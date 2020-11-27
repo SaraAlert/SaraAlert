@@ -4,6 +4,7 @@ analytic_1_active_overall_total_missing:
   active_monitoring: true
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Isolation'
   total: 158
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -13,6 +14,7 @@ analytic_1_active_overall_total_high:
   active_monitoring: true
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Exposure'
   total: 211
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -22,6 +24,7 @@ analytic_1_active_overall_total_low:
   active_monitoring: true
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Exposure'
   total: 709
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -31,6 +34,7 @@ analytic_1_active_overall_total_medium:
   active_monitoring: true
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Isolation'
   total: 544
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -40,6 +44,7 @@ analytic_1_active_overall_total_no_identified_risk:
   active_monitoring: true
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Exposure'
   total: 544
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -49,6 +54,7 @@ analytic_1_overall_overall_total_missing:
   active_monitoring: false
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Isolation'
   total: 158
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -58,6 +64,7 @@ analytic_1_overall_overall_total_high:
   active_monitoring: false
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Isolation'
   total: 211
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -67,6 +74,7 @@ analytic_1_overall_overall_total_low:
   active_monitoring: false
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Isolation'
   total: 709
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -76,6 +84,7 @@ analytic_1_overall_overall_total_medium:
   active_monitoring: false
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Isolation'
   total: 544
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -85,6 +94,7 @@ analytic_1_overall_overall_total_no_identified_risk:
   active_monitoring: false
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Isolation'
   total: 544
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -94,6 +104,7 @@ analytic_1_active_monitoring_status_symptomatic_missing:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Symptomatic'
+  status: 'Exposure'
   total: 82
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -103,6 +114,7 @@ analytic_1_active_monitoring_status_symptomatic_high:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Symptomatic'
+  status: 'Isolation'
   total: 116
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -112,6 +124,7 @@ analytic_1_active_monitoring_status_symptomatic_low:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Symptomatic'
+  status: 'Isolation'
   total: 389
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -121,6 +134,7 @@ analytic_1_active_monitoring_status_symptomatic_medium:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Symptomatic'
+  status: 'Isolation'
   total: 322
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -130,6 +144,7 @@ analytic_1_active_monitoring_status_symptomatic_no_identified_risk:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Symptomatic'
+  status: 'Isolation'
   total: 242
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -139,6 +154,7 @@ analytic_1_active_monitoring_status_non_reporting_high:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Non-Reporting'
+  status: 'Isolation'
   total: 2
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -148,6 +164,7 @@ analytic_1_active_monitoring_status_non_reporting_low:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Non-Reporting'
+  status: 'Exposure'
   total: 18
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -157,6 +174,7 @@ analytic_1_active_monitoring_status_non_reporting_medium:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Non-Reporting'
+  status: 'Exposure'
   total: 6
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -166,6 +184,7 @@ analytic_1_active_monitoring_status_non_reporting_no_identified_risk:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Non-Reporting'
+  status: 'Exposure'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -175,6 +194,7 @@ analytic_1_active_monitoring_status_asymptomatic_missing:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Asymptomatic'
+  status: 'Exposure'
   total: 76
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -184,6 +204,7 @@ analytic_1_active_monitoring_status_asymptomatic_high:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Asymptomatic'
+  status: 'Exposure'
   total: 93
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -193,6 +214,7 @@ analytic_1_active_monitoring_status_asymptomatic_low:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Asymptomatic'
+  status: 'Isolation'
   total: 302
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -202,6 +224,7 @@ analytic_1_active_monitoring_status_asymptomatic_medium:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Asymptomatic'
+  status: 'Exposure'
   total: 216
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -211,6 +234,7 @@ analytic_1_active_monitoring_status_asymptomatic_no_identified_risk:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Asymptomatic'
+  status: 'Exposure'
   total: 154
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -220,6 +244,7 @@ analytic_1_active_age_group_0_19_missing:
   active_monitoring: true
   category_type: 'Age Group'
   category: '0-19'
+  status: 'Isolation'
   total: 30
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -229,6 +254,7 @@ analytic_1_active_sex_female_missing:
   active_monitoring: true
   category_type: 'Sex'
   category: 'Female'
+  status: 'Exposure'
   total: 66
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -238,6 +264,7 @@ analytic_1_active_risk_factor_close_contact_with_known_case_missing:
   active_monitoring: true
   category_type: 'Risk Factor'
   category: 'Close Contact with Known Case'
+  status: 'Isolation'
   total: 52
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -247,6 +274,7 @@ analytic_1_active_exposure_country_high:
   active_monitoring: true
   category_type: 'Exposure Country'
   category: 'Congo'
+  status: 'Isolation'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -256,6 +284,7 @@ analytic_1_active_last_exposure_date_1_missing:
   active_monitoring: true
   category_type: 'Last Exposure Date'
   category: <%= 14.days.ago %>
+  status: 'Isolation'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -265,6 +294,7 @@ analytic_1_active_last_exposure_week_1_missing:
   active_monitoring: true
   category_type: 'Last Exposure Week'
   category: <%= 3.weeks.ago %>
+  status: 'Exposure'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -274,6 +304,7 @@ analytic_1_active_last_exposure_month_1_missing:
   active_monitoring: true
   category_type: 'Last Exposure Month'
   category: <%= 1.month.ago %>
+  status: 'Isolation'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -284,6 +315,7 @@ analytic_2_active_overall_total_missing:
   active_monitoring: true
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Exposure'
   total: 158
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -293,6 +325,7 @@ analytic_2_active_monitoring_status_symptomatic_missing:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Symptomatic'
+  status: 'Exposure'
   total: 82
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -302,6 +335,7 @@ analytic_2_active_age_group_0_19_missing:
   active_monitoring: true
   category_type: 'Age Group'
   category: '0-19'
+  status: 'Exposure'
   total: 30
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -311,6 +345,7 @@ analytic_2_active_sex_female_missing:
   active_monitoring: true
   category_type: 'Sex'
   category: 'Female'
+  status: 'Exposure'
   total: 66
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -320,6 +355,7 @@ analytic_2_active_risk_factor_close_contact_with_known_case_missing:
   active_monitoring: true
   category_type: 'Risk Factor'
   category: 'Close Contact with Known Case'
+  status: 'Isolation'
   total: 52
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -329,6 +365,7 @@ analytic_2_active_exposure_country_high:
   active_monitoring: true
   category_type: 'Exposure Country'
   category: 'Congo'
+  status: 'Isolation'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -338,6 +375,7 @@ analytic_2_active_last_exposure_date_1_missing:
   active_monitoring: true
   category_type: 'Last Exposure Date'
   category: <%= 14.days.ago %>
+  status: 'Exposure'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -347,6 +385,7 @@ analytic_2_active_last_exposure_week_1_missing:
   active_monitoring: true
   category_type: 'Last Exposure Week'
   category: <%= 3.weeks.ago %>
+  status: 'Exposure'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -356,6 +395,7 @@ analytic_2_active_last_exposure_month_1_missing:
   active_monitoring: true
   category_type: 'Last Exposure Month'
   category: <%= 1.month.ago %>
+  status: 'Isolation'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -366,6 +406,7 @@ analytic_3_active_overall_total_missing:
   active_monitoring: true
   category_type: 'Overall Total'
   category: 'Total'
+  status: 'Isolation'
   total: 158
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -375,6 +416,7 @@ analytic_3_active_monitoring_status_symptomatic_missing:
   active_monitoring: true
   category_type: 'Monitoring Status'
   category: 'Symptomatic'
+  status: 'Exposure'
   total: 82
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -384,6 +426,7 @@ analytic_3_active_age_group_0_19_missing:
   active_monitoring: true
   category_type: 'Age Group'
   category: '0-19'
+  status: 'Exposure'
   total: 30
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -393,6 +436,7 @@ analytic_3_active_sex_female_missing:
   active_monitoring: true
   category_type: 'Sex'
   category: 'Female'
+  status: 'Isolation'
   total: 66
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -402,6 +446,7 @@ analytic_3_active_risk_factor_close_contact_with_known_case_missing:
   active_monitoring: true
   category_type: 'Risk Factor'
   category: 'Close Contact with Known Case'
+  status: 'Isolation'
   total: 52
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -411,6 +456,7 @@ analytic_3_active_exposure_country_high:
   active_monitoring: true
   category_type: 'Exposure Country'
   category: 'Congo'
+  status: 'Exposure'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -420,6 +466,7 @@ analytic_3_active_last_exposure_date_1_missing:
   active_monitoring: true
   category_type: 'Last Exposure Date'
   category: <%= 14.days.ago %>
+  status: 'Exposure'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -429,6 +476,7 @@ analytic_3_active_last_exposure_week_1_missing:
   active_monitoring: true
   category_type: 'Last Exposure Week'
   category: <%= 3.weeks.ago %>
+  status: 'Isolation'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
@@ -438,6 +486,7 @@ analytic_3_active_last_exposure_month_1_missing:
   active_monitoring: true
   category_type: 'Last Exposure Month'
   category: <%= 1.month.ago %>
+  status: 'Exposure'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
