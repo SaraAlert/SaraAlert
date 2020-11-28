@@ -59,9 +59,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     patients = filter_by_text(patients, query[:search])
 
     # Filter by advanced filter (if present)
-    if params[:filter].present?
-      tz_offset = permitted_params.require(:tz_offset)
-      advanced = params.require(:filter).collect do |filter|
+    if query[:filter].present?
+      tz_offset = query.require(:tz_offset)
+      advanced = query.require(:filter).collect do |filter|
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
           value: filter.permit(:value)[:value] || filter.require(:value) || false,

@@ -9,7 +9,7 @@ import AdvancedFilter from '../AdvancedFilter';
 import AssignedUserFilter from '../query/AssignedUserFilter';
 import JurisdictionFilter from '../query/JurisdictionFilter';
 
-class MonitoreesFilters extends React.Component {
+class PatientsFilters extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,10 +26,10 @@ class MonitoreesFilters extends React.Component {
     axios
       .get('/jurisdictions/assigned_users', {
         params: {
-          jurisdiction_id: this.state.preset?.config?.query?.patients?.filters?.jurisdiction || this.props.jurisdiction?.id,
-          scope: this.state.preset?.config?.query?.patients?.filters?.scope || 'all',
-          workflow: this.state.preset?.config?.query?.patients?.filters?.workflow,
-          tab: this.state.preset?.config?.query?.patients?.filters?.tab || 'all',
+          jurisdiction_id: this.props.query?.jurisdiction || this.props.jurisdiction?.id,
+          scope: this.props.query?.scope || 'all',
+          workflow: this.props.query?.workflow,
+          tab: this.props.query?.tab || 'all',
         },
       })
       .then(response => {
@@ -54,8 +54,8 @@ class MonitoreesFilters extends React.Component {
                 as="select"
                 size="sm"
                 className="form-square"
-                onChange={event => this.props.onFiltersChange('workflow', event?.target?.value)}
-                value={this.props.filters?.workflow}>
+                onChange={event => this.props.onQueryChange('workflow', event?.target?.value)}
+                value={this.props.query?.workflow}>
                 <option value="all">All</option>
                 <option value="exposure">Exposure</option>
                 <option value="isolation">Isolation</option>
@@ -70,10 +70,10 @@ class MonitoreesFilters extends React.Component {
                 as="select"
                 size="sm"
                 className="form-square"
-                onChange={event => this.props.onFiltersChange('tab', event?.target?.value)}
-                value={this.props.filters?.tab}>
+                onChange={event => this.props.onQueryChange('tab', event?.target?.value)}
+                value={this.props.query?.tab}>
                 <option value="all">All</option>
-                {this.props.filters?.workflow === 'exposure' && (
+                {this.props.query?.workflow === 'exposure' && (
                   <React.Fragment>
                     <option value="symptomatic">Symptomatic</option>
                     <option value="non_reporting">Non-Reporting</option>
@@ -81,7 +81,7 @@ class MonitoreesFilters extends React.Component {
                     <option value="pui">PUI</option>
                   </React.Fragment>
                 )}
-                {this.props.filters?.workflow === 'isolation' && (
+                {this.props.query?.workflow === 'isolation' && (
                   <React.Fragment>
                     <option value="requiring_review">Records Requiring Review</option>
                     <option value="non_reporting">Non-Reporting</option>
@@ -97,24 +97,24 @@ class MonitoreesFilters extends React.Component {
           <Col md={24} className="my-1">
             <JurisdictionFilter
               jurisdiction_paths={this.props.jurisdiction_paths}
-              jurisdiction={this.props.filters?.jurisdiction}
-              scope={this.props.filters?.scope}
+              jurisdiction={this.props.query?.jurisdiction}
+              scope={this.props.query?.scope}
               onJurisdictionChange={jurisdiction => {
-                if (jurisdiction !== this.props.filters?.jurisdiction) {
-                  this.props.onFiltersChange('jurisdiction', jurisdiction, () => {
+                if (jurisdiction !== this.props.query?.jurisdiction) {
+                  this.props.onQueryChange('jurisdiction', jurisdiction, () => {
                     this.updateAssignedUsers();
                   });
                 }
               }}
-              onScopeChange={scope => this.props.onFiltersChange('scope', scope)}
+              onScopeChange={scope => this.props.onQueryChange('scope', scope)}
             />
           </Col>
           <Col md={24} className="my-1">
             <AssignedUserFilter
-              workflow={this.props.filters?.workflow}
+              workflow={this.props.query?.workflow}
               assigned_users={this.state.assigned_users}
-              assigned_user={this.props.filters?.user}
-              onAssignedUserChange={user => this.props.onFiltersChange('user', user)}
+              assigned_user={this.props.query?.user}
+              onAssignedUserChange={user => this.props.onQueryChange('user', user)}
             />
           </Col>
           <Col md={24} className="my-1">
@@ -131,8 +131,8 @@ class MonitoreesFilters extends React.Component {
                 autoComplete="off"
                 size="sm"
                 id="search"
-                value={this.props.filters?.search || ''}
-                onChange={event => this.props.onFiltersChange('search', event?.target?.value)}
+                value={this.props.query?.search || ''}
+                onChange={event => this.props.onQueryChange('search', event?.target?.value)}
                 onKeyPress={event => {
                   if (event.which === 13) {
                     event.preventDefault();
@@ -141,13 +141,13 @@ class MonitoreesFilters extends React.Component {
               />
               <AdvancedFilter
                 advancedFilterUpdate={filter =>
-                  this.props.onFiltersChange(
-                    'filters',
+                  this.props.onQueryChange(
+                    'query',
                     filter?.filter(field => field?.filterOption != null)
                   )
                 }
                 authenticity_token={this.props.authenticity_token}
-                workflow={this.props.filters?.workflow}
+                workflow={this.props.query?.workflow}
               />
             </InputGroup>
           </Col>
@@ -157,12 +157,12 @@ class MonitoreesFilters extends React.Component {
   }
 }
 
-MonitoreesFilters.propTypes = {
+PatientsFilters.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   jurisdiction: PropTypes.object,
-  filters: PropTypes.object,
-  onFiltersChange: PropTypes.func,
+  query: PropTypes.object,
+  onQueryChange: PropTypes.func,
 };
 
-export default MonitoreesFilters;
+export default PatientsFilters;
