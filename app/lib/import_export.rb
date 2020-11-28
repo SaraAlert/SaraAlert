@@ -212,6 +212,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   PATIENTS_EXPORT_OPTIONS = {
+    label: 'Monitorees',
     nodes: [
       {
         value: 'patients',
@@ -299,6 +300,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   ASSESSMENTS_EXPORT_OPTIONS = {
+    label: 'Reports',
     nodes: [rct_node(:assessments, 'Export Reports', %i[id patient_id symptomatic who_reported created_at updated_at symptoms])],
     checked: [],
     expanded: %w[assessments],
@@ -320,6 +322,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   LABORATORIES_EXPORT_OPTIONS = {
+    label: 'Lab Results',
     nodes: [rct_node(:laboratories, 'Export Lab Results', %i[id patient_id lab_type specimen_collection report result created_at updated_at])],
     checked: [],
     expanded: %w[laboratories],
@@ -351,6 +354,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   CLOSE_CONTACTS_EXPORT_OPTIONS = {
+    label: 'Close Contacts',
     nodes: [rct_node(:close_contacts, 'Export Close Contacts', %i[id patient_id first_name last_name primary_telephone email contact_attempts notes enrolled_id
                                                                   created_at updated_at])],
     checked: [],
@@ -367,6 +371,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   TRANSFERS_EXPORT_OPTIONS = {
+    label: 'Transfers',
     nodes: [rct_node(:transfers, 'Export Transfers', %i[id patient_id who from_jurisdiction to_jurisdiction created_at updated_at])],
     checked: [],
     expanded: %w[transfers],
@@ -374,6 +379,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   HISTORIES_EXPORT_OPTIONS = {
+    label: 'History',
     nodes: [rct_node(:histories, 'Export History', %i[id patient_id created_by history_type comment created_at updated_at])],
     checked: [],
     expanded: %w[histories],
@@ -485,46 +491,14 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     value.to_s.downcase.gsub(/[ -.]/, '')
   end
 
-  def validate_checked_fields(checked)
-    raise StandardError('Checked must be an array') unless checked.is_a?(Array)
-  end
-
-  def csv_export(patients, fields)
-    package = CSV.generate(headers: true) do |csv|
-      csv << fields.map { |field| PATIENT_FIELDS[field] }
-      patients.find_in_batches(batch_size: 500) do |patients_group|
-        patients_details = extract_patient_details_in_batch(patients_group, fields)
-        patients_details.each do |patient_details|
-          csv << fields.map { |field| patient_details[field] }
-        end
-      end
-    end
-    Base64.encode64(package)
-  end
-
-  def xlsx_export(patients, fields)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: data_type) do |sheet|
-        sheet.add_row(fields.map { |field| PATIENT_FIELDS[field] })
-        patients.find_in_batches(batch_size: 500) do |patients_group|
-          patients_details = extract_patient_details_in_batch(patients_group, fields)
-          patients_details.each do |patient_details|
-            sheet.add_row(fields.map { |field| patient_details[field] }, { types: Array.new(fields.length, :string) })
-          end
-        end
-      end
-      return Base64.encode64(p.to_stream.read)
-    end
-  end
-
   def extract_patient_details_in_batch(patients_group, fields)
     # perform the following queries in bulk only if requested for better performance
-    patients_statuses = statuses(patients) if fields.include?(:status)
-    patients_jurisdiction_names = jurisdiction_names(patients) if fields.include?(:jurisdiction)
-    patients_jurisdiction_paths = jurisdiction_paths(patients) if fields.include?(:jurisdiction_path)
-    patients_transfers = transfers(patients) if (fields & %i[transferred_from transferred_to]).any?
+    # patients_statuses = statuses(patients_group) if fields.include?(:status)
+    patients_jurisdiction_names = jurisdiction_names(patients_group) if fields.include?(:jurisdiction)
+    patients_jurisdiction_paths = jurisdiction_paths(patients_group) if fields.include?(:jurisdiction_path)
+    patients_transfers = transfers(patients_group) if (fields & %i[transferred_from transferred_to]).any?
     lab_fields = %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result]
-    patients_labs = laboratories(patients) if (fields & lab_fields).any?
+    patients_labs = laboratories(patients_group) if (fields & lab_fields).any?
 
     # construct patient details
     patients_details = []
@@ -536,20 +510,20 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       patient_details[:name] = patient.displayed_name || '' if fields.include?(:name)
       patient_details[:jurisdiction] = patients_jurisdiction_names[patient.id] || '' if fields.include?(:jurisdiction)
       patient_details[:jurisdiction_path] = patients_jurisdiction_paths[patient.id] || '' if fields.include?(:jurisdiction_path)
-      patient_details[:status] = patients_statuses[patient.id] || '' if fields.include?(:status)
+      # patient_details[:status] = patients_statuses[patient.id] || '' if fields.include?(:status)
       patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
       patient_details[:expected_purge_date] = patient.expected_purge_date || '' if fields.include?(:expected_purge_date)
       patient_details[:latest_report] = patient[:latest_assessment_at]&.strftime('%F') || '' if fields.include?(:latest_report)
       patient_details[:transferred_at] = patient[:latest_transfer_at]&.strftime('%F') || '' if fields.include?(:transferred_at)
 
       # populate latest transfer from and to if requested
-      if patients_transfers.key?(patient.id)
+      if patients_transfers&.key?(patient.id)
         patient_details[:transferred_from] = patients_transfers[patient.id][:trasnferred_from] if fields.include?(:transferred_from)
         patient_details[:transferred_to] = patients_transfer[patient.id][:transferred_to] if fields.include?(:transferred_to)
       end
 
       # populate labs if requested
-      if patients_labs.key?(patient.id)
+      if patients_labs&.key?(patient.id)
         if patients_labs[patient.id].key?(:first)
           patient_details[:lab_1_type] = patients_labs[patient.id][:first][:lab_type] || '' if fields.include?(:lab_1_type)
           if fields.include?(:lab_1_specimen_collection)

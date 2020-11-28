@@ -9,7 +9,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
 
-import MonitoreesFilters from './custom_export/MonitoreesFilters';
+import PatientsFilters from './custom_export/PatientsFilters';
 import reportError from '../util/ReportError';
 
 const rctIcons = {
@@ -30,19 +30,12 @@ class CustomExport extends React.Component {
         config: {
           filename: props.preset?.filename || '',
           format: props.preset?.format || 'xlsx',
-          filtered: props.preset?.filtered === !!props.preset?.filtered ? props.preset?.filtered : true,
-          query:
-            props.preset?.query ||
-            props.preset?.query ||
-            _.pickBy(props.patient_filters, (_, key) => {
-              return ['workflow', 'tab', 'jurisdiction', 'scope', 'user', 'search', 'filter'].includes(key);
-            }),
-          queries: _.mapValues(props.options, (settings, type) => {
+          // filtered: props.preset?.filtered === !!props.preset?.filtered ? props.preset?.filtered : true,
+          data: _.mapValues(props.options, (settings, type) => {
             return {
-              checked: _.get(props.preset, type)?.queries.checked || settings?.checked || [],
-              expanded: _.get(props.preset, type)?.queries.expanded || settings?.expanded || [],
-              filters: _.get(props.preset, type)?.queries.filters || type === 'patients' ? props.patient_filters : [],
-              order: _.get(props.preset, type)?.queries.order || [],
+              checked: _.get(props.preset, type)?.data?.checked || settings?.checked || [],
+              expanded: _.get(props.preset, type)?.data?.expanded || settings?.expanded || [],
+              query: _.get(props.preset, type)?.data?.filters || type === 'patients' ? props.patient_query : [],
             };
           }),
         },
@@ -96,12 +89,12 @@ class CustomExport extends React.Component {
   export = () => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post(`${window.BASE_PATH}/export/custom`, this.state)
+      .post(`${window.BASE_PATH}/export/custom`, this.state.preset)
       .then(response => console.log(response))
       .catch(err => reportError(err));
   };
 
-  // Update queries
+  // Update preset
   handlePresetChange = (field, value, cb) => {
     this.setState(state => {
       const preset = state.preset;
@@ -120,21 +113,21 @@ class CustomExport extends React.Component {
         <Modal.Body className="p-0">
           <Row className="mx-3 pt-3 pb-1">
             <Col md={12} className="px-2 py-1">
-              <MonitoreesFilters
+              <PatientsFilters
                 authenticity_token={this.props.authenticity_token}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 jurisdiction={this.props.jurisdiction}
-                filters={this.state.preset?.config?.queries?.patients?.filters}
-                onFiltersChange={(field, value, cb) => this.handlePresetChange(['config', 'queries', 'patients', 'filters', field], value, cb)}
+                query={this.state.preset?.config?.data?.patients?.query}
+                onQueryChange={(field, value, cb) => this.handlePresetChange(['config', 'data', 'patients', 'query', field], value, cb)}
               />
             </Col>
             <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.patients?.nodes}
-                checked={this.state.preset?.config?.queries?.patients?.checked}
-                expanded={this.state.preset?.config?.queries?.patients?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'queries', 'patients', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'queries', 'patients', 'expanded'], expanded)}
+                checked={this.state.preset?.config?.data?.patients?.checked}
+                expanded={this.state.preset?.config?.data?.patients?.expanded}
+                onCheck={checked => this.handlePresetChange(['config', 'data', 'patients', 'checked'], checked)}
+                onExpand={expanded => this.handlePresetChange(['config', 'data', 'patients', 'expanded'], expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
@@ -143,16 +136,16 @@ class CustomExport extends React.Component {
           <Row className="mx-3 py-1 g-border-top">
             <Col md={12} className="px-2 py-1">
               <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
-              <Select isMulti className="my-1" options={this.props.options?.assessments?.filters?.symptomatic?.options} placeholder="Filter by status..." />
-              <Select isMulti className="my-1" options={this.props.options?.assessments?.filters?.who_reported?.options} placeholder="Filter by reporter..." />
+              <Select isMulti className="my-1" options={this.props.options?.assessments?.query?.symptomatic?.options} placeholder="Filter by status..." />
+              <Select isMulti className="my-1" options={this.props.options?.assessments?.query?.who_reported?.options} placeholder="Filter by reporter..." />
             </Col>
             <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.assessments?.nodes}
-                checked={this.state.preset?.config?.queries?.assessments?.checked}
-                expanded={this.state.preset?.config?.queries?.assessments?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'queries', 'assessments', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'queries', 'assessments', 'expanded'], expanded)}
+                checked={this.state.preset?.config?.data?.assessments?.checked}
+                expanded={this.state.preset?.config?.data?.assessments?.expanded}
+                onCheck={checked => this.handlePresetChange(['config', 'data', 'assessments', 'checked'], checked)}
+                onExpand={expanded => this.handlePresetChange(['config', 'data', 'assessments', 'expanded'], expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
@@ -161,16 +154,16 @@ class CustomExport extends React.Component {
           <Row className="mx-3 py-1 g-border-top">
             <Col md={12} className="px-2 py-1">
               <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
-              <Select isMulti className="my-1" options={this.props.options?.laboratories?.filters?.lab_type?.options} placeholder="Filter by type..." />
-              <Select isMulti className="my-1" options={this.props.options?.laboratories?.filters?.result?.options} placeholder="Filter by result..." />
+              <Select isMulti className="my-1" options={this.props.options?.laboratories?.query?.lab_type?.options} placeholder="Filter by type..." />
+              <Select isMulti className="my-1" options={this.props.options?.laboratories?.query?.result?.options} placeholder="Filter by result..." />
             </Col>
             <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.laboratories?.nodes}
-                checked={this.state.preset?.config?.queries?.laboratories?.checked}
-                expanded={this.state.preset?.config?.queries?.laboratories?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'queries', 'laboratories', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'queries', 'laboratories', 'expanded'], expanded)}
+                checked={this.state.preset?.config?.data?.laboratories?.checked}
+                expanded={this.state.preset?.config?.data?.laboratories?.expanded}
+                onCheck={checked => this.handlePresetChange(['config', 'data', 'laboratories', 'checked'], checked)}
+                onExpand={expanded => this.handlePresetChange(['config', 'data', 'laboratories', 'expanded'], expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
@@ -179,15 +172,15 @@ class CustomExport extends React.Component {
           <Row className="mx-3 py-1 g-border-top">
             <Col md={12} className="px-2 py-1">
               <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
-              <Select isMulti className="my-1" options={this.props.options?.close_contacts?.filters?.enrolled_id?.options} placeholder="Filter by type..." />
+              <Select isMulti className="my-1" options={this.props.options?.close_contacts?.query?.enrolled_id?.options} placeholder="Filter by type..." />
             </Col>
             <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.close_contacts?.nodes}
-                checked={this.state.preset?.config?.queries?.close_contacts?.checked}
-                expanded={this.state.preset?.config?.queries?.close_contacts?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'queries', 'close_contacts', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'queries', 'close_contacts', 'expanded'], expanded)}
+                checked={this.state.preset?.config?.data?.close_contacts?.checked}
+                expanded={this.state.preset?.config?.data?.close_contacts?.expanded}
+                onCheck={checked => this.handlePresetChange(['config', 'data', 'close_contacts', 'checked'], checked)}
+                onExpand={expanded => this.handlePresetChange(['config', 'data', 'close_contacts', 'expanded'], expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
@@ -200,10 +193,10 @@ class CustomExport extends React.Component {
             <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.transfers?.nodes}
-                checked={this.state.preset?.config?.queries?.transfers?.checked}
-                expanded={this.state.preset?.config?.queries?.transfers?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'queries', 'transfers', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'queries', 'transfers', 'expanded'], expanded)}
+                checked={this.state.preset?.config?.data?.transfers?.checked}
+                expanded={this.state.preset?.config?.data?.transfers?.expanded}
+                onCheck={checked => this.handlePresetChange(['config', 'data', 'transfers', 'checked'], checked)}
+                onExpand={expanded => this.handlePresetChange(['config', 'data', 'transfers', 'expanded'], expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
@@ -212,21 +205,16 @@ class CustomExport extends React.Component {
           <Row className="mx-3 py-1 g-border-top">
             <Col md={12} className="px-2 py-1">
               <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
-              <Select
-                isMulti
-                className="my-1"
-                options={this.props.options?.histories?.filters?.history_type?.options}
-                placeholder="Filter by history type..."
-              />
-              <Select isMulti className="my-1" options={this.props.options?.histories?.filters?.created_by?.options} placeholder="Filter by creator..." />
+              <Select isMulti className="my-1" options={this.props.options?.histories?.query?.history_type?.options} placeholder="Filter by history type..." />
+              <Select isMulti className="my-1" options={this.props.options?.histories?.query?.created_by?.options} placeholder="Filter by creator..." />
             </Col>
             <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.histories?.nodes}
-                checked={this.state.preset?.config?.queries?.histories?.checked}
-                expanded={this.state.preset?.config?.queries?.histories?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'queries', 'histories', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'queries', 'histories', 'expanded'], expanded)}
+                checked={this.state.preset?.config?.data?.histories?.checked}
+                expanded={this.state.preset?.config?.data?.histories?.expanded}
+                onCheck={checked => this.handlePresetChange(['config', 'data', 'histories', 'checked'], checked)}
+                onExpand={expanded => this.handlePresetChange(['config', 'data', 'histories', 'expanded'], expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
@@ -311,7 +299,7 @@ class CustomExport extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={this.export} disabled={this.state.preset?.config?.queries?.patients?.checked?.length === 0}>
+          <Button variant="primary btn-square" onClick={this.export} disabled={this.state.preset?.config?.data?.patients?.checked?.length === 0}>
             Export
           </Button>
         </Modal.Footer>
@@ -326,7 +314,7 @@ CustomExport.propTypes = {
   jurisdiction: PropTypes.object,
   tabs: PropTypes.object,
   preset: PropTypes.object,
-  patient_filters: PropTypes.object,
+  patient_query: PropTypes.object,
   all_monitorees_count: PropTypes.number,
   filtered_monitorees_count: PropTypes.number,
   options: PropTypes.object,
