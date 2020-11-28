@@ -5,7 +5,7 @@
 .date-input__calendar_icon_sm {
   z-index: 1;
   position: absolute;
-  left: 1.00rem;
+  left: 0.75rem;
   top: 0.40rem;
   color: #495057;
   font-size: 14pt;
@@ -30,7 +30,7 @@
 }
 
 .date-input__input_sm {
-  padding-left: 2.375rem;
+  padding-left: 2.125rem;
 }
 
 .date-input__input_md {
@@ -41,7 +41,7 @@
   padding-left: 3.375rem;
 }
 
-.date-input__clear-btn {
+.date-input__clear-btn_lg {
   z-index: 1;
   position: absolute;
   right: 0;
@@ -51,7 +51,27 @@
   outline: none;
 }
 
-.date-input__clear-btn-invalid {
+.date-input__clear-btn_md {
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  padding: 0.8125rem 1rem !important;
+  color: #555;
+  font-size: 16pt;
+  outline: none;
+}
+
+.date-input__clear-btn_sm {
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  padding: 0.4125rem 0.5rem !important;
+  color: #555;
+  font-size: 13pt;
+  outline: none;
+}
+
+.date-input__clear-btn-invalid_lg {
   z-index: 1;
   position: absolute;
   right: 1.5rem;
@@ -59,6 +79,30 @@
   color: #555;
   font-size: 16pt;
   outline: none;
+}
+
+.date-input__clear-btn-invalid_md {
+  z-index: 1;
+  position: absolute;
+  right: 1.5rem;
+  padding: 0.8125rem 1rem !important;
+  color: #555;
+  font-size: 16pt;
+  outline: none;
+}
+
+.date-input__clear-btn-invalid_sm {
+  z-index: 1;
+  position: absolute;
+  right: 1.5rem;
+  padding: 0.4125rem 0.5rem !important;
+  color: #555;
+  font-size: 13pt;
+  outline: none;
+}
+
+.date-input__datepicker-wrapper_sm {
+  width: 9rem;
 }
 
 .react-datepicker-wrapper {

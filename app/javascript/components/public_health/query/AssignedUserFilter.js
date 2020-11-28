@@ -2,6 +2,8 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Form, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 class AssignedUserFilter extends React.Component {
   constructor(props) {
     super(props);
@@ -28,7 +30,7 @@ class AssignedUserFilter extends React.Component {
       <InputGroup size="sm">
         <InputGroup.Prepend>
           <InputGroup.Text className="rounded-0">
-            <i className="fas fa-users"></i>
+            <FontAwesomeIcon icon="users" />
             <span className="ml-1">Assigned User</span>
           </InputGroup.Text>
         </InputGroup.Prepend>
@@ -39,6 +41,7 @@ class AssignedUserFilter extends React.Component {
           list="assigned_users"
           value={this.state.assigned_user || ''}
           onChange={event => this.handleAssignedUserChange(event?.target?.value)}
+          disabled={this.props.disabled}
         />
         <datalist id="assigned_users">
           {this.props.assigned_users?.map(num => {
@@ -61,7 +64,8 @@ class AssignedUserFilter extends React.Component {
             size="sm"
             variant={this.props.assigned_user === null ? 'primary' : 'outline-secondary'}
             style={{ outline: 'none', boxShadow: 'none' }}
-            onClick={() => this.handleAssignedUserChange(null)}>
+            onClick={() => this.handleAssignedUserChange(null)}
+            disabled={this.props.disabled}>
             All
           </Button>
         </OverlayTrigger>
@@ -77,7 +81,8 @@ class AssignedUserFilter extends React.Component {
             size="sm"
             variant={this.props.assigned_user === 'none' ? 'primary' : 'outline-secondary'}
             style={{ outline: 'none', boxShadow: 'none' }}
-            onClick={() => this.handleAssignedUserChange('none')}>
+            onClick={() => this.handleAssignedUserChange('none')}
+            disabled={this.props.disabled}>
             None
           </Button>
         </OverlayTrigger>
@@ -91,6 +96,7 @@ AssignedUserFilter.propTypes = {
   assigned_users: PropTypes.array,
   assigned_user: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onAssignedUserChange: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 export default AssignedUserFilter;

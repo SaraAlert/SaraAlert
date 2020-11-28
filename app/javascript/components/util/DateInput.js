@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import MaskedInput from 'react-text-mask';
+
 import moment from 'moment';
 
 class DateInput extends React.Component {
@@ -44,7 +45,11 @@ class DateInput extends React.Component {
           }`}></i>
         {this.props.isClearable && this.props.date && (
           <button
-            className={`close ${this.props.isInvalid ? 'date-input__clear-btn-invalid' : 'date-input__clear-btn'}`}
+            className={`close ${
+              this.props.isInvalid
+                ? `date-input__clear-btn-invalid_${this.props.customClass?.includes('sm') ? 'sm' : this.props.customClass?.includes('md') ? 'md' : 'lg'}`
+                : `date-input__clear-btn_${this.props.customClass?.includes('sm') ? 'sm' : this.props.customClass?.includes('md') ? 'md' : 'lg'}`
+            }`}
             onClick={this.clearDate}
             disabled={this.props.disabled}>
             <i className="fas fa-times"></i>
@@ -54,7 +59,7 @@ class DateInput extends React.Component {
           key={this.props.tooltipKey || ''}
           placement={this.props.tooltipPlacement || 'auto'}
           overlay={<Tooltip style={this.props.tooltipText ? {} : { display: 'none' }}>{this.props.tooltipText}</Tooltip>}>
-          <div>
+          <div className={this.props.customClass?.includes('sm') ? 'date-input__datepicker-wrapper_sm' : ''}>
             <DatePicker
               id={this.props.id}
               selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}

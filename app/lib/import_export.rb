@@ -296,35 +296,20 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       }
     ],
     checked: PATIENT_FIELD_NAMES.keys,
-    expanded: %w[patients patients-enrollment patients-monitoring]
+    expanded: %w[patients]
   }.freeze
 
   ASSESSMENTS_EXPORT_OPTIONS = {
     label: 'Reports',
     nodes: [rct_node(:assessments, 'Export Reports', %i[id patient_id symptomatic who_reported created_at updated_at symptoms])],
-    checked: [],
-    expanded: %w[assessments],
-    filters: {
-      symptomatic: {
-        label: 'Needs Review',
-        options: [
-          { value: 'assessments-status-needs-review', label: 'Needs Review' },
-          { value: 'assessments-status-reviewed', label: 'Reviewed' }
-        ]
-      },
-      who_reported: {
-        options: [
-          { value: 'assessments-reporter-monitoree', label: 'Monitoree' },
-          { value: 'assessments-reporter-user', label: 'User' }
-        ]
-      }
-    }
+    checked: ASSESSMENT_FIELD_NAMES.keys,
+    expanded: %w[assessments]
   }.freeze
 
   LABORATORIES_EXPORT_OPTIONS = {
     label: 'Lab Results',
     nodes: [rct_node(:laboratories, 'Export Lab Results', %i[id patient_id lab_type specimen_collection report result created_at updated_at])],
-    checked: [],
+    checked: LABORATORY_FIELD_NAMES.keys,
     expanded: %w[laboratories],
     filters: {
       lab_type: {
@@ -357,43 +342,26 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     label: 'Close Contacts',
     nodes: [rct_node(:close_contacts, 'Export Close Contacts', %i[id patient_id first_name last_name primary_telephone email contact_attempts notes enrolled_id
                                                                   created_at updated_at])],
-    checked: [],
-    expanded: %w[close_contacts],
-    filters: {
-      enrolled_id: {
-        label: 'enrolled id',
-        options: [
-          { value: 'close_contacts-type-enrolled', label: 'Enrolled' },
-          { value: 'close_contacts-type-not-enrolled', label: 'Not Enrolled' }
-        ]
-      }
-    }
+    checked: CLOSE_CONTACT_FIELD_NAMES.keys,
+    expanded: %w[close_contacts]
   }.freeze
 
   TRANSFERS_EXPORT_OPTIONS = {
     label: 'Transfers',
     nodes: [rct_node(:transfers, 'Export Transfers', %i[id patient_id who from_jurisdiction to_jurisdiction created_at updated_at])],
-    checked: [],
-    expanded: %w[transfers],
-    filters: []
+    checked: TRANSFER_FIELD_NAMES.keys,
+    expanded: %w[transfers]
   }.freeze
 
   HISTORIES_EXPORT_OPTIONS = {
     label: 'History',
     nodes: [rct_node(:histories, 'Export History', %i[id patient_id created_by history_type comment created_at updated_at])],
-    checked: [],
+    checked: HISTORY_FIELD_NAMES.keys,
     expanded: %w[histories],
     filters: {
       history_type: {
         label: 'history type',
         options: History::HISTORY_TYPES.map { |type, label| { value: "histories-type-#{type}", label: label } }
-      },
-      created_by: {
-        label: 'creator',
-        options: [
-          { value: 'histories-creator-sara-alert-system', label: 'Sara Alert System' },
-          { value: 'histories-creator-user', label: 'User' }
-        ]
       }
     }
   }.freeze

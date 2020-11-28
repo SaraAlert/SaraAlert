@@ -39,10 +39,10 @@ class PatientsFilters extends React.Component {
 
   render() {
     return (
-      <Form.Group>
-        <Form.Label className="nav-input-label mb-0">Select Monitorees:</Form.Label>
-        <Row>
-          <Col md={24} className="my-1">
+      <Form.Group className="mb-0">
+        <Form.Label className="nav-input-label m-1">Select Monitorees:</Form.Label>
+        <Row className="px-3">
+          <Col md={12} className="my-1 px-1">
             <InputGroup size="sm" className="d-flex justify-content-between">
               <InputGroup.Prepend>
                 <InputGroup.Text className="rounded-0">
@@ -55,12 +55,17 @@ class PatientsFilters extends React.Component {
                 size="sm"
                 className="form-square"
                 onChange={event => this.props.onQueryChange('workflow', event?.target?.value)}
-                value={this.props.query?.workflow}>
+                value={this.props.query?.workflow}
+                disabled={this.props.disabled}>
                 <option value="all">All</option>
                 <option value="exposure">Exposure</option>
                 <option value="isolation">Isolation</option>
               </Form.Control>
-              <InputGroup.Prepend className="pl-2">
+            </InputGroup>
+          </Col>
+          <Col md={12} className="my-1 px-1">
+            <InputGroup size="sm" className="d-flex justify-content-between">
+              <InputGroup.Prepend>
                 <InputGroup.Text className="rounded-0">
                   <FontAwesomeIcon icon="folder-open" />
                   <span className="ml-1">Tab</span>
@@ -71,7 +76,8 @@ class PatientsFilters extends React.Component {
                 size="sm"
                 className="form-square"
                 onChange={event => this.props.onQueryChange('tab', event?.target?.value)}
-                value={this.props.query?.tab}>
+                value={this.props.query?.tab}
+                disabled={this.props.disabled}>
                 <option value="all">All</option>
                 {this.props.query?.workflow === 'exposure' && (
                   <React.Fragment>
@@ -94,7 +100,7 @@ class PatientsFilters extends React.Component {
               </Form.Control>
             </InputGroup>
           </Col>
-          <Col md={24} className="my-1">
+          <Col md={24} className="my-1 px-1">
             <JurisdictionFilter
               jurisdiction_paths={this.props.jurisdiction_paths}
               jurisdiction={this.props.query?.jurisdiction}
@@ -107,22 +113,24 @@ class PatientsFilters extends React.Component {
                 }
               }}
               onScopeChange={scope => this.props.onQueryChange('scope', scope)}
+              disabled={this.props.disabled}
             />
           </Col>
-          <Col md={24} className="my-1">
+          <Col md={24} className="my-1 px-1">
             <AssignedUserFilter
               workflow={this.props.query?.workflow}
               assigned_users={this.state.assigned_users}
               assigned_user={this.props.query?.user}
               onAssignedUserChange={user => this.props.onQueryChange('user', user)}
+              disabled={this.props.disabled}
             />
           </Col>
-          <Col md={24} className="my-1">
+          <Col md={24} className="my-1 px-1">
             <InputGroup size="sm" className="d-flex justify-content-between">
               <InputGroup.Prepend>
                 <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
                   <InputGroup.Text className="rounded-0">
-                    <i className="fas fa-search"></i>
+                    <FontAwesomeIcon icon="search" />
                     <span className="ml-1">Search</span>
                   </InputGroup.Text>
                 </OverlayTrigger>
@@ -138,6 +146,7 @@ class PatientsFilters extends React.Component {
                     event.preventDefault();
                   }
                 }}
+                disabled={this.props.disabled}
               />
               <AdvancedFilter
                 advancedFilterUpdate={filter =>
@@ -148,6 +157,7 @@ class PatientsFilters extends React.Component {
                 }
                 authenticity_token={this.props.authenticity_token}
                 workflow={this.props.query?.workflow}
+                disabled={this.props.disabled}
               />
             </InputGroup>
           </Col>
@@ -163,6 +173,7 @@ PatientsFilters.propTypes = {
   jurisdiction: PropTypes.object,
   query: PropTypes.object,
   onQueryChange: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 export default PatientsFilters;
