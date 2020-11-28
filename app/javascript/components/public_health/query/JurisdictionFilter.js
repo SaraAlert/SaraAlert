@@ -2,6 +2,8 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Form, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 class JurisdictionFilter extends React.Component {
   constructor(props) {
     super(props);
@@ -27,8 +29,8 @@ class JurisdictionFilter extends React.Component {
       <InputGroup size="sm">
         <InputGroup.Prepend>
           <InputGroup.Text className="rounded-0">
-            <i className="fas fa-map-marked-alt"></i>
-            <span className="ml-1">Jurisdiction</span>
+            <FontAwesomeIcon icon="map-marked-alt" />
+            <span className="ml-1">{this.props.label || 'Jurisdiction'}</span>
           </InputGroup.Text>
         </InputGroup.Prepend>
         <Form.Control
@@ -38,6 +40,7 @@ class JurisdictionFilter extends React.Component {
           list="jurisdiction_paths"
           defaultValue={this.props.jurisdiction_paths[this.props.jurisdiction] || ''}
           onChange={event => this.handleJurisdictionChange(event?.target?.value)}
+          disabled={this.props.disabled}
         />
         <datalist id="jurisdiction_paths">
           {Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
@@ -54,7 +57,8 @@ class JurisdictionFilter extends React.Component {
               size="sm"
               variant={this.props.scope === 'all' ? 'primary' : 'outline-secondary'}
               style={{ outline: 'none', boxShadow: 'none' }}
-              onClick={() => this.handleScopeChange('all')}>
+              onClick={() => this.handleScopeChange('all')}
+              disabled={this.props.disabled}>
               All
             </Button>
           </OverlayTrigger>
@@ -63,7 +67,8 @@ class JurisdictionFilter extends React.Component {
               size="sm"
               variant={this.props.scope === 'exact' ? 'primary' : 'outline-secondary'}
               style={{ outline: 'none', boxShadow: 'none' }}
-              onClick={() => this.handleScopeChange('exact')}>
+              onClick={() => this.handleScopeChange('exact')}
+              disabled={this.props.disabled}>
               Exact
             </Button>
           </OverlayTrigger>
@@ -74,11 +79,13 @@ class JurisdictionFilter extends React.Component {
 }
 
 JurisdictionFilter.propTypes = {
+  label: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   jurisdiction: PropTypes.number,
   scope: PropTypes.string,
   onJurisdictionChange: PropTypes.func,
   onScopeChange: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 export default JurisdictionFilter;

@@ -994,13 +994,14 @@ class AdvancedFilter extends React.Component {
             className="ml-2"
             onClick={() => {
               this.setState({ show: true });
-            }}>
+            }}
+            disabled={this.props.disabled}>
             <i className="fas fa-microscope"></i>
             <span className="ml-1">Advanced Filter</span>
           </Button>
         </OverlayTrigger>
         <Dropdown>
-          <Dropdown.Toggle variant="outline-secondary" size="sm" className="advanced-filter-dropdown">
+          <Dropdown.Toggle variant="outline-secondary" size="sm" className="advanced-filter-dropdown" disabled={this.props.disabled}>
             {this.state.applied && (this.state.activeFilter?.name || 'untitled')}
           </Dropdown.Toggle>
           <Dropdown.Menu alignRight>
@@ -1038,6 +1039,7 @@ AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
   workflow: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 export default AdvancedFilter;
