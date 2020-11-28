@@ -205,11 +205,11 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${this.formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
-                	{this.props.details.blocked_sms && (
-                  		<Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
-                    		&nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
-                  		</Form.Label>
-                	)}
+                    {this.props.details.blocked_sms && (
+                      <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
+                        &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
+                      </Form.Label>
+                    )}
                   </Col>
                 </Row>
                 <Row>
@@ -230,19 +230,17 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <b>Preferred Reporting Method:</b>{' '}
-                                    {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method.includes('SMS')) && (
-                  <span className="font-weight-light">{`${
-                    this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : '--'
-                  }`}</span>
-                )}
-					                {this.props.details.blocked_sms && this.props.details.preferred_contact_method.includes('SMS') && (
-                  		<span className="font-weight-bold text-danger">
-                    		{`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : '--'}`}
-                    	<Form.Label className="tooltip-whitespace">
-                      		<InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
-                    	</Form.Label>
-                  		</span>
-                	)}
+                    {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method.includes('SMS')) && (
+                      <span className="font-weight-light">{this.props.details.preferred_contact_method || '--'}</span>
+                    )}
+                    {this.props.details.blocked_sms && this.props.details.preferred_contact_method.includes('SMS') && (
+                      <span className="font-weight-bold text-danger">
+                        {this.props.details.preferred_contact_method || '--'}
+                        <Form.Label className="tooltip-whitespace">
+                          <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
+                        </Form.Label>
+                      </span>
+                    )}
                   </Col>
                 </Row>
               </Col>
