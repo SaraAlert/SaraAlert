@@ -327,8 +327,8 @@ namespace :demo do
       end
 
       # Potential Exposure Info
-      patient[:last_date_of_exposure] = today - rand(5).days
-      patient[:continuous_exposure] = rand < 0.15
+      patient[:continuous_exposure] = rand < 0.3
+      patient[:last_date_of_exposure] = today - rand(5).days unless patient[:continuous_exposure]
       patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
       patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
       if rand < 0.85
