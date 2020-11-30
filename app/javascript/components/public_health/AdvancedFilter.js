@@ -642,7 +642,7 @@ class AdvancedFilter extends React.Component {
                 <Col className="py-0" md="6">
                   {this.renderDateOptions(dateOption, index)}
                 </Col>
-                {dateOption != 'within' && (
+                {dateOption !== 'within' && (
                   <Col className="py-0">
                     <Form.Group className="py-0 my-0">
                       <DateInput
