@@ -7,13 +7,17 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     # Assume that the default patient created here will have a nil preferred_contact_time
     # and if it will be non-nil, then the specific test can change the Timecop time.
     # Default timezone is Eastern Time.
-    Timecop.freeze(Time.use_zone('Eastern Time (US & Canada)') { Time.now.noon }.utc)
+    Timecop.freeze(Time.now.in_time_zone('Eastern Time (US & Canada)').noon.utc)
     @original_reporting_period = ADMIN_OPTIONS['reporting_period_minutes']
   end
 
   def teardown
     ADMIN_OPTIONS['reporting_period_minutes'] = @original_reporting_period
     Timecop.return
+  end
+
+  def default_days_ago(days)
+    (Time.now.in_time_zone('Eastern Time (US & Canada)') - days.days)
   end
 
   def expected_eligibility(patient, exp_eligibility)
@@ -85,9 +89,9 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     [
       { isolation: true },
       { continuous_exposure: true },
-      { last_date_of_exposure: nil, created_at: 5.days.ago },
-      { last_date_of_exposure: 5.days.ago, created_at: 5.days.ago },
-      { last_date_of_exposure: 11.days.ago, created_at: 20.days.ago }
+      { last_date_of_exposure: nil, created_at: default_days_ago(5) },
+      { last_date_of_exposure: default_days_ago(5), created_at: default_days_ago(5) },
+      { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
     ].each do |workflow_params|
       dependent_params = {
         responder: patient,
@@ -105,9 +109,9 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     [
       { isolation: true },
       { continuous_exposure: true },
-      { last_date_of_exposure: nil, created_at: 5.days.ago },
-      { last_date_of_exposure: 5.days.ago, created_at: 5.days.ago },
-      { last_date_of_exposure: 11.days.ago, created_at: 20.days.ago }
+      { last_date_of_exposure: nil, created_at: default_days_ago(5) },
+      { last_date_of_exposure: default_days_ago(5), created_at: default_days_ago(5) },
+      { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
     ].each do |workflow_params|
       dependent = create(
         :patient,
@@ -125,9 +129,9 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
 
   def past_monitoring_period_dependent_test(patient, exp_eligibility: false)
     [
-      { last_date_of_exposure: nil, created_at: 16.days.ago },
-      { last_date_of_exposure: 16.days.ago, created_at: 16.days.ago },
-      { last_date_of_exposure: 16.days.ago, created_at: 30.days.ago }
+      { last_date_of_exposure: nil, created_at: default_days_ago(16) },
+      { last_date_of_exposure: default_days_ago(16), created_at: default_days_ago(16) },
+      { last_date_of_exposure: default_days_ago(16), created_at: default_days_ago(30) }
     ].each do |workflow_params|
       dependent = create(
         :patient,
@@ -175,9 +179,9 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   end
 
   test 'ignored dependent eligibility fields' do
-    patient = create(:patient, preferred_contact_method: 'E-mailed Web Link', monitoring: false, closed_at: 1.day.ago)
+    patient = create(:patient, preferred_contact_method: 'E-mailed Web Link', monitoring: false, closed_at: default_days_ago(1))
     eligible_dependent_params = { continuous_exposure: true }
-    ineligible_dependent_params = { monitoring: false, closed_at: 1.day.ago }
+    ineligible_dependent_params = { monitoring: false, closed_at: default_days_ago(1) }
     # Expect that the ignored params below will not affect the initial eligibilty found here.
     [
       { preferred_contact_method: 'E-mailed Web Link' },
@@ -189,7 +193,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       { preferred_contact_method: '' },
       { preferred_contact_method: nil },
       { pause_notifications: true },
-      { last_assessment_reminder_sent: 1.hour.ago }
+      { last_assessment_reminder_sent: default_days_ago(0) - 1.hour }
     ].each do |ignored_params|
       # Inegligible dependent should not become eligible
       ineligible_dependent = create(
@@ -202,7 +206,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         :assessment,
         patient: ineligible_dependent,
         symptomatic: false,
-        created_at: Time.now.getlocal('-04:00').beginning_of_day
+        created_at: default_days_ago(0).beginning_of_day
       )
       expected_eligibility(patient, false)
 
@@ -217,7 +221,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         :assessment,
         patient: eligible_dependent,
         symptomatic: false,
-        created_at: Time.now.getlocal('-04:00').beginning_of_day
+        created_at: default_days_ago(0).beginning_of_day
       )
       expected_eligibility(patient, true)
 
@@ -227,7 +231,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   end
 
   test 'HoH notification eligible because of dependent flows' do
-    patient = create(:patient, preferred_contact_method: 'SMS Text-message', monitoring: false, closed_at: 1.day.ago)
+    patient = create(:patient, preferred_contact_method: 'SMS Text-message', monitoring: false, closed_at: default_days_ago(1))
     assert_ineligible(patient)
     continuous_exposure_dependent_test(patient)
     closed_dependent_test(patient)
@@ -258,9 +262,9 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       [
         { isolation: true },
         { continuous_exposure: true },
-        { last_date_of_exposure: nil, created_at: 5.days.ago },
-        { last_date_of_exposure: 5.days.ago, created_at: 5.days.ago },
-        { last_date_of_exposure: 11.days.ago, created_at: 20.days.ago }
+        { last_date_of_exposure: nil, created_at: default_days_ago(5) },
+        { last_date_of_exposure: default_days_ago(5), created_at: default_days_ago(5) },
+        { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
       ].each do |workflow_params|
         patient = create(
           :patient,
@@ -278,7 +282,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           :assessment,
           patient: patient,
           symptomatic: false,
-          created_at: 1.day.ago.end_of_day
+          created_at: default_days_ago(1).end_of_day
         )
         assert_eligible(patient)
         # Creating an assessment from today SHOULD affect eligibility
@@ -286,7 +290,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           :assessment,
           patient: patient,
           symptomatic: false,
-          created_at: Time.now.beginning_of_day
+          created_at: default_days_ago(0).beginning_of_day
         )
         assert_ineligible(patient)
       end
@@ -298,14 +302,14 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       [
         { isolation: true },
         { continuous_exposure: true },
-        { last_date_of_exposure: nil, created_at: 5.days.ago },
-        { last_date_of_exposure: 5.days.ago, created_at: 5.days.ago },
-        { last_date_of_exposure: 11.days.ago, created_at: 20.days.ago }
+        { last_date_of_exposure: nil, created_at: default_days_ago(5) },
+        { last_date_of_exposure: default_days_ago(5), created_at: default_days_ago(5) },
+        { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
       ].each do |workflow_params|
         [
           { pause_notifications: true },
-          { monitoring: false, closed_at: 1.day.ago },
-          { last_assessment_reminder_sent: 11.hours.ago },
+          { monitoring: false, closed_at: default_days_ago(1) },
+          { last_assessment_reminder_sent: default_days_ago(0) - 11.hours },
           { preferred_contact_method: 'Unknown' },
           { preferred_contact_method: 'Opt-out' },
           { preferred_contact_method: '' },
@@ -328,8 +332,8 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   test 'non-HoH, special exposure workflow, non-eligible flows' do
     ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |preferred_contact_method|
       [
-        { last_date_of_exposure: 16.days.ago, created_at: 20.days.ago },
-        { last_date_of_exposure: nil, created_at: 16.days.ago }
+        { last_date_of_exposure: default_days_ago(16), created_at: default_days_ago(20) },
+        { last_date_of_exposure: nil, created_at: default_days_ago(16) }
       ].each do |ineligible_params|
         patient_args = {
           preferred_contact_method: preferred_contact_method,
@@ -354,7 +358,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       monitoring: true,
       purged: false,
       isolation: true,
-      created_at: 2.days.ago
+      created_at: default_days_ago(2)
     )
     # patient has asymptomatic assessment more than 24 hours ago but less than 7 days ago
     create(:assessment, patient: patient, symptomatic: false, created_at: 25.hours.ago)
@@ -368,7 +372,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       preferred_contact_method: 'E-mailed Web Link',
       monitoring: true,
       purged: false,
-      isolation: true, created_at: 2.days.ago
+      isolation: true, created_at: default_days_ago(2)
     )
     assert_eligible(patient)
   end
@@ -381,11 +385,11 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       monitoring: true,
       purged: false,
       isolation: false,
-      created_at: 20.days.ago,
-      last_date_of_exposure: 14.days.ago
+      created_at: default_days_ago(20),
+      last_date_of_exposure: default_days_ago(14)
     )
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, created_at: default_days_ago(2))
     assert_eligible(patient)
   end
 
@@ -397,8 +401,8 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       monitoring: true,
       purged: false,
       isolation: false,
-      created_at: 2.days.ago,
-      last_date_of_exposure: 14.days.ago
+      created_at: default_days_ago(2),
+      last_date_of_exposure: default_days_ago(14)
     )
     assert_eligible(patient)
   end
@@ -411,11 +415,11 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       monitoring: true,
       purged: false,
       isolation: false,
-      created_at: 4.days.ago,
-      last_date_of_exposure: 5.days.ago
+      created_at: default_days_ago(4),
+      last_date_of_exposure: default_days_ago(5)
     )
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, created_at: default_days_ago(2))
     assert_eligible(patient)
   end
 
@@ -427,11 +431,11 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       monitoring: true,
       purged: false,
       isolation: false,
-      created_at: 4.days.ago,
+      created_at: default_days_ago(2),
       continuous_exposure: true
     )
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, created_at: default_days_ago(2))
     assert_eligible(patient)
   end
 
@@ -478,7 +482,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       monitoring: true,
       purged: false,
       isolation: false,
-      created_at: 4.days.ago,
+      created_at: default_days_ago(4),
       continuous_exposure: true
     )
     assert_eligible(patient)
