@@ -248,7 +248,7 @@
         <tr>
           <td><%= cc.first_name %></td>
           <td><%= cc.last_name %></td>
-          <td><%= cc.primary_telephone&.gsub('+1', '')&.gsub(/\D/, '')&.insert(3, '-')&.insert(7, '-') %></td>
+          <td><%= cc.primary_telephone.present? && cc.primary_telephone.length > 10 ? cc.primary_telephone&.gsub('+1', '')&.gsub(/\D/, '')&.insert(3, '-')&.insert(7, '-') : '' %></td>
           <td><%= cc.email %></td>
           <td><%= cc.contact_attempts %></td>
           <td>
