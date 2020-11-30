@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CheckboxTree from 'react-checkbox-tree';
@@ -32,14 +32,13 @@ class CustomExport extends React.Component {
         id: props.preset?.id || null,
         name: props.preset?.name || '',
         config: {
-          filename: props.preset?.filename || '',
-          format: props.preset?.format || 'xlsx',
-          // filtered: props.preset?.filtered === !!props.preset?.filtered ? props.preset?.filtered : true,
+          filename: props.preset?.config?.filename || '',
+          format: props.preset?.config?.format || 'xlsx',
           data: _.mapValues(props.options, (settings, type) => {
             return {
-              checked: _.get(props.preset, type)?.data?.checked || settings?.checked || [],
-              expanded: _.get(props.preset, type)?.data?.expanded || settings?.expanded || [],
-              query: _.get(props.preset, type)?.data?.query || type === 'patients' ? props.patient_query : {},
+              checked: _.get(props.preset, ['config', 'data', type, 'checked']) || settings?.checked || [],
+              expanded: _.get(props.preset, ['config', 'data', type, 'expanded']) || settings?.expanded || [],
+              query: _.get(props.preset, ['config', 'data', type, 'query']) || type === 'patients' ? props.patient_query : {},
             };
           }),
         },
@@ -56,7 +55,7 @@ class CustomExport extends React.Component {
       .then(response => {
         if (response?.data) {
           toast.success('Export preset successfully saved.');
-          this.setState({ id: response?.data?.id });
+          this.handlePresetChange('id', response?.data?.id);
         }
         this.props.reloadExportPresets();
       });
@@ -66,7 +65,7 @@ class CustomExport extends React.Component {
   update = () => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .put(`${window.BASE_PATH}/user_export_presets/${this.state?.id}`, this.state.preset)
+      .put(`${window.BASE_PATH}/user_export_presets/${this.state.preset?.id}`, this.state.preset)
       .catch(() => toast.error('Failed to update export preset.'))
       .then(response => {
         if (response?.data) {
@@ -80,11 +79,11 @@ class CustomExport extends React.Component {
   delete = () => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .delete(`${window.BASE_PATH}/user_export_presets/${this.props.preset?.id}`)
+      .delete(`${window.BASE_PATH}/user_export_presets/${this.state.preset?.id}`)
       .catch(() => toast.error('Failed to delete export preset.'))
       .then(() => {
         toast.success('Export preset successfully deleted.');
-        this.setState({ id: null });
+        this.handlePresetChange('id', null);
         this.props.reloadExportPresets();
       });
   };
@@ -103,7 +102,6 @@ class CustomExport extends React.Component {
     this.setState(state => {
       const preset = state.preset;
       _.set(preset, field, value);
-      console.log(preset);
       return { preset };
     }, cb);
   };
@@ -122,7 +120,7 @@ class CustomExport extends React.Component {
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 jurisdiction={this.props.jurisdiction}
                 query={this.state.preset?.config?.data?.patients?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(['config', 'data', 'patients', 'query', field], value, cb)}
+                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.patients.query.${field}`, value, cb)}
                 disabled={this.state.preset?.config?.data?.patients?.checked?.length === 0}
               />
             </Col>
@@ -131,8 +129,8 @@ class CustomExport extends React.Component {
                 nodes={this.props.options?.patients?.nodes}
                 checked={this.state.preset?.config?.data?.patients?.checked}
                 expanded={this.state.preset?.config?.data?.patients?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'data', 'patients', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'data', 'patients', 'expanded'], expanded)}
+                onCheck={checked => this.handlePresetChange('config.data.patients.checked', checked)}
+                onExpand={expanded => this.handlePresetChange('config.data.patients.expanded', expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
@@ -142,7 +140,7 @@ class CustomExport extends React.Component {
             <Col md={14} className="px-0 py-1">
               <AssessmentsFilters
                 query={this.state.preset?.config?.data?.assessments?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(['config', 'data', 'assessments', 'query', field], value, cb)}
+                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.assessments.query.${field}`, value, cb)}
                 disabled={this.state.preset?.config?.data?.assessments?.checked?.length === 0}
               />
             </Col>
@@ -151,8 +149,8 @@ class CustomExport extends React.Component {
                 nodes={this.props.options?.assessments?.nodes}
                 checked={this.state.preset?.config?.data?.assessments?.checked}
                 expanded={this.state.preset?.config?.data?.assessments?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'data', 'assessments', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'data', 'assessments', 'expanded'], expanded)}
+                onCheck={checked => this.handlePresetChange('config.data.assessments.checked', checked)}
+                onExpand={expanded => this.handlePresetChange('config.data.assessments.expanded', expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
@@ -162,7 +160,7 @@ class CustomExport extends React.Component {
             <Col md={14} className="px-0 py-1">
               <LaboratoriesFilters
                 query={this.state.preset?.config?.data?.laboratories?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(['config', 'data', 'laboratories', 'query', field], value, cb)}
+                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.laboratories.query.${field}`, value, cb)}
                 disabled={this.state.preset?.config?.data?.laboratories?.checked?.length === 0}
               />
             </Col>
@@ -171,8 +169,8 @@ class CustomExport extends React.Component {
                 nodes={this.props.options?.laboratories?.nodes}
                 checked={this.state.preset?.config?.data?.laboratories?.checked}
                 expanded={this.state.preset?.config?.data?.laboratories?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'data', 'laboratories', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'data', 'laboratories', 'expanded'], expanded)}
+                onCheck={checked => this.handlePresetChange('config.data.laboratories.checked', checked)}
+                onExpand={expanded => this.handlePresetChange('config.data.laboratories.expanded', expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
@@ -182,7 +180,7 @@ class CustomExport extends React.Component {
             <Col md={14} className="px-0 py-1">
               <CloseContactsFilters
                 query={this.state.preset?.config?.data?.close_contacts?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(['config', 'data', 'close_contacts', 'query', field], value, cb)}
+                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.close_contacts.query.${field}`, value, cb)}
                 disabled={this.state.preset?.config?.data?.close_contacts?.checked?.length === 0}
               />
             </Col>
@@ -191,8 +189,8 @@ class CustomExport extends React.Component {
                 nodes={this.props.options?.close_contacts?.nodes}
                 checked={this.state.preset?.config?.data?.close_contacts?.checked}
                 expanded={this.state.preset?.config?.data?.close_contacts?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'data', 'close_contacts', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'data', 'close_contacts', 'expanded'], expanded)}
+                onCheck={checked => this.handlePresetChange('config.data.close_contacts.checked', checked)}
+                onExpand={expanded => this.handlePresetChange('config.data.close_contacts.expanded', expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
@@ -204,7 +202,7 @@ class CustomExport extends React.Component {
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 jurisdiction={this.props.jurisdiction}
                 query={this.state.preset?.config?.data?.transfers?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(['config', 'data', 'transfers', 'query', field], value, cb)}
+                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.transfers.query.${field}`, value, cb)}
                 disabled={this.state.preset?.config?.data?.transfers?.checked?.length === 0}
               />
             </Col>
@@ -213,18 +211,18 @@ class CustomExport extends React.Component {
                 nodes={this.props.options?.transfers?.nodes}
                 checked={this.state.preset?.config?.data?.transfers?.checked}
                 expanded={this.state.preset?.config?.data?.transfers?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'data', 'transfers', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'data', 'transfers', 'expanded'], expanded)}
+                onCheck={checked => this.handlePresetChange('config.data.transfers.checked', checked)}
+                onExpand={expanded => this.handlePresetChange('config.data.transfers.expanded', expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
             </Col>
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md={14} className="px-0 py-1">
+            <Col lg={14} className="px-0 py-1">
               <HistoriesFilters
                 query={this.state.preset?.config?.data?.histories?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(['config', 'data', 'histories', 'query', field], value, cb)}
+                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.histories.query.${field}`, value, cb)}
                 disabled={this.state.preset?.config?.data?.histories?.checked?.length === 0}
               />
             </Col>
@@ -233,15 +231,15 @@ class CustomExport extends React.Component {
                 nodes={this.props.options?.histories?.nodes}
                 checked={this.state.preset?.config?.data?.histories?.checked}
                 expanded={this.state.preset?.config?.data?.histories?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'data', 'histories', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'data', 'histories', 'expanded'], expanded)}
+                onCheck={checked => this.handlePresetChange('config.data.histories.checked', checked)}
+                onExpand={expanded => this.handlePresetChange('config.data.histories.expanded', expanded)}
                 showNodeIcon={false}
                 icons={rctIcons}
               />
             </Col>
           </Row>
           <Row className="mx-3 pt-3 g-border-top">
-            <Col md={7} className="px-1">
+            <Col lg={7} className="px-1">
               <Form.Label className="nav-input-label">PRESET NAME</Form.Label>
               <Form.Control
                 id="preset"
@@ -253,7 +251,6 @@ class CustomExport extends React.Component {
                 autoComplete="off"
                 value={this.state.preset?.name}
                 onChange={event => this.handlePresetChange('name', event?.target?.value)}
-                disabled={this.state.preset?.id}
               />
             </Col>
             <Col md={7} className="px-1">
@@ -267,17 +264,17 @@ class CustomExport extends React.Component {
                 placeholder="(Optional prefix for export file names)"
                 autoComplete="off"
                 value={this.state.preset?.config?.filename}
-                onChange={event => this.handlePresetChange(['config', 'filename'], event?.target?.value)}
+                onChange={event => this.handlePresetChange('config.filename', event?.target?.value)}
               />
             </Col>
-            <Col md={4} className="px-1">
+            <Col lg={4} className="px-1">
               <Form.Label className="nav-input-label">FILE FORMAT</Form.Label>
               <Form.Group>
                 <Button
                   size="sm"
                   variant={this.state.preset?.config?.format === 'csv' ? 'primary' : 'outline-secondary'}
                   style={{ outline: 'none', boxShadow: 'none' }}
-                  onClick={() => this.handlePresetChange(['config', 'format'], 'csv')}>
+                  onClick={() => this.handlePresetChange('config.format', 'csv')}>
                   <FontAwesomeIcon className="mr-1" icon={['fas', 'file-csv']} />
                   CSV
                 </Button>
@@ -285,32 +282,53 @@ class CustomExport extends React.Component {
                   size="sm"
                   variant={this.state.preset?.config?.format === 'xlsx' ? 'primary' : 'outline-secondary'}
                   style={{ outline: 'none', boxShadow: 'none' }}
-                  onClick={() => this.handlePresetChange(['config', 'format'], 'xlsx')}>
+                  onClick={() => this.handlePresetChange('config.format', 'xlsx')}>
                   <FontAwesomeIcon className="mr-1" icon={['fas', 'file-excel']} />
                   Excel
                 </Button>
               </Form.Group>
             </Col>
-            <Col md={6} className="px-1">
+            <Col lg={6} className="px-1">
               <Form.Label className="nav-input-label">MANAGE PRESET</Form.Label>
               <Form.Group>
-                <Button
-                  size="sm"
-                  variant="success"
-                  disabled={this.state.preset?.name === ''}
-                  style={{ outline: 'none', boxShadow: 'none' }}
-                  onClick={this.save}>
-                  <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
-                  Save
-                </Button>
-                <Button size="sm" variant="warning" disabled={!this.state.preset?.id} style={{ outline: 'none', boxShadow: 'none' }} onClick={this.update}>
-                  <FontAwesomeIcon className="mr-1" icon={['fas', 'pen-alt']} />
-                  Update
-                </Button>
-                <Button size="sm" variant="danger" disabled={!this.state.preset?.id} style={{ outline: 'none', boxShadow: 'none' }} onClick={this.delete}>
-                  <FontAwesomeIcon className="mr-1" icon={['fas', 'trash']} />
-                  Delete
-                </Button>
+                {this.state.preset?.id ? (
+                  <React.Fragment>
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      disabled={!this.state.preset?.id}
+                      className="mr-1"
+                      style={{ outline: 'none', boxShadow: 'none' }}
+                      onClick={this.update}>
+                      <FontAwesomeIcon className="mr-1" icon={['fas', 'pen-alt']} />
+                      Update
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      disabled={!this.state.preset?.id}
+                      className="ml-1"
+                      style={{ outline: 'none', boxShadow: 'none' }}
+                      onClick={this.delete}>
+                      <FontAwesomeIcon className="mr-1" icon={['fas', 'trash']} />
+                      Delete
+                    </Button>
+                  </React.Fragment>
+                ) : this.state.preset?.name === '' ? (
+                  <OverlayTrigger overlay={<Tooltip>Please indicate a preset name to save this preset</Tooltip>}>
+                    <div>
+                      <Button size="sm" variant="primary" disabled style={{ outline: 'none', boxShadow: 'none' }}>
+                        <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
+                        Save
+                      </Button>
+                    </div>
+                  </OverlayTrigger>
+                ) : (
+                  <Button size="sm" variant="primary" style={{ outline: 'none', boxShadow: 'none' }} onClick={this.save}>
+                    <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
+                    Save
+                  </Button>
+                )}
               </Form.Group>
             </Col>
           </Row>

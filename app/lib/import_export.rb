@@ -24,6 +24,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     sexual_orientation: 'Sexual Orientation',
     # Enrollment Info - Identification and Demographics - Race, Ethnicity, and Nationality
     race: 'Race (All Race Fields)',
+    white: 'White',
+    black_or_african_american: 'Black or African American',
+    american_indian_or_alaska_native: 'American Indian or Alaska Native',
+    asian: 'Asian',
+    native_hawaiian_or_other_pacific_islander: 'Native Hawaiian or Other Pacific Islander',
     ethnicity: 'Ethnicity',
     nationality: 'Nationality',
     # Enrollment Info - Identification and Demographics - Language
@@ -455,18 +460,67 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                   :primary_telephone, :secondary_telephone, :email, nil, nil, nil, :potential_exposure_location, :potential_exposure_country,
                   :date_of_departure, nil, nil, nil, nil, :contact_of_known_case, :was_in_health_care_facility_with_known_cases].freeze
 
+  EXPORT_TYPES = {
+    csv_exposure: { label: 'Line list CSV (exposure)', filename: 'Sara-Alert-Linelist-Exposure' },
+    csv_isolation: { label: 'Line list CSV (isolation)', filename: 'Sara-Alert-Linelist-Isolation' },
+    sara_format_exposure: { label: 'Sara Alert Format (exposure)', filename: 'Sara-Alert-Format-Exposure' },
+    sara_format_isolation: { label: 'Sara Alert Format (isolation)', filename: 'Sara-Alert-Format-Isolation' },
+    full_history_all: { label: 'Excel Export For All Monitorees', filename: 'Sara-Alert-Full-Export' },
+    full_history_purgeable: { label: 'Excel Export For Purge-Eligible Monitorees', filename: 'Sara-Alert-Purge-Eligible-Export' },
+    custom: { label: 'Custom Export', filename: 'Custom-Export' }
+  }.freeze
+
+  RACE_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].freeze
+
+  PATIENT_FIELD_TYPES = {
+    numbers: %i[id assigned_user responder_id],
+    strings: %i[first_name middle_name last_name sex ethnicity primary_language secondary_language nationality user_defined_id_statelocal user_defined_id_cdc
+                user_defined_id_nndss address_line_1 address_city address_state address_line_2 address_zip address_county foreign_address_line_1
+                foreign_address_city foreign_address_country foreign_address_line_2 foreign_address_zip foreign_address_line_3 foreign_address_state
+                monitored_address_line_1 monitored_address_city monitoring_address_state monitored_address_state monitored_address_line_2 monitored_address_zip
+                monitored_address_county foreign_monitored_address_line_1 foreign_monitored_address_city foreign_monitored_address_state
+                foreign_monitored_address_line_2 foreign_monitored_address_zip foreign_monitored_address_county preferred_contact_method primary_telephone_type
+                secondary_telephone_type preferred_contact_time email port_of_origin source_of_report source_of_report_specify flight_or_vessel_number
+                flight_or_vessel_carrier port_of_entry_into_usa travel_related_notes additional_planned_travel_type additional_planned_travel_destination
+                additional_planned_travel_destination_state additional_planned_travel_destination_country additional_planned_travel_port_of_departure
+                additional_planned_travel_related_notes potential_exposure_location potential_exposure_country contact_of_known_case_id
+                was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel_facility_name healthcare_personnel_facility_name
+                member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan exposure_notes case_status gender_identity
+                sexual_orientation risk_level monitoring_reason public_health_action],
+    dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
+              symptom_onset extended_isolation last_assessment_reminder_sent latest_assessment_at latest_transfer_at closed_at created_at updated_at],
+    booleans: %i[interpretation_required isolation continuous_exposure contact_of_known_case travel_to_affected_country_or_area
+                 was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
+                 member_of_a_common_exposure_cohort head_of_household pause_notifications].concat(RACE_FIELDS),
+    phones: %i[primary_telephone secondary_telephone]
+  }.freeze
+
+  PATIENT_STATUS_LABELS = {
+    exposure_symptomatic: 'symptomatic',
+    exposure_asymptomatic: 'asymptomatic',
+    expsoure_non_reporting: 'non-reporting',
+    exposure_under_investigation: 'PUI',
+    isolation_asymp_non_test_based: 'requires review (asymptomatic non test based)',
+    isolation_symp_non_test_based: 'requires review (symptomatic non test based)',
+    isolation_test_based: 'requires review (test based)',
+    isolation_reporting: 'reporting',
+    isolation_non_reporting: 'non-reporting',
+    purged: 'purged',
+    closed: 'closed'
+  }.freeze
+
   def unformat_enum_field(value)
     value.to_s.downcase.gsub(/[ -.]/, '')
   end
 
   def extract_patients_details_in_batch(patients_group, fields)
     # perform the following queries in bulk only if requested for better performance
-    # patients_statuses = statuses(patients_group) if fields.include?(:status)
-    patients_jurisdiction_names = jurisdiction_names(patients_group) if fields.include?(:jurisdiction)
+    patients_jurisdiction_names = jurisdiction_names(patients_group) if fields.include?(:jurisdiction_name)
     patients_jurisdiction_paths = jurisdiction_paths(patients_group) if fields.include?(:jurisdiction_path)
     patients_transfers = transfers(patients_group) if (fields & %i[transferred_from transferred_to]).any?
     lab_fields = %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result]
     patients_labs = laboratories(patients_group) if (fields & lab_fields).any?
+    patients_creators = Hash[User.find(patients_group.pluck(:creator_id)).pluck(:id, :email)] if fields.include?(:creator)
 
     # construct patient details
     patients_details = []
@@ -474,15 +528,12 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       # populate requested inherent fields
       patient_details = extract_incomplete_patient_details(patient, fields)
 
-      # populate computed fields if requested
-      patient_details[:name] = patient.displayed_name || '' if fields.include?(:name)
-      patient_details[:jurisdiction] = patients_jurisdiction_names[patient.id] || '' if fields.include?(:jurisdiction)
+      # populate creator if requested
+      patient_details[:creator] = patients_creators[patient.creator_id] || '' if fields.include?(:creator)
+
+      # populate jurisdiction if requested
+      patient_details[:jurisdiction_name] = patients_jurisdiction_names[patient.id] || '' if fields.include?(:jurisdiction_name)
       patient_details[:jurisdiction_path] = patients_jurisdiction_paths[patient.id] || '' if fields.include?(:jurisdiction_path)
-      # patient_details[:status] = patients_statuses[patient.id] || '' if fields.include?(:status)
-      patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
-      patient_details[:expected_purge_date] = patient.expected_purge_date || '' if fields.include?(:expected_purge_date)
-      patient_details[:latest_report] = patient[:latest_assessment_at]&.strftime('%F') || '' if fields.include?(:latest_report)
-      patient_details[:transferred_at] = patient[:latest_transfer_at]&.strftime('%F') || '' if fields.include?(:transferred_at)
 
       # populate latest transfer from and to if requested
       if patients_transfers&.key?(patient.id)
@@ -514,6 +565,39 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     patients_details
+  end
+
+  def extract_incomplete_patient_details(patient, fields)
+    patient_details = {}
+
+    (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:strings]).each do |field|
+      patient_details[field] = patient[field] || '' if fields.include?(field)
+    end
+
+    PATIENT_FIELD_TYPES[:dates].each do |field|
+      patient_details[field] = patient[field]&.strftime('%F') || '' if fields.include?(field)
+    end
+
+    PATIENT_FIELD_TYPES[:booleans].each do |field|
+      patient_details[field] = patient[field] || false if fields.include?(field)
+    end
+
+    PATIENT_FIELD_TYPES[:phones].each do |field|
+      patient_details[field] = format_phone_number(patient[field]) if fields.include?(field)
+    end
+
+    RACE_FIELDS.each { |race| patient_details[race] = patient[race] || false } if fields.include?(:race)
+
+    patient_details[:name] = patient.displayed_name if fields.include?(:name)
+    patient_details[:age] = patient.calc_current_age if fields.include?(:age)
+    patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Workflow'
+    patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
+    patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
+    patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
+    patient_details[:expected_purge_date] = patient.expected_purge_date || '' if fields.include?(:expected_purge_date)
+    patient_details[:status] = PATIENT_STATUS_LABELS[patient.status] || '' if fields.include?(:status)
+
+    patient_details
   end
 
   def extract_assessments_details_in_batch(assessments, fields, query)
@@ -622,222 +706,185 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     histories_details
   end
 
-  def extract_incomplete_patient_details(patient, fields)
-    details = {}
-    number_fields = %i[id assigned_user]
-    string_fields = %i[first_name middle_name last_name sex ethnicity primary_language secondary_language nationality user_defined_id_statelocal
-                       user_defined_id_cdc user_defined_id_nndss address_line_1 address_city address_state address_line_2 address_zip address_county
-                       foreign_address_line_1 foreign_address_city foreign_address_country foreign_address_line_2 foreign_address_zip foreign_address_line_3
-                       foreign_address_state monitored_address_line_1 monitored_address_city monitoring_address_state monitored_address_state
-                       monitored_address_line_2 monitored_address_zip monitored_address_county foreign_monitored_address_line_1 foreign_monitored_address_city
-                       foreign_monitored_address_state foreign_monitored_address_line_2 foreign_monitored_address_zip foreign_monitored_address_county
-                       preferred_contact_method primary_telephone primary_telephone_type secondary_telephone secondary_telephone_type preferred_contact_time
-                       email port_of_origin source_of_report flight_or_vessel_number flight_or_vessel_carrier port_of_entry_into_usa travel_related_notes
-                       additional_planned_travel_type additional_planned_travel_destination additional_planned_travel_destination_state
-                       additional_planned_travel_destination_country additional_planned_travel_port_of_departure additional_planned_travel_related_notes
-                       potential_exposure_country potential_exposure_country contact_of_known_case_id was_in_health_care_facility_with_known_cases_facility_name
-                       laboratory_personnel_facility_name healthcare_personnel_facility_name member_of_a_common_exposure_cohort_type exposure_risk_assessment
-                       monitoring_plan exposure_notes case_status gender_identity sexual_orientation risk_level monitoring_reason public_health_action]
-    date_fields = %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date
-                     last_date_of_exposure symptom_onset extended_isolation]
-    bool_fields = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander interpretation_required
-                     contact_of_known_case travel_to_affected_country_or_area was_in_health_care_facility_with_known_cases laboratory_personnel
-                     healthcare_personnel crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort]
+  # def csv_line_list(patients)
+  #   package = CSV.generate(headers: true) do |csv|
+  #     csv << LINELIST_HEADERS
+  #     patient_statuses = statuses(patients)
+  #     patients.find_in_batches(batch_size: 500) do |patients_group|
+  #       linelists = linelists_for_export(patients_group, patient_statuses)
+  #       patients_group.each do |patient|
+  #         csv << linelists[patient.id].values
+  #       end
+  #     end
+  #   end
+  #   Base64.encode64(package)
+  # end
 
-    (number_fields + string_fields).each do |field|
-      details[field] = patient[field] || '' if fields.include?(field)
-    end
+  # def sara_alert_format(patients)
+  #   Axlsx::Package.new do |p|
+  #     p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
+  #       sheet.add_row COMPREHENSIVE_HEADERS
+  #       patient_statuses = statuses(patients)
+  #       patients.find_in_batches(batch_size: 500) do |patients_group|
+  #         comprehensive_details = comprehensive_details_for_export(patients_group, patient_statuses)
+  #         patients_group.each do |patient|
+  #           sheet.add_row comprehensive_details[patient.id].values, { types: Array.new(COMPREHENSIVE_HEADERS.length, :string) }
+  #         end
+  #       end
+  #     end
+  #     return Base64.encode64(p.to_stream.read)
+  #   end
+  # end
 
-    date_fields.each do |field|
-      details[field] = patient[field]&.strftime('%F') || '' if fields.include?(field)
-    end
+  # def excel_export(patients)
+  #   Axlsx::Package.new do |p|
+  #     p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
+  #       headers = MONITOREES_LIST_HEADERS
+  #       sheet.add_row headers
+  #       patient_statuses = statuses(patients)
+  #       patients.find_in_batches(batch_size: 500) do |patients_group|
+  #         comprehensive_details = comprehensive_details_for_export(patients_group, patient_statuses)
+  #         patients_group.each do |patient|
+  #           extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
+  #           values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
+  #           sheet.add_row values, { types: Array.new(MONITOREES_LIST_HEADERS.length + 2, :string) }
+  #         end
+  #       end
+  #     end
+  #     p.workbook.add_worksheet(name: 'Reports') do |sheet|
+  #       # headers and all unique symptoms
+  #       symptom_labels = patients.joins(assessments: [{ reported_condition: :symptoms }]).select('symptoms.label').distinct.pluck('symptoms.label').sort
+  #       sheet.add_row ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
 
-    bool_fields.each do |field|
-      details[field] = patient[field] || false if fields.include?(field)
-    end
+  #       # assessments sorted by patients
+  #       patients.find_in_batches(batch_size: 500) do |patients_group|
+  #         assessments = Assessment.where(patient_id: patients_group.pluck(:id))
+  #         conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
+  #         symptoms = Symptom.where(condition_id: conditions.pluck(:id))
 
-    details
-  end
+  #         # construct hash containing symptoms by assessment_id
+  #         conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
+  #                           .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
+  #         symptoms.each do |symptom|
+  #           conditions_hash[symptom[:condition_id]][:symptoms][symptom[:label]] = symptom.value
+  #         end
+  #         assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
 
-  def csv_line_list(patients)
-    package = CSV.generate(headers: true) do |csv|
-      csv << LINELIST_HEADERS
-      patient_statuses = statuses(patients)
-      patients.find_in_batches(batch_size: 500) do |patients_group|
-        linelists = linelists_for_export(patients_group, patient_statuses)
-        patients_group.each do |patient|
-          csv << linelists[patient.id].values
-        end
-      end
-    end
-    Base64.encode64(package)
-  end
+  #         # combine symptoms with assessment summary
+  #         assessment_summary_arrays = assessments.order(:patient_id, :id).pluck(:id, :patient_id, :symptomatic, :who_reported, :created_at, :updated_at)
+  #         assessment_summary_arrays.each do |assessment_summary_array|
+  #           symptoms_hash = assessments_hash[assessment_summary_array[0]]
+  #           next if symptoms_hash.nil?
 
-  def sara_alert_format(patients)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
-        sheet.add_row COMPREHENSIVE_HEADERS
-        patient_statuses = statuses(patients)
-        patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = comprehensive_details_for_export(patients_group, patient_statuses)
-          patients_group.each do |patient|
-            sheet.add_row comprehensive_details[patient.id].values, { types: Array.new(COMPREHENSIVE_HEADERS.length, :string) }
-          end
-        end
-      end
-      return Base64.encode64(p.to_stream.read)
-    end
-  end
+  #           symptoms_array = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s }
+  #           row = assessment_summary_array[1..].concat(symptoms_array)
+  #           sheet.add_row row, { types: Array.new(row.length, :string) }
+  #         end
+  #       end
+  #     end
+  #     p.workbook.add_worksheet(name: 'Lab Results') do |sheet|
+  #       labs = Laboratory.where(patient_id: patients.pluck(:id))
+  #       lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
+  #       sheet.add_row lab_headers
+  #       labs.find_each(batch_size: 500) do |lab|
+  #         sheet.add_row lab.details.values, { types: Array.new(lab_headers.length, :string) }
+  #       end
+  #     end
+  #     p.workbook.add_worksheet(name: 'Edit Histories') do |sheet|
+  #       histories = History.where(patient_id: patients.pluck(:id))
+  #       history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
+  #       sheet.add_row history_headers
+  #       histories.find_each(batch_size: 500) do |history|
+  #         sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
+  #       end
+  #     end
+  #     return Base64.encode64(p.to_stream.read)
+  #   end
+  # end
 
-  def excel_export(patients)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
-        headers = MONITOREES_LIST_HEADERS
-        sheet.add_row headers
-        patient_statuses = statuses(patients)
-        patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = comprehensive_details_for_export(patients_group, patient_statuses)
-          patients_group.each do |patient|
-            extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
-            values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
-            sheet.add_row values, { types: Array.new(MONITOREES_LIST_HEADERS.length + 2, :string) }
-          end
-        end
-      end
-      p.workbook.add_worksheet(name: 'Reports') do |sheet|
-        # headers and all unique symptoms
-        symptom_labels = patients.joins(assessments: [{ reported_condition: :symptoms }]).select('symptoms.label').distinct.pluck('symptoms.label').sort
-        sheet.add_row ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
+  # def excel_export_monitorees(patients)
+  #   Axlsx::Package.new do |p|
+  #     p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
+  #       headers = MONITOREES_LIST_HEADERS
+  #       sheet.add_row headers
+  #       patient_statuses = statuses(patients)
+  #       patients.find_in_batches(batch_size: 500) do |patients_group|
+  #         comprehensive_details = comprehensive_details_for_export(patients_group, patient_statuses)
+  #         patients_group.each do |patient|
+  #           extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
+  #           values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
+  #           sheet.add_row values, { types: Array.new(MONITOREES_LIST_HEADERS.length + 2, :string) }
+  #         end
+  #       end
+  #     end
+  #     return Base64.encode64(p.to_stream.read)
+  #   end
+  # end
 
-        # assessments sorted by patients
-        patients.find_in_batches(batch_size: 500) do |patients_group|
-          assessments = Assessment.where(patient_id: patients_group.pluck(:id))
-          conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
-          symptoms = Symptom.where(condition_id: conditions.pluck(:id))
+  # def excel_export_assessments(patients)
+  #   Axlsx::Package.new do |p|
+  #     p.workbook.add_worksheet(name: 'Reports') do |sheet|
+  #       # headers and all unique symptoms
+  #       symptom_labels = patients.joins(assessments: [{ reported_condition: :symptoms }]).select('symptoms.label').distinct.pluck('symptoms.label').sort
+  #       sheet.add_row ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
 
-          # construct hash containing symptoms by assessment_id
-          conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
-                            .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
-          symptoms.each do |symptom|
-            conditions_hash[symptom[:condition_id]][:symptoms][symptom[:label]] = symptom.value
-          end
-          assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
+  #       # assessments sorted by patients
+  #       patients.find_in_batches(batch_size: 500) do |patients_group|
+  #         assessments = Assessment.where(patient_id: patients_group.pluck(:id))
+  #         conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
+  #         symptoms = Symptom.where(condition_id: conditions.pluck(:id))
 
-          # combine symptoms with assessment summary
-          assessment_summary_arrays = assessments.order(:patient_id, :id).pluck(:id, :patient_id, :symptomatic, :who_reported, :created_at, :updated_at)
-          assessment_summary_arrays.each do |assessment_summary_array|
-            symptoms_hash = assessments_hash[assessment_summary_array[0]]
-            next if symptoms_hash.nil?
+  #         # construct hash containing symptoms by assessment_id
+  #         conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
+  #                           .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
+  #         symptoms.each do |symptom|
+  #           conditions_hash[symptom[:condition_id]][:symptoms][symptom[:label]] = symptom.value
+  #         end
+  #         assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
 
-            symptoms_array = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s }
-            row = assessment_summary_array[1..].concat(symptoms_array)
-            sheet.add_row row, { types: Array.new(row.length, :string) }
-          end
-        end
-      end
-      p.workbook.add_worksheet(name: 'Lab Results') do |sheet|
-        labs = Laboratory.where(patient_id: patients.pluck(:id))
-        lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
-        sheet.add_row lab_headers
-        labs.find_each(batch_size: 500) do |lab|
-          sheet.add_row lab.details.values, { types: Array.new(lab_headers.length, :string) }
-        end
-      end
-      p.workbook.add_worksheet(name: 'Edit Histories') do |sheet|
-        histories = History.where(patient_id: patients.pluck(:id))
-        history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
-        sheet.add_row history_headers
-        histories.find_each(batch_size: 500) do |history|
-          sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
-        end
-      end
-      return Base64.encode64(p.to_stream.read)
-    end
-  end
+  #         # combine symptoms with assessment summary
+  #         assessment_summary_arrays = assessments.order(:patient_id, :id).pluck(:id, :patient_id, :symptomatic, :who_reported, :created_at, :updated_at)
+  #         assessment_summary_arrays.each do |assessment_summary_array|
+  #           symptoms_hash = assessments_hash[assessment_summary_array[0]]
+  #           next if symptoms_hash.nil?
 
-  def excel_export_monitorees(patients)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
-        headers = MONITOREES_LIST_HEADERS
-        sheet.add_row headers
-        patient_statuses = statuses(patients)
-        patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = comprehensive_details_for_export(patients_group, patient_statuses)
-          patients_group.each do |patient|
-            extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
-            values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
-            sheet.add_row values, { types: Array.new(MONITOREES_LIST_HEADERS.length + 2, :string) }
-          end
-        end
-      end
-      return Base64.encode64(p.to_stream.read)
-    end
-  end
+  #           symptoms_array = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s }
+  #           row = assessment_summary_array[1..].concat(symptoms_array)
+  #           sheet.add_row row, { types: Array.new(row.length, :string) }
+  #         end
+  #       end
+  #     end
+  #     return Base64.encode64(p.to_stream.read)
+  #   end
+  # end
 
-  def excel_export_assessments(patients)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Reports') do |sheet|
-        # headers and all unique symptoms
-        symptom_labels = patients.joins(assessments: [{ reported_condition: :symptoms }]).select('symptoms.label').distinct.pluck('symptoms.label').sort
-        sheet.add_row ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
+  # def excel_export_lab_results(patients)
+  #   Axlsx::Package.new do |p|
+  #     p.workbook.add_worksheet(name: 'Lab Results') do |sheet|
+  #       labs = Laboratory.where(patient_id: patients.pluck(:id))
+  #       lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
+  #       sheet.add_row lab_headers
+  #       labs.find_each(batch_size: 500) do |lab|
+  #         sheet.add_row lab.details.values, { types: Array.new(lab_headers.length, :string) }
+  #       end
+  #     end
+  #     return Base64.encode64(p.to_stream.read)
+  #   end
+  # end
 
-        # assessments sorted by patients
-        patients.find_in_batches(batch_size: 500) do |patients_group|
-          assessments = Assessment.where(patient_id: patients_group.pluck(:id))
-          conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
-          symptoms = Symptom.where(condition_id: conditions.pluck(:id))
-
-          # construct hash containing symptoms by assessment_id
-          conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
-                            .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
-          symptoms.each do |symptom|
-            conditions_hash[symptom[:condition_id]][:symptoms][symptom[:label]] = symptom.value
-          end
-          assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
-
-          # combine symptoms with assessment summary
-          assessment_summary_arrays = assessments.order(:patient_id, :id).pluck(:id, :patient_id, :symptomatic, :who_reported, :created_at, :updated_at)
-          assessment_summary_arrays.each do |assessment_summary_array|
-            symptoms_hash = assessments_hash[assessment_summary_array[0]]
-            next if symptoms_hash.nil?
-
-            symptoms_array = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s }
-            row = assessment_summary_array[1..].concat(symptoms_array)
-            sheet.add_row row, { types: Array.new(row.length, :string) }
-          end
-        end
-      end
-      return Base64.encode64(p.to_stream.read)
-    end
-  end
-
-  def excel_export_lab_results(patients)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Lab Results') do |sheet|
-        labs = Laboratory.where(patient_id: patients.pluck(:id))
-        lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
-        sheet.add_row lab_headers
-        labs.find_each(batch_size: 500) do |lab|
-          sheet.add_row lab.details.values, { types: Array.new(lab_headers.length, :string) }
-        end
-      end
-      return Base64.encode64(p.to_stream.read)
-    end
-  end
-
-  def excel_export_histories(patients)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Edit Histories') do |sheet|
-        histories = History.where(patient_id: patients.pluck(:id))
-        history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
-        sheet.add_row history_headers
-        histories.find_each(batch_size: 500) do |history|
-          sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
-        end
-      end
-      return Base64.encode64(p.to_stream.read)
-    end
-  end
+  # def excel_export_histories(patients)
+  #   Axlsx::Package.new do |p|
+  #     p.workbook.add_worksheet(name: 'Edit Histories') do |sheet|
+  #       histories = History.where(patient_id: patients.pluck(:id))
+  #       history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
+  #       sheet.add_row history_headers
+  #       histories.find_each(batch_size: 500) do |history|
+  #         sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
+  #       end
+  #     end
+  #     return Base64.encode64(p.to_stream.read)
+  #   end
+  # end
 
   # Patient fields relevant to linelist export
   def linelists_for_export(patients, patient_statuses)

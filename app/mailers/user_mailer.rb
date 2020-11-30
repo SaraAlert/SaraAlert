@@ -55,9 +55,9 @@ class UserMailer < ApplicationMailer
     end
   end
 
-  def download_email(user, export_type, lookups, batch_size)
+  def download_email(user, export_label, lookups, batch_size)
     @user = user
-    @export_type = export_type
+    @export_label = export_label
     @lookups = lookups
     @batch_size = batch_size
     mail(to: user.email.strip, subject: 'Your Sara Alert system export is ready') do |format|

@@ -19,35 +19,18 @@ class Patient < ApplicationRecord
     end
   end
 
-  validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
-                                                  'Meets criteria to shorten quarantine',
-                                                  'Enrolled more than 14 days after last date of exposure (system)',
-                                                  'Enrolled more than 10 days after last date of exposure (system)',
-                                                  'Enrolled on last day of monitoring period (system)',
-                                                  'Completed Monitoring (system)',
-                                                  'Meets Case Definition',
-                                                  'Lost to follow-up during monitoring period',
-                                                  'Lost to follow-up (contact never established)',
-                                                  'Transferred to another jurisdiction',
-                                                  'Person Under Investigation (PUI)',
-                                                  'Case confirmed',
-                                                  'Past monitoring period',
-                                                  'Meets criteria to discontinue isolation',
-                                                  'Deceased',
-                                                  'Duplicate',
-                                                  'Other',
-                                                  nil, ''] }
-
+  validates :monitoring_reason, inclusion: {
+    in: VALID_ENUMS[:monitoring_reason],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[:monitoring_reason].reject(&:blank?).join("', '")}'"
+  }
   validates :monitoring_plan, inclusion: {
     in: VALID_ENUMS[:monitoring_plan],
     message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[:monitoring_plan].reject(&:blank?).join("', '")}'"
   }
-
-  validates :exposure_risk_assessment, inclusion: { in: ['High',
-                                                         'Medium',
-                                                         'Low',
-                                                         'No Identified Risk',
-                                                         nil, ''] }
+  validates :exposure_risk_assessment, inclusion: {
+    in: VALID_ENUMS[:exposure_risk_assessment],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[:exposure_risk_assessment].reject(&:blank?).join("', '")}'"
+  }
 
   %i[address_state
      ethnicity

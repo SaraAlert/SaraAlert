@@ -109,7 +109,7 @@ class Export extends React.Component {
           {this.state.savedExportPresets && this.state.savedExportPresets.length > 0 && <Dropdown.Divider />}
           {this.state.savedExportPresets?.map((savedPreset, index) => {
             return (
-              <Dropdown.Item key={`sep-${index}`} onClick={() => this.setState({ showCustomFormatModal: true, savedPreset })}>
+              <Dropdown.Item key={`sep-${index}`} onClick={() => this.setState({ savedPreset, showCustomFormatModal: true })}>
                 {savedPreset.name}
               </Dropdown.Item>
             );

@@ -54,10 +54,14 @@ class PatientsFilters extends React.Component {
                 as="select"
                 size="sm"
                 className="form-square"
-                onChange={event => this.props.onQueryChange('workflow', event?.target?.value)}
+                onChange={event => {
+                  this.props.onQueryChange('workflow', event?.target?.value || null);
+                  this.props.onQueryChange('tab', 'all');
+                }}
                 value={this.props.query?.workflow}
                 disabled={this.props.disabled}>
-                <option value="all">All</option>
+                value={this.props.query?.workflow || ''}
+                <option value="">All</option>
                 <option value="exposure">Exposure</option>
                 <option value="isolation">Isolation</option>
               </Form.Control>
