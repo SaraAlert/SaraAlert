@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Modal, DropdownButton, Dropdown } from 'react-boot
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 
-import CustomExport from './CutsomExport';
+import CustomExport from './CustomExport';
 import reportError from '../util/ReportError';
 
 class Export extends React.Component {
