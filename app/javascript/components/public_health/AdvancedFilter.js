@@ -303,6 +303,13 @@ class AdvancedFilter extends React.Component {
     this.setState({ activeFilterOptions });
   };
 
+  // Change the relative filter option for type relative date
+  changeFilterRelativeOption = (index, value, relativeOption) => {
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: value, relativeOption: relativeOption };
+    this.setState({ activeFilterOptions });
+  };
+
   // Change an index value
   changeValue = (index, value) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
@@ -447,6 +454,23 @@ class AdvancedFilter extends React.Component {
     );
   };
 
+  // Render relative date specific options
+  renderRelativeOptions = (current, index, value) => {
+    return (
+      <Form.Control
+        as="select"
+        value={current}
+        onChange={event => {
+          this.changeFilterRelativeOption(index, value, event.target.value);
+        }}>
+        <option value="today">today</option>
+        <option value="tomorrow">tomorrow</option>
+        <option value="yesterday">yesterday</option>
+        <option value="custom">more...</option>
+      </Form.Control>
+    );
+  };
+
   // Modal to specify filter name
   renderFilterNameModal = () => {
     return (
@@ -493,7 +517,7 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render a single line "statement"
-  renderStatement = (filterOption, value, index, total, dateOption) => {
+  renderStatement = (filterOption, value, index, total, dateOption, relativeOption) => {
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
@@ -800,7 +824,14 @@ class AdvancedFilter extends React.Component {
               </Col>
             </Row>
             {this.state.activeFilterOptions?.map((statement, index) => {
-              return this.renderStatement(statement.filterOption, statement.value, index, this.state.activeFilterOptions?.length, statement.dateOption);
+              return this.renderStatement(
+                statement.filterOption,
+                statement.value,
+                index,
+                this.state.activeFilterOptions?.length,
+                statement.dateOption,
+                statement.relativeOption
+              );
             })}
             <Row className="pt-2 pb-1">
               <Col>
