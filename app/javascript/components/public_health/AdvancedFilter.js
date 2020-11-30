@@ -556,7 +556,7 @@ class AdvancedFilter extends React.Component {
                       </Form.Control>
                     </Col>
                   )}
-                  <Col md="11">
+                  <Col md="12">
                     <Form.Control
                       as="select"
                       value={value?.operator}
@@ -574,7 +574,7 @@ class AdvancedFilter extends React.Component {
                       <option value="greater-than">{'greater than'}</option>
                     </Form.Control>
                   </Col>
-                  <Col>
+                  <Col md="4">
                     <Form.Control
                       className="form-control-number"
                       value={value?.number}
