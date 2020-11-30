@@ -21,8 +21,45 @@ class ExportJob < ApplicationJob
     lookups = []
     patients = patients_by_query(user, config[:data][:patients][:query])
     patients&.in_batches(of: RECORD_BATCH_SIZE)&.each_with_index do |patients_group, index|
-      exported_patients = extract_patient_details_in_batch(patients_group, config[:data][:patients][:checked].map(&:to_sym))
+      exported_patients = extract_patients_details_in_batch(patients_group, config[:data][:patients][:checked].map(&:to_sym))
       lookups << create_lookup(user_id, export_type, config, :patients, exported_patients, index)
+
+      patient_ids = patients_group.pluck(:id)
+
+      if config[:data][:assessments][:checked].present?
+        assessments = assessments_by_query(patient_ids, config[:data][:assessments][:query])
+        exported_assessments, symptom_names = extract_assessments_details_in_batch(assessments, config[:data][:assessments][:checked].map(&:to_sym),
+                                                                                   config[:data][:assessments][:query])
+        if config[:data][:assessments][:checked].include?(:symptoms.to_s)
+          config[:data][:assessments][:checked].delete(:symptoms.to_s)
+          config[:data][:assessments][:checked].concat(symptom_names)
+        end
+        lookups << create_lookup(user_id, export_type, config, :assessments, exported_assessments, index)
+      end
+
+      if config[:data][:laboratories][:checked].present?
+        laboratories = laboratories_by_query(patient_ids, config[:data][:laboratories][:query])
+        exported_laboratories = extract_laboratories_details_in_batch(laboratories, config[:data][:laboratories][:checked].map(&:to_sym))
+        lookups << create_lookup(user_id, export_type, config, :laboratories, exported_laboratories, index)
+      end
+
+      if config[:data][:close_contacts][:checked].present?
+        close_contacts = close_contacts_by_query(patient_ids, config[:data][:close_contacts][:query])
+        exported_close_contacts = extract_close_contacts_details_in_batch(close_contacts, config[:data][:close_contacts][:checked].map(&:to_sym))
+        lookups << create_lookup(user_id, export_type, config, :close_contacts, exported_close_contacts, index)
+      end
+
+      if config[:data][:transfers][:checked].present?
+        transfers = transfers_by_query(patient_ids, config[:data][:transfers][:query])
+        exported_transfers = extract_transfers_details_in_batch(transfers, config[:data][:transfers][:checked].map(&:to_sym))
+        lookups << create_lookup(user_id, export_type, config, :transfers, exported_transfers, index)
+      end
+
+      if config[:data][:histories][:checked].present?
+        histories = histories_by_query(patient_ids, config[:data][:histories][:query])
+        exported_histories = extract_histories_details_in_batch(histories, config[:data][:histories][:checked].map(&:to_sym))
+        lookups << create_lookup(user_id, export_type, config, :histories, exported_histories, index)
+      end
     end
 
     return if lookups.empty?
@@ -34,16 +71,38 @@ class ExportJob < ApplicationJob
     UserMailer.download_email(user, export_type, lookups, RECORD_BATCH_SIZE).deliver_later
   end
 
+  # rubocop:disable Lint/UnusedMethodArgument
+  def assessments_by_query(patient_ids, query)
+    Assessment.where(patient_id: patient_ids).order(:patient_id)
+  end
+
+  def laboratories_by_query(patient_ids, query)
+    Laboratory.where(patient_id: patient_ids).order(:patient_id)
+  end
+
+  def close_contacts_by_query(patient_ids, query)
+    CloseContact.where(patient_id: patient_ids).order(:patient_id)
+  end
+
+  def transfers_by_query(patient_ids, query)
+    Transfer.where(patient_id: patient_ids).order(:patient_id)
+  end
+
+  def histories_by_query(patient_ids, query)
+    History.where(patient_id: patient_ids).order(:patient_id)
+  end
+  # rubocop:enable Lint/UnusedMethodArgument
+
   # rubocop:disable Metrics/ParameterLists
   def create_lookup(user_id, export_type, config, data_type, records, index)
     fields = config[:data][data_type][:checked].map(&:to_sym)
+    filename = build_filename("#{export_type}-#{CUSTOM_EXPORT_OPTIONS[data_type][:label].gsub(' ', '-')}", index + 1, config[:format])
     case config[:format]
     when 'csv'
-      data = csv_export(data_type, fields, records)
+      get_file(user_id, csv_export(data_type, fields, records), filename, export_type)
     when 'xlsx'
-      data = xlsx_export(data_type, fields, records)
+      get_file(user_id, xlsx_export(data_type, fields, records), filename, export_type)
     end
-    get_file(user_id, data, build_filename(export_type, index + 1, config[:format]), export_type)
   end
   # rubocop:enable Metrics/ParameterLists
 
