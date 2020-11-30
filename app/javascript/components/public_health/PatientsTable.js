@@ -289,7 +289,7 @@ class PatientsTable extends React.Component {
     if (query.tab === 'transferred_out') {
       query.jurisdiction = this.props.jurisdiction.id;
       query.scope = 'all';
-      query.user = 'all';
+      query.user = null;
     }
 
     this.setState({ query, cancelToken, loading: true }, () => {

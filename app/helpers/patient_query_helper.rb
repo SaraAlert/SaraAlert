@@ -4,15 +4,17 @@
 module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   def validate_patients_query(query)
     # Validate workflow
-    workflow = query[:workflow].to_sym
-    raise InvalidQueryError.new(:workflow, workflow) unless %i[exposure isolation].include?(workflow)
+    workflow = query[:workflow]&.to_sym
+    raise InvalidQueryError.new(:workflow, workflow) unless [:exposure, :isolation, nil].include?(workflow)
 
     # Validate tab
     tab = query[:tab].to_sym
     if workflow == :exposure
       raise InvalidQueryError.new(:tab, tab) unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
-    else
+    elsif workflow == :isolation
       raise InvalidQueryError.new(:tab, tab) unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
+    else
+      raise InvalidQueryError.new(:tab, tab) unless %i[all closed transferred_in transferred_out].include?(tab)
     end
 
     # Validate jurisdiction
@@ -44,7 +46,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
   def patients_by_query(current_user, query)
     # Get current user's viewable patients by linelist
-    patients = patients_by_linelist(current_user, query[:workflow].to_sym, query[:tab].to_sym)
+    patients = patients_by_linelist(current_user, query[:workflow]&.to_sym, query[:tab].to_sym)
 
     # Filter by assigned jurisdiction
     unless query[:jurisdiction].nil? || query[:jurisdiction] == 'all' || query[:tab].to_sym == :transferred_out

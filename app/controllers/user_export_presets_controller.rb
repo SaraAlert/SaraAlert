@@ -6,29 +6,32 @@ class UserExportPresetsController < ApplicationController
   before_action :check_role
 
   def index
-    render json: current_user.user_export_presets.collect { |preset| { contents: JSON.parse(preset.contents), name: preset.name, id: preset.id } }
+    render json: current_user.user_export_presets.collect { |preset| { config: JSON.parse(preset.config), name: preset.name, id: preset.id } }
   end
 
   def create
     return head :bad_request unless current_user.user_export_presets.count < 100 # Enforce upper limit per user
 
-    config = params.require(:config).permit(:filename, :format, :filtered, :query, :queries)
+    config = params.require(:config).permit(:filename, :format, data: {})
 
-    render json: UserExportPreset.create!(user_id: current_user.id, name: params.require(:name), config: config.to_json)
+    saved_export_preset = UserExportPreset.create!(user_id: current_user.id, name: params.require(:name), config: config.to_json)
+    saved_export_preset[:config] = JSON.parse(saved_export_preset[:config])
+    render json: saved_export_preset
   end
 
   def update
-    saved_export_preset = current_user.user_export_presets.find_by(id: params.require(:id))
-    return if saved_export_preset.nil?
+    saved_export_preset = current_user.user_export_presets.find(params.require(:id))
+    return head :bad_request if saved_export_preset.nil?
 
-    config = params.require(:config).permit(:filename, :format, :filtered, :query, :queries)
+    config = params.require(:config).permit(:filename, :format, data: {})
 
     saved_export_preset.update(name: params.require(:name), config: config.to_json)
+    saved_export_preset[:config] = JSON.parse(saved_export_preset[:config])
     render json: saved_export_preset
   end
 
   def destroy
-    current_user.user_export_presets.find_by(id: params.require(:id)).destroy!
+    current_user.user_export_presets.find(params.require(:id)).destroy!
   end
 
   private

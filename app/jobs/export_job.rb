@@ -17,6 +17,13 @@ class ExportJob < ApplicationJob
     # Delete any existing downloads of this type
     user.downloads.where(export_type: export_type).delete_all
 
+    # Replace race fields
+    if config[:data][:patients][:checked].include?(:race.to_s)
+      race_index = config[:data][:patients][:checked].index(:race.to_s)
+      config[:data][:patients][:checked].delete(:race.to_s)
+      config[:data][:patients][:checked].insert(race_index, *RACE_FIELDS.map(&:to_s))
+    end
+
     # Construct export
     lookups = []
     patients = patients_by_query(user, config[:data][:patients][:query])
@@ -30,6 +37,8 @@ class ExportJob < ApplicationJob
         assessments = assessments_by_query(patient_ids, config[:data][:assessments][:query])
         exported_assessments, symptom_names = extract_assessments_details_in_batch(assessments, config[:data][:assessments][:checked].map(&:to_sym),
                                                                                    config[:data][:assessments][:query])
+
+        # Replace symptom fields
         if config[:data][:assessments][:checked].include?(:symptoms.to_s)
           config[:data][:assessments][:checked].delete(:symptoms.to_s)
           config[:data][:assessments][:checked].concat(symptom_names)
@@ -68,7 +77,7 @@ class ExportJob < ApplicationJob
     lookups = lookups.sort_by { |lookup| lookup[:filename] }
 
     # Send an email to user
-    UserMailer.download_email(user, export_type, lookups, RECORD_BATCH_SIZE).deliver_later
+    UserMailer.download_email(user, EXPORT_TYPES[export_type.to_sym][:label] || 'default', lookups, RECORD_BATCH_SIZE).deliver_later
   end
 
   # rubocop:disable Lint/UnusedMethodArgument
@@ -93,10 +102,9 @@ class ExportJob < ApplicationJob
   end
   # rubocop:enable Lint/UnusedMethodArgument
 
-  # rubocop:disable Metrics/ParameterLists
   def create_lookup(user_id, export_type, config, data_type, records, index)
     fields = config[:data][data_type][:checked].map(&:to_sym)
-    filename = build_filename("#{export_type}-#{CUSTOM_EXPORT_OPTIONS[data_type][:label].gsub(' ', '-')}", index + 1, config[:format])
+    filename = build_filename(export_type, data_type, index + 1, config[:format])
     case config[:format]
     when 'csv'
       get_file(user_id, csv_export(data_type, fields, records), filename, export_type)
@@ -104,7 +112,6 @@ class ExportJob < ApplicationJob
       get_file(user_id, xlsx_export(data_type, fields, records), filename, export_type)
     end
   end
-  # rubocop:enable Metrics/ParameterLists
 
   def csv_export(data_type, fields, records)
     package = CSV.generate(headers: true) do |csv|
@@ -130,7 +137,9 @@ class ExportJob < ApplicationJob
 
   # Builds a file name using the base name, index, date, and extension.
   # Ex: "Sara-Alert-Linelist-Isolation-2020-09-01T14:15:05-04:00-1"
-  def build_filename(base_name, file_index, file_extension)
+  def build_filename(export_type, data_type, file_index, file_extension)
+    data_type_name = CUSTOM_EXPORT_OPTIONS[data_type].present? ? CUSTOM_EXPORT_OPTIONS[data_type][:label] : nil
+    base_name = "#{EXPORT_TYPES[export_type.to_sym][:filename]}#{data_type_name ? "-#{data_type_name}" : ''}"
     "#{base_name}-#{DateTime.now}-#{file_index}.#{file_extension}"
   end
 

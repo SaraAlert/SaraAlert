@@ -213,15 +213,8 @@ namespace :demo do
   end
 
   def demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, counties)
-    territory_names = ['American Samoa',
-      'District of Columbia',
-      'Federated States of Micronesia',
-      'Guam',
-      'Marshall Islands',
-      'Northern Mariana Islands',
-      'Palau',
-      'Puerto Rico',
-      'Virgin Islands']
+    territory_names = ['American Samoa', 'District of Columbia', 'Federated States of Micronesia', 'Guam', 'Marshall Islands', 'Northern Mariana Islands',
+                       'Palau', 'Puerto Rico', 'Virgin Islands'].freeze
 
     printf("Generating monitorees...")
     patients = []
@@ -234,7 +227,8 @@ namespace :demo do
       sex = Faker::Gender.binary_type
       sexualOrientations = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know', 'Unknown'].freeze
       patient[:sex] = rand < 0.9 ? sex : 'Unknown' if rand < 0.9
-      patient[:sexual_orientation] = sexualOrientations.sample if rand < 0.9
+      patient[:gender_identity] = ValidationHelper::VALID_ENUMS[:gender_identity].sample if rand < 0.7
+      patient[:sexual_orientation] = ValidationHelper::VALID_ENUMS[:sexual_orientation].sample if rand < 0.6
       patient[:first_name] = "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
       patient[:middle_name] = "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}" if rand < 0.7
       patient[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
@@ -251,12 +245,12 @@ namespace :demo do
       patient[:user_defined_id_nndss] = Faker::Code.rut if rand < 0.2
 
       # Contact Information
-      patient[:preferred_contact_method] = ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown'].sample
-      patient[:preferred_contact_time] = ['Morning', 'Afternoon', 'Evening', nil].sample if patient[:preferred_contact_method] != 'E-mailed Web Link'
+      patient[:preferred_contact_method] = ValidationHelper::VALID_ENUMS[:preferred_contact_method].sample
+      patient[:preferred_contact_time] = ValidationHelper::VALID_ENUMS[:preferred_contact_time].sample if patient[:preferred_contact_method] != 'E-mailed Web Link' && rand < 0.6
       patient[:primary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:preferred_contact_method] != 'E-mailed Web Link' || rand < 0.5
-      patient[:primary_telephone_type] = ['Smartphone', 'Plain Cell', 'Landline'].sample if patient[:primary_telephone]
+      patient[:primary_telephone_type] = ValidationHelper::VALID_ENUMS[:primary_telephone_type].sample if patient[:primary_telephone]
       patient[:secondary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:primary_telephone] && rand < 0.5
-      patient[:secondary_telephone_type] = ['Smartphone', 'Plain Cell', 'Landline'].sample if patient[:secondary_telephone]
+      patient[:secondary_telephone_type] = ValidationHelper::VALID_ENUMS[:secondary_telephone_type].sample if patient[:secondary_telephone]
       patient[:email] = "#{rand(1000000000..9999999999)}fake@example.com" if patient[:preferred_contact_method] == 'E-mailed Web Link' || rand < 0.5
 
       # Address
@@ -290,9 +284,9 @@ namespace :demo do
         patient[:foreign_address_line_1] = Faker::Address.street_address if rand < 0.95
         patient[:foreign_address_city] = Faker::Nation.capital_city if rand < 0.95
         patient[:foreign_address_country] = Faker::Address.country if rand < 0.95
-        patient[:foreign_address_line_2] = Faker::Address.secondary_address if rand < 0.4
+        patient[:foreign_address_line_2] = Faker::Address.secondary_address if rand < 0.6
         patient[:foreign_address_zip] = Faker::Address.zip_code if rand < 0.95
-        patient[:foreign_address_line_3] = Faker::Address.secondary_address if patient[:foreign_address_line2] && rand < 0.3
+        patient[:foreign_address_line_3] = Faker::Address.secondary_address if patient[:foreign_address_line_2] && rand < 0.4
         patient[:foreign_address_state] = Faker::Address.community if rand < 0.7
         patient[:foreign_monitored_address_line_1] = Faker::Address.street_address if rand < 0.95
         patient[:foreign_monitored_address_city] = Faker::Nation.capital_city if rand < 0.95
@@ -308,7 +302,8 @@ namespace :demo do
       if rand < 0.7
         patient[:port_of_origin] = Faker::Address.city
         patient[:date_of_departure] = today - (rand < 0.3 ? 1.day : 0.days)
-        patient[:source_of_report] = ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other', nil].sample
+        patient[:source_of_report] = ValidationHelper::VALID_ENUMS[:source_of_report].sample if rand < 0.7
+        patient[:source_of_report_specify] = Faker::TvShows::SiliconValley.invention if patient[:source_of_report] == 'Other'
         patient[:flight_or_vessel_number] = "#{('A'..'Z').to_a.sample}#{rand(10)}#{rand(10)}#{rand(10)}"
         patient[:flight_or_vessel_carrier] = "#{Faker::Name.first_name} Airlines"
         patient[:port_of_entry_into_usa] = Faker::Address.city
@@ -333,10 +328,17 @@ namespace :demo do
       end
 
       # Potential Exposure Info
-      patient[:continuous_exposure] = rand < 0.3
-      patient[:last_date_of_exposure] = today - rand(5).days unless patient[:continuous_exposure]
+      patient[:isolation] = days_ago > 10 ? rand < 0.9 : rand < 0.4
+      if patient[:isolation]
+        patient[:symptom_onset] = today - rand(10).days
+        patient[:user_defined_symptom_onset] = true
+      else
+        patient[:continuous_exposure] = rand < 0.3
+        patient[:last_date_of_exposure] = today - rand(5).days unless patient[:continuous_exposure]
+      end
       patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
       patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
+      patient[:exposure_notes] = Faker::Games::LeagueOfLegends.quote if rand < 0.5
       if rand < 0.85
         patient[:contact_of_known_case] = rand < 0.3
         patient[:contact_of_known_case_id] = Faker::Code.ean if patient[:contact_of_known_case] && rand < 0.5
@@ -352,10 +354,9 @@ namespace :demo do
         patient[:was_in_health_care_facility_with_known_cases_facility_name] = Faker::GreekPhilosophers.name if patient[:was_in_health_care_facility_with_known_cases] && rand < 0.15
       end
       patient[:jurisdiction_id] = jurisdictions.sample[:id]
-      patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.9
-      patient[:exposure_risk_assessment] = ['High', 'Medium', 'Low', 'No Identified Risk', nil].sample
-      patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
-                                  'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
+      patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.8
+      patient[:exposure_risk_assessment] = ValidationHelper::VALID_ENUMS[:exposure_risk_assessment].sample
+      patient[:monitoring_plan] = ValidationHelper::VALID_ENUMS[:monitoring_plan].sample
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
@@ -366,18 +367,14 @@ namespace :demo do
       patient[:updated_at] = patient_ts
 
       # Update monitoring status
-      patient[:isolation] = days_ago > 10 ? rand < 0.9 : rand < 0.4
-      patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'].sample : nil
+      patient[:extended_isolation] = today + rand(10).days if patient[:isolation] && rand < 0.3
+      patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable'].sample : ['Suspect', 'Unknown', 'Not a Case', nil].sample
       patient[:monitoring] = rand < 0.95
       patient[:closed_at] = patient[:updated_at] unless patient[:monitoring]
-      patient[:monitoring_reason] = ['Completed Monitoring', 'Meets criteria to shorten quarantine', 'Meets Case Definition', 'Lost to follow-up during monitoring period',
-                                    'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
-                                    'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
-                                    'Meets criteria to discontinue isolation', 'Deceased', 'Duplicate', 'Other'].sample unless patient[:monitoring].nil?
-      patient[:public_health_action] = patient[:isolation] || rand < 0.9 ? 'None' : ['Recommended medical evaluation of symptoms',
-                                                                                    'Document results of medical evaluation',
-                                                                                    'Recommended laboratory testing'].sample
+      patient[:monitoring_reason] = ValidationHelper::VALID_ENUMS[:monitoring_reason].sample unless patient[:monitoring].nil?
+      patient[:public_health_action] = patient[:isolation] || rand < 0.8 ? 'None' : ValidationHelper::VALID_ENUMS[:public_health_action].sample
       patient[:pause_notifications] = rand < 0.1
+      patient[:last_assessment_reminder_sent] = today - rand(7).days if rand < 0.3
 
       patients << patient
     end

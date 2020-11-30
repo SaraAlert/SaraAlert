@@ -13,7 +13,7 @@ class ExportController < ApplicationController
   def csv
     permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
 
-    export_type = "Sara-Alert-Linelist-#{params[:workflow].capitalize}"
+    export_type = "csv_#{params[:workflow]}"
 
     if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
@@ -41,7 +41,7 @@ class ExportController < ApplicationController
   def excel_comprehensive_patients
     permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
 
-    export_type = "Sara-Alert-Format-#{params[:workflow].capitalize}"
+    export_type = "sara_format_#{params[:workflow]}"
 
     if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
@@ -69,7 +69,7 @@ class ExportController < ApplicationController
   def excel_full_history_patients
     permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
 
-    export_type = "Sara-Alert-#{params[:scope] == 'purgeable' ? 'Purge-Eligible' : 'Full'}-Export-Monitorees"
+    export_type = "full_history_#{params[:scope] == 'purgeable' ? 'purgeable' : 'all'}"
 
     if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
@@ -116,9 +116,8 @@ class ExportController < ApplicationController
   end
 
   def custom_export
-    export_type = 'Sara-Alert-Custom-Export'
+    export_type = 'custom'
 
-    # Figure out how to limit exports (1 hour limit might be annoying to users for custom export)
     # if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
     if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.second.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
@@ -145,7 +144,7 @@ class ExportController < ApplicationController
       ExportReceipt.create(user_id: current_user.id, export_type: export_type)
 
       # Spawn job to handle export
-      ExportJob.perform_later(current_user.id, 'Custom', config)
+      ExportJob.perform_later(current_user.id, export_type, config)
 
       respond_to do |f|
         f.any { head :ok }

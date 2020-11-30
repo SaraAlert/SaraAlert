@@ -36,7 +36,6 @@ class JurisdictionFilter extends React.Component {
         <Form.Control
           type="text"
           autoComplete="off"
-          id="jurisdiction_path"
           list="jurisdiction_paths"
           defaultValue={this.props.jurisdiction_paths[this.props.jurisdiction] || ''}
           onChange={event => this.handleJurisdictionChange(event?.target?.value)}
