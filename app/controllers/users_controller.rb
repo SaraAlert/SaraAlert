@@ -19,7 +19,15 @@ class UsersController < ApplicationController
     cur_jur = current_user.jurisdiction
     return head :bad_request unless cur_jur.subtree_ids.include? user.jurisdiction.id
 
+    # Structure array to be return so each audit encompasses a single change instead of multiple changes
+    individual_audits = []
+    user.audits.each do |a|
+      a.audited_changes.each do |change_name, change_details|
+        individual_audits.append(change: change_name, change_details: change_details, user: User.find(a.user_id).email, timestamp: a.created_at)
+      end
+    end
+
     # Return audits for user
-    render json: user.audits.collect { |a| { change: a.audited_changes, user: User.find(a.user_id).email, when: a.created_at } }.to_json
+    render json: individual_audits.to_json
   end
 end
