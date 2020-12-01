@@ -5,129 +5,58 @@ class ExportJob < ApplicationJob
   queue_as :exports
   include ImportExport
 
-  # Limits number of records to be considered for a single exported file to handle maximum file size limit.
-  # Adds additional files as needed if records exceeds batch size.
-  RECORD_BATCH_SIZE = 10_000
-
   def perform(user_id, export_type)
     user = User.find_by(id: user_id)
     return if user.nil?
 
     # Delete any existing downloads of this type
+    # This also queues the Rails attachment purge job to delete the file from S3
     user.downloads.where(export_type: export_type).delete_all
 
     # Construct export
-    lookups = []
     case export_type
     when 'csv_exposure'
-      patients = user.viewable_patients.where(isolation: false).where(purged: false)
-      base_filename = 'Sara-Alert-Linelist-Exposure'
-      file_extension = 'csv'
-      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
-        data = csv_line_list(group)
-        lookups << get_file(user_id, data, build_filename(base_filename, index + 1, file_extension), export_type)
-      end
+      data = csv_line_list(user.viewable_patients.where(isolation: false).where(purged: false))
+      download = create_download(user_id, data, build_filename('Sara-Alert-Linelist-Exposure', 'csv'), export_type, 'text/csv')
     when 'csv_isolation'
-      patients = user.viewable_patients.where(isolation: true).where(purged: false)
-      base_filename = 'Sara-Alert-Linelist-Isolation'
-      file_extension = 'csv'
-      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
-        data = csv_line_list(group)
-        lookups << get_file(user_id, data, build_filename(base_filename, index + 1, file_extension), export_type)
-      end
+      data = csv_line_list(user.viewable_patients.where(isolation: true).where(purged: false))
+      download = create_download(user_id, data, build_filename('Sara-Alert-Linelist-Isolation', 'csv'), export_type, 'text/csv')
     when 'sara_format_exposure'
-      patients = user.viewable_patients.where(isolation: false).where(purged: false)
-      base_filename = 'Sara-Alert-Format-Exposure'
-      file_extension = 'xlsx'
-      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
-        data = sara_alert_format(group)
-        lookups << get_file(user_id, data, build_filename(base_filename, index + 1, file_extension), export_type)
-      end
+      data = sara_alert_format(user.viewable_patients.where(isolation: false).where(purged: false))
+      download = create_download(user_id, data, build_filename('Sara-Alert-Format-Exposure', 'xlsx'), export_type, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     when 'sara_format_isolation'
-      patients = user.viewable_patients.where(isolation: true).where(purged: false)
-      base_filename = 'Sara-Alert-Format-Isolation'
-      file_extension = 'xlsx'
-      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
-        data = sara_alert_format(group)
-        lookups << get_file(user_id, data, build_filename(base_filename, index + 1, file_extension), export_type)
-      end
+      data = sara_alert_format(user.viewable_patients.where(isolation: true).where(purged: false))
+      download = create_download(user_id, data, build_filename('Sara-Alert-Format-Isolation', 'xlsx'), export_type, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     when 'full_history_all'
       patients = user.viewable_patients.where(purged: false)
-      file_extension = 'xlsx'
-      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
-        file_index = index + 1
-        lookups << get_file(user_id,
-                            excel_export_monitorees(group),
-                            build_filename('Sara-Alert-Full-Export-Monitorees', file_index, file_extension),
-                            export_type)
-        lookups << get_file(user_id,
-                            excel_export_assessments(group),
-                            build_filename('Sara-Alert-Full-Export-Assessments', file_index, file_extension),
-                            export_type)
-        lookups << get_file(user_id,
-                            excel_export_lab_results(group),
-                            build_filename('Sara-Alert-Full-Export-Lab-Results', file_index, file_extension),
-                            export_type)
-        lookups << get_file(user_id,
-                            excel_export_histories(group),
-                            build_filename('Sara-Alert-Full-Export-Histories', file_index, file_extension),
-                            export_type)
-      end
+      content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      download = create_download(user_id, excel_export_monitorees(patients), build_filename('Sara-Alert-Full-Export-Monitorees', 'xlsx'), export_type, content_type)
+      download.exports.attach(io: excel_export_assessments(patients), filename: build_filename('Sara-Alert-Full-Export-Assessments', 'xlsx'), content_type: content_type)
+      download.exports.attach(io: excel_export_lab_results(patients), filename: build_filename('Sara-Alert-Full-Export-Lab-Results', 'xlsx'), content_type: content_type)
+      download.exports.attach(io: excel_export_histories(patients), filename: build_filename('Sara-Alert-Full-Export-Histories', 'xlsx'), content_type: content_type)
     when 'full_history_purgeable'
       patients = user.viewable_patients.purge_eligible
-      file_extension = 'xlsx'
-      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
-        file_index = index + 1
-        lookups << get_file(user_id,
-                            excel_export_monitorees(group),
-                            build_filename('Sara-Alert-Purge-Eligible-Export-Monitorees', file_index, file_extension),
-                            export_type)
-        lookups << get_file(user_id,
-                            excel_export_assessments(group),
-                            build_filename('Sara-Alert-Purge-Eligible-Export-Assessments', file_index, file_extension),
-                            export_type)
-        lookups << get_file(user_id,
-                            excel_export_lab_results(group),
-                            build_filename('Sara-Alert-Purge-Eligible-Export-Lab-Results', file_index, file_extension),
-                            export_type)
-        lookups << get_file(user_id,
-                            excel_export_histories(group),
-                            build_filename('Sara-Alert-Purge-Eligible-Export-Histories', file_index, file_extension),
-                            export_type)
-      end
+      content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      download = create_download(user_id, excel_export_monitorees(patients), build_filename('Sara-Alert-Purge-Eligible-Export-Monitorees', 'xlsx'), export_type, content_type)
+      download.exports.attach(io: excel_export_assessments(patients), filename: build_filename('Sara-Alert-Purge-Eligible-Export-Assessments', 'xlsx'), content_type: content_type)
+      download.exports.attach(io: excel_export_lab_results(patients), filename: build_filename('Sara-Alert-Purge-Eligible-Export-Lab-Results', 'xlsx'), content_type: content_type)
+      download.exports.attach(io: excel_export_histories(patients), filename: build_filename('Sara-Alert-Purge-Eligible-Export-Histories', 'xlsx'), content_type: content_type)
     end
-    return if lookups.empty?
-
-    # Sort lookups by filename so that they are grouped together accordingly after batching
-    lookups = lookups.sort_by { |lookup| lookup[:filename] }
-
     # Send an email to user
-    UserMailer.download_email(user, export_type, lookups, RECORD_BATCH_SIZE).deliver_later
+    UserMailer.download_email(user, download).deliver_now
   end
 
   # Builds a file name using the base name, index, date, and extension.
-  # Ex: "Sara-Alert-Linelist-Isolation-2020-09-01T14:15:05-04:00-1"
-  def build_filename(base_name, file_index, file_extension)
-    "#{base_name}-#{DateTime.now}-#{file_index}.#{file_extension}"
+  # Ex: "Sara-Alert-Linelist-Isolation-2020-09-01T14:15:05-04:00.csv"
+  def build_filename(base_name, file_extension)
+    "#{base_name}-#{DateTime.now}.#{file_extension}"
   end
 
-  # Gets a single download with the provided filename information and containing the provided data.
-  def get_file(user_id, data, full_filename, export_type)
-    { lookup: save_download(user_id, data, full_filename, export_type), filename: full_filename }
-  end
-
-  # Save a download file and return the lookup
-  def save_download(user_id, data, filename, export_type)
-    lookup = SecureRandom.uuid
-    if ActiveRecord::Base.logger.formatter.nil?
-      download = Download.insert(user_id: user_id, contents: data, filename: filename, lookup: lookup,
-                                 export_type: export_type, created_at: DateTime.now, updated_at: DateTime.now)
-    else
-      ActiveRecord::Base.logger.silence do
-        download = Download.insert(user_id: user_id, contents: data, filename: filename, lookup: lookup,
-                                   export_type: export_type, created_at: DateTime.now, updated_at: DateTime.now)
-      end
-    end
-    lookup
+  # Build and save the initial Download object and upload at least 1 export attachment to S3
+  # Additional attachments can be chained off the returned download object
+  def create_download(user_id, data, full_filename, export_type, content_type)
+    download = Download.create(user_id: user_id, export_type: export_type, filename: full_filename)
+    download.exports.attach(io: data, filename: full_filename, content_type: content_type)
+    download
   end
 end
