@@ -27,8 +27,9 @@ class UsersController < ApplicationController
     # Structure array to be return so each audit encompasses a single change instead of multiple changes
     individual_audits = []
     user.audits.each do |a|
-      a.audited_changes.each do |change_name, change_details|
-        individual_audits.append(change: change_name, change_details: change_details, user: User.find(a.user_id).email, timestamp: a.created_at)
+      a.audited_changes.each do |c|
+        change = { name: c[0], details: c[1] }
+        individual_audits.unshift(change: change, user: User.find(a.user_id).email, timestamp: a.created_at)
       end
     end
 
