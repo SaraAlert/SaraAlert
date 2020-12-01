@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import { Spinner } from 'react-bootstrap';
 import CustomTable from '../layout/CustomTable';
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -14,7 +13,7 @@ class AuditModal extends React.Component {
       table: {
         colData: [
           { label: 'Triggered by', field: 'user' },
-          { label: 'Action', field: 'change' },
+          { label: 'Action', field: 'change', filter: this.formatChange },
           { label: 'Timestamp', field: 'timestamp', filter: this.formatTimestamp },
         ],
         rowData: [],
@@ -24,7 +23,7 @@ class AuditModal extends React.Component {
       },
       query: {
         page: 0,
-        entries: 25,
+        entries: 15,
       },
       entryOptions: [10, 15, 25],
       cancelToken: axios.CancelToken.source(),
@@ -96,6 +95,90 @@ class AuditModal extends React.Component {
     return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
   }
 
+  formatChange = change => {
+    switch (change.name) {
+      case 'locked_at':
+        if (change.details[0]) {
+          return (
+            <span>
+              <b>Account Status</b>: Unlocked
+            </span>
+          );
+        } else {
+          return (
+            <span>
+              <b>Account Status</b>: Locked
+            </span>
+          );
+        }
+      case 'jurisdiction_id':
+        return (
+          <span>
+            <b>Jurisdiction</b>: Changed from &quot;{_.invert(this.props.jurisdiction_paths)[change.details[0]]}&quot; to &quot;
+            {_.invert(this.props.jurisdiction_paths)[change.details[1]]}&quot;{' '}
+          </span>
+        );
+      case 'created_at':
+        return (
+          <span>
+            <b>Account Created</b>
+          </span>
+        );
+      case 'api_enabled':
+        if (change.details[0]) {
+          return (
+            <span>
+              <b>API Access</b>: Enabled{' '}
+            </span>
+          );
+        } else {
+          return (
+            <span>
+              <b>API Access</b>: Disabled{' '}
+            </span>
+          );
+        }
+      case 'role':
+        return (
+          <span>
+            <b>Role</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;{' '}
+          </span>
+        );
+      case 'email':
+        return (
+          <span>
+            <b>Email</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;{' '}
+          </span>
+        );
+      case 'authy_enabled':
+        if (change.details[0]) {
+          return (
+            <span>
+              <b>2FA</b>: Enabled{' '}
+            </span>
+          );
+        } else {
+          return (
+            <span>
+              <b>2FA</b>: Disabled{' '}
+            </span>
+          );
+        }
+      case 'force_password_change':
+        return (
+          <span>
+            <b>Password Changed/Reset</b>
+          </span>
+        );
+      case 'last_sign_in_with_authy':
+        return (
+          <span>
+            <b>User Signed In</b>
+          </span>
+        );
+    }
+  };
+
   /**
    * Called when table is to be updated because of a sorting change.
    * @param {Object} query - Updated query for table data after change.
@@ -148,102 +231,6 @@ class AuditModal extends React.Component {
     );
   };
 
-  // renderChange = (change, change_details) => {
-  //   return (
-  //     <React.Fragment>
-  //       {change === 'jurisdiction_id' && (
-  //         <React.Fragment>
-  //           <b>Jurisdiction:</b>&nbsp;
-  //           {_.invert(this.props.jurisdiction_paths)[change_details[0]]}
-  //           <i className="mx-2 fas fa-arrow-right"></i>
-  //           {_.invert(this.props.jurisdiction_paths)[change_details[1]]}
-  //         </React.Fragment>
-  //       )}
-  //       {change === 'role' && (
-  //         <React.Fragment>
-  //           <b>Role:</b>&nbsp;
-  //           {_.startCase(change_details[0])}
-  //           <i className="mx-2 fas fa-arrow-right"></i>
-  //           {_.startCase(change_details[1])}
-  //         </React.Fragment>
-  //       )}
-  //       {change === 'locked_at' && (
-  //         <React.Fragment>
-  //           <b>Status:</b>&nbsp;
-  //           {change_details[0] && (
-  //             <span>
-  //               Locked<i className="mx-2 fas fa-arrow-right"></i>Unlocked
-  //             </span>
-  //           )}
-  //           {!change_details[0] && (
-  //             <span>
-  //               Unlocked<i className="mx-2 fas fa-arrow-right"></i>Locked
-  //             </span>
-  //           )}
-  //         </React.Fragment>
-  //       )}
-  //       {change === 'api_enabled' && (
-  //         <React.Fragment>
-  //           <b>API Enabled:</b>&nbsp;
-  //           {change_details[0] && (
-  //             <span>
-  //               Yes<i className="mx-2 fas fa-arrow-right"></i>No
-  //             </span>
-  //           )}
-  //           {!change_details[0] && (
-  //             <span>
-  //               No<i className="mx-2 fas fa-arrow-right"></i>Yes
-  //             </span>
-  //           )}
-  //         </React.Fragment>
-  //       )}
-  //       {change === 'email' && (
-  //         <React.Fragment>
-  //           <b>Email:</b>&nbsp;
-  //           {change_details[0]}
-  //           <i className="mx-2 fas fa-arrow-right"></i>
-  //           {change_details[1]}
-  //         </React.Fragment>
-  //       )}
-  //       {change === 'authy_enabled' && (
-  //         <React.Fragment>
-  //           <b>2FA Enabled:</b>&nbsp;
-  //           {change_details[0] && (
-  //             <span>
-  //               Yes<i className="mx-2 fas fa-arrow-right"></i>No
-  //             </span>
-  //           )}
-  //           {!change_details[0] && (
-  //             <span>
-  //               No<i className="mx-2 fas fa-arrow-right"></i>Yes
-  //             </span>
-  //           )}
-  //         </React.Fragment>
-  //       )}
-  //       {change === 'force_password_change' && (
-  //         <React.Fragment>
-  //           <b>Password Changed/Reset</b>
-  //         </React.Fragment>
-  //       )}
-  //       {change === 'last_sign_in_with_authy' && (
-  //         <React.Fragment>
-  //           <b>User Signed In</b>
-  //         </React.Fragment>
-  //       )}
-  //     </React.Fragment>
-  //   );
-  // };
-
-  // renderEvent = (event, index) => {
-  //   return (
-  //     <tr key={`${index}${this.props.user.id}ae`}>
-  //       <td>{event.user}</td>
-  //       <td>{this.renderChange(event.change, event.change_details)}</td>
-  //       <td>{this.formatTimestamp(event.timestamp)}</td>
-  //     </tr>
-  //   );
-  // };
-
   render() {
     return (
       <React.Fragment>
@@ -255,11 +242,6 @@ class AuditModal extends React.Component {
             <span className="pb-3 d-inline-block">
               <b>User:</b> {this.props.user.email}
             </span>
-            {this.state.isLoading && (
-              <div className="text-center">
-                <Spinner variant="secondary" animation="border" size="lg" />
-              </div>
-            )}
             <CustomTable
               columnData={this.state.table.colData}
               rowData={this.state.table.rowData}
