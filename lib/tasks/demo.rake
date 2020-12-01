@@ -1,6 +1,22 @@
 # frozen_string_literal: true
 
 namespace :demo do
+  desc 'Backup the database'
+  task backup: :environment do
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    username = ActiveRecord::Base.configurations.configurations[1].config['username']
+    database = ActiveRecord::Base.configurations.configurations[1].config['database']
+    system "mysqldump --opt --user=#{username} #{database}  --no-create-info > database_backup.sql"
+  end
+
+  desc 'Restore the database'
+  task restore: :environment do
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    username = ActiveRecord::Base.configurations.configurations[1].config['username']
+    database = ActiveRecord::Base.configurations.configurations[1].config['database']
+    system "mysql --user=#{username} #{database} < #{ENV['FILE']}"
+  end
+  
   desc 'Configure the database for demo use'
   task setup: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
