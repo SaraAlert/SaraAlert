@@ -93,7 +93,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         end
       end
     end
-    Base64.encode64(package)
+    StringIO.new(package)
   end
 
   def sara_alert_format(patients)
@@ -108,7 +108,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           end
         end
       end
-      return Base64.encode64(p.to_stream.read)
+      return p.to_stream
     end
   end
 
@@ -174,7 +174,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
         end
       end
-      return Base64.encode64(p.to_stream.read)
+      return p.to_stream
     end
   end
 
@@ -193,7 +193,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           end
         end
       end
-      return Base64.encode64(p.to_stream.read)
+      return p.to_stream
     end
   end
 
@@ -230,7 +230,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           end
         end
       end
-      return Base64.encode64(p.to_stream.read)
+      return p.to_stream
     end
   end
 
@@ -244,7 +244,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           sheet.add_row lab.details.values, { types: Array.new(lab_headers.length, :string) }
         end
       end
-      return Base64.encode64(p.to_stream.read)
+      return p.to_stream
     end
   end
 
@@ -258,7 +258,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
         end
       end
-      return Base64.encode64(p.to_stream.read)
+      return p.to_stream
     end
   end
 
