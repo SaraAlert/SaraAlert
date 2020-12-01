@@ -469,16 +469,17 @@ class PublicHealthController < ApplicationController
       when 'manual-contact-attempts'
         operator = :==
         case filter[:value][:operator]
+        # less/greater-than operators are flipped for where_assoc_count
         when 'less-than'
-          operator = :<
+          operator = :>
         when 'less-than-equal'
-          operator = :<=
+          operator = :>=
         when 'equal'
           operator = :==
         when 'greater-than-equal'
-          operator = :>=
+          operator = :<=
         when 'greater-than'
-          operator = :>
+          operator = :<
         end
         case filter[:value][:option]
         when 'Successful'
