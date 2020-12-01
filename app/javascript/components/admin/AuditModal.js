@@ -136,7 +136,7 @@ class AuditModal extends React.Component {
       <tr key={`${index}${this.props.user.id}ae`}>
         <td>{event.user}</td>
         <td>{this.renderChange(event.change, event.change_details)}</td>
-        <td>{this.formatTimestamp(event.when)}</td>
+        <td>{this.formatTimestamp(event.timestamp)}</td>
       </tr>
     );
   };
@@ -149,7 +149,9 @@ class AuditModal extends React.Component {
             <Modal.Title>Audit Events</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <b>User: </b> {this.props.user.email}
+            <span className="pb-3 d-inline-block">
+              <b>User:</b> {this.props.user.email}
+            </span>
             {this.state.loading && (
               <div className="text-center">
                 <Spinner variant="secondary" animation="border" size="lg" />
