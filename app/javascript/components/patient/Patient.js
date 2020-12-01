@@ -524,7 +524,12 @@ class Patient extends React.Component {
                   <Col>
                     <Row>
                       <Col>
-                        <b>Last Date of Exposure:</b> <span>{moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
+                        <b>Last Date of Exposure:</b>{' '}
+                        <span>
+                          {this.props.details.last_date_of_exposure
+                            ? moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                            : '--'}
+                        </span>
                       </Col>
                     </Row>
                     <Row className="pt-2">
