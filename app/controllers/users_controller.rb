@@ -1,18 +1,23 @@
 # frozen_string_literal: true
 
+require 'will_paginate/array'
+
 # UsersController: user model controller
 class UsersController < ApplicationController
   before_action :authenticate_user!
 
   def audits
     redirect_to(root_url) && return unless current_user.can_view_user_audits?
+    permitted_params = params.permit(:entries, :page, :id, :cancelToken)
+    return head :bad_request unless permitted_params[:id].present?
 
-    # Grab id
-    id_param = params.permit(:id)
-    return head :bad_request unless id_param.present?
+    # Validate pagination params
+    entries = permitted_params[:entries]&.to_i || 15
+    page = permitted_params[:page]&.to_i || 0
+    return head :bad_request unless entries >= 0 && page >= 0
 
     # Find user
-    user = User.find_by(id: id_param[:id])
+    user = User.find_by(id: permitted_params[:id])
     return head :bad_request if user.nil?
 
     # Check jurisdiction permissions
@@ -27,7 +32,13 @@ class UsersController < ApplicationController
       end
     end
 
+    # Paginate
+    individual_audits = individual_audits.paginate(per_page: entries, page: page + 1)
+
+    # Get total count
+    total = individual_audits.total_entries
+
     # Return audits for user
-    render json: individual_audits.to_json
+    render json: { audit_rows: individual_audits, total: total }
   end
 end
