@@ -156,9 +156,11 @@ class CustomTable extends React.Component {
               })}
               {this.props.isEditable && <th>Edit</th>}
               {this.props.isAuditable && <th>Audit</th>}
-              <th>
-                <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll}></input>
-              </th>
+              {this.props.isSelectable && (
+                <th>
+                  <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll}></input>
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -173,7 +175,7 @@ class CustomTable extends React.Component {
                     } else if (col.filter) {
                       // If this column has a filter, apply the filter to the value
                       // Send along string of the ID and HoH bool if needed
-                      value = col.filter(data[col.field], data.id.toString(), data.is_hoh);
+                      value = col.filter(data[col.field], data.id?.toString(), data.is_hoh);
                     }
                     return <td key={index}>{value}</td>;
                   })}
@@ -191,12 +193,14 @@ class CustomTable extends React.Component {
                       </div>
                     </td>
                   )}
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={this.props.selectAll || this.props.selectedRows.includes(row)}
-                      onChange={e => this.handleCheckboxChange(e, row)}></input>
-                  </td>
+                  {this.props.isSelectable && (
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={this.props.selectAll || this.props.selectedRows.includes(row)}
+                        onChange={e => this.handleCheckboxChange(e, row)}></input>
+                    </td>
+                  )}
                 </tr>
               );
             })}
@@ -268,6 +272,7 @@ CustomTable.propTypes = {
   selectedRows: PropTypes.array,
   selectAll: PropTypes.bool,
   isEditable: PropTypes.bool,
+  isSelectable: PropTypes.bool,
   isAuditable: PropTypes.bool,
   handleEdit: PropTypes.func,
   handleAudit: PropTypes.func,
