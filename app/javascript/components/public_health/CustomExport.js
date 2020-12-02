@@ -38,7 +38,7 @@ class CustomExport extends React.Component {
             return {
               checked: _.get(props.preset, ['config', 'data', type, 'checked']) || settings?.checked || [],
               expanded: _.get(props.preset, ['config', 'data', type, 'expanded']) || settings?.expanded || [],
-              query: _.get(props.preset, ['config', 'data', type, 'query']) || type === 'patients' ? props.patient_query : {},
+              query: _.get(props.preset, ['config', 'data', type, 'query']) || type === 'patients' ? _.clone(props.patient_query) : {},
             };
           }),
         },

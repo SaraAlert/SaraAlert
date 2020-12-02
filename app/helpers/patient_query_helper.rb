@@ -2,13 +2,17 @@
 
 # Helper methods for filtering through patients
 module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
-  def validate_patients_query(query)
+  def validate_patients_query(unsanitized_query)
+    # Only allow permitted params
+    query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :tz_offset,
+                                     filter: [:value, :dateOption, :relativeOption, { filterOption: {}, value: {} }])
+
     # Validate workflow
     workflow = query[:workflow]&.to_sym
     raise InvalidQueryError.new(:workflow, workflow) unless [:exposure, :isolation, nil].include?(workflow)
 
-    # Validate tab
-    tab = query[:tab].to_sym
+    # Validate tab (linelist)
+    tab = query[:tab]&.to_sym
     if workflow == :exposure
       raise InvalidQueryError.new(:tab, tab) unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
     elsif workflow == :isolation
@@ -23,15 +27,31 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       raise InvalidQueryError.new(:jurisdiction, jurisdiction)
     end
 
-    # Validate scope
+    # Validate jurisdiction scope
     scope = query[:scope]
     raise InvalidQueryError.new(:scope, scope) unless scope.nil? || %w[all exact].include?(scope)
 
-    # Validate user
+    # Validate assigned user
     user = query[:user]
     raise InvalidQueryError.new(:user, user) unless user.nil? || %w[none].include?(user) || user.to_i.between?(1, 9999)
 
-    # Validate sort
+    # Validate advanced filter (also transform from rails params to array of hashes)
+    if unsanitized_query[:filter]
+      tz_offset = query.require(:tz_offset)
+      raise InvalidQueryError.new(:tz_offset, tz_offset) unless tz_offset.to_i.to_s == tz_offset
+
+      query[:filter] = unsanitized_query[:filter].collect do |filter|
+        permitted_filter_params = filter.permit(:value, :dateOption, :relativeOption, filterOption: {}, value: {})
+        {
+          filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
+          value: permitted_filter_params[:value] || filter.require(:value) || false,
+          dateOption: permitted_filter_params[:dateOption],
+          relativeOption: permitted_filter_params[:relativeOption]
+        }
+      end
+    end
+
+    # Validate sorting order
     order = query[:order]
     raise InvalidQueryError.new(:order, order) unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user
                                                                                        state_local_id dob end_of_monitoring risk_level monitoring_plan
@@ -39,17 +59,20 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                                                                                        transferred_at latest_report symptom_onset
                                                                                        extended_isolation].include?(order)
 
+    # Validate sorting direction
     direction = query[:direction]
     raise InvalidQueryError.new(:direction, direction) unless direction.nil? || direction.blank? || %w[asc desc].include?(direction)
     raise InvalidQueryError.new(:direction, direction) unless (!order.blank? && !direction.blank?) || (order.blank? && direction.blank?)
+
+    query
   end
 
   def patients_by_query(current_user, query)
     # Get current user's viewable patients by linelist
-    patients = patients_by_linelist(current_user, query[:workflow]&.to_sym, query[:tab].to_sym)
+    patients = patients_by_linelist(current_user, query[:workflow]&.to_sym, query[:tab]&.to_sym)
 
     # Filter by assigned jurisdiction
-    unless query[:jurisdiction].nil? || query[:jurisdiction] == 'all' || query[:tab].to_sym == :transferred_out
+    unless query[:jurisdiction].nil? || query[:jurisdiction] == 'all' || query[:tab]&.to_sym == :transferred_out
       jur_id = query[:jurisdiction].to_i
       patients = query[:scope] == 'all' ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
     end
@@ -60,19 +83,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     # Filter by search text
     patients = filter_by_text(patients, query[:search])
 
-    # Filter by advanced filter (if present)
-    if query[:filter].present?
-      tz_offset = query.require(:tz_offset)
-      advanced = query.require(:filter).collect do |filter|
-        {
-          filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
-          value: filter.permit(:value)[:value] || filter.require(:value) || false,
-          dateOption: filter.permit(:dateOption)[:dateOption],
-          relativeOption: filter.permit(:relativeOption)[:relativeOption]
-        }
-      end
-      patients = advanced_filter(patients, advanced, tz_offset) unless advanced.nil?
-    end
+    # Filter by advanced filter
+    patients = advanced_filter(patients, query[:filter], query[:tz_offset])
 
     # Sort
     sort(patients, query[:order], query[:direction])
@@ -167,6 +179,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
   # rubocop:disable Metrics/MethodLength
   def advanced_filter(patients, filters, tz_offset)
+    return patients unless filters.present?
+
     # Adjust for difference between client and server timezones.
     # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
     # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
