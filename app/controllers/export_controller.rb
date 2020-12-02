@@ -6,6 +6,11 @@ require 'axlsx'
 class ExportController < ApplicationController
   include ImportExport
   include PatientQueryHelper
+  include AssessmentQueryHelper
+  include LaboratoryQueryHelper
+  include CloseContactQueryHelper
+  include TransferQueryHelper
+  include HistoryQueryHelper
 
   before_action :authenticate_user!
   before_action :authenticate_user_role
@@ -122,19 +127,45 @@ class ExportController < ApplicationController
     if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.second.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
     else
-      config = params.require(:config).permit(:filename, :format, data: {})
+      unsanitized_config = params.require(:config).permit(:filename, :format, data: {})
+      config = {}
 
       # Validate format param
-      format = config.require(:format)
-      return head :bad_request unless EXPORT_FORMATS.include?(format)
+      config[:format] = unsanitized_config.require(:format)
+      return head :bad_request unless EXPORT_FORMATS.include?(config[:format])
+
+      # Validate filename param (remove os path characters and replace non-ascii characters with underscore)
+      config[:filename] = unsanitized_config[:filename]&.gsub(%r{^.*(\|/)}, '')&.gsub(/[^0-9A-Za-z.\-]/, '_')
 
       # Validate data
-      data = config.require(:data)
-      patients_query = data.require(:patients).require(:query).permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
-      patients_checked = data.require(:patients).require(:checked)
+      data = unsanitized_config.require(:data)
       begin
-        validate_patients_query(patients_query)
-        validate_checked_fields(:patients, patients_checked)
+        config[:data] = {
+          patients: {
+            checked: validate_checked_fields(data, :patients),
+            query: validate_patients_query(data.require(:patients)[:query])
+          },
+          assessments: {
+            checked: validate_checked_fields(data, :assessments),
+            query: validate_assessments_query(data.require(:assessments)[:query])
+          },
+          laboratories: {
+            checked: validate_checked_fields(data, :laboratories),
+            query: validate_laboratories_query(data.require(:laboratories)[:query])
+          },
+          close_contacts: {
+            checked: validate_checked_fields(data, :close_contacts),
+            query: validate_close_contacts_query(data.require(:close_contacts)[:query])
+          },
+          transfers: {
+            checked: validate_checked_fields(data, :transfers),
+            query: validate_transfers_query(data.require(:transfers)[:query])
+          },
+          histories: {
+            checked: validate_checked_fields(data, :histories),
+            query: validate_histories_query(data.require(:histories)[:query])
+          }
+        }
       rescue StandardError => e
         return render json: e, status: :bad_request
       end
@@ -154,12 +185,16 @@ class ExportController < ApplicationController
 
   private
 
-  def validate_checked_fields(data_type, checked)
+  def validate_checked_fields(data, data_type)
+    checked = data.require(data_type).require(:checked)
+
     raise StandardError('Checked must be an array') unless checked.is_a?(Array)
 
     checked.map(&:to_sym).each do |field|
       raise StandardError("Unknown field '#{field}' for '#{data_type}'") unless ALL_FIELDS_NAMES[data_type].keys.include?(field)
     end
+
+    checked
   end
 
   def authenticate_user_role

@@ -71,8 +71,8 @@ class PatientsFilters extends React.Component {
             <InputGroup size="sm" className="d-flex justify-content-between">
               <InputGroup.Prepend>
                 <InputGroup.Text className="rounded-0">
-                  <FontAwesomeIcon icon="folder-open" />
-                  <span className="ml-1">Tab</span>
+                  <FontAwesomeIcon icon="stream" />
+                  <span className="ml-1">Line List</span>
                 </InputGroup.Text>
               </InputGroup.Prepend>
               <Form.Control

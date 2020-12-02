@@ -5,6 +5,11 @@ class ExportJob < ApplicationJob
   queue_as :exports
   include ImportExport
   include PatientQueryHelper
+  include AssessmentQueryHelper
+  include LaboratoryQueryHelper
+  include CloseContactQueryHelper
+  include TransferQueryHelper
+  include HistoryQueryHelper
 
   # Limits number of records to be considered for a single exported file to handle maximum file size limit.
   # Adds additional files as needed if records exceeds batch size.
@@ -79,28 +84,6 @@ class ExportJob < ApplicationJob
     # Send an email to user
     UserMailer.download_email(user, EXPORT_TYPES[export_type.to_sym][:label] || 'default', lookups, RECORD_BATCH_SIZE).deliver_later
   end
-
-  # rubocop:disable Lint/UnusedMethodArgument
-  def assessments_by_query(patient_ids, query)
-    Assessment.where(patient_id: patient_ids).order(:patient_id)
-  end
-
-  def laboratories_by_query(patient_ids, query)
-    Laboratory.where(patient_id: patient_ids).order(:patient_id)
-  end
-
-  def close_contacts_by_query(patient_ids, query)
-    CloseContact.where(patient_id: patient_ids).order(:patient_id)
-  end
-
-  def transfers_by_query(patient_ids, query)
-    Transfer.where(patient_id: patient_ids).order(:patient_id)
-  end
-
-  def histories_by_query(patient_ids, query)
-    History.where(patient_id: patient_ids).order(:patient_id)
-  end
-  # rubocop:enable Lint/UnusedMethodArgument
 
   def create_lookup(user_id, export_type, config, data_type, records, index)
     fields = config[:data][data_type][:checked].map(&:to_sym)

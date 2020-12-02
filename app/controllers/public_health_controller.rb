@@ -8,22 +8,20 @@ class PublicHealthController < ApplicationController
   before_action :authenticate_user_role
 
   def patients
-    query = params.require(:query).permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :filter, :tz_offset)
-
     # Require workflow and tab params
-    workflow = query.require(:workflow).to_sym
-    tab = query.require(:tab).to_sym
+    workflow = params.require(:query).require(:workflow).to_sym
+    tab = params.require(:query).require(:tab).to_sym
 
-    # Validate query
+    # Validate filter and sorting params
     begin
-      validate_patients_query(query)
+      query = validate_patients_query(params.require(:query))
     rescue StandardError => e
       return render json: e, status: :bad_request
     end
 
     # Validate pagination params
-    entries = query[:entries]&.to_i || 25
-    page = query[:page]&.to_i || 0
+    entries = params.require(:query)[:entries]&.to_i || 25
+    page = params.require(:query)[:page]&.to_i || 0
     return render json: { error: 'Invalid entries or page' }, status: :bad_request unless entries >= 0 && page >= 0
 
     # Get filtered patients
