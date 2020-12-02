@@ -23,18 +23,34 @@ class ExportJob < ApplicationJob
       download = create_download(user_id, data, build_filename('Sara-Alert-Linelist-Isolation', 'csv'), export_type, 'text/csv')
     when 'sara_format_exposure'
       data = sara_alert_format(user.viewable_patients.where(isolation: false).where(purged: false))
-      download = create_download(user_id, data, build_filename('Sara-Alert-Format-Exposure', 'xlsx'), export_type, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      download = create_download(user_id,
+                                 data,
+                                 build_filename('Sara-Alert-Format-Exposure', 'xlsx'),
+                                 export_type,
+                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     when 'sara_format_isolation'
       data = sara_alert_format(user.viewable_patients.where(isolation: true).where(purged: false))
-      download = create_download(user_id, data, build_filename('Sara-Alert-Format-Isolation', 'xlsx'), export_type, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      download = create_download(user_id,
+                                 data,
+                                 build_filename('Sara-Alert-Format-Isolation', 'xlsx'),
+                                 export_type,
+                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     when 'full_history_all'
       patients = user.viewable_patients.where(purged: false)
       content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      download = create_download(user_id, excel_export_full_history(patients), build_filename('Sara-Alert-Full-Export-Monitorees', 'xlsx'), export_type, content_type)
+      download = create_download(user_id,
+                                 excel_export_full_history(patients),
+                                 build_filename('Sara-Alert-Full-Export-Monitorees', 'xlsx'),
+                                 export_type,
+                                 content_type)
     when 'full_history_purgeable'
       patients = user.viewable_patients.purge_eligible
       content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      download = create_download(user_id, excel_export_full_history(patients), build_filename('Sara-Alert-Purge-Eligible-Export-Monitorees', 'xlsx'), export_type, content_type)
+      download = create_download(user_id,
+                                 excel_export_full_history(patients),
+                                 build_filename('Sara-Alert-Purge-Eligible-Export-Monitorees', 'xlsx'),
+                                 export_type,
+                                 content_type)
     end
     # Send an email to user
     UserMailer.download_email(user, download).deliver_now
