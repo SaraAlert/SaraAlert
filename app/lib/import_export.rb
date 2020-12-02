@@ -178,88 +178,90 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
   end
 
-  def excel_export_monitorees(patients)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
-        headers = MONITOREES_LIST_HEADERS
-        sheet.add_row headers
-        statuses = patient_statuses(patients)
-        patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
-          patients_group.each do |patient|
-            extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
-            values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
-            sheet.add_row values, { types: Array.new(MONITOREES_LIST_HEADERS.length + 2, :string) }
-          end
-        end
-      end
-      return p.to_stream
+  def excel_export_full_history(patients)
+    Axlsx::Package.new do |excel_package|
+      excel_package = excel_export_monitorees(patients, excel_package)
+      excel_package = excel_export_assessments(patients, excel_package)
+      excel_package = excel_export_lab_results(patients, excel_package)
+      excel_package = excel_export_histories(patients, excel_package)
+      return excel_package.to_stream
     end
   end
 
-  def excel_export_assessments(patients)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Assessments') do |sheet|
-        # headers and all unique symptoms
-        symptom_labels = patients.joins(assessments: [{ reported_condition: :symptoms }]).select('symptoms.label').distinct.pluck('symptoms.label').sort
-        sheet.add_row ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
-
-        # assessments sorted by patients
-        patients.find_in_batches(batch_size: 500) do |patients_group|
-          assessments = Assessment.where(patient_id: patients_group.pluck(:id))
-          conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
-          symptoms = Symptom.where(condition_id: conditions.pluck(:id))
-
-          # construct hash containing symptoms by assessment_id
-          conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
-                            .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
-          symptoms.each do |symptom|
-            conditions_hash[symptom[:condition_id]][:symptoms][symptom[:label]] = symptom.value
-          end
-          assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
-
-          # combine symptoms with assessment summary
-          assessment_summary_arrays = assessments.order(:patient_id, :id).pluck(:id, :patient_id, :symptomatic, :who_reported, :created_at, :updated_at)
-          assessment_summary_arrays.each do |assessment_summary_array|
-            symptoms_hash = assessments_hash[assessment_summary_array[0]]
-            next if symptoms_hash.nil?
-
-            symptoms_array = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s }
-            row = assessment_summary_array[1..].concat(symptoms_array)
-            sheet.add_row row, { types: Array.new(row.length, :string) }
-          end
+  def excel_export_monitorees(patients, excel_package)
+    excel_package.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
+      headers = MONITOREES_LIST_HEADERS
+      sheet.add_row headers
+      statuses = patient_statuses(patients)
+      patients.find_in_batches(batch_size: 500) do |patients_group|
+        comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
+        patients_group.each do |patient|
+          extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
+          values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
+          sheet.add_row values, { types: Array.new(MONITOREES_LIST_HEADERS.length + 2, :string) }
         end
       end
-      return p.to_stream
     end
+    excel_package
   end
 
-  def excel_export_lab_results(patients)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Lab Results') do |sheet|
-        labs = Laboratory.where(patient_id: patients.pluck(:id))
-        lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
-        sheet.add_row lab_headers
-        labs.find_each(batch_size: 500) do |lab|
-          sheet.add_row lab.details.values, { types: Array.new(lab_headers.length, :string) }
+  def excel_export_assessments(patients, excel_package)
+    excel_package.workbook.add_worksheet(name: 'Assessments') do |sheet|
+      # headers and all unique symptoms
+      symptom_labels = patients.joins(assessments: [{ reported_condition: :symptoms }]).select('symptoms.label').distinct.pluck('symptoms.label').sort
+      sheet.add_row ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
+
+      # assessments sorted by patients
+      patients.find_in_batches(batch_size: 500) do |patients_group|
+        assessments = Assessment.where(patient_id: patients_group.pluck(:id))
+        conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
+        symptoms = Symptom.where(condition_id: conditions.pluck(:id))
+
+        # construct hash containing symptoms by assessment_id
+        conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
+                          .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
+        symptoms.each do |symptom|
+          conditions_hash[symptom[:condition_id]][:symptoms][symptom[:label]] = symptom.value
+        end
+        assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
+
+        # combine symptoms with assessment summary
+        assessment_summary_arrays = assessments.order(:patient_id, :id).pluck(:id, :patient_id, :symptomatic, :who_reported, :created_at, :updated_at)
+        assessment_summary_arrays.each do |assessment_summary_array|
+          symptoms_hash = assessments_hash[assessment_summary_array[0]]
+          next if symptoms_hash.nil?
+
+          symptoms_array = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s }
+          row = assessment_summary_array[1..].concat(symptoms_array)
+          sheet.add_row row, { types: Array.new(row.length, :string) }
         end
       end
-      return p.to_stream
     end
+    excel_package
   end
 
-  def excel_export_histories(patients)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Edit Histories') do |sheet|
-        histories = History.where(patient_id: patients.pluck(:id))
-        history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
-        sheet.add_row history_headers
-        histories.find_each(batch_size: 500) do |history|
-          sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
-        end
+  def excel_export_lab_results(patients, excel_package)
+    excel_package.workbook.add_worksheet(name: 'Lab Results') do |sheet|
+      labs = Laboratory.where(patient_id: patients.pluck(:id))
+      lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
+      sheet.add_row lab_headers
+      labs.find_each(batch_size: 500) do |lab|
+        sheet.add_row lab.details.values, { types: Array.new(lab_headers.length, :string) }
       end
-      return p.to_stream
     end
+    excel_package
+  end
+
+  def excel_export_histories(patients, excel_package)
+    excel_package.workbook.add_worksheet(name: 'Edit Histories') do |sheet|
+      histories = History.where(patient_id: patients.pluck(:id))
+      history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
+      sheet.add_row history_headers
+      histories.find_each(batch_size: 500) do |history|
+        sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
+      end
+    end
+    excel_package
   end
 
   # Patient fields relevant to linelist export
