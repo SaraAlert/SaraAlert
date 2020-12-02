@@ -150,6 +150,7 @@ class PatientsTable extends React.Component {
       localStorage.removeItem(`SaraSearch`);
       localStorage.removeItem(`SaraJurisdiction`);
       localStorage.removeItem(`SaraAssignedUser`);
+      localStorage.removeItem(`SaraScope`);
       location.reload();
       this.setState({ filter: null });
     }
