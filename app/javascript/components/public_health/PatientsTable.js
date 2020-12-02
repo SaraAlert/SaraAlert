@@ -602,6 +602,7 @@ class PatientsTable extends React.Component {
                 handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
                 handleSelect={this.handleSelect}
                 handleEntriesChange={this.handleEntriesChange}
+                isSelectable={true}
                 isEditable={false}
                 isLoading={this.state.loading}
                 page={this.state.query.page}

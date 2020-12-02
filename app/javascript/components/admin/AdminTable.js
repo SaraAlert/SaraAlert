@@ -647,6 +647,7 @@ class AdminTable extends React.Component {
           handleSelect={this.handleSelect}
           handleEdit={this.handleEditClick}
           handleEntriesChange={this.handleEntriesChange}
+          isSelectable={true}
           isEditable={true}
           isAuditable={true}
           handleAudit={this.handleAuditClick}

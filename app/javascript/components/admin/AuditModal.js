@@ -12,9 +12,9 @@ class AuditModal extends React.Component {
     this.state = {
       table: {
         colData: [
-          { label: 'Triggered by', field: 'user' },
-          { label: 'Action', field: 'change', filter: this.formatChange },
-          { label: 'Timestamp', field: 'timestamp', filter: this.formatTimestamp },
+          { label: 'Triggered by', field: 'user', isSortable: true },
+          { label: 'Action', field: 'change', filter: this.formatChange, isSortable: false },
+          { label: 'Timestamp', field: 'timestamp', filter: this.formatTimestamp, isSortable: true },
         ],
         rowData: [],
         totalRows: 0,
@@ -28,7 +28,6 @@ class AuditModal extends React.Component {
       entryOptions: [10, 15, 25],
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
-
       show: false,
     };
   }
@@ -115,7 +114,7 @@ class AuditModal extends React.Component {
         return (
           <span>
             <b>Jurisdiction</b>: Changed from &quot;{_.invert(this.props.jurisdiction_paths)[change.details[0]]}&quot; to &quot;
-            {_.invert(this.props.jurisdiction_paths)[change.details[1]]}&quot;{' '}
+            {_.invert(this.props.jurisdiction_paths)[change.details[1]]}&quot;
           </span>
         );
       case 'created_at':
@@ -128,39 +127,39 @@ class AuditModal extends React.Component {
         if (change.details[0]) {
           return (
             <span>
-              <b>API Access</b>: Enabled{' '}
+              <b>API Access</b>: Disabled
             </span>
           );
         } else {
           return (
             <span>
-              <b>API Access</b>: Disabled{' '}
+              <b>API Access</b>: Enabled
             </span>
           );
         }
       case 'role':
         return (
           <span>
-            <b>Role</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;{' '}
+            <b>Role</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;
           </span>
         );
       case 'email':
         return (
           <span>
-            <b>Email</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;{' '}
+            <b>Email</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;
           </span>
         );
       case 'authy_enabled':
         if (change.details[0]) {
           return (
             <span>
-              <b>2FA</b>: Enabled{' '}
+              <b>2FA</b>: Enabled
             </span>
           );
         } else {
           return (
             <span>
-              <b>2FA</b>: Disabled{' '}
+              <b>2FA</b>: Disabled
             </span>
           );
         }
@@ -246,7 +245,7 @@ class AuditModal extends React.Component {
               columnData={this.state.table.colData}
               rowData={this.state.table.rowData}
               totalRows={this.state.table.totalRows}
-              handleTableUpdate={query => this.updateTable({ ...this.state.query, page: query.page })}
+              handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
               handleEntriesChange={this.handleEntriesChange}
               isEditable={false}
               isSelectable={false}
