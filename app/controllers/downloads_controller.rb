@@ -14,7 +14,6 @@ class DownloadsController < ApplicationController
   # Hit this endpoint after the download link is clicked to remove download from database
   # and object storage
   def downloaded
-    byebug
     download = current_user.downloads.find_by(id: params.permit(:id)[:id])
     DestroyDownloadsJob.set(wait_until: 1.hour.from_now).perform_later(download) unless download.marked_for_deletion
     download.update(marked_for_deletion: true)
