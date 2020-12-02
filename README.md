@@ -231,6 +231,8 @@ The following environment variables need to be set on the enrollment instances, 
 * `AUTHY_API_KEY: <API key for Authy project>`
 
 **Amazon Web Services Environment Variables**
+To bypass AWS S3 object storage for local storage on staging or demonstration instance, set `ACTIVE_STORAGE_DRIVER=development`. To use AWS S3, do not set this environment variable as it defaults to using S3.
+
 The default configuration of Sara Alert uses AWS S3 for object storage. Information on changing the Sara Alert storage backend can be found [here](https://edgeguides.rubyonrails.org/active_storage_overview.html#s3-service-amazon-s3-and-s3-compatible-apis). The following environment variables need to be set on the enrollment instances, which are the instances that will be generating downloadable export spreadsheets.
 * `AWS_S3_ACCESS_KEY_ID=<Access Key ID generated from the AWS console or API that has access to the bucket provided below>`
 * `AWS_S3_SECRET_ACCESS_KEY=<Secret belonging to the Access Key ID above>`

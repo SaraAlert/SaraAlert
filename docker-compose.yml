@@ -111,6 +111,8 @@ services:
       - redis-enrollment
       - sara-alert-enrollment
       - mysql-enrollment
+    volumes:
+      - 'sidekiq-enrollment-export:/app/disease-trakker/tmp/storage'
   sidekiq-enrollment-default:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
@@ -178,6 +180,7 @@ volumes:
   redis-bridge:
   mysql-assessment:
   mysql-enrollment:
+  sidekiq-enrollment-export:
 
 networks:
   dt-net-enrollment:
