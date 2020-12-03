@@ -10,6 +10,11 @@ class JurisdictionsController < ApplicationController
     render json: { jurisdiction_paths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }] }
   end
 
+  # Get all jurisdiction ids and paths
+  def all_jurisdiction_paths
+    render json: { all_jurisdiction_paths: Hash[Jurisdiction.all.pluck(:id, :path).map { |id, path| [id, path] }] }
+  end
+
   # Get list of assigned users unique to jurisdiction
   def assigned_users_for_viewable_patients
     permitted_params = params.permit(:jurisdiction_id, :scope, :workflow, :tab)

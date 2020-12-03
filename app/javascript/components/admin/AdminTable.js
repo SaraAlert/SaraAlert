@@ -676,7 +676,6 @@ class AdminTable extends React.Component {
             show={this.state.showAuditModal}
             onClose={this.handleAuditModalClose}
             user={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
-            jurisdiction_paths={this.state.jurisdiction_paths}
             authenticity_token={this.props.authenticity_token}
           />
         )}

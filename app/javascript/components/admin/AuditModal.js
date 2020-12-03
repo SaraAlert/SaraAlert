@@ -23,12 +23,13 @@ class AuditModal extends React.Component {
       },
       query: {
         page: 0,
-        entries: 15,
+        entries: 25,
       },
-      entryOptions: [10, 15, 25],
+      entryOptions: [10, 15, 25, 50, 100],
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
       show: false,
+      all_jurisdiction_paths: {},
     };
   }
 
@@ -40,6 +41,9 @@ class AuditModal extends React.Component {
 
   componentDidMount() {
     this.updateTable(this.state.query);
+
+    // Gets all jurisdiction paths on initial mount.
+    this.getAllJurisdictionPaths();
   }
 
   updateTable = query => {
@@ -94,10 +98,30 @@ class AuditModal extends React.Component {
     return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
   }
 
+  /**
+   * Gets the all possible jurisdictions path via an axios GET request.
+   */
+  getAllJurisdictionPaths() {
+    axios.get('/jurisdictions/allpaths').then(response => {
+      const responseData = response.data.all_jurisdiction_paths;
+
+      // Swap keys and values for ease of use
+      let all_jurisdiction_paths = Object.assign({}, ...Object.entries(responseData).map(([id, path]) => ({ [path]: parseInt(id) })));
+
+      this.setState({ all_jurisdiction_paths });
+    });
+  }
+
   formatChange = change => {
     switch (change.name) {
       case 'locked_at':
-        if (change.details[0]) {
+        if (!change.details || !Array.isArray(change.details) || !change.details.length) {
+          return (
+            <span>
+              <b>Account Status</b>: Updated
+            </span>
+          );
+        } else if (change.details[0]) {
           return (
             <span>
               <b>Account Status</b>: Unlocked
@@ -111,12 +135,20 @@ class AuditModal extends React.Component {
           );
         }
       case 'jurisdiction_id':
-        return (
-          <span>
-            <b>Jurisdiction</b>: Changed from &quot;{_.invert(this.props.jurisdiction_paths)[change.details[0]]}&quot; to &quot;
-            {_.invert(this.props.jurisdiction_paths)[change.details[1]]}&quot;
-          </span>
-        );
+        if (!change.details || !Array.isArray(change.details) || change.details.length < 2) {
+          return (
+            <span>
+              <b>Jurisdiction</b>: Updated
+            </span>
+          );
+        } else {
+          return (
+            <span>
+              <b>Jurisdiction</b>: Changed from &quot;{_.invert(this.state.all_jurisdiction_paths)[change.details[0]]}&quot; to &quot;
+              {_.invert(this.state.all_jurisdiction_paths)[change.details[1]]}&quot;
+            </span>
+          );
+        }
       case 'created_at':
         return (
           <span>
@@ -124,7 +156,13 @@ class AuditModal extends React.Component {
           </span>
         );
       case 'api_enabled':
-        if (change.details[0]) {
+        if (!change.details || !Array.isArray(change.details) || !change.details.length) {
+          return (
+            <span>
+              <b>API Access</b>: Updated
+            </span>
+          );
+        } else if (change.details[0]) {
           return (
             <span>
               <b>API Access</b>: Disabled
@@ -138,19 +176,41 @@ class AuditModal extends React.Component {
           );
         }
       case 'role':
-        return (
-          <span>
-            <b>Role</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;
-          </span>
-        );
+        if (!change.details || !Array.isArray(change.details) || change.details.length < 2) {
+          return (
+            <span>
+              <b>Role</b>: Updated
+            </span>
+          );
+        } else {
+          return (
+            <span>
+              <b>Role</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;
+            </span>
+          );
+        }
       case 'email':
-        return (
-          <span>
-            <b>Email</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;
-          </span>
-        );
+        if (!change.details || !Array.isArray(change.details) || change.details.length < 2) {
+          return (
+            <span>
+              <b>Email</b>: Updated
+            </span>
+          );
+        } else {
+          return (
+            <span>
+              <b>Email</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;
+            </span>
+          );
+        }
       case 'authy_enabled':
-        if (change.details[0]) {
+        if (!change.details || !Array.isArray(change.details) || !change.details.length) {
+          return (
+            <span>
+              <b>2FA</b>: Updated
+            </span>
+          );
+        } else if (change.details[0]) {
           return (
             <span>
               <b>2FA</b>: Enabled
@@ -272,7 +332,6 @@ AuditModal.propTypes = {
   user: PropTypes.object,
   onClose: PropTypes.func,
   show: PropTypes.bool,
-  jurisdiction_paths: PropTypes.object,
   authenticity_token: PropTypes.string,
 };
 
