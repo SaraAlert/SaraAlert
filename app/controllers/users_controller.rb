@@ -39,11 +39,11 @@ class UsersController < ApplicationController
     user.audits.each do |a|
       if a.audited_changes.key?('created_at')
         change = { name: 'created_at', details: a.audited_changes['created_at'] }
-        individual_audits.unshift(change: change, user: User.find(a.user_id).email, timestamp: a.created_at)
+        individual_audits.unshift(change: change, user: User.find(a.user_id || user.id).email, timestamp: a.created_at)
       else
         a.audited_changes.each do |change_name, details|
           change = { name: change_name, details: details }
-          individual_audits.unshift(change: change, user: User.find(a.user_id).email, timestamp: a.created_at)
+          individual_audits.unshift(change: change, user: User.find(a.user_id || user.id).email, timestamp: a.created_at)
         end
       end
     end
