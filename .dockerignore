@@ -27,6 +27,7 @@ coverage
 storage
 public/packs
 public/packs-test
+app/javascript/tests
 
 goals.txt
 docker-compose.prod.yml
