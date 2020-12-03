@@ -94,7 +94,7 @@ class Enrollment extends React.Component {
       k => _.get(this.state.enrollmentState.patient, k) !== _.get(this.props.patient, k) || k === 'id'
     );
     let data = new Object({
-      patient: _.pick(this.state.enrollmentState.patient, diffKeys),
+      patient: this.props.parent_id ? this.state.enrollmentState.patient : _.pick(this.state.enrollmentState.patient, diffKeys),
       propagated_fields: this.state.enrollmentState.propagatedFields,
     });
 
