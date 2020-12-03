@@ -269,7 +269,7 @@ class ImportController < ApplicationController
     normalized_sex = SEX_ABBREVIATIONS[value.upcase.to_sym]
     return normalized_sex if normalized_sex
 
-    raise ValidationError.new("'#{value}' is not a valid sex for '#{VALIDATION[field][:label]}'", row_ind)
+    raise ValidationError.new("'#{value}' is not a valid sex for '#{VALIDATION[field][:label]}', acceptable values are Male, Female, and Unknown", row_ind)
   end
 
   def validate_email_field(field, value, row_ind)
