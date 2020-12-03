@@ -5,7 +5,7 @@ version: v1.18.0
 base_path: ''
 
 # How many days an enrolled monitoree should be monitored
-monitoring_period_days: <%= ENV["MONITORING_PERIOD_DAYS"] || 10 %>
+monitoring_period_days: <%= ENV["MONITORING_PERIOD_DAYS"] || 14 %>
 
 # How long a monitoree should be in isolation and considered non-reporting before we halt daily reports
 isolation_non_reporting_max_days: <%= ENV["SARA_ALERT_ISOLATION_NON_REPORING_MAX"] || 7 %>
