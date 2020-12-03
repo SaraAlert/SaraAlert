@@ -91,8 +91,8 @@ gem 'fhir_models'
 # Split-arch queue support
 gem 'redis-queue'
 
-# JSON Patch and JSON Pointer implementation
-gem 'hana'
+# JSON Patch and JSON Pointer implementation (using our fork of the gem)
+gem 'hana', '1.3.6', github: 'SaraAlert/hana', branch: 'master'
 
 group :development, :test do
   gem 'brakeman'
