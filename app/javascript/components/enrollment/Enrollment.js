@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { debounce, pickBy, identity } from 'lodash';
 import axios from 'axios';
 import libphonenumber from 'google-libphonenumber';
+import _ from 'lodash';
 
 import Identification from './steps/Identification';
 import Address from './steps/Address';
@@ -88,10 +89,15 @@ class Enrollment extends React.Component {
   submit(_event, groupMember, reenableSubmit) {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+
+    let diffKeys = Object.keys(this.state.enrollmentState.patient).filter(
+      k => _.get(this.state.enrollmentState.patient, k) !== _.get(this.props.patient, k) || k === 'id'
+    );
     let data = new Object({
-      patient: this.state.enrollmentState.patient,
+      patient: _.pick(this.state.enrollmentState.patient, diffKeys),
       propagated_fields: this.state.enrollmentState.propagatedFields,
     });
+
     data.patient.primary_telephone = data.patient.primary_telephone
       ? phoneUtil.format(phoneUtil.parse(data.patient.primary_telephone, 'US'), PNF.E164)
       : data.patient.primary_telephone;
