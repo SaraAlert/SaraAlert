@@ -3,6 +3,16 @@
 require 'test_case'
 
 class DownloadsControllerTest < ActionController::TestCase
+  test 'download' do
+    user = create(:public_health_user)
+    download = create(:download, user_id: user.id)
+    text = StringIO.new('text')
+    download.exports.attach(io: text, filename: 'text.txt', content_type: 'application/text')
+    sign_in user
+    get :download, params: { id: download.id }
+    assert_response :success
+  end
+
   test 'downloaded' do
     user = create(:public_health_user)
     download = create(:download, user_id: user.id)
