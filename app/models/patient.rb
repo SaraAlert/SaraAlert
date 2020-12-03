@@ -21,6 +21,7 @@ class Patient < ApplicationRecord
 
   validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
                                                   'Enrolled more than 14 days after last date of exposure (system)',
+                                                  'Enrolled more than 10 days after last date of exposure (system)',
                                                   'Enrolled on last day of monitoring period (system)',
                                                   'Completed Monitoring (system)',
                                                   'Meets Case Definition',

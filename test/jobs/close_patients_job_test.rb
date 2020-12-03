@@ -90,7 +90,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
-    assert_equal(updated_patient.monitoring_reason, 'Enrolled more than 14 days after last date of exposure (system)')
+    assert_equal(updated_patient.monitoring_reason, 'Enrolled more than 10 days after last date of exposure (system)')
   end
 
   test 'creates correct monitoring reason when record was enrolled on their last day of monitoring' do
@@ -101,7 +101,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now,
-                     last_date_of_exposure: ADMIN_OPTIONS['monitoring_period_days'].days.ago,
+                     last_date_of_exposure: 10.days.ago,
                      created_at: Time.now)
 
     ClosePatientsJob.perform_now

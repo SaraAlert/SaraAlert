@@ -54,7 +54,7 @@ class PatientTest < ActiveSupport::TestCase
 
   test 'active dependents defaults to using last_date_of_exposure unless it is nil' do
     responder = create(:patient, purged: false, monitoring: true)
-    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 12.days.ago, created_at: 15.days.ago)
+    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 8.days.ago, created_at: 13.days.ago)
     dependent.update!(responder_id: responder.id)
 
     # Should be included because LDE is within monitoring period
