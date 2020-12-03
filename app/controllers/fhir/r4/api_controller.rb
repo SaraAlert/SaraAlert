@@ -441,6 +441,8 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Return a well known statement
+  #
+  # GET /fhir/r4/.well-known/smart-configuration
   def well_known
     render json: {
       authorization_endpoint: "#{root_url}oauth/authorize",
