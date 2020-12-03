@@ -30,107 +30,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       scopes: 'user/Patient.*'
     )
 
-    @user_patient_read_app = OauthApplication.create(
-      name: 'user-test-patient-r',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.read'
-    )
-
-    @user_patient_write_app = OauthApplication.create(
-      name: 'user-test-patient-w',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.write'
-    )
-
-    @user_observation_read_app = OauthApplication.create(
-      name: 'user-test-observation-r',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Observation.read'
-    )
-
-    @user_response_read_app = OauthApplication.create(
-      name: 'user-test-response-r',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/QuestionnaireResponse.read'
-    )
-
-    @user_patient_rw_observation_r_app = OauthApplication.create(
-      name: 'user-test-patient-rw-observation-r',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.* user/Observation.read'
-    )
-
-    @user_patient_rw_response_r_app = OauthApplication.create(
-      name: 'user-test-patient-rw-response-r',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.* user/QuestionnaireResponse.read'
-    )
-
-    @user_observation_r_response_r_app = OauthApplication.create(
-      name: 'user-test-observation-r-response-r',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/QuestionnaireResponse.read user/Observation.read'
-    )
-
-    @user_everything_app = OauthApplication.create(
-      name: 'user-test-everything',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read'
-    )
-
     # Create access tokens
     @user_patient_token_rw = Doorkeeper::AccessToken.create(
       resource_owner_id: @user.id,
       application: @user_patient_read_write_app,
       scopes: 'user/Patient.*'
-    )
-
-    @user_patient_token_r = Doorkeeper::AccessToken.create(
-      resource_owner_id: @user.id,
-      application: @user_patient_read_app,
-      scopes: 'user/Patient.read'
-    )
-
-    @user_patient_token_w = Doorkeeper::AccessToken.create(
-      resource_owner_id: @user.id,
-      application: @user_patient_write_app,
-      scopes: 'user/Patient.write'
-    )
-
-    @user_observation_token_r = Doorkeeper::AccessToken.create(
-      resource_owner_id: @user.id,
-      application: @user_observation_read_app,
-      scopes: 'user/Observation.read'
-    )
-
-    @user_response_token_r = Doorkeeper::AccessToken.create(
-      resource_owner_id: @user.id,
-      application: @user_response_read_app,
-      scopes: 'user/QuestionnaireResponse.read'
-    )
-
-    @user_patient_rw_observation_r_token = Doorkeeper::AccessToken.create(
-      resource_owner_id: @user.id,
-      application: @user_patient_rw_observation_r_app,
-      scopes: 'user/Patient.* user/Observation.read'
-    )
-
-    @user_patient_rw_response_r_token = Doorkeeper::AccessToken.create(
-      resource_owner_id: @user.id,
-      application: @user_patient_rw_response_r_app,
-      scopes: 'user/Patient.* user/QuestionnaireResponse.read'
-    )
-
-    @user_observation_r_response_r_token = Doorkeeper::AccessToken.create(
-      resource_owner_id: @user.id,
-      application: @user_observation_r_response_r_app,
-      scopes: 'user/QuestionnaireResponse.read user/Observation.read'
-    )
-
-    @user_everything_token = Doorkeeper::AccessToken.create(
-      resource_owner_id: @user.id,
-      application: @user_everything_app,
-      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read'
     )
   end
 
@@ -301,52 +205,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test 'GENERAL: should be unauthorized via show' do
-    get '/fhir/r4/Patient/1'
-    assert_response :unauthorized
-  end
+  #----- scope tests -----
 
-  #----- system flow tests -----
-
-  test 'SYSTEM FLOW: should group Patients in households with matching phone numbers' do
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :created
-    json_response = JSON.parse(response.body)
-    # Should be a dependent in the same household as patient with ID 1, who is now the HoH
-    assert_equal 1, Patient.find_by(id: json_response['id']).responder_id
-  end
-
-  test 'SYSTEM FLOW: should group Patients in households with matching emails' do
-    Patient.find_by(id: 1).update!(preferred_contact_method: 'E-mailed Web Link')
-    @patient_1 = Patient.find_by(id: 1).as_fhir
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :created
-    json_response = JSON.parse(response.body)
-    # Should be a dependent in the same household as patient with ID 1, who is now the HoH
-    assert_equal 1, Patient.find_by(id: json_response['id']).responder_id
-  end
-
-  test 'SYSTEM FLOW: should make Patient a self reporter if no matching number or email' do
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :created
-    json_response = JSON.parse(response.body)
-    # Should be their own reporter since they have a unique phone number and email
-    assert_equal json_response['id'], Patient.find_by(id: json_response['id']).responder_id
-  end
-
-  test 'SYSTEM FLOW: should not be able to create Patient resource with Patient read scope' do
+  test 'should not be able to create Patient resource with Patient read scope' do
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
@@ -355,7 +216,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to create Patient resource with Observation scope' do
+  test 'should not be able to create Patient resource with Observation scope' do
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
@@ -364,7 +225,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to create Patient resource with QuestionnaireResponse scope' do
+  test 'should not be able to create Patient resource with QuestionnaireResponse scope' do
     post(
       '/fhir/r4/Patient',
       headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -372,7 +233,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to update Patient resource with Patient read scope' do
+  test 'should not be able to update Patient resource with Patient read scope' do
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
@@ -381,7 +242,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to update Patient resource with Observation scope' do
+  test 'should not be able to update Patient resource with Observation scope' do
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
@@ -390,7 +251,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to update Patient resource with QuestionnaireResponse scope' do
+  test 'should not be able to update Patient resource with QuestionnaireResponse scope' do
     put(
       '/fhir/r4/Patient/1',
       headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -398,7 +259,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to read Patient resource with Patient write only scope' do
+  test 'should not be able to read Patient resource with Patient write only scope' do
     get(
       '/fhir/r4/Patient/1',
       headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
@@ -406,7 +267,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to read Patient resource with Observation scope' do
+  test 'should not be able to read Patient resource with Observation scope' do
     get(
       '/fhir/r4/Patient/1',
       headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -414,7 +275,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to read Patient resource with QuestionnaireResponse scope' do
+  test 'should not be able to read Patient resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient/1',
       headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -422,7 +283,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to search Patient resource with Patient write only scope' do
+  test 'should not be able to search Patient resource with Patient write only scope' do
     get(
       '/fhir/r4/Patient?_id=1',
       headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
@@ -430,7 +291,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to search Patient resource with Observation scope' do
+  test 'should not be able to search Patient resource with Observation scope' do
     get(
       '/fhir/r4/Patient?_id=1',
       headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -438,7 +299,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to search Patient resource with QuestionnaireResponse scope' do
+  test 'should not be able to search Patient resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient?_id=1',
       headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -446,7 +307,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to read Observation resource with Patient scope' do
+  test 'should not be able to read Observation resource with Patient scope' do
     get(
       '/fhir/r4/Observation/1',
       headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -454,7 +315,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to read Observation resource with QuestionnaireResponse scope' do
+  test 'should not be able to read Observation resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Observation/1',
       headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -462,7 +323,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to read QuestionnaireResponse resource with Patient scope' do
+  test 'should not be able to read QuestionnaireResponse resource with Patient scope' do
     get(
       '/fhir/r4/QuestionnaireResponse/1',
       headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -470,7 +331,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to read QuestionnaireResponse resource with Observation scope' do
+  test 'should not be able to read QuestionnaireResponse resource with Observation scope' do
     get(
       '/fhir/r4/QuestionnaireResponse/1',
       headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -478,7 +339,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to get everything with only Patient write only scope' do
+  test 'should not be able to get everything with only Patient write only scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
       headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
@@ -486,7 +347,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to get everything with only Patient read only scope' do
+  test 'should not be able to get everything with only Patient read only scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
       headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -494,7 +355,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to get everything with only Patient read and write scope' do
+  test 'should not be able to get everything with only Patient read and write scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
@@ -502,7 +363,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to get everything with only Observation scope' do
+  test 'should not be able to get everything with only Observation scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
       headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -510,7 +371,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to get everything with only QuestionnaireResponse scope' do
+  test 'should not be able to get everything with only QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
       headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -518,7 +379,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to get everything with only Patient read and write scope and Observation scope' do
+  test 'should not be able to get everything with only Patient read and write scope and Observation scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
       headers: { 'Authorization': "Bearer #{@system_patient_rw_observation_r_token.token}", 'Accept': 'application/fhir+json' }
@@ -526,7 +387,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to get everything with only Patient read and write scope and QuestionnaireResponse scope' do
+  test 'should not be able to get everything with only Patient read and write scope and QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
       headers: { 'Authorization': "Bearer #{@system_patient_rw_response_r_token.token}", 'Accept': 'application/fhir+json' }
@@ -534,7 +395,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should not be able to get everything with only Observation scope and QuestionnaireResponse scope' do
+  test 'should not be able to get everything with only Observation scope and QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
       headers: { 'Authorization': "Bearer #{@system_observation_r_response_r_token.token}", 'Accept': 'application/fhir+json' }
@@ -542,40 +403,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: patients within exact jurisdiction should be accessable' do
-    # Same jurisdiction
-    get(
-      '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 1, json_response['id']
+  #----- show tests -----
+
+  test 'should be unauthorized via show' do
+    get '/fhir/r4/Patient/1'
+    assert_response :unauthorized
   end
 
-  test 'SYSTEM FLOW: patients within subjurisdictions should be accessable' do
-    # Update jurisdiction to be subjurisdiction
-    Patient.find_by(id: 1).update!(jurisdiction_id: 4)
-    get(
-      '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 1, json_response['id']
-  end
-
-  test 'SYSTEM FLOW: patients outside of jurisdiction should NOT be accessable' do
-    # Update jurisdiction to be out of scope
-    Patient.find_by(id: 1).update!(jurisdiction_id: 1)
-    get(
-      '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'SYSTEM FLOW: should be 403 forbidden if no resource owner and jurisdiction_id is nil' do
+  test 'should be 403 forbidden if no resource owner and jurisdiction_id is nil' do
     @system_patient_read_write_app.update!(jurisdiction_id: nil)
     @system_patient_token_rw = Doorkeeper::AccessToken.create(application: @system_patient_read_write_app, scopes: 'system/*.read system/*.write')
     get(
@@ -585,7 +420,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should be 403 forbidden if no resource owner and jurisdiction_id is not a valid id' do
+  test 'should be 403 forbidden if no resource owner and jurisdiction_id is not a valid id' do
     @system_patient_read_write_app.update!(jurisdiction_id: 100)
     @system_patient_token_rw = Doorkeeper::AccessToken.create(application: @system_patient_read_write_app, scopes: 'system/*.read system/*.write')
     get(
@@ -595,7 +430,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should be 406 when bad accept header via show' do
+  test 'should be 406 when bad accept header via show' do
     get(
       '/fhir/r4/Patient/1',
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'foo/bar' }
@@ -603,7 +438,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_acceptable
   end
 
-  test 'SYSTEM FLOW: should get patient via show' do
+  test 'should get patient via show' do
     patient_id = 1
     patient = Patient.find_by(id: patient_id)
     resource_path = "/fhir/r4/Patient/#{patient_id}"
@@ -640,7 +475,15 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
-  test 'SYSTEM FLOW: should get observation via show' do
+  test 'should get patient via show using _format parameter' do
+    get(
+      '/fhir/r4/Patient/1?' + { _format: 'application/fhir+json' }.to_param,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}" }
+    )
+    assert_response :ok
+  end
+
+  test 'should get observation via show' do
     get(
       '/fhir/r4/Observation/1001',
       headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -653,7 +496,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'positive', json_response['valueString']
   end
 
-  test 'SYSTEM FLOW: should get QuestionnaireResponse via show' do
+  test 'should get QuestionnaireResponse via show' do
     get(
       '/fhir/r4/QuestionnaireResponse/1001',
       headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
@@ -668,7 +511,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_not json_response['item'].find(text: 'difficulty-breathing').first['answer'].first['valueBoolean']
   end
 
-  test 'SYSTEM FLOW: should be 404 via show when requesting unsupported resource' do
+  test 'should be 404 via show when requesting unsupported resource' do
     get(
       '/fhir/r4/FooBar/1',
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
@@ -676,7 +519,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test 'SYSTEM FLOW: should be forbidden via show' do
+  test 'should be forbidden via show' do
     get(
       '/fhir/r4/Patient/9',
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
@@ -684,880 +527,38 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should be unauthorized via create' do
-    post '/fhir/r4/Patient'
-    assert_response :unauthorized
-  end
-
-  test 'SYSTEM FLOW: should create Patient via create' do
-    patient = Patient.find_by(id: 1)
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :created
-    json_response = JSON.parse(response.body)
-    id = json_response['id']
-    p = Patient.find_by(id: id)
-    assert_not p.nil?
-    h = History.where(patient_id: id)
-    assert_not h.first.nil?
-    assert_equal 1, h.count
-    assert_equal 'Patient', json_response['resourceType']
-    assert_equal 3, json_response['telecom'].count
-    assert_equal 'Boehm62', json_response['name'].first['family']
-    assert response.headers['Location'].ends_with?(json_response['id'].to_s)
-    assert_equal 'USA, State 1',
-                 json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
-    assert_equal "/fhir/r4/Patient/#{id}", json_response['contained'].first['target'].first['reference']
-    assert_equal @system_patient_read_write_app.uid, json_response['contained'].first['agent'].first['who']['identifier']['value']
-    assert_equal @system_patient_read_write_app.name, json_response['contained'].first['agent'].first['who']['display']
-    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
-    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
-    assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
-    assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
-    assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
-    assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
-    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-departure')
-    assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
-    assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
-    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-arrival')
-    assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
-    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
-    assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
-  end
-
-  test 'SYSTEM FLOW: should calculate Patient age via create' do
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-
-    assert_response :created
-    json_response = JSON.parse(response.body)
-    patient = Patient.find(json_response['id'])
-    assert_equal 25, patient.age
-  end
-
-  test 'SYSTEM FLOW: should be 415 when bad content type header via create' do
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
-    )
-    assert_response :unsupported_media_type
-  end
-
-  test 'SYSTEM FLOW: should be bad request via create due to invalid JSON' do
-    post(
-      '/fhir/r4/Patient',
-      env: { 'RAW_POST_DATA' => '{ "foo", "bar" }' },
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :bad_request
-    json_response = JSON.parse(response.body)
-    assert_equal 'Invalid JSON in request body', json_response['issue'][0]['diagnostics']
-  end
-
-  test 'SYSTEM FLOW: should be bad request via create due to non-FHIR' do
-    post(
-      '/fhir/r4/Patient',
-      params: { foo: 'bar' }.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :bad_request
-  end
-
-  test 'SYSTEM FLOW: should be bad request via create with invalid FHIR' do
-    @patient_1.active = 1
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :bad_request
-    json_response = JSON.parse(response.body)
-    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
-  end
-
-  test 'SYSTEM FLOW: should be bad request via create with multiple FHIR errors' do
-    @patient_1.active = [1, 2]
-    @patient_1.telecom[0].value = [1, 2]
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :bad_request
-    json_response = JSON.parse(response.body)
-    assert_equal json_response['issue'].length, 4
-    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
-    assert_match(/Patient.active/, json_response['issue'][1]['diagnostics'])
-    assert_match(/Patient.active/, json_response['issue'][2]['diagnostics'])
-    assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
-  end
-
-  test 'SYSTEM FLOW: should be unprocessable entity via create with validation errors' do
-    post(
-      '/fhir/r4/Patient',
-      params: IO.read(file_fixture('fhir_invalid_patient.json')),
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
-    errors = json_response['issue'].map { |i| i['diagnostics'] }
-
-    msg = 'Expected validation error on '
-    assert_equal 18, errors.length
-    assert(errors.any?(/Invalid.*Monitoring Plan/), msg + 'Monitoring Plan')
-    assert(errors.any?(/Old York.*State/), msg + 'State')
-    assert(errors.any?(/0000.*Ethnicity/), msg + 'Ethnicity')
-    assert(errors.any?(/High noon.*Preferred Contact Time/), msg + 'Preferred Contact Time')
-    assert(errors.any?(/On FHIR.*Sex/), msg + 'Sex')
-    assert(errors.any?(/Dumbphone.*Telephone Type/), msg + 'Phone Type')
-    assert(errors.any?(/123.*Primary Telephone/), msg + 'Primary Telephone')
-    assert(errors.any?(/Date of Birth/), msg + 'Date of Birth')
-    assert(errors.any?(/Last Date of Exposure/), msg + 'Last Date of Exposure')
-    assert(errors.any?(/1492.*Symptom Onset/), msg + 'Symptom Onset')
-    assert(errors.any?(/1776.*Additional Planned Travel Start Date/), msg + 'Additional Planned Travel Start Date')
-    assert(errors.any?(/2020-01-32.*Date of Departure/), msg + 'Date of Departure')
-    assert(errors.any?(/9999-99-99.*Date of Arrival/), msg + 'Date of Arrival')
-    assert(errors.any?(/Last Name/), msg + 'Last Name')
-    assert(errors.any?(/10000.*Assigned User/), msg + 'Assigned User')
-    assert(errors.any?(/Email.*Primary Contact Method/), msg + 'Email')
-  end
-
-  test 'SYSTEM FLOW: should be unauthorized via update' do
-    get '/fhir/r4/Patient/1'
-    assert_response :unauthorized
-  end
-
-  test 'SYSTEM FLOW: should update Patient via update' do
-    patient_id = 1
-    patient = Patient.find_by(id: 2)
-    resource_path = "/fhir/r4/Patient/#{patient_id}"
-    put(
-      resource_path,
-      params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+  test 'SYSTEM FLOW: patients within exact jurisdiction should be accessible' do
+    # Same jurisdiction
+    get(
+      '/fhir/r4/Patient/1',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['id']
-    p = Patient.find_by(id: 1)
-    assert_not p.nil?
-    assert_equal 'Patient', json_response['resourceType']
-    assert_equal 'Kirlin44', json_response['name'].first['family']
-    assert_equal 'SMS Texted Weblink', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
-    assert_equal 'Afternoon', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
-    assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-date-of-exposure' }.first['valueDate']
-    assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
-    assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
-    assert_equal 'USA, State 1, County 1',
-                 json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
-    assert_equal resource_path, json_response['contained'].first['target'].first['reference']
-    assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
-    assert_equal Patient.find_by(id: patient_id).creator.email, json_response['contained'].first['agent'].first['who']['display']
-    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
-    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
-    assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
-    assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
-    assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
-    assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
-    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-departure')
-    assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
-    assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
-    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-arrival')
-    assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
-    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
-    assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
-  test 'SYSTEM FLOW: should update Patient via update and set omitted fields to nil ' do
-    # Possible update request that omits all fields that can be updated except for the "active" field.
-    patient_update = {
-      'id' => @patient_2.id,
-      'birthDate' => @patient_2.birthDate,
-      'name' => @patient_2.name,
-      'address' => @patient_2.address,
-      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-date-of-exposure' },
-      'active' => false,
-      'resourceType' => 'Patient'
-    }
-
-    put(
+  test 'SYSTEM FLOW: patients within subjurisdictions should be accessible' do
+    # Update jurisdiction to be subjurisdiction
+    Patient.find_by(id: 1).update!(jurisdiction_id: 4)
+    get(
       '/fhir/r4/Patient/1',
-      params: patient_update.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['id']
-    p = Patient.find_by(id: 1)
-
-    assert_not p.nil?
-    assert_equal 'Patient', json_response['resourceType']
-    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' })
-    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' })
-    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' })
-    assert_equal false, json_response['active']
   end
 
-  test 'SYSTEM FLOW: should properly close Patient record via update' do
-    # Possible update request that omits many fields but sets active to false
-    patient_update = {
-      'id' => @patient_2.id,
-      'birthDate' => @patient_2.birthDate,
-      'name' => @patient_2.name,
-      'address' => @patient_2.address,
-      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-date-of-exposure' },
-      'active' => false,
-      'resourceType' => 'Patient',
-      'telecom' => [
-        {
-          "system": 'email',
-          "value": '2966977816fake@example.com',
-          "rank": 1
-        }
-      ]
-    }
-
-    put(
-      '/fhir/r4/Patient/1',
-      params: patient_update.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 1, json_response['id']
-    p = Patient.find_by(id: 1)
-
-    assert_not p.nil?
-
-    # Record should be closed
-    assert_not json_response['active']
-    assert_not p.monitoring
-
-    # Closed at date should have been set to today
-    assert_equal DateTime.now.to_date, p.closed_at&.to_date
-  end
-
-  test 'SYSTEM FLOW: should be bad request via update due to invalid JSON' do
-    put(
-      '/fhir/r4/Patient/1',
-      env: { 'RAW_POST_DATA' => '{ "foo", "bar" }' },
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :bad_request
-    json_response = JSON.parse(response.body)
-    assert_equal 'Invalid JSON in request body', json_response['issue'][0]['diagnostics']
-  end
-
-  test 'SYSTEM FLOW: should be bad request via update due to bad fhir' do
-    put(
-      '/fhir/r4/Patient/1',
-      params: { foo: 'bar' }.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :bad_request
-  end
-
-  test 'SYSTEM FLOW: should be bad request via update with invalid FHIR' do
-    @patient_1.active = 1
-    put(
-      '/fhir/r4/Patient/1',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :bad_request
-    json_response = JSON.parse(response.body)
-    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
-  end
-
-  test 'SYSTEM FLOW: should be bad request via update with multiple FHIR errors' do
-    @patient_1.active = [1, 2]
-    @patient_1.telecom[0].value = [1, 2]
-    put(
-      '/fhir/r4/Patient/1',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :bad_request
-    json_response = JSON.parse(response.body)
-    assert_equal json_response['issue'].length, 4
-    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
-    assert_match(/Patient.active/, json_response['issue'][1]['diagnostics'])
-    assert_match(/Patient.active/, json_response['issue'][2]['diagnostics'])
-    assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
-  end
-
-  test 'SYSTEM FLOW: should be bad request via update due to unsupported resource' do
-    put(
-      '/fhir/r4/FooBar/9',
-      params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :not_found
-  end
-
-  test 'SYSTEM FLOW: should be unprocessable entity via update with validation errors' do
-    post(
-      '/fhir/r4/Patient',
-      params: IO.read(file_fixture('fhir_invalid_patient.json')),
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
-    errors = json_response['issue'].map { |i| i['diagnostics'] }
-
-    msg = 'Expected validation error on '
-    assert_equal 18, errors.length
-    assert(errors.any?(/Invalid.*Monitoring Plan/), msg + 'Monitoring Plan')
-    assert(errors.any?(/Old York.*State/), msg + 'State')
-    assert(errors.any?(/0000.*Ethnicity/), msg + 'Ethnicity')
-    assert(errors.any?(/High noon.*Preferred Contact Time/), msg + 'Preferred Contact Time')
-    assert(errors.any?(/On FHIR.*Sex/), msg + 'Sex')
-    assert(errors.any?(/Dumbphone.*Telephone Type/), msg + 'Phone Type')
-    assert(errors.any?(/123.*Primary Telephone/), msg + 'Primary Telephone')
-    assert(errors.any?(/Date of Birth/), msg + 'Date of Birth')
-    assert(errors.any?(/Last Date of Exposure/), msg + 'Last Date of Exposure')
-    assert(errors.any?(/1492.*Symptom Onset/), msg + 'Symptom Onset')
-    assert(errors.any?(/1776.*Additional Planned Travel Start Date/), msg + 'Additional Planned Travel Start Date')
-    assert(errors.any?(/2020-01-32.*Date of Departure/), msg + 'Date of Departure')
-    assert(errors.any?(/9999-99-99.*Date of Arrival/), msg + 'Date of Arrival')
-    assert(errors.any?(/Last Name/), msg + 'Last Name')
-    assert(errors.any?(/10000.*Assigned User/), msg + 'Assigned User')
-    assert(errors.any?(/Email.*Primary Contact Method/), msg + 'Email')
-  end
-
-  test 'SYSTEM FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
-    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA, State 2'
-    put(
-      '/fhir/r4/Patient/1',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
-    assert_equal 1, json_response['issue'].length
-    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction must be within'))
-  end
-
-  test 'SYSTEM FLOW: should be forbidden via update' do
-    put(
-      '/fhir/r4/Patient/9',
-      params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'SYSTEM FLOW: should update Patient via patch update' do
-    patch = [
-      { 'op': 'remove', 'path': '/communication/0/language' },
-      { 'op': 'add', 'path': '/address/0/line/-', 'value': 'Unit 123' },
-      { 'op': 'replace', 'path': '/name/0/family', 'value': 'Foo' }
-    ]
-    patch(
-      '/fhir/r4/Patient/1',
-      params: patch.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/json-patch+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 1, json_response['id']
-    assert_nil json_response['communication']
-    assert_equal 'Unit 123', json_response['address'][0]['line'][1]
-    assert_equal 'Foo', json_response['name'][0]['family']
-  end
-
-  test 'SYSTEM FLOW: should be bad request when patch update is invalid' do
-    patch = [{ 'op': 'replace', 'path': '/uh/oh/path', 'value': 'Foo' }]
-    patch(
-      '/fhir/r4/Patient/1',
-      params: patch.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/json-patch+json' }
-    )
-    assert_response :bad_request
-    json_response = JSON.parse(response.body)
-    assert_equal 'OperationOutcome', json_response['resourceType']
-  end
-
-  test 'SYSTEM FLOW: should be 415 when bad content type header via patch update' do
-    patch(
-      '/fhir/r4/Patient/1',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
-    )
-    assert_response :unsupported_media_type
-  end
-
-  test 'SYSTEM FLOW: should be unauthorized via search' do
-    get '/fhir/r4/Patient?family=Kirlin44'
-    assert_response :unauthorized
-  end
-
-  test 'SYSTEM FLOW: should be unauthorized via search write only' do
+  test 'SYSTEM FLOW: patients outside of jurisdiction should NOT be accessible' do
+    # Update jurisdiction to be out of scope
+    Patient.find_by(id: 1).update!(jurisdiction_id: 1)
     get(
-      '/fhir/r4/Patient?family=Kirlin44',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'SYSTEM FLOW: should find Observations for a Patient via search' do
-    get(
-      '/fhir/r4/Observation?subject=Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 'Observation', json_response['entry'].first['resource']['resourceType']
-  end
-
-  test 'SYSTEM FLOW: should find QuestionnaireResponses for a Patient via search' do
-    get(
-      '/fhir/r4/QuestionnaireResponse?subject=Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 'QuestionnaireResponse', json_response['entry'].first['resource']['resourceType']
-  end
-
-  test 'SYSTEM FLOW: should find no Observations for an invalid Patient via search' do
-    get(
-      '/fhir/r4/Observation?subject=Patient/blah',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 0, json_response['total']
-  end
-
-  test 'SYSTEM FLOW: should find no QuestionnaireResponses for an invalid Patient via search' do
-    get(
-      '/fhir/r4/QuestionnaireResponse?subject=Patient/blah',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 0, json_response['total']
-  end
-
-  test 'SYSTEM FLOW: should find Patient via search by _id' do
-    get(
-      '/fhir/r4/Patient?_id=1',
+      '/fhir/r4/Patient/1',
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 1, json_response['total']
-    assert_equal 1, json_response['entry'].first['resource']['id']
-  end
-
-  test 'SYSTEM FLOW: should find Patient via search on existing family' do
-    get(
-      '/fhir/r4/Patient?family=Kirlin44',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 1, json_response['total']
-    assert_equal 2, json_response['entry'].first['resource']['id']
-  end
-
-  test 'SYSTEM FLOW: should find no Patients via search on non-existing family' do
-    get(
-      '/fhir/r4/Patient?family=foo',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 0, json_response['total']
-  end
-
-  test 'SYSTEM FLOW: should find Patient via search on given' do
-    get(
-      '/fhir/r4/Patient?given=Chris32',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 1, json_response['total']
-    assert_equal 2, json_response['entry'].first['resource']['id']
-  end
-
-  test 'SYSTEM FLOW: should find Patient via search on telecom' do
-    get(
-      '/fhir/r4/Patient?telecom=5555550111',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 1, json_response['total']
-    assert_equal 1, json_response['entry'].first['resource']['id']
-  end
-
-  test 'SYSTEM FLOW: should find Patient via search on email' do
-    get(
-      '/fhir/r4/Patient?email=grazyna%40example.com',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 1, json_response['total']
-    assert_equal 2, json_response['entry'].first['resource']['id']
-  end
-
-  test 'SYSTEM FLOW: should get Bundle via search without params' do
-    get(
-      '/fhir/r4/Patient',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    json_response['entry'].each do |entry|
-      assert(entry['fullUrl'].include?('Patient') ||
-              entry['fullUrl'].include?('Observation') ||
-              entry['fullUrl'].include?('QuestionnaireResponse'))
-    end
-  end
-
-  test 'SYSTEM FLOW: should be 404 via search when requesting unsupported resource' do
-    get(
-      '/fhir/r4/FooBar?email=grazyna%40example.com',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :not_found
-  end
-
-  test 'SYSTEM FLOW: should be unauthorized via all' do
-    get '/fhir/r4/Patient/1/$everything'
-    assert_response :unauthorized
-  end
-
-  test 'SYSTEM FLOW: should get Bundle via all' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 5, json_response['total']
-    assert_equal 1, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Patient' }.count
-    assert_equal 2, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'QuestionnaireResponse' }.count
-    assert_equal 2, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Observation' }.count
-    assert_equal 'Patient/1', json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Observation' }.first['resource']['subject']['reference']
-    assert_equal 1, json_response['entry'].first['resource']['id']
-  end
-
-  test 'SYSTEM FLOW: should get patients with default count via search' do
-    get(
-      '/fhir/r4/Patient',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 'http://www.example.com/fhir/r4/Patient?page=2', json_response['link'][0]['url']
-  end
-
-  test 'SYSTEM FLOW: should get patients with count as 100 via search' do
-    get(
-      '/fhir/r4/Patient?_count=100',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_nil json_response['link']
-  end
-
-  test 'SYSTEM FLOW: should only get summary with count as 0 via search' do
-    get(
-      '/fhir/r4/Patient?_count=0',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_nil json_response['link']
-  end
-
-  test 'SYSTEM FLOW: should get CapabilityStatement unauthorized via capability_statement' do
-    get(
-      '/fhir/r4/metadata',
-      headers: { 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal ADMIN_OPTIONS['version'], json_response['software']['version']
-  end
-
-  test 'SYSTEM FLOW: should get CapabilityStatement authorized via capability_statement' do
-    get(
-      '/fhir/r4/metadata',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal ADMIN_OPTIONS['version'], json_response['software']['version']
-  end
-
-  # ----- end system flow tests -----
-
-  #----- user flow tests -----
-
-  test 'USER FLOW: should group Patients in households with matching phone numbers' do
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :created
-    json_response = JSON.parse(response.body)
-    # Should be a dependent in the same household as patient with ID 1, who is now the HoH
-    assert_equal 1, Patient.find_by(id: json_response['id']).responder_id
-  end
-
-  test 'USER FLOW: should group Patients in households with matching emails' do
-    Patient.find_by(id: 1).update!(preferred_contact_method: 'E-mailed Web Link')
-    @patient_1 = Patient.find_by(id: 1).as_fhir
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :created
-    json_response = JSON.parse(response.body)
-    # Should be a dependent in the same household as patient with ID 1, who is now the HoH
-    assert_equal 1, Patient.find_by(id: json_response['id']).responder_id
-  end
-
-  test 'USER FLOW: should make Patient a self reporter if no matching number or email' do
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :created
-    json_response = JSON.parse(response.body)
-    # Should be their own reporter since they have a unique phone number and email
-    assert_equal json_response['id'], Patient.find_by(id: json_response['id']).responder_id
-  end
-
-  test 'USER FLOW: should not be able to create Patient resource with Patient read scope' do
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}", 'Content-Type': 'application/fhir+json' }
-    )
     assert_response :forbidden
   end
-
-  test 'USER FLOW: should not be able to create Patient resource with Observation scope' do
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to create Patient resource with QuestionnaireResponse scope' do
-    post(
-      '/fhir/r4/Patient',
-      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to update Patient resource with Patient read scope' do
-    put(
-      '/fhir/r4/Patient/1',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to update Patient resource with Observation scope' do
-    put(
-      '/fhir/r4/Patient/1',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to update Patient resource with QuestionnaireResponse scope' do
-    put(
-      '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to read Patient resource with Patient write only scope' do
-    get(
-      '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_w.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to read Patient resource with Observation scope' do
-    get(
-      '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to read Patient resource with QuestionnaireResponse scope' do
-    get(
-      '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to search Patient resource with Patient write only scope' do
-    get(
-      '/fhir/r4/Patient?_id=1',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_w.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to search Patient resource with Observation scope' do
-    get(
-      '/fhir/r4/Patient?_id=1',
-      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to search Patient resource with QuestionnaireResponse scope' do
-    get(
-      '/fhir/r4/Patient?_id=1',
-      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to read Observation resource with Patient scope' do
-    get(
-      '/fhir/r4/Observation/1',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to read Observation resource with QuestionnaireResponse scope' do
-    get(
-      '/fhir/r4/Observation/1',
-      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to read QuestionnaireResponse resource with Patient scope' do
-    get(
-      '/fhir/r4/QuestionnaireResponse/1',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to read QuestionnaireResponse resource with Observation scope' do
-    get(
-      '/fhir/r4/QuestionnaireResponse/1',
-      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to get everything with only Patient write only scope' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_w.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to get everything with only Patient read only scope' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to get everything with only Patient read and write scope' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to get everything with only Observation scope' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to get everything with only QuestionnaireResponse scope' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to get everything with only Patient read and write scope and Observation scope' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_patient_rw_observation_r_token.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to get everything with only Patient read and write scope and QuestionnaireResponse scope' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_patient_rw_response_r_token.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should not be able to get everything with only Observation scope and QuestionnaireResponse scope' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_observation_r_response_r_token.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  # ----- end user scope tests -----
 
   test 'USER FLOW: analysts should not have any access to patients' do
     @user = User.find_by(email: 'analyst_all@example.com')
@@ -1645,7 +646,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, json_response['id']
   end
 
-  test 'USER FLOW: should be 403 forbidden when user does not have api access enabled' do
+  test 'USER FLOW: should be 403 forbidden when user does not have api access enabled via show' do
     @user.update!(api_enabled: false)
     @user_patient_token_rw = Doorkeeper::AccessToken.create(
       resource_owner_id: @user.id,
@@ -1659,44 +660,37 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'USER FLOW: should be 406 when bad accept header via show' do
-    get(
-      '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'foo/bar' }
-    )
-    assert_response :not_acceptable
+  #----- create tests -----
+
+  test 'should be unauthorized via create' do
+    post '/fhir/r4/Patient'
+    assert_response :unauthorized
   end
 
-  test 'USER FLOW: should be unauthorized via show write only' do
-    get(
-      '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+  test 'SYSTEM FLOW: should create Patient via create' do
+    patient = Patient.find_by(id: 1)
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should get patient via show' do
-    patient_id = 1
-    patient = Patient.find_by(id: patient_id)
-    resource_path = "/fhir/r4/Patient/#{patient_id}"
-    get(
-      resource_path,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
+    assert_response :created
     json_response = JSON.parse(response.body)
-    assert_equal 1, json_response['id']
+    id = json_response['id']
+    p = Patient.find_by(id: id)
+    assert_not p.nil?
+    h = History.where(patient_id: id)
+    assert_not h.first.nil?
+    assert_equal 1, h.count
     assert_equal 'Patient', json_response['resourceType']
     assert_equal 3, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
-    assert_equal 'Telephone call', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
-    assert_equal 'Morning', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
-    assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-date-of-exposure' }.first['valueDate']
-    assert_equal 5.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
-    assert_not json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
-    assert_equal resource_path, json_response['contained'].first['target'].first['reference']
-    assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
-    assert_equal Patient.find_by(id: patient_id).creator.email, json_response['contained'].first['agent'].first['who']['display']
+    assert response.headers['Location'].ends_with?(json_response['id'].to_s)
+    assert_equal 'USA, State 1',
+                 json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
+    assert_equal "/fhir/r4/Patient/#{id}", json_response['contained'].first['target'].first['reference']
+    assert_equal @system_patient_read_write_app.uid, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal @system_patient_read_write_app.name, json_response['contained'].first['agent'].first['who']['display']
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
@@ -1710,61 +704,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
     assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
-  end
-
-  test 'USER FLOW: should get observation via show' do
-    get(
-      '/fhir/r4/Observation/1001',
-      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 1001, json_response['id']
-    assert_equal 'Observation', json_response['resourceType']
-    assert_equal 'Patient/1', json_response['subject']['reference']
-    assert_equal 'positive', json_response['valueString']
-  end
-
-  test 'USER FLOW: should get QuestionnaireResponse via show' do
-    get(
-      '/fhir/r4/QuestionnaireResponse/1001',
-      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 1001, json_response['id']
-    assert_equal 'QuestionnaireResponse', json_response['resourceType']
-    assert_equal 'Patient/1', json_response['subject']['reference']
-    assert_not json_response['item'].find(text: 'fever').first['answer'].first['valueBoolean']
-    assert_not json_response['item'].find(text: 'cough').first['answer'].first['valueBoolean']
-    assert_not json_response['item'].find(text: 'difficulty-breathing').first['answer'].first['valueBoolean']
-  end
-
-  test 'USER FLOW: should be 404 via show when requesting unsupported resource' do
-    get(
-      '/fhir/r4/FooBar/1',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :not_found
-  end
-
-  test 'USER FLOW: should be forbidden via show' do
-    get(
-      '/fhir/r4/Patient/9',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should be unauthorized via create' do
-    post '/fhir/r4/Patient'
-    assert_response :unauthorized
-  end
-
-  test 'USER FLOW: should be unauthorized via create read only' do
-    post '/fhir/r4/Patient', params: @patient_1.to_json,
-                             headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}" }
-    assert_response :forbidden
   end
 
   test 'USER FLOW: should create Patient via create' do
@@ -1781,6 +720,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     h = History.where(patient_id: id)
     assert_not h.first.nil?
     assert_equal 1, h.count
+    assert_equal 'state1_epi@example.com', h.first.created_by
     assert_equal 'Patient', json_response['resourceType']
     assert_equal 3, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
@@ -1805,65 +745,67 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
-  test 'USER FLOW: should calculate Patient age via create' do
+  test 'should calculate Patient age via create' do
     post(
-      '/fhir/r4/Patient', params: @patient_1.to_json,
-                          headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
+
     assert_response :created
     json_response = JSON.parse(response.body)
     patient = Patient.find(json_response['id'])
     assert_equal 25, patient.age
   end
 
-  test 'USER FLOW: should be 415 when bad content type header via create' do
+  test 'should be 415 when bad content type header via create' do
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
     )
     assert_response :unsupported_media_type
   end
 
-  test 'USER FLOW: should be bad request via create due to invalid JSON' do
+  test 'should be bad request via create due to invalid JSON' do
     post(
       '/fhir/r4/Patient',
       env: { 'RAW_POST_DATA' => '{ "foo", "bar" }' },
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
     assert_equal 'Invalid JSON in request body', json_response['issue'][0]['diagnostics']
   end
 
-  test 'USER FLOW: should be bad request via create due to non-FHIR' do
+  test 'should be bad request via create due to non-FHIR' do
     post(
       '/fhir/r4/Patient',
       params: { foo: 'bar' }.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
   end
 
-  test 'USER FLOW: should be bad request via create with invalid FHIR' do
+  test 'should be bad request via create with invalid FHIR' do
     @patient_1.active = 1
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
     assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
   end
 
-  test 'USER FLOW: should be bad request via create with multiple FHIR errors' do
+  test 'should be bad request via create with multiple FHIR errors' do
     @patient_1.active = [1, 2]
     @patient_1.telecom[0].value = [1, 2]
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
@@ -1874,46 +816,98 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
   end
 
-  test 'USER FLOW: should be unprocessable entity via create with validation errors' do
-    bad_phone = '123'
-    bad_birth_date = '2000'
-    @patient_1.telecom[0].value = bad_phone
-    @patient_1.birthDate = bad_birth_date
+  test 'should be 404 not found via create due to unsupported resource' do
+    post(
+      '/fhir/r4/FooBar',
+      params: @patient_2.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :not_found
+  end
+
+  test 'should be unprocessable entity via create with validation errors' do
     post(
       '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      params: IO.read(file_fixture('fhir_invalid_patient.json')),
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    assert_equal json_response['issue'].length, 3
-    assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
-    assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
-    assert_match(Regexp.new('Date of Birth'), json_response['issue'][2]['diagnostics'])
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    msg = 'Expected validation error on '
+    assert_equal 18, errors.length
+    assert(errors.any?(/Invalid.*Monitoring Plan/), msg + 'Monitoring Plan')
+    assert(errors.any?(/Old York.*State/), msg + 'State')
+    assert(errors.any?(/0000.*Ethnicity/), msg + 'Ethnicity')
+    assert(errors.any?(/High noon.*Preferred Contact Time/), msg + 'Preferred Contact Time')
+    assert(errors.any?(/On FHIR.*Sex/), msg + 'Sex')
+    assert(errors.any?(/Dumbphone.*Telephone Type/), msg + 'Phone Type')
+    assert(errors.any?(/123.*Primary Telephone/), msg + 'Primary Telephone')
+    assert(errors.any?(/Date of Birth/), msg + 'Date of Birth')
+    assert(errors.any?(/Last Date of Exposure/), msg + 'Last Date of Exposure')
+    assert(errors.any?(/1492.*Symptom Onset/), msg + 'Symptom Onset')
+    assert(errors.any?(/1776.*Additional Planned Travel Start Date/), msg + 'Additional Planned Travel Start Date')
+    assert(errors.any?(/2020-01-32.*Date of Departure/), msg + 'Date of Departure')
+    assert(errors.any?(/9999-99-99.*Date of Arrival/), msg + 'Date of Arrival')
+    assert(errors.any?(/Last Name/), msg + 'Last Name')
+    assert(errors.any?(/10000.*Assigned User/), msg + 'Assigned User')
+    assert(errors.any?(/Email.*Primary Contact Method/), msg + 'Email')
   end
 
-  test 'USER FLOW: should be unauthorized via update' do
+  test 'should group Patients in households with matching phone numbers' do
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    # Should be a dependent in the same household as patient with ID 1, who is now the HoH
+    assert_equal 1, Patient.find_by(id: json_response['id']).responder_id
+  end
+
+  test 'should group Patients in households with matching emails' do
+    Patient.find_by(id: 1).update!(preferred_contact_method: 'E-mailed Web Link')
+    @patient_1 = Patient.find_by(id: 1).as_fhir
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    # Should be a dependent in the same household as patient with ID 1, who is now the HoH
+    assert_equal 1, Patient.find_by(id: json_response['id']).responder_id
+  end
+
+  test 'should make Patient a self reporter if no matching number or email' do
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_2.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    # Should be their own reporter since they have a unique phone number and email
+    assert_equal json_response['id'], Patient.find_by(id: json_response['id']).responder_id
+  end
+
+  #----- update tests -----
+
+  test 'should be unauthorized via update' do
     get '/fhir/r4/Patient/1'
     assert_response :unauthorized
   end
 
-  test 'USER FLOW: should be unauthorized via update read only' do
-    put(
-      '/fhir/r4/Patient/1',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}" }
-    )
-    assert_response :forbidden
-  end
-
-  test 'USER FLOW: should update Patient via update' do
+  test 'should update Patient via update' do
     patient_id = 1
     patient = Patient.find_by(id: 2)
     resource_path = "/fhir/r4/Patient/#{patient_id}"
     put(
       resource_path,
       params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -1947,7 +941,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
-  test 'USER FLOW: should update Patient via update and set omitted fields to nil' do
+  test 'should update Patient via update and set omitted fields to nil ' do
     # Possible update request that omits all fields that can be updated except for the "active" field.
     patient_update = {
       'id' => @patient_2.id,
@@ -1962,7 +956,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/Patient/1',
       params: patient_update.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -1977,7 +971,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal false, json_response['active']
   end
 
-  test 'USER FLOW: should properly close Patient record via update' do
+  test 'should properly close Patient record via update' do
     # Possible update request that omits many fields but sets active to false
     patient_update = {
       'id' => @patient_2.id,
@@ -1999,7 +993,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/Patient/1',
       params: patient_update.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2016,45 +1010,45 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal DateTime.now.to_date, p.closed_at&.to_date
   end
 
-  test 'USER FLOW: should be bad request via update due to invalid JSON' do
+  test 'should be bad request via update due to invalid JSON' do
     put(
       '/fhir/r4/Patient/1',
       env: { 'RAW_POST_DATA' => '{ "foo", "bar" }' },
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
     assert_equal 'Invalid JSON in request body', json_response['issue'][0]['diagnostics']
   end
 
-  test 'USER FLOW: should be bad request via update due to bad fhir' do
+  test 'should be bad request via update due to bad fhir' do
     put(
       '/fhir/r4/Patient/1',
       params: { foo: 'bar' }.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
   end
 
-  test 'USER FLOW: should be bad request via update with invalid FHIR' do
+  test 'should be bad request via update with invalid FHIR' do
     @patient_1.active = 1
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
     assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
   end
 
-  test 'USER FLOW: should be bad request via update with multiple FHIR errors' do
+  test 'should be bad request via update with multiple FHIR errors' do
     @patient_1.active = [1, 2]
     @patient_1.telecom[0].value = [1, 2]
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
@@ -2065,31 +1059,65 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
   end
 
-  test 'USER FLOW: should be 404 not found via update due to unsupported resource' do
+  test 'should be 404 not found via update due to unsupported resource' do
     put(
       '/fhir/r4/FooBar/9',
       params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :not_found
   end
 
-  test 'USER FLOW: should be unprocessable entity via update with validation errors' do
-    bad_phone = '123'
-    bad_birth_date = '2000'
-    @patient_1.telecom[0].value = bad_phone
-    @patient_1.birthDate = bad_birth_date
+  test 'should be unprocessable entity via update with validation errors' do
     put(
       '/fhir/r4/Patient/1',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      params: IO.read(file_fixture('fhir_invalid_patient.json')),
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    assert_equal json_response['issue'].length, 3
-    assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
-    assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
-    assert_match(Regexp.new('Date of Birth'), json_response['issue'][2]['diagnostics'])
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    msg = 'Expected validation error on '
+    assert_equal 18, errors.length
+    assert(errors.any?(/Invalid.*Monitoring Plan/), msg + 'Monitoring Plan')
+    assert(errors.any?(/Old York.*State/), msg + 'State')
+    assert(errors.any?(/0000.*Ethnicity/), msg + 'Ethnicity')
+    assert(errors.any?(/High noon.*Preferred Contact Time/), msg + 'Preferred Contact Time')
+    assert(errors.any?(/On FHIR.*Sex/), msg + 'Sex')
+    assert(errors.any?(/Dumbphone.*Telephone Type/), msg + 'Phone Type')
+    assert(errors.any?(/123.*Primary Telephone/), msg + 'Primary Telephone')
+    assert(errors.any?(/Date of Birth/), msg + 'Date of Birth')
+    assert(errors.any?(/Last Date of Exposure/), msg + 'Last Date of Exposure')
+    assert(errors.any?(/1492.*Symptom Onset/), msg + 'Symptom Onset')
+    assert(errors.any?(/1776.*Additional Planned Travel Start Date/), msg + 'Additional Planned Travel Start Date')
+    assert(errors.any?(/2020-01-32.*Date of Departure/), msg + 'Date of Departure')
+    assert(errors.any?(/9999-99-99.*Date of Arrival/), msg + 'Date of Arrival')
+    assert(errors.any?(/Last Name/), msg + 'Last Name')
+    assert(errors.any?(/10000.*Assigned User/), msg + 'Assigned User')
+    assert(errors.any?(/Email.*Primary Contact Method/), msg + 'Email')
+  end
+
+  test 'should be forbidden via update' do
+    put(
+      '/fhir/r4/Patient/9',
+      params: @patient_2.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
+    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA, State 2'
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['issue'].length
+    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction must be within'))
   end
 
   test 'USER FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
@@ -2105,32 +1133,65 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction must be within'))
   end
 
-  test 'USER FLOW: should be forbidden via update' do
-    put(
-      '/fhir/r4/Patient/9',
-      params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+  test 'should update Patient via patch update' do
+    patch = [
+      { 'op': 'remove', 'path': '/communication/0/language' },
+      { 'op': 'add', 'path': '/address/0/line/-', 'value': 'Unit 123' },
+      { 'op': 'replace', 'path': '/name/0/family', 'value': 'Foo' }
+    ]
+    patch(
+      '/fhir/r4/Patient/1',
+      params: patch.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/json-patch+json' }
     )
-    assert_response :forbidden
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    assert_nil json_response['communication']
+    assert_equal 'Unit 123', json_response['address'][0]['line'][1]
+    assert_equal 'Foo', json_response['name'][0]['family']
   end
 
-  test 'USER FLOW: should be unauthorized via search' do
+  test 'should be bad request when patch update is invalid' do
+    patch = [{ 'op': 'replace', 'path': '/uh/oh/path', 'value': 'Foo' }]
+    patch(
+      '/fhir/r4/Patient/1',
+      params: patch.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/json-patch+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal 'OperationOutcome', json_response['resourceType']
+  end
+
+  test 'should be 415 when bad content type header via patch update' do
+    patch(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
+    )
+    assert_response :unsupported_media_type
+  end
+
+  #----- search tests -----
+
+  test 'should be unauthorized via search' do
     get '/fhir/r4/Patient?family=Kirlin44'
     assert_response :unauthorized
   end
 
-  test 'USER FLOW: should be unauthorized via search write only' do
+  test 'should be unauthorized via search write only' do
     get(
       '/fhir/r4/Patient?family=Kirlin44',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
 
-  test 'USER FLOW: should find Observations for a Patient via search' do
+  test 'should find Observations for a Patient via search' do
     get(
       '/fhir/r4/Observation?subject=Patient/1',
-      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2138,10 +1199,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Observation', json_response['entry'].first['resource']['resourceType']
   end
 
-  test 'USER FLOW: should find QuestionnaireResponses for a Patient via search' do
+  test 'should find QuestionnaireResponses for a Patient via search' do
     get(
       '/fhir/r4/QuestionnaireResponse?subject=Patient/1',
-      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2149,10 +1210,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'QuestionnaireResponse', json_response['entry'].first['resource']['resourceType']
   end
 
-  test 'USER FLOW: should find no Observations for an invalid Patient via search' do
+  test 'should find no Observations for an invalid Patient via search' do
     get(
       '/fhir/r4/Observation?subject=Patient/blah',
-      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2160,10 +1221,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, json_response['total']
   end
 
-  test 'USER FLOW: should find no QuestionnaireResponses for an invalid Patient via search' do
+  test 'should find no QuestionnaireResponses for an invalid Patient via search' do
     get(
       '/fhir/r4/QuestionnaireResponse?subject=Patient/blah',
-      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2171,10 +1232,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, json_response['total']
   end
 
-  test 'USER FLOW: should find Patient via search by _id' do
+  test 'should find Patient via search by _id' do
     get(
       '/fhir/r4/Patient?_id=1',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2183,10 +1244,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, json_response['entry'].first['resource']['id']
   end
 
-  test 'USER FLOW: should find Patient via search on existing family' do
+  test 'should find Patient via search on existing family' do
     get(
       '/fhir/r4/Patient?family=Kirlin44',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2195,10 +1256,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, json_response['entry'].first['resource']['id']
   end
 
-  test 'USER FLOW: should find no Patients via search on non-existing family' do
+  test 'should find no Patients via search on non-existing family' do
     get(
       '/fhir/r4/Patient?family=foo',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2206,10 +1267,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, json_response['total']
   end
 
-  test 'USER FLOW: should find Patient via search on given' do
+  test 'should find Patient via search on given' do
     get(
       '/fhir/r4/Patient?given=Chris32',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2218,10 +1279,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, json_response['entry'].first['resource']['id']
   end
 
-  test 'USER FLOW: should find Patient via search on telecom' do
+  test 'should find Patient via search on telecom' do
     get(
-      '/fhir/r4/Patient?telecom=15555550111',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      '/fhir/r4/Patient?telecom=5555550111',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2230,10 +1291,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, json_response['entry'].first['resource']['id']
   end
 
-  test 'USER FLOW: should find Patient via search on email' do
+  test 'should find Patient via search on email' do
     get(
       '/fhir/r4/Patient?email=grazyna%40example.com',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2242,10 +1303,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, json_response['entry'].first['resource']['id']
   end
 
-  test 'USER FLOW: should get Bundle via search without params' do
+  test 'should get Bundle via search without params' do
     get(
       '/fhir/r4/Patient',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2257,23 +1318,58 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'USER FLOW: should be 404 via search when requesting unsupported resource' do
+  test 'should be 404 via search when requesting unsupported resource' do
     get(
       '/fhir/r4/FooBar?email=grazyna%40example.com',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :not_found
   end
 
-  test 'USER FLOW: should be unauthorized via all' do
+  test 'should get patients with default count via search' do
+    get(
+      '/fhir/r4/Patient',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 'Bundle', json_response['resourceType']
+    assert_equal 'http://www.example.com/fhir/r4/Patient?page=2', json_response['link'][0]['url']
+  end
+
+  test 'should get patients with count as 100 via search' do
+    get(
+      '/fhir/r4/Patient?_count=100',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 'Bundle', json_response['resourceType']
+    assert_nil json_response['link']
+  end
+
+  test 'should only get summary with count as 0 via search' do
+    get(
+      '/fhir/r4/Patient?_count=0',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 'Bundle', json_response['resourceType']
+    assert_nil json_response['link']
+  end
+
+  #----- all tests -----
+
+  test 'should be unauthorized via all' do
     get '/fhir/r4/Patient/1/$everything'
     assert_response :unauthorized
   end
 
-  test 'USER FLOW: should get Bundle via all' do
+  test 'should get Bundle via all' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -2286,40 +1382,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, json_response['entry'].first['resource']['id']
   end
 
-  test 'USER FLOW: should get patients with default count via search' do
-    get(
-      '/fhir/r4/Patient',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 'http://www.example.com/fhir/r4/Patient?page=2', json_response['link'][0]['url']
-  end
+  #----- capability_statement tests -----
 
-  test 'USER FLOW: should get patients with count as 100 via search' do
-    get(
-      '/fhir/r4/Patient?_count=100',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_nil json_response['link']
-  end
-
-  test 'USER FLOW: should only get summary with count as 0 via search' do
-    get(
-      '/fhir/r4/Patient?_count=0',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert_equal 'Bundle', json_response['resourceType']
-    assert_nil json_response['link']
-  end
-
-  test 'USER FLOW: should get CapabilityStatement unauthorized via capability_statement' do
+  test 'should get CapabilityStatement unauthorized via capability_statement' do
     get(
       '/fhir/r4/metadata',
       headers: { 'Accept': 'application/fhir+json' }
@@ -2329,16 +1394,37 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal ADMIN_OPTIONS['version'], json_response['software']['version']
   end
 
-  test 'USER FLOW: should get CapabilityStatement authorized via capability_statement' do
+  test 'should get CapabilityStatement authorized via capability_statement' do
     get(
       '/fhir/r4/metadata',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
     assert_equal ADMIN_OPTIONS['version'], json_response['software']['version']
   end
-  # ----- end user flow tests -----
+
+  #----- well_known tests -----
+
+  test 'should get well known statement unauthorized via well_known' do
+    get(
+      '/fhir/r4/.well-known/smart-configuration',
+      headers: { 'Accept': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal "#{root_url}oauth/authorize", json_response['authorization_endpoint']
+  end
+
+  test 'should get well known statement authorized via well_known' do
+    get(
+      '/fhir/r4/.well-known/smart-configuration',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal "#{root_url}oauth/authorize", json_response['authorization_endpoint']
+  end
 
   private
 
