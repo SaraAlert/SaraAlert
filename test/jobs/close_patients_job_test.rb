@@ -101,7 +101,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now,
-                     last_date_of_exposure: 14.days.ago,
+                     last_date_of_exposure: ADMIN_OPTIONS['monitoring_period_days'].days.ago,
                      created_at: Time.now)
 
     ClosePatientsJob.perform_now
