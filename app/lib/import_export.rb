@@ -138,7 +138,13 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     responder_id: 'ID of Reporter',
     head_of_household: 'Head of Household',
     pause_notifications: 'Paused Notifications',
-    last_assessment_reminder_sent: 'Last Assessment Reminder Sent Date'
+    last_assessment_reminder_sent: 'Last Assessment Reminder Sent Date',
+    # CSV Linelist Export Specific Fields
+    name: 'Name',
+    latest_assessment_at: 'Latest Report',
+    latest_transfer_at: 'Transferred At',
+    transferred_from: 'Transferred From',
+    transferred_to: 'Transferred To'
   }.freeze
 
   ASSESSMENT_FIELD_NAMES = {
@@ -429,9 +435,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                    'Disposition of Travelers Referred for CDC Assessment: Other', 'Final Disposition of Traveler\'s Medical Evaluation (If applicable)',
                    'Exposure Assessment', 'Contact Made?', 'Monitoring needed?', 'Notes'].freeze
 
-  LINELIST_FIELDS = %i[id name jurisdiction assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring risk_level monitoring_plan
-                       latest_report transferred_at monitoring_reason public_health_action status closed_at transferred_from transferred_to expected_purge_date
-                       symptom_onset extended_isolation].freeze
+  LINELIST_FIELDS = %i[id name jurisdiction_name assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring exposure_risk_assessment
+                       monitoring_plan latest_assessment_at latest_transfer_at monitoring_reason public_health_action status closed_at transferred_from
+                       transferred_to expected_purge_date symptom_onset extended_isolation].freeze
 
   COMPREHENSIVE_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :white, :black_or_african_american, :american_indian_or_alaska_native,
                           :asian, :native_hawaiian_or_other_pacific_islander, :ethnicity, :primary_language, :secondary_language, :interpretation_required,
@@ -513,7 +519,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     value.to_s.downcase.gsub(/[ -.]/, '')
   end
 
-  def extract_patients_details_in_batch(patients_group, fields)
+  def extract_patients_details(patients_group, fields)
     # perform the following queries in bulk only if requested for better performance
     patients_jurisdiction_names = jurisdiction_names(patients_group) if fields.include?(:jurisdiction_name)
     patients_jurisdiction_paths = jurisdiction_paths(patients_group) if fields.include?(:jurisdiction_path)
@@ -538,7 +544,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       # populate latest transfer from and to if requested
       if patients_transfers&.key?(patient.id)
         patient_details[:transferred_from] = patients_transfers[patient.id][:trasnferred_from] if fields.include?(:transferred_from)
-        patient_details[:transferred_to] = patients_transfer[patient.id][:transferred_to] if fields.include?(:transferred_to)
+        patient_details[:transferred_to] = patients_transfers[patient.id][:transferred_to] if fields.include?(:transferred_to)
       end
 
       # populate labs if requested
@@ -600,7 +606,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patient_details
   end
 
-  def extract_assessments_details_in_batch(assessments, fields, query)
+  def extract_assessments_details(assessments, fields, query)
     if fields.include?(:symptoms)
       conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
       symptoms = Symptom.where(condition_id: conditions.pluck(:id))
@@ -635,7 +641,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     [assessments_details, symptom_names]
   end
 
-  def extract_laboratories_details_in_batch(laboratories, fields)
+  def extract_laboratories_details(laboratories, fields)
     laboratories_details = []
     laboratories.each do |laboratory|
       laboratory_details = {}
@@ -651,7 +657,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
   end
 
-  def extract_close_contacts_details_in_batch(close_contacts, fields)
+  def extract_close_contacts_details(close_contacts, fields)
     close_contacts_details = []
     close_contacts.each do |close_contact|
       close_contact_details = {}
@@ -671,7 +677,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     close_contacts_details
   end
 
-  def extract_transfers_details_in_batch(transfers, fields)
+  def extract_transfers_details(transfers, fields)
     jurisdiction_ids = [transfers.map(&:from_jurisdiction_id), transfers.map(&:to_jurisdiction_id)].flatten.uniq
     jurisdiction_paths = Hash[Jurisdiction.find(jurisdiction_ids).pluck(:id, :path).map { |id, path| [id, path] }]
     user_emails = Hash[User.find(transfers.map(&:who_id).uniq).pluck(:id, :email).map { |id, email| [id, email] }]
@@ -690,7 +696,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     transfers_details
   end
 
-  def extract_histories_details_in_batch(histories, fields)
+  def extract_histories_details(histories, fields)
     histories_details = []
     histories.each do |history|
       history_details = {}
