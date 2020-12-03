@@ -71,7 +71,7 @@ class PatientTest < ActiveSupport::TestCase
 
   test 'active dependents DOES include dependents where they are on their last day of monitoring' do
     responder = create(:patient, purged: false, monitoring: true)
-    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 14.days.ago, created_at: 12.days.ago)
+    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: ADMIN_OPTIONS['monitoring_period_days'].days.ago, created_at: 12.days.ago)
     dependent.update!(responder_id: responder.id)
 
     assert responder.active_dependents.pluck(:id).include?(dependent.id)
