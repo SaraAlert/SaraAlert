@@ -16,26 +16,32 @@ class ExportController < ApplicationController
   before_action :authenticate_user_role
 
   def csv
-    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
+    # Verify params
+    redirect_to(root_url) && return unless %w[exposure isolation].include?(params[:workflow])
 
-    export_type = "csv_#{params[:workflow]}"
+    export_type = "csv_#{params[:workflow]}".to_sym
 
     if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
     else
-      # Validate filters
-      begin
-        filters = validate_patients_query(permitted_params)
-      rescue StandardError
-        return head :bad_request
-      end
-
       # Clear out old receipts and create a new one
       current_user.export_receipts.where(export_type: export_type).destroy_all
       ExportReceipt.create(user_id: current_user.id, export_type: export_type)
 
       # Spawn job to handle export
-      ExportJob.perform_later(current_user.id, export_type, 'csv', LINELIST_FIELDS, filters)
+      config = {
+        user_id: current_user.id,
+        export_type: export_type,
+        format: 'csv',
+        data: {
+          patients: {
+            checked: LINELIST_FIELDS,
+            query: { workflow: params[:workflow] }
+          }
+        }
+      }
+
+      ExportJob.perform_later(config)
 
       respond_to do |format|
         format.any { head :ok }
@@ -44,26 +50,32 @@ class ExportController < ApplicationController
   end
 
   def excel_comprehensive_patients
-    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
+    # Verify params
+    redirect_to(root_url) && return unless %w[exposure isolation].include?(params[:workflow])
 
-    export_type = "sara_format_#{params[:workflow]}"
+    export_type = "sara_format_#{params[:workflow]}".to_sym
 
     if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
     else
-      # Validate filters
-      begin
-        filters = validate_patients_query(permitted_params)
-      rescue StandardError
-        return head :bad_request
-      end
-
       # Clear out old receipts and create a new one
       current_user.export_receipts.where(export_type: export_type).destroy_all
       ExportReceipt.create(user_id: current_user.id, export_type: export_type)
 
       # Spawn job to handle export
-      ExportJob.perform_later(current_user.id, export_type, 'xlsx', COMPREHENSIVE_FIELDS, filters)
+      config = {
+        user_id: current_user.id,
+        export_type: export_type,
+        format: 'xlsx',
+        data: {
+          patients: {
+            checked: COMPREHENSIVE_FIELDS,
+            query: { workflow: params[:workflow] }
+          }
+        }
+      }
+
+      ExportJob.perform_later(config)
 
       respond_to do |format|
         format.any { head :ok }
@@ -72,26 +84,52 @@ class ExportController < ApplicationController
   end
 
   def excel_full_history_patients
-    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
+    # Verify params
+    redirect_to(root_url) && return unless %w[purgeable all].include?(params[:scope])
 
-    export_type = "full_history_#{params[:scope] == 'purgeable' ? 'purgeable' : 'all'}"
+    export_type = "full_history_#{params[:scope]}".to_sym
 
     if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
     else
-      # Validate filters
-      begin
-        filters = validate_patients_query(permitted_params)
-      rescue StandardError
-        return head :bad_request
-      end
-
       # Clear out old receipts and create a new one
       current_user.export_receipts.where(export_type: export_type).destroy_all
       ExportReceipt.create(user_id: current_user.id, export_type: export_type)
 
       # Spawn job to handle export
-      ExportJob.perform_later(current_user.id, export_type, 'xlsx', COMPREHENSIVE_FIELDS, filters)
+      config = {
+        user_id: current_user.id,
+        export_type: export_type,
+        format: 'xlsx',
+        data: {
+          patients: {
+            checked: COMPREHENSIVE_FIELDS,
+            query: { workflow: params[:workflow] }
+          },
+          assessments: {
+            checked: ALL_FIELDS_NAMES[:assessments].keys,
+            query: {}
+          },
+          laboratories: {
+            checked: ALL_FIELDS_NAMES[:laboratories].keys,
+            query: {}
+          },
+          close_contacts: {
+            checked: ALL_FIELDS_NAMES[:close_contacts].keys,
+            query: {}
+          },
+          transfers: {
+            checked: ALL_FIELDS_NAMES[:transfers].keys,
+            query: {}
+          },
+          histories: {
+            checked: ALL_FIELDS_NAMES[:histories].keys,
+            query: {}
+          }
+        }
+      }
+
+      ExportJob.perform_later(config)
 
       respond_to do |format|
         format.any { head :ok }
@@ -121,14 +159,17 @@ class ExportController < ApplicationController
   end
 
   def custom_export
-    export_type = 'custom'
+    export_type = :custom
 
     # if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
     if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.second.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
     else
       unsanitized_config = params.require(:config).permit(:filename, :format, data: {})
-      config = {}
+      config = {
+        user_id: current_user.id,
+        export_type: export_type
+      }
 
       # Validate format param
       config[:format] = unsanitized_config.require(:format)
@@ -175,7 +216,7 @@ class ExportController < ApplicationController
       ExportReceipt.create(user_id: current_user.id, export_type: export_type)
 
       # Spawn job to handle export
-      ExportJob.perform_later(current_user.id, export_type, config)
+      ExportJob.perform_later(config)
 
       respond_to do |f|
         f.any { head :ok }
@@ -186,11 +227,11 @@ class ExportController < ApplicationController
   private
 
   def validate_checked_fields(data, data_type)
-    checked = data.require(data_type).require(:checked)
+    unsanitized_checked = data.require(data_type).require(:checked)
+    raise StandardError('Checked must be an array') unless unsanitized_checked.is_a?(Array)
 
-    raise StandardError('Checked must be an array') unless checked.is_a?(Array)
-
-    checked.map(&:to_sym).each do |field|
+    checked = unsanitized_checked.map(&:to_sym)
+    checked.each do |field|
       raise StandardError("Unknown field '#{field}' for '#{data_type}'") unless ALL_FIELDS_NAMES[data_type].keys.include?(field)
     end
 
