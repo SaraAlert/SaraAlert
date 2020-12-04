@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 2020_11_27_160411) do
   create_table "blocked_numbers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "phone_number", null: false
     t.index ["phone_number"], name: "index_blocked_phone_number"
+  end
 
   create_table "audits", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "auditable_id"
