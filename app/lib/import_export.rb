@@ -174,7 +174,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
         end
       end
-      return p.to_stream
+      return Base64.encode64(p.to_stream.read)
     end
   end
 

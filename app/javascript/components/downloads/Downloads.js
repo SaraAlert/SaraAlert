@@ -43,7 +43,7 @@ class Downloads extends React.Component {
               will be invalid if you attempt another export of this type before retrieving the file(s). Exports will not work if forwarded to another user. You
               must be logged into Sara Alert to access exports.
             </p>
-            <a href={this.props.export_url} target="_blank" rel="noreferrer" onClick={this.exportDownloaded}>
+            <a href={this.props.export_url} target="_blank" rel="noreferrer" onClick={this.exportDownloaded} id={this.props.download.filename}>
               <Button className="mx-1" size="md">
                 <i className="fas fa-download"></i>
                 &nbsp;Download Export - {this.props.download.filename}

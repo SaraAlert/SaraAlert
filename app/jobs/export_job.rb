@@ -40,7 +40,7 @@ class ExportJob < ApplicationJob
       content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       download = create_download(user_id,
                                  excel_export_full_history(patients),
-                                 build_filename('Sara-Alert-Full-Export-Monitorees', 'xlsx'),
+                                 build_filename('Sara-Alert-Full-Export-All', 'xlsx'),
                                  export_type,
                                  content_type)
     when 'full_history_purgeable'
@@ -48,7 +48,7 @@ class ExportJob < ApplicationJob
       content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       download = create_download(user_id,
                                  excel_export_full_history(patients),
-                                 build_filename('Sara-Alert-Purge-Eligible-Export-Monitorees', 'xlsx'),
+                                 build_filename('Sara-Alert-Full-Export-Purge-Eligible', 'xlsx'),
                                  export_type,
                                  content_type)
     end

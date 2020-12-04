@@ -15,7 +15,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   def verify_line_list_csv(user_label, workflow)
     current_user = @@system_test_utils.get_user(user_label)
     download_file(current_user, "csv_#{workflow}")
-    csv = get_csv("Sara-Alert-Linelist-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-????-??-??T??_??_?????_??-?.csv")
+    csv = get_csv("Sara-Alert-Linelist-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-????-??-??T??-??-??-??-??.csv")
     patients = current_user.jurisdiction.all_patients.where(isolation: workflow == :isolation).order(:id)
     verify_line_list_export(csv, LINELIST_HEADERS, patients)
   end
@@ -23,31 +23,25 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   def verify_sara_alert_format(user_label, workflow)
     current_user = @@system_test_utils.get_user(user_label)
     download_file(current_user, "sara_format_#{workflow}")
-    xlsx = get_xlsx("Sara-Alert-Format-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-????-??-??T??_??_?????_??-?.xlsx")
+    xlsx = get_xlsx("Sara-Alert-Format-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-????-??-??T??-??-??-??-??.xlsx")
     patients = current_user.jurisdiction.all_patients.where(isolation: workflow == :isolation).order(:id)
     verify_sara_alert_format_export(xlsx, patients)
   end
 
   def verify_excel_purge_eligible_monitorees(user_label)
     current_user = @@system_test_utils.get_user(user_label)
-    download_comprehensive_export_files(current_user, 'full_history_purgeable')
-    xlsx_monitorees = get_xlsx('Sara-Alert-Purge-Eligible-Export-Monitorees-????-??-??T??_??_?????_??-?.xlsx')
-    xlsx_assessments = get_xlsx('Sara-Alert-Purge-Eligible-Export-Assessments-????-??-??T??_??_?????_??-?.xlsx')
-    xlsx_lab_results = get_xlsx('Sara-Alert-Purge-Eligible-Export-Lab-Results-????-??-??T??_??_?????_??-?.xlsx')
-    xlsx_histories = get_xlsx('Sara-Alert-Purge-Eligible-Export-Histories-????-??-??T??_??_?????_??-?.xlsx')
+    download_file(current_user, 'full_history_purgeable')
+    xlsx = get_xlsx('Sara-Alert-Full-Export-Purge-Eligible-????-??-??T??-??-??-??-??.xlsx')
     patients = current_user.jurisdiction.all_patients.purge_eligible.order(:id)
-    verify_excel_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_histories, patients)
+    verify_excel_export(xlsx, xlsx, xlsx, xlsx, patients)
   end
 
   def verify_excel_all_monitorees(user_label)
     current_user = @@system_test_utils.get_user(user_label)
-    download_comprehensive_export_files(current_user, 'full_history_all')
-    xlsx_monitorees = get_xlsx('Sara-Alert-Full-Export-Monitorees-????-??-??T??_??_?????_??-?.xlsx')
-    xlsx_assessments = get_xlsx('Sara-Alert-Full-Export-Assessments-????-??-??T??_??_?????_??-?.xlsx')
-    xlsx_lab_results = get_xlsx('Sara-Alert-Full-Export-Lab-Results-????-??-??T??_??_?????_??-?.xlsx')
-    xlsx_histories = get_xlsx('Sara-Alert-Full-Export-Histories-????-??-??T??_??_?????_??-?.xlsx')
+    download_file(current_user, 'full_history_all')
+    xlsx = get_xlsx('Sara-Alert-Full-Export-All-????-??-??T??-??-??-??-??.xlsx')
     patients = current_user.jurisdiction.all_patients.order(:id)
-    verify_excel_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_histories, patients)
+    verify_excel_export(xlsx, xlsx, xlsx, xlsx, patients)
   end
 
   def verify_excel_single_monitoree(patient_id)
@@ -186,23 +180,13 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def download_comprehensive_export_files(current_user, export_type)
-    sleep(0.5) # wait for export and download to complete
-    download_monitorees = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).first
-    download_assessments = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).second
-    download_lab_results = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).third
-    download_histories = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).fourth
-    visit "/export/download/#{download_monitorees.lookup}"
-    visit "/export/download/#{download_assessments.lookup}"
-    visit "/export/download/#{download_lab_results.lookup}"
-    visit "/export/download/#{download_histories.lookup}"
-    [download_monitorees.filename, download_assessments.filename, download_lab_results.filename, download_histories.filename]
-  end
-
   def download_file(current_user, export_type)
     sleep(0.5) # wait for export and download to complete
     download = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).first
-    visit "/export/download/#{download.lookup}"
+    visit "/export/download/#{download.id}"
+    Sidekiq::Testing.fake! do
+      click_link(download.filename)
+    end
     download.filename
   end
 
