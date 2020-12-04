@@ -12,7 +12,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   USER_PASSWORD = '1234567ab!'
   DOWNLOAD_PATH = Rails.root.join('tmp/downloads')
 
-  ENROLLMENT_SUBMISSION_DELAY = 5 # wait for submission alert animation to finish
+  ENROLLMENT_SUBMISSION_DELAY = 6 # wait for submission alert animation to finish
   ENROLLMENT_PAGE_TRANSITION_DELAY = 1 # wait for carousel animation to finish
   POP_UP_ALERT_ANIMATION_DELAY = 1 # wait for alert to pop up or dismiss
   MODAL_ANIMATION_DELAY = 0.5 # wait for modal to load
