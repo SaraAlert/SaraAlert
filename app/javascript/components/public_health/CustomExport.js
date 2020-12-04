@@ -36,7 +36,8 @@ class CustomExport extends React.Component {
           format: props.preset?.config?.format || 'xlsx',
           data: _.mapValues(props.options, (settings, type) => {
             return {
-              checked: _.get(props.preset, ['config', 'data', type, 'checked']) || settings?.checked || [],
+              // checked: _.get(props.preset, ['config', 'data', type, 'checked']) || settings?.checked || [],
+              checked: _.get(props.preset, ['config', 'data', type, 'checked']) || [],
               expanded: _.get(props.preset, ['config', 'data', type, 'expanded']) || settings?.expanded || [],
               query: _.get(props.preset, ['config', 'data', type, 'query']) || type === 'patients' ? _.clone(props.patient_query) : {},
             };
@@ -114,16 +115,6 @@ class CustomExport extends React.Component {
         </Modal.Header>
         <Modal.Body className="p-1">
           <Row className="mx-3 py-2">
-            <Col md={14} className="px-0 py-1">
-              <PatientsFilters
-                authenticity_token={this.props.authenticity_token}
-                jurisdiction_paths={this.props.jurisdiction_paths}
-                jurisdiction={this.props.jurisdiction}
-                query={this.state.preset?.config?.data?.patients?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.patients.query.${field}`, value, cb)}
-                disabled={this.state.preset?.config?.data?.patients?.checked?.length === 0}
-              />
-            </Col>
             <Col md={10} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.patients?.nodes}
@@ -135,15 +126,18 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-          </Row>
-          <Row className="mx-3 py-1 g-border-top">
             <Col md={14} className="px-0 py-1">
-              <AssessmentsFilters
-                query={this.state.preset?.config?.data?.assessments?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.assessments.query.${field}`, value, cb)}
-                disabled={this.state.preset?.config?.data?.assessments?.checked?.length === 0}
+              <PatientsFilters
+                authenticity_token={this.props.authenticity_token}
+                jurisdiction_paths={this.props.jurisdiction_paths}
+                jurisdiction={this.props.jurisdiction}
+                query={this.state.preset?.config?.data?.patients?.query}
+                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.patients.query.${field}`, value, cb)}
+                // disabled={this.state.preset?.config?.data?.patients?.checked?.length === 0}
               />
             </Col>
+          </Row>
+          <Row className="mx-3 py-1 g-border-top">
             <Col md={10} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.assessments?.nodes}
@@ -155,15 +149,16 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
+            {this.state.preset?.config?.data?.assessments?.checked?.length > 0 && (
+              <Col md={14} className="px-0 py-1">
+                <AssessmentsFilters
+                  query={this.state.preset?.config?.data?.assessments?.query}
+                  onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.assessments.query.${field}`, value, cb)}
+                />
+              </Col>
+            )}
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md={14} className="px-0 py-1">
-              <LaboratoriesFilters
-                query={this.state.preset?.config?.data?.laboratories?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.laboratories.query.${field}`, value, cb)}
-                disabled={this.state.preset?.config?.data?.laboratories?.checked?.length === 0}
-              />
-            </Col>
             <Col md={10} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.laboratories?.nodes}
@@ -175,15 +170,16 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
+            {this.state.preset?.config?.data?.laboratories?.checked?.length > 0 && (
+              <Col md={14} className="px-0 py-1">
+                <LaboratoriesFilters
+                  query={this.state.preset?.config?.data?.laboratories?.query}
+                  onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.laboratories.query.${field}`, value, cb)}
+                />
+              </Col>
+            )}
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md={14} className="px-0 py-1">
-              <CloseContactsFilters
-                query={this.state.preset?.config?.data?.close_contacts?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.close_contacts.query.${field}`, value, cb)}
-                disabled={this.state.preset?.config?.data?.close_contacts?.checked?.length === 0}
-              />
-            </Col>
             <Col md={10} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.close_contacts?.nodes}
@@ -195,17 +191,16 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
+            {this.state.preset?.config?.data?.close_contacts?.checked?.length > 0 && (
+              <Col md={14} className="px-0 py-1">
+                <CloseContactsFilters
+                  query={this.state.preset?.config?.data?.close_contacts?.query}
+                  onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.close_contacts.query.${field}`, value, cb)}
+                />
+              </Col>
+            )}
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md={14} className="px-0 py-1">
-              <TransfersFilters
-                jurisdiction_paths={this.props.jurisdiction_paths}
-                jurisdiction={this.props.jurisdiction}
-                query={this.state.preset?.config?.data?.transfers?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.transfers.query.${field}`, value, cb)}
-                disabled={this.state.preset?.config?.data?.transfers?.checked?.length === 0}
-              />
-            </Col>
             <Col md={10} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.transfers?.nodes}
@@ -217,15 +212,18 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
+            {this.state.preset?.config?.data?.transfers?.checked?.length > 0 && (
+              <Col md={14} className="px-0 py-1">
+                <TransfersFilters
+                  jurisdiction_paths={this.props.jurisdiction_paths}
+                  jurisdiction={this.props.jurisdiction}
+                  query={this.state.preset?.config?.data?.transfers?.query}
+                  onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.transfers.query.${field}`, value, cb)}
+                />
+              </Col>
+            )}
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col lg={14} className="px-0 py-1">
-              <HistoriesFilters
-                query={this.state.preset?.config?.data?.histories?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.histories.query.${field}`, value, cb)}
-                disabled={this.state.preset?.config?.data?.histories?.checked?.length === 0}
-              />
-            </Col>
             <Col md={10} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.histories?.nodes}
@@ -237,6 +235,14 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
+            {this.state.preset?.config?.data?.histories?.checked?.length > 0 && (
+              <Col lg={14} className="px-0 py-1">
+                <HistoriesFilters
+                  query={this.state.preset?.config?.data?.histories?.query}
+                  onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.histories.query.${field}`, value, cb)}
+                />
+              </Col>
+            )}
           </Row>
           <Row className="mx-3 pt-3 g-border-top">
             <Col lg={7} className="px-1">
