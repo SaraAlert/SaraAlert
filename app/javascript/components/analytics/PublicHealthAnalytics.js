@@ -11,7 +11,7 @@ import Demographics from './widgets/Demographics';
 import ExposureSummary from './widgets/ExposureSummary';
 import PreferredReportingMethod from './widgets/PreferredReportingMethod';
 import reportError from '../util/ReportError';
-import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
+import MonitoreesByEventDate from './widgets/MonitoreesByEventDate';
 import GeographicSummary from './widgets/GeographicSummary';
 
 class PublicHealthAnalytics extends React.Component {
@@ -127,7 +127,7 @@ class PublicHealthAnalytics extends React.Component {
           </Row>
           <Row className="mb-1 mx-2 px-0">
             <Col md="24" className="mx-0 px-0">
-              <MonitoreesByDateOfExposure stats={this.props.stats} />
+              <MonitoreesByEventDate stats={this.props.stats} />
             </Col>
           </Row>
           <Row className="mb-5 pb-3 mx-2 px-0 pt-4">
