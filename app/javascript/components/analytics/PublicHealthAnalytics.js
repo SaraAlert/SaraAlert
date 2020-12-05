@@ -91,7 +91,6 @@ class PublicHealthAnalytics extends React.Component {
             </Col>
           </Row>
           <Row className="mx-2 mt-2 px-0">
-            {/* <Col md="24" className="mx-0 px-0"> */}
             <Col xs="20">
               <span className="display-5">Epidemiological Summary</span>
             </Col>
