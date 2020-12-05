@@ -280,7 +280,6 @@ class PublicHealthController < ApplicationController
     %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
   end
 
-  # rubocop:disable Metrics/MethodLength
   def advanced_filter(patients, filters)
     filters.each do |filter|
       case filter[:filterOption]['name']
@@ -303,20 +302,9 @@ class PublicHealthController < ApplicationController
       when 'preferred-contact-method'
         patients = patients.where(preferred_contact_method: filter[:value].blank? ? [nil, ''] : filter[:value])
       when 'latest-report'
-        case filter[:dateOption]
-        when 'before'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(latest_assessment_at) < ?', compare_date)
-        when 'after'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(latest_assessment_at) > ?', compare_date)
-        when 'within'
-          compare_date_start = Chronic.parse(filter[:value][:start])
-          compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('Date(latest_assessment_at) > ?', compare_date_start).where('Date(latest_assessment_at) < ?', compare_date_end)
-        end
+        patients = advanced_filter_date(patients, :latest_assessment_at, filter)
       when 'latest-report-relative'
-        patients = advanced_filter_latest_report_relative(patients, filter)
+        patients = advanced_filter_relative_date(patients, :latest_assessment_at, filter)
       when 'hoh'
         patients = if filter[:value]
                      patients.where('patients.id = patients.responder_id')
@@ -330,50 +318,17 @@ class PublicHealthController < ApplicationController
                      patients.where('patients.id = patients.responder_id')
                    end
       when 'enrolled'
-        case filter[:dateOption]
-        when 'before'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(patients.created_at) < ?', compare_date)
-        when 'after'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(patients.created_at) > ?', compare_date)
-        when 'within'
-          compare_date_start = Chronic.parse(filter[:value][:start])
-          compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('Date(patients.created_at) > ?', compare_date_start).where('Date(patients.created_at) < ?', compare_date_end)
-        end
+        patients = advanced_filter_date(patients, :created_at, filter)
       when 'enrolled-relative'
-        patients = advanced_filter_enrolled_relative(patients, filter)
+        patients = advanced_filter_relative_date(patients, :created_at, filter)
       when 'last-date-exposure'
-        case filter[:dateOption]
-        when 'before'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(last_date_of_exposure) < ?', compare_date)
-        when 'after'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(last_date_of_exposure) > ?', compare_date)
-        when 'within'
-          compare_date_start = Chronic.parse(filter[:value][:start])
-          compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('Date(last_date_of_exposure) > ?', compare_date_start).where('Date(last_date_of_exposure) < ?', compare_date_end)
-        end
+        patients = advanced_filter_date(patients, :last_date_of_exposure, filter)
       when 'last-date-exposure-relative'
-        patients = advanced_filter_lde_relative(patients, filter)
+        patients = advanced_filter_relative_date(patients, :last_date_of_exposure, filter)
       when 'symptom-onset'
-        case filter[:dateOption]
-        when 'before'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(symptom_onset) < ?', compare_date)
-        when 'after'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(symptom_onset) > ?', compare_date)
-        when 'within'
-          compare_date_start = Chronic.parse(filter[:value][:start])
-          compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('Date(symptom_onset) > ?', compare_date_start).where('Date(symptom_onset) < ?', compare_date_end)
-        end
+        patients = advanced_filter_date(patients, :symptom_onset, filter)
       when 'symptom-onset-relative'
-        patients = advanced_filter_symptom_onset_relative(patients, filter)
+        patients = advanced_filter_relative_date(patients, :symptom_onset, filter)
       when 'continous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
       when 'telephone-number'
@@ -467,20 +422,12 @@ class PublicHealthController < ApplicationController
       when 'preferred-contact-time'
         patients = patients.where(preferred_contact_time: filter[:value].blank? ? [nil, ''] : filter[:value])
       when 'manual-contact-attempts'
-        operator = :==
-        case filter[:value][:operator]
         # less/greater-than operators are flipped for where_assoc_count
-        when 'less-than'
-          operator = :>
-        when 'less-than-equal'
-          operator = :>=
-        when 'equal'
-          operator = :==
-        when 'greater-than-equal'
-          operator = :<=
-        when 'greater-than'
-          operator = :<
-        end
+        operator = :==
+        operator = :> if filter[:value][:operator] == 'less-than'
+        operator = :>= if filter[:value][:operator] == 'less-than-equal'
+        operator = :<= if filter[:value][:operator] == 'greater-than-equal'
+        operator = :< if filter[:value][:operator] == 'greater-than'
         case filter[:value][:option]
         when 'Successful'
           patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts, successful: true)
@@ -493,161 +440,62 @@ class PublicHealthController < ApplicationController
     end
     patients
   end
-  # rubocop:enable Metrics/MethodLength
 
-  def advanced_filter_enrolled_relative(patients, filter)
-    case filter[:relativeOption]
-    when 'today'
-      patients = patients.where('Date(patients.created_at) = ?', Date.today)
-    when 'tomorrow'
-      patients = patients.where('Date(patients.created_at) = ?', Date.tomorrow)
-    when 'yesterday'
-      patients = patients.where('Date(patients.created_at) = ?', Date.yesterday)
-    when 'custom'
-      case filter[:value][:when]
-      when 'past'
-        case filter[:value][:unit]
-        when 'days'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(patients.created_at) >= ?', number.days.ago.to_date).where('Date(patients.created_at) <= ?', Date.today)
-        when 'weeks'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(patients.created_at) >= ?', number.weeks.ago.to_date).where('Date(patients.created_at) <= ?', Date.today)
-        when 'months'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(patients.created_at) >= ?', number.months.ago.to_date).where('Date(patients.created_at) <= ?', Date.today)
-        end
-      when 'next'
-        case filter[:value][:unit]
-        when 'days'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(patients.created_at) <= ?', number.days.from_now.to_date).where('Date(patients.created_at) >= ?', Date.today)
-        when 'weeks'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(patients.created_at) <= ?', number.weeks.from_now.to_date).where('Date(patients.created_at) >= ?', Date.today)
-        when 'months'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(patients.created_at) <= ?', number.months.from_now.to_date).where('Date(patients.created_at) >= ?', Date.today)
-        end
-      end
+  def advanced_filter_date(patients, field, filter)
+    return patients unless filter.dig(:value, :tzOffset).present?
+
+    timeframe = { after: Chronic.parse(filter[:value]).end_of_day } if filter[:dateOption] == 'after'
+    timeframe = { before: Chronic.parse(filter[:value]).beginning_of_day } if filter[:dateOption] == 'before'
+    if filter[:dateOption] == 'within'
+      timeframe = { after: Chronic.parse(filter[:value][:start]).beginning_of_day, before: Chronic.parse(filter[:value][:end]).end_of_day }
     end
+
+    if timeframe[:after].present?
+      # probably need to adjust for local timezone?
+      after = timeframe[:after]
+      patients = patients.where('created_at >= ?', after) if field == :created_at
+      patients = patients.where('latest_assessment_at >= ?', after) if field == :latest_assessment_at
+      patients = patients.where('last_date_of_exposure >= ?', after) if field == :last_date_of_exposure
+      patients = patients.where('symptom_onset >= ?', after) if field == :symptom_onset
+    end
+
+    if timeframe[:before].present?
+      # probabbly need to adjust for local timezone?
+      before = timeframe[:before]
+      patients = patients.where('created_at <= ?', before) if field == :created_at
+      patients = patients.where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
+      patients = patients.where('last_date_of_exposure <= ?', before) if field == :last_date_of_exposure
+      patients = patients.where('symptom_onset <= ?', before) if field == :symptom_onset
+    end
+
     patients
   end
 
-  def advanced_filter_latest_report_relative(patients, filter)
-    case filter[:relativeOption]
-    when 'today'
-      patients = patients.where('Date(latest_assessment_at) = ?', Date.today)
-    when 'tomorrow'
-      patients = patients.where('Date(latest_assessment_at) = ?', Date.tomorrow)
-    when 'yesterday'
-      patients = patients.where('Date(latest_assessment_at) = ?', Date.yesterday)
-    when 'custom'
-      case filter[:value][:when]
-      when 'past'
-        case filter[:value][:unit]
-        when 'days'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(latest_assessment_at) >= ?', number.days.ago.to_date).where('Date(latest_assessment_at) <= ?', Date.today)
-        when 'weeks'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(latest_assessment_at) >= ?', number.weeks.ago.to_date).where('Date(latest_assessment_at) <= ?', Date.today)
-        when 'months'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(latest_assessment_at) >= ?', number.months.ago.to_date).where('Date(latest_assessment_at) <= ?', Date.today)
-        end
-      when 'next'
-        case filter[:value][:unit]
-        when 'days'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(latest_assessment_at) <= ?', number.days.from_now.to_date).where('Date(latest_assessment_at) >= ?', Date.today)
-        when 'weeks'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(latest_assessment_at) <= ?', number.weeks.from_now.to_date).where('Date(latest_assessment_at) >= ?', Date.today)
-        when 'months'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(latest_assessment_at) <= ?', number.months.from_now.to_date).where('Date(latest_assessment_at) >= ?', Date.today)
-        end
-      end
-    end
-    patients
-  end
+  def advanced_filter_relative_date(patients, field, filter)
+    return patients unless filter.dig(:value, :tzOffset).present?
 
-  def advanced_filter_lde_relative(patients, filter)
-    case filter[:relativeOption]
-    when 'today'
-      patients = patients.where('Date(last_date_of_exposure) = ?', Date.today)
-    when 'tomorrow'
-      patients = patients.where('Date(last_date_of_exposure) = ?', Date.tomorrow)
-    when 'yesterday'
-      patients = patients.where('Date(last_date_of_exposure) = ?', Date.yesterday)
-    when 'custom'
-      case filter[:value][:when]
-      when 'past'
-        case filter[:value][:unit]
-        when 'days'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(last_date_of_exposure) >= ?', number.days.ago.to_date).where('Date(last_date_of_exposure) <= ?', Date.today)
-        when 'weeks'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(last_date_of_exposure) >= ?', number.weeks.ago.to_date).where('Date(last_date_of_exposure) <= ?', Date.today)
-        when 'months'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(last_date_of_exposure) >= ?', number.months.ago.to_date).where('Date(last_date_of_exposure) <= ?', Date.today)
-        end
-      when 'next'
-        case filter[:value][:unit]
-        when 'days'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(last_date_of_exposure) <= ?', number.days.from_now.to_date).where('Date(last_date_of_exposure) >= ?', Date.today)
-        when 'weeks'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(last_date_of_exposure) <= ?', number.weeks.from_now.to_date).where('Date(last_date_of_exposure) >= ?', Date.today)
-        when 'months'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(last_date_of_exposure) <= ?', number.months.from_now.to_date).where('Date(last_date_of_exposure) >= ?', Date.today)
-        end
-      end
-    end
-    patients
-  end
+    timeframe = { after: Date.today.beginning_of_day, before: Date.today.end_of_day } if filter[:relativeOption] == 'today'
+    timeframe = { after: Date.today.beginning_of_day + 1.day, before: Date.today.end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
+    timeframe = { after: Date.today.beginning_of_day - 1.day, before: Date.today.end_of_day - 1.day } if filter[:relativeOption] == 'yesterday'
+    if filter[:relativeOption] == 'custom'
+      timespan = filter[:value][:number].to_i.days if filter[:value][:unit] == 'days'
+      timespan = filter[:value][:number].to_i.weeks if filter[:value][:unit] == 'weeks'
+      timespan = filter[:value][:number].to_i.months if filter[:value][:unit] == 'months'
+      return patients if timespan.nil?
 
-  def advanced_filter_symptom_onset_relative(patients, filter)
-    case filter[:relativeOption]
-    when 'today'
-      patients = patients.where('Date(symptom_onset) = ?', Date.today)
-    when 'tomorrow'
-      patients = patients.where('Date(symptom_onset) = ?', Date.tomorrow)
-    when 'yesterday'
-      patients = patients.where('Date(symptom_onset) = ?', Date.yesterday)
-    when 'custom'
-      case filter[:value][:when]
-      when 'past'
-        case filter[:value][:unit]
-        when 'days'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(symptom_onset) >= ?', number.days.ago.to_date).where('Date(symptom_onset) <= ?', Date.today)
-        when 'weeks'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(symptom_onset) >= ?', number.weeks.ago.to_date).where('Date(symptom_onset) <= ?', Date.today)
-        when 'months'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(symptom_onset) >= ?', number.months.ago.to_date).where('Date(symptom_onset) <= ?', Date.today)
-        end
-      when 'next'
-        case filter[:value][:unit]
-        when 'days'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(symptom_onset) <= ?', number.days.from_now.to_date).where('Date(symptom_onset) >= ?', Date.today)
-        when 'weeks'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(symptom_onset) <= ?', number.weeks.from_now.to_date).where('Date(symptom_onset) >= ?', Date.today)
-        when 'months'
-          number = filter[:value][:number].to_i
-          patients = patients.where('Date(symptom_onset) <= ?', number.months.from_now.to_date).where('Date(symptom_onset) >= ?', Date.today)
-        end
-      end
+      timeframe = { after: timespan.ago.beginning_of_day, before: Time.now } if filter[:value][:when] == 'past'
+      timeframe = { after: Time.now, before: timespan.from_now.end_of_day } if filter[:value][:when] == 'next'
     end
+    return patients if timeframe.nil?
+
+    # need to adjust for local timezone
+    after = timeframe[:after] - (1 - (filter.dig(:value, :tzOffset)&.to_i&.minutes || 0))
+    before = timeframe[:before] - (1 - (filter.dig(:value, :tzOffset)&.to_i&.minutes || 0))
+
+    patients = patients.where('created_at >= ?', after).where('created_at <= ?', before) if field == :created_at
+    patients = patients.where('latest_assessment_at >= ?', after).where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
+    patients = patients.where('last_date_of_exposure >= ?', after).where('last_date_of_exposure <= ?', before) if field == :last_date_of_exposure
+    patients = patients.where('symptom_onset >= ?', after).where('symptom_onset <= ?', before) if field == :symptom_onset
     patients
   end
 
