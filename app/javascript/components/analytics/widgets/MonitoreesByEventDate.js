@@ -1,18 +1,22 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card, Form, Col, Row } from 'react-bootstrap';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import _ from 'lodash';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
+const GRAPH_CONFIGS = [
+  { dataKey: 'Exposure', fill: '#557385', legendText: 'Last Date of Exposure' },
+  { dataKey: 'Isolation', fill: '#cbcfd2', legendText: 'Symptom Onset Date' },
+];
 let DATES_OF_INTEREST = []; // If certain dates are desired, they can be specified here
 
-class MonitoreesByDateOfExposure extends React.Component {
+class MonitoreesByEventDate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       graphData: {},
-      lastExposureDateDate: [],
+      lastDateInQuestion: [],
     };
   }
 
@@ -57,10 +61,11 @@ class MonitoreesByDateOfExposure extends React.Component {
   }
 
   render() {
+    console.log(this.state.graphData);
     return (
       <React.Fragment>
         <Card className="card-square text-center mt-4">
-          <div className="analytics-card-header font-weight-bold h5"> Monitorees by Date of Last Exposure ​</div>
+          <div className="analytics-card-header font-weight-bold h5"> Monitorees by Event Date ​</div>
           <Card.Body className="mt-4">
             <Form.Row className="justify-content-md-center">
               <Form.Group as={Col} md="8" onChange={val => this.setTimeResolution(val.target.value)}>
@@ -72,49 +77,22 @@ class MonitoreesByDateOfExposure extends React.Component {
                 </Form.Control>
               </Form.Group>
             </Form.Row>
-            <Row className="mx-2 mt-2 px-0">
-              <Col xs="12">
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart
-                    width={500}
-                    height={300}
-                    data={this.state.graphData[0]}
-                    margin={{
-                      top: 20,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="Exposure" stackId="a" fill="#557385" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Col>
-              <Col xs="12">
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart
-                    width={500}
-                    height={300}
-                    data={this.state.graphData[1]}
-                    margin={{
-                      top: 20,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="Isolation" stackId="a" fill="#cbcfd2" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Col>
+            <Row className="mx-2 px-0">
+              {GRAPH_CONFIGS.map((val, index) => (
+                <Col xs="12" key={index}>
+                  <div className="font-weight-bold h5 ml-5"> {val.dataKey} Workflow </div>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <BarChart width={500} height={300} data={this.state.graphData[Number(index)]} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey={val.dataKey} stackId="a" fill={val.fill} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div className="font-weight-bold h6 ml-5 mb-2"> {val.legendText} </div>
+                </Col>
+              ))}
             </Row>
             <div className="text-secondary text-right">
               <i className="fas fa-exclamation-circle mr-1"></i>
@@ -127,8 +105,8 @@ class MonitoreesByDateOfExposure extends React.Component {
   }
 }
 
-MonitoreesByDateOfExposure.propTypes = {
+MonitoreesByEventDate.propTypes = {
   stats: PropTypes.object,
 };
 
-export default MonitoreesByDateOfExposure;
+export default MonitoreesByEventDate;
