@@ -38,7 +38,12 @@ class AdvancedFilter extends React.Component {
           type: 'option',
           options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', ''],
         },
-        { name: 'latest-report', title: 'Latest Report (Date)', description: 'Monitorees with latest report during specified date range', type: 'date' },
+        {
+          name: 'latest-report',
+          title: 'Latest Report (Date)',
+          description: 'Monitorees with latest report during specified date range',
+          type: 'date',
+        },
         {
           name: 'latest-report-relative',
           title: 'Latest Report (Relative Date)',
@@ -52,7 +57,12 @@ class AdvancedFilter extends React.Component {
           description: 'Monitorees that are in a household but not the Head of Household',
           type: 'boolean',
         },
-        { name: 'enrolled', title: 'Enrolled (Date)', description: 'Monitorees enrolled in system during specified date range', type: 'date' },
+        {
+          name: 'enrolled',
+          title: 'Enrolled (Date)',
+          description: 'Monitorees enrolled in system during specified date range',
+          type: 'date',
+        },
         {
           name: 'enrolled-relative',
           title: 'Enrolled (Relative Date)',
@@ -275,9 +285,15 @@ class AdvancedFilter extends React.Component {
       };
     } else if (filterOption.type === 'date') {
       // Default to "within" type
-      value = { start: moment().add(-72, 'hours'), end: moment() };
+      value = {
+        start: moment()
+          .add(-72, 'hours')
+          .format('YYYY-MM-DD'),
+        end: moment().format('YYYY-MM-DD'),
+        tzOffset: new Date().getTimezoneOffset(),
+      };
     } else if (filterOption.type === 'relative') {
-      value = { number: 1, unit: 'days', when: 'past' };
+      value = { number: 1, unit: 'days', when: 'past', tzOffset: new Date().getTimezoneOffset() };
     } else if (filterOption.type === 'search') {
       value = '';
     }
@@ -296,9 +312,18 @@ class AdvancedFilter extends React.Component {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     let defaultValue = null;
     if (value === 'within') {
-      defaultValue = { start: moment().add(-72, 'hours'), end: moment() };
+      defaultValue = {
+        start: moment()
+          .add(-72, 'hours')
+          .format('YYYY-MM-DD'),
+        end: moment().format('YYYY-MM-DD'),
+        tzOffset: new Date().getTimezoneOffset(),
+      };
     } else {
-      defaultValue = moment();
+      defaultValue = {
+        date: moment().format('YYYY-MM-DD'),
+        tzOffset: new Date().getTimezoneOffset(),
+      };
     }
     activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: defaultValue, dateOption: value };
     this.setState({ activeFilterOptions });
@@ -668,7 +693,7 @@ class AdvancedFilter extends React.Component {
                         <DateInput
                           date={value.start}
                           onChange={date => {
-                            this.changeValue(index, { start: date, end: value.end });
+                            this.changeValue(index, { start: date, end: value.end, tzOffset: new Date().getTimezoneOffset() });
                           }}
                           placement="bottom"
                           customClass="form-control-md"
@@ -687,7 +712,7 @@ class AdvancedFilter extends React.Component {
                         <DateInput
                           date={value.end}
                           onChange={date => {
-                            this.changeValue(index, { start: value.start, end: date });
+                            this.changeValue(index, { start: value.start, end: date, tzOffset: new Date().getTimezoneOffset() });
                           }}
                           placement="bottom"
                           customClass="form-control-md"
@@ -717,7 +742,12 @@ class AdvancedFilter extends React.Component {
                         as="select"
                         value={value.when}
                         onChange={event => {
-                          this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
+                          this.changeValue(index, {
+                            number: value.number,
+                            unit: value.unit,
+                            when: event.target.value,
+                            tzOffset: new Date().getTimezoneOffset(),
+                          });
                         }}>
                         <option value="past">past</option>
                         <option value="next">next</option>
@@ -728,7 +758,9 @@ class AdvancedFilter extends React.Component {
                         value={value.number}
                         type="number"
                         min="1"
-                        onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
+                        onChange={event =>
+                          this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when, tzOffset: new Date().getTimezoneOffset() })
+                        }
                       />
                     </Col>
                     <Col md="6" className="pr-0">
@@ -736,7 +768,12 @@ class AdvancedFilter extends React.Component {
                         as="select"
                         value={value.unit}
                         onChange={event => {
-                          this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
+                          this.changeValue(index, {
+                            number: value.number,
+                            unit: event.target.value,
+                            when: value.when,
+                            tzOffset: new Date().getTimezoneOffset(),
+                          });
                         }}>
                         <option value="days">day(s)</option>
                         <option value="weeks">week(s)</option>

@@ -15,7 +15,8 @@ class UserFiltersController < ApplicationController
       {
         filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
         value: filter.permit(:value)[:value] || filter.require(:value) || false,
-        dateOption: filter.permit(:dateOption)[:dateOption]
+        dateOption: filter.permit(:dateOption)[:dateOption],
+        relativeOption: filter.permit(:relativeOption)[:relativeOption]
       }
     end
     name = params.require(:name)
@@ -27,7 +28,8 @@ class UserFiltersController < ApplicationController
       {
         filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
         value: filter.permit(:value)[:value] || filter.require(:value) || false,
-        dateOption: filter.permit(:dateOption)[:dateOption]
+        dateOption: filter.permit(:dateOption)[:dateOption],
+        relativeOption: filter.permit(:relativeOption)[:relativeOption]
       }
     end
     user_filter = current_user.user_filters.find_by(id: params.permit(:id)[:id])

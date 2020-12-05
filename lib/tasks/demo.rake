@@ -820,6 +820,6 @@ namespace :demo do
   end
 
   def create_fake_timestamp(from, to)
-    Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :day)
+    Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
   end
 end
