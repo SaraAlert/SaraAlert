@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card } from 'react-bootstrap';
+import { Card, Col, Row } from 'react-bootstrap';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import _ from 'lodash';
 
@@ -79,146 +79,44 @@ class Demographics extends React.Component {
     });
 
   renderBarGraphs = () => (
-    <div className="mx-3 mt-5">
-      {this.barGraphData.map((graphData, i) => (
-        <div key={i}>
-          <h4 className="text-left">{graphData.title}</h4>
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart
-              width={500}
-              height={300}
-              data={graphData.data}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="Exposure" stackId="a" fill="#557385" />
-              <Bar dataKey="Isolation" stackId="a" fill="#cbcfd2" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      ))}
-    </div>
+    <Card.Body className="mt-4">
+      <Row>
+        {this.barGraphData.map((graphData, i) => (
+          <Col md="12" key={i}>
+            <div className="mx-3 mt-3">
+              <h4 className="text-center">{graphData.title}</h4>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart
+                  width={500}
+                  height={300}
+                  data={graphData.data}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="Exposure" stackId="a" fill="#557385" />
+                  <Bar dataKey="Isolation" stackId="a" fill="#cbcfd2" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Col>
+        ))}
+      </Row>
+    </Card.Body>
   );
 
   renderTables = () => (
-    <Card.Body className="mt-5">
-      <h4 className="text-left">Age (Years)</h4>
-      <table className="analytics-table">
-        <thead>
-          <tr>
-            <th className="py-0"></th>
-            {WORKFLOWS.map((header, index) => (
-              <th key={index} className="font-weight-bold">
-                {' '}
-                <u>{_.upperCase(header)}</u>{' '}
-              </th>
-            ))}
-            <th>Total</th>
-          </tr>
-        </thead>
-        {_.initial(AGEGROUPS).map((val, index1) => (
-          <tbody key={`workflow-table-${index1}`}>
-            <tr className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
-              <td className="font-weight-bold"> {val} </td>
-              {this.ageData[Number(index1)].map((data, subIndex1) => (
-                <td key={subIndex1}> {data} </td>
-              ))}
-            </tr>
-          </tbody>
-        ))}
-      </table>
-      {this.hasFakeBirthdateData && (
-        <div className="text-secondary fake-demographic-text mb-3">
-          <i className="fas fa-info-circle mr-3"></i>
-          &gt;=80 years category includes {this.numberOfFakeBirthdates} monitorees where age is greater than 110.
-        </div>
-      )}
-      <h4 className="text-left mt-3 mb-n1">Sex</h4>
-      <table className="analytics-table">
-        <thead>
-          <tr>
-            <th className="py-0"></th>
-            {WORKFLOWS.map((header, index) => (
-              <th key={index} className="font-weight-bold">
-                {' '}
-                <u>{_.upperCase(header)}</u>{' '}
-              </th>
-            ))}
-            <th>Total</th>
-          </tr>
-        </thead>
-        {SEXES.map((val, index2) => (
-          <tbody key={`workflow-table-${index2}`}>
-            <tr className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
-              <td className="font-weight-bold"> {val} </td>
-              {this.sexData[Number(index2)].map((data, subIndex2) => (
-                <td key={subIndex2}> {data} </td>
-              ))}
-            </tr>
-          </tbody>
-        ))}
-      </table>
-      <h4 className="text-left mt-3 mb-n1">Race</h4>
-      <table className="analytics-table">
-        <thead>
-          <tr>
-            <th className="py-0"></th>
-            {WORKFLOWS.map((header, index) => (
-              <th key={index} className="font-weight-bold">
-                {' '}
-                <u>{_.upperCase(header)}</u>{' '}
-              </th>
-            ))}
-            <th>Total</th>
-          </tr>
-        </thead>
-        {RACES.map((val, index4) => (
-          <tbody key={`workflow-table-${index4}`}>
-            <tr className={index4 % 2 ? '' : 'analytics-zebra-bg'}>
-              <td className="font-weight-bold"> {val} </td>
-              {this.raceData[Number(index4)].map((data, subIndex4) => (
-                <td key={subIndex4}> {data} </td>
-              ))}
-            </tr>
-          </tbody>
-        ))}
-      </table>
-      <h4 className="text-left mt-3 mb-n1">Ethnicity</h4>
-      <table className="analytics-table">
-        <thead>
-          <tr>
-            <th className="py-0"></th>
-            {WORKFLOWS.map((header, index) => (
-              <th key={index} className="font-weight-bold">
-                {' '}
-                <u>{_.upperCase(header)}</u>{' '}
-              </th>
-            ))}
-            <th>Total</th>
-          </tr>
-        </thead>
-        {ETHNICITIES.map((val, index3) => (
-          <tbody key={`workflow-table-${index3}`}>
-            <tr className={index3 % 2 ? '' : 'analytics-zebra-bg'}>
-              <td className="font-weight-bold"> {val} </td>
-              {this.ethnicityData[Number(index3)].map((data, subIndex3) => (
-                <td key={subIndex3}> {data} </td>
-              ))}
-            </tr>
-          </tbody>
-        ))}
-      </table>
-      {this.showSexualOrientationData && (
-        <div>
-          <h4 className="text-left mt-3 mb-n1">Sexual Orientation</h4>
+    <Card.Body className="mt-4">
+      <Row>
+        <Col md="12">
+          <h4 className="text-left mt-2 mb-n1">Age (Years)</h4>
           <table className="analytics-table">
             <thead>
               <tr>
@@ -232,19 +130,135 @@ class Demographics extends React.Component {
                 <th>Total</th>
               </tr>
             </thead>
-            {SEXUAL_ORIENTATIONS.map((val, index5) => (
-              <tbody key={`workflow-table-${index5}`}>
-                <tr className={index5 % 2 ? '' : 'analytics-zebra-bg'}>
+            {_.initial(AGEGROUPS).map((val, index1) => (
+              <tbody key={`workflow-table-${index1}`}>
+                <tr className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
                   <td className="font-weight-bold"> {val} </td>
-                  {this.soData[Number(index5)].map((data, subIndex5) => (
-                    <td key={subIndex5}> {data} </td>
+                  {this.ageData[Number(index1)].map((data, subIndex1) => (
+                    <td key={subIndex1}> {data} </td>
                   ))}
                 </tr>
               </tbody>
             ))}
           </table>
-        </div>
-      )}
+          {this.hasFakeBirthdateData && (
+            <div className="text-secondary fake-demographic-text mb-3">
+              <i className="fas fa-info-circle mr-3"></i>
+              &gt;=80 years category includes {this.numberOfFakeBirthdates} monitorees where age is greater than 110.
+            </div>
+          )}
+        </Col>
+        <Col md="12">
+          <h4 className="text-left mt-2 mb-n1">Race</h4>
+          <table className="analytics-table">
+            <thead>
+              <tr>
+                <th className="py-0"></th>
+                {WORKFLOWS.map((header, index) => (
+                  <th key={index} className="font-weight-bold">
+                    {' '}
+                    <u>{_.upperCase(header)}</u>{' '}
+                  </th>
+                ))}
+                <th>Total</th>
+              </tr>
+            </thead>
+            {RACES.map((val, index4) => (
+              <tbody key={`workflow-table-${index4}`}>
+                <tr className={index4 % 2 ? '' : 'analytics-zebra-bg'}>
+                  <td className="font-weight-bold"> {val} </td>
+                  {this.raceData[Number(index4)].map((data, subIndex4) => (
+                    <td key={subIndex4}> {data} </td>
+                  ))}
+                </tr>
+              </tbody>
+            ))}
+          </table>
+        </Col>
+        <Col md="12">
+          <h4 className="text-left mt-3 mb-n1">Sex</h4>
+          <table className="analytics-table">
+            <thead>
+              <tr>
+                <th className="py-0"></th>
+                {WORKFLOWS.map((header, index) => (
+                  <th key={index} className="font-weight-bold">
+                    {' '}
+                    <u>{_.upperCase(header)}</u>{' '}
+                  </th>
+                ))}
+                <th>Total</th>
+              </tr>
+            </thead>
+            {SEXES.map((val, index2) => (
+              <tbody key={`workflow-table-${index2}`}>
+                <tr className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
+                  <td className="font-weight-bold"> {val} </td>
+                  {this.sexData[Number(index2)].map((data, subIndex2) => (
+                    <td key={subIndex2}> {data} </td>
+                  ))}
+                </tr>
+              </tbody>
+            ))}
+          </table>
+          <h4 className="text-left mt-3 mb-n1">Ethnicity</h4>
+          <table className="analytics-table">
+            <thead>
+              <tr>
+                <th className="py-0"></th>
+                {WORKFLOWS.map((header, index) => (
+                  <th key={index} className="font-weight-bold">
+                    {' '}
+                    <u>{_.upperCase(header)}</u>{' '}
+                  </th>
+                ))}
+                <th>Total</th>
+              </tr>
+            </thead>
+            {ETHNICITIES.map((val, index3) => (
+              <tbody key={`workflow-table-${index3}`}>
+                <tr className={index3 % 2 ? '' : 'analytics-zebra-bg'}>
+                  <td className="font-weight-bold"> {val} </td>
+                  {this.ethnicityData[Number(index3)].map((data, subIndex3) => (
+                    <td key={subIndex3}> {data} </td>
+                  ))}
+                </tr>
+              </tbody>
+            ))}
+          </table>
+        </Col>
+        <Col md="12">
+          {this.showSexualOrientationData && (
+            <div>
+              <h4 className="text-left mt-3 mb-n1">Sexual Orientation</h4>
+              <table className="analytics-table">
+                <thead>
+                  <tr>
+                    <th className="py-0"></th>
+                    {WORKFLOWS.map((header, index) => (
+                      <th key={index} className="font-weight-bold">
+                        {' '}
+                        <u>{_.upperCase(header)}</u>{' '}
+                      </th>
+                    ))}
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                {SEXUAL_ORIENTATIONS.map((val, index5) => (
+                  <tbody key={`workflow-table-${index5}`}>
+                    <tr className={index5 % 2 ? '' : 'analytics-zebra-bg'}>
+                      <td className="font-weight-bold"> {val} </td>
+                      {this.soData[Number(index5)].map((data, subIndex5) => (
+                        <td key={subIndex5}> {data} </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                ))}
+              </table>
+            </div>
+          )}
+        </Col>
+      </Row>
     </Card.Body>
   );
 

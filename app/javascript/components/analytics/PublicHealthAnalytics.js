@@ -108,7 +108,7 @@ class PublicHealthAnalytics extends React.Component {
               </span>
             </Col>
           </Row>
-          <Row className="mb-4 mx-2 px-0">
+          <Row className="mb-4 mx-1 px-0">
             <Col xs="16">
               <h5 className="text-secondary">Among Those Currently Under Active Monitoring</h5>
             </Col>
@@ -116,20 +116,22 @@ class PublicHealthAnalytics extends React.Component {
               <h5 className="float-right text-secondary">View Data as Graph</h5>
             </Col>
           </Row>
-          <Row className="mb-4 mx-2 px-0">
-            <Col md="12" className="ml-0 pl-0">
+          <Row className="mb-4 mx-1 px-0">
+            <Col className="mx-0 pr-xl-3">
               <Demographics stats={this.props.stats} showGraphs={this.state.showEpidemiologicalGraphs} />
             </Col>
-            <Col md="12" className="mr-0 pr-0">
+          </Row>
+          <Row className="mb-4 mt-4 pt-3 mx-1 px-0">
+            <Col className="mx-0 pr-xl-3">
               <ExposureSummary stats={this.props.stats} showGraphs={this.state.showEpidemiologicalGraphs} />
             </Col>
           </Row>
-          <Row className="mb-1 mx-2 px-0">
-            <Col md="24" className="mx-0 px-0">
+          <Row className="mb-2 pt-4 mx-1 px-0">
+            <Col className="mx-0 pr-xl-3">
               <MonitoreesByEventDate stats={this.props.stats} />
             </Col>
           </Row>
-          <Row className="mb-5 pb-3 mx-2 px-0 pt-4">
+          <Row className="mb-5 pb-3 mx-1 px-0 pt-4">
             <GeographicSummary stats={this.props.stats} />
           </Row>
         </React.Fragment>
