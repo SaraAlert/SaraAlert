@@ -28,6 +28,7 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   WORKFLOWS = %w[Exposure Isolation].freeze
+  MONITORING_STATUSES ||= %w[Symptomatic Non-Reporting Asymptomatic].freeze
   LINELIST_STATUSES = [
     'Exposure Symptomatic',
     'Exposure Non-Reporting',
@@ -100,6 +101,20 @@ class CacheAnalyticsJob < ApplicationJob
               .map do |(age_group, isolation), total|
                 counts.append(monitoree_count(analytic_id, true, 'Age Group', age_group, total, isolation ? 'Isolation' : 'Exposure'))
               end
+    counts
+  end
+
+  def self.monitoree_counts_by_monitoring_status(analytic_id, monitorees)
+    counts = []
+    MONITORING_STATUSES.each do |monitoring_status|
+      monitorees.monitoring_status(monitoring_status)
+                .group(:exposure_risk_assessment)
+                .order(:exposure_risk_assessment)
+                .size
+                .each do |risk_level, total|
+                  counts.append(monitoree_count(analytic_id, true, 'Monitoring Status', monitoring_status, risk_level, total))
+                end
+    end
     counts
   end
 

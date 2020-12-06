@@ -61,10 +61,9 @@ class MonitoreesByEventDate extends React.Component {
   }
 
   render() {
-    console.log(this.state.graphData);
     return (
       <React.Fragment>
-        <Card className="card-square text-center mt-4">
+        <Card className="card-square text-center">
           <div className="analytics-card-header font-weight-bold h5"> Monitorees by Event Date ​</div>
           <Card.Body className="mt-4">
             <Form.Row className="justify-content-md-center">
