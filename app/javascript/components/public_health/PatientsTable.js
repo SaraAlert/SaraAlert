@@ -83,6 +83,7 @@ class PatientsTable extends React.Component {
         search: '',
         page: 0,
         entries: 25,
+        tz_offset: new Date().getTimezoneOffset(),
       },
       entryOptions: [10, 15, 25, 50, 100],
       cancelToken: axios.CancelToken.source(),
