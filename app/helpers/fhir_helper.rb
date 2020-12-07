@@ -42,6 +42,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         }
       )],
       id: patient.id,
+      identifier: [to_statelocal_identifier(patient.user_defined_id_statelocal)],
       active: patient.monitoring,
       name: [FHIR::HumanName.new(given: [patient.first_name, patient.middle_name].reject(&:blank?), family: patient.last_name)],
       telecom: [
@@ -151,7 +152,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       travel_related_notes: from_string_extension(patient, 'travel-related-notes'),
       additional_planned_travel_related_notes: from_string_extension(patient, 'additional-planned-travel-notes'),
       primary_telephone_type: from_primary_phone_type_extension(patient),
-      secondary_telephone_type: from_secondary_phone_type_extension(patient)
+      secondary_telephone_type: from_secondary_phone_type_extension(patient),
+      user_defined_id_statelocal: from_statelocal_id_extension(patient)
     }
   end
 
@@ -327,5 +329,14 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   def from_fhir_phone_number(value)
     Phonelib.parse(value, 'US').full_e164.presence || value
+  end
+
+  def to_statelocal_identifier(statelocal_identifier)
+    FHIR::Identifier.new(value: statelocal_identifier, system: 'http://saraalert.org/SaraAlert/state-local-id') unless statelocal_identifier.blank?
+  end
+
+  def from_statelocal_id_extension(patient)
+    statelocal_id = patient&.identifier&.find { |i| i&.system == 'http://saraalert.org/SaraAlert/state-local-id' }
+    statelocal_id&.value
   end
 end

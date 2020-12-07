@@ -638,6 +638,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
     assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
+    assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
   end
 
   test 'SYSTEM FLOW: should get observation via show' do
@@ -726,6 +727,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
     assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
+    assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
   end
 
   test 'SYSTEM FLOW: should calculate Patient age via create' do
@@ -873,6 +875,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
     assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
+    assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
   end
 
   test 'SYSTEM FLOW: should update Patient via update and set omitted fields to nil ' do
