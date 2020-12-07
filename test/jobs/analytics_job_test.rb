@@ -24,7 +24,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
 
     assert_equal(10, Analytic.all.size)
 
-    assert_equal(39, MonitoreeCount.where(category_type: 'Age Group').size)
+    assert_equal(40, MonitoreeCount.where(category_type: 'Age Group').size)
     assert_equal(27, MonitoreeCount.where(category_type: 'Sex').size)
     assert_equal(8, MonitoreeCount.where(category_type: 'Risk Factor').size)
     assert_equal(7, MonitoreeCount.where(category_type: 'Exposure Country').size)
@@ -59,14 +59,15 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 3, true, 'Age Group', '20-29', 1)
     verify_monitoree_count(active_counts, 4, true, 'Age Group', '30-39', 3)
     verify_monitoree_count(active_counts, 5, true, 'Age Group', '30-39', 2)
-    verify_monitoree_count(active_counts, 6, true, 'Age Group', '40-49', 11)
+    verify_monitoree_count(active_counts, 6, true, 'Age Group', '40-49', 10)
     verify_monitoree_count(active_counts, 7, true, 'Age Group', '40-49', 6)
     verify_monitoree_count(active_counts, 8, true, 'Age Group', '50-59', 1)
-    verify_monitoree_count(active_counts, 9, true, 'Age Group', '60-69', 1)
-    verify_monitoree_count(active_counts, 10, true, 'Age Group', '60-69', 2)
-    verify_monitoree_count(active_counts, 11, true, 'Age Group', '70-79', 1)
-    verify_monitoree_count(active_counts, 12, true, 'Age Group', '>=80', 1)
-    assert_equal(13, active_counts.length)
+    verify_monitoree_count(active_counts, 9, true, 'Age Group', '50-59', 1)
+    verify_monitoree_count(active_counts, 10, true, 'Age Group', '60-69', 1)
+    verify_monitoree_count(active_counts, 11, true, 'Age Group', '60-69', 2)
+    verify_monitoree_count(active_counts, 12, true, 'Age Group', '70-79', 1)
+    verify_monitoree_count(active_counts, 13, true, 'Age Group', '>=80', 1)
+    assert_equal(14, active_counts.length)
   end
 
   test 'monitoree counts by sex' do
@@ -127,9 +128,9 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, @@monitorees, 1)
     verify_snapshot(snapshots, 0, 'Last 24 Hours', 3, 0, 2, 0)
     verify_snapshot(snapshots, 1, 'Last 24 Hours', 2, 0, 0, 0)
-    verify_snapshot(snapshots, 2, 'Last 7 Days', 12, 0, 1, 0)
+    verify_snapshot(snapshots, 2, 'Last 7 Days', 14, 0, 1, 0)
     verify_snapshot(snapshots, 3, 'Last 7 Days', 12, 0, 0, 0)
-    verify_snapshot(snapshots, 4, 'Last 14 Days', 16, 0, 1, 0)
+    verify_snapshot(snapshots, 4, 'Last 14 Days', 18, 0, 1, 0)
     verify_snapshot(snapshots, 5, 'Last 14 Days', 13, 0, 0, 0)
     verify_snapshot(snapshots, 6, 'Total', 29, 0, 3, 0)
     verify_snapshot(snapshots, 7, 'Total', 15, 0, 0, 0)
