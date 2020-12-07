@@ -318,9 +318,7 @@ class AdvancedFilter extends React.Component {
         end: moment().format('YYYY-MM-DD'),
       };
     } else {
-      defaultValue = {
-        date: moment().format('YYYY-MM-DD'),
-      };
+      defaultValue = moment().format('YYYY-MM-DD');
     }
     activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: defaultValue, dateOption: value };
     this.setState({ activeFilterOptions });
@@ -739,11 +737,7 @@ class AdvancedFilter extends React.Component {
                         as="select"
                         value={value.when}
                         onChange={event => {
-                          this.changeValue(index, {
-                            number: value.number,
-                            unit: value.unit,
-                            when: event.target.value,
-                          });
+                          this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
                         }}>
                         <option value="past">past</option>
                         <option value="next">next</option>
@@ -762,11 +756,7 @@ class AdvancedFilter extends React.Component {
                         as="select"
                         value={value.unit}
                         onChange={event => {
-                          this.changeValue(index, {
-                            number: value.number,
-                            unit: event.target.value,
-                            when: value.when,
-                          });
+                          this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
                         }}>
                         <option value="days">day(s)</option>
                         <option value="weeks">week(s)</option>
