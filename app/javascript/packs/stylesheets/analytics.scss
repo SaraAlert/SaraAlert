@@ -72,6 +72,23 @@
   height: 50px; // the height of each row
 }
 
+.analytics-table-success {
+  background-color: #d1e6a5;
+}
+
+.analytics-table-caution {
+  background-color: #ffe09e;
+}
+
+.analytics-table-danger {
+  background-color: #f5988c;
+}
+
+.analytics-table-secondary {
+  background-color: #e2e2e2;
+}
+
+
 .analytics-zebra-bg {
   background-color: #0000000d;
 }
