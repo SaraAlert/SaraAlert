@@ -444,6 +444,9 @@ class PublicHealthController < ApplicationController
   def advanced_filter_date(patients, field, filter)
     return patients unless filter.dig(:value, :tzOffset).present?
 
+    # adjust for difference between client and server timezone (+ instead of - because js and ruby offsets are flipped)
+    tz_diff = filter.dig(:value, :tzOffset).to_i.minutes + DateTime.now.utc_offset
+
     timeframe = { after: Chronic.parse(filter[:value]).end_of_day } if filter[:dateOption] == 'after'
     timeframe = { before: Chronic.parse(filter[:value]).beginning_of_day } if filter[:dateOption] == 'before'
     if filter[:dateOption] == 'within'
@@ -452,7 +455,7 @@ class PublicHealthController < ApplicationController
 
     if timeframe[:after].present?
       # probably need to adjust for local timezone?
-      after = timeframe[:after]
+      after = timeframe[:after] - tz_diff
       patients = patients.where('patients.created_at >= ?', after) if field == :created_at
       patients = patients.where('latest_assessment_at >= ?', after) if field == :latest_assessment_at
       patients = patients.where('last_date_of_exposure >= ?', after) if field == :last_date_of_exposure
@@ -461,7 +464,7 @@ class PublicHealthController < ApplicationController
 
     if timeframe[:before].present?
       # probabbly need to adjust for local timezone?
-      before = timeframe[:before]
+      before = timeframe[:before] - tz_diff
       patients = patients.where('patients.created_at <= ?', before) if field == :created_at
       patients = patients.where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
       patients = patients.where('last_date_of_exposure <= ?', before) if field == :last_date_of_exposure
@@ -474,23 +477,24 @@ class PublicHealthController < ApplicationController
   def advanced_filter_relative_date(patients, field, filter)
     return patients unless filter.dig(:value, :tzOffset).present?
 
-    timeframe = { after: Date.today.beginning_of_day, before: Date.today.end_of_day } if filter[:relativeOption] == 'today'
-    timeframe = { after: Date.today.beginning_of_day + 1.day, before: Date.today.end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
-    timeframe = { after: Date.today.beginning_of_day - 1.day, before: Date.today.end_of_day - 1.day } if filter[:relativeOption] == 'yesterday'
+    timeframe = { after: DateTime.now.beginning_of_day, before: DateTime.now.end_of_day } if filter[:relativeOption] == 'today'
+    timeframe = { after: DateTime.now.beginning_of_day + 1.day, before: DateTime.now.end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
+    timeframe = { after: DateTime.now.beginning_of_day - 1.day, before: DateTime.now.end_of_day - 1.day } if filter[:relativeOption] == 'yesterday'
     if filter[:relativeOption] == 'custom'
       timespan = filter[:value][:number].to_i.days if filter[:value][:unit] == 'days'
       timespan = filter[:value][:number].to_i.weeks if filter[:value][:unit] == 'weeks'
       timespan = filter[:value][:number].to_i.months if filter[:value][:unit] == 'months'
       return patients if timespan.nil?
 
-      timeframe = { after: timespan.ago.beginning_of_day, before: Time.now } if filter[:value][:when] == 'past'
-      timeframe = { after: Time.now, before: timespan.from_now.end_of_day } if filter[:value][:when] == 'next'
+      timeframe = { after: timespan.ago.beginning_of_day, before: DateTime.now } if filter[:value][:when] == 'past'
+      timeframe = { after: DateTime.now, before: timespan.from_now.end_of_day } if filter[:value][:when] == 'next'
     end
     return patients if timeframe.nil?
 
-    # need to adjust for local timezone
-    after = timeframe[:after] - (1 - (filter.dig(:value, :tzOffset)&.to_i&.minutes || 0))
-    before = timeframe[:before] - (1 - (filter.dig(:value, :tzOffset)&.to_i&.minutes || 0))
+    # adjust for difference between client and server timezone (+ instead of - because js and ruby offsets are flipped)
+    tz_diff = filter.dig(:value, :tzOffset).to_i.minutes + DateTime.now.utc_offset
+    after = timeframe[:after] - tz_diff
+    before = timeframe[:before] - tz_diff
 
     patients = patients.where('patients.created_at >= ?', after).where('patients.created_at <= ?', before) if field == :created_at
     patients = patients.where('latest_assessment_at >= ?', after).where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
