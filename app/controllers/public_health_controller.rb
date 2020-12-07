@@ -453,7 +453,7 @@ class PublicHealthController < ApplicationController
     if timeframe[:after].present?
       # probably need to adjust for local timezone?
       after = timeframe[:after]
-      patients = patients.where('created_at >= ?', after) if field == :created_at
+      patients = patients.where('patients.created_at >= ?', after) if field == :created_at
       patients = patients.where('latest_assessment_at >= ?', after) if field == :latest_assessment_at
       patients = patients.where('last_date_of_exposure >= ?', after) if field == :last_date_of_exposure
       patients = patients.where('symptom_onset >= ?', after) if field == :symptom_onset
@@ -462,7 +462,7 @@ class PublicHealthController < ApplicationController
     if timeframe[:before].present?
       # probabbly need to adjust for local timezone?
       before = timeframe[:before]
-      patients = patients.where('created_at <= ?', before) if field == :created_at
+      patients = patients.where('patients.created_at <= ?', before) if field == :created_at
       patients = patients.where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
       patients = patients.where('last_date_of_exposure <= ?', before) if field == :last_date_of_exposure
       patients = patients.where('symptom_onset <= ?', before) if field == :symptom_onset
@@ -492,7 +492,7 @@ class PublicHealthController < ApplicationController
     after = timeframe[:after] - (1 - (filter.dig(:value, :tzOffset)&.to_i&.minutes || 0))
     before = timeframe[:before] - (1 - (filter.dig(:value, :tzOffset)&.to_i&.minutes || 0))
 
-    patients = patients.where('created_at >= ?', after).where('created_at <= ?', before) if field == :created_at
+    patients = patients.where('patients.created_at >= ?', after).where('patients.created_at <= ?', before) if field == :created_at
     patients = patients.where('latest_assessment_at >= ?', after).where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
     patients = patients.where('last_date_of_exposure >= ?', after).where('last_date_of_exposure <= ?', before) if field == :last_date_of_exposure
     patients = patients.where('symptom_onset >= ?', after).where('symptom_onset <= ?', before) if field == :symptom_onset
