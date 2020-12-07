@@ -23,28 +23,28 @@ const CONTACT_METHOD_MAPPINGS = {
 const LINELIST_STYLE_OPTIONS = [
   {
     linelist: 'Symptomatic',
-    color: '#f5988c',
+    class: 'analytics-table-danger',
   },
   {
     linelist: 'Non-Reporting',
-    color: '#ffe09e',
+    class: 'analytics-table-caution',
   },
   {
     linelist: 'Asymptomatic',
-    color: '#d1e6a5',
+    class: 'analytics-table-success',
   },
   {
     linelist: 'PUI',
-    color: '#e2e2e2',
+    class: 'analytics-table-secondary',
   },
   {
     linelist: 'Requiring Review',
     linelistRewording: 'Records Requiring Review',
-    color: '#f5988c',
+    class: 'analytics-table-danger',
   },
   {
     linelist: 'Reporting',
-    color: '#d1e6a5',
+    class: 'analytics-table-success',
   },
 ];
 
@@ -63,7 +63,7 @@ class RiskStratification extends React.Component {
           const linelistOptions = LINELIST_STYLE_OPTIONS.find(x => x.linelist === _.join(_.tail(linelistOption.split(' ')), ' '));
           return {
             linelist: linelistOptions['linelistRewording'] || linelistOptions['linelist'], // Some Linelists need to slightly re-worded
-            linelistColor: linelistOptions.color,
+            linelistClass: linelistOptions.class,
             contactMethodData: _.initial(CONTACT_METHOD_HEADERS).map(contactMethod => {
               const thisContactMethodData = thisWorkflowMC.filter(x => x.category === _.findKey(CONTACT_METHOD_MAPPINGS, x => x === contactMethod));
               const value = thisContactMethodData.find(x => x.status.includes(linelistOption))?.total || 0;
@@ -125,7 +125,7 @@ class RiskStratification extends React.Component {
                     </td>
                   </tr>
                   {workflow.data.map((data, index2) => (
-                    <tr key={`data-${index2}`} style={{ backgroundColor: data.linelistColor }}>
+                    <tr key={`data-${index2}`} className={data.linelistClass}>
                       <td className="text-right font-weight-bold">{data.linelist}</td>
                       {data.contactMethodData.map((value, index3) => (
                         <td key={`value-${index3}`}>
