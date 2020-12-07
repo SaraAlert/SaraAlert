@@ -290,10 +290,9 @@ class AdvancedFilter extends React.Component {
           .add(-72, 'hours')
           .format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
-        tzOffset: new Date().getTimezoneOffset(),
       };
     } else if (filterOption.type === 'relative') {
-      value = { number: 1, unit: 'days', when: 'past', tzOffset: new Date().getTimezoneOffset() };
+      value = { number: 1, unit: 'days', when: 'past' };
     } else if (filterOption.type === 'search') {
       value = '';
     }
@@ -317,12 +316,10 @@ class AdvancedFilter extends React.Component {
           .add(-72, 'hours')
           .format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
-        tzOffset: new Date().getTimezoneOffset(),
       };
     } else {
       defaultValue = {
         date: moment().format('YYYY-MM-DD'),
-        tzOffset: new Date().getTimezoneOffset(),
       };
     }
     activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: defaultValue, dateOption: value };
@@ -693,7 +690,7 @@ class AdvancedFilter extends React.Component {
                         <DateInput
                           date={value.start}
                           onChange={date => {
-                            this.changeValue(index, { start: date, end: value.end, tzOffset: new Date().getTimezoneOffset() });
+                            this.changeValue(index, { start: date, end: value.end });
                           }}
                           placement="bottom"
                           customClass="form-control-md"
@@ -712,7 +709,7 @@ class AdvancedFilter extends React.Component {
                         <DateInput
                           date={value.end}
                           onChange={date => {
-                            this.changeValue(index, { start: value.start, end: date, tzOffset: new Date().getTimezoneOffset() });
+                            this.changeValue(index, { start: value.start, end: date });
                           }}
                           placement="bottom"
                           customClass="form-control-md"
@@ -746,7 +743,6 @@ class AdvancedFilter extends React.Component {
                             number: value.number,
                             unit: value.unit,
                             when: event.target.value,
-                            tzOffset: new Date().getTimezoneOffset(),
                           });
                         }}>
                         <option value="past">past</option>
@@ -758,9 +754,7 @@ class AdvancedFilter extends React.Component {
                         value={value.number}
                         type="number"
                         min="1"
-                        onChange={event =>
-                          this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when, tzOffset: new Date().getTimezoneOffset() })
-                        }
+                        onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
                       />
                     </Col>
                     <Col md="6" className="pr-0">
@@ -772,7 +766,6 @@ class AdvancedFilter extends React.Component {
                             number: value.number,
                             unit: event.target.value,
                             when: value.when,
-                            tzOffset: new Date().getTimezoneOffset(),
                           });
                         }}>
                         <option value="days">day(s)</option>
