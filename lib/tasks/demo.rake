@@ -1,20 +1,39 @@
 # frozen_string_literal: true
 
 namespace :demo do
-  desc 'Backup the database'
-  task backup: :environment do
+desc 'Backup the database'
+  task backup_database: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
     username = ActiveRecord::Base.configurations.configurations[1].config['username']
     database = ActiveRecord::Base.configurations.configurations[1].config['database']
-    system "mysqldump --opt --user=#{username} #{database}  --no-create-info > database_backup.sql"
+    system "mysqldump --opt --user=#{username} #{database} > sara_database_#{Time.now.to_i}.sql"
   end
 
   desc 'Restore the database'
-  task restore: :environment do
+  task restore_database: :environment do
+    # Example usage: rake demo:restore_database FILE=sara_database_1606835867.sql
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
     username = ActiveRecord::Base.configurations.configurations[1].config['username']
     database = ActiveRecord::Base.configurations.configurations[1].config['database']
     system "mysql --user=#{username} #{database} < #{ENV['FILE']}"
+  end
+
+  # Duplicate existing monitoree data
+  # Note: comment out `around_save :inform_responder, if: :responder_id_changed?` in app/models/patient.rb to speed up process
+  desc 'Generate N many more monitorees based on existing data'
+  task create_bulk_data: :environment do
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    num_patients = (ENV['COUNT'] || 100000)
+    num_threads = (ENV['THREADS'] || 8)
+
+    duplicateable = Patient.where('responder_id = id').pluck(:id)
+    threads = []
+    (1..num_threads).each do |x|
+      threads << Thread.new do  (1..(num_patients/num_threads)).each {|x| deep_duplicate_patient(Patient.find(duplicateable.sample)) } end
+    end
+
+    threads.each(&:join)
+
   end
   
   desc 'Configure the database for demo use'
@@ -159,7 +178,6 @@ namespace :demo do
       printf("\n")
     end
   end
-
   desc 'Add synthetic patient/monitoree data to the database for a single day (today)'
   task update: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
@@ -582,9 +600,7 @@ namespace :demo do
       printf("\rUpdating symptomatic status #{index+1} of #{symptomatic_assessments.length}...")
       if assessment.symptomatic?
         assessment_symptomatic_statuses[assessment[:id]] = { symptomatic: true }
-        if symptomatic_patients_without_symptom_onset_ids.include?(assessment[:patient_id])
-          patient_symptom_onset_date_updates[assessment[:patient_id]] = { symptom_onset: assessment[:created_at] }
-        end
+        patient_symptom_onset_date_updates[assessment[:patient_id]] = { symptom_onset: assessment[:created_at] }
       end
     end
     Assessment.update(assessment_symptomatic_statuses.keys, assessment_symptomatic_statuses.values)
@@ -893,4 +909,63 @@ namespace :demo do
   def create_fake_timestamp(from, to)
     Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
   end
+
+  # Duplicate patient and all nested relations and change last name
+  def deep_duplicate_patient(patient, responder_id = nil)
+    new_pat = patient.dup
+    new_pat.responder_id = responder_id unless responder_id.nil?
+    new_pat.last_name = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
+    new_pat.save
+    new_pat.update(responder_id: new_pat.id) if responder_id.nil?
+    patient.dependents.each do |p|
+      if p.id != p.responder_id
+         deep_duplicate_patient(p, new_pat.id)
+      end
+    end
+    patient.assessments.each do |a| 
+        newa = a.dup
+        newa.created_at = a.created_at
+        newr = a.reported_condition.dup
+        newr.save
+        symptoms = []
+        a.reported_condition.symptoms.each do |s|
+            news = s.dup
+            news.condition_id = newr.id
+            symptoms << news
+        end
+        Symptom.import symptoms
+        newa.patient_id = new_pat.id
+        newa.save
+        newr.update(assessment_id: newa.id)
+    end
+
+    histories = []
+    patient.histories.each do |h| 
+        newh = h.dup
+        newh.created_at = h.created_at
+        newh.patient_id = new_pat.id
+        histories << newh
+    end
+    History.import histories
+
+    patient.transfers.each do |t| 
+        newt = t.dup
+        newt.patient_id = new_pat.id
+        newt.save
+    end
+
+    patient.laboratories.each do |l| 
+        newl = l.dup
+        newl.created_at = l.created_at
+        newl.patient_id = new_pat.id
+        newl.save
+    end
+
+    patient.close_contacts.each do |c| 
+        newc = c.dup
+        newc.patient_id = new_pat.id
+        newc.save
+    end
+  end
+
 end
