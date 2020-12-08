@@ -1,12 +1,13 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Button, ButtonGroup, ToggleButton, Row, Col, Form, Modal, OverlayTrigger, Tooltip, Dropdown } from 'react-bootstrap';
 import Select, { components } from 'react-select';
+import ReactTooltip from 'react-tooltip';
 import { ToastContainer, toast } from 'react-toastify';
 import moment from 'moment-timezone';
-import confirmDialog from '../util/ConfirmDialog';
 import axios from 'axios';
+import confirmDialog from '../util/ConfirmDialog';
 import DateInput from '../util/DateInput';
-import { PropTypes } from 'prop-types';
 import supportedLanguages from '../../data/supportedLanguages.json';
 
 class AdvancedFilter extends React.Component {
@@ -492,6 +493,36 @@ class AdvancedFilter extends React.Component {
     );
   };
 
+  renderRelativeTooltip = (filter, value, index) => {
+    // set variables for date options including a time stamp
+    const tooltipId = `${filter.name}-${index}`;
+    let filterName = filter.title.replace(' (Relative Date)', '');
+    let rangeString = 'up to the current time';
+    let start = moment()
+      .subtract(value.number, value.unit)
+      .format('MM/DD/YY');
+    let end = 'now';
+
+    // adjust variables for date options without a timestamp
+    if (filter.name === 'symptom-onset-relative' || filter.name === 'last-date-exposure-relative') {
+      rangeString = 'through today’s date';
+      end = moment().format('MM/DD/YY');
+    }
+
+    const statement = `${filterName} “${value.when}” relative date periods include records dated ${rangeString}.  The current setting of "${value.when}  ${value.number} ${value.unit}" will return records with ${filterName} date from ${start} through ${end}.`;
+
+    return (
+      <div style={{ display: 'inline' }}>
+        <span data-for={tooltipId} data-tip="" className="ml-1 tooltip-af">
+          <i className="fas fa-question-circle px-0"></i>
+        </span>
+        <ReactTooltip id={tooltipId} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container">
+          <span>{statement}</span>
+        </ReactTooltip>
+      </div>
+    );
+  };
+
   // Modal to specify filter name
   renderFilterNameModal = () => {
     return (
@@ -729,18 +760,15 @@ class AdvancedFilter extends React.Component {
                 </Col>
                 {relativeOption === 'custom' && (
                   <React.Fragment>
-                    <Col className="py-0 px-0 text-center my-auto" md="auto">
-                      <b>IN THE</b>
-                    </Col>
-                    <Col md="4" className="pr-0">
+                    <Col md="6" className="pr-0">
                       <Form.Control
                         as="select"
                         value={value.when}
                         onChange={event => {
                           this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
                         }}>
-                        <option value="past">past</option>
-                        <option value="next">next</option>
+                        <option value="past">in the past</option>
+                        <option value="next">in the next</option>
                       </Form.Control>
                     </Col>
                     <Col md="4" className="pr-0">
@@ -751,7 +779,7 @@ class AdvancedFilter extends React.Component {
                         onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
                       />
                     </Col>
-                    <Col md="6" className="pr-0">
+                    <Col md="5" className="pr-0">
                       <Form.Control
                         as="select"
                         value={value.unit}
@@ -762,6 +790,9 @@ class AdvancedFilter extends React.Component {
                         <option value="weeks">week(s)</option>
                         <option value="months">month(s)</option>
                       </Form.Control>
+                    </Col>
+                    <Col md="2" className="text-center my-auto">
+                      {this.renderRelativeTooltip(filterOption, value, index)}
                     </Col>
                   </React.Fragment>
                 )}
