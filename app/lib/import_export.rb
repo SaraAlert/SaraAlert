@@ -127,7 +127,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           end
         end
       end
-      p.workbook.add_worksheet(name: 'Assessments') do |sheet|
+      p.workbook.add_worksheet(name: 'Reports') do |sheet|
         # headers and all unique symptoms
         symptom_labels = patients.joins(assessments: [{ reported_condition: :symptoms }]).select('symptoms.label').distinct.pluck('symptoms.label').sort
         sheet.add_row ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
@@ -199,7 +199,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   def excel_export_assessments(patients)
     Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: 'Assessments') do |sheet|
+      p.workbook.add_worksheet(name: 'Reports') do |sheet|
         # headers and all unique symptoms
         symptom_labels = patients.joins(assessments: [{ reported_condition: :symptoms }]).select('symptoms.label').distinct.pluck('symptoms.label').sort
         sheet.add_row ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
