@@ -23,8 +23,8 @@ desc 'Backup the database'
   desc 'Generate N many more monitorees based on existing data'
   task create_bulk_data: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
-    num_patients = (ENV['COUNT'] || 100000)
-    num_threads = (ENV['THREADS'] || 8)
+    num_patients = (ENV['COUNT'] || 100000).to_i
+    num_threads = (ENV['THREADS'] || 8).to_i
 
     duplicateable = Patient.where('responder_id = id').pluck(:id)
     threads = []
@@ -925,7 +925,8 @@ desc 'Backup the database'
     patient.assessments.each do |a| 
         newa = a.dup
         newa.created_at = a.created_at
-        newr = a.reported_condition.dup
+        rep_condition = a.reported_condition
+        newr = rep_condition.dup
         newr.save
         symptoms = []
         a.reported_condition.symptoms.each do |s|
