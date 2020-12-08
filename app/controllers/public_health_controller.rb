@@ -475,13 +475,13 @@ class PublicHealthController < ApplicationController
 
   def patients_by_field_timeframe(patients, field, timeframe, tz_offset, type)
     # Adjust for difference between client and server timezones.
-    # NOTE: client timezone is not taken to account for date fields because they do not include a specific timestamp
     # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
     # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
-    tz_diff = type == :date ? DateTime.now.utc_offset * -1 : tz_offset.to_i.minutes + DateTime.now.utc_offset
+    tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
 
     if timeframe[:after].present?
-      after = timeframe[:after] - tz_diff
+      # Convert timeframe value to date if field is a date, apply timezone difference if field is a datetime
+      after = type == :date ? timeframe[:after].to_date : timeframe[:after] - tz_diff
       patients = patients.where('patients.created_at >= ?', after) if field == :created_at
       patients = patients.where('latest_assessment_at >= ?', after) if field == :latest_assessment_at
       patients = patients.where('last_date_of_exposure >= ?', after) if field == :last_date_of_exposure
@@ -489,7 +489,8 @@ class PublicHealthController < ApplicationController
     end
 
     if timeframe[:before].present?
-      before = timeframe[:before] - tz_diff
+      # Convert timeframe value to date if field is a date, apply timezone difference if field is a datetime
+      before = type == :date ? timeframe[:before].to_date : timeframe[:before] - tz_diff
       patients = patients.where('patients.created_at <= ?', before) if field == :created_at
       patients = patients.where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
       patients = patients.where('last_date_of_exposure <= ?', before) if field == :last_date_of_exposure
