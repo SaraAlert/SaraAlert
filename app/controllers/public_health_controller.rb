@@ -443,9 +443,11 @@ class PublicHealthController < ApplicationController
     patients
   end
 
-  # filter patients by a set time range for the given field
+  # Filter patients by a set time range for the given field
   def advanced_filter_date(patients, field, filter, tz_offset)
-    # adjust for diff between client/server timezones (server tz needed because utc time is not automatically used) (+ because js and ruby offsets are flipped)
+    # Adjust for diff between client/server timezones.
+    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
+    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
     tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
 
     timeframe = { after: Chronic.parse(filter[:value]).end_of_day } if filter[:dateOption] == 'after'
@@ -473,7 +475,7 @@ class PublicHealthController < ApplicationController
     patients
   end
 
-  # filter patients by a relative time range for the given field
+  # Filter patients by a relative time range for the given field
   def advanced_filter_relative_date(patients, field, filter, tz_offset)
     timeframe = { after: DateTime.now.beginning_of_day, before: DateTime.now.end_of_day } if filter[:relativeOption] == 'today'
     timeframe = { after: DateTime.now.beginning_of_day + 1.day, before: DateTime.now.end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
@@ -489,7 +491,9 @@ class PublicHealthController < ApplicationController
     end
     return patients if timeframe.nil?
 
-    # adjust for diff between client/server timezones (server tz needed because utc time is not automatically used) (+ because js and ruby offsets are flipped)
+    # Adjust for diff between client/server timezones.
+    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
+    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
     tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
     after = timeframe[:after] - tz_diff
     before = timeframe[:before] - tz_diff
