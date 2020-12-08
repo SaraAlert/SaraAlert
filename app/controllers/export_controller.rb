@@ -187,24 +187,19 @@ class ExportController < ApplicationController
             query: validate_patients_query(data.require(:patients)[:query])
           },
           assessments: {
-            checked: validate_checked_fields(data, :assessments),
-            query: validate_assessments_query(data.require(:assessments)[:query])
+            checked: validate_checked_fields(data, :assessments)
           },
           laboratories: {
-            checked: validate_checked_fields(data, :laboratories),
-            query: validate_laboratories_query(data.require(:laboratories)[:query])
+            checked: validate_checked_fields(data, :laboratories)
           },
           close_contacts: {
-            checked: validate_checked_fields(data, :close_contacts),
-            query: validate_close_contacts_query(data.require(:close_contacts)[:query])
+            checked: validate_checked_fields(data, :close_contacts)
           },
           transfers: {
-            checked: validate_checked_fields(data, :transfers),
-            query: validate_transfers_query(data.require(:transfers)[:query])
+            checked: validate_checked_fields(data, :transfers)
           },
           histories: {
-            checked: validate_checked_fields(data, :histories),
-            query: validate_histories_query(data.require(:histories)[:query])
+            checked: validate_checked_fields(data, :histories)
           }
         }
       rescue StandardError => e

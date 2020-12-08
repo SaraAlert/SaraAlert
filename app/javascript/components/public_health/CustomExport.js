@@ -8,12 +8,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
 
-import AssessmentsFilters from './custom_export/AssessmentsFilters';
-import CloseContactsFilters from './custom_export/CloseContactsFilters';
-import HistoriesFilters from './custom_export/HistoriesFilters';
-import LaboratoriesFilters from './custom_export/LaboratoriesFilters';
 import PatientsFilters from './custom_export/PatientsFilters';
-import TransfersFilters from './custom_export/TransfersFilters';
 import reportError from '../util/ReportError';
 
 const rctIcons = {
@@ -28,6 +23,7 @@ class CustomExport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      records: 'current',
       preset: {
         id: props.preset?.id || null,
         name: props.preset?.name || '',
@@ -36,9 +32,8 @@ class CustomExport extends React.Component {
           format: props.preset?.config?.format || 'xlsx',
           data: _.mapValues(props.options, (settings, type) => {
             return {
-              // checked: _.get(props.preset, ['config', 'data', type, 'checked']) || settings?.checked || [],
               checked: _.get(props.preset, ['config', 'data', type, 'checked']) || [],
-              expanded: _.get(props.preset, ['config', 'data', type, 'expanded']) || settings?.expanded || [],
+              expanded: _.get(props.preset, ['config', 'data', type, 'expanded']) || [],
               query: _.get(props.preset, ['config', 'data', type, 'query']) || type === 'patients' ? _.clone(props.patient_query) : {},
             };
           }),
@@ -109,13 +104,56 @@ class CustomExport extends React.Component {
 
   render() {
     return (
-      <Modal dialogClassName="modal-xl" backdrop="static" show onHide={this.props.onClose}>
+      <Modal size="lg" backdrop="static" show onHide={this.props.onClose}>
         <Modal.Header closeButton>
           <Modal.Title>Custom Export Format</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="p-1">
+        <Modal.Body className="p-2">
+          <Form.Label className="nav-input-label m-2">Select Records</Form.Label>
+          <Row className="mx-3 pb-2">
+            <Col md={24}>
+              <Form.Check
+                type="radio"
+                className="px-1"
+                label={`Current Records from Dashboard View (${this.props.filtered_monitorees_count})`}
+                onChange={() => this.setState({ records: 'current' })}
+                checked={this.state.records === 'current'}
+              />
+              <Form.Check
+                type="radio"
+                className="px-1"
+                label={`All Monitorees (${this.props.all_monitorees_count})`}
+                onChange={() => this.setState({ records: 'all' })}
+                checked={this.state.records === 'all'}
+              />
+              <Form.Check
+                type="radio"
+                className="px-1"
+                label={`Saved custom export template`}
+                onChange={() => this.setState({ records: 'preset' })}
+                checked={this.state.records === 'preset'}
+              />
+              <Form.Check
+                type="radio"
+                className="px-1"
+                label={`More filters`}
+                onChange={() => this.setState({ records: 'custom' })}
+                checked={this.state.records === 'custom'}
+              />
+              <div className="my-1"></div>
+              <PatientsFilters
+                authenticity_token={this.props.authenticity_token}
+                jurisdiction_paths={this.props.jurisdiction_paths}
+                jurisdiction={this.props.jurisdiction}
+                query={this.state.preset?.config?.data?.patients?.query}
+                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.patients.query.${field}`, value, cb)}
+              />
+            </Col>
+          </Row>
+          <Form.Label className="nav-input-label m-2">Select Data to Export</Form.Label>
+          <p className="mx-2 mb-1">Which data would you like to include for each monitoree?</p>
           <Row className="mx-3 py-2">
-            <Col md={10} className="p-1">
+            <Col md={24} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.patients?.nodes}
                 checked={this.state.preset?.config?.data?.patients?.checked}
@@ -126,19 +164,9 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            <Col md={14} className="px-0 py-1">
-              <PatientsFilters
-                authenticity_token={this.props.authenticity_token}
-                jurisdiction_paths={this.props.jurisdiction_paths}
-                jurisdiction={this.props.jurisdiction}
-                query={this.state.preset?.config?.data?.patients?.query}
-                onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.patients.query.${field}`, value, cb)}
-                // disabled={this.state.preset?.config?.data?.patients?.checked?.length === 0}
-              />
-            </Col>
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md={10} className="p-1">
+            <Col md={24} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.assessments?.nodes}
                 checked={this.state.preset?.config?.data?.assessments?.checked}
@@ -149,17 +177,9 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            {this.state.preset?.config?.data?.assessments?.checked?.length > 0 && (
-              <Col md={14} className="px-0 py-1">
-                <AssessmentsFilters
-                  query={this.state.preset?.config?.data?.assessments?.query}
-                  onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.assessments.query.${field}`, value, cb)}
-                />
-              </Col>
-            )}
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md={10} className="p-1">
+            <Col md={24} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.laboratories?.nodes}
                 checked={this.state.preset?.config?.data?.laboratories?.checked}
@@ -170,17 +190,9 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            {this.state.preset?.config?.data?.laboratories?.checked?.length > 0 && (
-              <Col md={14} className="px-0 py-1">
-                <LaboratoriesFilters
-                  query={this.state.preset?.config?.data?.laboratories?.query}
-                  onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.laboratories.query.${field}`, value, cb)}
-                />
-              </Col>
-            )}
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md={10} className="p-1">
+            <Col md={24} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.close_contacts?.nodes}
                 checked={this.state.preset?.config?.data?.close_contacts?.checked}
@@ -191,17 +203,9 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            {this.state.preset?.config?.data?.close_contacts?.checked?.length > 0 && (
-              <Col md={14} className="px-0 py-1">
-                <CloseContactsFilters
-                  query={this.state.preset?.config?.data?.close_contacts?.query}
-                  onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.close_contacts.query.${field}`, value, cb)}
-                />
-              </Col>
-            )}
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md={10} className="p-1">
+            <Col md={24} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.transfers?.nodes}
                 checked={this.state.preset?.config?.data?.transfers?.checked}
@@ -212,19 +216,9 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            {this.state.preset?.config?.data?.transfers?.checked?.length > 0 && (
-              <Col md={14} className="px-0 py-1">
-                <TransfersFilters
-                  jurisdiction_paths={this.props.jurisdiction_paths}
-                  jurisdiction={this.props.jurisdiction}
-                  query={this.state.preset?.config?.data?.transfers?.query}
-                  onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.transfers.query.${field}`, value, cb)}
-                />
-              </Col>
-            )}
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md={10} className="p-1">
+            <Col md={24} className="p-1">
               <CheckboxTree
                 nodes={this.props.options?.histories?.nodes}
                 checked={this.state.preset?.config?.data?.histories?.checked}
@@ -235,14 +229,6 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            {this.state.preset?.config?.data?.histories?.checked?.length > 0 && (
-              <Col lg={14} className="px-0 py-1">
-                <HistoriesFilters
-                  query={this.state.preset?.config?.data?.histories?.query}
-                  onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.histories.query.${field}`, value, cb)}
-                />
-              </Col>
-            )}
           </Row>
           <Row className="mx-3 pt-3 g-border-top">
             <Col lg={7} className="px-1">
@@ -358,6 +344,7 @@ CustomExport.propTypes = {
   jurisdiction: PropTypes.object,
   tabs: PropTypes.object,
   preset: PropTypes.object,
+  presets: PropTypes.array,
   patient_query: PropTypes.object,
   all_monitorees_count: PropTypes.number,
   filtered_monitorees_count: PropTypes.number,

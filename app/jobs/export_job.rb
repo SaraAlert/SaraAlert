@@ -32,7 +32,10 @@ class ExportJob < ApplicationJob
     lookups = []
     patients = patients_by_query(user, data.dig(:patients, :query) || {})
     patients&.in_batches(of: RECORD_BATCH_SIZE)&.each_with_index do |patients_group, index|
-      patient_ids = patients_group.pluck(:id)
+      patients_identifiers = Hash[patients_group.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
+                                                .map do |id, statelocal, cdc, nndss|
+                                                  [id, { user_defined_id_statelocal: statelocal, user_defined_id_cdc: cdc, user_defined_id_nndss: nndss }]
+                                                end]
 
       if data.dig(:patients, :checked).present?
         # Replace 'race' field with actual race fields
@@ -47,8 +50,8 @@ class ExportJob < ApplicationJob
       end
 
       if data.dig(:assessments, :checked).present?
-        assessments = assessments_by_query(patient_ids, data[:assessments][:query])
-        exported_assessments, symptom_names = extract_assessments_details(assessments, data[:assessments][:checked], data[:assessments][:query])
+        assessments = assessments_by_query(patients_identifiers)
+        exported_assessments, symptom_names = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
 
         # Replace 'symptom' field with actual symptom fields
         if data[:assessments][:checked].include?(:symptoms)
@@ -59,26 +62,26 @@ class ExportJob < ApplicationJob
       end
 
       if data.dig(:laboratories, :checked).present?
-        laboratories = laboratories_by_query(patient_ids, data[:laboratories][:query])
-        exported_laboratories = extract_laboratories_details(laboratories, data[:laboratories][:checked])
+        laboratories = laboratories_by_query(patients_identifiers)
+        exported_laboratories = extract_laboratories_details(patients_identifiers, laboratories, data[:laboratories][:checked])
         lookups << create_lookup(config, :laboratories, exported_laboratories, index)
       end
 
       if data.dig(:close_contacts, :checked).present?
-        close_contacts = close_contacts_by_query(patient_ids, data[:close_contacts][:query])
-        exported_close_contacts = extract_close_contacts_details(close_contacts, data[:close_contacts][:checked])
+        close_contacts = close_contacts_by_query(patients_identifiers)
+        exported_close_contacts = extract_close_contacts_details(patients_identifiers, close_contacts, data[:close_contacts][:checked])
         lookups << create_lookup(config, :close_contacts, exported_close_contacts, index)
       end
 
       if data.dig(:transfers, :checked).present?
-        transfers = transfers_by_query(patient_ids, data[:transfers][:query])
-        exported_transfers = extract_transfers_details(transfers, data[:transfers][:checked])
+        transfers = transfers_by_query(patients_identifiers)
+        exported_transfers = extract_transfers_details(patients_identifiers, transfers, data[:transfers][:checked])
         lookups << create_lookup(config, :transfers, exported_transfers, index)
       end
 
       if data.dig(:histories, :checked).present?
-        histories = histories_by_query(patient_ids, data[:histories][:query])
-        exported_histories = extract_histories_details(histories, data[:histories][:checked])
+        histories = histories_by_query(patients_identifiers)
+        exported_histories = extract_histories_details(patients_identifiers, histories, data[:histories][:checked])
         lookups << create_lookup(config, :histories, exported_histories, index)
       end
     end

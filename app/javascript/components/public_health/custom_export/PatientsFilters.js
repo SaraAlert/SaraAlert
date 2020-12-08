@@ -40,7 +40,6 @@ class PatientsFilters extends React.Component {
   render() {
     return (
       <Form.Group className="mb-0">
-        <Form.Label className="nav-input-label m-1">Select Monitorees:</Form.Label>
         <Row className="px-3">
           <Col md={12} className="my-1 px-1">
             <InputGroup size="sm" className="d-flex justify-content-between">
@@ -135,7 +134,7 @@ class PatientsFilters extends React.Component {
                 <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
                   <InputGroup.Text className="rounded-0">
                     <FontAwesomeIcon icon="search" />
-                    <span className="ml-1">Search</span>
+                    <span className="ml-1">Dashboard Search Terms</span>
                   </InputGroup.Text>
                 </OverlayTrigger>
               </InputGroup.Prepend>
