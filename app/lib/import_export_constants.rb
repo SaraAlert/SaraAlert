@@ -240,7 +240,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     nodes: [
       {
         value: 'patients',
-        label: 'Export Monitoree Details',
+        label: 'Monitoree Details',
         children: [
           {
             value: 'patients-enrollment',
@@ -323,31 +323,31 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
 
   ASSESSMENTS_EXPORT_OPTIONS = {
     label: 'Reports',
-    nodes: [rct_node(:assessments, 'Export Reports', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id symptomatic
+    nodes: [rct_node(:assessments, 'Reports', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id symptomatic
                                                         who_reported created_at updated_at symptoms])]
   }.freeze
 
   LABORATORIES_EXPORT_OPTIONS = {
     label: 'Lab Results',
-    nodes: [rct_node(:laboratories, 'Export Lab Results', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id lab_type
+    nodes: [rct_node(:laboratories, 'Lab Results', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id lab_type
                                                              specimen_collection report result created_at updated_at])]
   }.freeze
 
   CLOSE_CONTACTS_EXPORT_OPTIONS = {
     label: 'Close Contacts',
-    nodes: [rct_node(:close_contacts, 'Export Close Contacts', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id first_name
+    nodes: [rct_node(:close_contacts, 'Close Contacts', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id first_name
                                                                   last_name primary_telephone email contact_attempts notes enrolled_id created_at updated_at])]
   }.freeze
 
   TRANSFERS_EXPORT_OPTIONS = {
     label: 'Transfers',
-    nodes: [rct_node(:transfers, 'Export Transfers', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id who from_jurisdiction
+    nodes: [rct_node(:transfers, 'Transfers', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id who from_jurisdiction
                                                         to_jurisdiction created_at updated_at])]
   }.freeze
 
   HISTORIES_EXPORT_OPTIONS = {
     label: 'History',
-    nodes: [rct_node(:histories, 'Export History', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id created_by history_type
+    nodes: [rct_node(:histories, 'History', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id created_by history_type
                                                       comment created_at updated_at])]
   }.freeze
 
