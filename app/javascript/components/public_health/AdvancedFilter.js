@@ -494,23 +494,44 @@ class AdvancedFilter extends React.Component {
   };
 
   renderRelativeTooltip = (filter, value, index) => {
-    // set variables for date options including a time stamp
     const tooltipId = `${filter.name}-${index}`;
-    let filterName = filter.title.replace(' (Relative Date)', '');
-    let rangeString = 'up to the current time';
-    let start = moment()
-      .subtract(value.number, value.unit)
-      .format('MM/DD/YY');
-    let end = 'now';
+    const filterName = filter.title.replace(' (Relative Date)', '');
+    let rangeString, start, end;
 
-    // adjust variables for date options without a timestamp
+    // set variables for date options without a timestamp
     if (filter.name === 'symptom-onset-relative' || filter.name === 'last-date-exposure-relative') {
-      rangeString = 'through today’s date';
-      end = moment().format('MM/DD/YY');
+      if (value.when === 'past') {
+        rangeString = 'dated through today’s date';
+        start = moment()
+          .subtract(value.number, value.unit)
+          .format('MM/DD/YY');
+        end = moment().format('MM/DD/YY');
+      } else {
+        rangeString = 'dated from today’s date';
+        start = moment().format('MM/DD/YY');
+        end = moment()
+          .add(value.number, value.unit)
+          .format('MM/DD/YY');
+      }
+
+      // set variables for date options including a time stamp
+    } else {
+      if (value.when === 'past') {
+        rangeString = 'dated through today’s date';
+        start = moment()
+          .subtract(value.number, value.unit)
+          .format('MM/DD/YY');
+        end = 'now';
+      } else {
+        rangeString = 'dated from today’s date';
+        start = 'now';
+        end = moment()
+          .add(value.number, value.unit)
+          .format('MM/DD/YY');
+      }
     }
 
-    const statement = `${filterName} “${value.when}” relative date periods include records dated ${rangeString}.  The current setting of "${value.when}  ${value.number} ${value.unit}" will return records with ${filterName} date from ${start} through ${end}.`;
-
+    const statement = `${filterName} “${value.when}” relative date periods include records ${rangeString}.  The current setting of "${value.when}  ${value.number} ${value.unit}" will return records with ${filterName} date from ${start} through ${end}.`;
     return (
       <div style={{ display: 'inline' }}>
         <span data-for={tooltipId} data-tip="" className="ml-1 tooltip-af">
