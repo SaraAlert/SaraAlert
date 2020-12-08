@@ -445,7 +445,7 @@ class PublicHealthController < ApplicationController
 
   # filter patients by a set time range for the given field
   def advanced_filter_date(patients, field, filter, tz_offset)
-    # adjust for difference between client and server timezone (+ instead of - because js and ruby offsets are flipped)
+    # adjust for diff between client/server timezones (server tz needed because utc time is not automatically used) (+ because js and ruby offsets are flipped)
     tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
 
     timeframe = { after: Chronic.parse(filter[:value]).end_of_day } if filter[:dateOption] == 'after'
@@ -489,7 +489,7 @@ class PublicHealthController < ApplicationController
     end
     return patients if timeframe.nil?
 
-    # adjust for difference between client and server timezone (+ instead of - because js and ruby offsets are flipped)
+    # adjust for diff between client/server timezones (server tz needed because utc time is not automatically used) (+ because js and ruby offsets are flipped)
     tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
     after = timeframe[:after] - tz_diff
     before = timeframe[:before] - tz_diff
