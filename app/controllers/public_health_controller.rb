@@ -443,6 +443,7 @@ class PublicHealthController < ApplicationController
     patients
   end
 
+  # filter patients by a set time range for the given field
   def advanced_filter_date(patients, field, filter, tz_offset)
     # adjust for difference between client and server timezone (+ instead of - because js and ruby offsets are flipped)
     tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
@@ -454,7 +455,6 @@ class PublicHealthController < ApplicationController
     end
 
     if timeframe[:after].present?
-      # probably need to adjust for local timezone?
       after = timeframe[:after] - tz_diff
       patients = patients.where('patients.created_at >= ?', after) if field == :created_at
       patients = patients.where('latest_assessment_at >= ?', after) if field == :latest_assessment_at
@@ -463,7 +463,6 @@ class PublicHealthController < ApplicationController
     end
 
     if timeframe[:before].present?
-      # probabbly need to adjust for local timezone?
       before = timeframe[:before] - tz_diff
       patients = patients.where('patients.created_at <= ?', before) if field == :created_at
       patients = patients.where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
@@ -474,6 +473,7 @@ class PublicHealthController < ApplicationController
     patients
   end
 
+  # filter patients by a relative time range for the given field
   def advanced_filter_relative_date(patients, field, filter, tz_offset)
     timeframe = { after: DateTime.now.beginning_of_day, before: DateTime.now.end_of_day } if filter[:relativeOption] == 'today'
     timeframe = { after: DateTime.now.beginning_of_day + 1.day, before: DateTime.now.end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
