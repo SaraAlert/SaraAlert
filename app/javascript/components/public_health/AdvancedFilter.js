@@ -507,7 +507,7 @@ class AdvancedFilter extends React.Component {
           .format('MM/DD/YY');
         end = moment().format('MM/DD/YY');
       } else {
-        rangeString = 'dated from today’s date';
+        rangeString = 'with today’s date';
         start = moment().format('MM/DD/YY');
         end = moment()
           .add(value.number, value.unit)
@@ -523,7 +523,7 @@ class AdvancedFilter extends React.Component {
           .format('MM/DD/YY');
         end = 'now';
       } else {
-        rangeString = 'dated from today’s date';
+        rangeString = 'with today’s date as of the current time';
         start = 'now';
         end = moment()
           .add(value.number, value.unit)
