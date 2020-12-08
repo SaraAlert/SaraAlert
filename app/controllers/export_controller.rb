@@ -222,7 +222,7 @@ class ExportController < ApplicationController
   private
 
   def validate_checked_fields(data, data_type)
-    unsanitized_checked = data.require(data_type).require(:checked)
+    unsanitized_checked = data.require(data_type).permit(checked: [])[:checked]
     raise StandardError('Checked must be an array') unless unsanitized_checked.is_a?(Array)
 
     checked = unsanitized_checked.map(&:to_sym)

@@ -32,6 +32,7 @@ class ExportJob < ApplicationJob
     lookups = []
     patients = patients_by_query(user, data.dig(:patients, :query) || {})
     patients&.in_batches(of: RECORD_BATCH_SIZE)&.each_with_index do |patients_group, index|
+      exported_data = {}
       patients_identifiers = Hash[patients_group.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
                                                 .map do |id, statelocal, cdc, nndss|
                                                   [id, { user_defined_id_statelocal: statelocal, user_defined_id_cdc: cdc, user_defined_id_nndss: nndss }]
@@ -45,45 +46,41 @@ class ExportJob < ApplicationJob
           data[:patients][:checked].insert(race_index, *RACE_FIELDS)
         end
 
-        exported_patients = extract_patients_details(patients_group, data[:patients][:checked])
-        lookups << create_lookup(config, :patients, exported_patients, index)
+        exported_data[:patients] = extract_patients_details(patients_group, data[:patients][:checked])
       end
 
       if data.dig(:assessments, :checked).present?
         assessments = assessments_by_query(patients_identifiers)
-        exported_assessments, symptom_names = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
+        exported_data[:assessments], symptom_names = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
 
         # Replace 'symptom' field with actual symptom fields
         if data[:assessments][:checked].include?(:symptoms)
           data[:assessments][:checked].delete(:symptoms)
           data[:assessments][:checked].concat(symptom_names)
         end
-        lookups << create_lookup(config, :assessments, exported_assessments, index)
       end
 
       if data.dig(:laboratories, :checked).present?
         laboratories = laboratories_by_query(patients_identifiers)
-        exported_laboratories = extract_laboratories_details(patients_identifiers, laboratories, data[:laboratories][:checked])
-        lookups << create_lookup(config, :laboratories, exported_laboratories, index)
+        exported_data[:laboratories] = extract_laboratories_details(patients_identifiers, laboratories, data[:laboratories][:checked])
       end
 
       if data.dig(:close_contacts, :checked).present?
         close_contacts = close_contacts_by_query(patients_identifiers)
-        exported_close_contacts = extract_close_contacts_details(patients_identifiers, close_contacts, data[:close_contacts][:checked])
-        lookups << create_lookup(config, :close_contacts, exported_close_contacts, index)
+        exported_data[:close_contacts] = extract_close_contacts_details(patients_identifiers, close_contacts, data[:close_contacts][:checked])
       end
 
       if data.dig(:transfers, :checked).present?
         transfers = transfers_by_query(patients_identifiers)
-        exported_transfers = extract_transfers_details(patients_identifiers, transfers, data[:transfers][:checked])
-        lookups << create_lookup(config, :transfers, exported_transfers, index)
+        exported_data[:transfers] = extract_transfers_details(patients_identifiers, transfers, data[:transfers][:checked])
       end
 
       if data.dig(:histories, :checked).present?
         histories = histories_by_query(patients_identifiers)
-        exported_histories = extract_histories_details(patients_identifiers, histories, data[:histories][:checked])
-        lookups << create_lookup(config, :histories, exported_histories, index)
+        exported_data[:histories] = extract_histories_details(patients_identifiers, histories, data[:histories][:checked])
       end
+
+      lookups.concat(save_files_and_create_lookups(config, exported_data, index))
     end
 
     return if lookups.empty?
@@ -95,57 +92,78 @@ class ExportJob < ApplicationJob
     UserMailer.download_email(user, EXPORT_TYPES[config[:export_type]][:label] || 'default', lookups, RECORD_BATCH_SIZE).deliver_later
   end
 
-  def create_lookup(config, data_type, records, index)
-    config[:full_filename] = build_filename(config, data_type, index + 1)
-    fields = config[:data][data_type][:checked]
+  # Saves exported data to files and creates lookups for them
+  def save_files_and_create_lookups(config, exported_data, index)
+    lookups = []
+
+    # Write data to file(s)
     case config[:format]
     when 'csv'
-      get_file(config, csv_export(data_type, fields, records))
+      files = csv_export(config, exported_data, index)
     when 'xlsx'
-      get_file(config, xlsx_export(data_type, fields, records))
+      files = xlsx_export(config, exported_data, index)
+    end
+
+    # Write
+    files&.each do |file|
+      lookup = SecureRandom.uuid
+      if ActiveRecord::Base.logger.formatter.nil?
+        download = Download.insert(user_id: config[:user_id], export_type: config[:export_type], filename: file[:filename],
+                                   lookup: lookup, contents: file[:content], created_at: DateTime.now, updated_at: DateTime.now)
+      else
+        ActiveRecord::Base.logger.silence do
+          download = Download.insert(user_id: config[:user_id], export_type: config[:export_type], filename: file[:filename],
+                                     lookup: lookup, contents: file[:content], created_at: DateTime.now, updated_at: DateTime.now)
+        end
+      end
+      lookups << { lookup: lookup, filename: file[:filename] }
+    end
+
+    lookups
+  end
+
+  # Creates a list of csv files from exported data
+  def csv_export(config, exported_data, index)
+    files = []
+    CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+      skip unless config.dig(:data, data_type, :checked).present?
+
+      package = CSV.generate(headers: true) do |csv|
+        fields = config[:data][data_type][:checked]
+        csv << fields.map { |field| ALL_FIELDS_NAMES[data_type][field] }
+        exported_data[data_type].each do |record|
+          csv << fields.map { |field| record[field] }
+        end
+      end
+      files << { filename: build_filename(config, data_type, index), content: Base64.encode64(package) }
+    end
+    files
+  end
+
+  # Creates a list of excel files from exported data
+  def xlsx_export(config, exported_data, index)
+    Axlsx::Package.new do |p|
+      CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+        skip unless config.dig(:data, data_type, :checked).present?
+
+        p.workbook.add_worksheet(name: CUSTOM_EXPORT_OPTIONS[data_type][:label]) do |sheet|
+          fields = config[:data][data_type][:checked]
+          sheet.add_row(fields.map { |field| ALL_FIELDS_NAMES[data_type][field] })
+          exported_data[data_type].each do |record|
+            sheet.add_row(fields.map { |field| record[field] }, { types: Array.new(fields.length, :string) })
+          end
+        end
+      end
+      return [{ filename: build_filename(config, nil, index), content: Base64.encode64(p.to_stream.read) }]
     end
   end
 
   # Builds a file name using the base name, index, date, and extension.
   # Ex: "Sara-Alert-Linelist-Isolation-2020-09-01T14:15:05-04:00-1"
-  def build_filename(config, _, index)
+  def build_filename(config, data_type, index)
+    data_type_name = data_type.present? && CUSTOM_EXPORT_OPTIONS[data_type].present? ? CUSTOM_EXPORT_OPTIONS[data_type][:label] : nil
+    base_name = "#{config[:filename].present? ? config[:filename] : EXPORT_TYPES[config[:export_type]][:filename]}#{data_type_name ? "-#{data_type_name}" : ''}"
     "#{base_name}-#{DateTime.now}-#{index}.#{config[:format]}"
-  end
-
-  # Gets a single download with the provided filename information and containing the provided data.
-  def get_file(config, data)
-    lookup = SecureRandom.uuid
-    if ActiveRecord::Base.logger.formatter.nil?
-      download = Download.insert(user_id: config[:user_id], export_type: config[:export_type], filename: config[:full_filename],
-                                 lookup: lookup, contents: data, created_at: DateTime.now, updated_at: DateTime.now)
-    else
-      ActiveRecord::Base.logger.silence do
-        download = Download.insert(user_id: config[:user_id], export_type: config[:export_type], filename: config[:full_filename],
-                                   lookup: lookup, contents: data, created_at: DateTime.now, updated_at: DateTime.now)
-      end
-    end
-    { lookup: lookup, filename: config[:full_filename] }
-  end
-
-  def csv_export(data_type, fields, records)
-    package = CSV.generate(headers: true) do |csv|
-      csv << fields.map { |field| ALL_FIELDS_NAMES[data_type][field] }
-      records.each do |record|
-      end
-    end
-    Base64.encode64(package)
-  end
-
-  def xlsx_export(data_type, fields, records)
-    Axlsx::Package.new do |p|
-      p.workbook.add_worksheet(name: CUSTOM_EXPORT_OPTIONS[data_type][:label]) do |sheet|
-        sheet.add_row(fields.map { |field| ALL_FIELDS_NAMES[data_type][field] })
-        records.each do |record|
-          sheet.add_row(fields.map { |field| record[field] }, { types: Array.new(fields.length, :string) })
-        end
-      end
-      return Base64.encode64(p.to_stream.read)
-    end
   end
 
   # def perform(user_id, export_type)
