@@ -445,8 +445,8 @@ class PublicHealthController < ApplicationController
 
   # Filter patients by a set time range for the given field
   def advanced_filter_date(patients, field, filter, tz_offset, type)
-    timeframe = { after: Chronic.parse(filter[:value]).end_of_day } if filter[:dateOption] == 'after'
-    timeframe = { before: Chronic.parse(filter[:value]).beginning_of_day } if filter[:dateOption] == 'before'
+    timeframe = { after: Chronic.parse(filter[:value]).beginning_of_day + 1.day } if filter[:dateOption] == 'after'
+    timeframe = { before: Chronic.parse(filter[:value]).end_of_day - 1.day } if filter[:dateOption] == 'before'
     if filter[:dateOption] == 'within'
       timeframe = { after: Chronic.parse(filter[:value][:start]).beginning_of_day, before: Chronic.parse(filter[:value][:end]).end_of_day }
     end
