@@ -6,7 +6,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   PATIENT_FIELD_NAMES = {
     # Enrollment Info - Identification and Demographics - Identifiers
-    id: 'Monitoree ID',
+    id: 'Sara Alert ID',
     user_defined_id_statelocal: 'State/Local ID',
     user_defined_id_cdc: 'CDC ID',
     user_defined_id_nndss: 'NNDSS ID',
@@ -148,7 +148,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   ASSESSMENT_FIELD_NAMES = {
-    patient_id: 'Monitoree ID',
+    patient_id: 'Sara Alert ID',
+    user_defined_id_statelocal: 'State/Local ID',
+    user_defined_id_cdc: 'CDC ID',
+    user_defined_id_nndss: 'NNDSS ID',
     id: 'Report ID',
     symptomatic: 'Needs Review',
     who_reported: 'Who Reported',
@@ -158,7 +161,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.merge(Hash[Symptom.distinct.pluck(:name, :label)].transform_keys(&:to_sym)).freeze
 
   LABORATORY_FIELD_NAMES = {
-    patient_id: 'Monitoree ID',
+    patient_id: 'Sara Alert ID',
+    user_defined_id_statelocal: 'State/Local ID',
+    user_defined_id_cdc: 'CDC ID',
+    user_defined_id_nndss: 'NNDSS ID',
     id: 'Lab Report ID',
     lab_type: 'Lab Type',
     specimen_collection: 'Specimen Collection Date',
@@ -169,7 +175,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   CLOSE_CONTACT_FIELD_NAMES = {
-    patient_id: 'Monitoree ID',
+    patient_id: 'Sara Alert ID',
+    user_defined_id_statelocal: 'State/Local ID',
+    user_defined_id_cdc: 'CDC ID',
+    user_defined_id_nndss: 'NNDSS ID',
     id: 'Close Contact ID',
     first_name: 'First Name',
     last_name: 'Last Name',
@@ -183,7 +192,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   TRANSFER_FIELD_NAMES = {
-    patient_id: 'Monitoree ID',
+    patient_id: 'Sara Alert ID',
+    user_defined_id_statelocal: 'State/Local ID',
+    user_defined_id_cdc: 'CDC ID',
+    user_defined_id_nndss: 'NNDSS ID',
     id: 'Transfer ID',
     who: 'Who Initiated Transfer',
     from_jurisdiction: 'From Jurisdiction',
@@ -193,7 +205,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   HISTORY_FIELD_NAMES = {
-    patient_id: 'Monitoree ID',
+    patient_id: 'Sara Alert ID',
+    user_defined_id_statelocal: 'State/Local ID',
+    user_defined_id_cdc: 'CDC ID',
+    user_defined_id_nndss: 'NNDSS ID',
     id: 'History ID',
     created_by: 'History Creator',
     history_type: 'History Type',
@@ -227,7 +242,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     nodes: [
       {
         value: 'patients',
-        label: 'Export Monitorees',
+        label: 'Export Monitoree Details',
         children: [
           {
             value: 'patients-enrollment',
@@ -305,76 +320,37 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           }
         ]
       }
-    ],
-    checked: PATIENT_FIELD_NAMES.keys,
-    expanded: %w[patients]
+    ]
   }.freeze
 
   ASSESSMENTS_EXPORT_OPTIONS = {
     label: 'Reports',
-    nodes: [rct_node(:assessments, 'Export Reports', %i[patient_id id symptomatic who_reported created_at updated_at symptoms])],
-    checked: ASSESSMENT_FIELD_NAMES.keys,
-    expanded: %w[assessments]
+    nodes: [rct_node(:assessments, 'Export Reports', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id symptomatic
+                                                        who_reported created_at updated_at symptoms])]
   }.freeze
 
   LABORATORIES_EXPORT_OPTIONS = {
     label: 'Lab Results',
-    nodes: [rct_node(:laboratories, 'Export Lab Results', %i[patient_id id lab_type specimen_collection report result created_at updated_at])],
-    checked: LABORATORY_FIELD_NAMES.keys,
-    expanded: %w[laboratories],
-    filters: {
-      lab_type: {
-        label: 'lab type',
-        options: [
-          { value: 'laboratories-type-pcr', label: 'PCR' },
-          { value: 'laboratories-type-antigen', label: 'Antigen' },
-          { value: 'laboratories-type-total-antibody', label: 'Total Antibody' },
-          { value: 'laboratories-type-igg-antibody', label: 'IgG Antibody' },
-          { value: 'laboratories-type-igm-antibody', label: 'IgM Antibody' },
-          { value: 'laboratories-type-iga-antibody', label: 'IgA Antibody' },
-          { value: 'laboratories-type-other', label: 'Other' },
-          { value: 'laboratories-type-blank', label: 'Blank' }
-        ]
-      },
-      result: {
-        label: 'result',
-        options: [
-          { value: 'laboratories-result-positive', label: 'Positive' },
-          { value: 'laboratories-result-negative', label: 'Negative' },
-          { value: 'laboratories-result-indeterminate', label: 'Indeterminate' },
-          { value: 'laboratories-result-other', label: 'Other' },
-          { value: 'laboratories-result-blank', label: 'Blank' }
-        ]
-      }
-    }
+    nodes: [rct_node(:laboratories, 'Export Lab Results', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id lab_type
+                                                             specimen_collection report result created_at updated_at])]
   }.freeze
 
   CLOSE_CONTACTS_EXPORT_OPTIONS = {
     label: 'Close Contacts',
-    nodes: [rct_node(:close_contacts, 'Export Close Contacts', %i[patient_id id first_name last_name primary_telephone email contact_attempts notes enrolled_id
-                                                                  created_at updated_at])],
-    checked: CLOSE_CONTACT_FIELD_NAMES.keys,
-    expanded: %w[close_contacts]
+    nodes: [rct_node(:close_contacts, 'Export Close Contacts', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id first_name
+                                                                  last_name primary_telephone email contact_attempts notes enrolled_id created_at updated_at])]
   }.freeze
 
   TRANSFERS_EXPORT_OPTIONS = {
     label: 'Transfers',
-    nodes: [rct_node(:transfers, 'Export Transfers', %i[patient_id id who from_jurisdiction to_jurisdiction created_at updated_at])],
-    checked: TRANSFER_FIELD_NAMES.keys,
-    expanded: %w[transfers]
+    nodes: [rct_node(:transfers, 'Export Transfers', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id who from_jurisdiction
+                                                        to_jurisdiction created_at updated_at])]
   }.freeze
 
   HISTORIES_EXPORT_OPTIONS = {
     label: 'History',
-    nodes: [rct_node(:histories, 'Export History', %i[patient_id id created_by history_type comment created_at updated_at])],
-    checked: HISTORY_FIELD_NAMES.keys,
-    expanded: %w[histories],
-    filters: {
-      history_type: {
-        label: 'history type',
-        options: History::HISTORY_TYPES.map { |type, label| { value: "histories-type-#{type}", label: label } }
-      }
-    }
+    nodes: [rct_node(:histories, 'Export History', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id created_by history_type
+                                                      comment created_at updated_at])]
   }.freeze
 
   CUSTOM_EXPORT_OPTIONS = {
@@ -604,112 +580,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patient_details[:status] = PATIENT_STATUS_LABELS[patient.status] || '' if fields.include?(:status)
 
     patient_details
-  end
-
-  def extract_assessments_details(assessments, fields, query)
-    if fields.include?(:symptoms)
-      conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
-      symptoms = Symptom.where(condition_id: conditions.pluck(:id))
-      symptoms = symptoms.where(name: query[:symptoms]) if query[:symptoms].present?
-
-      conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
-                        .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
-      symptoms.each do |symptom|
-        conditions_hash[symptom[:condition_id]][:symptoms][symptom[:name]] = symptom.value
-      end
-      assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
-    end
-
-    symptom_names = symptoms&.distinct&.pluck(:name)
-
-    assessments_details = []
-    assessments.each do |assessment|
-      assessment_details = {}
-      assessment_details[:patient_id] = assessment[:patient_id] || '' if fields.include?(:patient_id)
-      assessment_details[:id] = assessment[:id] || '' if fields.include?(:id)
-      assessment_details[:symptomatic] = assessment[:symptomatic] || false if fields.include?(:symptomatic)
-      assessment_details[:who_reported] = assessment[:who_reported] || '' if fields.include?(:who_reported)
-      assessment_details[:created_at] = assessment[:created_at]&.strftime('%F') || '' if fields.include?(:created_at)
-      assessment_details[:updated_at] = assessment[:updated_at]&.strftime('%F') || '' if fields.include?(:updated_at)
-      if fields.include?(:symptoms)
-        symptom_names.each do |symptom_name|
-          assessment_details[symptom_name.to_sym] = assessments_hash[assessment[:id]][symptom_name]
-        end
-      end
-      assessments_details << assessment_details
-    end
-    [assessments_details, symptom_names]
-  end
-
-  def extract_laboratories_details(laboratories, fields)
-    laboratories_details = []
-    laboratories.each do |laboratory|
-      laboratory_details = {}
-      laboratory_details[:patient_id] = laboratory[:patient_id] || '' if fields.include?(:patient_id)
-      laboratory_details[:id] = laboratory[:id] || '' if fields.include?(:id)
-      laboratory_details[:lab_type] = laboratory[:lab_type] || '' if fields.include?(:lab_type)
-      laboratory_details[:specimen_collection] = laboratory[:specimen_collection]&.strftime('%F') || '' if fields.include?(:specimen_collection)
-      laboratory_details[:report] = laboratory[:report]&.strftime('%F') || '' if fields.include?(:report)
-      laboratory_details[:result] = laboratory[:result] || '' if fields.include?(:result)
-      laboratory_details[:created_at] = laboratory[:created_at]&.strftime('%F') || '' if fields.include?(:created_at)
-      laboratory_details[:updated_at] = laboratory[:updated_at]&.strftime('%F') || '' if fields.include?(:updated_at)
-      laboratories_details << laboratory_details
-    end
-  end
-
-  def extract_close_contacts_details(close_contacts, fields)
-    close_contacts_details = []
-    close_contacts.each do |close_contact|
-      close_contact_details = {}
-      close_contact_details[:patient_id] = close_contact[:patient_id] || '' if fields.include?(:patient_id)
-      close_contact_details[:id] = close_contact[:id] || '' if fields.include?(:id)
-      close_contact_details[:first_name] = close_contact[:first_name] || '' if fields.include?(:first_name)
-      close_contact_details[:last_name] = close_contact[:last_name] || '' if fields.include?(:last_name)
-      close_contact_details[:primary_telephone] = format_phone_number(close_contact[:primary_telephone]) || '' if fields.include?(:primary_telephone)
-      close_contact_details[:email] = close_contact[:email] || '' if fields.include?(:email)
-      close_contact_details[:contact_attempts] = close_contact[:contact_attempts] || '' if fields.include?(:contact_attempts)
-      close_contact_details[:notes] = close_contact[:notes] || '' if fields.include?(:notes)
-      close_contact_details[:enrolled_id] = close_contact[:enrolled_id] || '' if fields.include?(:enrolled_id)
-      close_contact_details[:created_at] = close_contact[:created_at]&.strftime('%F') || '' if fields.include?(:created_at)
-      close_contact_details[:updated_at] = close_contact[:updated_at]&.strftime('%F') || '' if fields.include?(:updated_at)
-      close_contacts_details << close_contact_details
-    end
-    close_contacts_details
-  end
-
-  def extract_transfers_details(transfers, fields)
-    jurisdiction_ids = [transfers.map(&:from_jurisdiction_id), transfers.map(&:to_jurisdiction_id)].flatten.uniq
-    jurisdiction_paths = Hash[Jurisdiction.find(jurisdiction_ids).pluck(:id, :path).map { |id, path| [id, path] }]
-    user_emails = Hash[User.find(transfers.map(&:who_id).uniq).pluck(:id, :email).map { |id, email| [id, email] }]
-    transfers_details = []
-    transfers.each do |transfer|
-      transfer_details = {}
-      transfer_details[:patient_id] = transfer[:patient_id] || '' if fields.include?(:patient_id)
-      transfer_details[:id] = transfer[:id] || '' if fields.include?(:id)
-      transfer_details[:who] = user_emails[transfer[:who_id]] || '' if fields.include?(:who)
-      transfer_details[:from_jurisdiction] = jurisdiction_paths[transfer[:from_jurisdiction_id]] || '' if fields.include?(:from_jurisdiction)
-      transfer_details[:to_jurisdiction] = jurisdiction_paths[transfer[:to_jurisdiction_id]] || '' if fields.include?(:to_jurisdiction)
-      transfer_details[:created_at] = transfer[:created_at]&.strftime('%F') || '' if fields.include?(:created_at)
-      transfer_details[:updated_at] = transfer[:updated_at]&.strftime('%F') || '' if fields.include?(:updated_at)
-      transfers_details << transfer_details
-    end
-    transfers_details
-  end
-
-  def extract_histories_details(histories, fields)
-    histories_details = []
-    histories.each do |history|
-      history_details = {}
-      history_details[:patient_id] = history[:patient_id] || '' if fields.include?(:patient_id)
-      history_details[:id] = history[:id] || '' if fields.include?(:id)
-      history_details[:created_by] = history[:created_by] || '' if fields.include?(:created_by)
-      history_details[:history_type] = history[:history_type] || '' if fields.include?(:history_type)
-      history_details[:comment] = history[:comment] || '' if fields.include?(:comment)
-      history_details[:created_at] = history[:created_at]&.strftime('%F') || '' if fields.include?(:created_at)
-      history_details[:updated_at] = history[:updated_at]&.strftime('%F') || '' if fields.include?(:updated_at)
-      histories_details << history_details
-    end
-    histories_details
   end
 
   # def csv_line_list(patients)
