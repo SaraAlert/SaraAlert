@@ -303,10 +303,6 @@ class PublicHealthController < ApplicationController
         patients = patients.where(monitoring: filter[:value].present? ? true : [nil, false])
       when 'preferred-contact-method'
         patients = patients.where(preferred_contact_method: filter[:value].blank? ? [nil, ''] : filter[:value])
-      when 'latest-report'
-        patients = advanced_filter_date(patients, :latest_assessment_at, filter, tz_offset)
-      when 'latest-report-relative'
-        patients = advanced_filter_relative_date(patients, :latest_assessment_at, filter, tz_offset)
       when 'hoh'
         patients = if filter[:value]
                      patients.where('patients.id = patients.responder_id')
@@ -320,17 +316,21 @@ class PublicHealthController < ApplicationController
                      patients.where('patients.id = patients.responder_id')
                    end
       when 'enrolled'
-        patients = advanced_filter_date(patients, :created_at, filter, tz_offset)
+        patients = advanced_filter_date(patients, :created_at, filter, tz_offset, :time)
       when 'enrolled-relative'
-        patients = advanced_filter_relative_date(patients, :created_at, filter, tz_offset)
+        patients = advanced_filter_relative_date(patients, :created_at, filter, tz_offset, :time)
+      when 'latest-report'
+        patients = advanced_filter_date(patients, :latest_assessment_at, filter, tz_offset, :time)
+      when 'latest-report-relative'
+        patients = advanced_filter_relative_date(patients, :latest_assessment_at, filter, tz_offset, :time)
       when 'last-date-exposure'
-        patients = advanced_filter_date(patients, :last_date_of_exposure, filter, tz_offset)
+        patients = advanced_filter_date(patients, :last_date_of_exposure, filter, tz_offset, :date)
       when 'last-date-exposure-relative'
-        patients = advanced_filter_relative_date(patients, :last_date_of_exposure, filter, tz_offset)
+        patients = advanced_filter_relative_date(patients, :last_date_of_exposure, filter, tz_offset, :date)
       when 'symptom-onset'
-        patients = advanced_filter_date(patients, :symptom_onset, filter, tz_offset)
+        patients = advanced_filter_date(patients, :symptom_onset, filter, tz_offset, :date)
       when 'symptom-onset-relative'
-        patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_offset)
+        patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_offset, :date)
       when 'continous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
       when 'telephone-number'
@@ -444,17 +444,41 @@ class PublicHealthController < ApplicationController
   end
 
   # Filter patients by a set time range for the given field
-  def advanced_filter_date(patients, field, filter, tz_offset)
-    # Adjust for diff between client/server timezones.
-    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
-    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
-    tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
-
+  def advanced_filter_date(patients, field, filter, tz_offset, type)
     timeframe = { after: Chronic.parse(filter[:value]).end_of_day } if filter[:dateOption] == 'after'
     timeframe = { before: Chronic.parse(filter[:value]).beginning_of_day } if filter[:dateOption] == 'before'
     if filter[:dateOption] == 'within'
       timeframe = { after: Chronic.parse(filter[:value][:start]).beginning_of_day, before: Chronic.parse(filter[:value][:end]).end_of_day }
     end
+
+    patients_by_field_timeframe(patients, field, timeframe, tz_offset, type)
+  end
+
+  # Filter patients by a relative time range for the given field
+  def advanced_filter_relative_date(patients, field, filter, tz_offset, type)
+    timeframe = { after: DateTime.now.beginning_of_day, before: DateTime.now.end_of_day } if filter[:relativeOption] == 'today'
+    timeframe = { after: DateTime.now.beginning_of_day + 1.day, before: DateTime.now.end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
+    timeframe = { after: DateTime.now.beginning_of_day - 1.day, before: DateTime.now.end_of_day - 1.day } if filter[:relativeOption] == 'yesterday'
+    if filter[:relativeOption] == 'custom'
+      timespan = filter[:value][:number].to_i.days if filter[:value][:unit] == 'days'
+      timespan = filter[:value][:number].to_i.weeks if filter[:value][:unit] == 'weeks'
+      timespan = filter[:value][:number].to_i.months if filter[:value][:unit] == 'months'
+      return patients if timespan.nil?
+
+      timeframe = { after: timespan.ago.beginning_of_day, before: DateTime.now } if filter[:value][:when] == 'past'
+      timeframe = { after: DateTime.now, before: timespan.from_now.end_of_day } if filter[:value][:when] == 'next'
+    end
+    return patients if timeframe.nil?
+
+    patients_by_field_timeframe(patients, field, timeframe, tz_offset, type)
+  end
+
+  def patients_by_field_timeframe(patients, field, timeframe, tz_offset, type)
+    # Adjust for difference between client and server timezones.
+    # NOTE: client timezone is not taken to account for date fields because they do not include a specific timestamp
+    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
+    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
+    tz_diff = type == :date ? DateTime.now.utc_offset * -1 : tz_offset.to_i.minutes + DateTime.now.utc_offset
 
     if timeframe[:after].present?
       after = timeframe[:after] - tz_diff
@@ -472,36 +496,6 @@ class PublicHealthController < ApplicationController
       patients = patients.where('symptom_onset <= ?', before) if field == :symptom_onset
     end
 
-    patients
-  end
-
-  # Filter patients by a relative time range for the given field
-  def advanced_filter_relative_date(patients, field, filter, tz_offset)
-    timeframe = { after: DateTime.now.beginning_of_day, before: DateTime.now.end_of_day } if filter[:relativeOption] == 'today'
-    timeframe = { after: DateTime.now.beginning_of_day + 1.day, before: DateTime.now.end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
-    timeframe = { after: DateTime.now.beginning_of_day - 1.day, before: DateTime.now.end_of_day - 1.day } if filter[:relativeOption] == 'yesterday'
-    if filter[:relativeOption] == 'custom'
-      timespan = filter[:value][:number].to_i.days if filter[:value][:unit] == 'days'
-      timespan = filter[:value][:number].to_i.weeks if filter[:value][:unit] == 'weeks'
-      timespan = filter[:value][:number].to_i.months if filter[:value][:unit] == 'months'
-      return patients if timespan.nil?
-
-      timeframe = { after: timespan.ago.beginning_of_day, before: DateTime.now } if filter[:value][:when] == 'past'
-      timeframe = { after: DateTime.now, before: timespan.from_now.end_of_day } if filter[:value][:when] == 'next'
-    end
-    return patients if timeframe.nil?
-
-    # Adjust for diff between client/server timezones.
-    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
-    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
-    tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
-    after = timeframe[:after] - tz_diff
-    before = timeframe[:before] - tz_diff
-
-    patients = patients.where('patients.created_at >= ?', after).where('patients.created_at <= ?', before) if field == :created_at
-    patients = patients.where('latest_assessment_at >= ?', after).where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
-    patients = patients.where('last_date_of_exposure >= ?', after).where('last_date_of_exposure <= ?', before) if field == :last_date_of_exposure
-    patients = patients.where('symptom_onset >= ?', after).where('symptom_onset <= ?', before) if field == :symptom_onset
     patients
   end
 
