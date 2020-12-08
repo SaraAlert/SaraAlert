@@ -50,6 +50,7 @@ class AdvancedFilter extends React.Component {
           title: 'Latest Report (Relative Date)',
           description: 'Monitorees with latest report during specified date range (relative to the current date)',
           type: 'relative',
+          hasTimestamp: true,
         },
         { name: 'hoh', title: 'Daily Reporters (Boolean)', description: 'Monitorees that are a Head of Household or self-reporter', type: 'boolean' },
         {
@@ -69,6 +70,7 @@ class AdvancedFilter extends React.Component {
           title: 'Enrolled (Relative Date)',
           description: 'Monitorees enrolled in system during specified date range (relative to the current date)',
           type: 'relative',
+          hasTimestamp: true,
         },
         {
           name: 'last-date-exposure',
@@ -81,6 +83,7 @@ class AdvancedFilter extends React.Component {
           title: 'Last Date of Exposure (Relative Date)',
           description: 'Monitorees who have a last date of exposure during specified date range (relative to the current date)',
           type: 'relative',
+          hasTimestamp: false,
         },
         {
           name: 'symptom-onset',
@@ -93,6 +96,7 @@ class AdvancedFilter extends React.Component {
           title: 'Symptom Onset (Relative Date)',
           description: 'Monitorees who have a symptom onset date during specified date range (relative to the current date)',
           type: 'relative',
+          hasTimestamp: false,
         },
         { name: 'continous-exposure', title: 'Continuous Exposure (Boolean)', description: 'Monitorees who have continuous exposure enabled', type: 'boolean' },
         {
@@ -498,24 +502,8 @@ class AdvancedFilter extends React.Component {
     const filterName = filter.title.replace(' (Relative Date)', '');
     let rangeString, start, end;
 
-    // set variables for date options without a timestamp
-    if (filter.name === 'symptom-onset-relative' || filter.name === 'last-date-exposure-relative') {
-      if (value.when === 'past') {
-        rangeString = 'dated through today’s date';
-        start = moment()
-          .subtract(value.number, value.unit)
-          .format('MM/DD/YY');
-        end = moment().format('MM/DD/YY');
-      } else {
-        rangeString = 'with today’s date';
-        start = moment().format('MM/DD/YY');
-        end = moment()
-          .add(value.number, value.unit)
-          .format('MM/DD/YY');
-      }
-
-      // set variables for date options including a time stamp
-    } else {
+    // set variables for date options including a time stamp
+    if (filter.hasTimestamp) {
       if (value.when === 'past') {
         rangeString = 'dated through today’s date';
         start = moment()
@@ -525,6 +513,23 @@ class AdvancedFilter extends React.Component {
       } else {
         rangeString = 'with today’s date as of the current time';
         start = 'now';
+        end = moment()
+          .add(value.number, value.unit)
+          .format('MM/DD/YY');
+      }
+    }
+
+    // set variables for date options without a timestamp
+    else {
+      if (value.when === 'past') {
+        rangeString = 'dated through today’s date';
+        start = moment()
+          .subtract(value.number, value.unit)
+          .format('MM/DD/YY');
+        end = moment().format('MM/DD/YY');
+      } else {
+        rangeString = 'with today’s date';
+        start = moment().format('MM/DD/YY');
         end = moment()
           .add(value.number, value.unit)
           .format('MM/DD/YY');
