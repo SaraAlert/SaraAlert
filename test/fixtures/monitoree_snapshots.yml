@@ -2,10 +2,11 @@ analytic_1_last_24_hours:
   id: 10001
   analytic_id: 1
   time_frame: 'Last 24 Hours'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Isolation'
+  new_enrollments: 469
+  transferred_in: 28
+  closed: 182
+  transferred_out: 19
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -18,10 +19,11 @@ analytic_1_last_7_days:
   id: 10002
   analytic_id: 1
   time_frame: 'Last 7 Days'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Exposure'
+  new_enrollments: 1106
+  transferred_in: 732
+  closed: 31
+  transferred_out: 444
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -34,10 +36,11 @@ analytic_1_last_14_days:
   id: 10003
   analytic_id: 1
   time_frame: 'Last 14 Days'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Exposure'
+  new_enrollments: 1706
+  transferred_in: 73
+  closed: 318
+  transferred_out: 44
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -50,10 +53,11 @@ analytic_1_total:
   id: 10004
   analytic_id: 1
   time_frame: 'Total'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Exposure'
+  new_enrollments: 2019
+  transferred_in: 129
+  closed: 673
+  transferred_out: 97
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -67,10 +71,11 @@ analytic_2_last_24_hours:
   id: 20001
   analytic_id: 2
   time_frame: 'Last 24 Hours'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Exposure'
+  new_enrollments: 469
+  transferred_in: 12
+  closed: 11
+  transferred_out: 9
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -83,10 +88,11 @@ analytic_2_last_7_days:
   id: 20002
   analytic_id: 2
   time_frame: 'Last 7 Days'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Isolation'
+  new_enrollments: 1106
+  transferred_in: 312
+  closed: 20
+  transferred_out: 484
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -99,10 +105,11 @@ analytic_2_last_14_days:
   id: 20003
   analytic_id: 2
   time_frame: 'Last 14 Days'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Isolation'
+  new_enrollments: 1706
+  transferred_in: 31
+  closed: 201
+  transferred_out: 48
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -115,10 +122,11 @@ analytic_2_total:
   id: 20004
   analytic_id: 2
   time_frame: 'Total'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Isolation'
+  new_enrollments: 2019
+  transferred_in: 62
+  closed: 382
+  transferred_out: 83
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -132,10 +140,11 @@ analytic_3_last_24_hours:
   id: 30001
   analytic_id: 3
   time_frame: 'Last 24 Hours'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Exposure'
+  new_enrollments: 469
+  transferred_in: 2
+  closed: 18
+  transferred_out: 4
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -148,10 +157,11 @@ analytic_3_last_7_days:
   id: 30002
   analytic_id: 3
   time_frame: 'Last 7 Days'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Isolation'
+  new_enrollments: 1106
+  transferred_in: 102
+  closed: 10
+  transferred_out: 284
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -164,10 +174,11 @@ analytic_3_last_14_days:
   id: 30003
   analytic_id: 3
   time_frame: 'Last 14 Days'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Isolation'
+  new_enrollments: 1706
+  transferred_in: 10
+  closed: 102
+  transferred_out: 28
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0
@@ -180,10 +191,11 @@ analytic_3_total:
   id: 30004
   analytic_id: 3
   time_frame: 'Total'
-  new_enrollments: 0
-  transferred_in: 0
-  closed: 0
-  transferred_out: 0
+  status: 'Isolation'
+  new_enrollments: 2019
+  transferred_in: 21
+  closed: 290
+  transferred_out: 52
   referral_for_medical_evaluation: 0
   document_completed_medical_evaluation: 0
   referral_for_public_health_test: 0

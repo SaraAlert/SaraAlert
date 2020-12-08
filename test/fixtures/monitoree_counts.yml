@@ -1,245 +1,445 @@
-analytic_1_active_overall_total_missing:
+analytic_1_active_isolation_requiring_review_contact_method_email:
   id: 10001
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Isolation'
-  total: 158
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Isolation Requiring Review'
+  total: 178
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_overall_total_high:
+analytic_1_active_isolation_non_reporting_contact_method_email:
   id: 10002
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Exposure'
-  total: 211
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Isolation Non-Reporting'
+  total: 303
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_overall_total_low:
+analytic_1_active_isolation_reporting_contact_method_email:
   id: 10003
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Exposure'
-  total: 709
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Isolation Reporting'
+  total: 398
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_overall_total_medium:
+analytic_1_active_exposure_symptomatic_contact_method_email:
   id: 10004
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Isolation'
-  total: 544
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure Symptomatic'
+  total: 142
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_overall_total_no_identified_risk:
+analytic_1_active_exposure_non_reporting_contact_method_email:
   id: 10005
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Exposure'
-  total: 544
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure Non-Reporting'
+  total: 44
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_overall_overall_total_missing:
+analytic_1_active_exposure_asymptomatic_contact_method_email:
   id: 10006
   analytic_id: 1
-  active_monitoring: false
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Isolation'
-  total: 158
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure Asymptomatic'
+  total: 412
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_overall_overall_total_high:
+analytic_1_active_exposure_pui_contact_method_email:
   id: 10007
   analytic_id: 1
-  active_monitoring: false
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Isolation'
-  total: 211
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure PUI'
+  total: 253
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_overall_overall_total_low:
+analytic_1_active_isolation_requiring_review_contact_method_sms_texted_weblink:
   id: 10008
   analytic_id: 1
-  active_monitoring: false
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Isolation'
-  total: 709
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Isolation Requiring Review'
+  total: 409
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_overall_overall_total_medium:
+analytic_1_active_isolation_non_reporting_contact_method_sms_texted_weblink:
   id: 10009
   analytic_id: 1
-  active_monitoring: false
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Isolation'
-  total: 544
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Isolation Non-Reporting'
+  total: 267
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_overall_overall_total_no_identified_risk:
+analytic_1_active_isolation_reporting_contact_method_sms_texted_weblink:
   id: 10010
   analytic_id: 1
-  active_monitoring: false
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Isolation'
-  total: 544
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Isolation Reporting'
+  total: 121
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_symptomatic_missing:
-  id: 10101
+analytic_1_active_exposure_symptomatic_contact_method_sms_texted_weblink:
+  id: 10011
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Symptomatic'
-  status: 'Exposure'
-  total: 82
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure Symptomatic'
+  total: 482
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_symptomatic_high:
-  id: 10102
+analytic_1_active_exposure_non_reporting_contact_method_sms_texted_weblink:
+  id: 10012
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Symptomatic'
-  status: 'Isolation'
-  total: 116
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure Non-Reporting'
+  total: 443
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_symptomatic_low:
-  id: 10103
+analytic_1_active_exposure_asymptomatic_contact_method_sms_texted_weblink:
+  id: 10013
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Symptomatic'
-  status: 'Isolation'
-  total: 389
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure Asymptomatic'
+  total: 67
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_symptomatic_medium:
-  id: 10104
+analytic_1_active_exposure_pui_contact_method_sms_texted_weblink:
+  id: 10014
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Symptomatic'
-  status: 'Isolation'
-  total: 322
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure PUI'
+  total: 81
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_symptomatic_no_identified_risk:
-  id: 10105
+analytic_1_active_isolation_requiring_review_contact_method_sms_text_message:
+  id: 10015
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Symptomatic'
-  status: 'Isolation'
-  total: 242
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Isolation Requiring Review'
+  total: 85
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_non_reporting_high:
-  id: 10112
+analytic_1_active_isolation_non_reporting_contact_method_sms_text_message:
+  id: 10016
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Non-Reporting'
-  status: 'Isolation'
-  total: 2
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Isolation Non-Reporting'
+  total: 237
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_non_reporting_low:
-  id: 10113
+analytic_1_active_isolation_reporting_contact_method_sms_text_message:
+  id: 10017
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Non-Reporting'
-  status: 'Exposure'
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Isolation Reporting'
+  total: 180
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_symptomatic_contact_method_sms_text_message:
+  id: 10018
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure Symptomatic'
+  total: 30
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_non_reporting_contact_method_sms_text_message:
+  id: 10019
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure Non-Reporting'
+  total: 253
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_asymptomatic_contact_method_sms_text_message:
+  id: 10020
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure Asymptomatic'
+  total: 247
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_pui_contact_method_sms_text_message:
+  id: 10021
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure PUI'
+  total: 134
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_isolation_requiring_review_contact_method_telephone:
+  id: 10022
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Isolation Requiring Review'
+  total: 489
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_isolation_non_reporting_contact_method_telephone:
+  id: 10023
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Isolation Non-Reporting'
+  total: 324
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_isolation_reporting_contact_method_telephone:
+  id: 10024
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Isolation Reporting'
+  total: 148
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_symptomatic_contact_method_telephone:
+  id: 10025
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure Symptomatic'
+  total: 179
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_non_reporting_contact_method_telephone:
+  id: 10026
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure Non-Reporting'
+  total: 495
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_asymptomatic_contact_method_telephone:
+  id: 10027
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure Asymptomatic'
+  total: 157
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_pui_contact_method_telephone:
+  id: 10028
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure PUI'
+  total: 388
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_isolation_requiring_review_contact_method_opt_out:
+  id: 10029
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Isolation Requiring Review'
+  total: 165
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_isolation_non_reporting_contact_method_opt_out:
+  id: 10030
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Isolation Non-Reporting'
+  total: 113
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_isolation_reporting_contact_method_opt_out:
+  id: 10031
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Isolation Reporting'
+  total: 103
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_symptomatic_contact_method_opt_out:
+  id: 10032
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure Symptomatic'
+  total: 135
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_non_reporting_contact_method_opt_out:
+  id: 10033
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure Non-Reporting'
+  total: 200
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_asymptomatic_contact_method_opt_out:
+  id: 10034
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure Asymptomatic'
+  total: 67
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_pui_contact_method_opt_out:
+  id: 10035
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure PUI'
+  total: 273
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_isolation_requiring_review_contact_method_unknown:
+  id: 10036
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Isolation Requiring Review'
   total: 18
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_non_reporting_medium:
-  id: 10114
+analytic_1_active_isolation_non_reporting_contact_method_unknown:
+  id: 10037
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Non-Reporting'
-  status: 'Exposure'
-  total: 6
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Isolation Non-Reporting'
+  total: 267
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_non_reporting_no_identified_risk:
-  id: 10115
+analytic_1_active_isolation_reporting_contact_method_unknown:
+  id: 10038
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Non-Reporting'
-  status: 'Exposure'
-  total: 1
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Isolation Reporting'
+  total: 367
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_asymptomatic_missing:
-  id: 10121
+analytic_1_active_exposure_symptomatic_contact_method_unknown:
+  id: 10039
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Asymptomatic'
-  status: 'Exposure'
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure Symptomatic'
+  total: 456
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_non_reporting_contact_method_unknown:
+  id: 10040
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure Non-Reporting'
+  total: 456
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_asymptomatic_contact_method_unknown:
+  id: 10041
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure Asymptomatic'
   total: 76
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_asymptomatic_high:
-  id: 10122
+analytic_1_active_exposure_pui_contact_method_unknown:
+  id: 10042
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Asymptomatic'
-  status: 'Exposure'
-  total: 93
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure PUI'
+  total: 319
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_asymptomatic_low:
-  id: 10123
+analytic_1_active_isolation_requiring_review_age_group_0_19:
+  id: 10043
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Asymptomatic'
+  category_type: 'Age Group'
+  category: '0-19'
   status: 'Isolation'
-  total: 302
+  total: 40
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_asymptomatic_medium:
-  id: 10124
+analytic_1_active_exposure_non_reporting_age_group_0_19:
+  id: 10044
   analytic_id: 1
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Asymptomatic'
+  category_type: 'Age Group'
+  category: '0-19'
   status: 'Exposure'
-  total: 216
+  total: 50
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_monitoring_status_asymptomatic_no_identified_risk:
-  id: 10125
-  analytic_id: 1
-  active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Asymptomatic'
-  status: 'Exposure'
-  total: 154
-  created_at: <%= 1.minute.ago %>
-  updated_at: <%= 1.minute.ago %>
-analytic_1_active_age_group_0_19_missing:
-  id: 10201
+analytic_1_active_isolation_age_group_0_19:
+  id: 10045
   analytic_id: 1
   active_monitoring: true
   category_type: 'Age Group'
@@ -248,8 +448,8 @@ analytic_1_active_age_group_0_19_missing:
   total: 30
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_sex_female_missing:
-  id: 10301
+analytic_1_active_exposure_sex_female:
+  id: 10046
   analytic_id: 1
   active_monitoring: true
   category_type: 'Sex'
@@ -258,89 +458,510 @@ analytic_1_active_sex_female_missing:
   total: 66
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_risk_factor_close_contact_with_known_case_missing:
-  id: 10401
+analytic_1_active_Isolation_risk_factor_close_contact_with_known_case:
+  id: 10047
   analytic_id: 1
   active_monitoring: true
   category_type: 'Risk Factor'
   category: 'Close Contact with Known Case'
   status: 'Isolation'
-  total: 52
+  total: 521
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_exposure_country_high:
-  id: 10502
+analytic_1_active_isolation_exposure_country:
+  id: 10048
   analytic_id: 1
   active_monitoring: true
   category_type: 'Exposure Country'
   category: 'Congo'
   status: 'Isolation'
-  total: 1
+  total: 114
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_last_exposure_date_1_missing:
-  id: 10601
+analytic_1_active_isolation_last_exposure_date_1:
+  id: 10049
   analytic_id: 1
   active_monitoring: true
   category_type: 'Last Exposure Date'
   category: <%= 14.days.ago %>
   status: 'Isolation'
-  total: 1
+  total: 153
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_last_exposure_week_1_missing:
-  id: 10701
+analytic_1_active_isolation_last_exposure_week_1:
+  id: 10050
   analytic_id: 1
   active_monitoring: true
   category_type: 'Last Exposure Week'
   category: <%= 3.weeks.ago %>
-  status: 'Exposure'
-  total: 1
+  status: 'Isolation'
+  total: 14
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_1_active_last_exposure_month_1_missing:
-  id: 10801
+analytic_1_active_exposure_last_exposure_month_1:
+  id: 10051
   analytic_id: 1
   active_monitoring: true
   category_type: 'Last Exposure Month'
   category: <%= 1.month.ago %>
-  status: 'Isolation'
-  total: 1
+  status: 'Eposure'
+  total: 13
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
 
-analytic_2_active_overall_total_missing:
+
+analytic_2_active_isolation_requiring_review_contact_method_email:
   id: 20001
   analytic_id: 2
   active_monitoring: true
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Exposure'
-  total: 158
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Isolation Requiring Review'
+  total: 193
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_2_active_monitoring_status_symptomatic_missing:
-  id: 20101
+analytic_2_active_isolation_non_reporting_contact_method_email:
+  id: 20002
   analytic_id: 2
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Symptomatic'
-  status: 'Exposure'
-  total: 82
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Isolation Non-Reporting'
+  total: 172
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_2_active_age_group_0_19_missing:
-  id: 20201
+analytic_2_active_isolation_reporting_contact_method_email:
+  id: 20003
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Isolation Reporting'
+  total: 293
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_symptomatic_contact_method_email:
+  id: 20004
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure Symptomatic'
+  total: 401
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_non_reporting_contact_method_email:
+  id: 20005
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure Non-Reporting'
+  total: 188
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_asymptomatic_contact_method_email:
+  id: 20006
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure Asymptomatic'
+  total: 182
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_pui_contact_method_email:
+  id: 20007
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure PUI'
+  total: 409
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_requiring_review_contact_method_sms_texted_weblink:
+  id: 20008
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Isolation Requiring Review'
+  total: 241
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_non_reporting_contact_method_sms_texted_weblink:
+  id: 20009
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Isolation Non-Reporting'
+  total: 96
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_reporting_contact_method_sms_texted_weblink:
+  id: 20010
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Isolation Reporting'
+  total: 444
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_symptomatic_contact_method_sms_texted_weblink:
+  id: 20011
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure Symptomatic'
+  total: 337
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_non_reporting_contact_method_sms_texted_weblink:
+  id: 20012
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure Non-Reporting'
+  total: 462
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_asymptomatic_contact_method_sms_texted_weblink:
+  id: 20013
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure Asymptomatic'
+  total: 29
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_pui_contact_method_sms_texted_weblink:
+  id: 20014
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure PUI'
+  total: 372
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_requiring_review_contact_method_sms_text_message:
+  id: 20015
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Isolation Requiring Review'
+  total: 26
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_non_reporting_contact_method_sms_text_message:
+  id: 20016
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Isolation Non-Reporting'
+  total: 400
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_reporting_contact_method_sms_text_message:
+  id: 20017
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Isolation Reporting'
+  total: 194
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_symptomatic_contact_method_sms_text_message:
+  id: 20018
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure Symptomatic'
+  total: 91
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_non_reporting_contact_method_sms_text_message:
+  id: 20019
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure Non-Reporting'
+  total: 364
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_asymptomatic_contact_method_sms_text_message:
+  id: 20020
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure Asymptomatic'
+  total: 443
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_pui_contact_method_sms_text_message:
+  id: 20021
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure PUI'
+  total: 24
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_requiring_review_contact_method_telephone:
+  id: 20022
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Isolation Requiring Review'
+  total: 14
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_non_reporting_contact_method_telephone:
+  id: 20023
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Isolation Non-Reporting'
+  total: 248
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_reporting_contact_method_telephone:
+  id: 20024
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Isolation Reporting'
+  total: 317
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_symptomatic_contact_method_telephone:
+  id: 20025
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure Symptomatic'
+  total: 172
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_non_reporting_contact_method_telephone:
+  id: 20026
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure Non-Reporting'
+  total: 441
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_asymptomatic_contact_method_telephone:
+  id: 20027
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure Asymptomatic'
+  total: 218
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_pui_contact_method_telephone:
+  id: 20028
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure PUI'
+  total: 361
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_requiring_review_contact_method_opt_out:
+  id: 20029
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Isolation Requiring Review'
+  total: 298
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_non_reporting_contact_method_opt_out:
+  id: 20030
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Isolation Non-Reporting'
+  total: 8
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_reporting_contact_method_opt_out:
+  id: 20031
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Isolation Reporting'
+  total: 97
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_symptomatic_contact_method_opt_out:
+  id: 20032
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure Symptomatic'
+  total: 63
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_non_reporting_contact_method_opt_out:
+  id: 20033
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure Non-Reporting'
+  total: 419
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_asymptomatic_contact_method_opt_out:
+  id: 20034
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure Asymptomatic'
+  total: 476
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_pui_contact_method_opt_out:
+  id: 20035
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure PUI'
+  total: 218
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_requiring_review_contact_method_unknown:
+  id: 20036
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Isolation Requiring Review'
+  total: 247
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_non_reporting_contact_method_unknown:
+  id: 20037
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Isolation Non-Reporting'
+  total: 346
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_reporting_contact_method_unknown:
+  id: 20038
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Isolation Reporting'
+  total: 207
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_symptomatic_contact_method_unknown:
+  id: 20039
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure Symptomatic'
+  total: 274
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_non_reporting_contact_method_unknown:
+  id: 20040
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure Non-Reporting'
+  total: 19
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_asymptomatic_contact_method_unknown:
+  id: 20041
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure Asymptomatic'
+  total: 6
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_pui_contact_method_unknown:
+  id: 20042
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure PUI'
+  total: 480
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_requiring_review_age_group_40_49:
+  id: 20043
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Age Group'
+  category: '4-49'
+  status: 'Isolation'
+  total: 31
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_non_reporting_age_group_40_49:
+  id: 20044
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Age Group'
+  category: '50-59'
+  status: 'Exposure'
+  total: 64
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_isolation_age_group_0_19:
+  id: 20045
   analytic_id: 2
   active_monitoring: true
   category_type: 'Age Group'
   category: '0-19'
-  status: 'Exposure'
-  total: 30
+  status: 'Isolation'
+  total: 303
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_2_active_sex_female_missing:
-  id: 20301
+analytic_2_active_exposure_sex_female:
+  id: 20046
   analytic_id: 2
   active_monitoring: true
   category_type: 'Sex'
@@ -349,99 +970,523 @@ analytic_2_active_sex_female_missing:
   total: 66
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_2_active_risk_factor_close_contact_with_known_case_missing:
-  id: 20401
+analytic_2_active_exposure_risk_factor_close_contact_with_known_case:
+  id: 20047
   analytic_id: 2
   active_monitoring: true
   category_type: 'Risk Factor'
   category: 'Close Contact with Known Case'
-  status: 'Isolation'
+  status: 'Exposure'
   total: 52
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_2_active_exposure_country_high:
-  id: 20502
+analytic_2_active_exposure_exposure_country:
+  id: 20048
   analytic_id: 2
   active_monitoring: true
   category_type: 'Exposure Country'
   category: 'Congo'
-  status: 'Isolation'
-  total: 1
+  status: 'Exposure'
+  total: 11
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_2_active_last_exposure_date_1_missing:
-  id: 20601
+analytic_2_active_isolation_last_exposure_date_1:
+  id: 20049
   analytic_id: 2
   active_monitoring: true
   category_type: 'Last Exposure Date'
   category: <%= 14.days.ago %>
-  status: 'Exposure'
-  total: 1
+  status: 'Isolation'
+  total: 15
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_2_active_last_exposure_week_1_missing:
-  id: 20701
+analytic_2_active_isolation_last_exposure_week_1:
+  id: 20050
   analytic_id: 2
   active_monitoring: true
   category_type: 'Last Exposure Week'
   category: <%= 3.weeks.ago %>
-  status: 'Exposure'
-  total: 1
+  status: 'Isolation'
+  total: 12
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_2_active_last_exposure_month_1_missing:
-  id: 20801
+analytic_2_active_exposure_last_exposure_month_1:
+  id: 20051
   analytic_id: 2
   active_monitoring: true
   category_type: 'Last Exposure Month'
   category: <%= 1.month.ago %>
-  status: 'Isolation'
-  total: 1
+  status: 'Exposure'
+  total: 13
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
 
-analytic_3_active_overall_total_missing:
+
+
+
+
+analytic_3_active_isolation_requiring_review_contact_method_email:
   id: 30001
   analytic_id: 3
   active_monitoring: true
-  category_type: 'Overall Total'
-  category: 'Total'
-  status: 'Isolation'
-  total: 158
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Isolation Requiring Review'
+  total: 278
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_3_active_monitoring_status_symptomatic_missing:
-  id: 30101
+analytic_3_active_isolation_non_reporting_contact_method_email:
+  id: 30002
   analytic_id: 3
   active_monitoring: true
-  category_type: 'Monitoring Status'
-  category: 'Symptomatic'
-  status: 'Exposure'
-  total: 82
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Isolation Non-Reporting'
+  total: 63
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_3_active_age_group_0_19_missing:
-  id: 30201
+analytic_3_active_isolation_reporting_contact_method_email:
+  id: 30003
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Isolation Reporting'
+  total: 245
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_symptomatic_contact_method_email:
+  id: 30004
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure Symptomatic'
+  total: 209
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_non_reporting_contact_method_email:
+  id: 30005
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure Non-Reporting'
+  total: 422
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_asymptomatic_contact_method_email:
+  id: 30006
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure Asymptomatic'
+  total: 292
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_pui_contact_method_email:
+  id: 30007
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'E-mailed Web Link'
+  status: 'Exposure PUI'
+  total: 237
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_requiring_review_contact_method_sms_texted_weblink:
+  id: 30008
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Isolation Requiring Review'
+  total: 22
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_non_reporting_contact_method_sms_texted_weblink:
+  id: 30009
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Isolation Non-Reporting'
+  total: 216
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_reporting_contact_method_sms_texted_weblink:
+  id: 30010
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Isolation Reporting'
+  total: 110
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_symptomatic_contact_method_sms_texted_weblink:
+  id: 30011
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure Symptomatic'
+  total: 79
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_non_reporting_contact_method_sms_texted_weblink:
+  id: 30012
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure Non-Reporting'
+  total: 343
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_asymptomatic_contact_method_sms_texted_weblink:
+  id: 30013
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure Asymptomatic'
+  total: 332
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_pui_contact_method_sms_texted_weblink:
+  id: 30014
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Texted Weblink'
+  status: 'Exposure PUI'
+  total: 218
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_requiring_review_contact_method_sms_text_message:
+  id: 30015
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Isolation Requiring Review'
+  total: 347
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_non_reporting_contact_method_sms_text_message:
+  id: 30016
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Isolation Non-Reporting'
+  total: 202
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_reporting_contact_method_sms_text_message:
+  id: 30017
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Isolation Reporting'
+  total: 23
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_symptomatic_contact_method_sms_text_message:
+  id: 30018
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure Symptomatic'
+  total: 481
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_non_reporting_contact_method_sms_text_message:
+  id: 30019
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure Non-Reporting'
+  total: 358
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_asymptomatic_contact_method_sms_text_message:
+  id: 30020
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure Asymptomatic'
+  total: 382
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_pui_contact_method_sms_text_message:
+  id: 30021
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'SMS Text-message'
+  status: 'Exposure PUI'
+  total: 433
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_requiring_review_contact_method_telephone:
+  id: 30022
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Isolation Requiring Review'
+  total: 404
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_non_reporting_contact_method_telephone:
+  id: 30023
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Isolation Non-Reporting'
+  total: 406
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_reporting_contact_method_telephone:
+  id: 30024
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Isolation Reporting'
+  total: 138
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_symptomatic_contact_method_telephone:
+  id: 30025
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure Symptomatic'
+  total: 446
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_non_reporting_contact_method_telephone:
+  id: 30026
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure Non-Reporting'
+  total: 362
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_asymptomatic_contact_method_telephone:
+  id: 30027
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure Asymptomatic'
+  total: 413
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_pui_contact_method_telephone:
+  id: 30028
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Telephone call'
+  status: 'Exposure PUI'
+  total: 252
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_requiring_review_contact_method_opt_out:
+  id: 30029
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Isolation Requiring Review'
+  total: 160
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_non_reporting_contact_method_opt_out:
+  id: 30030
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Isolation Non-Reporting'
+  total: 359
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_reporting_contact_method_opt_out:
+  id: 30031
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Isolation Reporting'
+  total: 107
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_symptomatic_contact_method_opt_out:
+  id: 30032
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure Symptomatic'
+  total: 187
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_non_reporting_contact_method_opt_out:
+  id: 30033
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure Non-Reporting'
+  total: 64
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_asymptomatic_contact_method_opt_out:
+  id: 30034
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure Asymptomatic'
+  total: 177
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_pui_contact_method_opt_out:
+  id: 30035
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Opt-out'
+  status: 'Exposure PUI'
+  total: 43
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_requiring_review_contact_method_unknown:
+  id: 30036
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Isolation Requiring Review'
+  total: 100
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_non_reporting_contact_method_unknown:
+  id: 30037
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Isolation Non-Reporting'
+  total: 240
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_reporting_contact_method_unknown:
+  id: 30038
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Isolation Reporting'
+  total: 419
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_symptomatic_contact_method_unknown:
+  id: 30039
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure Symptomatic'
+  total: 348
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_non_reporting_contact_method_unknown:
+  id: 30040
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure Non-Reporting'
+  total: 476
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_asymptomatic_contact_method_unknown:
+  id: 30041
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure Asymptomatic'
+  total: 457
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_pui_contact_method_unknown:
+  id: 30042
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Contact Method'
+  category: 'Unknown'
+  status: 'Exposure PUI'
+  total: 153
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_requiring_review_age_group_0_19:
+  id: 30043
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Age Group'
+  category: '0-19'
+  status: 'Isolation'
+  total: 10
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_non_reporting_age_group_0_19:
+  id: 30044
   analytic_id: 3
   active_monitoring: true
   category_type: 'Age Group'
   category: '0-19'
   status: 'Exposure'
+  total: 80
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_isolation_age_group_0_19:
+  id: 30045
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Age Group'
+  category: '0-19'
+  status: 'Isolation'
   total: 30
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_3_active_sex_female_missing:
-  id: 30301
+analytic_3_active_exposure_sex_female:
+  id: 30046
   analytic_id: 3
   active_monitoring: true
   category_type: 'Sex'
   category: 'Female'
-  status: 'Isolation'
+  status: 'Exposure'
   total: 66
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_3_active_risk_factor_close_contact_with_known_case_missing:
-  id: 30401
+analytic_3_active_isolation_risk_factor_close_contact_with_known_case:
+  id: 30047
   analytic_id: 3
   active_monitoring: true
   category_type: 'Risk Factor'
@@ -450,38 +1495,38 @@ analytic_3_active_risk_factor_close_contact_with_known_case_missing:
   total: 52
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_3_active_exposure_country_high:
-  id: 30502
+analytic_3_active_isolation_exposure_country:
+  id: 30048
   analytic_id: 3
   active_monitoring: true
   category_type: 'Exposure Country'
   category: 'Congo'
-  status: 'Exposure'
-  total: 1
-  created_at: <%= 1.minute.ago %>
-  updated_at: <%= 1.minute.ago %>
-analytic_3_active_last_exposure_date_1_missing:
-  id: 30601
-  analytic_id: 3
-  active_monitoring: true
-  category_type: 'Last Exposure Date'
-  category: <%= 14.days.ago %>
-  status: 'Exposure'
-  total: 1
-  created_at: <%= 1.minute.ago %>
-  updated_at: <%= 1.minute.ago %>
-analytic_3_active_last_exposure_week_1_missing:
-  id: 30701
-  analytic_id: 3
-  active_monitoring: true
-  category_type: 'Last Exposure Week'
-  category: <%= 3.weeks.ago %>
   status: 'Isolation'
   total: 1
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
-analytic_3_active_last_exposure_month_1_missing:
-  id: 30801
+analytic_3_active_isolation_last_exposure_date_1:
+  id: 30049
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Last Exposure Date'
+  category: <%= 14.days.ago %>
+  status: 'Isolation'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_last_exposure_week_1:
+  id: 30050
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Last Exposure Week'
+  category: <%= 3.weeks.ago %>
+  status: 'Exposure'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_last_exposure_month_1:
+  id: 30051
   analytic_id: 3
   active_monitoring: true
   category_type: 'Last Exposure Month'
