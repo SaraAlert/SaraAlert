@@ -89,7 +89,7 @@ class PatientMailer < ApplicationMailer
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.split('-').first.upcase,
                try_again: I18n.t('assessments.sms.prompt.try-again', locale: lang),
-               max_retries_message: I18n.t('assessments.sms.max_retries_message', locale: lang),
+               max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
 
     if TwilioSender.start_studio_flow(patient, params)

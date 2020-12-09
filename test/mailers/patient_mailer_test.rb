@@ -316,7 +316,7 @@ class PatientMailerTest < ActionMailer::TestCase
       try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'en'),
       thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'en'),
       medium: 'SMS',
-      max_retries_message: I18n.t('assessments.sms.max_retries_message', locale: 'en'),
+      max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'en'),
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
@@ -346,7 +346,7 @@ class PatientMailerTest < ActionMailer::TestCase
       try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'en'),
       thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'en'),
       medium: 'SMS',
-      max_retries_message: I18n.t('assessments.sms.max_retries_message', locale: 'en'),
+      max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'en'),
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
