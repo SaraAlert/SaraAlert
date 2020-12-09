@@ -57,7 +57,7 @@ Rails.application.routes.draw do
 
   get '/jurisdictions/paths', to: 'jurisdictions#jurisdiction_paths', as: :jurisdiction_paths
   get '/jurisdictions/allpaths', to: 'jurisdictions#all_jurisdiction_paths', as: :all_jurisdiction_paths
-  get '/jurisdictions/assigned_users', to: 'jurisdictions#assigned_users_for_viewable_patients', as: :assigned_users_for_viewable_patients
+  post '/jurisdictions/assigned_users', to: 'jurisdictions#assigned_users_for_viewable_patients', as: :assigned_users_for_viewable_patients
 
   post '/close_contacts', to: 'close_contacts#create'
   post '/close_contacts/:id', to: 'close_contacts#update'
@@ -111,6 +111,7 @@ Rails.application.routes.draw do
   get '/public_health', to: 'public_health#exposure', as: :public_health
   get '/public_health/isolation', to: 'public_health#isolation', as: :public_health_isolation
   post '/public_health/patients', to: 'public_health#patients', as: :public_health_patients
+  post '/public_health/patients/count', to: 'public_health#patients_count', as: :public_health_patients_count
   get '/public_health/patients/counts/workflow', to: 'public_health#workflow_counts', as: :workflow_counts
   get '/public_health/patients/counts/:workflow/:tab', to: 'public_health#tab_counts', as: :tab_counts
 

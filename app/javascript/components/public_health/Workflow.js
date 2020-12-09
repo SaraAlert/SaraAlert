@@ -12,7 +12,7 @@ class Workflow extends React.Component {
     this.state = {
       jurisdiction_paths: {},
       query: {},
-      filtered_monitorees_count: 0,
+      current_monitorees_count: 0,
     };
   }
 
@@ -33,7 +33,7 @@ class Workflow extends React.Component {
           tabs={this.props.tabs}
           abilities={this.props.abilities}
           query={this.state.query}
-          filtered_monitorees_count={this.state.filtered_monitorees_count}
+          current_monitorees_count={this.state.current_monitorees_count}
           custom_export_options={this.props.custom_export_options}
         />
         <PatientsTable
@@ -43,7 +43,7 @@ class Workflow extends React.Component {
           jurisdiction={this.props.jurisdiction}
           tabs={this.props.tabs}
           setQuery={query => this.setState({ query })}
-          setFilteredMonitoreesCount={filtered_monitorees_count => this.setState({ filtered_monitorees_count })}
+          setFilteredMonitoreesCount={current_monitorees_count => this.setState({ current_monitorees_count })}
         />
       </React.Fragment>
     );

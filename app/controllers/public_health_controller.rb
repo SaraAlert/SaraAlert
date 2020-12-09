@@ -34,6 +34,18 @@ class PublicHealthController < ApplicationController
     render json: linelist(patients, workflow, tab)
   end
 
+  def patients_count
+    # Validate filter and sorting params
+    begin
+      query = validate_patients_query(params.require(:query))
+    rescue StandardError => e
+      return render json: e, status: :bad_request
+    end
+
+    # Get count of filtered patients
+    render json: { count: patients_by_query(current_user, query)&.size }
+  end
+
   # Get patient counts by workflow
   def workflow_counts
     render json: {

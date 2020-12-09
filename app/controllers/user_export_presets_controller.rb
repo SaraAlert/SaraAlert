@@ -12,7 +12,7 @@ class UserExportPresetsController < ApplicationController
   def create
     return head :bad_request unless current_user.user_export_presets.count < 100 # Enforce upper limit per user
 
-    config = params.require(:config).permit(:filename, :format, data: {})
+    config = params.require(:config).permit(:format, data: {})
 
     saved_export_preset = UserExportPreset.create!(user_id: current_user.id, name: params.require(:name), config: config.to_json)
     saved_export_preset[:config] = JSON.parse(saved_export_preset[:config])
@@ -23,7 +23,7 @@ class UserExportPresetsController < ApplicationController
     saved_export_preset = current_user.user_export_presets.find(params.require(:id))
     return head :bad_request if saved_export_preset.nil?
 
-    config = params.require(:config).permit(:filename, :format, data: {})
+    config = params.require(:config).permit(:format, data: {})
 
     saved_export_preset.update(name: params.require(:name), config: config.to_json)
     saved_export_preset[:config] = JSON.parse(saved_export_preset[:config])

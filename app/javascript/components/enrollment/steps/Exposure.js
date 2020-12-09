@@ -51,9 +51,9 @@ class Exposure extends React.Component {
         value = jurisdiction_id;
         axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
         axios
-          .get('/jurisdictions/assigned_users', {
-            params: {
-              jurisdiction_id,
+          .post('/jurisdictions/assigned_users', {
+            query: {
+              jurisdiction: jurisdiction_id,
               scope: 'exact',
             },
           })

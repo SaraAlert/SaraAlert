@@ -24,9 +24,9 @@ class PatientsFilters extends React.Component {
   // Update Assigned Users datalist
   updateAssignedUsers = () => {
     axios
-      .get('/jurisdictions/assigned_users', {
-        params: {
-          jurisdiction_id: this.props.query?.jurisdiction || this.props.jurisdiction?.id,
+      .post('/jurisdictions/assigned_users', {
+        query: {
+          jurisdiction: this.props.query?.jurisdiction || this.props.jurisdiction?.id,
           scope: this.props.query?.scope || 'all',
           workflow: this.props.query?.workflow,
           tab: this.props.query?.tab || 'all',
@@ -54,13 +54,12 @@ class PatientsFilters extends React.Component {
                 size="sm"
                 className="form-square"
                 onChange={event => {
-                  this.props.onQueryChange('workflow', event?.target?.value || null);
+                  this.props.onQueryChange('workflow', event?.target?.value);
                   this.props.onQueryChange('tab', 'all');
                 }}
                 value={this.props.query?.workflow}
                 disabled={this.props.disabled}>
-                value={this.props.query?.workflow || ''}
-                <option value="">All</option>
+                <option value="all">All</option>
                 <option value="exposure">Exposure</option>
                 <option value="isolation">Isolation</option>
               </Form.Control>
@@ -152,9 +151,10 @@ class PatientsFilters extends React.Component {
                 disabled={this.props.disabled}
               />
               <AdvancedFilter
+                key="custom-export-advanced-filter"
                 advancedFilterUpdate={filter =>
                   this.props.onQueryChange(
-                    'query',
+                    'filter',
                     filter?.filter(field => field?.filterOption != null)
                   )
                 }

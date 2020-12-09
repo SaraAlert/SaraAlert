@@ -1,10 +1,11 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Badge, Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CheckboxTree from 'react-checkbox-tree';
 import axios from 'axios';
+import moment from 'moment-timezone';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
 
@@ -23,13 +24,16 @@ class CustomExport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedRecords: 'current',
-      showFilters: false,
+      selected_records: props.preset?.id ? 'custom' : 'current',
+      custom_patient_query: props.preset?.config?.data?.patients?.query
+        ? _.clone(props.preset.config.data.patients.query)
+        : { workflow: 'all', tab: 'all', jurisdiction: props.jurisdiction.id, scope: 'all' },
+      filtered_monitorees_count: props.all_monitorees_count,
+      cancel_token: axios.CancelToken.source(),
       preset: {
         id: props.preset?.id || null,
         name: props.preset?.name || '',
         config: {
-          filename: props.preset?.config?.filename || '',
           format: props.preset?.config?.format || 'xlsx',
           data: _.mapValues(props.options, (settings, type) => {
             return {
@@ -41,6 +45,13 @@ class CustomExport extends React.Component {
         },
       },
     };
+  }
+
+  componentDidMount() {
+    // get patient count preview if this is a preset
+    if (this.props.preset?.id) {
+      this.getPatientCount();
+    }
   }
 
   // Save a new preset
@@ -90,8 +101,43 @@ class CustomExport extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .post(`${window.BASE_PATH}/export/custom`, this.state.preset)
-      .then(response => console.log(response))
+      .then(response => {
+        if (response?.status === 200) {
+          toast.success('Export has been initiated!');
+          this.props.onClose();
+        }
+      })
       .catch(err => reportError(err));
+  };
+
+  // Get patient count based on custom query
+  getPatientCount = () => {
+    // cancel any previous unfinished requests to prevent race condition inconsistencies
+    this.state.cancel_token.cancel();
+
+    // generate new cancel token for this request
+    const cancel_token = axios.CancelToken.source();
+
+    this.setState({ cancel_token }, () => {
+      axios
+        .post(`${window.BASE_PATH}/public_health/patients/count`, {
+          query: this.state.custom_patient_query,
+          cancelToken: this.state.cancel_token.token,
+        })
+        .then(response => this.setState({ filtered_monitorees_count: response?.data?.count }))
+        .catch(err => reportError(err));
+    });
+  };
+
+  // Update selected records
+  handleSelectedRecordsChange = selected_records => {
+    this.setState({ selected_records }, () => {
+      if (selected_records === 'current') {
+        this.handlePresetChange('config.data.patients.query', _.clone(this.props.patient_query));
+      } else if (selected_records === 'all') {
+        this.handlePresetChange('config.data.patients.query', { workflow: 'all', tab: 'all', jurisdiction: this.props.jurisdiction.id, scope: 'all' });
+      }
+    });
   };
 
   // Update preset
@@ -105,9 +151,9 @@ class CustomExport extends React.Component {
 
   render() {
     return (
-      <Modal size="lg" backdrop="static" show onHide={this.props.onClose}>
+      <Modal dialogClassName="modal-custom-export" backdrop="static" show onHide={this.props.onClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Custom Export Format</Modal.Title>
+          <Modal.Title>Custom Export Format {this.state.preset?.name ? `(${this.state.preset.name})` : ''}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="p-0">
           <div className="p-2">
@@ -119,51 +165,98 @@ class CustomExport extends React.Component {
                   className="px-1"
                   label={
                     <span>
-                      Current Records from Dashboard View ({this.props.filtered_monitorees_count})&nbsp;
-                      <a
-                        style={{ color: '#226891', textDecoration: 'underline' }}
-                        onClick={() =>
-                          this.setState(state => {
-                            return { showFilters: !state.showFilters };
-                          })
-                        }>
-                        {this.state.showFilters ? 'Hide' : 'View'} Filters
+                      <a onClick={() => this.handleSelectedRecordsChange('current')}>
+                        Current Records from Dashboard View ({this.props.current_monitorees_count}){' '}
                       </a>
                     </span>
                   }
-                  onChange={() =>
-                    this.setState({ selectedRecords: 'current' }, () => {
-                      this.handlePresetChange('config.data.patients.query', _.clone(this.props.patient_query));
-                    })
-                  }
-                  checked={this.state.selectedRecords === 'current'}
+                  onChange={() => this.handleSelectedRecordsChange('current')}
+                  checked={this.state.selected_records === 'current'}
                 />
+                {this.state.selected_records === 'current' && (
+                  <div className="px-1 pb-1">
+                    <Badge variant="secondary" className="mr-1">
+                      {this.props.patient_query.workflow === 'isolation' ? 'Isolation' : 'Exposure'} - {this.props.tabs[this.props.patient_query.tab]?.label}
+                    </Badge>
+                    {this.props.patient_query.jurisdiction !== this.props.jurisdiction.id && (
+                      <Badge variant="secondary" className="mr-1">
+                        Jurisdiction: {this.props.jurisdiction_paths[this.props.patient_query.jurisdiction]}
+                      </Badge>
+                    )}
+                    {this.props.patient_query.user !== null && (
+                      <Badge variant="secondary" className="mr-1">
+                        Assigned User: {this.props.patient_query.user}
+                      </Badge>
+                    )}
+                    {this.props.patient_query.search !== '' && (
+                      <Badge variant="secondary" className="mr-1">
+                        Dashboard Search Terms: {this.props.patient_query.search}
+                      </Badge>
+                    )}
+                    {this.props.patient_query.filter?.map((filter, index) => {
+                      return (
+                        <Badge key={`filter-${index}`} variant="primary" className="mr-1">
+                          {filter.filterOption?.title}: {filter.filterOption?.type === 'boolean' && <span>{filter.value ? 'True' : 'False'}</span>}
+                          {filter.filterOption?.type === 'relative' && (
+                            <span>
+                              {filter.relativeOption === 'custom'
+                                ? `in the ${filter.value?.when} ${filter.value?.number} ${filter.value?.unit}`
+                                : filter.relativeOption}
+                            </span>
+                          )}
+                          {filter.filterOption?.type === 'date' && (
+                            <span>
+                              {filter.dateOption}{' '}
+                              {filter.dateOption === 'within'
+                                ? moment(filter.value?.start).format('MM/DD/YYYY') + ' and ' + moment(filter.value?.end).format('MM/DD/YYYY')
+                                : moment(filter.value).format('MM/DD/YYYY')}
+                            </span>
+                          )}
+                          {!['boolean', 'relative', 'date'].includes(filter.filterOption?.type) && <span>{filter.value}</span>}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
                 <Form.Check
                   type="radio"
                   className="px-1"
-                  label={`All Monitorees (${this.props.all_monitorees_count})`}
-                  onChange={() =>
-                    this.setState({ selectedRecords: 'all' }, () => {
-                      this.handlePresetChange('config.data.patients.query', { jurisdiction: this.props.patient_query.jurisdiction });
-                    })
-                  }
-                  checked={this.state.selectedRecords === 'all'}
+                  label={<a onClick={() => this.handleSelectedRecordsChange('all')}>All Monitorees ({this.props.all_monitorees_count})</a>}
+                  onChange={() => this.handleSelectedRecordsChange('all')}
+                  checked={this.state.selected_records === 'all'}
                 />
                 <Form.Check
                   type="radio"
-                  className="px-1"
-                  label={`Only include reports that meet the following criteria (23):`}
-                  onChange={() => this.setState({ selectedRecords: 'custom' })}
-                  checked={this.state.selectedRecords === 'custom'}
+                  className="px-1 mb-2"
+                  label={
+                    <a onClick={() => this.handleSelectedRecordsChange('custom')}>
+                      Only include reports that meet the following criteria ({this.state.filtered_monitorees_count}):
+                    </a>
+                  }
+                  onChange={() => this.handleSelectedRecordsChange('custom')}
+                  checked={this.state.selected_records === 'custom'}
                 />
-                <div className="my-1"></div>
-                {(this.state.showFilters || this.state.selectedRecords === 'custom') && (
+                {this.state.selected_records === 'custom' && (
                   <PatientsFilters
                     authenticity_token={this.props.authenticity_token}
                     jurisdiction_paths={this.props.jurisdiction_paths}
                     jurisdiction={this.props.jurisdiction}
-                    query={this.state.preset?.config?.data?.patients?.query}
-                    onQueryChange={(field, value, cb) => this.handlePresetChange(`config.data.patients.query.${field}`, value, cb)}
+                    query={this.state.custom_patient_query}
+                    onQueryChange={(field, value, cb) =>
+                      this.setState(
+                        state => {
+                          return {
+                            custom_patient_query: { ...state.custom_patient_query, [field]: value },
+                          };
+                        },
+                        () => {
+                          this.getPatientCount();
+                          if (this.state.selected_records === 'custom') {
+                            this.handlePresetChange(`config.data.patients.query.${field}`, value, cb);
+                          }
+                        }
+                      )
+                    }
                   />
                 )}
               </Col>
@@ -256,7 +349,7 @@ class CustomExport extends React.Component {
           <div className="p-2">
             <h5 className="mx-3 my-2">Custom Export Format Name</h5>
             <Row className="mx-3">
-              <Col lg={16} className="px-1">
+              <Col md={12} className="px-1 py-2">
                 <Form.Control
                   id="preset"
                   as="input"
@@ -269,22 +362,8 @@ class CustomExport extends React.Component {
                   onChange={event => this.handlePresetChange('name', event?.target?.value)}
                 />
               </Col>
-              {/* <Col md={7} className="px-1">
-                <Form.Label className="nav-input-label">FILE NAME PREFIX</Form.Label>
-                <Form.Control
-                  id="filename"
-                  as="input"
-                  size="sm"
-                  type="text"
-                  className="form-square"
-                  placeholder="(Optional prefix for export file names)"
-                  autoComplete="off"
-                  value={this.state.preset?.config?.filename}
-                  onChange={event => this.handlePresetChange('config.filename', event?.target?.value)}
-                />
-              </Col> */}
-              <Col lg={8} className="px-1">
-                <Form.Group>
+              <Col md={6} className="px-1 pt-2">
+                <Form.Group className="mb-0">
                   <Button
                     size="sm"
                     variant={this.state.preset?.config?.format === 'csv' ? 'primary' : 'outline-secondary'}
@@ -303,34 +382,33 @@ class CustomExport extends React.Component {
                   </Button>
                 </Form.Group>
               </Col>
-              {/* <Col lg={6} className="px-1">
-                <Form.Label className="nav-input-label">MANAGE PRESET</Form.Label>
-                <Form.Group>
+              <Col md={6} className="px-1 pt-2">
+                <Form.Group className="mb-0 float-right">
                   {this.state.preset?.id ? (
                     <React.Fragment>
                       <Button
                         size="sm"
-                        variant="primary"
-                        disabled={!this.state.preset?.id}
-                        className="mr-1"
-                        style={{ outline: 'none', boxShadow: 'none' }}
-                        onClick={this.update}>
-                        <FontAwesomeIcon className="mr-1" icon={['fas', 'pen-alt']} />
-                        Update
-                      </Button>
-                      <Button
-                        size="sm"
                         variant="danger"
                         disabled={!this.state.preset?.id}
-                        className="ml-1"
+                        className="mr-1"
                         style={{ outline: 'none', boxShadow: 'none' }}
                         onClick={this.delete}>
                         <FontAwesomeIcon className="mr-1" icon={['fas', 'trash']} />
                         Delete
                       </Button>
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        disabled={!this.state.preset?.id}
+                        className="ml-1"
+                        style={{ outline: 'none', boxShadow: 'none' }}
+                        onClick={this.update}>
+                        <FontAwesomeIcon className="mr-1" icon={['fas', 'pen-alt']} />
+                        Update
+                      </Button>
                     </React.Fragment>
                   ) : this.state.preset?.name === '' ? (
-                    <OverlayTrigger overlay={<Tooltip>Please indicate a preset name to save this preset</Tooltip>}>
+                    <OverlayTrigger overlay={<Tooltip>Please indicate a name for the saved Custom Export</Tooltip>}>
                       <div>
                         <Button size="sm" variant="primary" disabled style={{ outline: 'none', boxShadow: 'none' }}>
                           <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
@@ -345,7 +423,7 @@ class CustomExport extends React.Component {
                     </Button>
                   )}
                 </Form.Group>
-              </Col> */}
+              </Col>
             </Row>
           </div>
         </Modal.Body>
@@ -353,21 +431,28 @@ class CustomExport extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={this.save}>
-            Save
-          </Button>
-          <Button variant="primary btn-square" onClick={this.export} disabled={this.state.preset?.config?.data?.patients?.checked?.length === 0}>
-            Export
-          </Button>
-          <Button
-            variant="primary btn-square"
-            onClick={() => {
-              this.save();
-              this.export();
-            }}
-            disabled={this.state.preset?.config?.data?.patients?.checked?.length === 0}>
-            Save and Export
-          </Button>
+          {this.state.preset?.config?.data?.patients?.checked?.length === 0 ? (
+            <OverlayTrigger overlay={<Tooltip>Please select at least one data element to export</Tooltip>}>
+              <div>
+                <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none' }}>
+                  Export
+                </Button>
+              </div>
+            </OverlayTrigger>
+          ) : (this.state.selected_records === 'current' && this.props.current_monitorees_count === 0) ||
+            (this.state.selected_records === 'custom' && this.state.filtered_monitorees_count === 0) ? (
+            <OverlayTrigger overlay={<Tooltip>Please modify filters to select at least 1 record</Tooltip>}>
+              <div>
+                <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none' }}>
+                  Export
+                </Button>
+              </div>
+            </OverlayTrigger>
+          ) : (
+            <Button variant="primary btn-square" onClick={this.export}>
+              Export
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     );
@@ -383,7 +468,7 @@ CustomExport.propTypes = {
   presets: PropTypes.array,
   patient_query: PropTypes.object,
   all_monitorees_count: PropTypes.number,
-  filtered_monitorees_count: PropTypes.number,
+  current_monitorees_count: PropTypes.number,
   options: PropTypes.object,
   onClose: PropTypes.func,
   reloadExportPresets: PropTypes.func,
