@@ -211,7 +211,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       #   assert page.has_content?("Required field '#{VALIDATION[field][:label]}' is missing"), "Error message for #{field}"
       # end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:enum) && !NORMALIZED_ENUMS[field].keys.include?(normalize_enum_field_value(value))
-        assert page.has_content?("'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value"), "Error message for #{field} missing"
       end
       # TODO: when workflow specific case status validation re-enabled: uncomment
       # if value && !value.blank? && WORKFLOW_SPECIFIC_FIELDS.include?(field)
