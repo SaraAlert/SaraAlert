@@ -214,7 +214,8 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         unless dependents.blank?
           create_contact_attempt_history_for_dependents(dependents, "The system will now be able to send an SMS to this monitoree's head of household
-            #{patient.primary_telephone}, because the head of household re-enabled communications with Sara Alert by sending a START keyword to #{sara_number}.")
+            #{patient.primary_telephone}, because the head of household re-enabled communications with Sara Alert by sending a START
+            keyword to #{sara_number}.")
         end
       end
     end
