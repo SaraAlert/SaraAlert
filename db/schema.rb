@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_27_160411) do
+ActiveRecord::Schema.define(version: 2020_12_09_221804) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -37,11 +37,6 @@ ActiveRecord::Schema.define(version: 2020_11_27_160411) do
     t.index ["symptomatic", "patient_id", "created_at"], name: "assessments_index_chain_2"
   end
 
-  create_table "blocked_numbers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "phone_number", null: false
-    t.index ["phone_number"], name: "index_blocked_phone_number"
-  end
-
   create_table "audits", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "auditable_id"
     t.string "auditable_type"
@@ -62,6 +57,11 @@ ActiveRecord::Schema.define(version: 2020_11_27_160411) do
     t.index ["created_at"], name: "index_audits_on_created_at"
     t.index ["request_uuid"], name: "index_audits_on_request_uuid"
     t.index ["user_id", "user_type"], name: "user_index"
+  end
+
+  create_table "blocked_numbers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "phone_number", null: false
+    t.index ["phone_number"], name: "index_blocked_phone_number"
   end
 
   create_table "close_contacts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

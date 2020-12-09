@@ -2,7 +2,6 @@
 
 # User: user model
 class User < ApplicationRecord
-  rolify
   audited only: %i[locked_at jurisdiction_id created_at api_enabled role email authy_enabled
                    force_password_change last_sign_in_with_authy], max_audits: 1000
 

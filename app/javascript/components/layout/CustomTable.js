@@ -81,18 +81,6 @@ class CustomTable extends React.Component {
   };
 
   /**
-   * Called when the audit button a row is clicked. Calls passed in handler (if any).
-   * @param {Number} row - Row that the edit button was clicked on.
-   */
-  handleAuditClick = row => {
-    if (this.props.isAuditable && this.props.handleAudit) {
-      this.props.handleAudit(row);
-    } else if (this.props.isAuditable) {
-      console.log('Please provide a handler function in component props for editing.');
-    }
-  };
-
-  /**
    * Renders the header element of the table for a given field with
    * optional sorting functionality and a toolip.
    *
@@ -155,7 +143,6 @@ class CustomTable extends React.Component {
                 return this.renderTableHeader(data.field, data.label, data.isSortable, data.tooltip, data.icon);
               })}
               {this.props.isEditable && <th>Edit</th>}
-              {this.props.isAuditable && <th>Audit</th>}
               {this.props.isSelectable && (
                 <th>
                   <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll}></input>
@@ -177,19 +164,16 @@ class CustomTable extends React.Component {
                       // Send along string of the ID and HoH bool if needed
                       value = col.filter(data[col.field], data.id?.toString(), data.is_hoh);
                     }
-                    return <td key={index}>{value}</td>;
+                    return (
+                      <td key={index} className={col.className ? col.className : ''}>
+                        <span onClick={() => (col.onClick(data.id.toString()) ? col.onClick : null)}>{value}</span>
+                      </td>
+                    );
                   })}
                   {this.props.isEditable && (
                     <td>
                       <div className="float-left edit-button" onClick={() => this.handleEditClick(row)}>
                         <i className="fas fa-edit"></i>
-                      </div>
-                    </td>
-                  )}
-                  {this.props.isAuditable && (
-                    <td>
-                      <div className="float-left edit-button" onClick={() => this.handleAuditClick(row)}>
-                        <i className="fas fa-user-clock"></i>
                       </div>
                     </td>
                   )}
@@ -273,9 +257,7 @@ CustomTable.propTypes = {
   selectAll: PropTypes.bool,
   isEditable: PropTypes.bool,
   isSelectable: PropTypes.bool,
-  isAuditable: PropTypes.bool,
   handleEdit: PropTypes.func,
-  handleAudit: PropTypes.func,
   handleTableUpdate: PropTypes.func,
   handleSelect: PropTypes.func,
   handlePageUpdate: PropTypes.func,
