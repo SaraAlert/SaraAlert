@@ -481,7 +481,8 @@ class PublicHealthController < ApplicationController
 
     if timeframe[:after].present?
       # Convert timeframe value to date if field is a date, apply timezone difference if field is a datetime
-      after = type == :date ? timeframe[:after].to_date : timeframe[:after] - tz_diff
+      after = timeframe[:after] - tz_diff
+      after = after.to_date if type == :date
       patients = patients.where('patients.created_at >= ?', after) if field == :created_at
       patients = patients.where('latest_assessment_at >= ?', after) if field == :latest_assessment_at
       patients = patients.where('last_date_of_exposure >= ?', after) if field == :last_date_of_exposure
@@ -490,7 +491,8 @@ class PublicHealthController < ApplicationController
 
     if timeframe[:before].present?
       # Convert timeframe value to date if field is a date, apply timezone difference if field is a datetime
-      before = type == :date ? timeframe[:before].to_date : timeframe[:before] - tz_diff
+      before = timeframe[:before] - tz_diff
+      before = before.to_date if type == :date
       patients = patients.where('patients.created_at <= ?', before) if field == :created_at
       patients = patients.where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
       patients = patients.where('last_date_of_exposure <= ?', before) if field == :last_date_of_exposure
