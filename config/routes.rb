@@ -68,6 +68,7 @@ Rails.application.routes.draw do
   get '/export/excel/patients/comprehensive/:workflow', to: 'export#excel_comprehensive_patients'
   get '/export/excel/patients/full_history/:scope', to: 'export#excel_full_history_patients'
   get '/export/excel/patients/full_history/patient/:patient_id', to: 'export#excel_full_history_patient'
+  get '/export/nbs/patient/:patient_id', to: 'export#nbs_patient'
   get '/export/download/:lookup', to: 'downloads#download', as: :export_download
 
   post '/import/:workflow/:format', to: 'import#import'

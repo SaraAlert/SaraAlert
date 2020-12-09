@@ -61,6 +61,12 @@ gem 'roo'
 # Excel Export
 gem 'caxlsx'
 
+# Fast XML
+gem 'ox'
+
+# Zip support
+gem 'rubyzip'
+
 # Used for inline css before mailer
 gem 'premailer-rails'
 

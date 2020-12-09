@@ -183,7 +183,6 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(17, maps.length)
   end
 
-  # rubocop:disable Metrics/ParameterLists
   def verify_monitoree_count(counts, index, active_monitoring, category_type, category, total)
     assert_equal(1, counts[index].analytic_id, monitoree_count_err_msg(index, active_monitoring, category_type))
     assert_equal(active_monitoring, counts[index].active_monitoring, monitoree_count_err_msg(index, active_monitoring, category_type))
@@ -217,7 +216,6 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     end
     assert_equal(total, maps[index].total, 'Total')
   end
-  # rubocop:enable Metrics/ParameterLists
 
   def days_ago(num_days)
     num_days.days.ago.strftime('%F')

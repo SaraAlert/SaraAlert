@@ -67,7 +67,6 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     end
   end
 
-  # rubocop:disable Metrics/ParameterLists
   def import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
@@ -125,7 +124,6 @@ class PublicHealthDashboard < ApplicationSystemTestCase
       find('.modal-header').find('.close').click
     end
   end
-  # rubocop:enable Metrics/ParameterLists
 
   def import_and_cancel(workflow, file_name, file_type)
     click_on 'Isolation Monitoring' if workflow == :isolation

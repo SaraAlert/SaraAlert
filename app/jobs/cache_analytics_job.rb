@@ -353,7 +353,7 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   # New monitoree count with given fields
-  def self.monitoree_count(analytic_id, active_monitoring, category_type, category, total, status) # rubocop:todo Metrics/ParameterLists
+  def self.monitoree_count(analytic_id, active_monitoring, category_type, category, total, status)
     MonitoreeCount.new(
       analytic_id: analytic_id,
       active_monitoring: active_monitoring,
@@ -419,7 +419,7 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   # Monitoree map
-  def self.monitoree_map(analytic_id, level, workflow, state, county, total) # rubocop:todo Metrics/ParameterLists
+  def self.monitoree_map(analytic_id, level, workflow, state, county, total)
     MonitoreeMap.new(
       analytic_id: analytic_id,
       level: level,
