@@ -89,4 +89,15 @@ class ExportController < ApplicationController
     History.monitoree_data_downloaded(patient: patients.first, created_by: current_user.email)
     send_data excel_export(patients)
   end
+
+  # Single patient NBS export
+  def nbs_patient
+    redirect_to(root_url) && return unless current_user.can_export?
+    return unless current_user.viewable_patients.exists?(params[:patient_id])
+
+    patients = current_user.viewable_patients.where(id: params[:patient_id])
+    return if patients.empty?
+
+    send_data Base64.encode64(PHDC::Serializer.new.patients_to_phdc_zip(patients, patients.first.jurisdiction).string)
+  end
 end

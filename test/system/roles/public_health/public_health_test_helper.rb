@@ -19,7 +19,6 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
   @@public_health_patient_page = PublicHealthPatientPage.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  # rubocop:disable Metrics/ParameterLists
   def verify_patients_on_dashboard(user_label, verify_scope: false)
     jurisdiction_id = @@system_test_utils.login(user_label)
     @@public_health_dashboard_verifier.verify_patients_on_dashboard(jurisdiction_id, verify_scope: verify_scope)
@@ -216,5 +215,4 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@public_health_dashboard.download_sara_alert_format_guidance(workflow)
     @@system_test_utils.logout
   end
-  # rubocop:enable Metrics/ParameterLists
 end
