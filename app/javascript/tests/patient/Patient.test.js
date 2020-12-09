@@ -279,7 +279,7 @@ describe('Patient', () => {
     it('Renders edit buttons if props.goto is defined', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2 ]} goto={goToMock} hideBody={false}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
-        expect(wrapper.find(Button).length).toEqual(7);
+        expect(wrapper.find(Button).length).toEqual(6);
         wrapper.find(Button).forEach(function(btn) {
             expect(btn.text()).toEqual('(Edit)');
         });
