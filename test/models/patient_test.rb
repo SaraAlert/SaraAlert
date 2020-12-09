@@ -1448,100 +1448,174 @@ class PatientTest < ActiveSupport::TestCase
     assert_not new_head.reload.head_of_household
   end
 
-  test 'validates address_state inclusion in api context' do
+  test 'validates address_state inclusion' do
     patient = valid_patient
 
     patient.address_state = 'Georgia'
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.address_state = 'foo'
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
-  test 'validates ethnicity inclusion in api context' do
+  test 'validates ethnicity inclusion' do
     patient = valid_patient
 
     patient.ethnicity = 'Hispanic or Latino'
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.ethnicity = ''
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.ethnicity = nil
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.ethnicity = 'foo'
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
-  test 'validates monitored_address_state inclusion in api context' do
+  test 'validates monitored_address_state inclusion' do
     patient = valid_patient
 
     patient.monitored_address_state = 'Oregon'
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.monitored_address_state = ''
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.monitored_address_state = nil
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.monitored_address_state = 'foo'
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
-  test 'validates preferred contact method inclusion in api context' do
+  test 'validates preferred contact method inclusion' do
     patient = valid_patient
 
     patient.preferred_contact_method = 'Unknown'
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.preferred_contact_method = ''
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.preferred_contact_method = nil
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.preferred_contact_method = 'foo'
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
-  test 'validates preferred contact time inclusion in api context' do
+  test 'validates preferred contact time inclusion' do
     patient = valid_patient
 
     patient.preferred_contact_time = 'Morning'
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.preferred_contact_time = ''
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.preferred_contact_time = nil
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.preferred_contact_time = 'foo'
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
-  test 'validates sex inclusion in api context' do
+  test 'validates sex inclusion' do
     patient = valid_patient
 
     patient.sex = 'Female'
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.sex = ''
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.sex = nil
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.sex = 'foo'
-    assert_not patient.valid?(:api)
+    assert_not patient.valid?
+  end
+
+  test 'validates primary_telephone_type inclusion' do
+    patient = valid_patient
+
+    patient.primary_telephone_type = 'Smartphone'
     assert patient.valid?
+
+    patient.primary_telephone_type = ''
+    assert patient.valid?
+
+    patient.primary_telephone_type = nil
+    assert patient.valid?
+
+    patient.primary_telephone_type = 'foo'
+    assert_not patient.valid?
+  end
+
+  test 'validates secondary_telephone_type inclusion' do
+    patient = valid_patient
+
+    patient.secondary_telephone_type = 'Smartphone'
+    assert patient.valid?
+
+    patient.secondary_telephone_type = ''
+    assert patient.valid?
+
+    patient.secondary_telephone_type = nil
+    assert patient.valid?
+
+    patient.secondary_telephone_type = 'foo'
+    assert_not patient.valid?
+  end
+
+  test 'validates additional_planned_travel_type inclusion' do
+    patient = valid_patient
+
+    patient.additional_planned_travel_type = 'Domestic'
+    assert patient.valid?
+
+    patient.additional_planned_travel_type = ''
+    assert patient.valid?
+
+    patient.additional_planned_travel_type = nil
+    assert patient.valid?
+
+    patient.additional_planned_travel_type = 'foo'
+    assert_not patient.valid?
+  end
+
+  test 'validates monitoring_plan inclusion' do
+    patient = valid_patient
+
+    patient.monitoring_plan = 'None'
+    assert patient.valid?
+
+    patient.monitoring_plan = ''
+    assert patient.valid?
+
+    patient.monitoring_plan = nil
+    assert patient.valid?
+
+    patient.monitoring_plan = 'foo'
+    assert_not patient.valid?
+  end
+
+  test 'validates case_status inclusion' do
+    patient = valid_patient
+
+    patient.case_status = 'Confirmed'
+    assert patient.valid?
+
+    patient.case_status = ''
+    assert patient.valid?
+
+    patient.case_status = nil
+    assert patient.valid?
+
+    patient.case_status = 'foo'
+    assert_not patient.valid?
   end
 
   test 'validates primary phone is a possible phone number in api context' do
@@ -2075,13 +2149,13 @@ class PatientTest < ActiveSupport::TestCase
 
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
     create(:assessment, patient_id: patient.id, symptomatic: false)
-    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'ANTIGEN', specimen_collection: DateTime.now.utc.to_date)
+    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'Antigen', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
     assert scoped_patients.where(id: patient.id).present?
 
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
     create(:assessment, patient_id: patient.id, symptomatic: false)
-    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'test', specimen_collection: DateTime.now.utc.to_date)
+    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'Other', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
     assert_not scoped_patients.where(id: patient.id).present?
   end

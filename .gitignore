@@ -49,3 +49,6 @@ tls/
 
 # Ignore database backups
 sara_database_*
+
+# Ignore temporary excel files
+~$*
