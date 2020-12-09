@@ -86,26 +86,13 @@ class ImportController < ApplicationController
         end
 
         begin
-          # Run validations on fields that have restrictions conditional on other fields
-          validate_required_primary_contact(patient, row_ind)
-
           # Validate using Patient model validators without saving
-          # NOTE: Using dummy values for required fields to satisfy basic checks on those fields that will be added later outside of import
-          # NOTE: Commented out until additional testing
-          # temp_patient_data = patient.merge({ responder_id: 1, creator_id: 1, jurisdiction_id: 1 })
-          # temp_patient = Patient.new(temp_patient_data)
-          # unless temp_patient.valid?
-          #   temp_patient.errors.messages.each_value do |err_message|
-          #     @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
-          #   end
-          # end
-
-          # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
-          patient[:duplicate_data] = current_user.viewable_patients.duplicate_data(patient[:first_name],
-                                                                                   patient[:last_name],
-                                                                                   patient[:sex],
-                                                                                   patient[:date_of_birth],
-                                                                                   patient[:user_defined_id_statelocal])
+          validation_patient = Patient.new(patient.slice(*Patient.attribute_names.map(&:to_sym)))
+          unless validation_patient.valid?
+            format_model_validation_errors(validation_patient).each do |error|
+              @errors << ValidationError.new(error, row_ind).message
+            end
+          end
 
           if format == :sara_alert_format
             lab_results = []
@@ -114,19 +101,26 @@ class ImportController < ApplicationController
             patient[:laboratories_attributes] = lab_results unless lab_results.empty?
 
             # Validate using Laboratory model validators without saving
-            # NOTE: Using dummy values for patient to satisfy basic validation on that field
-            # NOTE: Commented out until additional testing
-            # lab_results.each do |lab_data|
-            #   temp_lab_data = lab_data.merge({ patient_id: 1 })
-            #   temp_lab_result = Laboratory.new(temp_lab_data)
-            #   next if temp_lab_result.valid?
+            lab_results.each do |lab_data|
+              validation_lab_result = Laboratory.new(lab_data)
+              next if validation_lab_result.valid?
 
-            #   temp_lab_result.errors.messages.each_value do |err_message|
-            #     @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
-            #   end
-            # end
+              format_model_validation_errors(validation_lab_result).each do |error|
+                @errors << ValidationError.new(error, row_ind).message
+              end
+            end
 
           end
+
+          # Run validations on fields that have restrictions conditional on other fields
+          validate_required_primary_contact(patient, row_ind)
+
+          # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
+          patient[:duplicate_data] = current_user.viewable_patients.duplicate_data(patient[:first_name],
+                                                                                   patient[:last_name],
+                                                                                   patient[:sex],
+                                                                                   patient[:date_of_birth],
+                                                                                   patient[:user_defined_id_statelocal])
         rescue ValidationError => e
           @errors << e&.message || "Unknown error on row #{row_ind}"
         rescue StandardError => e
@@ -152,10 +146,10 @@ class ImportController < ApplicationController
 
   def lab_result(data, row_ind)
     {
-      lab_type: validate_enum_field(:lab_type, data[0], row_ind),
+      lab_type: import_enum_field(:lab_type, data[0]),
       specimen_collection: validate_field(:specimen_collection, data[1], row_ind),
       report: validate_field(:report, data[2], row_ind),
-      result: validate_enum_field(:result, data[3], row_ind)
+      result: import_enum_field(:result, data[3])
     }
   end
 
@@ -187,7 +181,7 @@ class ImportController < ApplicationController
 
     # TODO: Un-comment when required fields are to be checked upon import
     # value = validate_required_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:required)
-    value = validate_enum_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:enum)
+    value = import_enum_field(field, value) if VALIDATION[field][:checks].include?(:enum)
     value = validate_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
     value = validate_date_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:date)
     value = validate_phone_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:phone)
@@ -203,15 +197,11 @@ class ImportController < ApplicationController
     value
   end
 
-  def validate_enum_field(field, value, row_ind)
+  def import_enum_field(field, value)
     return nil if value.blank?
 
     normalized_value = normalize_enum_field_value(value)
-    return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
-
-    err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}',"\
-              " acceptable values are: #{VALID_PATIENT_ENUMS[field].reject(&:blank?).to_sentence}"
-    raise ValidationError.new(err_msg, row_ind)
+    NORMALIZED_ENUMS[field].keys.include?(normalized_value) ? NORMALIZED_ENUMS[field][normalized_value] : value
   end
 
   def validate_bool_field(field, value, row_ind)
@@ -331,6 +321,18 @@ class ImportController < ApplicationController
     end
 
     raise ValidationError.new("'Primary Telephone' is required when Primary Contact Method is '#{patient[:preferred_contact_method]}'", row_ind)
+  end
+
+  def format_model_validation_errors(resource)
+    resource.errors&.messages&.each_with_object([]) do |(attribute, errors), messages|
+      next unless VALIDATION.key?(attribute)
+
+      value = resource[attribute] || resource.public_send("#{attribute}_before_type_cast")
+      msg_header = (value ? " Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}'"
+      errors.each do |error_message|
+        messages << "#{msg_header} #{error_message}"
+      end
+    end
   end
 end
 

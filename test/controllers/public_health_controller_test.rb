@@ -488,7 +488,7 @@ class PublicHealthControllerTest < ActionController::TestCase
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user, monitoring: true, last_date_of_exposure: 15.days.ago)
     assessment = create(:assessment, patient: patient, symptomatic: false)
-    laboratory = create(:laboratory, patient: patient, result: 'negative', lab_type: 'ANTIGEN', specimen_collection: DateTime.now)
+    laboratory = create(:laboratory, patient: patient, result: 'negative', lab_type: 'Antigen', specimen_collection: DateTime.now)
     js_timezone_offsets = [-120, -480, -720, 300, 360, 420, 480, 660]
     (7..12).to_a.each do |lde|
       patient.update(last_date_of_exposure: lde.days.ago)
