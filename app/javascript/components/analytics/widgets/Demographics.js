@@ -102,7 +102,7 @@ class Demographics extends React.Component {
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="Exposure" stackId="a" fill="#557385" />
-                  <Bar dataKey="Isolation" stackId="a" fill="#cbcfd2" />
+                  <Bar dataKey="Isolation" stackId="a" fill="#DCC5A7" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
