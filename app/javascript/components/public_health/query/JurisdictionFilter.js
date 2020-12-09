@@ -34,6 +34,7 @@ class JurisdictionFilter extends React.Component {
           </InputGroup.Text>
         </InputGroup.Prepend>
         <Form.Control
+          id="jurisdiction_path"
           type="text"
           autoComplete="off"
           list="jurisdiction_paths"
@@ -53,6 +54,7 @@ class JurisdictionFilter extends React.Component {
         <React.Fragment>
           <OverlayTrigger overlay={<Tooltip>Include Sub-Jurisdictions</Tooltip>}>
             <Button
+              id="allJurisdictions"
               size="sm"
               variant={this.props.scope === 'all' ? 'primary' : 'outline-secondary'}
               style={{ outline: 'none', boxShadow: 'none' }}
@@ -63,6 +65,7 @@ class JurisdictionFilter extends React.Component {
           </OverlayTrigger>
           <OverlayTrigger overlay={<Tooltip>Exclude Sub-Jurisdictions</Tooltip>}>
             <Button
+              id="exactJurisdiction"
               size="sm"
               variant={this.props.scope === 'exact' ? 'primary' : 'outline-secondary'}
               style={{ outline: 'none', boxShadow: 'none' }}

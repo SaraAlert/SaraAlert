@@ -5,12 +5,6 @@ require 'axlsx'
 # ExportController: for exporting subjects
 class ExportController < ApplicationController
   include ImportExport
-  include PatientQueryHelper
-  include AssessmentQueryHelper
-  include LaboratoryQueryHelper
-  include CloseContactQueryHelper
-  include TransferQueryHelper
-  include HistoryQueryHelper
 
   before_action :authenticate_user!
   before_action :authenticate_user_role

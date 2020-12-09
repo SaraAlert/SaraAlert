@@ -332,6 +332,10 @@ class ImportController < ApplicationController
 
     raise ValidationError.new("'Primary Telephone' is required when Primary Contact Method is '#{patient[:preferred_contact_method]}'", row_ind)
   end
+
+  def unformat_enum_field(value)
+    value.to_s.downcase.gsub(/[ -.]/, '')
+  end
 end
 
 # Exception used for reporting validation errors
