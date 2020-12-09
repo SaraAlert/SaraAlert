@@ -511,7 +511,7 @@ class Patient extends React.Component {
                       </h4>
                     </div>
                     <div>
-                      {this.props.goto && (
+                      {this.props.goto && !this.props.details.isolation && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
                           <h5>(Edit)</h5>
                         </Button>
