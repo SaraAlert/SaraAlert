@@ -282,6 +282,7 @@ class PublicHealthController < ApplicationController
     %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
   end
 
+  # rubocop:disable Metrics/MethodLength
   def advanced_filter(patients, filters, tz_offset)
     filters.each do |filter|
       case filter[:filterOption]['name']
@@ -438,9 +439,34 @@ class PublicHealthController < ApplicationController
         when 'All'
           patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts)
         end
+      when 'ten-day-quarantine'
+        patients = advanced_filter_quarantine_option(patients, tz_offset, :ten_day)
+      when `seven-day-quarantine`
+        patients = advanced_filter_quarantine_option(patients, tz_offset, :seven_day)
       end
     end
     patients
+  end
+  # rubocop:enable Metrics/MethodLength
+
+  # Handles a given quarantine option from the advanced filter.
+  def advanced_filter_quarantine_option(patients, tz_offset, option_type)
+    # Adjust for difference between client and server timezones.
+    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
+    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
+    tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
+    user_curr_datetime = DateTime.now - tz_diff
+
+    # Get all patients who meet this criteria based on the option type
+    case option_type
+    when :ten_day
+      query = patients.ten_day_quarantine_candidates(user_curr_datetime)
+    when :seven_day
+      query = patients.seven_day_quarantine_candidates(user_curr_datetime)
+    end
+
+    # Based on if the user selected true/false, return appropriate patients
+    filter[:value].present? ? query : patients.where.not(id: query.pluck(:id))
   end
 
   # Filter patients by a set time range for the given field

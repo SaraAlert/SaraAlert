@@ -183,6 +183,19 @@ class AdvancedFilter extends React.Component {
           type: 'number',
           options: ['Successful', 'Unsuccessful', 'All'],
         },
+        {
+          name: 'ten-day-quarantine',
+          title: 'Candidate to Reduce Quarantine after 10 Days (Boolean)',
+          description: 'All asymptomatic records that meet CDC criteria to end quarantine after Day 10 (based on last date of exposure)',
+          type: 'boolean',
+        },
+        {
+          name: 'seven-day-quarantine',
+          title: 'Candidate to Reduce Quarantine after 7 Days (Boolean)',
+          description:
+            'All asymptomatic records that meet CDC criteria to end quarantine after Day 7 (based on last date of exposure and most recent lab result)',
+          type: 'boolean',
+        },
       ],
       savedFilters: [],
       activeFilter: null,
