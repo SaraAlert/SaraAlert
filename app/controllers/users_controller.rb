@@ -32,9 +32,9 @@ class UsersController < ApplicationController
 
     # Check jurisdiction permissions
     cur_jur = current_user.jurisdiction
-    return head :bad_request unless cur_jur.subtree_ids.include? user.jurisdiction.id
+    return head :unauthorized unless cur_jur.subtree_ids.include? user.jurisdiction.id
 
-    # Structure array to be return so each audit encompasses a single change instead of multiple changes
+    # Break out audits into all the individual changes
     individual_audits = []
     user.audits.each do |a|
       if a.audited_changes.key?('created_at')

@@ -74,7 +74,6 @@ class AuditModal extends React.Component {
             };
           });
         } else {
-          console.log(error);
           this.setState({ isLoading: false });
         }
       })
@@ -112,35 +111,37 @@ class AuditModal extends React.Component {
     });
   }
 
+  /**
+   * Formatting method for displaying each audit action in the table.
+   * @param {Object} change - audit to display holding the updated element ({String} name) and the before & after values ({Array} details)
+   */
   formatChange = change => {
     switch (change.name) {
       case 'locked_at':
+        // Generic audit message in case before & after values not provided
         if (!change.details || !Array.isArray(change.details) || !change.details.length) {
           return (
             <span>
               <b>Account Status</b>: Updated
             </span>
           );
-        } else if (change.details[0]) {
-          return (
-            <span>
-              <b>Account Status</b>: Unlocked
-            </span>
-          );
+          // More detailed audit message when before & after values provided
         } else {
           return (
             <span>
-              <b>Account Status</b>: Locked
+              <b>Account Status</b>: {change.details[0] ? 'Unlocked' : 'Locked'}
             </span>
           );
         }
       case 'jurisdiction_id':
+        // Generic audit message in case before & after values not provided
         if (!change.details || !Array.isArray(change.details) || change.details.length < 2) {
           return (
             <span>
               <b>Jurisdiction</b>: Updated
             </span>
           );
+          // More detailed audit message when before & after values provided
         } else {
           return (
             <span>
@@ -156,32 +157,30 @@ class AuditModal extends React.Component {
           </span>
         );
       case 'api_enabled':
+        // Generic audit message in case before & after values not provided
         if (!change.details || !Array.isArray(change.details) || !change.details.length) {
           return (
             <span>
               <b>API Access</b>: Updated
             </span>
           );
-        } else if (change.details[0]) {
-          return (
-            <span>
-              <b>API Access</b>: Disabled
-            </span>
-          );
+          // More detailed audit message when before & after values provided
         } else {
           return (
             <span>
-              <b>API Access</b>: Enabled
+              <b>API Access</b>: {change.details[0] ? 'Disabled' : 'Enabled'}
             </span>
           );
         }
       case 'role':
+        // Generic audit message in case before & after values not provided
         if (!change.details || !Array.isArray(change.details) || change.details.length < 2) {
           return (
             <span>
               <b>Role</b>: Updated
             </span>
           );
+          // More detailed audit message when before & after values provided
         } else {
           return (
             <span>
@@ -190,12 +189,14 @@ class AuditModal extends React.Component {
           );
         }
       case 'email':
+        // Generic audit message in case before & after values not provided
         if (!change.details || !Array.isArray(change.details) || change.details.length < 2) {
           return (
             <span>
               <b>Email</b>: Updated
             </span>
           );
+          // More detailed audit message when before & after values provided
         } else {
           return (
             <span>
@@ -204,22 +205,18 @@ class AuditModal extends React.Component {
           );
         }
       case 'authy_enabled':
+        // Generic audit message in case before & after values not provided
         if (!change.details || !Array.isArray(change.details) || !change.details.length) {
           return (
             <span>
               <b>2FA</b>: Updated
             </span>
           );
-        } else if (change.details[0]) {
-          return (
-            <span>
-              <b>2FA</b>: Enabled
-            </span>
-          );
+          // More detailed audit message when before & after values provided
         } else {
           return (
             <span>
-              <b>2FA</b>: Disabled
+              <b>2FA</b>: {change.details[0] ? 'Disabled' : 'Enabled'}
             </span>
           );
         }
@@ -309,7 +306,6 @@ class AuditModal extends React.Component {
               handleEntriesChange={this.handleEntriesChange}
               isEditable={false}
               isSelectable={false}
-              isAuditable={false}
               isLoading={this.state.isLoading}
               page={this.state.query.page}
               handlePageUpdate={this.handlePageUpdate}

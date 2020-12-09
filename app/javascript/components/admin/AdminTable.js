@@ -25,6 +25,7 @@ class AdminTable extends React.Component {
           { label: 'API Enabled', field: 'is_api_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: '2FA Enabled', field: 'is_2fa_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: 'Failed Login Attempts', field: 'num_failed_logins', isSortable: true },
+          { label: 'Audit', field: 'Audit', isSortable: false, tooltip: null, filter: this.createAuditButton, onClick: this.handleAuditClick },
         ],
         rowData: [],
         totalRows: 0,
@@ -45,11 +46,24 @@ class AdminTable extends React.Component {
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
       editRow: null,
+      auditRow: null,
       csvData: [],
       jurisdiction_paths: {},
     };
     // Ref for the CSVLink component used to click it when async data fetch has completed
     this.csvLink = React.createRef();
+  }
+
+  /**
+   * Creates a "Audit" button for each row of the table.
+   * @param {string} userId
+   */
+  createAuditButton(_, userId) {
+    return (
+      <div id={userId} className="float-left edit-button">
+        <i className="fas fa-user-clock"></i>
+      </div>
+    );
   }
 
   componentDidMount() {
@@ -115,6 +129,17 @@ class AdminTable extends React.Component {
         })
         .then(handleSuccess)
         .catch(handleError);
+    });
+  };
+
+  /**
+   * Called when the audit button is clicked on a given row.
+   * Updates the state to show the appropriate modal for auditing a user and the the current row being audited.
+   */
+  handleAuditClick = user_id => {
+    this.setState({
+      showAuditModal: true,
+      auditRow: this.state.table.rowData.find(u => u.id == user_id),
     });
   };
 
@@ -206,17 +231,6 @@ class AdminTable extends React.Component {
       showEditUserModal: false,
       showAddUserModal: false,
       editRow: null,
-    });
-  };
-
-  /**
-   * Called when the audit button is clicked on a given row.
-   * Updates the state to show the appropriate modal for auditing a user and the the current row being audited.
-   */
-  handleAuditClick = row => {
-    this.setState({
-      showAuditModal: true,
-      editRow: row,
     });
   };
 
@@ -649,8 +663,6 @@ class AdminTable extends React.Component {
           handleEntriesChange={this.handleEntriesChange}
           isSelectable={true}
           isEditable={true}
-          isAuditable={true}
-          handleAudit={this.handleAuditClick}
           isLoading={this.state.isLoading}
           page={this.state.query.page}
           handlePageUpdate={this.handlePageUpdate}
@@ -675,7 +687,7 @@ class AdminTable extends React.Component {
           <AuditModal
             show={this.state.showAuditModal}
             onClose={this.handleAuditModalClose}
-            user={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
+            user={this.state.auditRow === null ? {} : this.state.auditRow}
             authenticity_token={this.props.authenticity_token}
           />
         )}
