@@ -1,4 +1,10 @@
-1.16.0
+---
+layout: default
+title: Release Notes
+parent: API
+nav_order: 1
+---
+# 1.16.0
 * The following data elements are now required on the Patient resource:
   * **State**, **Date of Birth**, **First Name**, **Last Name** are always required
   * **Symptom Onset** is required if **Isolation** is true (Monitoree is in the Isolation Workflow)

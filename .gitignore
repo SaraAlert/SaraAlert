@@ -1,0 +1,3 @@
+# Ignore Jekyll generated files
+_site
+.jekyll-cache
