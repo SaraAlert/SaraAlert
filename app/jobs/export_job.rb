@@ -25,62 +25,15 @@ class ExportJob < ApplicationJob
 
     # Extract data
     data = config[:data]
-
     return if data.nil?
 
     # Construct export
     lookups = []
     patients = patients_by_query(user, data.dig(:patients, :query) || {})
     patients&.in_batches(of: RECORD_BATCH_SIZE)&.each_with_index do |patients_group, index|
-      exported_data = {}
-      patients_identifiers = Hash[patients_group.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
-                                                .map do |id, statelocal, cdc, nndss|
-                                                  [id, { user_defined_id_statelocal: statelocal, user_defined_id_cdc: cdc, user_defined_id_nndss: nndss }]
-                                                end]
-
-      if data.dig(:patients, :checked).present?
-        # Replace 'race' field with actual race fields
-        if data[:patients][:checked].include?(:race)
-          race_index = data[:patients][:checked].index(:race)
-          data[:patients][:checked].delete(:race)
-          data[:patients][:checked].insert(race_index, *RACE_FIELDS)
-        end
-
-        exported_data[:patients] = extract_patients_details(patients_group, data[:patients][:checked])
-      end
-
-      if data.dig(:assessments, :checked).present?
-        assessments = assessments_by_query(patients_identifiers)
-        exported_data[:assessments], symptom_names = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
-
-        # Replace 'symptom' field with actual symptom fields
-        if data[:assessments][:checked].include?(:symptoms)
-          data[:assessments][:checked].delete(:symptoms)
-          data[:assessments][:checked].concat(symptom_names)
-        end
-      end
-
-      if data.dig(:laboratories, :checked).present?
-        laboratories = laboratories_by_query(patients_identifiers)
-        exported_data[:laboratories] = extract_laboratories_details(patients_identifiers, laboratories, data[:laboratories][:checked])
-      end
-
-      if data.dig(:close_contacts, :checked).present?
-        close_contacts = close_contacts_by_query(patients_identifiers)
-        exported_data[:close_contacts] = extract_close_contacts_details(patients_identifiers, close_contacts, data[:close_contacts][:checked])
-      end
-
-      if data.dig(:transfers, :checked).present?
-        transfers = transfers_by_query(patients_identifiers)
-        exported_data[:transfers] = extract_transfers_details(patients_identifiers, transfers, data[:transfers][:checked])
-      end
-
-      if data.dig(:histories, :checked).present?
-        histories = histories_by_query(patients_identifiers)
-        exported_data[:histories] = extract_histories_details(patients_identifiers, histories, data[:histories][:checked])
-      end
-
-      lookups.concat(save_files_and_create_lookups(config, exported_data, index))
+      exported_data = get_export_data(patients_group, data)
+      files = write_export_data_to_file(config, exported_data, index)
+      lookups.concat(create_lookups(config, files))
     end
 
     return if lookups.empty?
@@ -92,17 +45,19 @@ class ExportJob < ApplicationJob
     UserMailer.download_email(user, EXPORT_TYPES[config[:export_type]][:label] || 'default', lookups, RECORD_BATCH_SIZE).deliver_later
   end
 
-  # Saves exported data to files and creates lookups for them
-  def save_files_and_create_lookups(config, exported_data, index)
-    lookups = []
-
-    # Write data to file(s)
+  # Writes export data to file(s)
+  def write_export_data_to_file(config, exported_data, index)
     case config[:format]
     when 'csv'
-      files = csv_export(config, exported_data, index)
+      csv_export(config, exported_data, index)
     when 'xlsx'
-      files = xlsx_export(config, exported_data, index)
+      xlsx_export(config, exported_data, index)
     end
+  end
+
+  # Creates lookups for files
+  def create_lookups(config, files)
+    lookups = []
 
     # Write
     files&.each do |file|

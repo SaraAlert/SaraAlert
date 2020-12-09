@@ -19,6 +19,10 @@ class JurisdictionsController < ApplicationController
 
   # Get list of assigned users unique to jurisdiction
   def assigned_users_for_viewable_patients
+    # Require jurisdiction and scope params
+    params.require(:query).require(:jurisdiction)
+    params.require(:query).require(:scope)
+
     # Validate filter and sorting params
     begin
       query = validate_patients_query(params.require(:query))

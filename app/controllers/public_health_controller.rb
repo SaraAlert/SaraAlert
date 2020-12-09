@@ -69,7 +69,7 @@ class PublicHealthController < ApplicationController
     end
 
     # Get patients by workflow and tab
-    patients = patients_by_linelist(current_user, workflow, tab)
+    patients = patients_by_linelist(current_user, workflow, tab, current_user.jurisdiction)
 
     render json: { total: patients.size }
   end

@@ -35,9 +35,9 @@ class AssignedUserFilter extends React.Component {
           </InputGroup.Text>
         </InputGroup.Prepend>
         <Form.Control
+          id="assigned_user"
           type="text"
           autoComplete="off"
-          id="assigned_user"
           list="assigned_users"
           value={this.state.assigned_user || ''}
           onChange={event => this.handleAssignedUserChange(event?.target?.value)}

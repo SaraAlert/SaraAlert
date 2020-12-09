@@ -301,6 +301,10 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     %w[true false].include?(value.to_s.downcase) ? (value.to_s.downcase == 'true') : nil
   end
 
+  def unformat_enum_field(value)
+    value.to_s.downcase.gsub(/[ -.]/, '')
+  end
+
   def get_xslx(file_name)
     Roo::Spreadsheet.open(file_fixture(file_name).to_s)
   end
