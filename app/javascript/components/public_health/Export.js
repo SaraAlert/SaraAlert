@@ -172,7 +172,7 @@ class Export extends React.Component {
             preset={this.state.savedPreset}
             presets={this.state.savedExportPresets}
             patient_query={this.props.query}
-            filtered_monitorees_count={this.props.filtered_monitorees_count}
+            current_monitorees_count={this.props.current_monitorees_count}
             all_monitorees_count={this.props.all_monitorees_count}
             options={this.props.custom_export_options}
             onClose={() => this.setState({ showCustomFormatModal: false, savedPreset: null })}
@@ -191,7 +191,7 @@ Export.propTypes = {
   tabs: PropTypes.object,
   query: PropTypes.object,
   all_monitorees_count: PropTypes.number,
-  filtered_monitorees_count: PropTypes.number,
+  current_monitorees_count: PropTypes.number,
   custom_export_options: PropTypes.object,
 };
 

@@ -126,7 +126,7 @@ class ExportJob < ApplicationJob
   def csv_export(config, exported_data, index)
     files = []
     CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
-      skip unless config.dig(:data, data_type, :checked).present?
+      next unless config.dig(:data, data_type, :checked).present?
 
       package = CSV.generate(headers: true) do |csv|
         fields = config[:data][data_type][:checked]
@@ -144,7 +144,7 @@ class ExportJob < ApplicationJob
   def xlsx_export(config, exported_data, index)
     Axlsx::Package.new do |p|
       CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
-        skip unless config.dig(:data, data_type, :checked).present?
+        next unless config.dig(:data, data_type, :checked).present?
 
         p.workbook.add_worksheet(name: CUSTOM_EXPORT_OPTIONS[data_type][:label]) do |sheet|
           fields = config[:data][data_type][:checked]

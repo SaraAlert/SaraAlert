@@ -175,8 +175,8 @@ class ExportController < ApplicationController
       config[:format] = unsanitized_config.require(:format)
       return head :bad_request unless EXPORT_FORMATS.include?(config[:format])
 
-      # Validate filename param (remove os path characters and replace non-ascii characters with underscore)
-      config[:filename] = unsanitized_config[:filename]&.gsub(%r{^.*(\|/)}, '')&.gsub(/[^0-9A-Za-z.\-]/, '_')
+      # Validate name param (remove os path characters and replace non-ascii characters with dash)
+      config[:filename] = params[:name]&.gsub(%r{^.*(\|/)}, '')&.gsub(/[^0-9A-Za-z.\-]/, '-')
 
       # Validate data
       data = unsanitized_config.require(:data)

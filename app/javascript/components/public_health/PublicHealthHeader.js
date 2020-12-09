@@ -54,7 +54,7 @@ class PublicHealthHeader extends React.Component {
   renderImportModal() {
     return (
       <Modal
-        dialogClassName="modal-xl"
+        dialogClassName="modal-import"
         backdrop={this.state.importData?.errors?.length > 0 ? true : 'static'}
         scrollable="true"
         show={this.state.showImportModal}
@@ -172,7 +172,7 @@ class PublicHealthHeader extends React.Component {
               workflow={this.props.workflow}
               query={this.props.query}
               all_monitorees_count={this.state.counts.exposure + this.state.counts.isolation}
-              filtered_monitorees_count={this.props.filtered_monitorees_count}
+              current_monitorees_count={this.props.current_monitorees_count}
               custom_export_options={this.props.custom_export_options}
             />
           )}
@@ -225,7 +225,7 @@ PublicHealthHeader.propTypes = {
     import: PropTypes.bool,
   }),
   query: PropTypes.object,
-  filtered_monitorees_count: PropTypes.number,
+  current_monitorees_count: PropTypes.number,
   custom_export_options: PropTypes.object,
 };
 

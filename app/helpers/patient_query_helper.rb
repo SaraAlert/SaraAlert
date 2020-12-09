@@ -8,8 +8,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                                      filter: [:value, :dateOption, :relativeOption, { filterOption: {}, value: {} }])
 
     # Validate workflow
-    workflow = query[:workflow]&.to_sym
-    raise InvalidQueryError.new(:workflow, workflow) unless [:exposure, :isolation, nil].include?(workflow)
+    workflow = query[:workflow]&.to_sym || :all
+    raise InvalidQueryError.new(:workflow, workflow) unless %i[exposure isolation all].include?(workflow)
 
     # Validate tab (linelist)
     tab = query[:tab]&.to_sym
@@ -91,8 +91,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def patients_by_linelist(current_user, workflow, tab)
-    return current_user.viewable_patients if workflow.nil?
-    return current_user.viewable_patients.where(isolation: workflow == :isolation) if !workflow.nil? && tab.nil?
+    return current_user.viewable_patients if workflow == :all
+    return current_user.viewable_patients.where(isolation: workflow == :isolation) if workflow != :all && tab == :all
 
     return current_user.viewable_patients.where(isolation: workflow == :isolation, purged: false) if tab == :all
     return current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: workflow == :isolation) if tab == :closed

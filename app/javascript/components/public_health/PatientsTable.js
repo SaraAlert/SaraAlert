@@ -360,8 +360,8 @@ class PatientsTable extends React.Component {
   updateAssignedUsers(jurisdiction_id, scope, workflow, tab) {
     if (tab !== 'transferred_out') {
       axios
-        .get('/jurisdictions/assigned_users', {
-          params: { jurisdiction_id, scope, workflow, tab },
+        .post('/jurisdictions/assigned_users', {
+          query: { jurisdiction: jurisdiction_id, scope, workflow, tab },
         })
         .then(response => {
           this.setState({ assigned_users: response.data.assigned_users });
@@ -484,6 +484,7 @@ class PatientsTable extends React.Component {
                     onKeyPress={this.handleKeyPress}
                   />
                   <AdvancedFilter
+                    key="patients-table-advanced-filter"
                     advancedFilterUpdate={this.advancedFilterUpdate}
                     authenticity_token={this.props.authenticity_token}
                     workflow={this.props.workflow}

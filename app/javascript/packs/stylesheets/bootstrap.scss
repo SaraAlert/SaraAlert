@@ -202,7 +202,11 @@ select.form-control {
   z-index: 2000;
 }
 
-.modal-xl {
+.modal-import {
+  max-width: 95% !important;
+}
+
+.modal-custom-export {
   max-width: 95% !important;
 }
 
