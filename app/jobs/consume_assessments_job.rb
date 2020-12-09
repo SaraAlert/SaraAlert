@@ -189,31 +189,33 @@ class ConsumeAssessmentsJob < ApplicationJob
     # Handle BlockedNumber manipulation here in case no monitorees are associated with this number
     BlockedNumber.create(phone_number: monitoree_number) if message['response_status'] == 'opt_out'
     BlockedNumber.where(phone_number: monitoree_number).destroy_all if message['response_status'] == 'opt_in'
-    patient = Patient.responder_for_number(monitoree_number)&.first
-    return if patient.nil?
+    patients = Patient.responder_for_number(monitoree_number)
+    patients.uniq.each do |patient|
+      next if patient.nil?
 
-    # Get list of dependents excluding the patient itself.
-    dependents = patient.dependents_exclude_self
+      # Get list of dependents excluding the patient itself.
+      dependents = patient.dependents_exclude_self
 
-    case message['response_status']
-    when 'opt_out'
-      # In cases of opt_in/opt_out the sara_number should always be available
-      sara_number ||= '<Number Unavailable>'
-      History.contact_attempt(patient: patient, comment: "The system will no longer be able to send an SMS to this monitoree #{patient.primary_telephone},
-         because the monitoree blocked communications with Sara Alert by sending a STOP keyword to #{sara_number}.")
-      unless dependents.blank?
-        create_contact_attempt_history_for_dependents(dependents, "The system will no longer be able to send an SMS to this monitoree's head of household
-           #{patient.primary_telephone}, because the head of household blocked communications with Sara Alert by sending a STOP keyword to #{sara_number}.")
-      end
-    when 'opt_in'
-      # In cases of opt_in/opt_out the sara_number should always be available
-      sara_number ||= '<Number Unavailable>'
-      History.contact_attempt(patient: patient, comment: "The system will now be able to send an SMS to this monitoree #{patient.primary_telephone},
-         because the monitoree re-enabled communications with Sara Alert by sending a START keyword to #{sara_number}.")
+      case message['response_status']
+      when 'opt_out'
+        # In cases of opt_in/opt_out the sara_number should always be available
+        sara_number ||= '<Number Unavailable>'
+        History.contact_attempt(patient: patient, comment: "The system will no longer be able to send an SMS to this monitoree #{patient.primary_telephone},
+          because the monitoree blocked communications with Sara Alert by sending a STOP keyword to #{sara_number}.")
+        unless dependents.blank?
+          create_contact_attempt_history_for_dependents(dependents, "The system will no longer be able to send an SMS to this monitoree's head of household
+            #{patient.primary_telephone}, because the head of household blocked communications with Sara Alert by sending a STOP keyword to #{sara_number}.")
+        end
+      when 'opt_in'
+        # In cases of opt_in/opt_out the sara_number should always be available
+        sara_number ||= '<Number Unavailable>'
+        History.contact_attempt(patient: patient, comment: "The system will now be able to send an SMS to this monitoree #{patient.primary_telephone},
+          because the monitoree re-enabled communications with Sara Alert by sending a START keyword to #{sara_number}.")
 
-      unless dependents.blank?
-        create_contact_attempt_history_for_dependents(dependents, "The system will now be able to send an SMS to this monitoree's head of household
-          #{patient.primary_telephone}, because the head of household re-enabled communications with Sara Alert by sending a START keyword to #{sara_number}.")
+        unless dependents.blank?
+          create_contact_attempt_history_for_dependents(dependents, "The system will now be able to send an SMS to this monitoree's head of household
+            #{patient.primary_telephone}, because the head of household re-enabled communications with Sara Alert by sending a START keyword to #{sara_number}.")
+        end
       end
     end
   end
