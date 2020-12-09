@@ -79,11 +79,11 @@ class Demographics extends React.Component {
     });
 
   renderBarGraphs = () => (
-    <Card.Body className="mt-4">
+    <Card.Body className="mt-5">
       <Row>
         {this.barGraphData.map((graphData, i) => (
           <Col md="12" key={i}>
-            <div className="mx-3 mt-3">
+            <div className="mx-2 mt-3 analytics-chart-borders">
               <h4 className="text-center">{graphData.title}</h4>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart

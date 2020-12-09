@@ -72,6 +72,12 @@
   height: 50px; // the height of each row
 }
 
+.analytics-chart-borders {
+  border: 1px solid #cecece6e;
+  padding-top: 10px;
+  margin-bottom: 30px;
+}
+
 .analytics-table-success {
   background-color: #d1e6a5;
 }
@@ -87,7 +93,6 @@
 .analytics-table-secondary {
   background-color: #e2e2e2;
 }
-
 
 .analytics-zebra-bg {
   background-color: #0000000d;
