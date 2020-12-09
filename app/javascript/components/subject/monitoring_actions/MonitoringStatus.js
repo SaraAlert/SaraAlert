@@ -145,6 +145,7 @@ class MonitoringStatus extends React.Component {
                 <option>Person Under Investigation (PUI)</option>
                 <option>Case confirmed</option>
                 <option>Meets criteria to discontinue isolation</option>
+                <option>Did not meet criteria for monitoring</option>
                 <option>Deceased</option>
                 <option>Duplicate</option>
                 <option>Other</option>
