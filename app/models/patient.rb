@@ -48,9 +48,10 @@ class Patient < ApplicationRecord
      last_date_of_exposure
      symptom_onset
      additional_planned_travel_start_date
+     additional_planned_travel_end_date
      date_of_departure
      date_of_arrival].each do |date_field|
-    validates date_field, on: :api, date: true
+    validates date_field, date: true
   end
 
   %i[date_of_birth

@@ -1658,52 +1658,125 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-  test 'validates date_of_birth is a valid date in api context' do
+  test 'validates date_of_birth is a valid date' do
     patient = valid_patient
 
     patient.date_of_birth = 25.years.ago
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.date_of_birth = '01-15-2000'
-    assert_not patient.valid?(:api)
+    assert_not patient.valid?
 
     patient.date_of_birth = '2000-13-13'
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
-  test 'validates last_date_of_exposure is a valid date in api context' do
+  test 'validates last_date_of_exposure is a valid date' do
     patient = valid_patient
 
     patient.last_date_of_exposure = Time.now - 1.day
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.last_date_of_exposure = '01-15-2000'
-    assert_not patient.valid?(:api)
+    assert_not patient.valid?
 
     patient.last_date_of_exposure = '2000-13-13'
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
-  test 'validates symptom_onset is a valid date in api context' do
+  test 'validates symptom_onset is a valid date' do
     patient = valid_patient
 
     patient.symptom_onset = Time.now - 1.day
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.symptom_onset = ''
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.symptom_onset = nil
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.symptom_onset = '01-15-2000'
-    assert_not patient.valid?(:api)
+    assert_not patient.valid?
 
     patient.symptom_onset = '2000-13-13'
-    assert_not patient.valid?(:api)
+    assert_not patient.valid?
+  end
+
+  test 'validates additional_planned_travel_start_date is a valid date' do
+    patient = valid_patient
+
+    patient.additional_planned_travel_start_date = Time.now - 1.day
     assert patient.valid?
+
+    patient.additional_planned_travel_start_date = ''
+    assert patient.valid?
+
+    patient.additional_planned_travel_start_date = nil
+    assert patient.valid?
+
+    patient.additional_planned_travel_start_date = '01-15-2000'
+    assert_not patient.valid?
+
+    patient.additional_planned_travel_start_date = '2000-13-13'
+    assert_not patient.valid?
+  end
+
+  test 'validates additional_planned_travel_end_date is a valid date' do
+    patient = valid_patient
+
+    patient.additional_planned_travel_end_date = Time.now - 1.day
+    assert patient.valid?
+
+    patient.additional_planned_travel_end_date = ''
+    assert patient.valid?
+
+    patient.additional_planned_travel_end_date = nil
+    assert patient.valid?
+
+    patient.additional_planned_travel_end_date = '01-15-2000'
+    assert_not patient.valid?
+
+    patient.additional_planned_travel_end_date = '2000-13-13'
+    assert_not patient.valid?
+  end
+
+  test 'validates date_of_departure is a valid date' do
+    patient = valid_patient
+
+    patient.date_of_departure = Time.now - 1.day
+    assert patient.valid?
+
+    patient.date_of_departure = ''
+    assert patient.valid?
+
+    patient.date_of_departure = nil
+    assert patient.valid?
+
+    patient.date_of_departure = '01-15-2000'
+    assert_not patient.valid?
+
+    patient.date_of_departure = '2000-13-13'
+    assert_not patient.valid?
+  end
+
+  test 'validates date_of_arrival is a valid date' do
+    patient = valid_patient
+
+    patient.date_of_arrival = Time.now - 1.day
+    assert patient.valid?
+
+    patient.date_of_arrival = ''
+    assert patient.valid?
+
+    patient.date_of_arrival = nil
+    assert patient.valid?
+
+    patient.date_of_arrival = '01-15-2000'
+    assert_not patient.valid?
+
+    patient.date_of_arrival = '2000-13-13'
+    assert_not patient.valid?
   end
 
   test 'validates email is a valid email address in api context' do

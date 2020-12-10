@@ -782,7 +782,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   def format_model_validation_errors(resource)
     resource.errors&.messages&.each_with_object([]) do |(attribute, errors), messages|
-      value = resource[attribute] || resource.public_send("#{attribute}_before_type_cast")
+      value = resource.public_send("#{attribute}_before_type_cast") || resource[attribute]
       msg_header = 'Validation Error' + (value ? " for value '#{value}'" : '') + " on '#{VALIDATION[attribute][:label]}':"
       errors.each do |error_message|
         # Exclude the actual value in logging to avoid PII/PHI
