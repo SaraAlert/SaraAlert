@@ -27,7 +27,7 @@ class CustomExport extends React.Component {
       selected_records: props.preset?.id ? 'custom' : 'current',
       custom_patient_query: props.preset?.config?.data?.patients?.query
         ? _.clone(props.preset.config.data.patients.query)
-        : { workflow: 'all', tab: 'all', jurisdiction: props.jurisdiction.id, scope: 'all', tz_offset: new Date().getTimezoneOffset() },
+        : { workflow: 'all', tab: 'all', jurisdiction: props.jurisdiction.id, scope: 'all', user: null, search: '', tz_offset: new Date().getTimezoneOffset() },
       filtered_monitorees_count: props.all_monitorees_count,
       cancel_token: axios.CancelToken.source(),
       preset: {
@@ -107,7 +107,10 @@ class CustomExport extends React.Component {
           this.props.onClose();
         }
       })
-      .catch(err => reportError(err));
+      .catch(err => {
+        reportError(err?.response?.data?.message ? err.response.data.message : err, false);
+        this.props.onClose();
+      });
   };
 
   // Get patient count based on custom query
@@ -125,7 +128,7 @@ class CustomExport extends React.Component {
           cancelToken: this.state.cancel_token.token,
         })
         .then(response => this.setState({ filtered_monitorees_count: response?.data?.count }))
-        .catch(err => reportError(err));
+        .catch(err => reportError(err?.response?.data?.message ? err.response.data.message : err, false));
     });
   };
 
@@ -134,12 +137,16 @@ class CustomExport extends React.Component {
     this.setState({ selected_records }, () => {
       if (selected_records === 'current') {
         this.handlePresetChange('config.data.patients.query', _.clone(this.props.patient_query));
+      } else if (selected_records === 'custom') {
+        this.handlePresetChange('config.data.patients.query', this.state.custom_patient_query);
       } else if (selected_records === 'all') {
         this.handlePresetChange('config.data.patients.query', {
           workflow: 'all',
           tab: 'all',
           jurisdiction: this.props.jurisdiction.id,
           scope: 'all',
+          user: null,
+          search: '',
           tz_offset: new Date().getTimezoneOffset(),
         });
       }
@@ -163,16 +170,17 @@ class CustomExport extends React.Component {
         </Modal.Header>
         <Modal.Body className="p-0">
           <div className="p-2">
-            <h5 className="mx-3 my-2">Chose which records to export</h5>
+            <h5 className="mx-3 my-2">Choose which records to export</h5>
             <Row className="mx-3 pb-2">
               <Col md={24}>
                 <Form.Check
+                  id="select-monitoree-records-current"
                   type="radio"
                   className="px-1"
                   label={
                     <span>
                       <a onClick={() => this.handleSelectedRecordsChange('current')}>
-                        Current Records from Dashboard View ({this.props.current_monitorees_count}){' '}
+                        Current monitoree records from Dashboard View ({this.props.current_monitorees_count}){' '}
                       </a>
                     </span>
                   }
@@ -225,18 +233,20 @@ class CustomExport extends React.Component {
                   </div>
                 )}
                 <Form.Check
+                  id="select-monitoree-records-all"
                   type="radio"
                   className="px-1"
-                  label={<a onClick={() => this.handleSelectedRecordsChange('all')}>All Monitorees ({this.props.all_monitorees_count})</a>}
+                  label={<a onClick={() => this.handleSelectedRecordsChange('all')}>All monitoree records ({this.props.all_monitorees_count})</a>}
                   onChange={() => this.handleSelectedRecordsChange('all')}
                   checked={this.state.selected_records === 'all'}
                 />
                 <Form.Check
+                  id="select-monitoree-records-custom"
                   type="radio"
                   className="px-1 mb-2"
                   label={
                     <a onClick={() => this.handleSelectedRecordsChange('custom')}>
-                      Only include reports that meet the following criteria ({this.state.filtered_monitorees_count}):
+                      Only include monitoree records that meet the following criteria ({this.state.filtered_monitorees_count}):
                     </a>
                   }
                   onChange={() => this.handleSelectedRecordsChange('custom')}
@@ -275,6 +285,7 @@ class CustomExport extends React.Component {
             <Row className="mx-3 py-2">
               <Col md={24} className="p-1">
                 <CheckboxTree
+                  id="rct-patients-elements"
                   nodes={this.props.options?.patients?.nodes}
                   checked={this.state.preset?.config?.data?.patients?.checked}
                   expanded={this.state.preset?.config?.data?.patients?.expanded}
@@ -288,6 +299,7 @@ class CustomExport extends React.Component {
             <Row className="mx-3 py-1 g-border-top">
               <Col md={24} className="p-1">
                 <CheckboxTree
+                  id="rct-assessments-elements"
                   nodes={this.props.options?.assessments?.nodes}
                   checked={this.state.preset?.config?.data?.assessments?.checked}
                   expanded={this.state.preset?.config?.data?.assessments?.expanded}
@@ -301,6 +313,7 @@ class CustomExport extends React.Component {
             <Row className="mx-3 py-1 g-border-top">
               <Col md={24} className="p-1">
                 <CheckboxTree
+                  id="rct-laboratories-elements"
                   nodes={this.props.options?.laboratories?.nodes}
                   checked={this.state.preset?.config?.data?.laboratories?.checked}
                   expanded={this.state.preset?.config?.data?.laboratories?.expanded}
@@ -314,6 +327,7 @@ class CustomExport extends React.Component {
             <Row className="mx-3 py-1 g-border-top">
               <Col md={24} className="p-1">
                 <CheckboxTree
+                  id="rct-close-contacts-elements"
                   nodes={this.props.options?.close_contacts?.nodes}
                   checked={this.state.preset?.config?.data?.close_contacts?.checked}
                   expanded={this.state.preset?.config?.data?.close_contacts?.expanded}
@@ -327,6 +341,7 @@ class CustomExport extends React.Component {
             <Row className="mx-3 py-1 g-border-top">
               <Col md={24} className="p-1">
                 <CheckboxTree
+                  id="rct-transfers-elements"
                   nodes={this.props.options?.transfers?.nodes}
                   checked={this.state.preset?.config?.data?.transfers?.checked}
                   expanded={this.state.preset?.config?.data?.transfers?.expanded}
@@ -340,6 +355,7 @@ class CustomExport extends React.Component {
             <Row className="mx-3 py-1 g-border-top">
               <Col md={24} className="p-1">
                 <CheckboxTree
+                  id="rct-histories-elements"
                   nodes={this.props.options?.histories?.nodes}
                   checked={this.state.preset?.config?.data?.histories?.checked}
                   expanded={this.state.preset?.config?.data?.histories?.expanded}
@@ -371,6 +387,7 @@ class CustomExport extends React.Component {
               <Col md={6} className="px-1 pt-2">
                 <Form.Group className="mb-0">
                   <Button
+                    id="custom-export-format-csv"
                     size="sm"
                     variant={this.state.preset?.config?.format === 'csv' ? 'primary' : 'outline-secondary'}
                     style={{ outline: 'none', boxShadow: 'none' }}
@@ -379,6 +396,7 @@ class CustomExport extends React.Component {
                     CSV
                   </Button>
                   <Button
+                    id="custom-export-format-xlsx"
                     size="sm"
                     variant={this.state.preset?.config?.format === 'xlsx' ? 'primary' : 'outline-secondary'}
                     style={{ outline: 'none', boxShadow: 'none' }}
@@ -393,6 +411,7 @@ class CustomExport extends React.Component {
                   {this.state.preset?.id ? (
                     <React.Fragment>
                       <Button
+                        id="custom-export-action-delete"
                         size="sm"
                         variant="danger"
                         disabled={!this.state.preset?.id}
@@ -403,6 +422,7 @@ class CustomExport extends React.Component {
                         Delete
                       </Button>
                       <Button
+                        id="custom-export-action-update"
                         size="sm"
                         variant="primary"
                         disabled={!this.state.preset?.id}
@@ -415,15 +435,15 @@ class CustomExport extends React.Component {
                     </React.Fragment>
                   ) : this.state.preset?.name === '' ? (
                     <OverlayTrigger overlay={<Tooltip>Please indicate a name for the saved Custom Export</Tooltip>}>
-                      <div>
-                        <Button size="sm" variant="primary" disabled style={{ outline: 'none', boxShadow: 'none' }}>
+                      <span>
+                        <Button size="sm" variant="primary" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
                           <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
                           Save
                         </Button>
-                      </div>
+                      </span>
                     </OverlayTrigger>
                   ) : (
-                    <Button size="sm" variant="primary" style={{ outline: 'none', boxShadow: 'none' }} onClick={this.save}>
+                    <Button id="custom-export-action-save" size="sm" variant="primary" style={{ outline: 'none', boxShadow: 'none' }} onClick={this.save}>
                       <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
                       Save
                     </Button>
@@ -434,28 +454,33 @@ class CustomExport extends React.Component {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={this.props.onClose}>
+          <Button id="custom-export-action-cancel" variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          {this.state.preset?.config?.data?.patients?.checked?.length === 0 ? (
+          {this.state.preset?.config?.data?.patients?.checked?.length === 0 &&
+          this.state.preset?.config?.data?.assessments?.checked?.length === 0 &&
+          this.state.preset?.config?.data?.laboratories?.checked?.length === 0 &&
+          this.state.preset?.config?.data?.close_contacts?.checked?.length === 0 &&
+          this.state.preset?.config?.data?.transfers?.checked?.length === 0 &&
+          this.state.preset?.config?.data?.histories?.checked?.length === 0 ? (
             <OverlayTrigger overlay={<Tooltip>Please select at least one data element to export</Tooltip>}>
-              <div>
-                <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none' }}>
+              <span>
+                <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
                   Export
                 </Button>
-              </div>
+              </span>
             </OverlayTrigger>
           ) : (this.state.selected_records === 'current' && this.props.current_monitorees_count === 0) ||
             (this.state.selected_records === 'custom' && this.state.filtered_monitorees_count === 0) ? (
             <OverlayTrigger overlay={<Tooltip>Please modify filters to select at least 1 record</Tooltip>}>
-              <div>
-                <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none' }}>
+              <span>
+                <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
                   Export
                 </Button>
-              </div>
+              </span>
             </OverlayTrigger>
           ) : (
-            <Button variant="primary btn-square" onClick={this.export}>
+            <Button id="custom-export-action-export" variant="primary btn-square" onClick={this.export}>
               Export
             </Button>
           )}

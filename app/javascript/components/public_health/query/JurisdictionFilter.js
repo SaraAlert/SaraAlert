@@ -40,7 +40,6 @@ class JurisdictionFilter extends React.Component {
           list="jurisdiction_paths"
           defaultValue={this.props.jurisdiction_paths[this.props.jurisdiction] || ''}
           onChange={event => this.handleJurisdictionChange(event?.target?.value)}
-          disabled={this.props.disabled}
         />
         <datalist id="jurisdiction_paths">
           {Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
@@ -58,8 +57,7 @@ class JurisdictionFilter extends React.Component {
               size="sm"
               variant={this.props.scope === 'all' ? 'primary' : 'outline-secondary'}
               style={{ outline: 'none', boxShadow: 'none' }}
-              onClick={() => this.handleScopeChange('all')}
-              disabled={this.props.disabled}>
+              onClick={() => this.handleScopeChange('all')}>
               All
             </Button>
           </OverlayTrigger>
@@ -69,8 +67,7 @@ class JurisdictionFilter extends React.Component {
               size="sm"
               variant={this.props.scope === 'exact' ? 'primary' : 'outline-secondary'}
               style={{ outline: 'none', boxShadow: 'none' }}
-              onClick={() => this.handleScopeChange('exact')}
-              disabled={this.props.disabled}>
+              onClick={() => this.handleScopeChange('exact')}>
               Exact
             </Button>
           </OverlayTrigger>
@@ -87,7 +84,6 @@ JurisdictionFilter.propTypes = {
   scope: PropTypes.string,
   onJurisdictionChange: PropTypes.func,
   onScopeChange: PropTypes.func,
-  disabled: PropTypes.bool,
 };
 
 export default JurisdictionFilter;

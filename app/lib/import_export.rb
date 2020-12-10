@@ -272,7 +272,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end_of_monitoring: 'End of Monitoring',
     closed_at: 'Closure Date',
     monitoring_reason: 'Reason For Closure',
-    expected_purge_date: 'Expected Purge Date',
+    expected_purge_ts: 'Expected Purge Date',
     # Monitoring Info - Reporting Info
     responder_id: 'ID of Reporter',
     head_of_household: 'Head of Household',
@@ -453,7 +453,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
               rct_node(:patients, 'Monitoring Actions', %i[monitoring_status exposure_risk_assessment monitoring_plan case_status public_health_action
                                                            jurisdiction_path jurisdiction_name assigned_user]),
               rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset symptom_onset_defined_by
-                                                          extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_date]),
+                                                          extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_ts]),
               rct_node(:patients, 'Reporting Info', %i[responder_id head_of_household pause_notifications last_assessment_reminder_sent])
             ]
           }
@@ -639,12 +639,15 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     patient_details[:name] = patient.displayed_name if fields.include?(:name)
     patient_details[:age] = patient.calc_current_age if fields.include?(:age)
-    patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Workflow'
+    patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
     patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
     patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
     patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
     if fields.include?(:expected_purge_date)
       patient_details[:expected_purge_date] = patient[:updated_at].nil? ? '' : (patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''
+    end
+    if fields.include?(:expected_purge_ts)
+      patient_details[:expected_purge_ts] = patient[:updated_at].nil? ? '' : (patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes) || ''
     end
     patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase || '' if fields.include?(:full_status)
     patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '' if fields.include?(:status)

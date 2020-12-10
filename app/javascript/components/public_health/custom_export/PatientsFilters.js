@@ -57,8 +57,7 @@ class PatientsFilters extends React.Component {
                   this.props.onQueryChange('workflow', event?.target?.value);
                   this.props.onQueryChange('tab', 'all');
                 }}
-                value={this.props.query?.workflow}
-                disabled={this.props.disabled}>
+                value={this.props.query?.workflow}>
                 <option value="all">All</option>
                 <option value="exposure">Exposure</option>
                 <option value="isolation">Isolation</option>
@@ -78,8 +77,7 @@ class PatientsFilters extends React.Component {
                 size="sm"
                 className="form-square"
                 onChange={event => this.props.onQueryChange('tab', event?.target?.value)}
-                value={this.props.query?.tab}
-                disabled={this.props.disabled}>
+                value={this.props.query?.tab}>
                 <option value="all">All</option>
                 {this.props.query?.workflow === 'exposure' && (
                   <React.Fragment>
@@ -93,7 +91,7 @@ class PatientsFilters extends React.Component {
                   <React.Fragment>
                     <option value="requiring_review">Records Requiring Review</option>
                     <option value="non_reporting">Non-Reporting</option>
-                    <option value="reportingc">Reporting</option>
+                    <option value="reporting">Reporting</option>
                   </React.Fragment>
                 )}
                 <option value="closed">Closed</option>
@@ -115,7 +113,6 @@ class PatientsFilters extends React.Component {
                 }
               }}
               onScopeChange={scope => this.props.onQueryChange('scope', scope)}
-              disabled={this.props.disabled}
             />
           </Col>
           <Col md={24} className="my-1 px-1">
@@ -124,7 +121,6 @@ class PatientsFilters extends React.Component {
               assigned_users={this.state.assigned_users}
               assigned_user={this.props.query?.user}
               onAssignedUserChange={user => this.props.onQueryChange('user', user)}
-              disabled={this.props.disabled}
             />
           </Col>
           <Col md={24} className="my-1 px-1">
@@ -148,7 +144,6 @@ class PatientsFilters extends React.Component {
                     event.preventDefault();
                   }
                 }}
-                disabled={this.props.disabled}
               />
               <AdvancedFilter
                 advancedFilterUpdate={filter =>
@@ -159,7 +154,6 @@ class PatientsFilters extends React.Component {
                 }
                 authenticity_token={this.props.authenticity_token}
                 workflow={this.props.query?.workflow}
-                disabled={this.props.disabled}
                 useLocalStorage={false}
               />
             </InputGroup>
@@ -176,7 +170,6 @@ PatientsFilters.propTypes = {
   jurisdiction: PropTypes.object,
   query: PropTypes.object,
   onQueryChange: PropTypes.func,
-  disabled: PropTypes.bool,
 };
 
 export default PatientsFilters;

@@ -611,6 +611,7 @@ class AdvancedFilter extends React.Component {
       <Modal
         show={this.state.showFilterNameModal}
         centered
+        className="advanced-filter-modal-container"
         onHide={() => {
           this.setState({ showFilterNameModal: false });
         }}>
@@ -915,7 +916,7 @@ class AdvancedFilter extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Modal show={this.state.show} centered dialogClassName="modal-af" onHide={this.onHide}>
+        <Modal show={this.state.show} centered dialogClassName="modal-af" className="advanced-filter-modal-container" onHide={this.onHide}>
           <Modal.Header>
             <Modal.Title>Advanced Filter: {this.state.activeFilter ? this.state.activeFilter.name : 'untitled'}</Modal.Title>
           </Modal.Header>
@@ -998,14 +999,13 @@ class AdvancedFilter extends React.Component {
             className="ml-2"
             onClick={() => {
               this.setState({ show: true });
-            }}
-            disabled={this.props.disabled}>
+            }}>
             <i className="fas fa-microscope"></i>
             <span className="ml-1">Advanced Filter</span>
           </Button>
         </OverlayTrigger>
         <Dropdown>
-          <Dropdown.Toggle variant="outline-secondary" size="sm" className="advanced-filter-dropdown" disabled={this.props.disabled}>
+          <Dropdown.Toggle variant="outline-secondary" size="sm" className="advanced-filter-dropdown">
             {this.state.applied && (this.state.activeFilter?.name || 'untitled')}
           </Dropdown.Toggle>
           <Dropdown.Menu alignRight>
@@ -1043,7 +1043,6 @@ AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
   workflow: PropTypes.string,
-  disabled: PropTypes.bool,
   useLocalStorage: PropTypes.bool,
 };
 
