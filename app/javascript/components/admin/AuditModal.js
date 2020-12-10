@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import CustomTable from '../layout/CustomTable';
+import reportError from '../util/ReportError';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
@@ -81,6 +82,7 @@ class AuditModal extends React.Component {
             };
           });
         } else {
+          reportError(error);
           this.setState({ isLoading: false });
         }
       })
