@@ -441,7 +441,7 @@ class PublicHealthController < ApplicationController
         end
       when 'ten-day-quarantine'
         patients = advanced_filter_quarantine_option(patients, filter, tz_offset, :ten_day)
-      when `seven-day-quarantine`
+      when 'seven-day-quarantine'
         patients = advanced_filter_quarantine_option(patients, filter, tz_offset, :seven_day)
       end
     end
