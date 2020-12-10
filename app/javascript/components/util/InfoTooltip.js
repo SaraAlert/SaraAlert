@@ -217,7 +217,7 @@ const TOOLTIP_TEXT = {
 
   endOfMonitoring: (
     <div>
-      Calculated by the system based on Last Date of Exposure
+      Calculated by the system as Last Date of Exposure + [14] days
       <div>
         <i>Only relevant for Exposure Workflow</i>
       </div>
