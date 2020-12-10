@@ -235,8 +235,8 @@ select.form-control {
 }
 
 .modal-am {
-  width: 80% !important;
-  max-width: 1000px !important;
+  width: 60% !important;
+  max-width: 60% !important;
 }
 
 .advanced-filter-dropdown {
@@ -248,4 +248,8 @@ select.form-control {
 
 .justify-unset {
   justify-content: unset;
+}
+
+.wrap {
+  word-break: break-all;
 }
