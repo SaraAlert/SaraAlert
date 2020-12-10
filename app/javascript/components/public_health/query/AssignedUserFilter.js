@@ -41,7 +41,6 @@ class AssignedUserFilter extends React.Component {
           list="assigned_users"
           value={this.state.assigned_user || ''}
           onChange={event => this.handleAssignedUserChange(event?.target?.value)}
-          disabled={this.props.disabled}
         />
         <datalist id="assigned_users">
           {this.props.assigned_users?.map(num => {
@@ -64,8 +63,7 @@ class AssignedUserFilter extends React.Component {
             size="sm"
             variant={this.props.assigned_user === null ? 'primary' : 'outline-secondary'}
             style={{ outline: 'none', boxShadow: 'none' }}
-            onClick={() => this.handleAssignedUserChange(null)}
-            disabled={this.props.disabled}>
+            onClick={() => this.handleAssignedUserChange(null)}>
             All
           </Button>
         </OverlayTrigger>
@@ -81,8 +79,7 @@ class AssignedUserFilter extends React.Component {
             size="sm"
             variant={this.props.assigned_user === 'none' ? 'primary' : 'outline-secondary'}
             style={{ outline: 'none', boxShadow: 'none' }}
-            onClick={() => this.handleAssignedUserChange('none')}
-            disabled={this.props.disabled}>
+            onClick={() => this.handleAssignedUserChange('none')}>
             None
           </Button>
         </OverlayTrigger>
@@ -96,7 +93,6 @@ AssignedUserFilter.propTypes = {
   assigned_users: PropTypes.array,
   assigned_user: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onAssignedUserChange: PropTypes.func,
-  disabled: PropTypes.bool,
 };
 
 export default AssignedUserFilter;
