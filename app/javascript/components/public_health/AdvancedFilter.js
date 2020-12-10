@@ -510,10 +510,14 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  renderRelativeTooltip = (filter, value, index) => {
-    const tooltipId = `${filter.name}-${index}`;
+  /**
+   * Gets the string inside the tooltip for relative date filter options.
+   * @param {Object} filter - Filter currently selected
+   * @param {*} value - Filter value
+   */
+  getRelativeTooltipString(filter, value) {
     const filterName = filter.title.replace(' (Relative Date)', '');
-    let rangeString, start, end;
+    let statement, rangeString, start, end;
 
     // set variables for date options including a time stamp
     if (filter.hasTimestamp) {
@@ -549,17 +553,55 @@ class AdvancedFilter extends React.Component {
       }
     }
 
-    const statement = `${filterName} “${value.when}” relative date periods include records ${rangeString}.  The current setting of "${value.when}  ${value.number} ${value.unit}" will return records with ${filterName} date from ${start} through ${end}.`;
-    return (
-      <div style={{ display: 'inline' }}>
-        <span data-for={tooltipId} data-tip="" className="ml-1 tooltip-af">
-          <i className="fas fa-question-circle px-0"></i>
-        </span>
-        <ReactTooltip id={tooltipId} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container">
-          <span>{statement}</span>
-        </ReactTooltip>
-      </div>
-    );
+    statement = `${filterName} “${value.when}” relative date periods include records ${rangeString}.
+                 The current setting of "${value.when}  ${value.number} ${value.unit}" will return records with ${filterName} date from ${start} through ${end}.`;
+    return statement;
+  }
+
+  /**
+   * Renders a tooltip for the specific filter option/type.
+   * @param {Object} filter - Filter currently selected
+   * @param {*} value - Filter value
+   * @param {Number} index  - Filter index
+   */
+  renderOptionTooltip = (filter, value, index) => {
+    const tooltipId = `${filter.name}-${index}`;
+    let statement;
+
+    // Relative dates all get a specific tooltip
+    if (filter.title.includes('(Relative Date)')) {
+      statement = this.getRelativeTooltipString(filter, value);
+    } else {
+      // Otherwise base it on specific filter option
+      switch (filter.name) {
+        case 'ten-day-quarantine':
+          statement =
+            'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom ' +
+            'Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.';
+          break;
+        case 'seven-day-quarantine':
+          statement =
+            'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom ' +
+            'Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.';
+          break;
+        default:
+          statement = '';
+      }
+    }
+
+    // Only render if there is a valid statement for this filter option.
+    if (statement) {
+      return (
+        <div style={{ display: 'inline' }}>
+          <span data-for={tooltipId} data-tip="" className="ml-1 tooltip-af">
+            <i className="fas fa-question-circle px-0"></i>
+          </span>
+          <ReactTooltip id={tooltipId} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container">
+            <span>{statement}</span>
+          </ReactTooltip>
+        </div>
+      );
+    }
   };
 
   // Modal to specify filter name
@@ -831,11 +873,14 @@ class AdvancedFilter extends React.Component {
                       </Form.Control>
                     </Col>
                     <Col md="2" className="text-center my-auto">
-                      {this.renderRelativeTooltip(filterOption, value, index)}
+                      {this.renderOptionTooltip(filterOption, value, index)}
                     </Col>
                   </React.Fragment>
                 )}
               </Row>
+            )}
+            {filterOption && filterOption.type !== 'relative' && (
+              <span className="align-middle mx-2">{this.renderOptionTooltip(filterOption, value, index)}</span>
             )}
             {filterOption?.type === 'search' && (
               <Form.Group className="py-0 my-0">
