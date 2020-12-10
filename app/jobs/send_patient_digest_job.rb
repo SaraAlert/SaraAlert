@@ -6,7 +6,7 @@ class SendPatientDigestJob < ApplicationJob
 
   def perform(*_args)
     # Loop over jurisdictions
-    Jurisdiction.where(send_digest: true) do |jur|
+    Jurisdiction.where(send_digest: true).each do |jur|
       # Grab patients who reported symtomatic in the last hour
       patients = jur.all_patients.recently_symptomatic
 
