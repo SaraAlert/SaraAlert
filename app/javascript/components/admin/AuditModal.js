@@ -46,6 +46,10 @@ class AuditModal extends React.Component {
     this.getAllJurisdictionPaths();
   }
 
+  /**
+   * Called when table data is to be updated because of some change to the table setting.
+   * @param {Object} query - Updated query for table data after change.
+   */
   updateTable = query => {
     // cancel any previous unfinished requests to prevent race condition inconsistencies
     this.state.cancelToken.cancel();
@@ -58,6 +62,9 @@ class AuditModal extends React.Component {
     });
   };
 
+  /**
+   * Returns updated table data via an axios POST request.
+   */
   queryServer = _.debounce(query => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
@@ -92,6 +99,10 @@ class AuditModal extends React.Component {
       });
   }, 500);
 
+  /**
+   * Formats values in the timestamp column to be human readable
+   * @param {String} timestamp
+   */
   formatTimestamp(timestamp) {
     const ts = moment.tz(timestamp, 'UTC');
     return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
