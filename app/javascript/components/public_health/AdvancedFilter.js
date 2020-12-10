@@ -188,6 +188,9 @@ class AdvancedFilter extends React.Component {
           title: 'Candidate to Reduce Quarantine after 10 Days (Boolean)',
           description: 'All asymptomatic records that meet CDC criteria to end quarantine after Day 10 (based on last date of exposure)',
           type: 'boolean',
+          tooltip:
+            'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom ' +
+            'Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.',
         },
         {
           name: 'seven-day-quarantine',
@@ -195,6 +198,9 @@ class AdvancedFilter extends React.Component {
           description:
             'All asymptomatic records that meet CDC criteria to end quarantine after Day 7 (based on last date of exposure and most recent lab result)',
           type: 'boolean',
+          tooltip:
+            'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom ' +
+            'Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.',
         },
       ],
       savedFilters: [],
@@ -573,20 +579,7 @@ class AdvancedFilter extends React.Component {
       statement = this.getRelativeTooltipString(filter, value);
     } else {
       // Otherwise base it on specific filter option
-      switch (filter.name) {
-        case 'ten-day-quarantine':
-          statement =
-            'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom ' +
-            'Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.';
-          break;
-        case 'seven-day-quarantine':
-          statement =
-            'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom ' +
-            'Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.';
-          break;
-        default:
-          statement = '';
-      }
+      statement = filter.tooltip;
     }
 
     // Only render if there is a valid statement for this filter option.
@@ -879,7 +872,7 @@ class AdvancedFilter extends React.Component {
                 )}
               </Row>
             )}
-            {filterOption && filterOption.type !== 'relative' && (
+            {filterOption && filterOption.tooltip && filterOption.type !== 'relative' && (
               <span className="align-middle mx-2">{this.renderOptionTooltip(filterOption, value, index)}</span>
             )}
             {filterOption?.type === 'search' && (

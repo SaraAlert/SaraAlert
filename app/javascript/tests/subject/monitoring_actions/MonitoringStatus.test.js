@@ -72,7 +72,7 @@ describe('MonitoringStatus', () => {
     expect(wrapper.find(Modal.Body).find('p').text().includes(`Are you sure you want to change monitoring status to "Not Monitoring"?`)).toBeTruthy();
     expect(wrapper.find(Modal.Body).find('p').find('b').text()).toEqual(' This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.');
     expect(wrapper.find('#monitoring_reason').exists()).toBeTruthy();
-    expect(wrapper.find('#monitoring_reason').find('option').length).toEqual(12);
+    expect(wrapper.find('#monitoring_reason').find('option').length).toEqual(monitoringReasons.length);
     monitoringReasons.forEach(function(value, index) {
       expect(wrapper.find('#monitoring_reason').find('option').at(index).text()).toEqual(value);
     });
