@@ -146,10 +146,10 @@ class ImportController < ApplicationController
 
   def lab_result(data, row_ind)
     {
-      lab_type: import_enum_field(:lab_type, data[0]),
+      lab_type: validate_field(:lab_type, data[0], row_ind),
       specimen_collection: validate_field(:specimen_collection, data[1], row_ind),
       report: validate_field(:report, data[2], row_ind),
-      result: import_enum_field(:result, data[3])
+      result: validate_field(:result, data[3], row_ind)
     }
   end
 
@@ -183,7 +183,7 @@ class ImportController < ApplicationController
     # value = validate_required_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:required)
     value = import_enum_field(field, value) if VALIDATION[field][:checks].include?(:enum)
     value = import_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
-    value = validate_date_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:date)
+    value = import_date_field(value) if VALIDATION[field][:checks].include?(:date)
     value = validate_phone_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:phone)
     value = validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
     value = validate_sex_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:sex)
@@ -212,24 +212,8 @@ class ImportController < ApplicationController
     raise ValidationError.new(err_msg, row_ind)
   end
 
-  def validate_date_field(field, value, row_ind)
-    return nil if value.blank?
-    return value if value.instance_of?(Date)
-
-    unless value.match(/\d{4}-\d{2}-\d{2}/)
-      err_msg = "'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"
-      if value.match(%r{\d{2}/\d{2}/\d{4}})
-        raise ValidationError.new("#{err_msg} due to ambiguity between 'MM/DD/YYYY' and 'DD/MM/YYYY', please use the 'YYYY-MM-DD' format instead", row_ind)
-      end
-
-      raise ValidationError.new("#{err_msg}, please use the 'YYYY-MM-DD' format", row_ind)
-    end
-
-    begin
-      Date.parse(value)
-    rescue ArgumentError
-      raise ValidationError.new("'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'", row_ind)
-    end
+  def import_date_field(value)
+    value.blank? ? nil : value
   end
 
   def validate_phone_field(field, value, row_ind)
@@ -327,7 +311,7 @@ class ImportController < ApplicationController
     resource.errors&.messages&.each_with_object([]) do |(attribute, errors), messages|
       next unless VALIDATION.key?(attribute)
 
-      value = resource[attribute] || resource.public_send("#{attribute}_before_type_cast")
+      value = resource.public_send("#{attribute}_before_type_cast") || resource[attribute]
       msg_header = (value ? " Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}'"
       errors.each do |error_message|
         messages << "#{msg_header} #{error_message}"
