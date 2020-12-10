@@ -182,7 +182,7 @@ class ImportController < ApplicationController
     # TODO: Un-comment when required fields are to be checked upon import
     # value = validate_required_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:required)
     value = import_enum_field(field, value) if VALIDATION[field][:checks].include?(:enum)
-    value = validate_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
+    value = import_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
     value = validate_date_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:date)
     value = validate_phone_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:phone)
     value = validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
@@ -204,11 +204,11 @@ class ImportController < ApplicationController
     NORMALIZED_ENUMS[field].keys.include?(normalized_value) ? NORMALIZED_ENUMS[field][normalized_value] : value
   end
 
-  def validate_bool_field(field, value, row_ind)
+  def import_bool_field(field, value, row_ind)
     return value if value.blank?
     return (value.to_s.downcase == 'true') if %w[true false].include?(value.to_s.downcase)
 
-    err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}', acceptable values are: 'True' and 'False'"
+    err_msg = "Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value, acceptable values are: 'True' and 'False'"
     raise ValidationError.new(err_msg, row_ind)
   end
 

@@ -222,7 +222,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       #   end
       # end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:bool) && !%w[true false].include?(value.to_s.downcase)
-        assert page.has_content?("'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:date) && !value.instance_of?(Date) && value.match(/\d{4}-\d{2}-\d{2}/)
         begin
