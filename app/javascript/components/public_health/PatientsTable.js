@@ -484,10 +484,10 @@ class PatientsTable extends React.Component {
                     onKeyPress={this.handleKeyPress}
                   />
                   <AdvancedFilter
-                    key="patients-table-advanced-filter"
                     advancedFilterUpdate={this.advancedFilterUpdate}
                     authenticity_token={this.props.authenticity_token}
                     workflow={this.props.workflow}
+                    useLocalStorage={true}
                   />
                   {this.state.query !== 'transferred_out' && (
                     <DropdownButton

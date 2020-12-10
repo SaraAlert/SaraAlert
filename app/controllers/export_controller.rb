@@ -27,9 +27,12 @@ class ExportController < ApplicationController
         user_id: current_user.id,
         export_type: export_type,
         format: 'csv',
+        filename: "Sara-Alert-Linelist-#{params[:workflow] == 'isolation' ? 'Isolation' : 'Exposure'}",
+        filename_data_type: false,
         data: {
           patients: {
             checked: LINELIST_FIELDS,
+            headers: LINELIST_HEADERS,
             query: { workflow: params[:workflow] }
           }
         }
@@ -43,7 +46,7 @@ class ExportController < ApplicationController
     end
   end
 
-  def excel_comprehensive_patients
+  def excel_sara_alert_format
     # Verify params
     redirect_to(root_url) && return unless %w[exposure isolation].include?(params[:workflow])
 
@@ -61,9 +64,12 @@ class ExportController < ApplicationController
         user_id: current_user.id,
         export_type: export_type,
         format: 'xlsx',
+        filename: "Sara-Alert-Format-#{params[:workflow] == 'isolation' ? 'Isolation' : 'Exposure'}",
+        filename_data_type: false,
         data: {
           patients: {
-            checked: COMPREHENSIVE_FIELDS,
+            checked: SARA_ALERT_FORMAT_FIELDS,
+            headers: SARA_ALERT_FORMAT_HEADERS,
             query: { workflow: params[:workflow] }
           }
         }
@@ -95,30 +101,35 @@ class ExportController < ApplicationController
         user_id: current_user.id,
         export_type: export_type,
         format: 'xlsx',
+        filename: "Sara-Alert-#{params[:scope] == 'purgeable' ? 'Purge-Eligible' : 'Full'}-Export",
+        filename_data_type: true,
+        separate_files: true,
         data: {
           patients: {
-            checked: COMPREHENSIVE_FIELDS,
-            query: { workflow: params[:workflow] }
+            checked: FULL_HISTORY_PATIENTS_FIELDS,
+            headers: FULL_HISTORY_PATIENTS_HEADERS,
+            query: params[:scope] == 'purgeable' ? { purgeable: true } : {},
+            name: 'Monitorees',
+            tab: 'Monitorees List'
           },
+          # assessment fields and headers need to be duplicated because they may be modified
           assessments: {
-            checked: ALL_FIELDS_NAMES[:assessments].keys,
-            query: {}
+            checked: FULL_HISTORY_ASSESSMENTS_FIELDS.dup,
+            headers: FULL_HISTORY_ASSESSMENTS_HEADERS.dup,
+            name: 'Reports',
+            tab: 'Reports'
           },
           laboratories: {
-            checked: ALL_FIELDS_NAMES[:laboratories].keys,
-            query: {}
-          },
-          close_contacts: {
-            checked: ALL_FIELDS_NAMES[:close_contacts].keys,
-            query: {}
-          },
-          transfers: {
-            checked: ALL_FIELDS_NAMES[:transfers].keys,
-            query: {}
+            checked: FULL_HISTORY_LABORATORIES_FIELDS,
+            headers: FULL_HISTORY_LABORATORIES_HEADERS,
+            name: 'Lab-Results',
+            tab: 'Lab Results'
           },
           histories: {
-            checked: ALL_FIELDS_NAMES[:histories].keys,
-            query: {}
+            checked: FULL_HISTORY_HISTORIES_FIELDS,
+            headers: FULL_HISTORY_HISTORIES_HEADERS,
+            name: 'Histories',
+            tab: 'Edit Histories'
           }
         }
       }
@@ -138,7 +149,37 @@ class ExportController < ApplicationController
     return if patients.empty?
 
     History.monitoree_data_downloaded(patient: patients.first, created_by: current_user.email)
-    send_data excel_export(patients)
+
+    config = {
+      format: 'xlsx',
+      separate_files: false,
+      data: {
+        patients: {
+          checked: FULL_HISTORY_PATIENTS_FIELDS,
+          headers: FULL_HISTORY_PATIENTS_HEADERS,
+          tab: 'Monitorees List'
+        },
+        # assessment fields and headers need to be duplicated because they may be modified
+        assessments: {
+          checked: FULL_HISTORY_ASSESSMENTS_FIELDS.dup,
+          headers: FULL_HISTORY_ASSESSMENTS_HEADERS.dup,
+          tab: 'Reports'
+        },
+        laboratories: {
+          checked: FULL_HISTORY_LABORATORIES_FIELDS,
+          headers: FULL_HISTORY_LABORATORIES_HEADERS,
+          tab: 'Lab Results'
+        },
+        histories: {
+          checked: FULL_HISTORY_HISTORIES_FIELDS,
+          headers: FULL_HISTORY_HISTORIES_HEADERS,
+          tab: 'Edit Histories'
+        }
+      }
+    }
+
+    exported_data = get_export_data(patients, config[:data])
+    send_data write_export_data_to_files(config, exported_data, nil)[0][:content]
   end
 
   # Single patient NBS export
@@ -155,14 +196,14 @@ class ExportController < ApplicationController
   def custom_export
     export_type = :custom
 
-    # if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
-    if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.second.ago).exists?
+    if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
     else
       unsanitized_config = params.require(:config).permit(:filename, :format, data: {})
       config = {
         user_id: current_user.id,
-        export_type: export_type
+        export_type: export_type,
+        filename_data_type: false
       }
 
       # Validate format param

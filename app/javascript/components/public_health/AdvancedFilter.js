@@ -223,7 +223,7 @@ class AdvancedFilter extends React.Component {
       this.setState({ savedFilters: response.data }, () => {
         // Apply filter if it exists in local storage
         let sessionFilter = localStorage.getItem(`SaraFilter`);
-        if (parseInt(sessionFilter)) {
+        if (this.props.useLocalStorage && parseInt(sessionFilter)) {
           this.setFilter(
             this.state.savedFilters.find(filter => {
               return filter.id === parseInt(sessionFilter);
@@ -267,7 +267,9 @@ class AdvancedFilter extends React.Component {
   clear = () => {
     this.setState({ activeFilter: null, applied: false }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilter);
-      localStorage.setItem(`SaraFilter`, null);
+      if (this.props.useLocalStorage) {
+        localStorage.setItem(`SaraFilter`, null);
+      }
     });
   };
 
@@ -282,7 +284,9 @@ class AdvancedFilter extends React.Component {
   setFilter = (filter, apply = false) => {
     if (filter) {
       this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter?.contents || [] }, () => {
-        localStorage.setItem(`SaraFilter`, filter.id);
+        if (this.props.useLocalStorage) {
+          localStorage.setItem(`SaraFilter`, filter.id);
+        }
         if (apply) {
           this.apply();
         }
@@ -1040,6 +1044,7 @@ AdvancedFilter.propTypes = {
   advancedFilterUpdate: PropTypes.func,
   workflow: PropTypes.string,
   disabled: PropTypes.bool,
+  useLocalStorage: PropTypes.bool,
 };
 
 export default AdvancedFilter;

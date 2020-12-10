@@ -26,7 +26,7 @@ class ImportController < ApplicationController
 
     redirect_to(root_url) && return unless params.permit(:workflow)[:workflow] == 'exposure' || params.permit(:workflow)[:workflow] == 'isolation'
 
-    redirect_to(root_url) && return unless params.permit(:format)[:format] == 'epix' || params.permit(:format)[:format] == 'comprehensive_monitorees'
+    redirect_to(root_url) && return unless params.permit(:format)[:format] == 'epix' || params.permit(:format)[:format] == 'sara_alert_format'
 
     workflow = params.permit(:workflow)[:workflow].to_sym
     format = params.permit(:format)[:format].to_sym
@@ -46,13 +46,13 @@ class ImportController < ApplicationController
       xlsx.sheet(0).each_with_index do |row, row_ind|
         next if row_ind.zero? # Skip headers
 
-        fields = format == :epix ? EPI_X_FIELDS : COMPREHENSIVE_FIELDS
+        fields = format == :epix ? EPI_X_FIELDS : SARA_ALERT_FORMAT_FIELDS
         patient = { isolation: workflow == :isolation }
         fields.each_with_index do |field, col_num|
           next if field.nil?
 
           begin
-            if format == :comprehensive_monitorees
+            if format == :sara_alert_format
               if col_num == 95
                 patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
               elsif col_num == 96
@@ -107,7 +107,7 @@ class ImportController < ApplicationController
                                                                                    patient[:date_of_birth],
                                                                                    patient[:user_defined_id_statelocal])
 
-          if format == :comprehensive_monitorees
+          if format == :sara_alert_format
             lab_results = []
             lab_results.push(lab_result(row[87..90], row_ind)) if !row[87].blank? || !row[88].blank? || !row[89].blank? || !row[90].blank?
             lab_results.push(lab_result(row[91..94], row_ind)) if !row[91].blank? || !row[92].blank? || !row[93].blank? || !row[94].blank?
@@ -163,8 +163,8 @@ class ImportController < ApplicationController
 
   def validate_headers(format, headers)
     case format
-    when :comprehensive_monitorees
-      COMPREHENSIVE_HEADERS.each_with_index do |field, col_num|
+    when :sara_alert_format
+      SARA_ALERT_FORMAT_HEADERS.each_with_index do |field, col_num|
         next if field == headers[col_num]
 
         err_msg = "Invalid header in column #{col_num} should be '#{field}' instead of '#{headers[col_num]}'. "\

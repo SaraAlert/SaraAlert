@@ -38,7 +38,7 @@ class PublicHealthHeader extends React.Component {
         const config = { headers: { 'content-type': 'multipart/form-data' } };
         const formData = new FormData();
         formData.append('file', this.state.file);
-        const url = `/import/${this.props.workflow}/${this.state.fileType === 'epix' ? 'epix' : 'comprehensive_monitorees'}`;
+        const url = `/import/${this.props.workflow}/${this.state.fileType === 'epix' ? 'epix' : 'sara_alert_format'}`;
         axios.post(url, formData, config).then(response => {
           this.setState({
             uploading: false,

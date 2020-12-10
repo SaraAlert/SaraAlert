@@ -2,45 +2,6 @@
 
 # Helper methods for filtering through patients
 module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
-  RACE_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].freeze
-
-  PATIENT_FIELD_TYPES = {
-    numbers: %i[id assigned_user responder_id],
-    strings: %i[first_name middle_name last_name sex ethnicity primary_language secondary_language nationality user_defined_id_statelocal user_defined_id_cdc
-                user_defined_id_nndss address_line_1 address_city address_state address_line_2 address_zip address_county foreign_address_line_1
-                foreign_address_city foreign_address_country foreign_address_line_2 foreign_address_zip foreign_address_line_3 foreign_address_state
-                monitored_address_line_1 monitored_address_city monitoring_address_state monitored_address_state monitored_address_line_2 monitored_address_zip
-                monitored_address_county foreign_monitored_address_line_1 foreign_monitored_address_city foreign_monitored_address_state
-                foreign_monitored_address_line_2 foreign_monitored_address_zip foreign_monitored_address_county preferred_contact_method primary_telephone_type
-                secondary_telephone_type preferred_contact_time email port_of_origin source_of_report source_of_report_specify flight_or_vessel_number
-                flight_or_vessel_carrier port_of_entry_into_usa travel_related_notes additional_planned_travel_type additional_planned_travel_destination
-                additional_planned_travel_destination_state additional_planned_travel_destination_country additional_planned_travel_port_of_departure
-                additional_planned_travel_related_notes potential_exposure_location potential_exposure_country contact_of_known_case_id
-                was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel_facility_name healthcare_personnel_facility_name
-                member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan exposure_notes case_status gender_identity
-                sexual_orientation risk_level monitoring_reason public_health_action],
-    dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
-              symptom_onset extended_isolation last_assessment_reminder_sent latest_assessment_at latest_transfer_at closed_at created_at updated_at],
-    booleans: %i[interpretation_required isolation continuous_exposure contact_of_known_case travel_to_affected_country_or_area
-                 was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
-                 member_of_a_common_exposure_cohort head_of_household pause_notifications].concat(RACE_FIELDS),
-    phones: %i[primary_telephone secondary_telephone]
-  }.freeze
-
-  PATIENT_STATUS_LABELS = {
-    exposure_symptomatic: 'symptomatic',
-    exposure_asymptomatic: 'asymptomatic',
-    expsoure_non_reporting: 'non-reporting',
-    exposure_under_investigation: 'PUI',
-    isolation_asymp_non_test_based: 'requires review (asymptomatic non test based)',
-    isolation_symp_non_test_based: 'requires review (symptomatic non test based)',
-    isolation_test_based: 'requires review (test based)',
-    isolation_reporting: 'reporting',
-    isolation_non_reporting: 'non-reporting',
-    purged: 'purged',
-    closed: 'closed'
-  }.freeze
-
   def validate_patients_query(unsanitized_query)
     # Only allow permitted params
     query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :tz_offset,
@@ -77,7 +38,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     # Validate advanced filter (also transform from rails params to array of hashes)
     if unsanitized_query[:filter]
       tz_offset = query.require(:tz_offset)
-      raise InvalidQueryError.new(:tz_offset, tz_offset) unless tz_offset.to_i.to_s == tz_offset
+      raise InvalidQueryError.new(:tz_offset, tz_offset) unless tz_offset.to_i.to_s == tz_offset.to_s
 
       query[:filter] = unsanitized_query[:filter].collect do |filter|
         permitted_filter_params = filter.permit(:value, :dateOption, :relativeOption, filterOption: {}, value: {})
@@ -128,6 +89,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     # Filter by advanced filter
     patients = advanced_filter(patients, query[:filter], query[:tz_offset])
+
+    # Filter by purgeable patients (only used by purge-eligible export)
+    patients = patients.purge_eligible if query[:purgeable].present?
 
     # Sort
     sort(patients, query[:order], query[:direction])
@@ -474,93 +438,6 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     end
 
     patients
-  end
-
-  def extract_patients_details(patients_group, fields)
-    # perform the following queries in bulk only if requested for better performance
-    patients_jurisdiction_names = jurisdiction_names(patients_group) if fields.include?(:jurisdiction_name)
-    patients_jurisdiction_paths = jurisdiction_paths(patients_group) if fields.include?(:jurisdiction_path)
-    patients_transfers = transfers(patients_group) if (fields & %i[transferred_from transferred_to]).any?
-    lab_fields = %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result]
-    patients_labs = laboratories(patients_group) if (fields & lab_fields).any?
-    patients_creators = Hash[User.find(patients_group.pluck(:creator_id)).pluck(:id, :email)] if fields.include?(:creator)
-
-    # construct patient details
-    patients_details = []
-    patients_group.each do |patient|
-      # populate requested inherent fields
-      patient_details = extract_incomplete_patient_details(patient, fields)
-
-      # populate creator if requested
-      patient_details[:creator] = patients_creators[patient.creator_id] || '' if fields.include?(:creator)
-
-      # populate jurisdiction if requested
-      patient_details[:jurisdiction_name] = patients_jurisdiction_names[patient.id] || '' if fields.include?(:jurisdiction_name)
-      patient_details[:jurisdiction_path] = patients_jurisdiction_paths[patient.id] || '' if fields.include?(:jurisdiction_path)
-
-      # populate latest transfer from and to if requested
-      if patients_transfers&.key?(patient.id)
-        patient_details[:transferred_from] = patients_transfers[patient.id][:trasnferred_from] if fields.include?(:transferred_from)
-        patient_details[:transferred_to] = patients_transfers[patient.id][:transferred_to] if fields.include?(:transferred_to)
-      end
-
-      # populate labs if requested
-      if patients_labs&.key?(patient.id)
-        if patients_labs[patient.id].key?(:first)
-          patient_details[:lab_1_type] = patients_labs[patient.id][:first][:lab_type] || '' if fields.include?(:lab_1_type)
-          if fields.include?(:lab_1_specimen_collection)
-            patient_details[:lab_1_specimen_collection] = patients_labs[patient.id][:first][:specimen_collection]&.strftime('%F') || ''
-          end
-          patient_details[:lab_1_report] = patients_labs[patient.id][:first][:report]&.strftime('%F') || '' if fields.include?(:lab_1_report)
-          patient_details[:lab_1_result] = patients_labs[patient.id][:first][:result] || '' if fields.include?(:lab_1_result)
-        end
-        if patients_labs[patient.id].key?(:second)
-          patient_details[:lab_2_type] = patients_labs[patient.id][:first][:lab_type] || '' if fields.include?(:lab_2_type)
-          if fields.include?(:lab_2_specimen_collection)
-            patient_details[:lab_2_specimen_collection] = patients_labs[patient.id][:first][:specimen_collection]&.strftime('%F') || ''
-          end
-          patient_details[:lab_2_report] = patients_labs[patient.id][:first][:report]&.strftime('%F') || '' if fields.include?(:lab_2_report)
-          patient_details[:lab_2_result] = patients_labs[patient.id][:first][:result] || '' if fields.include?(:lab_2_result)
-        end
-      end
-
-      patients_details << patient_details
-    end
-
-    patients_details
-  end
-
-  def extract_incomplete_patient_details(patient, fields)
-    patient_details = {}
-
-    (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:strings]).each do |field|
-      patient_details[field] = patient[field] || '' if fields.include?(field)
-    end
-
-    PATIENT_FIELD_TYPES[:dates].each do |field|
-      patient_details[field] = patient[field]&.strftime('%F') || '' if fields.include?(field)
-    end
-
-    PATIENT_FIELD_TYPES[:booleans].each do |field|
-      patient_details[field] = patient[field] || false if fields.include?(field)
-    end
-
-    PATIENT_FIELD_TYPES[:phones].each do |field|
-      patient_details[field] = format_phone_number(patient[field]) if fields.include?(field)
-    end
-
-    RACE_FIELDS.each { |race| patient_details[race] = patient[race] || false } if fields.include?(:race)
-
-    patient_details[:name] = patient.displayed_name if fields.include?(:name)
-    patient_details[:age] = patient.calc_current_age if fields.include?(:age)
-    patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Workflow'
-    patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
-    patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
-    patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
-    patient_details[:expected_purge_date] = patient.expected_purge_date || '' if fields.include?(:expected_purge_date)
-    patient_details[:status] = PATIENT_STATUS_LABELS[patient.status] || '' if fields.include?(:status)
-
-    patient_details
   end
 end
 
