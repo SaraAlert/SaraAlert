@@ -20,6 +20,7 @@ class Patient < ApplicationRecord
   end
 
   validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
+                                                  'Meets criteria to shorten quarantine',
                                                   'Enrolled more than 14 days after last date of exposure (system)',
                                                   'Enrolled more than 10 days after last date of exposure (system)',
                                                   'Enrolled on last day of monitoring period (system)',
