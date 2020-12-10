@@ -3,9 +3,9 @@
 # Validates that a given date (attribute) is valid
 class DateValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
-    # If value is unsuccessfully typecast to a date, it will be nil, so validate on the value before cast
-    value ||= record.public_send("#{attribute}_before_type_cast")
-    return if value.blank? || value.instance_of?(Date)
+    # If we can, validate using the pre-type cast value, since this will more accurately reflect user input
+    value = record.public_send("#{attribute}_before_type_cast") || value
+    return if value.blank? || !value.respond_to?(:match)
 
     unless value.match(/\d{4}-\d{2}-\d{2}/)
       err_msg = 'is not a valid date'

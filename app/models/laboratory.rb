@@ -13,6 +13,11 @@ class Laboratory < ApplicationRecord
     }
   end
 
+  %i[specimen_collection
+     report].each do |date_field|
+    validates date_field, date: true
+  end
+
   # NOTE: Commented out until additional testing
   # validates_with LaboratoryDateValidator
 

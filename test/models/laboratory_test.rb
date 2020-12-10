@@ -112,4 +112,74 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert patient.negative_lab_count.zero?
     assert_empty patient.laboratories
   end
+
+  test 'validates result inclusion' do
+    lab = create(:laboratory)
+
+    lab.result = 'positive'
+    assert lab.valid?
+
+    lab.result = ''
+    assert lab.valid?
+
+    lab.result = nil
+    assert lab.valid?
+
+    lab.result = 'foo'
+    assert_not lab.valid?
+  end
+
+  test 'validates lab_type inclusion' do
+    lab = create(:laboratory)
+
+    lab.lab_type = 'PCR'
+    assert lab.valid?
+
+    lab.lab_type = ''
+    assert lab.valid?
+
+    lab.lab_type = nil
+    assert lab.valid?
+
+    lab.lab_type = 'foo'
+    assert_not lab.valid?
+  end
+
+  test 'validates specimen_collection is a valid date' do
+    lab = create(:laboratory)
+
+    lab.specimen_collection = Time.now - 1.day
+    assert lab.valid?
+
+    lab.specimen_collection = ''
+    assert lab.valid?
+
+    lab.specimen_collection = nil
+    assert lab.valid?
+
+    lab.specimen_collection = '01-15-2000'
+    assert_not lab.valid?
+
+    lab.specimen_collection = '2000-13-13'
+    assert_not lab.valid?
+  end
+
+  test 'validates report is a valid date' do
+    lab = create(:laboratory)
+
+    lab.report = Time.now - 1.day
+    assert lab.valid?
+
+    lab.report = ''
+    assert lab.valid?
+
+    lab.report = nil
+    assert lab.valid?
+
+    lab.report = '01-15-2000'
+    assert_not lab.valid?
+
+    lab.report = '2000-13-13'
+    assert_not lab.valid?
+  end
 end

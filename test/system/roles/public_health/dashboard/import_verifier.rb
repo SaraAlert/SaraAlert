@@ -228,11 +228,11 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         begin
           Date.parse(value)
         rescue ArgumentError
-          assert page.has_content?("'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+          assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not a valid date"), "Error message for #{field} missing"
         end
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:date) && !value.instance_of?(Date) && !value.match(/\d{4}-\d{2}-\d{2}/)
-        generic_msg = "'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"
+        generic_msg = "Value '#{value}' for '#{VALIDATION[field][:label]}' is not a valid date"
         if value.match(%r{\d{2}/\d{2}/\d{4}})
           specific_msg = "#{generic_msg} due to ambiguity between 'MM/DD/YYYY' and 'DD/MM/YYYY', please use the 'YYYY-MM-DD' format instead"
           assert page.has_content?(specific_msg), "Error message for #{field} missing"
