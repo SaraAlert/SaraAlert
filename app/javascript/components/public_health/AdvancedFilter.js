@@ -575,6 +575,8 @@ class AdvancedFilter extends React.Component {
     let statement;
 
     // Relative dates all get a specific tooltip
+    // NOTE: Right now because of how this is set up, relative dates can't have a tooltip in addition to the one that is shown
+    // here once "more" is selected.
     if (filter.title.includes('(Relative Date)')) {
       statement = this.getRelativeTooltipString(filter, value);
     } else {
@@ -872,9 +874,6 @@ class AdvancedFilter extends React.Component {
                 )}
               </Row>
             )}
-            {filterOption && filterOption.tooltip && filterOption.type !== 'relative' && (
-              <span className="align-middle mx-2">{this.renderOptionTooltip(filterOption, value, index)}</span>
-            )}
             {filterOption?.type === 'search' && (
               <Form.Group className="py-0 my-0">
                 <Form.Control
@@ -888,6 +887,9 @@ class AdvancedFilter extends React.Component {
               </Form.Group>
             )}
           </Col>
+          {filterOption && filterOption.tooltip && filterOption.type !== 'relative' && (
+            <span className="align-middle mx-2">{this.renderOptionTooltip(filterOption, value, index)}</span>
+          )}
           <Col className="py-0" md={2}>
             <div className="float-right">
               <Button variant="danger" onClick={() => this.remove(index)}>
