@@ -30,9 +30,9 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
   def verify_excel_purge_eligible_monitorees(user_label)
     current_user = @@system_test_utils.get_user(user_label)
-    download_comprehensive_export_files(current_user, 'full_history_purgeable')
+    download_full_history_export_files(current_user, 'full_history_purgeable')
     xlsx_monitorees = get_xlsx('Sara-Alert-Purge-Eligible-Export-Monitorees-????-??-??T??_??_?????_??-?.xlsx')
-    xlsx_assessments = get_xlsx('Sara-Alert-Purge-Eligible-Export-Assessments-????-??-??T??_??_?????_??-?.xlsx')
+    xlsx_assessments = get_xlsx('Sara-Alert-Purge-Eligible-Export-Reports-????-??-??T??_??_?????_??-?.xlsx')
     xlsx_lab_results = get_xlsx('Sara-Alert-Purge-Eligible-Export-Lab-Results-????-??-??T??_??_?????_??-?.xlsx')
     xlsx_histories = get_xlsx('Sara-Alert-Purge-Eligible-Export-Histories-????-??-??T??_??_?????_??-?.xlsx')
     patients = current_user.jurisdiction.all_patients.purge_eligible.order(:id)
@@ -41,9 +41,9 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
   def verify_excel_all_monitorees(user_label)
     current_user = @@system_test_utils.get_user(user_label)
-    download_comprehensive_export_files(current_user, 'full_history_all')
+    download_full_history_export_files(current_user, 'full_history_all')
     xlsx_monitorees = get_xlsx('Sara-Alert-Full-Export-Monitorees-????-??-??T??_??_?????_??-?.xlsx')
-    xlsx_assessments = get_xlsx('Sara-Alert-Full-Export-Assessments-????-??-??T??_??_?????_??-?.xlsx')
+    xlsx_assessments = get_xlsx('Sara-Alert-Full-Export-Reports-????-??-??T??_??_?????_??-?.xlsx')
     xlsx_lab_results = get_xlsx('Sara-Alert-Full-Export-Lab-Results-????-??-??T??_??_?????_??-?.xlsx')
     xlsx_histories = get_xlsx('Sara-Alert-Full-Export-Histories-????-??-??T??_??_?????_??-?.xlsx')
     patients = current_user.jurisdiction.all_patients.order(:id)
@@ -88,19 +88,19 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   def verify_sara_alert_format_export(xlsx, patients)
     monitorees = xlsx.sheet('Monitorees')
     assert_equal(patients.size, monitorees.last_row - 1, 'Number of patients')
-    COMPREHENSIVE_HEADERS.each_with_index do |header, col|
+    SARA_ALERT_FORMAT_HEADERS.each_with_index do |header, col|
       assert_equal(header, monitorees.cell(1, col + 1), "For header: #{header}")
     end
     patients.each_with_index do |patient, row|
       details = patient.comprehensive_details
       details.keys.each_with_index do |field, col|
         cell_value = monitorees.cell(row + 2, col + 1)
-        if field == :status
-          assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field}")
+        if field == :full_status
+          assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field} (row #{row + 1})")
         elsif %i[primary_telephone secondary_telephone].include?(field)
-          assert_equal(format_phone_number(details[field]).to_s, cell_value || '', "For field: #{field}")
+          assert_equal(format_phone_number(details[field]).to_s, cell_value || '', "For field: #{field} (row #{row + 1})")
         else
-          assert_equal(details[field].to_s, cell_value || '', "For field: #{field}")
+          assert_equal(details[field].to_s, cell_value || '', "For field: #{field} (row #{row + 1})")
         end
       end
     end
@@ -109,19 +109,19 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   def verify_excel_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_histories, patients)
     monitorees_list = xlsx_monitorees.sheet('Monitorees List')
     assert_equal(patients.size, monitorees_list.last_row - 1, 'Number of patients in Monitorees List')
-    MONITOREES_LIST_HEADERS.each_with_index do |header, col|
+    FULL_HISTORY_PATIENTS_HEADERS.each_with_index do |header, col|
       assert_equal(header, monitorees_list.cell(1, col + 1), "For header: #{header} in Monitorees List")
     end
     patients.each_with_index do |patient, row|
       details = { patient_id: patient.id }.merge(patient.comprehensive_details)
       details.keys.each_with_index do |field, col|
         cell_value = monitorees_list.cell(row + 2, col + 1)
-        if field == :status
-          assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field} in Monitorees List")
+        if field == :full_status
+          assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field} in Monitorees List (row #{row + 1})")
         elsif %i[primary_telephone secondary_telephone].include?(field)
-          assert_equal(format_phone_number(details[field]).to_s, cell_value || '', "For field: #{field} in Monitorees List")
+          assert_equal(format_phone_number(details[field]).to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
         else
-          assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Monitorees List")
+          assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
         end
       end
     end
@@ -186,7 +186,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def download_comprehensive_export_files(current_user, export_type)
+  def download_full_history_export_files(current_user, export_type)
     sleep(0.5) # wait for export and download to complete
     download_monitorees = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).first
     download_assessments = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).second

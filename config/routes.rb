@@ -65,7 +65,7 @@ Rails.application.routes.draw do
   get '/patients/:id/group', to: 'patients#new_group_member'
 
   get '/export/csv/patients/:type/:workflow', to: 'export#csv'
-  get '/export/excel/patients/comprehensive/:workflow', to: 'export#excel_comprehensive_patients'
+  get '/export/excel/patients/sara_alert_format/:workflow', to: 'export#excel_sara_alert_format'
   get '/export/excel/patients/full_history/:scope', to: 'export#excel_full_history_patients'
   get '/export/excel/patients/full_history/patient/:patient_id', to: 'export#excel_full_history_patient'
   post '/export/custom', to: 'export#custom_export'

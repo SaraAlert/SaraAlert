@@ -10,6 +10,139 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   include TransferQueryHelper
   include HistoryQueryHelper
 
+  EXPORT_TYPES = {
+    csv_exposure: { label: 'Line list CSV (exposure)', filename: 'Sara-Alert-Linelist-Exposure' },
+    csv_isolation: { label: 'Line list CSV (isolation)', filename: 'Sara-Alert-Linelist-Isolation' },
+    sara_format_exposure: { label: 'Sara Alert Format (exposure)', filename: 'Sara-Alert-Format-Exposure' },
+    sara_format_isolation: { label: 'Sara Alert Format (isolation)', filename: 'Sara-Alert-Format-Isolation' },
+    full_history_all: { label: 'Excel Export For All Monitorees', filename: 'Sara-Alert-Full-Export' },
+    full_history_purgeable: { label: 'Excel Export For Purge-Eligible Monitorees', filename: 'Sara-Alert-Purge-Eligible-Export' },
+    custom: { label: 'Custom Export', filename: 'Custom-Export' }
+  }.freeze
+
+  EXPORT_FORMATS = %w[csv xlsx].freeze
+
+  EPI_X_FIELDS = [:user_defined_id_statelocal, :flight_or_vessel_number, nil, nil, :user_defined_id_cdc, nil, nil, :primary_language, :date_of_arrival,
+                  :port_of_entry_into_usa, :last_name, :first_name, :date_of_birth, :sex, nil, nil, :address_line_1, :address_city, :address_state,
+                  :address_zip, :monitored_address_line_1, :monitored_address_city, :monitored_address_state, :monitored_address_zip, nil, nil, nil, nil,
+                  :primary_telephone, :secondary_telephone, :email, nil, nil, nil, :potential_exposure_location, :potential_exposure_country,
+                  :date_of_departure, nil, nil, nil, nil, :contact_of_known_case, :was_in_health_care_facility_with_known_cases].freeze
+
+  EPI_X_HEADERS = ['Local-ID', 'Flight No', 'Date of notice', 'MDH Assignee', 'DGMQ ID', 'CARE ID', 'CARE Cell Number', 'Language', 'Arrival Date and Time',
+                   'Arrival City', 'Last Name', 'First Name', 'Date of Birth', 'Gender', 'Passport Country', 'Passport Number', 'Permanent Street Address',
+                   'Permanent City', 'Permanent State or Country', 'Postal Code', 'Temporary Street Address 1', 'Temporary City 1', 'Temporary State 1',
+                   'Temporary Postal Code 1', 'Temporary Street Address 2', 'Temporary City 2', 'Temporary State 2', 'Temporary Postal Code 2',
+                   'Phone Number 1', 'Phone Number 2', 'Email 1', 'Email 2', 'Emergency Contact Name', 'Emergency Contact Telephone Number',
+                   'Emergency Contact Email', 'Countries Visited with Widespread Transmission in Past 14 Days', 'Departure Date',
+                   'DHS Observed Vomiting, Diarrhea or Bleeding', 'Temperature taken by DHS', 'Fever/Chills in the past 48 hours',
+                   'Vomiting/Diarrhea in the past 48 hours', 'Lived in Same Household or Had Other Contact with a Person Sick with disease in Past 14 Days',
+                   'Worked in Health Care Facility or Laboratory in Country with Widespread Transmission in Past 14 Days',
+                   'Touched Body of Someone who Died in Country with Widespread Transmission in Past 14 Days',
+                   'DHS Traveler Health Declaration Outcome: Released', 'DHS Traveler Health Declaration Outcome: Referred to Tertiary for Add\'l Assessment',
+                   'Disposition of Travelers Referred for CDC Assessment: Released to Continue Travel',
+                   'Disposition of Travelers Referred for CDC Assessment: Coordinated Disposition with State Health Dept.',
+                   'Disposition of Travelers Referred for CDC Assessment: Referred for Additional Medical Evaluation',
+                   'Disposition of Travelers Referred for CDC Assessment: Other', 'Final Disposition of Traveler\'s Medical Evaluation (If applicable)',
+                   'Exposure Assessment', 'Contact Made?', 'Monitoring needed?', 'Notes'].freeze
+
+  LINELIST_FIELDS = %i[id name jurisdiction_name assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring exposure_risk_assessment
+                       monitoring_plan latest_assessment_at latest_transfer_at monitoring_reason public_health_action status closed_at transferred_from
+                       transferred_to expected_purge_date symptom_onset extended_isolation].freeze
+
+  LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
+                      'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
+                      'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation'].freeze
+
+  SARA_ALERT_FORMAT_FIELDS = %i[first_name middle_name last_name date_of_birth sex white black_or_african_american american_indian_or_alaska_native asian
+                                native_hawaiian_or_other_pacific_islander ethnicity primary_language secondary_language interpretation_required nationality
+                                user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss address_line_1 address_city address_state address_line_2
+                                address_zip address_county foreign_address_line_1 foreign_address_city foreign_address_country foreign_address_line_2
+                                foreign_address_zip foreign_address_line_3 foreign_address_state monitored_address_line_1 monitored_address_city
+                                monitored_address_state monitored_address_line_2 monitored_address_zip monitored_address_county foreign_monitored_address_line_1
+                                foreign_monitored_address_city foreign_monitored_address_state foreign_monitored_address_line_2 foreign_monitored_address_zip
+                                foreign_monitored_address_county preferred_contact_method primary_telephone primary_telephone_type secondary_telephone
+                                secondary_telephone_type preferred_contact_time email port_of_origin date_of_departure source_of_report flight_or_vessel_number
+                                flight_or_vessel_carrier port_of_entry_into_usa date_of_arrival travel_related_notes additional_planned_travel_type
+                                additional_planned_travel_destination additional_planned_travel_destination_state additional_planned_travel_destination_country
+                                additional_planned_travel_port_of_departure additional_planned_travel_start_date additional_planned_travel_end_date
+                                additional_planned_travel_related_notes last_date_of_exposure potential_exposure_location potential_exposure_country
+                                contact_of_known_case contact_of_known_case_id travel_to_affected_country_or_area was_in_health_care_facility_with_known_cases
+                                was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel laboratory_personnel_facility_name
+                                healthcare_personnel healthcare_personnel_facility_name crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort
+                                member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan exposure_notes full_status symptom_onset
+                                case_status lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report
+                                lab_2_result jurisdiction_path assigned_user gender_identity sexual_orientation].freeze
+
+  SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
+                               'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
+                               'Secondary Language', 'Interpretation Required?', 'Nationality', 'Identifier (STATE/LOCAL)', 'Identifier (CDC)',
+                               'Identifier (NNDSS)', 'Address Line 1', 'Address City', 'Address State', 'Address Line 2', 'Address Zip', 'Address County',
+                               'Foreign Address Line 1', 'Foreign Address City', 'Foreign Address Country', 'Foreign Address Line 2', 'Foreign Address Zip',
+                               'Foreign Address Line 3', 'Foreign Address State', 'Monitored Address Line 1', 'Monitored Address City',
+                               'Monitored Address State', 'Monitored Address Line 2', 'Monitored Address Zip', 'Monitored Address County',
+                               'Foreign Monitored Address Line 1', 'Foreign Monitored Address City', 'Foreign Monitored Address State',
+                               'Foreign Monitored Address Line 2', 'Foreign Monitored Address Zip', 'Foreign Monitored Address County',
+                               'Preferred Contact Method', 'Primary Telephone', 'Primary Telephone Type', 'Secondary Telephone', 'Secondary Telephone Type',
+                               'Preferred Contact Time', 'Email', 'Port of Origin', 'Date of Departure', 'Source of Report', 'Flight or Vessel Number',
+                               'Flight or Vessel Carrier', 'Port of Entry Into USA', 'Date of Arrival', 'Travel Related Notes',
+                               'Additional Planned Travel Type', 'Additional Planned Travel Destination', 'Additional Planned Travel Destination State',
+                               'Additional Planned Travel Destination Country', 'Additional Planned Travel Port of Departure',
+                               'Additional Planned Travel Start Date', 'Additional Planned Travel End Date', 'Additional Planned Travel Related Notes',
+                               'Last Date of Exposure', 'Potential Exposure Location', 'Potential Exposure Country', 'Contact of Known Case?',
+                               'Contact of Known Case ID', 'Travel from Affected Country or Area?', 'Was in Health Care Facility With Known Cases?',
+                               'Health Care Facility with Known Cases Name', 'Laboratory Personnel?', 'Laboratory Personnel Facility Name',
+                               'Health Care Personnel?', 'Health Care Personnel Facility Name', 'Crew on Passenger or Cargo Flight?',
+                               'Member of a Common Exposure Cohort?', 'Common Exposure Cohort Name', 'Exposure Risk Assessment', 'Monitoring Plan',
+                               'Exposure Notes', 'Status', 'Symptom Onset Date', 'Case Status', 'Lab 1 Test Type', 'Lab 1 Specimen Collection Date',
+                               'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type', 'Lab 2 Specimen Collection Date', 'Lab 2 Report Date', 'Lab 2 Result',
+                               'Full Assigned Jurisdiction Path', 'Assigned User', 'Gender Identity', 'Sexual Orientation'].freeze
+
+  FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + [:extended_isolation]).freeze
+
+  FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['Extended Isolation Date']).freeze
+
+  FULL_HISTORY_ASSESSMENTS_FIELDS = %i[patient_id symptomatic who_reported created_at updated_at symptoms].freeze
+
+  FULL_HISTORY_ASSESSMENTS_HEADERS = ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At', 'Symptoms Reported'].freeze
+
+  FULL_HISTORY_LABORATORIES_FIELDS = %i[patient_id lab_type specimen_collection report result created_at updated_at].freeze
+
+  FULL_HISTORY_LABORATORIES_HEADERS = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At'].freeze
+
+  FULL_HISTORY_HISTORIES_FIELDS = %i[patient_id comment created_by history_type created_at updated_at].freeze
+
+  FULL_HISTORY_HISTORIES_HEADERS = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At'].freeze
+
+  PATIENT_SECONDARY_IDENTIFIER_FIELDS = %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss].freeze
+
+  PATIENT_RACE_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].freeze
+
+  PATIENT_LAB_FIELDS = %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result].freeze
+
+  PATIENT_FIELD_TYPES = {
+    numbers: %i[id assigned_user responder_id],
+    strings: %i[first_name middle_name last_name sex ethnicity primary_language secondary_language nationality user_defined_id_statelocal user_defined_id_cdc
+                user_defined_id_nndss address_line_1 address_city address_state address_line_2 address_zip address_county foreign_address_line_1
+                foreign_address_city foreign_address_country foreign_address_line_2 foreign_address_zip foreign_address_line_3 foreign_address_state
+                monitored_address_line_1 monitored_address_city monitoring_address_state monitored_address_state monitored_address_line_2 monitored_address_zip
+                monitored_address_county foreign_monitored_address_line_1 foreign_monitored_address_city foreign_monitored_address_state
+                foreign_monitored_address_line_2 foreign_monitored_address_zip foreign_monitored_address_county preferred_contact_method primary_telephone_type
+                secondary_telephone_type preferred_contact_time email port_of_origin source_of_report source_of_report_specify flight_or_vessel_number
+                flight_or_vessel_carrier port_of_entry_into_usa travel_related_notes additional_planned_travel_type additional_planned_travel_destination
+                additional_planned_travel_destination_state additional_planned_travel_destination_country additional_planned_travel_port_of_departure
+                additional_planned_travel_related_notes potential_exposure_location potential_exposure_country contact_of_known_case_id
+                was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel_facility_name healthcare_personnel_facility_name
+                member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan exposure_notes case_status gender_identity
+                sexual_orientation risk_level monitoring_reason public_health_action],
+    dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
+              symptom_onset extended_isolation],
+    timestamps: %i[created_at updated_at closed_at latest_assessment_at latest_transfer_at last_assessment_reminder_sent],
+    booleans: %i[interpretation_required isolation continuous_exposure contact_of_known_case travel_to_affected_country_or_area
+                 was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
+                 member_of_a_common_exposure_cohort head_of_household pause_notifications].concat(PATIENT_RACE_FIELDS),
+    phones: %i[primary_telephone secondary_telephone]
+  }.freeze
+
   PATIENT_FIELD_NAMES = {
     # Enrollment Info - Identification and Demographics - Identifiers
     id: 'Sara Alert ID',
@@ -368,122 +501,36 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     histories: HISTORIES_EXPORT_OPTIONS
   }.freeze
 
-  EXPORT_FORMATS = %w[csv xlsx].freeze
-
-  LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
-                      'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
-                      'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation'].freeze
-
-  COMPREHENSIVE_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
-                           'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
-                           'Secondary Language', 'Interpretation Required?', 'Nationality', 'Identifier (STATE/LOCAL)', 'Identifier (CDC)',
-                           'Identifier (NNDSS)', 'Address Line 1', 'Address City', 'Address State', 'Address Line 2', 'Address Zip', 'Address County',
-                           'Foreign Address Line 1', 'Foreign Address City', 'Foreign Address Country', 'Foreign Address Line 2', 'Foreign Address Zip',
-                           'Foreign Address Line 3', 'Foreign Address State', 'Monitored Address Line 1', 'Monitored Address City', 'Monitored Address State',
-                           'Monitored Address Line 2', 'Monitored Address Zip', 'Monitored Address County', 'Foreign Monitored Address Line 1',
-                           'Foreign Monitored Address City', 'Foreign Monitored Address State', 'Foreign Monitored Address Line 2',
-                           'Foreign Monitored Address Zip', 'Foreign Monitored Address County', 'Preferred Contact Method', 'Primary Telephone',
-                           'Primary Telephone Type', 'Secondary Telephone', 'Secondary Telephone Type', 'Preferred Contact Time', 'Email', 'Port of Origin',
-                           'Date of Departure', 'Source of Report', 'Flight or Vessel Number', 'Flight or Vessel Carrier', 'Port of Entry Into USA',
-                           'Date of Arrival', 'Travel Related Notes', 'Additional Planned Travel Type', 'Additional Planned Travel Destination',
-                           'Additional Planned Travel Destination State', 'Additional Planned Travel Destination Country',
-                           'Additional Planned Travel Port of Departure', 'Additional Planned Travel Start Date', 'Additional Planned Travel End Date',
-                           'Additional Planned Travel Related Notes', 'Last Date of Exposure', 'Potential Exposure Location', 'Potential Exposure Country',
-                           'Contact of Known Case?', 'Contact of Known Case ID', 'Travel from Affected Country or Area?',
-                           'Was in Health Care Facility With Known Cases?', 'Health Care Facility with Known Cases Name', 'Laboratory Personnel?',
-                           'Laboratory Personnel Facility Name', 'Health Care Personnel?', 'Health Care Personnel Facility Name',
-                           'Crew on Passenger or Cargo Flight?', 'Member of a Common Exposure Cohort?', 'Common Exposure Cohort Name',
-                           'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status', 'Symptom Onset Date',
-                           'Case Status', 'Lab 1 Test Type', 'Lab 1 Specimen Collection Date', 'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type',
-                           'Lab 2 Specimen Collection Date', 'Lab 2 Report Date', 'Lab 2 Result', 'Full Assigned Jurisdiction Path', 'Assigned User',
-                           'Gender Identity', 'Sexual Orientation'].freeze
-
-  MONITOREES_LIST_HEADERS = ['Patient ID'] + COMPREHENSIVE_HEADERS + ['Extended Isolation Date'].freeze
-
-  EPI_X_HEADERS = ['Local-ID', 'Flight No', 'Date of notice', 'MDH Assignee', 'DGMQ ID', 'CARE ID', 'CARE Cell Number', 'Language', 'Arrival Date and Time',
-                   'Arrival City', 'Last Name', 'First Name', 'Date of Birth', 'Gender', 'Passport Country', 'Passport Number', 'Permanent Street Address',
-                   'Permanent City', 'Permanent State or Country', 'Postal Code', 'Temporary Street Address 1', 'Temporary City 1', 'Temporary State 1',
-                   'Temporary Postal Code 1', 'Temporary Street Address 2', 'Temporary City 2', 'Temporary State 2', 'Temporary Postal Code 2',
-                   'Phone Number 1', 'Phone Number 2', 'Email 1', 'Email 2', 'Emergency Contact Name', 'Emergency Contact Telephone Number',
-                   'Emergency Contact Email', 'Countries Visited with Widespread Transmission in Past 14 Days', 'Departure Date',
-                   'DHS Observed Vomiting, Diarrhea or Bleeding', 'Temperature taken by DHS', 'Fever/Chills in the past 48 hours',
-                   'Vomiting/Diarrhea in the past 48 hours', 'Lived in Same Household or Had Other Contact with a Person Sick with disease in Past 14 Days',
-                   'Worked in Health Care Facility or Laboratory in Country with Widespread Transmission in Past 14 Days',
-                   'Touched Body of Someone who Died in Country with Widespread Transmission in Past 14 Days',
-                   'DHS Traveler Health Declaration Outcome: Released', 'DHS Traveler Health Declaration Outcome: Referred to Tertiary for Add\'l Assessment',
-                   'Disposition of Travelers Referred for CDC Assessment: Released to Continue Travel',
-                   'Disposition of Travelers Referred for CDC Assessment: Coordinated Disposition with State Health Dept.',
-                   'Disposition of Travelers Referred for CDC Assessment: Referred for Additional Medical Evaluation',
-                   'Disposition of Travelers Referred for CDC Assessment: Other', 'Final Disposition of Traveler\'s Medical Evaluation (If applicable)',
-                   'Exposure Assessment', 'Contact Made?', 'Monitoring needed?', 'Notes'].freeze
-
-  LINELIST_FIELDS = %i[id name jurisdiction_name assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring exposure_risk_assessment
-                       monitoring_plan latest_assessment_at latest_transfer_at monitoring_reason public_health_action status closed_at transferred_from
-                       transferred_to expected_purge_date symptom_onset extended_isolation].freeze
-
-  COMPREHENSIVE_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :white, :black_or_african_american, :american_indian_or_alaska_native,
-                          :asian, :native_hawaiian_or_other_pacific_islander, :ethnicity, :primary_language, :secondary_language, :interpretation_required,
-                          :nationality, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss, :address_line_1, :address_city,
-                          :address_state, :address_line_2, :address_zip, :address_county, :foreign_address_line_1, :foreign_address_city,
-                          :foreign_address_country, :foreign_address_line_2, :foreign_address_zip, :foreign_address_line_3, :foreign_address_state,
-                          :monitored_address_line_1, :monitored_address_city, :monitored_address_state, :monitored_address_line_2, :monitored_address_zip,
-                          :monitored_address_county, :foreign_monitored_address_line_1, :foreign_monitored_address_city, :foreign_monitored_address_state,
-                          :foreign_monitored_address_line_2, :foreign_monitored_address_zip, :foreign_monitored_address_county, :preferred_contact_method,
-                          :primary_telephone, :primary_telephone_type, :secondary_telephone, :secondary_telephone_type, :preferred_contact_time, :email,
-                          :port_of_origin, :date_of_departure, :source_of_report, :flight_or_vessel_number, :flight_or_vessel_carrier, :port_of_entry_into_usa,
-                          :date_of_arrival, :travel_related_notes, :additional_planned_travel_type, :additional_planned_travel_destination,
-                          :additional_planned_travel_destination_state, :additional_planned_travel_destination_country,
-                          :additional_planned_travel_port_of_departure, :additional_planned_travel_start_date, :additional_planned_travel_end_date,
-                          :additional_planned_travel_related_notes, :last_date_of_exposure, :potential_exposure_location, :potential_exposure_country,
-                          :contact_of_known_case, :contact_of_known_case_id, :travel_to_affected_country_or_area, :was_in_health_care_facility_with_known_cases,
-                          :was_in_health_care_facility_with_known_cases_facility_name, :laboratory_personnel, :laboratory_personnel_facility_name,
-                          :healthcare_personnel, :healthcare_personnel_facility_name, :crew_on_passenger_or_cargo_flight, :member_of_a_common_exposure_cohort,
-                          :member_of_a_common_exposure_cohort_type, :exposure_risk_assessment, :monitoring_plan, :exposure_notes, nil, :symptom_onset,
-                          :case_status, nil, nil, nil, nil, nil, nil, nil, nil, :jurisdiction_path, :assigned_user, :gender_identity,
-                          :sexual_orientation].freeze
-
-  EPI_X_FIELDS = [:user_defined_id_statelocal, :flight_or_vessel_number, nil, nil, :user_defined_id_cdc, nil, nil, :primary_language, :date_of_arrival,
-                  :port_of_entry_into_usa, :last_name, :first_name, :date_of_birth, :sex, nil, nil, :address_line_1, :address_city, :address_state,
-                  :address_zip, :monitored_address_line_1, :monitored_address_city, :monitored_address_state, :monitored_address_zip, nil, nil, nil, nil,
-                  :primary_telephone, :secondary_telephone, :email, nil, nil, nil, :potential_exposure_location, :potential_exposure_country,
-                  :date_of_departure, nil, nil, nil, nil, :contact_of_known_case, :was_in_health_care_facility_with_known_cases].freeze
-
-  EXPORT_TYPES = {
-    csv_exposure: { label: 'Line list CSV (exposure)', filename: 'Sara-Alert-Linelist-Exposure' },
-    csv_isolation: { label: 'Line list CSV (isolation)', filename: 'Sara-Alert-Linelist-Isolation' },
-    sara_format_exposure: { label: 'Sara Alert Format (exposure)', filename: 'Sara-Alert-Format-Exposure' },
-    sara_format_isolation: { label: 'Sara Alert Format (isolation)', filename: 'Sara-Alert-Format-Isolation' },
-    full_history_all: { label: 'Excel Export For All Monitorees', filename: 'Sara-Alert-Full-Export' },
-    full_history_purgeable: { label: 'Excel Export For Purge-Eligible Monitorees', filename: 'Sara-Alert-Purge-Eligible-Export' },
-    custom: { label: 'Custom Export', filename: 'Custom-Export' }
-  }.freeze
-
-  def get_export_data(patients_group, data)
+  # Gets all associated relevant data for patients group based on queries and fields
+  def get_export_data(patients, data)
     exported_data = {}
-    patients_identifiers = Hash[patients_group.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
-                                              .map do |id, statelocal, cdc, nndss|
-                                                [id, { user_defined_id_statelocal: statelocal, user_defined_id_cdc: cdc, user_defined_id_nndss: nndss }]
-                                              end]
+    patients_identifiers = Hash[patients.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
+                                        .map do |id, statelocal, cdc, nndss|
+                                          [id, { user_defined_id_statelocal: statelocal, user_defined_id_cdc: cdc, user_defined_id_nndss: nndss }]
+                                        end]
 
     if data.dig(:patients, :checked).present?
-      # Replace 'race' field with actual race fields
+      # Replace race field with actual race fields
       if data[:patients][:checked].include?(:race)
         race_index = data[:patients][:checked].index(:race)
         data[:patients][:checked].delete(:race)
-        data[:patients][:checked].insert(race_index, *RACE_FIELDS)
+        data[:patients][:checked].insert(race_index, *PATIENT_RACE_FIELDS)
       end
 
-      exported_data[:patients] = extract_patients_details(patients_group, data[:patients][:checked])
+      exported_data[:patients] = extract_patients_details(patients, data[:patients][:checked])
     end
 
     if data.dig(:assessments, :checked).present?
       assessments = assessments_by_query(patients_identifiers)
-      exported_data[:assessments], symptom_names = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
+      exported_data[:assessments], symptom_names_and_labels = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
 
-      # Replace 'symptom' field with actual symptom fields
+      # Replace symptoms field with actual symptom fields
       if data[:assessments][:checked].include?(:symptoms)
+        data[:assessments][:headers] = data[:assessments][:checked].map { |field| ASSESSMENT_FIELD_NAMES[field] } if data[:assessments][:headers].nil?
+        data[:assessments][:headers].delete('Symptoms Reported')
+        data[:assessments][:headers].concat(symptom_names_and_labels.map(&:second))
         data[:assessments][:checked].delete(:symptoms)
-        data[:assessments][:checked].concat(symptom_names)
+        data[:assessments][:checked].concat(symptom_names_and_labels.map(&:first).map(&:to_sym))
       end
     end
 
@@ -510,8 +557,103 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     exported_data
   end
 
-  # Latest transfer of each patient
-  def transfers(patients)
+  # Extracts patient data values given relevant fields
+  def extract_patients_details(patients, fields)
+    # perform the following queries in bulk only if requested for better performance
+    patients_jurisdiction_names = get_patients_jurisdiction_names(patients) if fields.include?(:jurisdiction_name)
+    patients_jurisdiction_paths = get_patients_jurisdiction_paths(patients) if fields.include?(:jurisdiction_path)
+    patients_transfers = get_patients_transfers(patients) if (fields & %i[transferred_from transferred_to]).any?
+    patients_labs = get_patients_laboratories(patients) if (fields & PATIENT_LAB_FIELDS).any?
+    patients_creators = Hash[User.find(patients.pluck(:creator_id)).pluck(:id, :email)] if fields.include?(:creator)
+
+    # construct patient details
+    patients_details = []
+    patients.each do |patient|
+      # populate requested inherent fields
+      patient_details = extract_incomplete_patient_details(patient, fields)
+
+      # populate creator if requested
+      patient_details[:creator] = patients_creators[patient.creator_id] || '' if fields.include?(:creator)
+
+      # populate jurisdiction if requested
+      patient_details[:jurisdiction_name] = patients_jurisdiction_names[patient.id] || '' if fields.include?(:jurisdiction_name)
+      patient_details[:jurisdiction_path] = patients_jurisdiction_paths[patient.id] || '' if fields.include?(:jurisdiction_path)
+
+      # populate latest transfer from and to if requested
+      if patients_transfers&.key?(patient.id)
+        patient_details[:transferred_from] = patients_transfers[patient.id][:transferred_from] if fields.include?(:transferred_from)
+        patient_details[:transferred_to] = patients_transfers[patient.id][:transferred_to] if fields.include?(:transferred_to)
+      end
+
+      # populate labs if requested
+      if patients_labs&.key?(patient.id)
+        if patients_labs[patient.id].key?(:first)
+          patient_details[:lab_1_type] = patients_labs[patient.id][:first][:lab_type] || '' if fields.include?(:lab_1_type)
+          if fields.include?(:lab_1_specimen_collection)
+            patient_details[:lab_1_specimen_collection] = patients_labs[patient.id][:first][:specimen_collection]&.strftime('%F') || ''
+          end
+          patient_details[:lab_1_report] = patients_labs[patient.id][:first][:report]&.strftime('%F') || '' if fields.include?(:lab_1_report)
+          patient_details[:lab_1_result] = patients_labs[patient.id][:first][:result] || '' if fields.include?(:lab_1_result)
+        end
+        if patients_labs[patient.id].key?(:second)
+          patient_details[:lab_2_type] = patients_labs[patient.id][:second][:lab_type] || '' if fields.include?(:lab_2_type)
+          if fields.include?(:lab_2_specimen_collection)
+            patient_details[:lab_2_specimen_collection] = patients_labs[patient.id][:second][:specimen_collection]&.strftime('%F') || ''
+          end
+          patient_details[:lab_2_report] = patients_labs[patient.id][:second][:report]&.strftime('%F') || '' if fields.include?(:lab_2_report)
+          patient_details[:lab_2_result] = patients_labs[patient.id][:second][:result] || '' if fields.include?(:lab_2_result)
+        end
+      end
+
+      patients_details << patient_details
+    end
+
+    patients_details
+  end
+
+  # Extracts incomplete patient data values given relevant fields
+  def extract_incomplete_patient_details(patient, fields)
+    patient_details = {}
+
+    (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:strings]).each do |field|
+      patient_details[field] = patient[field] || '' if fields.include?(field)
+    end
+
+    PATIENT_FIELD_TYPES[:dates].each do |field|
+      patient_details[field] = patient[field]&.strftime('%F') || '' if fields.include?(field)
+    end
+
+    PATIENT_FIELD_TYPES[:timestamps].each do |field|
+      patient_details[field] = patient[field]&.rfc2822 || '' if fields.include?(field)
+    end
+
+    PATIENT_FIELD_TYPES[:booleans].each do |field|
+      patient_details[field] = patient[field] || false if fields.include?(field)
+    end
+
+    PATIENT_FIELD_TYPES[:phones].each do |field|
+      patient_details[field] = format_phone_number(patient[field]) if fields.include?(field)
+    end
+
+    PATIENT_RACE_FIELDS.each { |race| patient_details[race] = patient[race] || false } if fields.include?(:race)
+
+    patient_details[:name] = patient.displayed_name if fields.include?(:name)
+    patient_details[:age] = patient.calc_current_age if fields.include?(:age)
+    patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Workflow'
+    patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
+    patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
+    patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
+    if fields.include?(:expected_purge_date)
+      patient_details[:expected_purge_date] = patient[:updated_at].nil? ? '' : (patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''
+    end
+    patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase || '' if fields.include?(:full_status)
+    patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '' if fields.include?(:status)
+
+    patient_details
+  end
+
+  # Gets a hash of the latest transfers of each patient
+  def get_patients_transfers(patients)
     transfers = patients.pluck(:id, :latest_transfer_at)
     transfers = Transfer.where(patient_id: transfers.map { |lt| lt[0] }, created_at: transfers.map { |lt| lt[1] })
     jurisdictions = Jurisdiction.find(transfers.pluck(:from_jurisdiction_id, :to_jurisdiction_id).flatten.uniq)
@@ -527,10 +669,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         ]
   end
 
-  # 2 Latest laboratories of each patient
-  def laboratories(patients)
+  # Gets a hash of the 2 latest laboratories of each patient
+  def get_patients_laboratories(patients)
     latest_labs = Hash[patients.pluck(:id).map { |id| [id, {}] }]
-    Laboratory.where(patient_id: patients.pluck(:id)).order(report: :desc).each do |lab|
+    Laboratory.where(patient_id: patients.pluck(:id)).order(specimen_collection: :desc).each do |lab|
       if !latest_labs[lab.patient_id].key?(:first)
         latest_labs[lab.patient_id][:first] = {
           lab_type: lab[:lab_type],
@@ -550,18 +692,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     latest_labs
   end
 
-  # Hash containing mappings between jurisdiction id and path for each patient
-  def jurisdiction_paths(patients)
-    jurisdiction_paths = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :path).map { |id, path| [id, path] }]
-    patients_jurisdiction_paths = {}
-    patients.each do |patient|
-      patients_jurisdiction_paths[patient.id] = jurisdiction_paths[patient.jurisdiction_id]
-    end
-    patients_jurisdiction_paths
-  end
-
-  # Hash containing mappings between jurisdiction id and name for each patient
-  def jurisdiction_names(patients)
+  # Gets a hash containing mappings between jurisdiction id and name for each patient
+  def get_patients_jurisdiction_names(patients)
     jurisdiction_names = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :name).map { |id, name| [id, name] }]
     patients_jurisdiction_names = {}
     patients.each do |patient|
@@ -570,11 +702,224 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patients_jurisdiction_names
   end
 
+  # Gets a hash containing mappings between jurisdiction id and path for each patient
+  def get_patients_jurisdiction_paths(patients)
+    jurisdiction_paths = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :path).map { |id, path| [id, path] }]
+    patients_jurisdiction_paths = {}
+    patients.each do |patient|
+      patients_jurisdiction_paths[patient.id] = jurisdiction_paths[patient.jurisdiction_id]
+    end
+    patients_jurisdiction_paths
+  end
+
+  # Extracts assessment data values given relevant fields
+  def extract_assessments_details(patients_identifiers, assessments, fields)
+    if fields.include?(:symptoms)
+      conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
+      symptoms = Symptom.where(condition_id: conditions.pluck(:id)).order(:label)
+
+      conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
+                        .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
+      symptoms.each do |symptom|
+        conditions_hash[symptom[:condition_id]][:symptoms][symptom[:name]] = symptom.value
+      end
+      assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
+    end
+
+    symptom_names_and_labels = symptoms&.distinct&.pluck(:name, :label)
+
+    assessments_details = []
+    assessments.each do |assessment|
+      assessment_details = {}
+      assessment_details[:patient_id] = assessment[:patient_id] || '' if fields.include?(:patient_id)
+      PATIENT_SECONDARY_IDENTIFIER_FIELDS.each do |identifier|
+        assessment_details[identifier] = patients_identifiers[assessment[:patient_id]][identifier] || '' if fields.include?(identifier)
+      end
+      assessment_details[:id] = assessment[:id] || '' if fields.include?(:id)
+      assessment_details[:symptomatic] = assessment[:symptomatic] || false if fields.include?(:symptomatic)
+      assessment_details[:who_reported] = assessment[:who_reported] || '' if fields.include?(:who_reported)
+      assessment_details[:created_at] = assessment[:created_at] || '' if fields.include?(:created_at)
+      assessment_details[:updated_at] = assessment[:updated_at] || '' if fields.include?(:updated_at)
+      if fields.include?(:symptoms)
+        symptom_names_and_labels.map(&:first).each do |symptom_name|
+          assessment_details[symptom_name.to_sym] = assessments_hash[assessment[:id]][symptom_name]
+        end
+      end
+      assessments_details << assessment_details
+    end
+    [assessments_details, symptom_names_and_labels]
+  end
+
+  # Extracts laboratory data values given relevant fields
+  def extract_laboratories_details(patients_identifiers, laboratories, fields)
+    laboratories_details = []
+    laboratories.each do |laboratory|
+      laboratory_details = {}
+      laboratory_details[:patient_id] = laboratory[:patient_id] || '' if fields.include?(:patient_id)
+      PATIENT_SECONDARY_IDENTIFIER_FIELDS.each do |identifier|
+        laboratory_details[identifier] = patients_identifiers[laboratory[:patient_id]][identifier] || '' if fields.include?(identifier)
+      end
+      laboratory_details[:id] = laboratory[:id] || '' if fields.include?(:id)
+      laboratory_details[:lab_type] = laboratory[:lab_type] || '' if fields.include?(:lab_type)
+      laboratory_details[:specimen_collection] = laboratory[:specimen_collection]&.strftime('%F') || '' if fields.include?(:specimen_collection)
+      laboratory_details[:report] = laboratory[:report]&.strftime('%F') || '' if fields.include?(:report)
+      laboratory_details[:result] = laboratory[:result] || '' if fields.include?(:result)
+      laboratory_details[:created_at] = laboratory[:created_at] || '' if fields.include?(:created_at)
+      laboratory_details[:updated_at] = laboratory[:updated_at] || '' if fields.include?(:updated_at)
+      laboratories_details << laboratory_details
+    end
+    laboratories_details
+  end
+
+  # Extracts close contact data values given relevant fields
+  def extract_close_contacts_details(patients_identifiers, close_contacts, fields)
+    close_contacts_details = []
+    close_contacts.each do |close_contact|
+      close_contact_details = {}
+      close_contact_details[:patient_id] = close_contact[:patient_id] || '' if fields.include?(:patient_id)
+      PATIENT_SECONDARY_IDENTIFIER_FIELDS.each do |identifier|
+        close_contact_details[identifier] = patients_identifiers[close_contact[:patient_id]][identifier] || '' if fields.include?(identifier)
+      end
+      close_contact_details[:id] = close_contact[:id] || '' if fields.include?(:id)
+      close_contact_details[:first_name] = close_contact[:first_name] || '' if fields.include?(:first_name)
+      close_contact_details[:last_name] = close_contact[:last_name] || '' if fields.include?(:last_name)
+      close_contact_details[:primary_telephone] = format_phone_number(close_contact[:primary_telephone]) || '' if fields.include?(:primary_telephone)
+      close_contact_details[:email] = close_contact[:email] || '' if fields.include?(:email)
+      close_contact_details[:contact_attempts] = close_contact[:contact_attempts] || '' if fields.include?(:contact_attempts)
+      close_contact_details[:notes] = close_contact[:notes] || '' if fields.include?(:notes)
+      close_contact_details[:enrolled_id] = close_contact[:enrolled_id] || '' if fields.include?(:enrolled_id)
+      close_contact_details[:created_at] = close_contact[:created_at] || '' if fields.include?(:created_at)
+      close_contact_details[:updated_at] = close_contact[:updated_at] || '' if fields.include?(:updated_at)
+      close_contacts_details << close_contact_details
+    end
+    close_contacts_details
+  end
+
+  # Extracts transfer data values given relevant fields
+  def extract_transfers_details(patients_identifiers, transfers, fields)
+    jurisdiction_ids = [transfers.map(&:from_jurisdiction_id), transfers.map(&:to_jurisdiction_id)].flatten.uniq
+    jurisdiction_paths = Hash[Jurisdiction.find(jurisdiction_ids).pluck(:id, :path).map { |id, path| [id, path] }]
+    user_emails = Hash[User.find(transfers.map(&:who_id).uniq).pluck(:id, :email).map { |id, email| [id, email] }]
+    transfers_details = []
+    transfers.each do |transfer|
+      transfer_details = {}
+      transfer_details[:patient_id] = transfer[:patient_id] || '' if fields.include?(:patient_id)
+      PATIENT_SECONDARY_IDENTIFIER_FIELDS.each do |identifier|
+        transfer_details[identifier] = patients_identifiers[transfer[:patient_id]][identifier] || '' if fields.include?(identifier)
+      end
+      transfer_details[:id] = transfer[:id] || '' if fields.include?(:id)
+      transfer_details[:who] = user_emails[transfer[:who_id]] || '' if fields.include?(:who)
+      transfer_details[:from_jurisdiction] = jurisdiction_paths[transfer[:from_jurisdiction_id]] || '' if fields.include?(:from_jurisdiction)
+      transfer_details[:to_jurisdiction] = jurisdiction_paths[transfer[:to_jurisdiction_id]] || '' if fields.include?(:to_jurisdiction)
+      transfer_details[:created_at] = transfer[:created_at] || '' if fields.include?(:created_at)
+      transfer_details[:updated_at] = transfer[:updated_at] || '' if fields.include?(:updated_at)
+      transfers_details << transfer_details
+    end
+    transfers_details
+  end
+
+  # Extracts history data values given relevant fields
+  def extract_histories_details(patients_identifiers, histories, fields)
+    histories_details = []
+    histories.each do |history|
+      history_details = {}
+      history_details[:patient_id] = history[:patient_id] || '' if fields.include?(:patient_id)
+      PATIENT_SECONDARY_IDENTIFIER_FIELDS.each do |identifier|
+        history_details[identifier] = patients_identifiers[history[:patient_id]][identifier] || '' if fields.include?(identifier)
+      end
+      history_details[:id] = history[:id] || '' if fields.include?(:id)
+      history_details[:created_by] = history[:created_by] || '' if fields.include?(:created_by)
+      history_details[:history_type] = history[:history_type] || '' if fields.include?(:history_type)
+      history_details[:comment] = history[:comment] || '' if fields.include?(:comment)
+      history_details[:created_at] = history[:created_at] || '' if fields.include?(:created_at)
+      history_details[:updated_at] = history[:updated_at] || '' if fields.include?(:updated_at)
+      histories_details << history_details
+    end
+    histories_details
+  end
+
   # Converts phone number from e164 to CDC recommended format
   def format_phone_number(phone)
     cleaned_phone_number = Phonelib.parse(phone).national(false)
     return nil if cleaned_phone_number.nil? || cleaned_phone_number.length != 10
 
     cleaned_phone_number.insert(6, '-').insert(3, '-')
+  end
+
+  # Writes export data to file(s)
+  def write_export_data_to_files(config, exported_data, index)
+    case config[:format]
+    when 'csv'
+      csv_export(config, exported_data, index)
+    when 'xlsx'
+      xlsx_export(config, exported_data, index)
+    end
+  end
+
+  # Creates a list of csv files from exported data
+  def csv_export(config, exported_data, index)
+    files = []
+    CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+      next unless config.dig(:data, data_type, :checked).present?
+
+      package = CSV.generate(headers: true) do |csv|
+        fields = config[:data][data_type][:checked]
+        csv << config[:data][data_type][:headers] || fields.map { |field| ALL_FIELDS_NAMES[data_type][field] }
+        exported_data[data_type].each do |record|
+          csv << fields.map { |field| record[field] }
+        end
+      end
+      files << { filename: build_export_filename(config, data_type, index), content: Base64.encode64(package) }
+    end
+    files
+  end
+
+  # Creates a list of excel files from exported data
+  def xlsx_export(config, exported_data, index)
+    if config[:separate_files].present?
+      files = []
+      CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+        next unless config.dig(:data, data_type, :checked).present?
+
+        Axlsx::Package.new do |p|
+          p.workbook.add_worksheet(name: config[:data][data_type][:tab] || CUSTOM_EXPORT_OPTIONS[data_type][:label]) do |sheet|
+            fields = config[:data][data_type][:checked]
+            sheet.add_row(config[:data][data_type][:headers] || fields.map { |field| ALL_FIELDS_NAMES[data_type][field] })
+            exported_data[data_type].each do |record|
+              sheet.add_row(fields.map { |field| record[field] }, { types: Array.new(fields.length, :string) })
+            end
+          end
+          files << { filename: build_export_filename(config, data_type, index), content: Base64.encode64(p.to_stream.read) }
+        end
+      end
+      files
+    else
+      Axlsx::Package.new do |p|
+        CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+          next unless config.dig(:data, data_type, :checked).present?
+
+          p.workbook.add_worksheet(name: config[:data][data_type][:tab] || CUSTOM_EXPORT_OPTIONS[data_type][:label]) do |sheet|
+            fields = config[:data][data_type][:checked]
+            sheet.add_row(config[:data][data_type][:headers] || fields.map { |field| ALL_FIELDS_NAMES[data_type][field] })
+            exported_data[data_type].each do |record|
+              sheet.add_row(fields.map { |field| record[field] }, { types: Array.new(fields.length, :string) })
+            end
+          end
+        end
+        return [{ filename: build_export_filename(config, nil, index), content: Base64.encode64(p.to_stream.read) }]
+      end
+    end
+  end
+
+  # Builds a file name using the base name, index, date, and extension.
+  # Ex: "Sara-Alert-Linelist-Isolation-2020-09-01T14:15:05-04:00-1"
+  def build_export_filename(config, data_type, index)
+    return unless config[:export_type].present? && EXPORT_TYPES.key?(config[:export_type])
+
+    if config[:filename_data_type].present? && data_type.present? && CUSTOM_EXPORT_OPTIONS[data_type].present?
+      data_type_name = config[:data][data_type][:name] || CUSTOM_EXPORT_OPTIONS[data_type][:label]
+    end
+    base_name = "#{config[:filename].present? ? config[:filename] : EXPORT_TYPES[config[:export_type]][:filename]}#{data_type_name ? "-#{data_type_name}" : ''}"
+    "#{base_name}-#{DateTime.now}#{index.present? ? "-#{index + 1}" : ''}.#{config[:format]}"
   end
 end

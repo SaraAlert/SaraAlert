@@ -27,7 +27,7 @@ class CustomExport extends React.Component {
       selected_records: props.preset?.id ? 'custom' : 'current',
       custom_patient_query: props.preset?.config?.data?.patients?.query
         ? _.clone(props.preset.config.data.patients.query)
-        : { workflow: 'all', tab: 'all', jurisdiction: props.jurisdiction.id, scope: 'all' },
+        : { workflow: 'all', tab: 'all', jurisdiction: props.jurisdiction.id, scope: 'all', tz_offset: new Date().getTimezoneOffset() },
       filtered_monitorees_count: props.all_monitorees_count,
       cancel_token: axios.CancelToken.source(),
       preset: {
@@ -135,7 +135,13 @@ class CustomExport extends React.Component {
       if (selected_records === 'current') {
         this.handlePresetChange('config.data.patients.query', _.clone(this.props.patient_query));
       } else if (selected_records === 'all') {
-        this.handlePresetChange('config.data.patients.query', { workflow: 'all', tab: 'all', jurisdiction: this.props.jurisdiction.id, scope: 'all' });
+        this.handlePresetChange('config.data.patients.query', {
+          workflow: 'all',
+          tab: 'all',
+          jurisdiction: this.props.jurisdiction.id,
+          scope: 'all',
+          tz_offset: new Date().getTimezoneOffset(),
+        });
       }
     });
   };

@@ -151,7 +151,6 @@ class PatientsFilters extends React.Component {
                 disabled={this.props.disabled}
               />
               <AdvancedFilter
-                key="custom-export-advanced-filter"
                 advancedFilterUpdate={filter =>
                   this.props.onQueryChange(
                     'filter',
@@ -161,6 +160,7 @@ class PatientsFilters extends React.Component {
                 authenticity_token={this.props.authenticity_token}
                 workflow={this.props.query?.workflow}
                 disabled={this.props.disabled}
+                useLocalStorage={false}
               />
             </InputGroup>
           </Col>

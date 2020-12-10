@@ -22,6 +22,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   RISK_FACTOR_FIELDS = %i[contact_of_known_case was_in_health_care_facility_with_known_cases].freeze
   # TODO: when workflow specific case status validation re-enabled: uncomment
   # WORKFLOW_SPECIFIC_FIELDS = %i[case_status].freeze
+  NON_IMPORTED_PATIENT_FIELDS = %i[full_status lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report
+                                   lab_2_result].freeze
 
   def verify_epi_x_field_validation(jurisdiction_id, workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
@@ -38,7 +40,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       row.each_with_index do |value, index|
-        verify_validation(jurisdiction_id, workflow, COMPREHENSIVE_FIELDS[index], value)
+        verify_validation(jurisdiction_id, workflow, SARA_ALERT_FORMAT_FIELDS[index], value)
       end
     end
   end
@@ -160,7 +162,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         assert_nil(patient, "Patient should not be found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_num}")
       else
         assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_num}")
-        COMPREHENSIVE_FIELDS.each_with_index do |field, index|
+        SARA_ALERT_FORMAT_FIELDS.each_with_index do |field, index|
           if TELEPHONE_FIELDS.include?(field)
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif BOOL_FIELDS.include?(field)
@@ -189,7 +191,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(row[index] ? row[index].to_s : user_jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, "#{field} mismatch in row #{row_num}")
           elsif ENUM_FIELDS.include?(field)
             assert_equal(NORMALIZED_ENUMS[field][unformat_enum_field(row[index])].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif !field.nil?
+          elsif !NON_IMPORTED_PATIENT_FIELDS.include?(field)
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end
         end

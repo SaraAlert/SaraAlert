@@ -133,7 +133,7 @@ class Export extends React.Component {
               this.setState({ showSaraFormatModal: false });
             },
             this.submit,
-            `/export/excel/patients/comprehensive/${this.props.query.workflow}`
+            `/export/excel/patients/sara_alert_format/${this.props.query.workflow}`
           )}
         {this.state.showAllPurgeEligibleModal &&
           this.createModal(
