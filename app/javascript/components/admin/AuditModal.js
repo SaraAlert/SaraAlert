@@ -12,9 +12,9 @@ class AuditModal extends React.Component {
     this.state = {
       table: {
         colData: [
-          { label: 'Triggered by', field: 'user', isSortable: true },
-          { label: 'Action', field: 'change', filter: this.formatChange, isSortable: false },
-          { label: 'Timestamp', field: 'timestamp', filter: this.formatTimestamp, isSortable: true },
+          { label: 'Triggered by', field: 'user', className: 'wrap', isSortable: true, width: '30%' },
+          { label: 'Action', field: 'change', className: 'wrap', filter: this.formatChange, isSortable: false, width: '60%' },
+          { label: 'Timestamp', field: 'timestamp', filter: this.formatTimestamp, isSortable: true, width: '10%' },
         ],
         rowData: [],
         totalRows: 0,
@@ -306,7 +306,7 @@ class AuditModal extends React.Component {
             <Modal.Title>Audit Events</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <span className="pb-3 d-inline-block">
+            <span className="pb-3 d-inline-block wrap">
               <b>User:</b> {this.props.user.email}
             </span>
             <CustomTable
