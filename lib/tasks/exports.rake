@@ -27,6 +27,8 @@ namespace :exports do
                                                               date_of_birth,secondary_telephone, created_at, primary_language, age,
                                                               user_defined_id_statelocal, gender_identity, potential_exposure_country,
                                                               potential_exposure_location, exposure_notes').all, Jurisdiction.first)
-    File.open('NBS.zip', 'w') { |file| file.write(zip.string) }
+    nbs_filename = "NBS-#{DateTime.now.to_s}.zip"
+    File.open(nbs_filename, 'w') { |file| file.write(zip.string) }
+    puts "Saved export file to: #{nbs_filename}"
   end
 end

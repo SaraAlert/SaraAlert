@@ -32,6 +32,7 @@ class DownloadMonitoreeExcel extends React.Component {
         })
         .catch(error => {
           reportError(error);
+          this.setState({ loadingExcel: false });
         });
     });
   };
@@ -51,6 +52,7 @@ class DownloadMonitoreeExcel extends React.Component {
         })
         .catch(error => {
           reportError(error);
+          this.setState({ loadingNBS: false });
         });
     });
   };
