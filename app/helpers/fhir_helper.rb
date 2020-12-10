@@ -98,8 +98,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       ].reject(&:nil?)
     )
   end
-  
-  def races_as_hash
+
+  def races_as_hash(patient)
     {
       white: patient.white,
       black_or_african_american: patient.black_or_african_american,
