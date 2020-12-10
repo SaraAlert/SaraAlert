@@ -89,13 +89,13 @@ class CustomTable extends React.Component {
    * @param {Boolean} sortable - True if this column should be sortable and false otherwise.
    * @param {String} tooltip - Text for the tooltip (if any).
    * @param {String} icon - Icon class for the header (if any)
-   * @param {String} width - Width of the column (if any)
+   * @param {String} colWidth - Width of the column (if any)
    */
-  renderTableHeader = (field, label, sortable, tooltip, icon, width) => {
+  renderTableHeader = (field, label, sortable, tooltip, icon, colWidth) => {
     return (
       <th
         key={field}
-        width={width}
+        width={colWidth}
         onClick={() => {
           if (sortable) {
             this.handleSortClick(field);
@@ -142,7 +142,7 @@ class CustomTable extends React.Component {
           <thead>
             <tr>
               {this.props.columnData.map(data => {
-                return this.renderTableHeader(data.field, data.label, data.isSortable, data.tooltip, data.icon, data.width);
+                return this.renderTableHeader(data.field, data.label, data.isSortable, data.tooltip, data.icon, data.colWidth);
               })}
               {this.props.isEditable && <th>Edit</th>}
               {this.props.isSelectable && (

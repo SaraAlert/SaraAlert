@@ -12,9 +12,9 @@ class AuditModal extends React.Component {
     this.state = {
       table: {
         colData: [
-          { label: 'Triggered by', field: 'user', className: 'wrap', isSortable: true, width: '30%' },
-          { label: 'Action', field: 'change', className: 'wrap', filter: this.formatChange, isSortable: false, width: '60%' },
-          { label: 'Timestamp', field: 'timestamp', filter: this.formatTimestamp, isSortable: true, width: '10%' },
+          { label: 'Triggered by', field: 'user', className: 'wrap', isSortable: true, colWidth: '30%' },
+          { label: 'Action', field: 'change', className: 'wrap', filter: this.formatChange, isSortable: false, colWidth: '60%' },
+          { label: 'Timestamp', field: 'timestamp', filter: this.formatTimestamp, isSortable: true, colWidth: '10%' },
         ],
         rowData: [],
         totalRows: 0,
