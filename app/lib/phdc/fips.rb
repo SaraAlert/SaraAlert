@@ -6,14 +6,14 @@ module PHDC
   class FIPS # rubocop:todo Metrics/ClassLength
     # FIPS code for a given state
     def state_to_fips(state)
-      FIPS_STATE_COUNTY[state&.titleize]&.keys&.first
+      FIPS_STATE_COUNTY[state&.strip]&.keys&.first
     end
 
     # FIPS code for a given county
     def county_to_fips(state, county)
       return nil if state.blank? || county.blank?
 
-      counties = FIPS_STATE_COUNTY[state&.titleize]&.values&.first
+      counties = FIPS_STATE_COUNTY[state&.strip]&.values&.first
       return nil if counties.blank?
 
       county_code = counties.find { |name, _code| name&.downcase&.starts_with?(county&.downcase) }
@@ -24,7 +24,7 @@ module PHDC
 
     # Alpha 3 code for given country
     def country_to_alpha3(country)
-      country = FIPS_COUNTRY[country&.titleize]
+      country = FIPS_COUNTRY[country&.strip]
       return nil if country.blank?
 
       country[1]
@@ -32,7 +32,7 @@ module PHDC
 
     # FIPS code for given country
     def country_to_fips(country)
-      country = FIPS_COUNTRY[country&.titleize]
+      country = FIPS_COUNTRY[country&.strip]
       return nil if country.blank?
 
       country[0]
