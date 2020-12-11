@@ -283,6 +283,11 @@ class PublicHealthController < ApplicationController
   end
 
   def advanced_filter(patients, filters, tz_offset)
+    # Adjust for difference between client and server timezones.
+    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
+    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
+    tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
+
     filters.each do |filter|
       case filter[:filterOption]['name']
       when 'sent-today'
@@ -316,21 +321,21 @@ class PublicHealthController < ApplicationController
                      patients.where('patients.id = patients.responder_id')
                    end
       when 'enrolled'
-        patients = advanced_filter_date(patients, :created_at, filter, tz_offset, :time)
+        patients = advanced_filter_date(patients, :created_at, filter, tz_diff, :time)
       when 'enrolled-relative'
-        patients = advanced_filter_relative_date(patients, :created_at, filter, tz_offset, :time)
+        patients = advanced_filter_relative_date(patients, :created_at, filter, tz_diff, :time)
       when 'latest-report'
-        patients = advanced_filter_date(patients, :latest_assessment_at, filter, tz_offset, :time)
+        patients = advanced_filter_date(patients, :latest_assessment_at, filter, tz_diff, :time)
       when 'latest-report-relative'
-        patients = advanced_filter_relative_date(patients, :latest_assessment_at, filter, tz_offset, :time)
+        patients = advanced_filter_relative_date(patients, :latest_assessment_at, filter, tz_diff, :time)
       when 'last-date-exposure'
-        patients = advanced_filter_date(patients, :last_date_of_exposure, filter, tz_offset, :date)
+        patients = advanced_filter_date(patients, :last_date_of_exposure, filter, tz_diff, :date)
       when 'last-date-exposure-relative'
-        patients = advanced_filter_relative_date(patients, :last_date_of_exposure, filter, tz_offset, :date)
+        patients = advanced_filter_relative_date(patients, :last_date_of_exposure, filter, tz_diff, :date)
       when 'symptom-onset'
-        patients = advanced_filter_date(patients, :symptom_onset, filter, tz_offset, :date)
+        patients = advanced_filter_date(patients, :symptom_onset, filter, tz_diff, :date)
       when 'symptom-onset-relative'
-        patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_offset, :date)
+        patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_diff, :date)
       when 'continous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
       when 'telephone-number'
@@ -444,28 +449,18 @@ class PublicHealthController < ApplicationController
   end
 
   # Filter patients by a set time range for the given field
-  def advanced_filter_date(patients, field, filter, tz_offset, type)
-    # Adjust for difference between client and server timezones.
-    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
-    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
-    tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
-
-    timeframe = { after: (Chronic.parse(filter[:value])).beginning_of_day + 1.day } if filter[:dateOption] == 'after'
-    timeframe = { before: (Chronic.parse(filter[:value])).end_of_day - 1.day } if filter[:dateOption] == 'before'
+  def advanced_filter_date(patients, field, filter, tz_diff, type)
+    timeframe = { after: Chronic.parse(filter[:value]).beginning_of_day + 1.day } if filter[:dateOption] == 'after'
+    timeframe = { before: Chronic.parse(filter[:value]).end_of_day - 1.day } if filter[:dateOption] == 'before'
     if filter[:dateOption] == 'within'
-      timeframe = { after: (Chronic.parse(filter[:value][:start])).beginning_of_day, before: (Chronic.parse(filter[:value][:end])).end_of_day }
+      timeframe = { after: Chronic.parse(filter[:value][:start]).beginning_of_day, before: Chronic.parse(filter[:value][:end]).end_of_day }
     end
 
-    patients_by_field_timeframe(patients, field, timeframe, tz_offset, type)
+    patients_by_field_timeframe(patients, field, timeframe, tz_diff, type)
   end
 
   # Filter patients by a relative time range for the given field
-  def advanced_filter_relative_date(patients, field, filter, tz_offset, type)
-    # Adjust for difference between client and server timezones.
-    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
-    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
-    tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
-
+  def advanced_filter_relative_date(patients, field, filter, tz_diff, type)
     timeframe = { after: (DateTime.now - tz_diff).beginning_of_day, before: (DateTime.now - tz_diff).end_of_day } if filter[:relativeOption] == 'today'
     timeframe = { after: (DateTime.now - tz_diff).beginning_of_day + 1.day, before: (DateTime.now - tz_diff).end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
     timeframe = { after: (DateTime.now - tz_diff).beginning_of_day - 1.day, before: (DateTime.now - tz_diff).end_of_day - 1.day } if filter[:relativeOption] == 'yesterday'
@@ -480,15 +475,10 @@ class PublicHealthController < ApplicationController
     end
     return patients if timeframe.nil?
 
-    patients_by_field_timeframe(patients, field, timeframe, tz_offset, type)
+    patients_by_field_timeframe(patients, field, timeframe, tz_diff, type)
   end
 
-  def patients_by_field_timeframe(patients, field, timeframe, tz_offset, type)
-    # Adjust for difference between client and server timezones.
-    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
-    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
-    tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
-
+  def patients_by_field_timeframe(patients, field, timeframe, tz_diff, type)
     if timeframe[:after].present?
       # Convert timeframe value to date if field is a date, apply timezone difference if field is a datetime
       after = type == :date ? timeframe[:after].to_date : timeframe[:after] + tz_diff
