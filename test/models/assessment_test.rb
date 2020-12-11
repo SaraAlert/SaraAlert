@@ -422,5 +422,9 @@ class AssessmentTest < ActiveSupport::TestCase
     assessment = create(:assessment, reported_condition: reported_condition, patient: patient)
 
     assert_equal(assessment.get_reported_symptom_value(reported_symptom.name), reported_symptom.value)
+
+    reported_condition.destroy!
+    assessment.reload
+    assert_nil(assessment.get_reported_symptom_value(reported_symptom.value))
   end
 end
