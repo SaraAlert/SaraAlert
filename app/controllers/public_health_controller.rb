@@ -461,17 +461,18 @@ class PublicHealthController < ApplicationController
 
   # Filter patients by a relative time range for the given field
   def advanced_filter_relative_date(patients, field, filter, tz_diff, type)
-    timeframe = { after: (DateTime.now - tz_diff).beginning_of_day, before: (DateTime.now - tz_diff).end_of_day } if filter[:relativeOption] == 'today'
-    timeframe = { after: (DateTime.now - tz_diff).beginning_of_day + 1.day, before: (DateTime.now - tz_diff).end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
-    timeframe = { after: (DateTime.now - tz_diff).beginning_of_day - 1.day, before: (DateTime.now - tz_diff).end_of_day - 1.day } if filter[:relativeOption] == 'yesterday'
+    local_current_time = DateTime.now - tz_diff
+    timeframe = { after: local_current_time.beginning_of_day, before: local_current_time.end_of_day } if filter[:relativeOption] == 'today'
+    timeframe = { after: local_current_time.beginning_of_day + 1.day, before: local_current_time.end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
+    timeframe = { after: local_current_time.beginning_of_day - 1.day, before: local_current_time.end_of_day - 1.day } if filter[:relativeOption] == 'yesterday'
     if filter[:relativeOption] == 'custom'
       timespan = filter[:value][:number].to_i.days if filter[:value][:unit] == 'days'
       timespan = filter[:value][:number].to_i.weeks if filter[:value][:unit] == 'weeks'
       timespan = filter[:value][:number].to_i.months if filter[:value][:unit] == 'months'
       return patients if timespan.nil?
 
-      timeframe = { after: (timespan.ago - tz_diff).beginning_of_day, before: DateTime.now - tz_diff } if filter[:value][:when] == 'past'
-      timeframe = { after: (DateTime.now - tz_diff), before: (timespan.from_now - tz_diff).end_of_day } if filter[:value][:when] == 'next'
+      timeframe = { after: (timespan.ago - tz_diff).beginning_of_day, before: local_current_time } if filter[:value][:when] == 'past'
+      timeframe = { after: local_current_time, before: (timespan.from_now - tz_diff).end_of_day } if filter[:value][:when] == 'next'
     end
     return patients if timeframe.nil?
 
