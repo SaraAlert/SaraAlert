@@ -27,7 +27,11 @@ class PatientMailer < ApplicationMailer
   def enrollment_sms_text_based(patient)
     # Should not be sending enrollment sms if no valid number
     return if patient&.primary_telephone.blank?
-    add_fail_history_sms_blocked(patient) && return if patient.blocked_sms
+
+    if patient.blocked_sms
+      add_fail_history_sms_blocked(patient)
+      return
+    end
 
     lang = patient.select_language
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
@@ -42,8 +46,14 @@ class PatientMailer < ApplicationMailer
 
   # Right now the wording of this message is the same as for enrollment
   def assessment_sms_weblink(patient)
-    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
-    add_fail_history_sms_blocked(patient) && return if patient.blocked_sms
+    if patient&.primary_telephone.blank?
+      add_fail_history_blank_field(patient, 'primary phone number')
+      return
+    end
+    if patient.blocked_sms
+      add_fail_history_sms_blocked(patient)
+      return
+    end
 
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |dependent|
@@ -65,8 +75,14 @@ class PatientMailer < ApplicationMailer
   end
 
   def assessment_sms(patient)
-    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
-    add_fail_history_sms_blocked(patient) && return if patient.blocked_sms
+    if patient&.primary_telephone.blank?
+      add_fail_history_blank_field(patient, 'primary phone number')
+      return
+    end
+    if patient.blocked_sms
+      add_fail_history_sms_blocked(patient)
+      return
+    end
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
@@ -103,7 +119,10 @@ class PatientMailer < ApplicationMailer
   end
 
   def assessment_voice(patient)
-    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    if patient&.primary_telephone.blank?
+      add_fail_history_blank_field(patient, 'primary phone number')
+      return
+    end
 
     lang = patient.select_language
     lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
@@ -145,7 +164,10 @@ class PatientMailer < ApplicationMailer
   end
 
   def assessment_email(patient)
-    add_fail_history_blank_field(patient, 'email') && return if patient&.email.blank?
+    if patient&.email.blank?
+      add_fail_history_blank_field(patient, 'email')
+      return
+    end
 
     @lang = patient.select_language
     # Gather patients and jurisdictions
