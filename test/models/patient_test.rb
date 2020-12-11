@@ -1797,7 +1797,9 @@ class PatientTest < ActiveSupport::TestCase
     assert scoped_patients.where(id: patient.id).present?
 
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date, latest_assessment_at: DateTime.now.utc)
+    # NOTE: Must test with multiple assessments where some are NOT symptomatic
     Assessment.create!(patient_id: patient.id, symptomatic: true)
+    Assessment.create!(patient_id: patient.id, symptomatic: false)
     scoped_patients = Patient.ten_day_quarantine_candidates(DateTime.now.utc)
     assert_not scoped_patients.where(id: patient.id).present?
   end
@@ -1946,7 +1948,9 @@ class PatientTest < ActiveSupport::TestCase
     assert scoped_patients.where(id: patient.id).present?
 
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
+    # NOTE: Must test with multiple assessments where some are NOT symptomatic
     Assessment.create!(patient_id: patient.id, symptomatic: true)
+    Assessment.create!(patient_id: patient.id, symptomatic: false)
     Laboratory.create!(patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
     assert_not scoped_patients.where(id: patient.id).present?
@@ -1989,13 +1993,22 @@ class PatientTest < ActiveSupport::TestCase
     assert_not scoped_patients.where(id: patient.id).present?
   end
 
-  test 'seven_day_quarantine_candidates scope asserts only negative lab tests' do
+  test 'seven_day_quarantine_candidates scope asserts must be at least one negative lab test in range' do
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
     Assessment.create!(patient_id: patient.id, symptomatic: false)
     Laboratory.create!(patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
     assert scoped_patients.where(id: patient.id).present?
 
+    # If there is a negative PCR or ANTIGEN test it should still be true even if there are positive tests
+    patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
+    Assessment.create!(patient_id: patient.id, symptomatic: false)
+    Laboratory.create!(patient_id: patient.id, result: 'positive', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
+    Laboratory.create!(patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
+    scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
+    assert scoped_patients.where(id: patient.id).present?
+
+    # If there is NO negative PCR or ANTIGEN test, can't pass
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
     Assessment.create!(patient_id: patient.id, symptomatic: false)
     Laboratory.create!(patient_id: patient.id, result: 'positive', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)

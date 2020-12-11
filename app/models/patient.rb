@@ -464,15 +464,16 @@ class Patient < ApplicationRecord
   #
   # Record must:
   # - be unpurged, open, in exposure workflow, and not in continuous exposure
-  # - have reported within 10-13 days after their last date of exposure and has no symptomatic reports
+  # - has no symptomatic reports
+  # - have reported within 10-13 days after their last date of exposure 
   # - be 10 or more days past their last date of exposure
   scope :ten_day_quarantine_candidates, lambda { |user_curr_datetime|
     where(purged: false, monitoring: true, isolation: false, continuous_exposure: false)
+      .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_exists(:assessments) do
         # CAST is necessary to guarantee correct comparison between datetime and date.
         where('CAST(assessments.created_at AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 10 DAY) '\
               'AND DATE_ADD(last_date_of_exposure, INTERVAL 13 DAY)')
-          .where('assessments.symptomatic = ?', false)
       end
       .where('? >= DATE_ADD(patients.last_date_of_exposure, INTERVAL 10 DAY)', user_curr_datetime.to_date)
   }
@@ -482,17 +483,18 @@ class Patient < ApplicationRecord
   #
   # Record must:
   # - be unpurged, open, in exposure workflow, and not in continuous exposure
-  # - have reported within 7-9 days after their last date of exposure and has no symptomatic reports
+  #-  has no symptomatic reports
+  # - have reported within 7-9 days after their last date of exposure and
   # - be 7 or more days past their last date of exposure
   # - have a negative PCR or Antigen test that was collected between 5-9 days after their last date of exposure
   # rubocop:disable Style/MultilineBlockChain
   scope :seven_day_quarantine_candidates, lambda { |user_curr_datetime|
     where(purged: false, monitoring: true, isolation: false, continuous_exposure: false)
+      .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_exists(:assessments) do
         # CAST is necessary to guarantee correct comparison between datetime and date.
         where('CAST(assessments.created_at AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY) '\
               'AND DATE_ADD(last_date_of_exposure, INTERVAL 9 DAY)')
-          .where('assessments.symptomatic = ?', false)
       end
       .where('? >= DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY)', user_curr_datetime.to_date)
       .where_assoc_exists(:laboratories) do
