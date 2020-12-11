@@ -230,10 +230,10 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <b>Preferred Reporting Method:</b>{' '}
-                    {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method.includes('SMS')) && (
+                    {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method?.includes('SMS')) && (
                       <span className="font-weight-light">{this.props.details.preferred_contact_method || '--'}</span>
                     )}
-                    {this.props.details.blocked_sms && this.props.details.preferred_contact_method.includes('SMS') && (
+                    {this.props.details.blocked_sms && this.props.details.preferred_contact_method?.includes('SMS') && (
                       <span className="font-weight-bold text-danger">
                         {this.props.details.preferred_contact_method || '--'}
                         <Form.Label className="tooltip-whitespace">
