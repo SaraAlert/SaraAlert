@@ -241,8 +241,9 @@ module PHDC
         sh_section << entry_helper_code('DEM142', 'Patient Primary Language', 'CE', 'ENG', 'English')
         sh_section << entry_helper_code('NBS214', 'Patient Speaks English', 'CE', 'Y', 'Yes')
       end
-      unless patient.age.blank?
-        sh_section << entry_helper_text('INV2001', 'Patient Age Reported', 'ST', patient.age.to_s)
+      unless patient.date_of_birth.blank?
+        age = Patient.calc_current_age_base(provided_date_of_birth: patient.date_of_birth).to_s
+        sh_section << entry_helper_text('INV2001', 'Patient Age Reported', 'ST', age)
         sh_section << entry_helper_code('INV2002', 'Patient Age Reported Units', 'CE', 'a', 'Year')
       end
       sh_section << entry_helper_text('NBS213', 'Patient Gender (Transgender Information)', 'ST', patient.gender_identity) unless patient.gender_identity.blank?
