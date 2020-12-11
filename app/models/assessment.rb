@@ -76,7 +76,7 @@ class Assessment < ApplicationRecord
   end
 
   def get_reported_symptom_value(symptom_name)
-    reported_symptom = reported_condition&.symptoms.find_by(name: symptom_name).first
+    reported_symptom = reported_condition&.symptoms.find_by(name: symptom_name)
 
     # This will be the case if a symptom is no longer being tracked and the assessments table is looking for its value
     return nil if reported_symptom.nil?

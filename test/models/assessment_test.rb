@@ -411,4 +411,16 @@ class AssessmentTest < ActiveSupport::TestCase
     reported_symptom_2.value = false
     assert assessment.symptomatic?
   end
+
+  test 'get reported symptom value' do
+    threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
+    threshold_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Greater Than Or Equal', name: 'pulse-ox', label: 'Pulse Ox')
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    reported_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Greater Than Or Equal', name: 'pulse-ox', label: 'Pulse Ox')
+    reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
+    patient = create(:patient)
+    assessment = create(:assessment, reported_condition: reported_condition, patient: patient)
+
+    assert_equal(assessment.get_reported_symptom_value(reported_symptom.name), reported_symptom.value)
+  end
 end
