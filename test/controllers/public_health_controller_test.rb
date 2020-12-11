@@ -439,7 +439,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       assessment.update(created_at: 1.days.ago) if lde == 14
       assessment.update(created_at: 2.days.ago) if lde == 15
       js_timezone_offsets.each do |offset|
-        patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, {value: true}, offset, :ten_day)
+        patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, offset, :ten_day)
         assert_equal(patients.count, 1)
       end
     end
@@ -458,7 +458,7 @@ class PublicHealthControllerTest < ActionController::TestCase
         laboratory.update(specimen_collection: 3.days.ago)
       end
       js_timezone_offsets.each do |offset|
-        patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, {value: true}, offset, :seven_day)
+        patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, offset, :seven_day)
         assert_equal(patients.count, 1)
       end
     end
