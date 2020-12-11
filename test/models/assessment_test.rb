@@ -156,10 +156,10 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 90.0 is less than 90.1
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 90.1 is not less than 90.1
-    reported_symptom.value = 90.1
+    reported_symptom.update(value: 90.1)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
     # Assert 91 is not less than 90.1
-    reported_symptom.value = 91
+    reported_symptom.update(value: 91)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -174,10 +174,10 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 90.0 is less than or equal 90.1
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 90.1 is less than or equal 90.1
-    reported_symptom.value = 90.1
+    reported_symptom.update(value: 90.1)
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 91 is not less than or equal 90.1
-    reported_symptom.value = 91
+    reported_symptom.update(value: 91)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -192,10 +192,10 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 91.0 is greater than 90.1
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 90.1 is not greater than 90.1
-    reported_symptom.value = 90.1
+    reported_symptom.update(value: 90.1)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
     # Assert 90 is not less than 90.1
-    reported_symptom.value = 90
+    reported_symptom.update(value: 90)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -210,10 +210,10 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 91.0 is greater than or equal 90.1
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 90.1 is greater than or equal 90.1
-    reported_symptom.value = 90.1
+    reported_symptom.update(value: 90.1)
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 90 is not greater than or equal 90.1
-    reported_symptom.value = 90
+    reported_symptom.update(value: 90)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -228,7 +228,7 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 90.1 is equal to 90.1
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 91.1 is not equal to 90.1
-    reported_symptom.value = 91.1
+    reported_symptom.update(value: 91.1)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -243,7 +243,7 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 90.1 is not not equal to 90.1
     assert_not assessment.symptom_passes_threshold('pulse-ox')
     # Assert 91.1 is not equal to 90.1
-    reported_symptom.value = 91.1
+    reported_symptom.update(value: 91.1)
     assert assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -258,10 +258,10 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 90 is less than 91
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 91 is not less than 91
-    reported_symptom.value = 91
+    reported_symptom.update(value: 91)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
     # Assert 91 is not less than 91
-    reported_symptom.value = 91
+    reported_symptom.update(value: 91)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -276,10 +276,10 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 90 is less than or equal 91
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 91 is less than or equal 91
-    reported_symptom.value = 91
+    reported_symptom.update(value: 91)
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 92 is not less than or equal 91
-    reported_symptom.value = 92
+    reported_symptom.update(value: 92)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -294,10 +294,10 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 92 is greater than 91
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 91 is not greater than 91
-    reported_symptom.value = 91
+    reported_symptom.update(value: 91)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
     # Assert 90 is not less than 91
-    reported_symptom.value = 90
+    reported_symptom.update(value: 90)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -312,10 +312,10 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 91 is greater than or equal 91
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 91 is greater than or equal 91
-    reported_symptom.value = 91
+    reported_symptom.update(value: 91)
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 90 is not greater than or equal 91
-    reported_symptom.value = 90
+    reported_symptom.update(value: 90)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -330,7 +330,7 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 91 is equal to 91
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert 90 is not equal to 91
-    reported_symptom.value = 90
+    reported_symptom.update(value: 90)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -345,7 +345,7 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert 91 is not not equal to 91
     assert_not assessment.symptom_passes_threshold('pulse-ox')
     # Assert 90 is not equal to 91
-    reported_symptom.value = 90
+    reported_symptom.update(value: 90)
     assert assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -360,7 +360,7 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert true is equal to true
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert true is not equal to false
-    reported_symptom.value = false
+    reported_symptom.update(value: false)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -375,7 +375,7 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert false is not equal to true
     assert assessment.symptom_passes_threshold('pulse-ox')
     # Assert true is not equal to true
-    reported_symptom.value = true
+    reported_symptom.update(value: true)
     assert_not assessment.symptom_passes_threshold('pulse-ox')
   end
 
@@ -392,7 +392,7 @@ class AssessmentTest < ActiveSupport::TestCase
     # Assert symptomatic when 2/2 group 2 symptoms pass threshold
     assert assessment.symptomatic?
     # Assert non_symptomatic when 1/2 group 2 symptoms pass threshold
-    reported_symptom_2.value = false
+    reported_symptom_2.update(value: false)
     assert_not assessment.symptomatic?
   end
 
@@ -426,5 +426,44 @@ class AssessmentTest < ActiveSupport::TestCase
     reported_condition.destroy!
     assessment.reload
     assert_nil(assessment.get_reported_symptom_value(reported_symptom.value))
+  end
+
+  test 'all symptom names' do
+    threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
+    threshold_symptom_1 = create(:integer_symptom, int_value: 91, threshold_operator: 'Greater Than Or Equal', name: 'pulse-ox', label: 'Pulse Ox')
+    threshold_symptom_2 = create(:bool_symptom, bool_value: false, threshold_operator: 'Not Equal', name: 'fever', label: 'Fever')
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom_1, threshold_symptom_2])
+    reported_symptom_1 = create(:integer_symptom, int_value: 91, threshold_operator: 'Greater Than Or Equal', name: 'pulse-ox', label: 'Pulse Ox')
+    reported_symptom_2 = create(:bool_symptom, bool_value: false, threshold_operator: 'Not Equal', name: 'fever', label: 'Fever')
+    reported_condition = create(:reported_condition, symptoms: [reported_symptom_1, reported_symptom_2], threshold_condition_hash: threshold_condition_hash)
+    patient = create(:patient)
+    assessment = create(:assessment, reported_condition: reported_condition, patient: patient)
+
+    assert_equal(assessment.all_symptom_names, [threshold_symptom_1.name, threshold_symptom_2.name])
+
+    threshold_symptom_1.update(name: nil)
+    assert_equal(assessment.all_symptom_names, [threshold_symptom_1.name, threshold_symptom_2.name])
+
+    threshold_symptom_1.update(name: 'pulse-ox')
+    threshold_symptom_2.update(name: nil)
+    assert_equal(assessment.all_symptom_names, [threshold_symptom_1.name, threshold_symptom_2.name])
+
+    threshold_symptom_1.update(name: nil)
+    threshold_symptom_2.update(name: nil)
+    assert_equal(assessment.all_symptom_names, [threshold_symptom_1.name, threshold_symptom_2.name])
+  end
+
+  test 'get reported symptom by name' do
+    threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
+    threshold_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Greater Than Or Equal', name: 'pulse-ox', label: 'Pulse Ox')
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    reported_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Greater Than Or Equal', name: 'pulse-ox', label: 'Pulse Ox')
+    reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
+    patient = create(:patient)
+    assessment = create(:assessment, reported_condition: reported_condition, patient: patient)
+
+    assert_equal(assessment.get_reported_symptom_by_name(reported_symptom.name), reported_symptom)
+
+    assert_nil(assessment.get_reported_symptom_by_name('fake symptom name'))
   end
 end
