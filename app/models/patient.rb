@@ -465,7 +465,7 @@ class Patient < ApplicationRecord
   # Record must:
   # - be unpurged, open, in exposure workflow, and not in continuous exposure
   # - has no symptomatic reports
-  # - have reported within 10-13 days after their last date of exposure 
+  # - have reported within 10-13 days after their last date of exposure
   # - be 10 or more days past their last date of exposure
   scope :ten_day_quarantine_candidates, lambda { |user_curr_datetime|
     where(purged: false, monitoring: true, isolation: false, continuous_exposure: false)
