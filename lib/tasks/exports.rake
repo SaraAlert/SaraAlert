@@ -24,7 +24,7 @@ namespace :exports do
                                                               primary_telephone,first_name,middle_name,last_name,sex,white,
                                                               black_or_african_american,american_indian_or_alaska_native,asian,
                                                               native_hawaiian_or_other_pacific_islander,ethnicity,address_zip,
-                                                              date_of_birth,secondary_telephone, created_at, primary_language, age,
+                                                              date_of_birth,secondary_telephone, created_at, primary_language,
                                                               user_defined_id_statelocal, gender_identity, potential_exposure_country,
                                                               potential_exposure_location, exposure_notes').all, Jurisdiction.first)
     nbs_filename = "NBS-#{DateTime.now.to_s}.zip"
