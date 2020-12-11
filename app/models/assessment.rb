@@ -42,7 +42,7 @@ class Assessment < ApplicationRecord
   # symptom_passes_threshold will return true if the REQUIRED symptom with the given name in the reported condition
   # meets the definition of symptomatic as defined in the assocated ThresholdCondition
   def symptom_passes_threshold(symptom_name, threshold_symptom = nil)
-    reported_symptom = reported_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first
+    reported_symptom = reported_condition&.symptoms&.find_by(name: symptom_name)
     # This will be the case if a symptom is no longer being tracked and the assessments table is looking for its value
     return nil if reported_symptom.nil? || reported_symptom.value.nil?
 
@@ -71,8 +71,7 @@ class Assessment < ApplicationRecord
   end
 
   def get_threshold_symptom(symptom_name)
-    threshold_condition = reported_condition&.threshold_condition
-    threshold_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first
+    reported_condition&.threshold_condition&.symptoms&.find_by(name: symptom_name)
   end
 
   def get_reported_symptom_value(symptom_name)
@@ -85,11 +84,11 @@ class Assessment < ApplicationRecord
   end
 
   def all_symptom_names
-    reported_condition&.threshold_condition&.symptoms&.collect { |x| x.name } || []
+    reported_condition&.threshold_condition&.symptoms&.pluck(:name)
   end
 
   def get_reported_symptom_by_name(symptom_name)
-    reported_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first || nil
+    reported_condition&.symptoms&.find_by(name: symptom_name)
   end
 
   def translations
