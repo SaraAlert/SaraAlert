@@ -41,7 +41,7 @@ class Patient < ApplicationRecord
 
   %i[primary_telephone
      secondary_telephone].each do |phone_field|
-    validates phone_field, on: :api, phone_number: true
+    validates phone_field, phone_number: true
   end
 
   %i[date_of_birth

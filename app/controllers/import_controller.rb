@@ -184,7 +184,7 @@ class ImportController < ApplicationController
     value = import_enum_field(field, value) if VALIDATION[field][:checks].include?(:enum)
     value = import_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
     value = import_date_field(value) if VALIDATION[field][:checks].include?(:date)
-    value = validate_phone_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:phone)
+    value = import_phone_field(value) if VALIDATION[field][:checks].include?(:phone)
     value = validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
     value = validate_sex_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:sex)
     value = validate_email_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:email)
@@ -216,13 +216,9 @@ class ImportController < ApplicationController
     value.blank? ? nil : value
   end
 
-  def validate_phone_field(field, value, row_ind)
-    return nil if value.blank?
-
-    phone = Phonelib.parse(value, 'US')
-    return phone.full_e164 unless phone.national(false).nil? || phone.national(false).length != 10
-
-    raise ValidationError.new("'#{value}' is not a valid phone number for '#{VALIDATION[field][:label]}'", row_ind)
+  def import_phone_field(value)
+    e_164 = Phonelib.parse(value, 'US').full_e164
+    e_164.blank? ? value : e_164
   end
 
   def validate_state_field(field, value, row_ind)
