@@ -1618,44 +1618,42 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.valid?
   end
 
-  test 'validates primary phone is a possible phone number in api context' do
+  test 'validates primary phone is a possible phone number' do
     patient = valid_patient
 
-    patient.primary_telephone = '+11111111111'
-    assert patient.valid?(:api)
+    patient.primary_telephone = '+15555555555'
+    assert patient.valid?
 
-    patient.primary_telephone = '+1 111 111 1111'
-    assert patient.valid?(:api)
+    patient.primary_telephone = '+1 555 555 5555'
+    assert patient.valid?
 
     patient.primary_telephone = ''
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.primary_telephone = nil
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.primary_telephone = '123'
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
-  test 'validates secondary phone is a possible phone number in api context' do
+  test 'validates secondary phone is a possible phone number' do
     patient = valid_patient
 
-    patient.secondary_telephone = '+11111111111'
-    assert patient.valid?(:api)
+    patient.secondary_telephone = '+15555555555'
+    assert patient.valid?
 
-    patient.secondary_telephone = '+1 111 111 1111'
-    assert patient.valid?(:api)
+    patient.secondary_telephone = '+1 555 555 5555'
+    assert patient.valid?
 
     patient.secondary_telephone = ''
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.secondary_telephone = nil
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.secondary_telephone = '123'
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
   test 'validates date_of_birth is a valid date' do
@@ -1854,7 +1852,7 @@ class PatientTest < ActiveSupport::TestCase
   test 'validates primary_telephone is not blank when preferred_contact_method requires a phone' do
     patient = valid_patient
 
-    patient.primary_telephone = '+1111111111'
+    patient.primary_telephone = '+15555555555'
     patient.preferred_contact_method = 'SMS Text-message'
     assert patient.valid?(:api)
 
