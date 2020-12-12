@@ -13,12 +13,30 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
 
   test 'export all monitorees with all data types with all fields' do
     settings = {
-      selected_records: :all,
+      records: :all,
       elements: {
         patients: {
           checked: ['Monitoree Details']
+        },
+        assessments: {
+          checked: ['Reports']
+        },
+        laboratories: {
+          checked: ['Lab Results']
+        },
+        close_contacts: {
+          checked: ['Close Contacts']
+        },
+        transfers: {
+          checked: ['Transfers']
+        },
+        histories: {
+          checked: ['History']
         }
-      }
+      },
+      name: 'Custom Preset 1',
+      format: :xlsx,
+      actions: %i[save export]
     }
     @@public_health_test_helper.export_custom('state1_epi', settings)
   end

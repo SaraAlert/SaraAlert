@@ -192,6 +192,12 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
+  def export_custom(user_label, settings)
+    @@system_test_utils.login(user_label)
+    @@public_health_dashboard.export_custom(settings)
+    @@system_test_utils.logout
+  end
+
   def import_epi_x(user_label, workflow, file_name, validity, rejects, accept_duplicates: false)
     jurisdiction_id = @@system_test_utils.login(user_label)
     @@public_health_dashboard.import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
