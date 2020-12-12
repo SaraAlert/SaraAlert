@@ -241,7 +241,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         end
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:phone) && Phonelib.parse(value, 'US').full_e164.nil?
-        assert page.has_content?("'#{value}' is not a valid phone number for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not a valid phone number"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:state) && !VALID_STATES.include?(value) && STATE_ABBREVIATIONS[value.upcase.to_sym].nil?
         assert page.has_content?("'#{value}' is not a valid state for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
