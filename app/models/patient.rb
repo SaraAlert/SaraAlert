@@ -75,7 +75,7 @@ class Patient < ApplicationRecord
             presence: { message: "is required when 'Isolation' is 'false'" },
             if: -> { !isolation }
 
-  validates :email, on: :api, email: true
+  validates :email, email: true
 
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 999_999 }
 
