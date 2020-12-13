@@ -1777,21 +1777,20 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.valid?
   end
 
-  test 'validates email is a valid email address in api context' do
+  test 'validates email is a valid email address' do
     patient = valid_patient
 
     patient.email = 'foo@bar.com'
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.email = ''
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.email = nil
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.email = 'not@an@email.com'
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
   test 'validates address_state is required unless foreign_address_country in api context' do
