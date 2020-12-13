@@ -77,8 +77,6 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     # Choose which elements to export
     settings[:elements]&.each_value do |data_type|
       data_type[:checked]&.each do |label|
-        # find("rct-#{data_type}-elements").click_on(label)
-        # find("#rct-#{data_type}-elements")
         find('span', class: 'rct-title', text: label).click
       end
     end

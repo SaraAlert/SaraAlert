@@ -2,7 +2,7 @@
 
 # Helper methods for filtering through transfers
 module TransferQueryHelper
-  def transfers_by_query(patients_identifiers)
-    Transfer.where(patient_id: patients_identifiers.keys).order(:patient_id)
+  def transfers_by_patient_ids(patient_ids)
+    Transfer.where(patient_id: patient_ids).order(:patient_id)
   end
 end

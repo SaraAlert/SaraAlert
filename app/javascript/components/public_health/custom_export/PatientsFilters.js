@@ -5,7 +5,7 @@ import { Col, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-boots
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 
-import AdvancedFilter from '../AdvancedFilter';
+import AdvancedFilter from '../query/AdvancedFilter';
 import AssignedUserFilter from '../query/AssignedUserFilter';
 import JurisdictionFilter from '../query/JurisdictionFilter';
 

@@ -8,9 +8,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import moment from 'moment-timezone';
 
-import DateInput from '../util/DateInput';
-import confirmDialog from '../util/ConfirmDialog';
-import supportedLanguages from '../../data/supportedLanguages.json';
+import DateInput from '../../util/DateInput';
+import confirmDialog from '../../util/ConfirmDialog';
+import supportedLanguages from '../../../data/supportedLanguages.json';
 
 class AdvancedFilter extends React.Component {
   constructor(props) {
@@ -424,7 +424,9 @@ class AdvancedFilter extends React.Component {
       })
       .then(() => {
         toast.success('Filter successfully deleted.');
-        localStorage.removeItem(`SaraFilter`);
+        if (this.props.useLocalStorage) {
+          localStorage.removeItem(`SaraFilter`);
+        }
         this.setState({
           show: false,
           applied: false,

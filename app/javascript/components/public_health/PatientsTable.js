@@ -22,7 +22,7 @@ import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 
-import AdvancedFilter from './AdvancedFilter';
+import AdvancedFilter from './query/AdvancedFilter';
 import BadgeHOH from '../util/BadgeHOH';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';

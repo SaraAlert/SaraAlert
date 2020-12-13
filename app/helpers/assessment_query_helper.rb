@@ -2,7 +2,7 @@
 
 # Helper methods for filtering through assessments
 module AssessmentQueryHelper
-  def assessments_by_query(patients_identifiers)
-    Assessment.where(patient_id: patients_identifiers.keys).order(:patient_id)
+  def assessments_by_patient_ids(patient_ids)
+    Assessment.where(patient_id: patient_ids).order(:patient_id)
   end
 end
