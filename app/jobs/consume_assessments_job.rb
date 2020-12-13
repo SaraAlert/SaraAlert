@@ -135,10 +135,10 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         if message['reported_symptoms_array']
           typed_reported_symptoms = Condition.build_symptoms(message['reported_symptoms_array'])
-          reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
+          reported_condition = ReportedCondition.create(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
           assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
           assessment.symptomatic = assessment.symptomatic?
-          queue.commit if assessment.save
+          queue.commit if assessment.save!
         else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
@@ -152,14 +152,14 @@ class ConsumeAssessmentsJob < ApplicationJob
                                         # of the threshold values that represent symptomatic
                                         threshold_condition.clone_symptoms_negate_bool_values
                                       end
-            reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
+            reported_condition = ReportedCondition.create(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
             assessment = Assessment.new(reported_condition: reported_condition, patient: dependent)
             assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
             # If current user in the collection of patient + patient dependents is the patient, then that means
             # that they reported for themselves, else we are creating an assessment for the dependent and
             # that means that it was the proxy who reported for them
             assessment.who_reported = patient.submission_token == dependent.submission_token ? 'Monitoree' : 'Proxy'
-            queue.commit if assessment.save
+            queue.commit if assessment.save!
           end
         end
       rescue JSON::ParserError

@@ -10,7 +10,7 @@ class Assessment < ApplicationRecord
       validates column.name.to_sym, length: { maximum: 200 }
     end
   end
-  has_one :reported_condition, class_name: 'ReportedCondition'
+  belongs_to :reported_condition, class_name: 'ReportedCondition'
   belongs_to :patient
 
   after_save :update_patient_linelist_after_save

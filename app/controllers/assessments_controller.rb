@@ -108,7 +108,7 @@ class AssessmentsController < ApplicationController
 
       typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
 
-      reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: threshold_condition_hash)
+      reported_condition = ReportedCondition.create(symptoms: typed_reported_symptoms, threshold_condition_hash: threshold_condition_hash)
 
       @assessment = Assessment.new(reported_condition: reported_condition)
       @assessment.symptomatic = @assessment.symptomatic?
@@ -117,7 +117,7 @@ class AssessmentsController < ApplicationController
 
       # Determine if a user created this assessment or a monitoree
       @assessment.who_reported = current_user.nil? ? 'Monitoree' : current_user.email
-      @assessment.save
+      @assessment.save!
 
       # Save a new receipt and clear out any older ones
       AssessmentReceipt.where(submission_token: submission_token_from_params).delete_all

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_09_221804) do
+ActiveRecord::Schema.define(version: 2020_12_13_214453) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2020_12_09_221804) do
     t.bigint "patient_id"
     t.boolean "symptomatic"
     t.string "who_reported", default: "Monitoree"
+    t.bigint "reported_condition_id", null: false
     t.index ["created_at"], name: "assessments_index_chain_1"
     t.index ["patient_id", "created_at"], name: "assessments_index_chain_3"
     t.index ["symptomatic", "patient_id", "created_at"], name: "assessments_index_chain_2"

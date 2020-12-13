@@ -2,7 +2,6 @@
 
 # ReportedCondition
 class ReportedCondition < Condition
-  belongs_to :assessment
 
   def threshold_condition
     # Because threshold_condition_hash is calculated based on jurisdiction_path and edit_count
