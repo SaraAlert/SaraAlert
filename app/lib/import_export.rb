@@ -521,7 +521,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     if data.dig(:assessments, :checked).present?
-      assessments = assessments_by_query(patients_identifiers)
+      assessments = assessments_by_patient_ids(patients_identifiers.keys)
       exported_data[:assessments], symptom_names_and_labels = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
 
       # Replace symptoms field with actual symptom fields
@@ -535,22 +535,22 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     if data.dig(:laboratories, :checked).present?
-      laboratories = laboratories_by_query(patients_identifiers)
+      laboratories = laboratories_by_patient_ids(patients_identifiers.keys)
       exported_data[:laboratories] = extract_laboratories_details(patients_identifiers, laboratories, data[:laboratories][:checked])
     end
 
     if data.dig(:close_contacts, :checked).present?
-      close_contacts = close_contacts_by_query(patients_identifiers)
+      close_contacts = close_contacts_by_patient_ids(patients_identifiers.keys)
       exported_data[:close_contacts] = extract_close_contacts_details(patients_identifiers, close_contacts, data[:close_contacts][:checked])
     end
 
     if data.dig(:transfers, :checked).present?
-      transfers = transfers_by_query(patients_identifiers)
+      transfers = transfers_by_patient_ids(patients_identifiers.keys)
       exported_data[:transfers] = extract_transfers_details(patients_identifiers, transfers, data[:transfers][:checked])
     end
 
     if data.dig(:histories, :checked).present?
-      histories = histories_by_query(patients_identifiers)
+      histories = histories_by_patient_ids(patients_identifiers.keys)
       exported_data[:histories] = extract_histories_details(patients_identifiers, histories, data[:histories][:checked])
     end
 
@@ -674,8 +674,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Gets a hash of the 2 latest laboratories of each patient
   def get_patients_laboratories(patients)
-    latest_labs = Hash[patients.pluck(:id).map { |id| [id, {}] }]
-    Laboratory.where(patient_id: patients.pluck(:id)).order(specimen_collection: :desc).each do |lab|
+    patient_ids = patients.pluck(:id)
+    latest_labs = Hash[patient_ids.map { |id| [id, {}] }]
+    Laboratory.where(patient_id: patient_ids).order(specimen_collection: :desc).each do |lab|
       if !latest_labs[lab.patient_id].key?(:first)
         latest_labs[lab.patient_id][:first] = {
           lab_type: lab[:lab_type],
@@ -884,32 +885,30 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
         next unless config.dig(:data, data_type, :checked).present?
 
-        Axlsx::Package.new do |p|
-          p.workbook.add_worksheet(name: config[:data][data_type][:tab] || CUSTOM_EXPORT_OPTIONS[data_type][:label]) do |sheet|
-            fields = config[:data][data_type][:checked]
-            sheet.add_row(config[:data][data_type][:headers] || fields.map { |field| ALL_FIELDS_NAMES[data_type][field] })
-            exported_data[data_type].each do |record|
-              sheet.add_row(fields.map { |field| record[field] }, { types: Array.new(fields.length, :string) })
-            end
-          end
-          files << { filename: build_export_filename(config, data_type, index), content: Base64.encode64(p.to_stream.read) }
+        Axlsx::Package.new do |package|
+          xlsx_sheet(config, exported_data, data_type, package)
+          files << { filename: build_export_filename(config, data_type, index), content: Base64.encode64(package.to_stream.read) }
         end
       end
       files
     else
-      Axlsx::Package.new do |p|
+      Axlsx::Package.new do |package|
         CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
           next unless config.dig(:data, data_type, :checked).present?
 
-          p.workbook.add_worksheet(name: config[:data][data_type][:tab] || CUSTOM_EXPORT_OPTIONS[data_type][:label]) do |sheet|
-            fields = config[:data][data_type][:checked]
-            sheet.add_row(config[:data][data_type][:headers] || fields.map { |field| ALL_FIELDS_NAMES[data_type][field] })
-            exported_data[data_type].each do |record|
-              sheet.add_row(fields.map { |field| record[field] }, { types: Array.new(fields.length, :string) })
-            end
-          end
+          xlsx_sheet(config, exported_data, data_type, package)
         end
-        return [{ filename: build_export_filename(config, nil, index), content: Base64.encode64(p.to_stream.read) }]
+        return [{ filename: build_export_filename(config, nil, index), content: Base64.encode64(package.to_stream.read) }]
+      end
+    end
+  end
+
+  def xlsx_sheet(config, exported_data, data_type, package)
+    package.workbook.add_worksheet(name: config[:data][data_type][:tab] || CUSTOM_EXPORT_OPTIONS[data_type][:label]) do |sheet|
+      fields = config[:data][data_type][:checked]
+      sheet.add_row(config[:data][data_type][:headers] || fields.map { |field| ALL_FIELDS_NAMES[data_type][field] })
+      exported_data[data_type].each do |record|
+        sheet.add_row(fields.map { |field| record[field] }, { types: Array.new(fields.length, :string) })
       end
     end
   end

@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Badge, Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { Badge, Button, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CheckboxTree from 'react-checkbox-tree';
@@ -59,14 +59,14 @@ class CustomExport extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .post(`${window.BASE_PATH}/user_export_presets`, this.state.preset)
-      .catch(() => toast.error('Failed to save export preset.'))
       .then(response => {
         if (response?.data) {
           toast.success('Export preset successfully saved.');
           this.handlePresetChange('id', response?.data?.id);
         }
         this.props.reloadExportPresets();
-      });
+      })
+      .catch(err => reportError(err?.response?.data?.message ? err.response.data.message : err, false));
   };
 
   // Update an existing preset
@@ -121,13 +121,13 @@ class CustomExport extends React.Component {
     // generate new cancel token for this request
     const cancel_token = axios.CancelToken.source();
 
-    this.setState({ cancel_token }, () => {
+    this.setState({ cancel_token, filtered_monitorees_count: 'loading...' }, () => {
       axios
         .post(`${window.BASE_PATH}/public_health/patients/count`, {
           query: this.state.custom_patient_query,
           cancelToken: this.state.cancel_token.token,
         })
-        .then(response => this.setState({ filtered_monitorees_count: response?.data?.count }))
+        .then(response => this.setState({ filtered_monitorees_count: response?.data?.count || 0 }))
         .catch(err => reportError(err?.response?.data?.message ? err.response.data.message : err, false));
     });
   };
@@ -163,8 +163,18 @@ class CustomExport extends React.Component {
   };
 
   render() {
+    const non_zero_elements_selected =
+      this.state.preset?.config?.data?.patients?.checked?.length > 0 ||
+      this.state.preset?.config?.data?.assessments?.checked?.length > 0 ||
+      this.state.preset?.config?.data?.laboratories?.checked?.length > 0 ||
+      this.state.preset?.config?.data?.close_contacts?.checked?.length > 0 ||
+      this.state.preset?.config?.data?.transfers?.checked?.length > 0 ||
+      this.state.preset?.config?.data?.histories?.checked?.length > 0;
+    const non_zero_records_selected =
+      (this.state.selected_records === 'current' && this.props.current_monitorees_count === 0) ||
+      (this.state.selected_records === 'custom' && this.state.filtered_monitorees_count === 0);
     return (
-      <Modal dialogClassName="modal-custom-export" backdrop="static" show onHide={this.props.onClose}>
+      <Modal size="lg" backdrop="static" show onHide={this.props.onClose}>
         <Modal.Header closeButton>
           <Modal.Title>Custom Export Format {this.state.preset?.name ? `(${this.state.preset.name})` : ''}</Modal.Title>
         </Modal.Header>
@@ -246,7 +256,13 @@ class CustomExport extends React.Component {
                   className="px-1 mb-2"
                   label={
                     <a onClick={() => this.handleSelectedRecordsChange('custom')}>
-                      Only include monitoree records that meet the following criteria ({this.state.filtered_monitorees_count}):
+                      Only include monitoree records that meet the following criteria (
+                      {this.state.filtered_monitorees_count === 'loading...' ? (
+                        <Spinner variant="secondary" animation="border" size="sm"></Spinner>
+                      ) : (
+                        this.state.filtered_monitorees_count
+                      )}
+                      ):
                     </a>
                   }
                   onChange={() => this.handleSelectedRecordsChange('custom')}
@@ -457,12 +473,21 @@ class CustomExport extends React.Component {
           <Button id="custom-export-action-cancel" variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          {this.state.preset?.config?.data?.patients?.checked?.length === 0 &&
-          this.state.preset?.config?.data?.assessments?.checked?.length === 0 &&
-          this.state.preset?.config?.data?.laboratories?.checked?.length === 0 &&
-          this.state.preset?.config?.data?.close_contacts?.checked?.length === 0 &&
-          this.state.preset?.config?.data?.transfers?.checked?.length === 0 &&
-          this.state.preset?.config?.data?.histories?.checked?.length === 0 ? (
+          {non_zero_elements_selected ? (
+            non_zero_records_selected ? (
+              <OverlayTrigger overlay={<Tooltip>Please modify filters to select at least 1 record</Tooltip>}>
+                <span>
+                  <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
+                    Export
+                  </Button>
+                </span>
+              </OverlayTrigger>
+            ) : (
+              <Button id="custom-export-action-export" variant="primary btn-square" onClick={this.export}>
+                Export
+              </Button>
+            )
+          ) : (
             <OverlayTrigger overlay={<Tooltip>Please select at least one data element to export</Tooltip>}>
               <span>
                 <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
@@ -470,19 +495,6 @@ class CustomExport extends React.Component {
                 </Button>
               </span>
             </OverlayTrigger>
-          ) : (this.state.selected_records === 'current' && this.props.current_monitorees_count === 0) ||
-            (this.state.selected_records === 'custom' && this.state.filtered_monitorees_count === 0) ? (
-            <OverlayTrigger overlay={<Tooltip>Please modify filters to select at least 1 record</Tooltip>}>
-              <span>
-                <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
-                  Export
-                </Button>
-              </span>
-            </OverlayTrigger>
-          ) : (
-            <Button id="custom-export-action-export" variant="primary btn-square" onClick={this.export}>
-              Export
-            </Button>
           )}
         </Modal.Footer>
       </Modal>

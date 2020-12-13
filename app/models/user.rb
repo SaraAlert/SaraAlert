@@ -134,7 +134,7 @@ class User < ApplicationRecord
 
   # Can this user manage saved export_presets?
   def can_manage_saved_export_presets?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user edit a Patient?

@@ -13,11 +13,12 @@ class JurisdictionFilter extends React.Component {
   }
 
   handleJurisdictionChange = jurisdiction_path => {
-    this.setState({ jurisdiction_path });
-    const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === jurisdiction_path);
-    if (jurisdiction) {
-      this.props.onJurisdictionChange(parseInt(jurisdiction));
-    }
+    this.setState({ jurisdiction_path }, () => {
+      const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === jurisdiction_path);
+      if (jurisdiction) {
+        this.props.onJurisdictionChange(parseInt(jurisdiction));
+      }
+    });
   };
 
   handleScopeChange = scope => {

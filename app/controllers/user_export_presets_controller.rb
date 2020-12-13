@@ -5,12 +5,17 @@ class UserExportPresetsController < ApplicationController
   before_action :authenticate_user!
   before_action :check_role
 
+  EXPORT_PRESET_LIMIT = 100
+
   def index
     render json: current_user.user_export_presets.collect { |preset| { config: JSON.parse(preset.config), name: preset.name, id: preset.id } }
   end
 
   def create
-    return head :bad_request unless current_user.user_export_presets.count < 100 # Enforce upper limit per user
+    unless current_user.user_export_presets.count < EXPORT_PRESET_LIMIT # Enforce upper limit per user
+      message = "You have already reached the limit of #{EXPORT_PRESET_LIMIT} custom export presets. Please delete at least one before creating another preset."
+      return render json: { message: message }.to_json, status: 400
+    end
 
     config = params.require(:config).permit(:format, data: {})
 
@@ -25,7 +30,7 @@ class UserExportPresetsController < ApplicationController
 
     config = params.require(:config).permit(:format, data: {})
 
-    saved_export_preset.update(name: params.require(:name), config: config.to_json)
+    saved_export_preset.update!(name: params.require(:name), config: config.to_json)
     saved_export_preset[:config] = JSON.parse(saved_export_preset[:config])
     render json: saved_export_preset
   end
