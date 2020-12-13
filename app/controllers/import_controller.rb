@@ -187,7 +187,7 @@ class ImportController < ApplicationController
     value = import_phone_field(value) if VALIDATION[field][:checks].include?(:phone)
     value = validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
     value = validate_sex_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:sex)
-    value = validate_email_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:email)
+    value = import_email_field(value) if VALIDATION[field][:checks].include?(:email)
     value
   end
 
@@ -242,13 +242,8 @@ class ImportController < ApplicationController
     raise ValidationError.new("'#{value}' is not a valid sex for '#{VALIDATION[field][:label]}', acceptable values are Male, Female, and Unknown", row_ind)
   end
 
-  def validate_email_field(field, value, row_ind)
-    return nil if value.blank?
-    unless ValidEmail2::Address.new(value).valid?
-      raise ValidationError.new("'#{value}' is not a valid Email Address for '#{VALIDATION[field][:label]}'", row_ind)
-    end
-
-    value
+  def import_email_field(value)
+    value.blank? ? nil : value
   end
 
   def validate_jurisdiction(value, row_ind, valid_jurisdiction_ids)

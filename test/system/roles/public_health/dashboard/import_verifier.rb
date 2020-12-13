@@ -251,7 +251,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
                "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:email) && !ValidEmail2::Address.new(value).valid?
-        assert page.has_content?("'#{value}' is not a valid Email Address for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not a valid Email Address"), "Error message for #{field} missing"
       end
     elsif field == :jurisdiction_path
       return unless value && !value.blank?
