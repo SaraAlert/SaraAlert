@@ -32,7 +32,6 @@ class CustomExport extends React.Component {
       cancel_token: axios.CancelToken.source(),
       preset: {
         id: props.preset?.id || null,
-        name: props.preset?.name || '',
         config: {
           format: props.preset?.config?.format || 'xlsx',
           data: _.mapValues(props.options, (settings, type) => {
@@ -385,7 +384,7 @@ class CustomExport extends React.Component {
           </div>
           <hr className="m-0" />
           <div className="p-2">
-            <h5 className="mx-3 my-2">Custom Export Format Name</h5>
+            <h5 className="mx-3 my-2">Custom export format name</h5>
             <Row className="mx-3">
               <Col md={12} className="px-1 py-2">
                 <Form.Control

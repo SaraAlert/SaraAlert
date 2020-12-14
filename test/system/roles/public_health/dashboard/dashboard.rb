@@ -21,6 +21,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def search_for_and_view_monitoree(tab, monitoree_label)
+    sleep(0.5)
     @@system_test_utils.go_to_tab(tab)
     fill_in 'search', with: MONITOREES[monitoree_label]['identification']['last_name']
     click_on @@system_test_utils.get_monitoree_display_name(monitoree_label)
@@ -30,9 +31,9 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     fill_in 'search', with: MONITOREES[monitoree_label]['identification']['last_name']
   end
 
-  def export_line_list_csv(user_label, workflow, action)
+  def export_csv_linelist(user_label, workflow, action)
     start_export(workflow, "Line list CSV (#{workflow})", action)
-    @@public_health_export_verifier.verify_line_list_csv(user_label, workflow) if action == :export
+    @@public_health_export_verifier.verify_csv_linelist(user_label, workflow) if action == :export
   end
 
   def export_sara_alert_format(user_label, workflow, action)
@@ -40,31 +41,22 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     @@public_health_export_verifier.verify_sara_alert_format(user_label, workflow) if action == :export
   end
 
-  def export_excel_purge_eligible_monitorees(user_label, workflow, action)
-    start_export(workflow, 'Excel Export For Purge-Eligible Monitorees', action)
-    @@public_health_export_verifier.verify_excel_purge_eligible_monitorees(user_label) if action == :export
-  end
-
-  def export_excel_all_monitorees(user_label, workflow, action)
-    start_export(workflow, 'Excel Export For All Monitorees', action)
-    @@public_health_export_verifier.verify_excel_all_monitorees(user_label) if action == :export
+  def export_full_history_patients(user_label, workflow, action, scope)
+    start_export(workflow, "Excel Export For #{scope == :purgeable ? 'Purge-Eligible' : 'All'} Monitorees", action)
+    @@public_health_export_verifier.verify_full_history_patients(user_label, scope) if action == :export
   end
 
   def start_export(workflow, export_type, action)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Export'
     click_on export_type
-    if action == :export
-      click_on 'Start Export'
-    else
-      click_on 'Cancel'
-    end
+    click_on action == :export ? 'Start Export' : 'Cancel'
   end
 
-  def export_excel_single_monitoree(patient_label)
+  def export_full_history_patient(patient_label)
     search_for_and_view_patient('all', patient_label)
     click_on 'Download Excel Export'
-    @@public_health_export_verifier.verify_excel_single_monitoree(patient_label.split('_')[1].to_i)
+    @@public_health_export_verifier.verify_full_history_patient(patient_label.split('_')[1].to_i)
   end
 
   def export_custom(settings)

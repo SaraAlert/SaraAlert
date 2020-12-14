@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Helper methods for the linelist and comprehensive details
+# Helper methods for the linelist and full history details
 module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   # Current patient status
   def status
@@ -56,7 +56,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   end
 
   # All information about this subject
-  def comprehensive_details
+  def full_history_details
     labs = Laboratory.where(patient_id: id).order(specimen_collection: :desc)
     {
       first_name: first_name || '',

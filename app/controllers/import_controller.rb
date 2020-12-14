@@ -206,11 +206,11 @@ class ImportController < ApplicationController
   def validate_enum_field(field, value, row_ind)
     return nil if value.blank?
 
-    normalized_value = unformat_enum_field(value)
+    normalized_value = normalize_enum_field_value(value)
     return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
 
     err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}',"\
-              " acceptable values are: #{VALID_ENUMS[field].reject(&:blank?).to_sentence}"
+              " acceptable values are: #{VALID_PATIENT_ENUMS[field].reject(&:blank?).to_sentence}"
     raise ValidationError.new(err_msg, row_ind)
   end
 
@@ -307,7 +307,7 @@ class ImportController < ApplicationController
   def validate_workflow_specific_enums(workflow, field, value, row_ind)
     return nil if value.blank?
 
-    normalized_value = unformat_enum_field(value)
+    normalized_value = normalize_enum_field_value(value)
     if workflow == :exposure
       return NORMALIZED_EXPOSURE_ENUMS[field][normalized_value] if NORMALIZED_EXPOSURE_ENUMS[field].keys.include?(normalized_value)
 
@@ -331,10 +331,6 @@ class ImportController < ApplicationController
     end
 
     raise ValidationError.new("'Primary Telephone' is required when Primary Contact Method is '#{patient[:preferred_contact_method]}'", row_ind)
-  end
-
-  def unformat_enum_field(value)
-    value.to_s.downcase.gsub(/[ -.]/, '')
   end
 end
 

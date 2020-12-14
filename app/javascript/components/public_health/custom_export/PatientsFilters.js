@@ -154,7 +154,7 @@ class PatientsFilters extends React.Component {
                 }
                 authenticity_token={this.props.authenticity_token}
                 workflow={this.props.query?.workflow}
-                useLocalStorage={false}
+                updateStickySettings={false}
               />
             </InputGroup>
           </Col>

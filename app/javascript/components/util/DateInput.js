@@ -59,7 +59,7 @@ class DateInput extends React.Component {
           key={this.props.tooltipKey || ''}
           placement={this.props.tooltipPlacement || 'auto'}
           overlay={<Tooltip style={this.props.tooltipText ? {} : { display: 'none' }}>{this.props.tooltipText}</Tooltip>}>
-          <div className={this.props.customClass?.includes('sm') ? 'date-input__datepicker-wrapper_sm' : ''}>
+          <div>
             <DatePicker
               id={this.props.id}
               selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}

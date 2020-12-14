@@ -27,7 +27,7 @@ class ExportJob < ApplicationJob
 
     # Custom export is already sorted by id, calling order on custom export patients leads to invalid SQL statement because id is not in select list
     patients = patients.order(:id) unless config[:export_type] == :custom
-    patients&.in_batches(of: RECORD_BATCH_SIZE)&.each_with_index do |patients_group, index|
+    patients.find_in_batches(batch_size: RECORD_BATCH_SIZE).with_index do |patients_group, index|
       exported_data = get_export_data(patients_group, data)
       files = write_export_data_to_files(config, exported_data, index)
       lookups.concat(create_lookups(config, files))

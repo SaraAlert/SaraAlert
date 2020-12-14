@@ -223,7 +223,7 @@ class AdvancedFilter extends React.Component {
       this.setState({ savedFilters: response.data }, () => {
         // Apply filter if it exists in local storage
         let sessionFilter = localStorage.getItem(`SaraFilter`);
-        if (this.props.useLocalStorage && parseInt(sessionFilter)) {
+        if (this.props.updateStickySettings && parseInt(sessionFilter)) {
           this.setFilter(
             this.state.savedFilters.find(filter => {
               return filter.id === parseInt(sessionFilter);
@@ -267,7 +267,7 @@ class AdvancedFilter extends React.Component {
   clear = () => {
     this.setState({ activeFilter: null, applied: false }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilter);
-      if (this.props.useLocalStorage) {
+      if (this.props.updateStickySettings) {
         localStorage.setItem(`SaraFilter`, null);
       }
     });
@@ -284,7 +284,7 @@ class AdvancedFilter extends React.Component {
   setFilter = (filter, apply = false) => {
     if (filter) {
       this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter?.contents || [] }, () => {
-        if (this.props.useLocalStorage) {
+        if (this.props.updateStickySettings) {
           localStorage.setItem(`SaraFilter`, filter.id);
         }
         if (apply) {
@@ -424,7 +424,7 @@ class AdvancedFilter extends React.Component {
       })
       .then(() => {
         toast.success('Filter successfully deleted.');
-        if (this.props.useLocalStorage) {
+        if (this.props.updateStickySettings) {
           localStorage.removeItem(`SaraFilter`);
         }
         this.setState({
@@ -1045,7 +1045,7 @@ AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
   workflow: PropTypes.string,
-  useLocalStorage: PropTypes.bool,
+  updateStickySettings: PropTypes.bool,
 };
 
 export default AdvancedFilter;

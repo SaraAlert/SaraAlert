@@ -20,16 +20,16 @@ class Patient < ApplicationRecord
   end
 
   validates :monitoring_reason, inclusion: {
-    in: VALID_ENUMS[:monitoring_reason],
-    message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[:monitoring_reason].reject(&:blank?).join("', '")}'"
+    in: VALID_PATIENT_ENUMS[:monitoring_reason],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:monitoring_reason].reject(&:blank?).join("', '")}'"
   }
   validates :monitoring_plan, inclusion: {
-    in: VALID_ENUMS[:monitoring_plan],
-    message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[:monitoring_plan].reject(&:blank?).join("', '")}'"
+    in: VALID_PATIENT_ENUMS[:monitoring_plan],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:monitoring_plan].reject(&:blank?).join("', '")}'"
   }
   validates :exposure_risk_assessment, inclusion: {
-    in: VALID_ENUMS[:exposure_risk_assessment],
-    message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[:exposure_risk_assessment].reject(&:blank?).join("', '")}'"
+    in: VALID_PATIENT_ENUMS[:exposure_risk_assessment],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:exposure_risk_assessment].reject(&:blank?).join("', '")}'"
   }
 
   %i[address_state
@@ -41,8 +41,8 @@ class Patient < ApplicationRecord
      primary_telephone_type
      secondary_telephone_type].each do |enum_field|
     validates enum_field, on: :api, inclusion: {
-      in: VALID_ENUMS[enum_field],
-      message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
+      in: VALID_PATIENT_ENUMS[enum_field],
+      message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].join("', '")}'"
     }, allow_blank: true
   end
 
@@ -638,7 +638,7 @@ class Patient < ApplicationRecord
 
   # Date when patient is expected to be purged
   def expected_purge_date
-    (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 unless monitoring
+    monitoring ? '' : (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822
   end
 
   # Determine if this patient's phone number has blocked communication with SaraAlert
