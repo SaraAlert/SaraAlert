@@ -153,8 +153,8 @@ class AssessmentsController < ApplicationController
     # Figure out the change
     delta = []
     typed_reported_symptoms.each do |symptom|
-      new_val = symptom.value
-      old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.value
+      new_val = symptom.bool_value
+      old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
       if new_val.present? && old_val.present? && new_val != old_val
         delta << symptom.name + '=' + (new_val ? 'Yes' : 'No')
       end
