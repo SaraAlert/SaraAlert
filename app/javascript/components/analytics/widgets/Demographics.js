@@ -53,8 +53,8 @@ class Demographics extends React.Component {
     this.barGraphData = [
       { title: 'Age (Years)', data: this.ageChartData },
       { title: 'Sex', data: this.sexChartData },
-      { title: 'Race', data: this.ethnicityChartData },
-      { title: 'Ethnicity', data: this.raceChartData },
+      { title: 'Ethnicity', data: this.ethnicityChartData },
+      { title: 'Race', data: this.raceChartData },
       { title: 'Sexual Orientation', data: this.soChartData },
     ];
   }
