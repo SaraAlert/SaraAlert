@@ -72,7 +72,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
 
   VALID_STATES = STATE_ABBREVIATIONS.values
 
-  VALID_ENUMS = {
+  VALID_PATIENT_ENUMS = {
     gender_identity: ['Male (Identifies as male)', 'Female (Identifies as female)', 'Transgender Male (Female-to-Male [FTM])',
                       'Transgender Female (Male-to-Female [MTF]', 'Genderqueer / gender nonconforming (neither exclusively male nor female)', 'Another',
                       'Chose not to disclose'],
@@ -115,7 +115,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     end
   end
 
-  NORMALIZED_ENUMS = normalize_enums(VALID_ENUMS)
+  NORMALIZED_ENUMS = normalize_enums(VALID_PATIENT_ENUMS)
 
   NORMALIZED_EXPOSURE_ENUMS = normalize_enums(VALID_EXPOSURE_ENUMS)
 

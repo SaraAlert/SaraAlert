@@ -124,7 +124,7 @@ class Export extends React.Component {
               this.setState({ showCSVModal: false });
             },
             this.submit,
-            `/export/csv/patients/linelist/${this.props.query.workflow}`
+            `/export/csv_linelist/${this.props.query.workflow}`
           )}
         {this.state.showSaraFormatModal &&
           this.createModal(
@@ -133,7 +133,7 @@ class Export extends React.Component {
               this.setState({ showSaraFormatModal: false });
             },
             this.submit,
-            `/export/excel/patients/sara_alert_format/${this.props.query.workflow}`
+            `/export/sara_alert_format/${this.props.query.workflow}`
           )}
         {this.state.showAllPurgeEligibleModal &&
           this.createModal(
@@ -142,7 +142,7 @@ class Export extends React.Component {
               this.setState({ showAllPurgeEligibleModal: false });
             },
             this.submit,
-            '/export/excel/patients/full_history/purgeable'
+            '/export/full_history_patients/purgeable'
           )}
         {this.state.showAllModal &&
           this.createModal(
@@ -151,7 +151,7 @@ class Export extends React.Component {
               this.setState({ showAllModal: false });
             },
             this.submit,
-            '/export/excel/patients/full_history/all'
+            '/export/full_history_patients/all'
           )}
         <ToastContainer
           position="top-center"

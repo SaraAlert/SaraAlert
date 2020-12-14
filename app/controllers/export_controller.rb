@@ -9,11 +9,11 @@ class ExportController < ApplicationController
   before_action :authenticate_user!
   before_action :authenticate_user_role
 
-  def csv
+  def csv_linelist
     # Verify params
     redirect_to(root_url) && return unless %w[exposure isolation].include?(params[:workflow])
 
-    export_type = "csv_#{params[:workflow]}".to_sym
+    export_type = "csv_linelist_#{params[:workflow]}".to_sym
     return if exported_recently?(export_type)
 
     # Clear out old receipts and create a new one
@@ -25,7 +25,7 @@ class ExportController < ApplicationController
       user_id: current_user.id,
       export_type: export_type,
       format: 'csv',
-      filename: "Sara-Alert-Linelist-#{params[:workflow]&.titleize}",
+      filename: "Sara-Alert-Linelist-#{params[:workflow] == 'isolation' ? 'Isolation' : 'Exposure'}",
       filename_data_type: false,
       data: {
         patients: {
@@ -43,11 +43,11 @@ class ExportController < ApplicationController
     end
   end
 
-  def excel_sara_alert_format
+  def sara_alert_format
     # Verify params
     redirect_to(root_url) && return unless %w[exposure isolation].include?(params[:workflow])
 
-    export_type = "sara_format_#{params[:workflow]}".to_sym
+    export_type = "sara_alert_format_#{params[:workflow]}".to_sym
     return if exported_recently?(export_type)
 
     # Clear out old receipts and create a new one
@@ -59,7 +59,7 @@ class ExportController < ApplicationController
       user_id: current_user.id,
       export_type: export_type,
       format: 'xlsx',
-      filename: "Sara-Alert-Format-#{params[:workflow]&.titleize}",
+      filename: "Sara-Alert-Format-##{params[:workflow] == 'isolation' ? 'Isolation' : 'Exposure'}",
       filename_data_type: false,
       data: {
         patients: {
@@ -77,11 +77,11 @@ class ExportController < ApplicationController
     end
   end
 
-  def excel_full_history_patients
+  def full_history_patients
     # Verify params
     redirect_to(root_url) && return unless %w[purgeable all].include?(params[:scope])
 
-    export_type = "full_history_#{params[:scope]}".to_sym
+    export_type = "full_history_patients_#{params[:scope]}".to_sym
     return if exported_recently?(export_type)
 
     # Clear out old receipts and create a new one
@@ -133,7 +133,7 @@ class ExportController < ApplicationController
     end
   end
 
-  def excel_full_history_patient
+  def full_history_patient
     return unless current_user.viewable_patients.exists?(params[:patient_id])
 
     patients = current_user.viewable_patients.where(id: params[:patient_id])
@@ -188,7 +188,7 @@ class ExportController < ApplicationController
     export_type = :custom
     return if exported_recently?(export_type)
 
-    unsanitized_config = params.require(:config).permit(:filename, :format, data: {})
+    unsanitized_config = params.require(:config).permit(:format, data: {})
     config = {
       user_id: current_user.id,
       export_type: export_type,
@@ -198,9 +198,6 @@ class ExportController < ApplicationController
     # Validate format param
     config[:format] = unsanitized_config.require(:format)
     return head :bad_request unless EXPORT_FORMATS.include?(config[:format])
-
-    # Validate name param (remove os path characters and replace non-ascii characters with dash)
-    config[:filename] = params[:name]&.gsub(%r{^.*(\|/)}, '')&.gsub(/[^0-9A-Za-z.\-]/, '-')
 
     # Validate data
     data = unsanitized_config.require(:data)

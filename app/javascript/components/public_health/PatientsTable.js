@@ -487,7 +487,7 @@ class PatientsTable extends React.Component {
                     advancedFilterUpdate={this.advancedFilterUpdate}
                     authenticity_token={this.props.authenticity_token}
                     workflow={this.props.workflow}
-                    useLocalStorage={true}
+                    updateStickySettings={true}
                   />
                   {this.state.query !== 'transferred_out' && (
                     <DropdownButton

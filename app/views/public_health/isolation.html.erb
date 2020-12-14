@@ -1,5 +1,5 @@
 <% content_for :assets do %>
-<%= javascript_packs_with_chunks_tag 'moment' %>
+  <%= javascript_packs_with_chunks_tag 'moment' %>
 <% end %>
 
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Isolation Dashboard', href: nil }] } %>
@@ -21,13 +21,13 @@
                         requiring_review: {
                           label: 'Records Requiring Review',
                           variant: 'danger',
-                          tooltip: 'isolation_recordsRequiringReview',
+                          tooltip: 'isolation_records_requiring_review',
                           description: 'Cases who preliminarily meet the recovery definition and require review.'
                         },
                         non_reporting: {
                           label: 'Non-Reporting',
                           variant: 'warning',
-                          tooltip: 'isolation_nonReporting',
+                          tooltip: 'isolation_non_reporting',
                           description: 'Cases who failed to report during the last day and have not yet met recovery definition.'
                         },
                         reporting: {

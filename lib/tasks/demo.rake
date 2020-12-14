@@ -227,8 +227,8 @@ namespace :demo do
       sex = Faker::Gender.binary_type
       sexualOrientations = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know', 'Unknown'].freeze
       patient[:sex] = rand < 0.9 ? sex : 'Unknown' if rand < 0.9
-      patient[:gender_identity] = ValidationHelper::VALID_ENUMS[:gender_identity].sample if rand < 0.7
-      patient[:sexual_orientation] = ValidationHelper::VALID_ENUMS[:sexual_orientation].sample if rand < 0.6
+      patient[:gender_identity] = ValidationHelper::VALID_PATIENT_ENUMS[:gender_identity].sample if rand < 0.7
+      patient[:sexual_orientation] = ValidationHelper::VALID_PATIENT_ENUMS[:sexual_orientation].sample if rand < 0.6
       patient[:first_name] = "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
       patient[:middle_name] = "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}" if rand < 0.7
       patient[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
@@ -245,12 +245,12 @@ namespace :demo do
       patient[:user_defined_id_nndss] = Faker::Code.rut if rand < 0.2
 
       # Contact Information
-      patient[:preferred_contact_method] = ValidationHelper::VALID_ENUMS[:preferred_contact_method].sample
-      patient[:preferred_contact_time] = ValidationHelper::VALID_ENUMS[:preferred_contact_time].sample if patient[:preferred_contact_method] != 'E-mailed Web Link' && rand < 0.6
+      patient[:preferred_contact_method] = ValidationHelper::VALID_PATIENT_ENUMS[:preferred_contact_method].sample
+      patient[:preferred_contact_time] = ValidationHelper::VALID_PATIENT_ENUMS[:preferred_contact_time].sample if patient[:preferred_contact_method] != 'E-mailed Web Link' && rand < 0.6
       patient[:primary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:preferred_contact_method] != 'E-mailed Web Link' || rand < 0.5
-      patient[:primary_telephone_type] = ValidationHelper::VALID_ENUMS[:primary_telephone_type].sample if patient[:primary_telephone]
+      patient[:primary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:primary_telephone_type].sample if patient[:primary_telephone]
       patient[:secondary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:primary_telephone] && rand < 0.5
-      patient[:secondary_telephone_type] = ValidationHelper::VALID_ENUMS[:secondary_telephone_type].sample if patient[:secondary_telephone]
+      patient[:secondary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:secondary_telephone_type].sample if patient[:secondary_telephone]
       patient[:email] = "#{rand(1000000000..9999999999)}fake@example.com" if patient[:preferred_contact_method] == 'E-mailed Web Link' || rand < 0.5
 
       # Address
@@ -302,7 +302,7 @@ namespace :demo do
       if rand < 0.7
         patient[:port_of_origin] = Faker::Address.city
         patient[:date_of_departure] = today - (rand < 0.3 ? 1.day : 0.days)
-        patient[:source_of_report] = ValidationHelper::VALID_ENUMS[:source_of_report].sample if rand < 0.7
+        patient[:source_of_report] = ValidationHelper::VALID_PATIENT_ENUMS[:source_of_report].sample if rand < 0.7
         patient[:source_of_report_specify] = Faker::TvShows::SiliconValley.invention if patient[:source_of_report] == 'Other'
         patient[:flight_or_vessel_number] = "#{('A'..'Z').to_a.sample}#{rand(10)}#{rand(10)}#{rand(10)}"
         patient[:flight_or_vessel_carrier] = "#{Faker::Name.first_name} Airlines"
@@ -355,8 +355,8 @@ namespace :demo do
       end
       patient[:jurisdiction_id] = jurisdictions.sample[:id]
       patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.8
-      patient[:exposure_risk_assessment] = ValidationHelper::VALID_ENUMS[:exposure_risk_assessment].sample
-      patient[:monitoring_plan] = ValidationHelper::VALID_ENUMS[:monitoring_plan].sample
+      patient[:exposure_risk_assessment] = ValidationHelper::VALID_PATIENT_ENUMS[:exposure_risk_assessment].sample
+      patient[:monitoring_plan] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_plan].sample
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
@@ -371,8 +371,8 @@ namespace :demo do
       patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable'].sample : ['Suspect', 'Unknown', 'Not a Case', nil].sample
       patient[:monitoring] = rand < 0.95
       patient[:closed_at] = patient[:updated_at] unless patient[:monitoring]
-      patient[:monitoring_reason] = ValidationHelper::VALID_ENUMS[:monitoring_reason].sample unless patient[:monitoring].nil?
-      patient[:public_health_action] = patient[:isolation] || rand < 0.8 ? 'None' : ValidationHelper::VALID_ENUMS[:public_health_action].sample
+      patient[:monitoring_reason] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_reason].sample unless patient[:monitoring].nil?
+      patient[:public_health_action] = patient[:isolation] || rand < 0.8 ? 'None' : ValidationHelper::VALID_PATIENT_ENUMS[:public_health_action].sample
       patient[:pause_notifications] = rand < 0.1
       patient[:last_assessment_reminder_sent] = today - rand(7).days if rand < 0.3
 

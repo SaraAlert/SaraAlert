@@ -259,7 +259,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  exposure_nonReporting: (
+  exposure_non_reporting: (
     <div>
       Monitorees on this list require public health follow-up to collect missing symptom report(s). Follow-up with these monitorees should be based on current
       guidelines and available resources.
@@ -284,7 +284,7 @@ const TOOLTIP_TEXT = {
   ),
 
   // ISOLATION WORKFLOW LINE LIST DEFINITIONS
-  isolation_recordsRequiringReview: (
+  isolation_records_requiring_review: (
     <div>
       These cases meet one of the recovery definitions and require review by public health to validate that it is safe to discontinue isolation. The recovery
       definition logic has been designed to be sensitive; as a result, cases that do not meet requirements for recovery may appear. To view which recovery
@@ -293,7 +293,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  isolation_nonReporting: (
+  isolation_non_reporting: (
     <div>
       Monitorees on this list require public health follow-up to collect missing symptom report(s). Follow-up with these cases should be based on current
       guidelines and available resources.
