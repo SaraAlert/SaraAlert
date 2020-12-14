@@ -5,6 +5,7 @@ import moment from 'moment-timezone';
 import domtoimage from 'dom-to-image';
 import Switch from 'react-switch';
 import 'rc-slider/assets/index.css';
+import ReactTooltip from 'react-tooltip';
 
 import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
@@ -63,23 +64,32 @@ class PublicHealthAnalytics extends React.Component {
     } else {
       return (
         <React.Fragment>
-          <Row className="mb-2 mx-0 px-0 pt-2">
-            <Col md="24" className="mx-2 px-0">
-              <Button variant="primary" className="btn-square export-png" onClick={this.exportAsPNG}>
-                <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG
-              </Button>
-            </Col>
-          </Row>
-          <Row className="mb-2 mx-0 px-0 pt-4 pb-2">
-            <Col md="24" className="mx-2 px-0">
-              <p className="display-6">
-                <i className="fas fa-info-circle mr-1"></i> Analytics are generated using data from both exposure and isolation workflows. Last Updated At{' '}
+          <Row className="mx-0 px-0 mt-1 mb-4 ">
+            <Col className="mx-2 px-0">
+              <div className="display-6">
+                <div style={{ display: 'inline' }}>
+                  <span data-for="analytics-refresh" data-tip="" className="ml-1">
+                    <i className="fas fa-info-circle mr-1 px-0"></i>
+                  </span>
+                  <ReactTooltip id="analytics-refresh" multiline={true} place="right" effect="solid" className="tooltip-container">
+                    <div className="font-weight-bold p-2">
+                      The data on this page refreshes once a day. Therefore, any changes to records throughout the day will not be reflected on this page until
+                      it is refreshed around 11:30 PM EST.
+                    </div>
+                  </ReactTooltip>
+                </div>
+                Last Updated At{' '}
                 {moment
                   .tz(this.props.stats.last_updated_at, 'UTC')
                   .tz(moment.tz.guess())
                   .format('YYYY-MM-DD HH:mm z')}
                 .
-              </p>
+              </div>
+            </Col>
+            <Col className="mx-2 px-0 text-right">
+              <Button variant="primary" className="btn-square export-png" onClick={this.exportAsPNG}>
+                <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG
+              </Button>
             </Col>
           </Row>
           <Row className="mb-4 mx-2 px-0">

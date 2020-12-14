@@ -181,7 +181,7 @@ class ExposureSummary extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5"> Exposure Summary ​</div>
+          <div className="analytics-card-header font-weight-bold h5"> Exposure Summary (Active Records Only) ​</div>
           {this.props.showGraphs ? this.renderBarGraphs() : this.renderTables()}
         </Card>
       </React.Fragment>

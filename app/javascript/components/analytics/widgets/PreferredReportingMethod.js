@@ -102,7 +102,7 @@ class RiskStratification extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5">Actively Monitored Individuals by Reporting Method</div>
+          <div className="analytics-card-header font-weight-bold h5">Monitorees by Reporting Method (Active Records Only)</div>
           <Card.Body className="mt-4">
             <table className="analytics-table">
               <thead>

@@ -298,7 +298,7 @@ class CacheAnalyticsJob < ApplicationJob
       DATE_ADD(last_date_of_exposure, INTERVAL(1 - DAYOFWEEK(last_date_of_exposure)) DAY)
     SQL
     symptom_onset_weeks = <<-SQL
-      DATE_ADD(last_date_of_exposure, INTERVAL(1 - DAYOFWEEK(symptom_onset)) DAY)
+      DATE_ADD(symptom_onset, INTERVAL(1 - DAYOFWEEK(symptom_onset)) DAY)
     SQL
     monitorees.where(isolation: false)
               .monitoring_active(true)

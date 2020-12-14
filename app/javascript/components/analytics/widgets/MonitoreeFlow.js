@@ -31,7 +31,7 @@ class MonitoreeFlow extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5"> Monitoree Flow Over Time ​</div>
+          <div className="analytics-card-header font-weight-bold h5"> Monitoree Flow Over Time (All Records) ​</div>
           <Card.Body className="mt-4">
             <table className="analytics-table">
               <thead>
@@ -86,6 +86,10 @@ class MonitoreeFlow extends React.Component {
                 </tbody>
               ))}
             </table>
+            <div className="text-secondary fake-demographic-text mb-1">
+              <i className="fas fa-info-circle mr-3 mt-2"></i>
+              Total includes all incoming and outgoing counts ever recorded for this jurisdiction
+            </div>
           </Card.Body>
         </Card>
       </React.Fragment>
