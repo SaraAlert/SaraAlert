@@ -116,10 +116,10 @@ class ConsumeAssessmentsJob < ApplicationJob
           # nil out the last_reminder_sent field so the system will try sending another voice assessment
           patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "The system could not record a response because the monitoree exceeded the maximum number
-            of daily report voice response retries via primary telephone number #{patient.primary_telephone}.")
+            of report voice response retries via primary telephone number #{patient.primary_telephone}.")
           unless dependents.blank?
             create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household
-              exceeded the maximum number of daily report voice response retries via primary telephone number #{patient.primary_telephone}.")
+              exceeded the maximum number of report voice response retries via primary telephone number #{patient.primary_telephone}.")
           end
           queue.commit
           next
