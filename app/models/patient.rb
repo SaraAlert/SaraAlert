@@ -77,7 +77,11 @@ class Patient < ApplicationRecord
 
   validates :email, email: true
 
-  validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 999_999 }
+  validates :assigned_user, numericality: { only_integer: true,
+                                            allow_nil: true,
+                                            greater_than: 0,
+                                            less_than_or_equal_to: 999_999,
+                                            message: 'is not valid, acceptable values are numbers between 1-9999' }
 
   validates_with PrimaryContactValidator
 
