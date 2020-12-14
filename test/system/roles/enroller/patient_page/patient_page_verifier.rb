@@ -21,10 +21,10 @@ class EnrollerPatientPageVerifier < ApplicationSystemTestCase
     find('#patient-info-header').click if is_epi
     verify_enrollment_step(new_monitoree['identification'], @@enrollment_form_steps.steps[:identification])
     verify_enrollment_step(existing_monitoree['address'], @@enrollment_form_steps.steps[:address])
-    verify_enrollment_step(existing_monitoree['contact_info'], @@enrollment_form_steps.steps[:contact_info])
-    verify_enrollment_step(existing_monitoree['arrival_info'], @@enrollment_form_steps.steps[:arrival_info])
-    verify_enrollment_step(existing_monitoree['additional_planned_travel'], @@enrollment_form_steps.steps[:additional_planned_travel])
-    verify_enrollment_step(existing_monitoree['potential_exposure_info'], @@enrollment_form_steps.steps[:potential_exposure_info])
+    verify_enrollment_step(existing_monitoree['contact_information'], @@enrollment_form_steps.steps[:contact_information])
+    verify_enrollment_step(existing_monitoree['arrival_information'], @@enrollment_form_steps.steps[:arrival_information])
+    verify_enrollment_step(existing_monitoree['planned_travel'], @@enrollment_form_steps.steps[:planned_travel])
+    verify_enrollment_step(existing_monitoree['potential_exposure_information'], @@enrollment_form_steps.steps[:potential_exposure_information])
   end
 
   def verify_enrollment_step(data, fields)

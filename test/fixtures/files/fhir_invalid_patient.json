@@ -1,0 +1,148 @@
+{
+  "extension": [
+    {
+      "extension": [
+        {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "0000",
+            "display": "Not Hispanic or Latino"
+          }
+        },
+        {
+          "url": "text",
+          "valueString": "Not Hispanic or Latino"
+        }
+      ],
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+    },
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+      "valueCode": "On FHIR"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
+      "valueString": "E-mailed Web Link"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "High noon"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
+      "valueDate": "1492"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/isolation",
+      "valueBoolean": false
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+      "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Invalid"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/assigned-user",
+      "valuePositiveInt": 10000
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+      "valueDate": "1776"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+      "valueString": "South Mandieshire"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+      "valueDate": "2020-01-32"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-number",
+      "valueString": "W345"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-carrier",
+      "valueString": "Brady Airlines"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+      "valueDate": "9999-99-99"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+      "valueString": "exposure notes"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+      "valueString": "travel notes"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+      "valueString": "additional travel notes"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "given": [
+        "Domingo54",
+        "Simonis31"
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Dumbphone"
+        }
+      ],
+      "system": "phone",
+      "value": "123",
+      "rank": 1
+    },
+    {
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ],
+      "system": "phone",
+      "value": "+15555550112",
+      "rank": 2
+    }
+  ],
+  "birthDate": "2000",
+  "address": [
+    {
+      "line": [
+        "76640 Barney Street"
+      ],
+      "city": "South Lenport",
+      "district": "Monroe",
+      "state": "Old York",
+      "postalCode": "41987-5448"
+    }
+  ],
+  "communication": [
+    {
+      "language": {
+        "coding": [
+          {
+            "system": "urn:ietf:bcp:47",
+            "code": "en",
+            "display": "English"
+          }
+        ]
+      }
+    }
+  ],
+  "resourceType": "Patient"
+}

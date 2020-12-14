@@ -3,24 +3,23 @@ import { PropTypes } from 'prop-types';
 import { Row, Col, Button } from 'react-bootstrap';
 import moment from 'moment-timezone';
 import domtoimage from 'dom-to-image';
+import Switch from 'react-switch';
 import 'rc-slider/assets/index.css';
 
-import RiskStratificationTable from './widgets/RiskStratificationTable';
 import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
-import RiskFactors from './widgets/RiskFactors';
+import ExposureSummary from './widgets/ExposureSummary';
+import PreferredReportingMethod from './widgets/PreferredReportingMethod';
 import reportError from '../util/ReportError';
-import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
+import MonitoreesByEventDate from './widgets/MonitoreesByEventDate';
 import GeographicSummary from './widgets/GeographicSummary';
 
 class PublicHealthAnalytics extends React.Component {
   constructor(props) {
     super(props);
     this.exportAsPNG = this.exportAsPNG.bind(this);
-    this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
     this.state = {
-      checked: false,
-      viewTotal: false,
+      showEpidemiologicalGraphs: false,
       hasErrors: !this.props.stats || Object.entries(this.props.stats).length === 0,
     };
   }
@@ -51,7 +50,7 @@ class PublicHealthAnalytics extends React.Component {
     }
   }
 
-  toggleBetweenActiveAndTotal = viewTotal => this.setState({ viewTotal });
+  toggleEpidemiologicalGraphs = showEpidemiologicalGraphs => this.setState({ showEpidemiologicalGraphs });
 
   render() {
     if (this.state.hasErrors) {
@@ -84,44 +83,55 @@ class PublicHealthAnalytics extends React.Component {
             </Col>
           </Row>
           <Row className="mb-4 mx-2 px-0">
-            <Col md="14" className="ml-0 pl-0">
-              <RiskStratificationTable stats={this.props.stats} />
+            <Col xl="14" lg="24" sm="24" className="mx-0 pr-xl-3">
+              <PreferredReportingMethod stats={this.props.stats} />
             </Col>
-            <Col md="10" className="mr-0 pr-0">
+            <Col xl="10" lg="24" sm="24" className="mx-0 mt-5 mt-xl-0 pl-xl-3">
               <MonitoreeFlow stats={this.props.stats} />
             </Col>
           </Row>
-          <Row className="mb-4 mx-2 px-0 pt-4">
-            <Col md="24" className="mx-0 px-0">
+          <Row className="mx-2 mt-2 px-0">
+            <Col xs="20">
               <span className="display-5">Epidemiological Summary</span>
-              {/* <span className="float-right display-6">
-                View Overall
+            </Col>
+            <Col xs="4">
+              <span className="float-right">
                 <Switch
-                className="ml-2"
-                onChange={this.toggleBetweenActiveAndTotal}
-                onColor="#82A0E4"
-                height={18}
-                width={40}
-                uncheckedIcon={false}
-                checked={this.state.viewTotal}
+                  className="ml-2 mt-4 custom-react-switch"
+                  onChange={this.toggleEpidemiologicalGraphs}
+                  onColor="#557385"
+                  height={30}
+                  width={80}
+                  uncheckedIcon={false}
+                  checked={this.state.showEpidemiologicalGraphs}
                 />
-              </span> */}
+              </span>
             </Col>
           </Row>
-          <Row className="mb-4 mx-2 px-0">
-            <Col md="12" className="ml-0 pl-0">
-              <Demographics stats={this.props.stats} viewTotal={this.state.viewTotal} />
+          <Row className="mb-4 mx-1 px-0">
+            <Col xs="16">
+              <h5 className="text-secondary">Among Those Currently Under Active Monitoring</h5>
             </Col>
-            <Col md="12" className="mr-0 pr-0">
-              <RiskFactors stats={this.props.stats} viewTotal={this.state.viewTotal} />
-            </Col>
-          </Row>
-          <Row className="mb-1 mx-2 px-0">
-            <Col md="24" className="mx-0 px-0">
-              <MonitoreesByDateOfExposure stats={this.props.stats} />
+            <Col xs="8">
+              <h5 className="float-right text-secondary">View Data as Graph</h5>
             </Col>
           </Row>
-          <Row className="mb-5 pb-3 mx-2 px-0 pt-4">
+          <Row className="mb-4 mx-1 px-0">
+            <Col className="mx-0 pr-xl-3">
+              <Demographics stats={this.props.stats} showGraphs={this.state.showEpidemiologicalGraphs} />
+            </Col>
+          </Row>
+          <Row className="mb-4 mt-4 pt-3 mx-1 px-0">
+            <Col className="mx-0 pr-xl-3">
+              <ExposureSummary stats={this.props.stats} showGraphs={this.state.showEpidemiologicalGraphs} />
+            </Col>
+          </Row>
+          <Row className="mb-2 pt-4 mx-1 px-0">
+            <Col className="mx-0 pr-xl-3">
+              <MonitoreesByEventDate stats={this.props.stats} />
+            </Col>
+          </Row>
+          <Row className="mb-5 pb-3 mx-1 px-0 pt-4">
             <GeographicSummary stats={this.props.stats} />
           </Row>
         </React.Fragment>

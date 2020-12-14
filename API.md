@@ -28,10 +28,10 @@ This API is intended for use by public health organizations using Sara Alert, an
 	  - [GET [base]/QuestionaireResponse/[:id]](#read-get-que)
 	  - [GET [base]/Patient/[:id]/$everything](#read-get-all)
 	- [Creating](#create)
-	  - [Extensions](#create-ext)
 	  - [POST [base]/Patient](#create-post-pat)
 	- [Updating](#update)
 	  - [PUT [base]/Patient/[:id]](#update-put-pat)
+	  - [PATCH [base]/Patient/[:id]](#update-patch-pat)
 	- [Searching](#search)
 	  - [GET [base]/Patient?parameter(s)](#search-get)
 	  - [GET [base]/QuestionnaireResponse?subject=Patient/[:id]](#search-questionnaire-subj)
@@ -289,13 +289,14 @@ JSON is currently the only supported format. Please make use of the `application
 <a name="data-representation"/>
 
 ### Data Representation
-Because the Sara Alert API follows the FHIR specification, there is a mapping between known kinds of Sara Alert data and their associated FHIR resources.
+Because the Sara Alert API follows the FHIR specification, there is a mapping between known kinds of Sara Alert data and their associated FHIR resources. Sara Alert also has a [FHIR Implementation Guide](https://saraalert.github.io/saraalert-fhir-ig/index.html), which specifies profiles for each of these resources. Along with supporting the US Core extensions for race, ethnicity, and birthsex, the Sara Alert FHIR profiles include additional extensions for things specific to the Sara Alert workflows. Please visit the profile links in the table below for documentation of those extensions.
 
-| Sara Alert                | FHIR Resource |
-| :---------------          | :------------ |
-| Monitoree                 | [Patient](https://hl7.org/fhir/R4/patient.html)|
-| Monitoree Lab Result      | [Observation](https://hl7.org/fhir/R4/observation.html)|
-| Monitoree Daily Report    | [QuestionnaireResponse](https://www.hl7.org/fhir/questionnaireresponse.html)|
+
+| Sara Alert                | FHIR Resource                                                               | Sara Alert Profile |
+| :---------------          | :------------                                                               | :----------------- |
+| Monitoree                 | [Patient](https://hl7.org/fhir/R4/patient.html)                             | [SaraAlertPatient](https://saraalert.github.io/saraalert-fhir-ig/StructureDefinition-sara-alert-patient.html) |
+| Monitoree Lab Result      | [Observation](https://hl7.org/fhir/R4/observation.html)                     | [SaraAlertObservation](https://saraalert.github.io/saraalert-fhir-ig/StructureDefinition-sara-alert-observation.html) |
+| Monitoree Daily Report    | [QuestionnaireResponse](https://www.hl7.org/fhir/questionnaireresponse.html)| [SaraAlertQuestionnaireResponse](https://saraalert.github.io/saraalert-fhir-ig/StructureDefinition-sara-alert-questionnaire-response.html) |
 
 <a name="supported-scopes"/>
 
@@ -399,6 +400,9 @@ A capability statement is available at `[base]/metadata`:
             },
             {
               "code": "update"
+            },
+            {
+              "code": "patch"
             },
             {
               "code": "create"
@@ -544,6 +548,36 @@ Get a monitoree via an id, e.g.:
   "meta": {
     "lastUpdated": "2020-05-29T00:19:18+00:00"
   },
+  "contained": [
+    {
+      "target": [
+        {
+          "reference": "/fhir/r4/Patient/5"
+        }
+      ],
+      "recorded": "2020-05-18T17:53:04+00:00",
+      "activity": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+            "code": "CREATE",
+            "display": "create"
+          }
+        ]
+      },
+      "agent": [
+        {
+          "who": {
+            "identifier": {
+              "value": "UOQGqellTNi0XIJLe49sAQFvAjwjYMRsFDnmksh8s04"
+            },
+            "display": "example-app"
+          }
+        }
+      ],
+      "resourceType": "Provenance"
+    }
+  ],
   "extension": [
     {
       "extension": [
@@ -592,7 +626,7 @@ Get a monitoree via an id, e.g.:
       "valueDate": "2020-05-23"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
+      "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
       "valueDate": "2020-05-18"
     },
     {
@@ -602,6 +636,54 @@ Get a monitoree via an id, e.g.:
     {
         "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
         "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "Morning"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/assigned-user",
+        "valuePositiveInt": 9999
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+        "valueDate": "2020-04-30"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+        "valueString": "West Margarete"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+        "valueDate": "2020-04-24"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-number",
+        "valueString": "X639"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+        "valueString": "Annamae Airlines"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+        "valueDate": "2020-04-04"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+        "valueString": "these are exposure notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+        "valueString": "these are travel related notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+        "valueString": "these are additional planned travel notes"
     }
   ],
   "active": true,
@@ -618,12 +700,24 @@ Get a monitoree via an id, e.g.:
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 1
+      "rank": 1,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Smartphone"
+        }
+      ]
     },
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 2
+      "rank": 2,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ]
     },
     {
       "system": "email",
@@ -830,6 +924,36 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
         "meta": {
           "lastUpdated": "2020-05-29T00:42:54+00:00"
         },
+        "contained": [
+          {
+            "target": [
+              {
+                "reference": "/fhir/r4/Patient/3"
+              }
+            ],
+            "recorded": "2020-05-18T17:53:04+00:00",
+            "activity": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                  "code": "CREATE",
+                  "display": "create"
+                }
+              ]
+            },
+            "agent": [
+              {
+                "who": {
+                  "identifier": {
+                    "value": "UOQGqellTNi0XIJLe49sAQFvAjwjYMRsFDnmksh8s04"
+                  },
+                  "display": "example-app"
+                }
+              }
+            ],
+            "resourceType": "Provenance"
+          }
+        ],
         "extension": [
           {
             "extension": [
@@ -878,7 +1002,7 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
             "valueDate": "2020-05-16"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
+            "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
             "valueDate": "2020-05-11"
           },
           {
@@ -888,6 +1012,54 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+            "valueString": "Morning"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+            "valueString": "Daily active monitoring"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/assigned-user",
+              "valuePositiveInt": 9999
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+              "valueDate": "2020-04-30"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+              "valueString": "West Margarete"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+              "valueDate": "2020-04-24"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-number",
+              "valueString": "X639"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+              "valueString": "Annamae Airlines"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+              "valueDate": "2020-04-04"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+              "valueString": "these are exposure notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+              "valueString": "these are travel related notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+              "valueString": "these are additional planned travel notes"
           }
         ],
         "active": true,
@@ -904,12 +1076,24 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 1
+            "rank": 1,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Smartphone"
+              }
+            ]
           },
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 2
+            "rank": 2,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Landline"
+              }
+            ]
           },
           {
             "system": "email",
@@ -1063,58 +1247,6 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
 
 The API supports creating new monitorees.
 
-#### Extensions
-
-<a name="create-ext"/>
-
-Along with supporting the US Core extensions for race, ethnicity, and birthsex, Sara Alert includes four additional extensions for things specific to the Sara Alert workflows.
-
-Use `http://saraalert.org/StructureDefinition/preferred-contact-method` for specifying the monitorees Sara Alert preferred contact method (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, `SMS Text-message`, `Opt-out`, and `Unknown`).
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
-  "valueString": "E-mailed Web Link"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/preferred-contact-time` for specifying the monitorees Sara Alert preferred contact time (options are: `Morning`, `Afternoon`, and `Evening`).
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
-  "valueString": "Morning"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/symptom-onset-date` to specify when the monitoree's first symptoms appeared for use in the Sara Alert isolation workflow.
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
-  "valueDate": "2020-05-23"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/last-exposure-date` to specify when the monitoree's last exposure occurred for use in the Sara Alert exposure workflow.
-
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
-  "valueDate": "2020-05-18"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/isolation` to specify if the monitoree should be in the isolation workflow (omitting this extension defaults this value to false, leaving the monitoree in the exposure workflow).
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/isolation",
-  "valueBoolean": false
-}
-```
-
 #### POST `[base]/Patient`
 
 <a name="create-post-pat"/>
@@ -1176,7 +1308,7 @@ To create a new monitoree, simply POST a FHIR Patient resource.
       "valueDate": "2020-05-23"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
+      "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
       "valueDate": "2020-05-18"
     },
     {
@@ -1186,6 +1318,54 @@ To create a new monitoree, simply POST a FHIR Patient resource.
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "Morning"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/assigned-user",
+        "valuePositiveInt": 9999
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+        "valueDate": "2020-04-30"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+        "valueString": "West Margarete"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+        "valueDate": "2020-04-24"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-number",
+        "valueString": "X639"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+        "valueString": "Annamae Airlines"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+        "valueDate": "2020-04-04"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+        "valueString": "these are exposure notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+        "valueString": "these are travel related notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+        "valueString": "these are additional planned travel notes"
     }
   ],
   "active": true,
@@ -1202,12 +1382,24 @@ To create a new monitoree, simply POST a FHIR Patient resource.
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 1
+      "rank": 1,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Smartphone"
+        }
+      ]
     },
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 2
+      "rank": 2,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ]
     },
     {
       "system": "email",
@@ -1258,6 +1450,36 @@ On success, the server will return the newly created resource with an id. This i
   "meta": {
     "lastUpdated": "2020-05-29T00:56:18+00:00"
   },
+  "contained": [
+    {
+      "target": [
+        {
+          "reference": "/fhir/r4/Patient/1109"
+        }
+      ],
+      "recorded": "2020-05-18T17:53:04+00:00",
+      "activity": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+            "code": "CREATE",
+            "display": "create"
+          }
+        ]
+      },
+      "agent": [
+        {
+          "who": {
+            "identifier": {
+              "value": "UOQGqellTNi0XIJLe49sAQFvAjwjYMRsFDnmksh8s04"
+            },
+            "display": "example-app"
+          }
+        }
+      ],
+      "resourceType": "Provenance"
+    }
+  ],
   "extension": [
     {
       "extension": [
@@ -1306,7 +1528,7 @@ On success, the server will return the newly created resource with an id. This i
       "valueDate": "2020-05-23"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
+      "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
       "valueDate": "2020-05-18"
     },
     {
@@ -1316,6 +1538,54 @@ On success, the server will return the newly created resource with an id. This i
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "Morning"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/assigned-user",
+        "valuePositiveInt": 9999
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+        "valueDate": "2020-04-30"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+        "valueString": "West Margarete"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+        "valueDate": "2020-04-24"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-number",
+        "valueString": "X639"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+        "valueString": "Annamae Airlines"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+        "valueDate": "2020-04-04"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+        "valueString": "these are exposure notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+        "valueString": "these are travel related notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+        "valueString": "these are additional planned travel notes"
     }
   ],
   "active": true,
@@ -1332,12 +1602,24 @@ On success, the server will return the newly created resource with an id. This i
     {
       "system": "phone",
       "value": "+13333333333",
-      "rank": 1
+      "rank": 1,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Smartphone"
+        }
+      ]
     },
     {
       "system": "phone",
       "value": "+13333333333",
-      "rank": 2
+      "rank": 2,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ]
     },
     {
       "system": "email",
@@ -1380,11 +1662,13 @@ On success, the server will return the newly created resource with an id. This i
 ### Updating
 An update request creates a new current version for an existing resource.
 
-**PLEASE NOTE:** This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with `nil` values, as is expected with `PUT` requests. The Sara Alert team is planning on supporting `PATCH` requests in the future to support updates where only fields that should be changed need to be included.
+**PLEASE NOTE:** The API supports `PUT` and `PATCH` requests, which update an existing resource in different ways. A `PUT` request will replace the entire existing resource. This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with null values. A `PATCH` request will only modify the attributes indicated in the request, which must follow the [JSON Patch specification](https://tools.ietf.org/html/rfc6902). Omitted attributes are unchanged. For further details on the contents of a `PATCH` request, see the [JSON Patch documentation](http://jsonpatch.com/).
 
 <a name="update-put-pat"/>
 
 #### PUT `[base]/Patient/[:id]`
+
+**NOTE:** This is a `PUT` operation, it will replace the entire resource. If you intend to modify specific attributes instead, see [PATCH](#update-patch-pat).
 
 #### Request Body
 
@@ -1441,7 +1725,7 @@ An update request creates a new current version for an existing resource.
       "valueDate": "2020-05-23"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
+      "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
       "valueDate": "2020-05-18"
     },
     {
@@ -1451,6 +1735,54 @@ An update request creates a new current version for an existing resource.
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "Morning"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/assigned-user",
+        "valuePositiveInt": 9999
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+        "valueDate": "2020-04-30"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+        "valueString": "West Margarete"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+        "valueDate": "2020-04-24"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-number",
+        "valueString": "X639"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+        "valueString": "Annamae Airlines"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+        "valueDate": "2020-04-04"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+        "valueString": "these are exposure notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+        "valueString": "these are travel related notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+        "valueString": "these are additional planned travel notes"
     }
   ],
   "active": true,
@@ -1467,12 +1799,24 @@ An update request creates a new current version for an existing resource.
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 1
+      "rank": 1,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Smartphone"
+        }
+      ]
     },
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 2
+      "rank": 2,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ]
     },
     {
       "system": "email",
@@ -1522,6 +1866,247 @@ On success, the server will update the existing resource given the id.
   "id": 1109,
   "meta": {
     "lastUpdated": "2020-05-29T00:57:40+00:00"
+  },
+  "contained": [
+    {
+      "target": [
+        {
+          "reference": "/fhir/r4/Patient/1109"
+        }
+      ],
+      "recorded": "2020-05-18T17:53:04+00:00",
+      "activity": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+            "code": "CREATE",
+            "display": "create"
+          }
+        ]
+      },
+      "agent": [
+        {
+          "who": {
+            "identifier": {
+              "value": "UOQGqellTNi0XIJLe49sAQFvAjwjYMRsFDnmksh8s04"
+            },
+            "display": "example-app"
+          }
+        }
+      ],
+      "resourceType": "Provenance"
+    }
+  ],
+  "extension": [
+    {
+      "extension": [
+        {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2054-5",
+            "display": "Black or African American"
+          }
+        },
+        {
+          "url": "text",
+          "valueString": "Black or African American"
+        }
+      ],
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+    },
+    {
+      "extension": [
+        {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2186-5",
+            "display": "Not Hispanic or Latino"
+          }
+        },
+        {
+          "url": "text",
+          "valueString": "Not Hispanic or Latino"
+        }
+      ],
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+    },
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+      "valueCode": "M"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
+      "valueString": "E-mailed Web Link"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
+      "valueDate": "2020-05-23"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
+      "valueDate": "2020-05-18"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/isolation",
+      "valueBoolean": true
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+      "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "Morning"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/assigned-user",
+        "valuePositiveInt": 9999
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+        "valueDate": "2020-04-30"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+        "valueString": "West Margarete"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+        "valueDate": "2020-04-24"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-number",
+        "valueString": "X639"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+        "valueString": "Annamae Airlines"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+        "valueDate": "2020-04-04"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+        "valueString": "these are exposure notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+        "valueString": "these are travel related notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+        "valueString": "these are additional planned travel notes"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "family": "O'Kon89",
+      "given": [
+        "Malcolm94",
+        "Bogan39"
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+13333333333",
+      "rank": 1,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Smartphone"
+        }
+      ]
+    },
+    {
+      "system": "phone",
+      "value": "+13333333333",
+      "rank": 2,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ]
+    },
+    {
+      "system": "email",
+      "value": "2966977816fake@example.com",
+      "rank": 1
+    }
+  ],
+  "birthDate": "1981-03-30",
+  "address": [
+    {
+      "line": [
+        "22424 Daphne Key"
+      ],
+      "city": "West Gabrielmouth",
+      "state": "Maine",
+      "postalCode": "24683"
+    }
+  ],
+  "communication": [
+    {
+      "language": {
+        "coding": [
+          {
+            "system": "urn:ietf:bcp:47",
+            "code": "en",
+            "display": "English"
+          }
+        ]
+      }
+    }
+  ],
+  "resourceType": "Patient"
+}
+```
+</details>
+
+<a name="update-patch-pat"/>
+
+#### PATCH `[base]/Patient/[:id]`
+
+**NOTE:** This is a `PATCH` operation, it will only modify specified attributes. If you intend to replace the entire resource instead, see [PUT](#update-put-pat).
+
+#### Request Body
+
+Assume the Patient resource was originally as shown in the example Patient [GET](#read-get-pat), and the patch is specified as below.
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+
+```json
+[
+  { "op": "remove", "path": "/communication" },
+  { "op": "replace", "path": "/birthDate", "value": "1985-03-30" }
+]
+```
+</details>
+
+
+#### Response
+
+On success, the server will update the attributes indicated by the request.
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+
+```json
+{
+  "id": 5,
+  "meta": {
+    "lastUpdated": "2020-05-29T00:19:18+00:00"
   },
   "extension": [
     {
@@ -1576,11 +2161,11 @@ On success, the server will update the existing resource given the id.
     },
     {
       "url": "http://saraalert.org/StructureDefinition/isolation",
-      "valueBoolean": true
+      "valueBoolean": false
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
-      "valueString": "USA, State 1"
+        "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+        "valueString": "USA, State 1"
     }
   ],
   "active": true,
@@ -1596,12 +2181,12 @@ On success, the server will update the existing resource given the id.
   "telecom": [
     {
       "system": "phone",
-      "value": "+13333333333",
+      "value": "(333) 333-3333",
       "rank": 1
     },
     {
       "system": "phone",
-      "value": "+13333333333",
+      "value": "(333) 333-3333",
       "rank": 2
     },
     {
@@ -1610,7 +2195,7 @@ On success, the server will update the existing resource given the id.
       "rank": 1
     }
   ],
-  "birthDate": "1981-03-30",
+  "birthDate": "1985-03-30",
   "address": [
     {
       "line": [
@@ -1619,19 +2204,6 @@ On success, the server will update the existing resource given the id.
       "city": "West Gabrielmouth",
       "state": "Maine",
       "postalCode": "24683"
-    }
-  ],
-  "communication": [
-    {
-      "language": {
-        "coding": [
-          {
-            "system": "urn:ietf:bcp:47",
-            "code": "en",
-            "display": "English"
-          }
-        ]
-      }
     }
   ],
   "resourceType": "Patient"
@@ -1673,6 +2245,36 @@ GET `[base]/Patient?given=testy&family=mctest`
         "meta": {
           "lastUpdated": "2020-05-29T00:42:54+00:00"
         },
+        "contained": [
+          {
+            "target": [
+              {
+                "reference": "/fhir/r4/Patient/3"
+              }
+            ],
+            "recorded": "2020-05-18T17:53:04+00:00",
+            "activity": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                  "code": "CREATE",
+                  "display": "create"
+                }
+              ]
+            },
+            "agent": [
+              {
+                "who": {
+                  "identifier": {
+                    "value": "UOQGqellTNi0XIJLe49sAQFvAjwjYMRsFDnmksh8s04"
+                  },
+                  "display": "example-app"
+                }
+              }
+            ],
+            "resourceType": "Provenance"
+          }
+        ],
         "extension": [
           {
             "extension": [
@@ -1721,7 +2323,7 @@ GET `[base]/Patient?given=testy&family=mctest`
             "valueDate": "2020-05-16"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
+            "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
             "valueDate": "2020-05-11"
           },
           {
@@ -1731,6 +2333,54 @@ GET `[base]/Patient?given=testy&family=mctest`
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+            "valueString": "Morning"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+            "valueString": "Daily active monitoring"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/assigned-user",
+              "valuePositiveInt": 9999
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+              "valueDate": "2020-04-30"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+              "valueString": "West Margarete"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+              "valueDate": "2020-04-24"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-number",
+              "valueString": "X639"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+              "valueString": "Annamae Airlines"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+              "valueDate": "2020-04-04"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+              "valueString": "these are exposure notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+              "valueString": "these are travel related notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+              "valueString": "these are additional planned travel notes"
           }
         ],
         "active": true,
@@ -1747,12 +2397,24 @@ GET `[base]/Patient?given=testy&family=mctest`
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 1
+            "rank": 1,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Smartphone"
+              }
+            ]
           },
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 2
+            "rank": 2,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Landline"
+              }
+            ]
           },
           {
             "system": "email",
@@ -2052,6 +2714,36 @@ GET `[base]/Patient?_count=2`
         "meta": {
           "lastUpdated": "2020-05-29T00:43:06+00:00"
         },
+        "contained": [
+          {
+            "target": [
+              {
+                "reference": "/fhir/r4/Patient/12"
+              }
+            ],
+            "recorded": "2020-05-18T17:53:04+00:00",
+            "activity": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                  "code": "CREATE",
+                  "display": "create"
+                }
+              ]
+            },
+            "agent": [
+              {
+                "who": {
+                  "identifier": {
+                    "value": "UOQGqellTNi0XIJLe49sAQFvAjwjYMRsFDnmksh8s04"
+                  },
+                  "display": "example-app"
+                }
+              }
+            ],
+            "resourceType": "Provenance"
+          }
+        ],
         "extension": [
           {
             "extension": [
@@ -2100,7 +2792,7 @@ GET `[base]/Patient?_count=2`
             "valueDate": "2020-05-18"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
+            "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
             "valueDate": "2020-05-12"
           },
           {
@@ -2110,6 +2802,54 @@ GET `[base]/Patient?_count=2`
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+            "valueString": "Morning"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+            "valueString": "Daily active monitoring"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/assigned-user",
+              "valuePositiveInt": 9999
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+              "valueDate": "2020-04-30"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+              "valueString": "West Margarete"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+              "valueDate": "2020-04-24"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-number",
+              "valueString": "X639"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+              "valueString": "Annamae Airlines"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+              "valueDate": "2020-04-04"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+              "valueString": "these are exposure notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+              "valueString": "these are travel related notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+              "valueString": "these are additional planned travel notes"
           }
         ],
         "active": true,
@@ -2126,12 +2866,24 @@ GET `[base]/Patient?_count=2`
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 1
+            "rank": 1,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Smartphone"
+              }
+            ]
           },
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 2
+            "rank": 2,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Landline"
+              }
+            ]
           },
           {
             "system": "email",
@@ -2173,6 +2925,36 @@ GET `[base]/Patient?_count=2`
         "meta": {
           "lastUpdated": "2020-05-29T00:43:14+00:00"
         },
+        "contained": [
+          {
+            "target": [
+              {
+                "reference": "/fhir/r4/Patient/26"
+              }
+            ],
+            "recorded": "2020-05-18T17:53:04+00:00",
+            "activity": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                  "code": "CREATE",
+                  "display": "create"
+                }
+              ]
+            },
+            "agent": [
+              {
+                "who": {
+                  "identifier": {
+                    "value": "UOQGqellTNi0XIJLe49sAQFvAjwjYMRsFDnmksh8s04"
+                  },
+                  "display": "example-app"
+                }
+              }
+            ],
+            "resourceType": "Provenance"
+          }
+        ],
         "extension": [
           {
             "extension": [
@@ -2221,7 +3003,7 @@ GET `[base]/Patient?_count=2`
             "valueDate": "2020-05-19"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
+            "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
             "valueDate": "2020-05-15"
           },
           {
@@ -2231,6 +3013,54 @@ GET `[base]/Patient?_count=2`
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+            "valueString": "Morning"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+            "valueString": "Daily active monitoring"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/assigned-user",
+              "valuePositiveInt": 9999
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+              "valueDate": "2020-04-30"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+              "valueString": "West Margarete"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+              "valueDate": "2020-04-24"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-number",
+              "valueString": "X639"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+              "valueString": "Annamae Airlines"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+              "valueDate": "2020-04-04"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+              "valueString": "these are exposure notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+              "valueString": "these are travel related notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+              "valueString": "these are additional planned travel notes"
           }
         ],
         "active": true,
@@ -2247,12 +3077,24 @@ GET `[base]/Patient?_count=2`
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 1
+            "rank": 1,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Smartphone"
+              }
+            ]
           },
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 2
+            "rank": 2,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Landline"
+              }
+            ]
           },
           {
             "system": "email",

@@ -13,10 +13,10 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     click_link 'Enroll New Monitoree'
     verify_input_validation_for_identification(monitoree['identification'])
     verify_input_validation_for_address(monitoree['address'])
-    verify_input_validation_for_contact_info(monitoree['contact_info'])
-    verify_input_validation_for_arrival_info(monitoree['arrival_info'])
-    verify_input_validation_for_additional_planned_travel(monitoree['additional_planned_travel'])
-    verify_input_validation_for_potential_exposure_info(monitoree['potential_exposure_info'])
+    verify_input_validation_for_contact_information(monitoree['contact_information'])
+    verify_input_validation_for_arrival_information(monitoree['arrival_information'])
+    verify_input_validation_for_planned_travel(monitoree['planned_travel'])
+    verify_input_validation_for_potential_exposure_information(monitoree['potential_exposure_information'])
   end
 
   def verify_input_validation_for_identification(identification)
@@ -53,7 +53,7 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     verify_text_not_displayed('Please enter country of address')
   end
 
-  def verify_input_validation_for_contact_info(contact_info)
+  def verify_input_validation_for_contact_information(contact_information)
     select 'Telephone call', from: 'preferred_contact_method'
     click_on 'Next'
     verify_text_not_displayed('Please provide an Email or change Preferred Reporting Method')
@@ -74,21 +74,21 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     verify_text_not_displayed('Please provide an Email or change Preferred Reporting Method')
     verify_text_displayed('Please confirm Email')
     verify_text_not_displayed('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
-    @@enrollment_form.populate_enrollment_step(:contact_info, contact_info)
+    @@enrollment_form.populate_enrollment_step(:contact_information, contact_information)
     verify_text_not_displayed('Please provide an Email or change Preferred Reporting Method')
     verify_text_not_displayed('Please confirm Email')
     verify_text_not_displayed('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
   end
 
-  def verify_input_validation_for_arrival_info(arrival_info)
-    @@enrollment_form.populate_enrollment_step(:arrival_info, arrival_info)
+  def verify_input_validation_for_arrival_information(arrival_information)
+    @@enrollment_form.populate_enrollment_step(:arrival_information, arrival_information)
   end
 
-  def verify_input_validation_for_additional_planned_travel(additional_planned_travel)
-    @@enrollment_form.populate_enrollment_step(:additional_planned_travel, additional_planned_travel)
+  def verify_input_validation_for_planned_travel(planned_travel)
+    @@enrollment_form.populate_enrollment_step(:planned_travel, planned_travel)
   end
 
-  def verify_input_validation_for_potential_exposure_info(potential_exposure_info)
+  def verify_input_validation_for_potential_exposure_information(potential_exposure_information)
     @@system_test_utils.go_to_next_page
     verify_text_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
     fill_in 'last_date_of_exposure', with: rand(30).days.ago.strftime('%m/%d/%Y')
@@ -110,7 +110,7 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     assert_not_equal('asdf', page.find_field('assigned_user').value)
     fill_in 'assigned_user', with: 'W(#*&R#(W&'
     assert_not_equal('W(#*&R#(W&', page.find_field('assigned_user').value)
-    @@enrollment_form.populate_enrollment_step(:potential_exposure_info, potential_exposure_info)
+    @@enrollment_form.populate_enrollment_step(:potential_exposure_information, potential_exposure_information)
     verify_text_not_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
   end
 

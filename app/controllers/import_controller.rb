@@ -209,7 +209,8 @@ class ImportController < ApplicationController
     normalized_value = unformat_enum_field(value)
     return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
 
-    err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}', acceptable values are: #{VALID_ENUMS[field].to_sentence}"
+    err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}',"\
+              " acceptable values are: #{VALID_ENUMS[field].reject(&:blank?).to_sentence}"
     raise ValidationError.new(err_msg, row_ind)
   end
 
@@ -268,7 +269,7 @@ class ImportController < ApplicationController
     normalized_sex = SEX_ABBREVIATIONS[value.upcase.to_sym]
     return normalized_sex if normalized_sex
 
-    raise ValidationError.new("'#{value}' is not a valid sex for '#{VALIDATION[field][:label]}'", row_ind)
+    raise ValidationError.new("'#{value}' is not a valid sex for '#{VALIDATION[field][:label]}', acceptable values are Male, Female, and Unknown", row_ind)
   end
 
   def validate_email_field(field, value, row_ind)

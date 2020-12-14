@@ -12,11 +12,19 @@
   width: 300px;
 }
 
+.tooltip-whitespace {
+  white-space: normal !important;
+}
+
 .notes-character-limit {
   font-size: 10px;
   color: dimgray;
   font-style: italic;
   float: right;
+}
+
+.none-text {
+  color: dimgray;
 }
 
 .header-brand-text {

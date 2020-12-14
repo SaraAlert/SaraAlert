@@ -524,6 +524,15 @@ class PatientsController < ApplicationController
     render json: { removeable: !duplicate_contact }
   end
 
+  # Check to see if a phone number has blocked SMS communications with SaraAlert
+  def sms_eligibility_check
+    redirect_to(root_url) && return unless current_user.can_edit_patient?
+
+    phone_number = params.require(:phone_number)
+    blocked = BlockedNumber.exists?(phone_number: phone_number)
+    render json: { sms_eligible: !blocked }
+  end
+
   # Construct a diff for a patient update to keep track of changes
   def patient_diff(patient_before, patient_after)
     diffs = []

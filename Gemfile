@@ -30,7 +30,6 @@ gem 'devise'
 gem 'devise-authy'
 gem 'devise-security'
 gem 'doorkeeper'
-gem 'rolify'
 
 # Better React integration
 gem 'react-rails'
@@ -62,6 +61,12 @@ gem 'roo'
 # Excel Export
 gem 'caxlsx'
 
+# Fast XML
+gem 'ox'
+
+# Zip support
+gem 'rubyzip'
+
 # Used for inline css before mailer
 gem 'premailer-rails'
 
@@ -91,6 +96,11 @@ gem 'fhir_models'
 
 # Split-arch queue support
 gem 'redis-queue'
+
+# JSON Patch and JSON Pointer implementation (using our fork of the gem)
+gem 'hana', '~> 1.3.7'
+# Auditing model changes
+gem 'audited'
 
 group :development, :test do
   gem 'brakeman'

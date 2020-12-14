@@ -14,7 +14,6 @@ class ConsumeAssessmentsJob < ApplicationJob
       begin
         message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array',
                                          'patient_submission_token', 'experiencing_symptoms', 'response_status')
-
         # Invalid message
         if message.nil?
           Rails.logger.info 'ConsumeAssessmentsJob: skipping nil message...'
@@ -22,10 +21,15 @@ class ConsumeAssessmentsJob < ApplicationJob
           next
         end
 
-        patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
+        if message['response_status'].in? %w[opt_out opt_in]
+          handle_opt_in_opt_out(message)
+          queue.commit
+          next
+        end
 
-        # Perform patient lookup for old submission tokens
+        patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
         if patient.nil?
+          # Perform patient lookup for old submission tokens if new submission token didn't resolve
           patient_lookup = PatientLookup.find_by(old_submission_token: message['patient_submission_token'])
           patient = Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
         end
@@ -97,10 +101,31 @@ class ConsumeAssessmentsJob < ApplicationJob
 
           queue.commit
           next
+        when 'max_retries_sms'
+          # Maximum amount of SMS response retries reached
+          History.contact_attempt(patient: patient, comment: "The system could not record a response because the monitoree exceeded the maximum number
+             of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
+          unless dependents.blank?
+            create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household
+              exceeded the maximum number of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
+          end
+          queue.commit
+          next
+        when 'max_retries_voice'
+          # Maximum amount of voice response retries reached
+          # nil out the last_reminder_sent field so the system will try sending another voice assessment
+          patient.update(last_assessment_reminder_sent: nil)
+          History.contact_attempt(patient: patient, comment: "The system could not record a response because the monitoree exceeded the maximum number
+            of daily report voice response retries via primary telephone number #{patient.primary_telephone}.")
+          unless dependents.blank?
+            create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household
+              exceeded the maximum number of daily report voice response retries via primary telephone number #{patient.primary_telephone}.")
+          end
+          queue.commit
+          next
         end
 
         threshold_condition = ThresholdCondition.where(type: 'ThresholdCondition').find_by(threshold_condition_hash: message['threshold_condition_hash'])
-
         # Invalid threshold condition hash
         if threshold_condition.nil?
           Rails.logger.info "ConsumeAssessmentsJob: skipping nil threshold (patient: #{patient.id}, hash: #{message['threshold_condition_hash']})..."
@@ -150,6 +175,51 @@ class ConsumeAssessmentsJob < ApplicationJob
   end
 
   private
+
+  def handle_opt_in_opt_out(message)
+    # When an opt_in or opt_out response_status is posted to us the patient_submission_token value is popuated with
+    # a flow execution id, this is because a monitoree may send STOP/START outside the context of an assessment and
+    # therefore the patient.submission_token will not be available. We get the responder associated with the opt_in
+    # or opt_out phone number by requesting the phone number who sent the message in the associated flow execution id
+    phone_numbers = TwilioSender.get_phone_numbers_from_flow_execution(message['patient_submission_token'])
+    return if phone_numbers.nil?
+
+    monitoree_number = Phonelib.parse(phone_numbers[:monitoree_number], 'US').full_e164
+    sara_number = phone_numbers[:sara_number]
+    # Handle BlockedNumber manipulation here in case no monitorees are associated with this number
+    BlockedNumber.create(phone_number: monitoree_number) if message['response_status'] == 'opt_out'
+    BlockedNumber.where(phone_number: monitoree_number).destroy_all if message['response_status'] == 'opt_in'
+    patients = Patient.responder_for_number(monitoree_number)
+    patients.uniq.each do |patient|
+      next if patient.nil?
+
+      # Get list of dependents excluding the patient itself.
+      dependents = patient.dependents_exclude_self
+
+      case message['response_status']
+      when 'opt_out'
+        # In cases of opt_in/opt_out the sara_number should always be available
+        sara_number ||= '<Number Unavailable>'
+        History.contact_attempt(patient: patient, comment: "The system will no longer be able to send an SMS to this monitoree #{patient.primary_telephone},
+          because the monitoree blocked communications with Sara Alert by sending a STOP keyword to #{sara_number}.")
+        unless dependents.blank?
+          create_contact_attempt_history_for_dependents(dependents, "The system will no longer be able to send an SMS to this monitoree's head of household
+            #{patient.primary_telephone}, because the head of household blocked communications with Sara Alert by sending a STOP keyword to #{sara_number}.")
+        end
+      when 'opt_in'
+        # In cases of opt_in/opt_out the sara_number should always be available
+        sara_number ||= '<Number Unavailable>'
+        History.contact_attempt(patient: patient, comment: "The system will now be able to send an SMS to this monitoree #{patient.primary_telephone},
+          because the monitoree re-enabled communications with Sara Alert by sending a START keyword to #{sara_number}.")
+
+        unless dependents.blank?
+          create_contact_attempt_history_for_dependents(dependents, "The system will now be able to send an SMS to this monitoree's head of household
+            #{patient.primary_telephone}, because the head of household re-enabled communications with Sara Alert by sending a START
+            keyword to #{sara_number}.")
+        end
+      end
+    end
+  end
 
   # Use the import method here to generate less SQL statements for a bulk insert of
   # dependent histories instead of 1 statement per dependent.

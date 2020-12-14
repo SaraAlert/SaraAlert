@@ -9,6 +9,7 @@ class Patient < ApplicationRecord
   include PatientDetailsHelper
   include ValidationHelper
   include ActiveModel::Validations
+  include FhirHelper
 
   columns.each do |column|
     case column.type
@@ -21,6 +22,7 @@ class Patient < ApplicationRecord
 
   validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
                                                   'Enrolled more than 14 days after last date of exposure (system)',
+                                                  'Enrolled more than 10 days after last date of exposure (system)',
                                                   'Enrolled on last day of monitoring period (system)',
                                                   'Completed Monitoring (system)',
                                                   'Meets Case Definition',
@@ -36,12 +38,10 @@ class Patient < ApplicationRecord
                                                   'Other',
                                                   nil, ''] }
 
-  validates :monitoring_plan, inclusion: { in: ['None',
-                                                'Daily active monitoring',
-                                                'Self-monitoring with public health supervision',
-                                                'Self-monitoring with delegated supervision',
-                                                'Self-observation',
-                                                nil, ''] }
+  validates :monitoring_plan, inclusion: {
+    in: VALID_ENUMS[:monitoring_plan],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[:monitoring_plan].reject(&:blank?).join("', '")}'"
+  }
 
   validates :exposure_risk_assessment, inclusion: { in: ['High',
                                                          'Medium',
@@ -54,7 +54,9 @@ class Patient < ApplicationRecord
      monitored_address_state
      preferred_contact_method
      preferred_contact_time
-     sex].each do |enum_field|
+     sex
+     primary_telephone_type
+     secondary_telephone_type].each do |enum_field|
     validates enum_field, on: :api, inclusion: {
       in: VALID_ENUMS[enum_field],
       message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
@@ -68,7 +70,10 @@ class Patient < ApplicationRecord
 
   %i[date_of_birth
      last_date_of_exposure
-     symptom_onset].each do |date_field|
+     symptom_onset
+     additional_planned_travel_start_date
+     date_of_departure
+     date_of_arrival].each do |date_field|
     validates date_field, on: :api, date: true
   end
 
@@ -107,6 +112,7 @@ class Patient < ApplicationRecord
   has_many :transfers
   has_many :laboratories
   has_many :close_contacts
+  has_many :contact_attempts
 
   before_save :set_time_zone_offset
   around_save :inform_responder, if: :responder_id_changed?
@@ -475,6 +481,20 @@ class Patient < ApplicationRecord
       non_reporting
     when 'Asymptomatic'
       asymptomatic
+    when 'Exposure Symptomatic'
+      exposure_symptomatic
+    when 'Exposure Non-Reporting'
+      exposure_non_reporting
+    when 'Exposure Asymptomatic'
+      exposure_asymptomatic
+    when 'Exposure PUI'
+      exposure_under_investigation
+    when 'Isolation Requiring Review'
+      isolation_requiring_review
+    when 'Isolation Non-Reporting'
+      isolation_non_reporting
+    when 'Isolation Reporting'
+      isolation_reporting
     end
   }
 
@@ -488,6 +508,8 @@ class Patient < ApplicationRecord
     case time_frame
     when 'Last 24 Hours'
       where('patients.created_at >= ?', 24.hours.ago)
+    when 'Last 7 Days'
+      where('patients.created_at >= ? AND patients.created_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('patients.created_at >= ? AND patients.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'
@@ -502,6 +524,8 @@ class Patient < ApplicationRecord
     case time_frame
     when 'Last 24 Hours'
       where('patients.closed_at >= ?', 24.hours.ago)
+    when 'Last 7 Days'
+      where('patients.closed_at >= ? AND patients.closed_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('patients.closed_at >= ? AND patients.closed_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'
@@ -663,6 +687,13 @@ class Patient < ApplicationRecord
   # Date when patient is expected to be purged
   def expected_purge_date
     (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822
+  end
+
+  # Determine if this patient's phone number has blocked communication with SaraAlert
+  def blocked_sms
+    return false if primary_telephone.nil?
+
+    BlockedNumber.exists?(phone_number: primary_telephone)
   end
 
   # Send initial enrollment notification via patient's preferred contact method
@@ -862,87 +893,7 @@ class Patient < ApplicationRecord
   # extensions for sex, race, and ethnicity.
   # https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-patient.html
   def as_fhir
-    FHIR::Patient.new(
-      meta: FHIR::Meta.new(lastUpdated: updated_at.strftime('%FT%T%:z')),
-      id: id,
-      active: monitoring,
-      name: [FHIR::HumanName.new(given: [first_name, middle_name].reject(&:blank?), family: last_name)],
-      telecom: [
-        primary_telephone ? FHIR::ContactPoint.new(system: 'phone', value: primary_telephone, rank: 1) : nil,
-        secondary_telephone ? FHIR::ContactPoint.new(system: 'phone', value: secondary_telephone, rank: 2) : nil,
-        email ? FHIR::ContactPoint.new(system: 'email', value: email, rank: 1) : nil
-      ].reject(&:nil?),
-      birthDate: date_of_birth&.strftime('%F'),
-      address: [
-        FHIR::Address.new(
-          line: [address_line_1, address_line_2].reject(&:blank?),
-          city: address_city,
-          district: address_county,
-          state: address_state,
-          postalCode: address_zip
-        )
-      ],
-      communication: [
-        language_coding(primary_language) ? FHIR::Patient::Communication.new(
-          language: FHIR::CodeableConcept.new(coding: [language_coding(primary_language)]),
-          preferred: interpretation_required
-        ) : nil
-      ].reject(&:nil?),
-      extension: [
-        us_core_race(white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander),
-        us_core_ethnicity(ethnicity),
-        us_core_birthsex(sex),
-        to_preferred_contact_method_extension(preferred_contact_method),
-        to_preferred_contact_time_extension(preferred_contact_time),
-        to_symptom_onset_date_extension(symptom_onset),
-        to_last_exposure_date_extension(last_date_of_exposure),
-        to_isolation_extension(isolation),
-        to_string_extension(jurisdiction.jurisdiction_path_string, 'full-assigned-jurisdiction-path')
-      ].reject(&:nil?)
-    )
-  end
-
-  # Create a hash of atttributes that corresponds to a Sara Alert Patient (and can be used to
-  # create new ones, or update existing ones), using the given FHIR::Patient.
-  def self.from_fhir(patient, default_jurisdiction_id)
-    {
-      monitoring: patient&.active.nil? ? false : patient.active,
-      first_name: patient&.name&.first&.given&.first,
-      middle_name: patient&.name&.first&.given&.second,
-      last_name: patient&.name&.first&.family,
-      primary_telephone: PatientHelper.from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.first&.value),
-      secondary_telephone: PatientHelper.from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value),
-      email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
-      date_of_birth: patient&.birthDate,
-      age: Patient.calc_current_age_fhir(patient&.birthDate),
-      address_line_1: patient&.address&.first&.line&.first,
-      address_line_2: patient&.address&.first&.line&.second,
-      address_city: patient&.address&.first&.city,
-      address_county: patient&.address&.first&.district,
-      address_state: patient&.address&.first&.state,
-      address_zip: patient&.address&.first&.postalCode,
-      monitored_address_line_1: patient&.address&.first&.line&.first,
-      monitored_address_line_2: patient&.address&.first&.line&.second,
-      monitored_address_city: patient&.address&.first&.city,
-      monitored_address_county: patient&.address&.first&.district,
-      monitored_address_state: patient&.address&.first&.state,
-      monitored_address_zip: patient&.address&.first&.postalCode,
-      primary_language: patient&.communication&.first&.language&.coding&.first&.display,
-      interpretation_required: patient&.communication&.first&.preferred,
-      white: PatientHelper.race_code?(patient, '2106-3'),
-      black_or_african_american: PatientHelper.race_code?(patient, '2054-5'),
-      american_indian_or_alaska_native: PatientHelper.race_code?(patient, '1002-5'),
-      asian: PatientHelper.race_code?(patient, '2028-9'),
-      native_hawaiian_or_other_pacific_islander: PatientHelper.race_code?(patient, '2076-8'),
-      ethnicity: PatientHelper.ethnicity(patient),
-      sex: PatientHelper.birthsex(patient),
-      preferred_contact_method: PatientHelper.from_preferred_contact_method_extension(patient),
-      preferred_contact_time: PatientHelper.from_preferred_contact_time_extension(patient),
-      symptom_onset: PatientHelper.from_symptom_onset_date_extension(patient),
-      last_date_of_exposure: PatientHelper.from_last_exposure_date_extension(patient),
-      isolation: PatientHelper.from_isolation_extension(patient),
-      jurisdiction_id: PatientHelper.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id)
-    }
+    patient_as_fhir(self)
   end
 
   # Override as_json to include linelist

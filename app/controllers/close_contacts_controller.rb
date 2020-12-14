@@ -16,6 +16,9 @@ class CloseContactsController < ApplicationController
                           contact_attempts: 0)
     cc.patient_id = params.permit(:patient_id)[:patient_id]
     cc.save
+    History.close_contact(patient: params.permit(:patient_id)[:patient_id],
+                          created_by: current_user.email,
+                          comment: "User added a new close contact (ID: #{cc.id}).")
   end
 
   # Update an existing close contact
@@ -29,5 +32,8 @@ class CloseContactsController < ApplicationController
               notes: params.permit(:notes)[:notes],
               contact_attempts: params.permit(:contact_attempts)[:contact_attempts])
     cc.save
+    History.close_contact_edit(patient: params.permit(:patient_id)[:patient_id],
+                               created_by: current_user.email,
+                               comment: "User edited a close contact (ID: #{cc.id}).")
   end
 end

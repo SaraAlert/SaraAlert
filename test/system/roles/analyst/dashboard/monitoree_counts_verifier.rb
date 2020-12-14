@@ -7,19 +7,13 @@ require_relative '../../../lib/system_test_utils'
 class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  RISK_LEVELS = %w[high medium low no_identified missing].freeze
+  WORKFLOWS = %w[exposure isolation].freeze
 
   def verify_monitoree_counts(analytic_id)
-    verify_monitoree_counts_by_monitoring_status(analytic_id, true)
     verify_monitoree_counts_by_age_group(analytic_id, true)
     verify_monitoree_counts_by_sex(analytic_id, true)
     verify_monitoree_counts_by_risk_factor(analytic_id, true)
     verify_monitoree_counts_by_exposure_country(analytic_id, true)
-  end
-
-  def verify_monitoree_counts_by_monitoring_status(analytic_id, active_monitoring)
-    element = find('h5', text: 'Monitoring Status by Risk Level Amongst Those Currently Under Active Monitoring').first(:xpath, './/..//div/table/tbody')
-    verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, 'Monitoring Status')
   end
 
   def verify_monitoree_counts_by_age_group(analytic_id, active_monitoring)
@@ -33,32 +27,30 @@ class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
   end
 
   def verify_monitoree_counts_by_risk_factor(analytic_id, active_monitoring)
-    element = find('h4', text: 'Exposure Risk Factors').first(:xpath, './/..//table/tbody')
+    element = find('h4', text: 'Risk Factors').first(:xpath, './/..//table/tbody')
     verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, 'Risk Factor')
   end
 
   def verify_monitoree_counts_by_exposure_country(analytic_id, active_monitoring)
-    element = find('div', class: 'h4', text: 'Country of Exposure').first(:xpath, './/..//..//table/tbody')
+    element = find('h4', text: 'Country of Exposure').first(:xpath, './/..//..//table/tbody')
     verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, 'Exposure Country')
   end
 
-  # rubocop:disable Lint/UnusedMethodArgument
   def verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, category_type)
     element.text.split('\n').each do |distribution_text|
       distribution = get_distributions(distribution_text)
-      # verify_counts(distribution, analytic_id, active_monitoring, category_type, distribution.fetch(:category))
+      verify_counts(distribution, analytic_id, active_monitoring, category_type, distribution.fetch(:category))
       validate_counts(distribution)
       validate_percentages(distribution)
     end
   end
-  # rubocop:enable Lint/UnusedMethodArgument
 
   def verify_counts(distribution, analytic_id, active_monitoring, category_type, category)
-    RISK_LEVELS.each do |risk_level|
-      count = distribution.fetch("#{risk_level}_count".to_sym)
-      expected_count = get_expected_count(analytic_id, active_monitoring, category_type, category, risk_level)
+    WORKFLOWS.each do |workflow|
+      count = distribution.fetch("#{workflow}_count".to_sym)
+      expected_count = get_expected_count(analytic_id, active_monitoring, category_type, category, workflow.capitalize)
       unless expected_count.nil?
-        err_msg = @@system_test_utils.get_err_msg('Monitoree count', "#{category_type} #{category} #{risk_level}", expected_count['total'])
+        err_msg = @@system_test_utils.get_err_msg('Monitoree count', "#{category_type} #{category} #{workflow}", expected_count['total'])
         assert_equal(expected_count['total'], count, err_msg)
       end
     end
@@ -66,7 +58,7 @@ class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
 
   def validate_counts(distribution)
     sum_of_counts = 0
-    RISK_LEVELS.each do |risk_level|
+    WORKFLOWS.each do |risk_level|
       sum_of_counts += distribution.fetch("#{risk_level}_count".to_sym)
     end
     assert_equal(sum_of_counts, distribution.fetch(:total_count), @@system_test_utils.get_err_msg('Monitoree count', 'sum of counts', sum_of_counts))
@@ -75,7 +67,7 @@ class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
   def validate_percentages(distribution)
     return unless distribution.key?(:total_percentage)
 
-    RISK_LEVELS.each do |risk_level|
+    WORKFLOWS.each do |risk_level|
       percentage = distribution.fetch("#{risk_level}_percentage".to_sym)
       assert_operator percentage, :>=, 0, err_msg_for_distribution_percentage(distribution, risk_level)
       assert_operator percentage, :<=, 100, err_msg_for_distribution_percentage(distribution, risk_level)
@@ -112,37 +104,23 @@ class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
   def get_distributions_without_percentages(elements)
     {
       category: elements[0],
-      high_count: elements[1].to_i,
-      medium_count: elements[2].to_i,
-      low_count: elements[3].to_i,
-      no_identified_count: elements[4].to_i,
-      missing_count: elements[5].to_i,
-      total_count: elements[6].to_i
+      exposure_count: elements[1].to_i,
+      isolation_count: elements[2].to_i,
+      total_count: elements[3].to_i
     }
   end
 
-  def get_expected_count(analytic_id, active_monitoring, category_type, category, risk_level)
+  def get_expected_count(analytic_id, active_monitoring, category_type, category, workflow)
     MonitoreeCount.where(analytic_id: analytic_id,
+                         status: workflow,
                          active_monitoring: active_monitoring,
                          category_type: category_type,
-                         category: category,
-                         risk_level: risk_level_label(risk_level)).first
+                         category: category).first
   end
 
   def err_msg_for_distribution_percentage(distribution, risk_level)
     @@system_test_utils.get_err_msg('Monitoree counts',
                                     "#{distribution.fetch('category'.to_sym)} #{risk_level} risk level percentage",
                                     'less than or equal to 100')
-  end
-
-  def risk_level_label(risk_level)
-    mapping = {
-      'high': 'High',
-      'medium': 'Medium',
-      'low': 'Low',
-      'no_identified': 'No Identified Risk',
-      'missing': 'Missing'
-    }
-    mapping.fetch(risk_level.to_sym)
   end
 end

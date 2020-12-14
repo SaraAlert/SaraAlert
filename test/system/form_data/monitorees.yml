@@ -9,11 +9,11 @@ monitoree_1:
     address_city: 'Linseyfort'
     address_state: 'Wyoming'
     address_zip: '81210-6722'
-  contact_info:
+  contact_information:
     preferred_contact_method: 'Telephone call'
     primary_telephone: '5555550111'
     primary_telephone_type: 'Plain Cell'
-  potential_exposure_info:
+  potential_exposure_information:
     last_date_of_exposure: '02/05/2020'
     jurisdiction_id: 'USA, State 1, County 1'
     assigned_user: '5'
@@ -50,7 +50,7 @@ monitoree_2:
     monitored_address_state: 'New York'
     monitored_address_zip: '12345'
     monitored_address_county: 'White Plains'
-  contact_info:
+  contact_information:
     preferred_contact_method: 'SMS Texted Weblink'
     preferred_contact_time: 'Morning'
     primary_telephone: '5555550112'
@@ -59,7 +59,7 @@ monitoree_2:
     secondary_telephone_type: 'Landline'
     email: 'carey@example.com'
     confirm_email: 'carey@example.com'
-  arrival_info:
+  arrival_information:
     port_of_origin: 'Ushashire'
     date_of_departure: '02/15/2020'
     source_of_report: 'CDC'
@@ -68,7 +68,7 @@ monitoree_2:
     port_of_entry_into_usa: 'Gusikowskishire'
     date_of_arrival: '02/16/2020'
     travel_related_notes: 'notes...'
-  additional_planned_travel:
+  planned_travel:
     additional_planned_travel_type: 'Domestic'
     additional_planned_travel_destination: 'Clarindaburgh'
     additional_planned_travel_destination_state: 'Massachusetts'
@@ -76,7 +76,7 @@ monitoree_2:
     additional_planned_travel_start_date: '03/10/2020'
     additional_planned_travel_end_date: '03/20/2020'
     additional_planned_travel_related_notes: 'more notes...'
-  potential_exposure_info:
+  potential_exposure_information:
     last_date_of_exposure: '02/25/2020'
     potential_exposure_location: 'Phebestad'
     potential_exposure_country: 'Guatemala'
@@ -106,11 +106,11 @@ monitoree_3:
     address_city: 'East Yer'
     address_state: 'Tennessee'
     address_zip: '43058'
-  contact_info:
+  contact_information:
     preferred_contact_method: 'E-mailed Web Link'
     email: 'monitoree_3@example.com'
     confirm_email: 'monitoree_3@example.com'
-  potential_exposure_info:
+  potential_exposure_information:
     last_date_of_exposure: '12/30/2019'
 monitoree_4:
   identification:
@@ -131,11 +131,11 @@ monitoree_4:
     foreign_monitored_address_line_2: '724 Ryan Squares'
     foreign_monitored_address_zip: '68039'
     foreign_monitored_address_county: 'Lake Bryant'
-  contact_info:
+  contact_information:
     preferred_contact_method: 'E-mailed Web Link'
     email: 'edda@example.com'
     confirm_email: 'edda@example.com'
-  additional_planned_travel:
+  planned_travel:
     additional_planned_travel_type: 'International'
     additional_planned_travel_destination: 'Kamalaton'
     additional_planned_travel_destination_country: 'Algeria'
@@ -143,7 +143,7 @@ monitoree_4:
     additional_planned_travel_start_date: '05/09/2020'
     additional_planned_travel_end_date: '05/30/2020'
     additional_planned_travel_related_notes: 'asdogihlawkefjionak'
-  potential_exposure_info:
+  potential_exposure_information:
     last_date_of_exposure: '12/30/2019'
     assigned_user: '9429'
 monitoree_5:
@@ -163,11 +163,11 @@ monitoree_5:
     address_city: 'New Luciusmouth'
     address_state: 'North Carolina'
     address_zip: '50099-6977'
-  contact_info:
+  contact_information:
     preferred_contact_method: 'SMS Text-message'
     primary_telephone: '5555550114'
     primary_telephone_type: 'Smartphone'
-  potential_exposure_info:
+  potential_exposure_information:
     last_date_of_exposure: '01/30/2020'
     contact_of_known_case: true
     contact_of_known_case_id: '9BIHOS2819'
@@ -202,7 +202,7 @@ monitoree_6:
     monitored_address_state: 'Maryland'
     monitored_address_zip: '91829'
     monitored_address_county: 'Sussex'
-  contact_info:
+  contact_information:
     preferred_contact_method: 'Telephone call'
     preferred_contact_time: 'Evening'
     primary_telephone: '5555550115'
@@ -211,7 +211,7 @@ monitoree_6:
     secondary_telephone_type: 'Plain Cell'
     email: 'roberta@example.com'
     confirm_email: 'roberta@example.com'
-  arrival_info:
+  arrival_information:
     port_of_origin: 'Teresiaport'
     date_of_departure: '03/01/2020'
     source_of_report: 'Self-Identified'
@@ -220,7 +220,7 @@ monitoree_6:
     port_of_entry_into_usa: 'Teddyborough'
     date_of_arrival: '03/02/2020'
     travel_related_notes: '938nasd fok3hf8oisdkm sfkl93hnk'
-  potential_exposure_info:
+  potential_exposure_information:
     last_date_of_exposure: '03/01/2020'
     potential_exposure_location: 'Sporertown'
     potential_exposure_country: 'Kuwait'
@@ -236,7 +236,7 @@ monitoree_7:
     last_name: 'Kirlin27'
     date_of_birth: '05/31/2016'
     sex: 'Male'
-  contact_info:
+  contact_information:
     confirm_email: 'roberta@example.com'
 monitoree_8:
   identification:
@@ -266,12 +266,12 @@ monitoree_10:
     address_state: 'North Dakota'
     address_zip: '33194-7675'
     address_county: 'Bergen'
-  contact_info:
+  contact_information:
     preferred_contact_method: 'Telephone call'
     preferred_contact_time: 'Afternoon'
     primary_telephone: '5555550117'
     primary_telephone_type: 'Landline'
-  potential_exposure_info:
+  potential_exposure_information:
     last_date_of_exposure: '01/31/2020'
 monitoree_11:
   identification:
@@ -285,12 +285,12 @@ monitoree_11:
     address_state: 'North Dakota'
     address_zip: '33194-7675'
     address_county: 'Bergen'
-  contact_info:
+  contact_information:
     preferred_contact_method: 'Telephone call'
     preferred_contact_time: 'Evening'
     primary_telephone: '5555550118'
     primary_telephone_type: 'Landline'
-  potential_exposure_info:
+  potential_exposure_information:
     last_date_of_exposure: '01/31/2020'
     exposure_risk_assessment: 'Low'
     monitoring_plan: 'Self-monitoring with public health supervision'
@@ -340,7 +340,7 @@ monitoree_12:
     foreign_monitored_address_line_2: '724 Ryan Squares'
     foreign_monitored_address_zip: '68039'
     foreign_monitored_address_county: 'Lake Bryant'
-  contact_info:
+  contact_information:
     preferred_contact_method: 'SMS Texted Weblink'
     preferred_contact_time: 'Afternoon'
     primary_telephone: '5555550121'
@@ -349,7 +349,7 @@ monitoree_12:
     secondary_telephone_type: 'Landline'
     email: 'carey@example.com'
     confirm_email: 'carey@example.com'
-  arrival_info:
+  arrival_information:
     port_of_origin: 'Ushashire'
     date_of_departure: '02/15/2020'
     source_of_report: 'CDC'
@@ -358,7 +358,7 @@ monitoree_12:
     port_of_entry_into_usa: 'Gusikowskishire'
     date_of_arrival: '02/16/2020'
     travel_related_notes: 'notes...'
-  additional_planned_travel:
+  planned_travel:
     additional_planned_travel_type: 'Domestic'
     additional_planned_travel_destination: 'Clarindaburgh'
     additional_planned_travel_destination_state: 'Massachusetts'
@@ -366,7 +366,7 @@ monitoree_12:
     additional_planned_travel_start_date: '03/10/2020'
     additional_planned_travel_end_date: '03/20/2020'
     additional_planned_travel_related_notes: 'more notes...'
-  potential_exposure_info:
+  potential_exposure_information:
     last_date_of_exposure: '02/25/2020'
     potential_exposure_location: 'Phebestad'
     potential_exposure_country: 'Guatemala'
@@ -381,16 +381,16 @@ monitoree_12:
     monitoring_plan: 'Self-observation'
     exposure_notes: 'notes...'
 monitoree_13:
-  potential_exposure_info:
+  potential_exposure_information:
     jurisdiction_id: 'USA, State 2, County 3'
 monitoree_14:
-  potential_exposure_info:
+  potential_exposure_information:
     jurisdiction_id: 'USA, State 2, County 4'
     update_group_member_jurisdiction_id: true
 monitoree_15:
-  potential_exposure_info:
+  potential_exposure_information:
     assigned_user: '5'
 monitoree_16:
-  potential_exposure_info:
+  potential_exposure_information:
     assigned_user: '6'
     update_group_member_assigned_user: true

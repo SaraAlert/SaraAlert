@@ -82,7 +82,7 @@ class SystemTestUtils < ApplicationSystemTestCase
 
   def get_patient_by_label(patient_label)
     return Patient.where(id: PATIENTS[patient_label]['id']).first if PATIENTS[patient_label]
-    return Patient.where(email: MONITOREES[patient_label]['contact_info']['email']).first if MONITOREES[patient_label]
+    return Patient.where(email: MONITOREES[patient_label]['contact_information']['email']).first if MONITOREES[patient_label]
   end
 
   def get_patient_display_name(patient_label)

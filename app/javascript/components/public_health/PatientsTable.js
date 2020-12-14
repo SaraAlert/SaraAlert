@@ -83,6 +83,7 @@ class PatientsTable extends React.Component {
         search: '',
         page: 0,
         entries: 25,
+        tz_offset: new Date().getTimezoneOffset(),
       },
       entryOptions: [10, 15, 25, 50, 100],
       cancelToken: axios.CancelToken.source(),
@@ -148,6 +149,9 @@ class PatientsTable extends React.Component {
       localStorage.removeItem(`SaraPage`);
       localStorage.removeItem(`SaraEntries`);
       localStorage.removeItem(`SaraSearch`);
+      localStorage.removeItem(`SaraJurisdiction`);
+      localStorage.removeItem(`SaraAssignedUser`);
+      localStorage.removeItem(`SaraScope`);
       location.reload();
       this.setState({ filter: null });
     }
@@ -598,6 +602,7 @@ class PatientsTable extends React.Component {
                 handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
                 handleSelect={this.handleSelect}
                 handleEntriesChange={this.handleEntriesChange}
+                isSelectable={true}
                 isEditable={false}
                 isLoading={this.state.loading}
                 page={this.state.query.page}

@@ -1,12 +1,13 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Button, ButtonGroup, ToggleButton, Row, Col, Form, Modal, OverlayTrigger, Tooltip, Dropdown } from 'react-bootstrap';
 import Select, { components } from 'react-select';
+import ReactTooltip from 'react-tooltip';
 import { ToastContainer, toast } from 'react-toastify';
 import moment from 'moment-timezone';
-import confirmDialog from '../util/ConfirmDialog';
 import axios from 'axios';
+import confirmDialog from '../util/ConfirmDialog';
 import DateInput from '../util/DateInput';
-import { PropTypes } from 'prop-types';
 import supportedLanguages from '../../data/supportedLanguages.json';
 
 class AdvancedFilter extends React.Component {
@@ -38,7 +39,19 @@ class AdvancedFilter extends React.Component {
           type: 'option',
           options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', ''],
         },
-        { name: 'latest-report', title: 'Latest Report (Date picker)', description: 'Monitorees with latest report during specified date range', type: 'date' },
+        {
+          name: 'latest-report',
+          title: 'Latest Report (Date)',
+          description: 'Monitorees with latest report during specified date range',
+          type: 'date',
+        },
+        {
+          name: 'latest-report-relative',
+          title: 'Latest Report (Relative Date)',
+          description: 'Monitorees with latest report during specified date range (relative to the current date)',
+          type: 'relative',
+          hasTimestamp: true,
+        },
         { name: 'hoh', title: 'Daily Reporters (Boolean)', description: 'Monitorees that are a Head of Household or self-reporter', type: 'boolean' },
         {
           name: 'household-member',
@@ -46,18 +59,44 @@ class AdvancedFilter extends React.Component {
           description: 'Monitorees that are in a household but not the Head of Household',
           type: 'boolean',
         },
-        { name: 'enrolled', title: 'Enrolled (Date picker)', description: 'Monitorees enrolled in system during specified date range', type: 'date' },
+        {
+          name: 'enrolled',
+          title: 'Enrolled (Date)',
+          description: 'Monitorees enrolled in system during specified date range',
+          type: 'date',
+        },
+        {
+          name: 'enrolled-relative',
+          title: 'Enrolled (Relative Date)',
+          description: 'Monitorees enrolled in system during specified date range (relative to the current date)',
+          type: 'relative',
+          hasTimestamp: true,
+        },
         {
           name: 'last-date-exposure',
-          title: 'Last date of exposure (Date picker)',
+          title: 'Last Date of Exposure (Date)',
           description: 'Monitorees who have a last date of exposure during specified date range',
           type: 'date',
         },
         {
+          name: 'last-date-exposure-relative',
+          title: 'Last Date of Exposure (Relative Date)',
+          description: 'Monitorees who have a last date of exposure during specified date range (relative to the current date)',
+          type: 'relative',
+          hasTimestamp: false,
+        },
+        {
           name: 'symptom-onset',
-          title: 'Symptom onset (Date picker)',
+          title: 'Symptom Onset (Date)',
           description: 'Monitorees who have a symptom onset date during specified date range',
           type: 'date',
+        },
+        {
+          name: 'symptom-onset-relative',
+          title: 'Symptom Onset (Relative Date)',
+          description: 'Monitorees who have a symptom onset date during specified date range (relative to the current date)',
+          type: 'relative',
+          hasTimestamp: false,
         },
         { name: 'continous-exposure', title: 'Continuous Exposure (Boolean)', description: 'Monitorees who have continuous exposure enabled', type: 'boolean' },
         {
@@ -142,6 +181,7 @@ class AdvancedFilter extends React.Component {
           title: 'Manual Contact Attempts (Number)',
           description: 'All records with the specified number of manual contact attempts',
           type: 'number',
+          options: ['Successful', 'Unsuccessful', 'All'],
         },
       ],
       savedFilters: [],
@@ -243,10 +283,21 @@ class AdvancedFilter extends React.Component {
     } else if (filterOption.type === 'option') {
       value = filterOption.options[0];
     } else if (filterOption.type === 'number') {
-      value = 0;
+      value = {
+        number: 0,
+        operator: 'equal',
+        option: filterOption.options ? filterOption.options[0] : null,
+      };
     } else if (filterOption.type === 'date') {
       // Default to "within" type
-      value = { start: moment().add(-72, 'hours'), end: moment() };
+      value = {
+        start: moment()
+          .add(-72, 'hours')
+          .format('YYYY-MM-DD'),
+        end: moment().format('YYYY-MM-DD'),
+      };
+    } else if (filterOption.type === 'relative') {
+      value = { number: 1, unit: 'days', when: 'past' };
     } else if (filterOption.type === 'search') {
       value = '';
     }
@@ -255,28 +306,33 @@ class AdvancedFilter extends React.Component {
       filterOption,
       value,
       dateOption: filterOption.type === 'date' ? 'within' : null,
-      operatorOption: filterOption.type === 'number' ? 'equal' : null,
+      relativeOption: filterOption.type === 'relative' ? 'today' : null,
     };
     this.setState({ activeFilterOptions });
   };
 
-  // Change an index filter option for date
+  // Change an index filter option for type date
   changeFilterDateOption = (index, value) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     let defaultValue = null;
     if (value === 'within') {
-      defaultValue = { start: moment().add(-72, 'hours'), end: moment() };
+      defaultValue = {
+        start: moment()
+          .add(-72, 'hours')
+          .format('YYYY-MM-DD'),
+        end: moment().format('YYYY-MM-DD'),
+      };
     } else {
-      defaultValue = moment();
+      defaultValue = moment().format('YYYY-MM-DD');
     }
     activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: defaultValue, dateOption: value };
     this.setState({ activeFilterOptions });
   };
 
-  // Change an index filter option for number
-  changeFilterOperatorOption = (index, value, operatorOption) => {
+  // Change the relative filter option for type relative date
+  changeFilterRelativeOption = (index, value, relativeOption) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
-    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: value, operatorOption: operatorOption };
+    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: value, relativeOption: relativeOption };
     this.setState({ activeFilterOptions });
   };
 
@@ -424,21 +480,72 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // Render number specific options
-  renderOperatorOptions = (current, index, value) => {
+  // Render relative date specific options
+  renderRelativeOptions = (current, index, value) => {
     return (
       <Form.Control
         as="select"
         value={current}
         onChange={event => {
-          this.changeFilterOperatorOption(index, value, event.target.value);
+          this.changeFilterRelativeOption(index, value, event.target.value);
         }}>
-        <option value="less-than">{'less than'}</option>
-        <option value="less-than-equal">{'less than or equal to'}</option>
-        <option value="equal">{'equal to'}</option>
-        <option value="greater-than-equal">{'greater than or equal to'}</option>
-        <option value="greater-than">{'greater than'}</option>
+        <option value="today">today</option>
+        <option value="tomorrow">tomorrow</option>
+        <option value="yesterday">yesterday</option>
+        <option value="custom">more...</option>
       </Form.Control>
+    );
+  };
+
+  renderRelativeTooltip = (filter, value, index) => {
+    const tooltipId = `${filter.name}-${index}`;
+    const filterName = filter.title.replace(' (Relative Date)', '');
+    let rangeString, start, end;
+
+    // set variables for date options including a time stamp
+    if (filter.hasTimestamp) {
+      if (value.when === 'past') {
+        rangeString = 'dated through today’s date';
+        start = moment()
+          .subtract(value.number, value.unit)
+          .format('MM/DD/YY');
+        end = 'now';
+      } else {
+        rangeString = 'with today’s date as of the current time';
+        start = 'now';
+        end = moment()
+          .add(value.number, value.unit)
+          .format('MM/DD/YY');
+      }
+    }
+
+    // set variables for date options without a timestamp
+    else {
+      if (value.when === 'past') {
+        rangeString = 'dated through today’s date';
+        start = moment()
+          .subtract(value.number, value.unit)
+          .format('MM/DD/YY');
+        end = moment().format('MM/DD/YY');
+      } else {
+        rangeString = 'with today’s date';
+        start = moment().format('MM/DD/YY');
+        end = moment()
+          .add(value.number, value.unit)
+          .format('MM/DD/YY');
+      }
+    }
+
+    const statement = `${filterName} “${value.when}” relative date periods include records ${rangeString}.  The current setting of "${value.when}  ${value.number} ${value.unit}" will return records with ${filterName} date from ${start} through ${end}.`;
+    return (
+      <div style={{ display: 'inline' }}>
+        <span data-for={tooltipId} data-tip="" className="ml-1 tooltip-af">
+          <i className="fas fa-question-circle px-0"></i>
+        </span>
+        <ReactTooltip id={tooltipId} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container">
+          <span>{statement}</span>
+        </ReactTooltip>
+      </div>
     );
   };
 
@@ -488,7 +595,7 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render a single line "statement"
-  renderStatement = (filterOption, value, index, total, dateOption, operatorOption) => {
+  renderStatement = (filterOption, value, index, total, dateOption, relativeOption) => {
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
@@ -502,11 +609,6 @@ class AdvancedFilter extends React.Component {
           <Col className="py-0" md="9">
             {this.renderOptions(filterOption?.name, index)}
           </Col>
-          {filterOption?.type === 'date' && (
-            <Col className="py-0" md="3">
-              {this.renderDateOptions(dateOption, index)}
-            </Col>
-          )}
           <Col className="py-0">
             {filterOption?.type === 'boolean' && (
               <ButtonGroup toggle>
@@ -554,71 +656,173 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'number' && (
               <Form.Group className="py-0 my-0">
                 <Row>
-                  <Col md="auto">{this.renderOperatorOptions(operatorOption, index, value)}</Col>
-                  <Col>
+                  {filterOption?.options && (
+                    // specific dropdown for filters with number type but require additional options
+                    <Col md="8">
+                      <Form.Control
+                        as="select"
+                        value={value?.option}
+                        onChange={event =>
+                          this.changeValue(index, {
+                            number: value?.number,
+                            operator: value?.operator,
+                            option: event?.target?.value,
+                          })
+                        }>
+                        {filterOption.options.map((option, op_index) => {
+                          return (
+                            <option key={index + 'opkeyop-f' + op_index} value={option}>
+                              {option}
+                            </option>
+                          );
+                        })}
+                      </Form.Control>
+                    </Col>
+                  )}
+                  <Col md="12">
+                    <Form.Control
+                      as="select"
+                      value={value?.operator}
+                      onChange={event =>
+                        this.changeValue(index, {
+                          number: value?.number,
+                          operator: event?.target?.value,
+                          option: value?.option,
+                        })
+                      }>
+                      <option value="less-than">{'less than'}</option>
+                      <option value="less-than-equal">{'less than or equal to'}</option>
+                      <option value="equal">{'equal to'}</option>
+                      <option value="greater-than-equal">{'greater than or equal to'}</option>
+                      <option value="greater-than">{'greater than'}</option>
+                    </Form.Control>
+                  </Col>
+                  <Col md="4">
                     <Form.Control
                       className="form-control-number"
-                      value={value}
+                      value={value?.number}
                       type="number"
                       min="0"
-                      onChange={event => this.changeValue(index, event.target.value)}
+                      onChange={event =>
+                        this.changeValue(index, {
+                          number: event?.target?.value,
+                          operator: value?.operator,
+                          option: value?.option,
+                        })
+                      }
                     />
                   </Col>
                 </Row>
               </Form.Group>
             )}
-            {filterOption?.type === 'date' && dateOption != 'within' && (
-              <Form.Group className="py-0 my-0">
-                <DateInput
-                  date={value}
-                  onChange={date => {
-                    this.changeValue(index, date);
-                  }}
-                  placement="bottom"
-                  customClass="form-control-md"
-                  minDate={'1900-01-01'}
-                  maxDate={moment()
-                    .add(2, 'years')
-                    .format('YYYY-MM-DD')}
-                />
-              </Form.Group>
+            {filterOption?.type === 'date' && (
+              <Row>
+                <Col className="py-0" md="6">
+                  {this.renderDateOptions(dateOption, index)}
+                </Col>
+                {dateOption !== 'within' && (
+                  <Col className="py-0">
+                    <Form.Group className="py-0 my-0">
+                      <DateInput
+                        date={value}
+                        onChange={date => {
+                          this.changeValue(index, date);
+                        }}
+                        placement="bottom"
+                        customClass="form-control-md"
+                        minDate={'1900-01-01'}
+                        maxDate={moment()
+                          .add(2, 'years')
+                          .format('YYYY-MM-DD')}
+                      />
+                    </Form.Group>
+                  </Col>
+                )}
+                {dateOption === 'within' && (
+                  <React.Fragment>
+                    <Col className="pr-0" md="8">
+                      <Form.Group className="py-0 my-0">
+                        <DateInput
+                          date={value.start}
+                          onChange={date => {
+                            this.changeValue(index, { start: date, end: value.end });
+                          }}
+                          placement="bottom"
+                          customClass="form-control-md"
+                          minDate={'1900-01-01'}
+                          maxDate={moment()
+                            .add(2, 'years')
+                            .format('YYYY-MM-DD')}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col className="py-0 px-0 text-center my-auto" md="2">
+                      <b>TO</b>
+                    </Col>
+                    <Col className="pl-0" md="8">
+                      <Form.Group className="py-0 my-0">
+                        <DateInput
+                          date={value.end}
+                          onChange={date => {
+                            this.changeValue(index, { start: value.start, end: date });
+                          }}
+                          placement="bottom"
+                          customClass="form-control-md"
+                          minDate={'1900-01-01'}
+                          maxDate={moment()
+                            .add(2, 'years')
+                            .format('YYYY-MM-DD')}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </React.Fragment>
+                )}
+              </Row>
             )}
-            {filterOption?.type === 'date' && dateOption === 'within' && (
-              <Form.Group className="py-0 my-0">
-                <Row>
-                  <Col className="pr-0">
-                    <DateInput
-                      date={value.start}
-                      onChange={date => {
-                        this.changeValue(index, { start: date, end: value.end });
-                      }}
-                      placement="bottom"
-                      customClass="form-control-md"
-                      minDate={'1900-01-01'}
-                      maxDate={moment()
-                        .add(2, 'years')
-                        .format('YYYY-MM-DD')}
-                    />
-                  </Col>
-                  <Col className="py-0 px-0 text-center my-auto" md="2">
-                    <b>TO</b>
-                  </Col>
-                  <Col className="pl-0">
-                    <DateInput
-                      date={value.end}
-                      onChange={date => {
-                        this.changeValue(index, { start: value.start, end: date });
-                      }}
-                      placement="bottom"
-                      customClass="form-control-md"
-                      minDate={'1900-01-01'}
-                      maxDate={moment()
-                        .add(2, 'years')
-                        .format('YYYY-MM-DD')}
-                    />
-                  </Col>
-                </Row>
-              </Form.Group>
+            {filterOption?.type === 'relative' && (
+              <Row>
+                <Col className="py-0" md="7">
+                  {this.renderRelativeOptions(relativeOption, index, value)}
+                </Col>
+                {relativeOption === 'custom' && (
+                  <React.Fragment>
+                    <Col md="6" className="pr-0">
+                      <Form.Control
+                        as="select"
+                        value={value.when}
+                        onChange={event => {
+                          this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
+                        }}>
+                        <option value="past">in the past</option>
+                        <option value="next">in the next</option>
+                      </Form.Control>
+                    </Col>
+                    <Col md="4" className="pr-0">
+                      <Form.Control
+                        value={value.number}
+                        type="number"
+                        min="1"
+                        onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
+                      />
+                    </Col>
+                    <Col md="5" className="pr-0">
+                      <Form.Control
+                        as="select"
+                        value={value.unit}
+                        onChange={event => {
+                          this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
+                        }}>
+                        <option value="days">day(s)</option>
+                        <option value="weeks">week(s)</option>
+                        <option value="months">month(s)</option>
+                      </Form.Control>
+                    </Col>
+                    <Col md="2" className="text-center my-auto">
+                      {this.renderRelativeTooltip(filterOption, value, index)}
+                    </Col>
+                  </React.Fragment>
+                )}
+              </Row>
             )}
             {filterOption?.type === 'search' && (
               <Form.Group className="py-0 my-0">
@@ -704,7 +908,7 @@ class AdvancedFilter extends React.Component {
                 index,
                 this.state.activeFilterOptions?.length,
                 statement.dateOption,
-                statement.operatorOption
+                statement.relativeOption
               );
             })}
             <Row className="pt-2 pb-1">

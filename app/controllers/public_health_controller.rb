@@ -6,7 +6,7 @@ class PublicHealthController < ApplicationController
   before_action :authenticate_user_role
 
   def patients
-    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :filter)
+    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :filter, :tz_offset)
 
     # Validate workflow param
     workflow = permitted_params.require(:workflow).to_sym
@@ -68,15 +68,17 @@ class PublicHealthController < ApplicationController
 
     # Filter by advanced filter (if present)
     if params[:filter].present?
+      tz_offset = permitted_params.require(:tz_offset)
+
       advanced = params.require(:filter).collect do |filter|
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
           value: filter.permit(:value)[:value] || filter.require(:value) || false,
           dateOption: filter.permit(:dateOption)[:dateOption],
-          operatorOption: filter.permit(:operatorOption)[:operatorOption]
+          relativeOption: filter.permit(:relativeOption)[:relativeOption]
         }
       end
-      patients = advanced_filter(patients, advanced) unless advanced.nil?
+      patients = advanced_filter(patients, advanced, tz_offset) unless advanced.nil?
     end
 
     # Sort
@@ -280,8 +282,7 @@ class PublicHealthController < ApplicationController
     %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
   end
 
-  # rubocop:disable Metrics/MethodLength
-  def advanced_filter(patients, filters)
+  def advanced_filter(patients, filters, tz_offset)
     filters.each do |filter|
       case filter[:filterOption]['name']
       when 'sent-today'
@@ -302,19 +303,6 @@ class PublicHealthController < ApplicationController
         patients = patients.where(monitoring: filter[:value].present? ? true : [nil, false])
       when 'preferred-contact-method'
         patients = patients.where(preferred_contact_method: filter[:value].blank? ? [nil, ''] : filter[:value])
-      when 'latest-report'
-        case filter[:dateOption]
-        when 'before'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(latest_assessment_at) < ?', compare_date)
-        when 'after'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(latest_assessment_at) > ?', compare_date)
-        when 'within'
-          compare_date_start = Chronic.parse(filter[:value][:start])
-          compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('Date(latest_assessment_at) > ?', compare_date_start).where('Date(latest_assessment_at) < ?', compare_date_end)
-        end
       when 'hoh'
         patients = if filter[:value]
                      patients.where('patients.id = patients.responder_id')
@@ -328,44 +316,21 @@ class PublicHealthController < ApplicationController
                      patients.where('patients.id = patients.responder_id')
                    end
       when 'enrolled'
-        case filter[:dateOption]
-        when 'before'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(patients.created_at) < ?', compare_date)
-        when 'after'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(patients.created_at) > ?', compare_date)
-        when 'within'
-          compare_date_start = Chronic.parse(filter[:value][:start])
-          compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('Date(patients.created_at) > ?', compare_date_start).where('Date(patients.created_at) < ?', compare_date_end)
-        end
+        patients = advanced_filter_date(patients, :created_at, filter, tz_offset, :time)
+      when 'enrolled-relative'
+        patients = advanced_filter_relative_date(patients, :created_at, filter, tz_offset, :time)
+      when 'latest-report'
+        patients = advanced_filter_date(patients, :latest_assessment_at, filter, tz_offset, :time)
+      when 'latest-report-relative'
+        patients = advanced_filter_relative_date(patients, :latest_assessment_at, filter, tz_offset, :time)
       when 'last-date-exposure'
-        case filter[:dateOption]
-        when 'before'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(last_date_of_exposure) < ?', compare_date)
-        when 'after'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(last_date_of_exposure) > ?', compare_date)
-        when 'within'
-          compare_date_start = Chronic.parse(filter[:value][:start])
-          compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('Date(last_date_of_exposure) > ?', compare_date_start).where('Date(last_date_of_exposure) < ?', compare_date_end)
-        end
+        patients = advanced_filter_date(patients, :last_date_of_exposure, filter, tz_offset, :date)
+      when 'last-date-exposure-relative'
+        patients = advanced_filter_relative_date(patients, :last_date_of_exposure, filter, tz_offset, :date)
       when 'symptom-onset'
-        case filter[:dateOption]
-        when 'before'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(symptom_onset) < ?', compare_date)
-        when 'after'
-          compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('Date(symptom_onset) > ?', compare_date)
-        when 'within'
-          compare_date_start = Chronic.parse(filter[:value][:start])
-          compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('Date(symptom_onset) > ?', compare_date_start).where('Date(symptom_onset) < ?', compare_date_end)
-        end
+        patients = advanced_filter_date(patients, :symptom_onset, filter, tz_offset, :date)
+      when 'symptom-onset-relative'
+        patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_offset, :date)
       when 'continous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
       when 'telephone-number'
@@ -459,23 +424,83 @@ class PublicHealthController < ApplicationController
       when 'preferred-contact-time'
         patients = patients.where(preferred_contact_time: filter[:value].blank? ? [nil, ''] : filter[:value])
       when 'manual-contact-attempts'
-        case filter[:operatorOption]
-        when 'less-than'
-          patients = patients.where('contact_attempts < ?', filter[:value])
-        when 'less-than-equal'
-          patients = patients.where('contact_attempts <= ?', filter[:value])
-        when 'equal'
-          patients = patients.where('contact_attempts = ?', filter[:value])
-        when 'greater-than-equal'
-          patients = patients.where('contact_attempts >= ?', filter[:value])
-        when 'greater-than'
-          patients = patients.where('contact_attempts > ?', filter[:value])
+        # less/greater-than operators are flipped for where_assoc_count
+        operator = :==
+        operator = :> if filter[:value][:operator] == 'less-than'
+        operator = :>= if filter[:value][:operator] == 'less-than-equal'
+        operator = :<= if filter[:value][:operator] == 'greater-than-equal'
+        operator = :< if filter[:value][:operator] == 'greater-than'
+        case filter[:value][:option]
+        when 'Successful'
+          patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts, successful: true)
+        when 'Unsuccessful'
+          patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts, successful: false)
+        when 'All'
+          patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts)
         end
       end
     end
     patients
   end
-  # rubocop:enable Metrics/MethodLength
+
+  # Filter patients by a set time range for the given field
+  def advanced_filter_date(patients, field, filter, tz_offset, type)
+    timeframe = { after: Chronic.parse(filter[:value]).beginning_of_day + 1.day } if filter[:dateOption] == 'after'
+    timeframe = { before: Chronic.parse(filter[:value]).end_of_day - 1.day } if filter[:dateOption] == 'before'
+    if filter[:dateOption] == 'within'
+      timeframe = { after: Chronic.parse(filter[:value][:start]).beginning_of_day, before: Chronic.parse(filter[:value][:end]).end_of_day }
+    end
+
+    patients_by_field_timeframe(patients, field, timeframe, tz_offset, type)
+  end
+
+  # Filter patients by a relative time range for the given field
+  def advanced_filter_relative_date(patients, field, filter, tz_offset, type)
+    timeframe = { after: DateTime.now.beginning_of_day, before: DateTime.now.end_of_day } if filter[:relativeOption] == 'today'
+    timeframe = { after: DateTime.now.beginning_of_day + 1.day, before: DateTime.now.end_of_day + 1.day } if filter[:relativeOption] == 'tomorrow'
+    timeframe = { after: DateTime.now.beginning_of_day - 1.day, before: DateTime.now.end_of_day - 1.day } if filter[:relativeOption] == 'yesterday'
+    if filter[:relativeOption] == 'custom'
+      timespan = filter[:value][:number].to_i.days if filter[:value][:unit] == 'days'
+      timespan = filter[:value][:number].to_i.weeks if filter[:value][:unit] == 'weeks'
+      timespan = filter[:value][:number].to_i.months if filter[:value][:unit] == 'months'
+      return patients if timespan.nil?
+
+      timeframe = { after: timespan.ago.beginning_of_day, before: DateTime.now } if filter[:value][:when] == 'past'
+      timeframe = { after: DateTime.now, before: timespan.from_now.end_of_day } if filter[:value][:when] == 'next'
+    end
+    return patients if timeframe.nil?
+
+    patients_by_field_timeframe(patients, field, timeframe, tz_offset, type)
+  end
+
+  def patients_by_field_timeframe(patients, field, timeframe, tz_offset, type)
+    # Adjust for difference between client and server timezones.
+    # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
+    # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
+    tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
+
+    if timeframe[:after].present?
+      # Convert timeframe value to date if field is a date, apply timezone difference if field is a datetime
+      after = timeframe[:after] - tz_diff
+      after = after.to_date if type == :date
+      patients = patients.where('patients.created_at >= ?', after) if field == :created_at
+      patients = patients.where('latest_assessment_at >= ?', after) if field == :latest_assessment_at
+      patients = patients.where('last_date_of_exposure >= ?', after) if field == :last_date_of_exposure
+      patients = patients.where('symptom_onset >= ?', after) if field == :symptom_onset
+    end
+
+    if timeframe[:before].present?
+      # Convert timeframe value to date if field is a date, apply timezone difference if field is a datetime
+      before = timeframe[:before] - tz_diff
+      before = before.to_date if type == :date
+      patients = patients.where('patients.created_at <= ?', before) if field == :created_at
+      patients = patients.where('latest_assessment_at <= ?', before) if field == :latest_assessment_at
+      patients = patients.where('last_date_of_exposure <= ?', before) if field == :last_date_of_exposure
+      patients = patients.where('symptom_onset <= ?', before) if field == :symptom_onset
+    end
+
+    patients
+  end
 
   private
 

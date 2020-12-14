@@ -13,12 +13,6 @@ class HistoriesController < ApplicationController
                     comment: params.permit(:comment)[:comment],
                     history_type: params.permit(:type)[:type] || 'Comment')
 
-    # Increment number of contact attempts if applicable
-    if params.permit(:type)[:type] == 'Contact Attempt'
-      patient = current_user.patients.find(params.permit(:patient_id)[:patient_id])
-      patient&.increment!(:contact_attempts)
-    end
-
     redirect_back fallback_location: root_path
   end
 end

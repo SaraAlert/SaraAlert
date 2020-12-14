@@ -128,7 +128,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
     patient_ids = patients.pluck(:id)
 
-    assessments = xlsx_assessments.sheet('Assessments')
+    assessments = xlsx_assessments.sheet('Reports')
     symptom_labels = Patient.where(id: patient_ids)
                             .joins(assessments: [{ reported_condition: :symptoms }])
                             .select('symptoms.label')
@@ -137,7 +137,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
                             .sort
     assessment_headers = ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
     assessment_headers.each_with_index do |header, col|
-      assert_equal(header, assessments.cell(1, col + 1), "For header: #{header} in Assessments")
+      assert_equal(header, assessments.cell(1, col + 1), "For header: #{header} in Reports")
     end
     assessment_row = 0
     patients.joins(assessments: [{ reported_condition: :symptoms }])
@@ -149,7 +149,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
                 symptoms_arr = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s || '' }
                 assessment_summary_arr.concat(symptoms_arr).each_with_index do |value, col|
                   cell_value = assessments.cell(assessment_row + 2, col + 1)
-                  assert_equal(value.to_s, cell_value || '', "For field: #{assessment_headers[col]} in Assessments")
+                  assert_equal(value.to_s, cell_value || '', "For field: #{assessment_headers[col]} in Reports")
                 end
                 assessment_row += 1
               end

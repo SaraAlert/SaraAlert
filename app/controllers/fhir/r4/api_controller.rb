@@ -3,6 +3,7 @@
 # ApiController: API for interacting with Sara Alert
 class Fhir::R4::ApiController < ActionController::API
   include ValidationHelper
+  include FhirHelper
   include ActionController::MimeResponds
   before_action :cors_headers
   before_action only: %i[create update] do
@@ -77,12 +78,19 @@ class Fhir::R4::ApiController < ActionController::API
   #
   # PUT /fhir/r4/[:resource_type]/[:id]
   def update
-    status_unsupported_media_type && return unless content_type_header?
+    if request.patch?
+      status_unsupported_media_type && return unless content_type_header?('application/json-patch+json')
 
-    # Parse in the FHIR::Patient
-    contents = FHIR.from_contents(request.body.string)
-    errors = contents&.validate
-    status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
+      # Parse in the JSON patch
+      patch = Hana::Patch.new(JSON.parse(request.body.string))
+    else
+      status_unsupported_media_type && return unless content_type_header?('application/fhir+json')
+
+      # Parse in the FHIR::Patient
+      contents = FHIR.from_contents(request.body.string)
+      errors = contents&.validate
+      status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
+    end
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
@@ -94,9 +102,17 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/Patient.*'
       )
 
-      updates = Patient.from_fhir(contents, default_patient_jurisdiction_id)
-
       resource = get_patient(params.permit(:id)[:id])
+
+      if request.patch? && !resource.nil?
+        begin
+          contents = apply_patch(resource, patch)
+        rescue StandardError => e
+          status_bad_request([['Unable to apply patch', e&.message].compact.join(': ')]) && return
+        end
+      end
+
+      updates = patient_from_fhir(contents, default_patient_jurisdiction_id)
 
       # Grab patient before changes to construct diff
       patient_before = resource.dup
@@ -127,6 +143,8 @@ class Fhir::R4::ApiController < ActionController::API
     end
 
     status_ok(resource.as_fhir) && return
+  rescue JSON::ParserError
+    status_bad_request(['Invalid JSON in request body'])
   rescue StandardError
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
   end
@@ -137,7 +155,7 @@ class Fhir::R4::ApiController < ActionController::API
   #
   # POST /fhir/r4/[:resource_type]
   def create
-    status_unsupported_media_type && return unless content_type_header?
+    status_unsupported_media_type && return unless content_type_header?('application/fhir+json')
 
     # Parse in the FHIR::Patient
     contents = FHIR.from_contents(request.body.string)
@@ -155,7 +173,7 @@ class Fhir::R4::ApiController < ActionController::API
       )
 
       # Construct a Sara Alert Patient
-      resource = Patient.new(Patient.from_fhir(contents, default_patient_jurisdiction_id))
+      resource = Patient.new(patient_from_fhir(contents, default_patient_jurisdiction_id))
       # Responder is self
       resource.responder = resource
 
@@ -209,6 +227,8 @@ class Fhir::R4::ApiController < ActionController::API
       History.enrollment(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree enrolled via API.')
     end
     status_created(resource.as_fhir) && return
+  rescue JSON::ParserError
+    status_bad_request(['Invalid JSON in request body'])
   rescue StandardError
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
   end
@@ -374,6 +394,7 @@ class Fhir::R4::ApiController < ActionController::API
             interaction: [
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'read'),
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'update'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'patch'),
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'create'),
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'search-type')
             ],
@@ -420,6 +441,8 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Return a well known statement
+  #
+  # GET /fhir/r4/.well-known/smart-configuration
   def well_known
     render json: {
       authorization_endpoint: "#{root_url}oauth/authorize",
@@ -526,6 +549,11 @@ class Fhir::R4::ApiController < ActionController::API
     end
   end
 
+  # Apply a patch to a resource that can be represented as FHIR
+  def apply_patch(resource, patch)
+    FHIR.from_contents(patch.apply(resource.as_fhir.to_hash).to_json)
+  end
+
   # Check accept header for correct mime type (or allow fhir _format)
   def accept_header?
     return request.headers['Accept']&.include?('application/fhir+json') if params.permit(:_format)[:_format].nil?
@@ -534,8 +562,8 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Check content type header for correct mime type
-  def content_type_header?
-    request.headers['Content-Type']&.include?('application/fhir+json')
+  def content_type_header?(header)
+    request.content_type == header
   end
 
   # Generic 406 not acceptable
