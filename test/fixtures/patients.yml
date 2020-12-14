@@ -39,7 +39,7 @@ patient_1:
   port_of_entry_into_usa: 'South Hershelmouth'
   additional_planned_travel_type: 'Domestic'
   additional_planned_travel_destination: 'Saulchester'
-  additional_planned_travel_destination_state: 'Carolside'
+  additional_planned_travel_destination_state: 'New York'
   additional_planned_travel_port_of_departure: 'New Vaughn'
   date_of_departure: <%= 45.days.ago %>
   date_of_arrival: <%= 45.days.ago %>

@@ -1485,22 +1485,6 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.valid?
   end
 
-  test 'validates ethnicity inclusion' do
-    patient = valid_patient
-
-    patient.ethnicity = 'Hispanic or Latino'
-    assert patient.valid?
-
-    patient.ethnicity = ''
-    assert patient.valid?
-
-    patient.ethnicity = nil
-    assert patient.valid?
-
-    patient.ethnicity = 'foo'
-    assert_not patient.valid?
-  end
-
   test 'validates monitored_address_state inclusion' do
     patient = valid_patient
 
@@ -1514,6 +1498,54 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
 
     patient.monitored_address_state = 'foo'
+    assert_not patient.valid?
+  end
+
+  test 'validates foreign_monitored_address_state inclusion' do
+    patient = valid_patient
+
+    patient.foreign_monitored_address_state = 'Oregon'
+    assert patient.valid?
+
+    patient.foreign_monitored_address_state = ''
+    assert patient.valid?
+
+    patient.foreign_monitored_address_state = nil
+    assert patient.valid?
+
+    patient.foreign_monitored_address_state = 'foo'
+    assert_not patient.valid?
+  end
+
+  test 'validates additional_planned_travel_destination_state inclusion' do
+    patient = valid_patient
+
+    patient.additional_planned_travel_destination_state = 'Oregon'
+    assert patient.valid?
+
+    patient.additional_planned_travel_destination_state = ''
+    assert patient.valid?
+
+    patient.additional_planned_travel_destination_state = nil
+    assert patient.valid?
+
+    patient.additional_planned_travel_destination_state = 'foo'
+    assert_not patient.valid?
+  end
+
+  test 'validates ethnicity inclusion' do
+    patient = valid_patient
+
+    patient.ethnicity = 'Hispanic or Latino'
+    assert patient.valid?
+
+    patient.ethnicity = ''
+    assert patient.valid?
+
+    patient.ethnicity = nil
+    assert patient.valid?
+
+    patient.ethnicity = 'foo'
     assert_not patient.valid?
   end
 
