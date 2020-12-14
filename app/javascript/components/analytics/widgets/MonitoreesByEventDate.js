@@ -51,9 +51,9 @@ class MonitoreesByEventDate extends React.Component {
     } else if (timeRes === 'Month') {
       dateRangeInQuestion = 'Last Exposure Month';
     }
-    DATES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === dateRangeInQuestion).map(x => x.category))
-      .sort()
-      .slice(0, 14);
+    DATES_OF_INTEREST = _.uniq(
+      this.props.stats.monitoree_counts.filter(x => x.category_type === dateRangeInQuestion && x.category).map(x => x.category)
+    ).sort();
     this.setState({
       graphData: WORKFLOWS.map(workflow => this.mapToChartFormat(DATES_OF_INTEREST, this.parseOutFields(DATES_OF_INTEREST, dateRangeInQuestion), workflow)),
       lastDateInQuestion: _.last(DATES_OF_INTEREST),
@@ -64,7 +64,7 @@ class MonitoreesByEventDate extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5"> Monitorees by Event Date ​</div>
+          <div className="analytics-card-header font-weight-bold h5"> Monitorees by Event Date ​(Active Records Only) ​</div>
           <Card.Body className="mt-4">
             <Form.Row className="justify-content-md-center">
               <Form.Group as={Col} md="8" onChange={val => this.setTimeResolution(val.target.value)}>

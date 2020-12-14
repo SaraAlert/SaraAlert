@@ -266,7 +266,7 @@ class Demographics extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5"> Demographics ​</div>
+          <div className="analytics-card-header font-weight-bold h5"> Demographics (Active Records Only) ​ ​</div>
           {this.props.showGraphs ? this.renderBarGraphs() : this.renderTables()}
         </Card>
       </React.Fragment>
