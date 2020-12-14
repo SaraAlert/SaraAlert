@@ -112,9 +112,6 @@ class ImportController < ApplicationController
 
           end
 
-          # Run validations on fields that have restrictions conditional on other fields
-          validate_required_primary_contact(patient, row_ind)
-
           # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
           patient[:duplicate_data] = current_user.viewable_patients.duplicate_data(patient[:first_name],
                                                                                    patient[:last_name],
@@ -285,17 +282,6 @@ class ImportController < ApplicationController
       err_msg += "acceptable values are: #{VALID_ISOLATION_ENUMS[field].to_sentence}"
     end
     raise ValidationError.new(err_msg, row_ind)
-  end
-
-  def validate_required_primary_contact(patient, row_ind)
-    if patient[:email].blank? && patient[:preferred_contact_method] == 'E-mailed Web Link'
-      raise ValidationError.new("'Email' is required when Primary Contact Method is 'E-mailed Web Link'", row_ind)
-    end
-    unless patient[:primary_telephone].blank? && (['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method])
-      return
-    end
-
-    raise ValidationError.new("'Primary Telephone' is required when Primary Contact Method is '#{patient[:preferred_contact_method]}'", row_ind)
   end
 
   def format_model_validation_errors(resource)
