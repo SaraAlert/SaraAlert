@@ -259,7 +259,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   %i[assessment_sms_weblink].each do |mthd|
     test "#{mthd} no phone provided" do
-      @patient.update(primary_telephone: nil)
+      @patient.update(primary_telephone: nil, preferred_contact_method: 'Unknown')
       assert_difference '@patient.histories.length', 1 do
         PatientMailer.send(mthd, @patient).deliver_now
         @patient.reload

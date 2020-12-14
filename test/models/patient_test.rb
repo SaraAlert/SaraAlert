@@ -593,7 +593,8 @@ class PatientTest < ActiveSupport::TestCase
                      purged: true,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone call')
+                     preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333')
 
     assert_equal(0, Patient.reminder_eligible.where(id: patient.id).count)
 
@@ -601,7 +602,8 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone call')
+                     preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333')
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
   end
@@ -611,7 +613,8 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: true,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone call')
+                     preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333')
 
     assert_equal(0, Patient.reminder_eligible.where(id: patient.id).count)
 
@@ -619,7 +622,8 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone call')
+                     preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333')
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
   end
@@ -661,7 +665,8 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone call')
+                     preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333')
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
   end
@@ -671,13 +676,15 @@ class PatientTest < ActiveSupport::TestCase
                        purged: false,
                        pause_notifications: false,
                        monitoring: true,
-                       preferred_contact_method: 'Telephone call')
+                       preferred_contact_method: 'Telephone call',
+                       primary_telephone: '+13333333333')
 
     patient = create(:patient,
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone call')
+                     preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333')
 
     patient.update!(responder_id: responder.id)
     assert_equal(0, Patient.reminder_eligible.where(id: patient.id).count)
@@ -686,7 +693,8 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone call')
+                     preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333')
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
   end
@@ -698,6 +706,7 @@ class PatientTest < ActiveSupport::TestCase
                      pause_notifications: false,
                      monitoring: true,
                      preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333',
                      last_assessment_reminder_sent: 13.hours.ago)
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
@@ -708,6 +717,7 @@ class PatientTest < ActiveSupport::TestCase
                      pause_notifications: false,
                      monitoring: true,
                      preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333',
                      last_assessment_reminder_sent: nil)
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
@@ -718,6 +728,7 @@ class PatientTest < ActiveSupport::TestCase
                      pause_notifications: false,
                      monitoring: true,
                      preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333',
                      last_assessment_reminder_sent: 12.hours.ago)
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
@@ -728,6 +739,7 @@ class PatientTest < ActiveSupport::TestCase
                      pause_notifications: false,
                      monitoring: true,
                      preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333',
                      last_assessment_reminder_sent: 10.hours.ago)
 
     assert_equal(0, Patient.reminder_eligible.where(id: patient.id).count)
@@ -740,6 +752,7 @@ class PatientTest < ActiveSupport::TestCase
                      pause_notifications: false,
                      monitoring: true,
                      preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333',
                      latest_assessment_at: 25.hours.ago)
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
@@ -750,6 +763,7 @@ class PatientTest < ActiveSupport::TestCase
                      pause_notifications: false,
                      monitoring: true,
                      preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333',
                      latest_assessment_at: nil)
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
@@ -760,6 +774,7 @@ class PatientTest < ActiveSupport::TestCase
                      pause_notifications: false,
                      monitoring: true,
                      preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333',
                      latest_assessment_at: Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
 
     assert_equal(0, Patient.reminder_eligible.where(id: patient.id).count)
@@ -770,6 +785,7 @@ class PatientTest < ActiveSupport::TestCase
                      pause_notifications: false,
                      monitoring: true,
                      preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333',
                      latest_assessment_at: Time.now)
 
     assert_equal(0, Patient.reminder_eligible.where(id: patient.id).count)
@@ -811,31 +827,36 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'ineligible preferred contact method'
 
-    patient = create(:patient, isolation: false, last_date_of_exposure: 30.days.ago, continuous_exposure: false, preferred_contact_method: 'Telephone call')
+    patient = create(:patient,
+                     isolation: false,
+                     last_date_of_exposure: 30.days.ago,
+                     continuous_exposure: false,
+                     preferred_contact_method: 'Telephone call',
+                     primary_telephone: '+13333333333')
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'monitoring period has elapsed'
 
-    patient = create(:patient, preferred_contact_method: 'Telephone call', last_assessment_reminder_sent: 1.hour.ago)
+    patient = create(:patient, preferred_contact_method: 'Telephone call', primary_telephone: '+13333333333', last_assessment_reminder_sent: 1.hour.ago)
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'contacted recently'
 
-    patient = create(:patient, preferred_contact_method: 'Telephone call', latest_assessment_at: 1.hour.ago)
+    patient = create(:patient, preferred_contact_method: 'Telephone call', primary_telephone: '+13333333333', latest_assessment_at: 1.hour.ago)
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'already reported'
 
-    patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Morning')
+    patient = create(:patient, preferred_contact_method: 'Telephone call', primary_telephone: '+13333333333', preferred_contact_time: 'Morning')
     assert patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? '8:00 AM local time (Morning)'
 
-    patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Afternoon')
+    patient = create(:patient, preferred_contact_method: 'Telephone call', primary_telephone: '+13333333333', preferred_contact_time: 'Afternoon')
     assert patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? '12:00 PM local time (Afternoon)'
 
-    patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Evening')
+    patient = create(:patient, preferred_contact_method: 'Telephone call', primary_telephone: '+13333333333', preferred_contact_time: 'Evening')
     assert patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? '4:00 PM local time (Evening)'
 
-    patient = create(:patient, preferred_contact_method: 'Telephone call')
+    patient = create(:patient, preferred_contact_method: 'Telephone call', primary_telephone: '+13333333333')
     assert patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'Today'
   end
@@ -1207,7 +1228,8 @@ class PatientTest < ActiveSupport::TestCase
       purged: false,
       isolation: true,
       created_at: 2.days.ago,
-      preferred_contact_method: 'SMS Texted Weblink'
+      preferred_contact_method: 'SMS Texted Weblink',
+      primary_telephone: '+13333333333'
     )
 
     # patient has asymptomatic assessment more than 24 hours ago but less than 7 days ago
@@ -1225,7 +1247,8 @@ class PatientTest < ActiveSupport::TestCase
       purged: false,
       isolation: true,
       created_at: 2.days.ago,
-      preferred_contact_method: 'SMS Texted Weblink'
+      preferred_contact_method: 'SMS Texted Weblink',
+      primary_telephone: '+13333333333'
     )
 
     assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
@@ -1241,7 +1264,8 @@ class PatientTest < ActiveSupport::TestCase
       isolation: false,
       created_at: 20.days.ago,
       last_date_of_exposure: 14.days.ago,
-      preferred_contact_method: 'SMS Texted Weblink'
+      preferred_contact_method: 'SMS Texted Weblink',
+      primary_telephone: '+13333333333'
     )
 
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
@@ -1260,7 +1284,8 @@ class PatientTest < ActiveSupport::TestCase
       isolation: false,
       created_at: 2.days.ago,
       last_date_of_exposure: 14.days.ago,
-      preferred_contact_method: 'SMS Texted Weblink'
+      preferred_contact_method: 'SMS Texted Weblink',
+      primary_telephone: '+13333333333'
     )
 
     assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
@@ -1276,7 +1301,8 @@ class PatientTest < ActiveSupport::TestCase
       isolation: false,
       created_at: 4.days.ago,
       last_date_of_exposure: 5.days.ago,
-      preferred_contact_method: 'SMS Texted Weblink'
+      preferred_contact_method: 'SMS Texted Weblink',
+      primary_telephone: '+13333333333'
     )
 
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
@@ -1295,7 +1321,8 @@ class PatientTest < ActiveSupport::TestCase
       isolation: false,
       created_at: 4.days.ago,
       continuous_exposure: true,
-      preferred_contact_method: 'SMS Texted Weblink'
+      preferred_contact_method: 'SMS Texted Weblink',
+      primary_telephone: '+13333333333'
     )
 
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
@@ -1841,11 +1868,10 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.email = 'foo@bar.com'
     patient.preferred_contact_method = 'E-mailed Web Link'
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.email = ''
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
   test 'validates primary_telephone is not blank when preferred_contact_method requires a phone' do
@@ -1853,11 +1879,10 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.primary_telephone = '+15555555555'
     patient.preferred_contact_method = 'SMS Text-message'
-    assert patient.valid?(:api)
+    assert patient.valid?
 
     patient.primary_telephone = ''
-    assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?
   end
 
   test 'validates symptom_onset is present when isolation is true' do
