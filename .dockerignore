@@ -31,7 +31,6 @@ public/packs-test
 goals.txt
 docker-compose.prod.yml
 docker-compose.yml
-yarn-error.log
 CHANGELOG.md
 README.md
 API.md

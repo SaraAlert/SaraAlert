@@ -24,20 +24,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -84,20 +79,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -148,20 +138,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -212,20 +197,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -276,20 +256,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -340,20 +315,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -404,20 +374,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -468,20 +433,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -532,20 +492,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -596,20 +551,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -660,20 +610,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -724,20 +669,15 @@ jobs:
           node-version: '13.x'
       - name: Install Bundler
         run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -775,22 +715,17 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '13.x'
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
+            ${{ runner.OS }}-npm-cache-
+      - name: Run NPM Install
+        run: npm install
       - name: Run React Component Tests
-        run: yarn run test
+        run: npm run test
   compile-test-coverage:
     name: Display Test Coverage Results
     needs: [

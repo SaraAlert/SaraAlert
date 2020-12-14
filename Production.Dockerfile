@@ -5,10 +5,10 @@ ARG cert
 RUN echo "${cert}" > /usr/local/share/ca-certificates/ca-certificates.crt
 RUN update-ca-certificates
 
-RUN apk --update add nodejs yarn mariadb-dev tzdata
+RUN apk --update add nodejs mariadb-dev tzdata
 RUN apk --update add --virtual build-dependencies make g++ patch npm
 
-RUN yarn config set cafile /etc/ssl/certs/ca-certificates.crt
+RUN npm config set cafile /etc/ssl/certs/ca-certificates.crt
 RUN npm install node-gyp -g
 
 RUN mkdir -p /app/disease-trakker
@@ -18,7 +18,7 @@ COPY Gemfile Gemfile.lock /app/disease-trakker/
 WORKDIR /app/disease-trakker
 RUN gem install bundler -v 2.1.4 && bundle config set without 'development test' && bundle config set deployment 'true'
 RUN bundle install --jobs $(nproc)
-RUN yarn install --no-optional
+RUN npm install --no-optional
 
 RUN addgroup -g 1000 -S app && adduser -u 1000 -S app -G app
 COPY . /app/disease-trakker

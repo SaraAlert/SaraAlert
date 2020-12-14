@@ -23,7 +23,7 @@ To work with the application, you will need to install some prerequisites:
 * [Bundler](https://bundler.io/)
 * [MySQL](https://www.mysql.com/)
 * [Redis](https://redis.io) (installation instructions [below](#redis))
-* [Yarn](https://yarnpkg.com/)
+* [Node.js](https://nodejs.org/en/)
 
 ### Development Installation
 
@@ -36,7 +36,7 @@ Clone the project: `git clone https://github.com/SaraAlert/SaraAlert.git`
 Run the following commands from the project's root directory to pull in both frontend and backend dependencies:
 
 * `bundle install`
-* `yarn install`
+* `npm install`
 
 #### Database
 
@@ -140,7 +140,7 @@ bundle exec whenever --update-crontab
   * `SendPurgeWarningsJob`
       - Send warnings to users of upcoming PurgeJob
   * `SendPatientDigestJob`
-      - Send hourly reports on recently symptomatic patients to jurisdictions that opt in. 
+      - Send hourly reports on recently symptomatic patients to jurisdictions that opt in.
   * `CacheAnalyticsJob`
       - Caches analytics information for faster retrieval
   * `SendAssessmentsJob`
@@ -275,7 +275,7 @@ bundle exec rails test
 ### Frontend Tests
 
 ```
-yarn run test
+npm run test
 ```
 
 See [frontend tests documentation](app/javascript/tests/README.md) for more information.

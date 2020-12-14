@@ -11,21 +11,21 @@ Root directory for the tests is set in the `package.json` file here:
       "<rootDir>/app/javascript/tests"
     ],
 ```
-All of the test files located in the component test folder set here will run with `yarn run test`.
+All of the test files located in the component test folder set here will run with `npm run test`.
 
 ### Running
 
-When running the tests for the first time, run `yarn install` to install the required libraries.
+When running the tests for the first time, run `npm install` to install the required libraries.
 
 To run all the react component tests:
 ```
-yarn run test
+npm run test
 ```
 
 To run individual react test files:
 
 ```
-yarn test <test_file_path>
+npm test <test_file_path>
 ```
 
 You may also use add the `--watch` flag at the end to have tests automatically re-run on file save. This can be useful for development.
@@ -33,7 +33,7 @@ You may also use add the `--watch` flag at the end to have tests automatically r
 Example:
 
 ```
-yarn test app/javascript/tests/layout/Breadcrumb.test.js
+npm test app/javascript/tests/patient/Patient.test.js
 ```
 
 ### Organization
