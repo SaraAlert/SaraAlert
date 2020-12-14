@@ -79,7 +79,7 @@ class Patient < ApplicationRecord
 
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 999_999 }
 
-  validates_with PrimaryContactValidator, on: :api
+  validates_with PrimaryContactValidator
 
   # NOTE: Commented out until additional testing
   # validates_with PatientDateValidator
