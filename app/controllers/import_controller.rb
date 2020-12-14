@@ -56,7 +56,7 @@ class ImportController < ApplicationController
               if col_num == 95
                 patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
               elsif col_num == 96
-                patient[:assigned_user] = validate_assigned_user(row[96], row_ind)
+                patient[:assigned_user] = import_assigned_user(row[96])
               elsif col_num == 85 && workflow == :isolation
                 patient[:user_defined_symptom_onset] = row[85].present?
                 patient[field] = validate_field(field, row[col_num], row_ind)
@@ -258,12 +258,8 @@ class ImportController < ApplicationController
     raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path' because you do not have permission to import into it", row_ind)
   end
 
-  def validate_assigned_user(value, row_ind)
-    return nil if value.blank?
-
-    return value.to_i if value.to_i.between?(1, 999_999)
-
-    raise ValidationError.new("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-999999", row_ind)
+  def import_assigned_user(value)
+    value.blank? ? nil : value
   end
 
   def validate_workflow_specific_enums(workflow, field, value, row_ind)
