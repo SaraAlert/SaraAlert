@@ -247,7 +247,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         assert page.has_content?("'#{value}' is not a valid state for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:sex) && !%(Male Female Unknown M F).include?(value.capitalize)
-        assert page.has_content?("'#{value}' is not a valid sex for '#{VALIDATION[field][:label]}', acceptable values are Male, Female, and Unknown"),
+        assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value"),
                "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:email) && !ValidEmail2::Address.new(value).valid?
