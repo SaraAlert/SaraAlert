@@ -5,6 +5,7 @@ class SendPatientDigestJob < ApplicationJob
   queue_as :mailers
 
   def perform(*_args)
+    sent = []
     # Loop over jurisdictions
     Jurisdiction.where(send_digest: true).each do |jur|
       # Grab patients who reported symtomatic in the last hour
@@ -18,7 +19,11 @@ class SendPatientDigestJob < ApplicationJob
       users.each do |user|
         # Send email to this user
         UserMailer.send_patient_digest_job_email(patients, user).deliver_later
+        sent << {id: user.id}
       end
     end
+
+    # Send results email
+    UserMailer.send_patient_digest_job_results_email(sent).deliver_now
   end
 end

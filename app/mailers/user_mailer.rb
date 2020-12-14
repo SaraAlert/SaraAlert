@@ -34,6 +34,11 @@ class UserMailer < ApplicationMailer
     mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Send Purge Warnings Job Results (#{ActionMailer::Base.default_url_options[:host]})")
   end
 
+  def send_patient_digest_job_results_email(sent)
+    @sent = sent
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Send Patient Digest Job Results (#{ActionMailer::Base.default_url_options[:host]})")
+  end
+
   def close_job_email(closed, not_closed, eligible)
     @closed = closed
     @not_closed = not_closed
