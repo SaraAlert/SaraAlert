@@ -236,6 +236,7 @@ class Contact extends React.Component {
                     className="form-square"
                     value={this.state.current.patient.preferred_contact_method || ''}
                     onChange={this.handleChange}>
+                    <option></option>
                     <option>Unknown</option>
                     <option>E-mailed Web Link</option>
                     <option>SMS Texted Weblink</option>
