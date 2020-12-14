@@ -117,16 +117,19 @@ class AssessmentsController < ApplicationController
 
       # Determine if a user created this assessment or a monitoree
       @assessment.who_reported = current_user.nil? ? 'Monitoree' : current_user.email
-      @assessment.save
 
-      # Save a new receipt and clear out any older ones
-      AssessmentReceipt.where(submission_token: submission_token_from_params).delete_all
-      @assessment_receipt = AssessmentReceipt.new(submission_token: submission_token_from_params)
-      @assessment_receipt.save
+      reported_condition.transaction do
+        @assessment.save!
+        reported_condition.save!
 
-      # Create history if assessment was created by user
-      History.report_created(patient: patient, created_by: current_user.email, comment: "User created a new report (ID: #{@assessment.id}).") if current_user
+        # Save a new receipt and clear out any older ones
+        AssessmentReceipt.where(submission_token: submission_token_from_params).delete_all
+        @assessment_receipt = AssessmentReceipt.new(submission_token: submission_token_from_params)
+        @assessment_receipt.save
 
+        # Create history if assessment was created by user
+        History.report_created(patient: patient, created_by: current_user.email, comment: "User created a new report (ID: #{@assessment.id}).") if current_user
+      end
       redirect_to(patient_assessments_url)
     end
   end
@@ -150,8 +153,8 @@ class AssessmentsController < ApplicationController
     # Figure out the change
     delta = []
     typed_reported_symptoms.each do |symptom|
-      new_val = symptom.bool_value
-      old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
+      new_val = symptom.value
+      old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.value
       if new_val.present? && old_val.present? && new_val != old_val
         delta << symptom.name + '=' + (new_val ? 'Yes' : 'No')
       end

@@ -138,7 +138,11 @@ class ConsumeAssessmentsJob < ApplicationJob
           reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
           assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
           assessment.symptomatic = assessment.symptomatic?
-          queue.commit if assessment.save
+          reported_condition.transaction do
+            assessment.save!
+            reported_condition.save!
+            queue.commit
+          end
         else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
@@ -159,7 +163,11 @@ class ConsumeAssessmentsJob < ApplicationJob
             # that they reported for themselves, else we are creating an assessment for the dependent and
             # that means that it was the proxy who reported for them
             assessment.who_reported = patient.submission_token == dependent.submission_token ? 'Monitoree' : 'Proxy'
-            queue.commit if assessment.save
+            reported_condition.transaction do
+              assessment.save!
+              reported_condition.save!
+              queue.commit
+            end
           end
         end
       rescue JSON::ParserError
