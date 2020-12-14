@@ -116,7 +116,9 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     address_state: [*VALID_STATES, nil, ''],
     monitored_address_state: [*VALID_STATES, nil, ''],
     public_health_action: ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing'],
-    source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other']
+    source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other'],
+    foreign_monitored_address_state: [*VALID_STATES, nil, ''],
+    additional_planned_travel_destination_state: [*VALID_STATES, nil, '']
   }.freeze
 
   VALID_EXPOSURE_ENUMS = {

@@ -182,7 +182,7 @@ class ImportController < ApplicationController
     value = import_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
     value = import_date_field(value) if VALIDATION[field][:checks].include?(:date)
     value = import_phone_field(value) if VALIDATION[field][:checks].include?(:phone)
-    value = validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
+    value = import_and_validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
     value = import_sex_field(field, value) if VALIDATION[field][:checks].include?(:sex)
     value = import_email_field(value) if VALIDATION[field][:checks].include?(:email)
     value
@@ -218,13 +218,15 @@ class ImportController < ApplicationController
     e_164.blank? ? value : e_164
   end
 
-  def validate_state_field(field, value, row_ind)
+  def import_and_validate_state_field(field, value, row_ind)
     return nil if value.blank?
     return normalize_and_get_state_name(value) if VALID_STATES.include?(normalize_and_get_state_name(value))
 
     normalized_state = STATE_ABBREVIATIONS[value.upcase.to_sym]
     return normalized_state if normalized_state
 
+    # NOTE: Currently only import allows abbreviated state names. If that changes and we begin allowing abbreviations
+    # via other controllers, it will probably make sense to move this error onto the Patient model
     err_msg = "'#{value}' is not a valid state for '#{VALIDATION[field][:label]}', please use the full state name or two letter abbreviation"
     raise ValidationError.new(err_msg, row_ind)
   end

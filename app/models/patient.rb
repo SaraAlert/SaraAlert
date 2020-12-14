@@ -21,8 +21,10 @@ class Patient < ApplicationRecord
   end
 
   %i[address_state
-     ethnicity
      monitored_address_state
+     foreign_monitored_address_state
+     additional_planned_travel_destination_state
+     ethnicity
      preferred_contact_method
      preferred_contact_time
      sex
