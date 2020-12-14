@@ -32,6 +32,7 @@ class CustomExport extends React.Component {
       cancel_token: axios.CancelToken.source(),
       preset: {
         id: props.preset?.id || null,
+        name: props.preset?.name || '',
         config: {
           format: props.preset?.config?.format || 'xlsx',
           data: _.mapValues(props.options, (settings, type) => {
@@ -423,7 +424,7 @@ class CustomExport extends React.Component {
               </Col>
               <Col md={6} className="px-1 pt-2">
                 <Form.Group className="mb-0 float-right">
-                  {this.state.preset?.id ? (
+                  {this.state.preset?.id && (
                     <React.Fragment>
                       <Button
                         id="custom-export-action-delete"
@@ -436,32 +437,47 @@ class CustomExport extends React.Component {
                         <FontAwesomeIcon className="mr-1" icon={['fas', 'trash']} />
                         Delete
                       </Button>
-                      <Button
-                        id="custom-export-action-update"
-                        size="sm"
-                        variant="primary"
-                        disabled={!this.state.preset?.id}
-                        className="ml-1"
-                        style={{ outline: 'none', boxShadow: 'none' }}
-                        onClick={this.update}>
-                        <FontAwesomeIcon className="mr-1" icon={['fas', 'pen-alt']} />
-                        Update
-                      </Button>
+                      {this.state.preset?.name === '' ? (
+                        <OverlayTrigger overlay={<Tooltip>Please indicate a name for the saved Custom Export</Tooltip>}>
+                          <span>
+                            <Button size="sm" variant="primary" disabled className="ml-1" style={{ outline: 'none', boxShadow: 'none' }}>
+                              <FontAwesomeIcon className="mr-1" icon={['fas', 'pen-alt']} />
+                              Update
+                            </Button>
+                          </span>
+                        </OverlayTrigger>
+                      ) : (
+                        <Button
+                          id="custom-export-action-update"
+                          size="sm"
+                          variant="primary"
+                          className="ml-1"
+                          style={{ outline: 'none', boxShadow: 'none' }}
+                          onClick={this.update}>
+                          <FontAwesomeIcon className="mr-1" icon={['fas', 'pen-alt']} />
+                          Update
+                        </Button>
+                      )}
                     </React.Fragment>
-                  ) : this.state.preset?.name === '' ? (
-                    <OverlayTrigger overlay={<Tooltip>Please indicate a name for the saved Custom Export</Tooltip>}>
-                      <span>
-                        <Button size="sm" variant="primary" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
+                  )}
+                  {!this.state.preset?.id && (
+                    <React.Fragment>
+                      {this.state.preset?.name === '' ? (
+                        <OverlayTrigger overlay={<Tooltip>Please indicate a name for the saved Custom Export</Tooltip>}>
+                          <span>
+                            <Button size="sm" variant="primary" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
+                              <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
+                              Save
+                            </Button>
+                          </span>
+                        </OverlayTrigger>
+                      ) : (
+                        <Button id="custom-export-action-save" size="sm" variant="primary" style={{ outline: 'none', boxShadow: 'none' }} onClick={this.save}>
                           <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
                           Save
                         </Button>
-                      </span>
-                    </OverlayTrigger>
-                  ) : (
-                    <Button id="custom-export-action-save" size="sm" variant="primary" style={{ outline: 'none', boxShadow: 'none' }} onClick={this.save}>
-                      <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
-                      Save
-                    </Button>
+                      )}
+                    </React.Fragment>
                   )}
                 </Form.Group>
               </Col>
