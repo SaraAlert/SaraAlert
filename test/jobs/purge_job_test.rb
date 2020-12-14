@@ -100,7 +100,7 @@ class PurgeJobTest < ActiveSupport::TestCase
                                email: 'foo@bar.com', preferred_contact_method: 'Telephone call', preferred_contact_time: 'Morning', port_of_origin: 'a',
                                source_of_report: 'a', flight_or_vessel_number: 'a', flight_or_vessel_carrier: 'a', port_of_entry_into_usa: 'a',
                                travel_related_notes: 'a', additional_planned_travel_type: 'Domestic', additional_planned_travel_destination: 'a',
-                               additional_planned_travel_destination_state: 'a', additional_planned_travel_destination_country: 'a',
+                               additional_planned_travel_destination_state: 'Texas', additional_planned_travel_destination_country: 'a',
                                additional_planned_travel_port_of_departure: 'a', date_of_departure: 1.month.ago,
                                date_of_arrival: 1.month.ago, additional_planned_travel_start_date: 30.days.from_now,
                                additional_planned_travel_end_date: 30.days.from_now, additional_planned_travel_related_notes: 'a',
