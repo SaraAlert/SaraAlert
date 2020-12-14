@@ -183,7 +183,7 @@ class ImportController < ApplicationController
     value = import_date_field(value) if VALIDATION[field][:checks].include?(:date)
     value = import_phone_field(value) if VALIDATION[field][:checks].include?(:phone)
     value = validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
-    value = validate_sex_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:sex)
+    value = import_sex_field(field, value) if VALIDATION[field][:checks].include?(:sex)
     value = import_email_field(value) if VALIDATION[field][:checks].include?(:email)
     value
   end
@@ -229,14 +229,14 @@ class ImportController < ApplicationController
     raise ValidationError.new(err_msg, row_ind)
   end
 
-  def validate_sex_field(field, value, row_ind)
+  def import_sex_field(field, value)
     return nil if value.blank?
-    return value if %w[Male Female Unknown].include?(value.capitalize)
+
+    normalized_value = unformat_enum_field(value)
+    return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
 
     normalized_sex = SEX_ABBREVIATIONS[value.upcase.to_sym]
-    return normalized_sex if normalized_sex
-
-    raise ValidationError.new("'#{value}' is not a valid sex for '#{VALIDATION[field][:label]}', acceptable values are Male, Female, and Unknown", row_ind)
+    normalized_sex || value
   end
 
   def import_email_field(value)
