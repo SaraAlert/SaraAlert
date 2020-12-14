@@ -59,23 +59,23 @@ class ImportController < ApplicationController
                 patient[:assigned_user] = import_assigned_user(row[96])
               elsif col_num == 85 && workflow == :isolation
                 patient[:user_defined_symptom_onset] = row[85].present?
-                patient[field] = validate_field(field, row[col_num], row_ind)
+                patient[field] = import_field(field, row[col_num], row_ind)
               # TODO: when workflow specific case status validation re-enabled: uncomment
               # elsif col_num == 86
               #   patient[field] = validate_workflow_specific_enums(workflow, field, row[col_num], row_ind)
               else
                 # TODO: when workflow specific case status validation re-enabled: this line can be updated to not have to check the 86 col
-                patient[field] = validate_field(field, row[col_num], row_ind) unless [85, 86].include?(col_num) && workflow != :isolation
+                patient[field] = import_field(field, row[col_num], row_ind) unless [85, 86].include?(col_num) && workflow != :isolation
               end
             end
 
             if format == :epix
               patient[field] = if col_num == 34 # copy over potential exposure country to location
-                                 validate_field(field, row[35], row_ind)
+                                 import_field(field, row[35], row_ind)
                                elsif [41, 42].include?(col_num) # contact of known case and was in healthcare facilities
-                                 validate_field(field, !row[col_num].blank?, row_ind)
+                                 import_field(field, !row[col_num].blank?, row_ind)
                                else
-                                 validate_field(field, row[col_num], row_ind)
+                                 import_field(field, row[col_num], row_ind)
                                end
             end
           rescue ValidationError => e
@@ -143,10 +143,10 @@ class ImportController < ApplicationController
 
   def lab_result(data, row_ind)
     {
-      lab_type: validate_field(:lab_type, data[0], row_ind),
-      specimen_collection: validate_field(:specimen_collection, data[1], row_ind),
-      report: validate_field(:report, data[2], row_ind),
-      result: validate_field(:result, data[3], row_ind)
+      lab_type: import_field(:lab_type, data[0], row_ind),
+      specimen_collection: import_field(:specimen_collection, data[1], row_ind),
+      report: import_field(:report, data[2], row_ind),
+      result: import_field(:result, data[3], row_ind)
     }
   end
 
@@ -173,13 +173,13 @@ class ImportController < ApplicationController
     end
   end
 
-  def validate_field(field, value, row_ind)
+  def import_field(field, value, row_ind)
     return value unless VALIDATION[field]
 
     # TODO: Un-comment when required fields are to be checked upon import
     # value = validate_required_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:required)
     value = import_enum_field(field, value) if VALIDATION[field][:checks].include?(:enum)
-    value = import_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
+    value = import_and_validate_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
     value = import_date_field(value) if VALIDATION[field][:checks].include?(:date)
     value = import_phone_field(value) if VALIDATION[field][:checks].include?(:phone)
     value = import_and_validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
@@ -201,7 +201,7 @@ class ImportController < ApplicationController
     NORMALIZED_ENUMS[field].keys.include?(normalized_value) ? NORMALIZED_ENUMS[field][normalized_value] : value
   end
 
-  def import_bool_field(field, value, row_ind)
+  def import_and_validate_bool_field(field, value, row_ind)
     return value if value.blank?
     return (value.to_s.downcase == 'true') if %w[true false].include?(value.to_s.downcase)
 
@@ -234,7 +234,7 @@ class ImportController < ApplicationController
   def import_sex_field(field, value)
     return nil if value.blank?
 
-    normalized_value = unformat_enum_field(value)
+    normalized_value = normalize_enum_field_value(value)
     return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
 
     normalized_sex = SEX_ABBREVIATIONS[value.upcase.to_sym]
