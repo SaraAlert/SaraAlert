@@ -765,9 +765,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       next unless config.dig(:data, data_type, :checked).present?
 
       package = CSV.generate(headers: true) do |csv|
-        fields = config[:data][data_type][:checked]
-        csv << config[:data][data_type][:headers] || fields.map { |field| ALL_FIELDS_NAMES[data_type][field] }
-        exported_data[data_type].each do |record|
+        fields = config.dig(:data, data_type, :checked)
+        # puts config.dig(:data, data_type, :headers) || fields.map { |field| ALL_FIELDS_NAMES.dig(data_type, field) }
+        csv << (config.dig(:data, data_type, :headers) || fields.map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
+        exported_data[data_type]&.each do |record|
           csv << fields.map { |field| record[field] }
         end
       end
@@ -805,7 +806,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     package.workbook.add_worksheet(name: config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label)) do |sheet|
       fields = config.dig(:data, data_type, :checked)
       sheet.add_row(config.dig(:data, data_type, :headers) || fields.map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
-      exported_data[data_type].each do |record|
+      exported_data[data_type]&.each do |record|
         sheet.add_row(fields.map { |field| record[field] }, { types: Array.new(fields.length, :string) })
       end
     end
