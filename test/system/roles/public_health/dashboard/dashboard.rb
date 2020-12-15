@@ -84,6 +84,10 @@ class PublicHealthDashboard < ApplicationSystemTestCase
       click_on "custom-export-action-#{action}"
       sleep(1)
     end
+
+    # Start or cancel export
+    click_on 'Start Export' if settings[:confirm] == :start
+    click_on 'Cancel' if settings[:confirm] == :cancel
   end
 
   def import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
