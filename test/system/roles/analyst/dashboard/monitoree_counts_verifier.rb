@@ -17,7 +17,7 @@ class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
   end
 
   def verify_monitoree_counts_by_age_group(analytic_id, active_monitoring)
-    element = find('h4', text: 'Age (Years)').first(:xpath, './/..//table/tbody')
+    element = find('span', text: 'Current Age (Years)').first(:xpath, './/..//..//table/tbody')
     verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, 'Age Group')
   end
 
