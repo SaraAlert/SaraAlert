@@ -13,7 +13,7 @@ class Vaccine extends React.Component {
     this.state = {
       showModal: false,
       loading: false,
-      vaccinated: this.props.vac.vaccinate || false,
+      vaccinated: this.props.vac.vaccinated || false,
       first_vac_date: this.props.vac.first_vac_date,
       second_vac_date: this.props.vac.second_vac_date,
       vaccinationInvalid: false,
@@ -28,12 +28,16 @@ class Vaccine extends React.Component {
       return {
         showModal: !state.showModal,
         loading: false,
+        vaccinated: this.props.vac.vaccinated || false,
+        first_vac_date: this.props.vac.first_vac_date,
+        second_vac_date: this.props.vac.second_vac_date,
+        vaccinationInvalid: false,
       };
     });
   }
 
   handleChange(event) {
-    this.setState({ [event.target.id]: event.target.value });
+    this.setState({ [event.target.id]: event.target.checked });
   }
 
   handleDateChange(field, date) {
@@ -97,14 +101,26 @@ class Vaccine extends React.Component {
                   maxDate={moment().format('YYYY-MM-DD')}
                   onChange={date => this.handleDateChange('second_vac_date', date)}
                   placement="bottom"
+                  isValid={this.state.vaccinationInvalid}
                   customClass="form-control-lg"
                 />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.vaccinationInvalid && <span>Second vaccination date cannot be before first.</span>}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col}>
-                <Form.Label className="nav-input-label">Vaccinated</Form.Label>
-                <Form.Check id="vaccinated" name="vaccinated" type="switch" checked={this.state.vaccinated} onChange={this.handleVacChange} />
+                <Form.Check
+                  id="vaccinated"
+                  size="lg"
+                  name="vaccinated"
+                  type="checkbox"
+                  checked={this.state.vaccinated}
+                  className="pb-2"
+                  label="Vaccinated"
+                  onChange={this.handleChange}
+                />
               </Form.Group>
             </Row>
           </Form>
@@ -113,7 +129,7 @@ class Vaccine extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disable={this.state.loading || this.state.reportInvalid} onClick={submit}>
+          <Button variant="primary btn-square" disabled={this.state.loading || this.state.vaccinationInvalid} onClick={submit}>
             Create
           </Button>
         </Modal.Footer>

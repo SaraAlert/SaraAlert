@@ -23,7 +23,9 @@ class History < ApplicationRecord
     close_contact_edit: 'Close Contact Edit',
     contact_attempt: 'Contact Attempt',
     welcome_message_sent: 'Welcome Message Sent',
-    record_automatically_closed: 'Record Automatically Closed'
+    record_automatically_closed: 'Record Automatically Closed',
+    vac_record: 'Vaccine Record',
+    vac_record_edit: 'Vaccine Record Edit'
   }.freeze
 
   columns.each do |column|
@@ -117,6 +119,14 @@ class History < ApplicationRecord
 
   def self.record_automatically_closed(patient: nil, created_by: 'Sara Alert System', comment: 'Monitoree has completed monitoring.')
     create_history(patient, created_by, HISTORY_TYPES[:record_automatically_closed], comment)
+  end
+
+  def self.vac_record(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new vaccine record.')
+    create_history(patient, created_by, HISTORY_TYPES[:vac_record], comment)
+  end
+
+  def self.vac_record_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a vaccine record.')
+    create_history(patient, created_by, HISTORY_TYPES[:vac_record_edit], comment)
   end
 
   def self.monitoring_actions(history, diff_state)

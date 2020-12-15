@@ -122,4 +122,17 @@ Rails.application.routes.draw do
   get '/404', to: 'errors#not_found'
   get '/422', to: 'errors#unprocessable'
   get '/500', to: 'errors#internal_server_error'
+<<<<<<< HEAD
+=======
+
+  #SAA additions
+  get 'contact_us', to: 'contact_us#show'
+  post 'contact_us/send', to: 'contact_us#create'
+  #created routes to get around a conflict with the devise_authy gem conflict
+  get 'passwords/new', to: 'passwords#new'
+  post 'passwords/create', to: 'passwords#create'
+
+  post '/vaccines', to: 'vaccines#create'
+  post '/vaccines/:id', to: 'vaccines#update'
+>>>>>>> 5fdd0506... controller, components, views, routes, models.
 end

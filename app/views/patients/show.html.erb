@@ -230,6 +230,49 @@
 </div>
 <% end %>
 
+<% if current_user.can_view_patient_vaccines? %>
+  <div class="card mx-2 mt-3 mb-4 card-squre">
+    <div class="card-header h5">
+      Vaccine Records
+      <%= react_component('util/InfoTooltip', { tooltipTextKey: 'vacRecords', location: 'right'}, {style: 'display:inline'}) %>
+    </div>
+    <div class="m-4">
+      <table class="vac_table table table-sm table-striped table-bordered table-hover table-small-font" style="width:100%">
+        <thead>
+          <tr>
+            <th class="DataTable-table-header">ID</th>
+            <th class="DataTable-table-header">Vaccinated</th>
+            <th class="DataTable-table-header">Date of First Vaccination</th>
+            <th class="DataTable-table-header">Date of Second Vaccination</th>
+            <th class="DataTable-table-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @patient.vaccines.order('created_at').each do |vac| -%>
+            <tr>
+              <td><%= vac.id %></td>
+              <% vaccinated = vac.vaccinated ? 'Yes' : 'No' %>
+              <td><%= vaccinated %></td>
+              <td><%= vac.first_vac_date %></td>
+              <td><%= vac.second_vac_date %></td>
+              <td>
+                <div class="btn-group btn-group-sm" role="group">
+                  <%= react_component('vaccine/Vaccine', { authenticity_token: form_authenticity_token, patient: @patient, vac: vac}) %>
+                </div>
+              </td>
+            </tr>
+          <% end -%>
+        </tbody>
+      </table>
+      <div class="pb-1">
+        <div class="btn-group" role="group">
+          <%= react_component('vaccine/Vaccine', { authenticity_token: form_authenticity_token, patient: @patient, vac: Vaccine.new}) %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
 <% if current_user.can_view_patient_close_contacts? %>
 <div class="card mx-2 mt-3 mb-4 card-square">
   <h5 class="card-header">
@@ -304,6 +347,16 @@
       "pageLength": 15,
       "oLanguage": {
         "sSearch": "Search Lab Results:"
+      },
+      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
+    });
+    $('.vac_table').DataTable({
+      "search": false,
+      "info": false,
+      "lengthMenu": [10, 15, 25, 50],
+      "pageLength": 15,
+      "oLanguage": {
+        "sSearch": "Search Vaccine Records:"
       },
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
     });

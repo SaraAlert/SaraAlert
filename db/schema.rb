@@ -132,6 +132,12 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["patient_id"], name: "index_histories_on_patient_id"
   end
 
+  create_table "jurisdiction_emails", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "domain"
+    t.bigint "jurisdiction_id", null: false
+    t.index ["jurisdiction_id"], name: "index_jurisdiction_emails_on_jurisdiction_id"
+  end
+
   create_table "jurisdiction_lookups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "old_unique_identifier"
     t.binary "new_unique_identifier", limit: 255
@@ -508,7 +514,26 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["password_changed_at"], name: "index_users_on_password_changed_at"
   end
 
+  create_table "users_roles", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "role_id"
+    t.index ["role_id"], name: "index_users_roles_on_role_id"
+    t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id"
+    t.index ["user_id"], name: "index_users_roles_on_user_id"
+  end
+
+  create_table "vaccines", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.boolean "vaccinated"
+    t.date "first_vac_date"
+    t.date "second_vac_date"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_vaccines_on_patient_id"
+  end
+
   add_foreign_key "jwt_identifiers", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
+  add_foreign_key "potential_patients", "jurisdictions"
 end
