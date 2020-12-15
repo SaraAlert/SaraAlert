@@ -62,7 +62,8 @@ class PatientsController < ApplicationController
                            email: @close_contact.nil? ? '' : @close_contact.email,
                            contact_of_known_case: !@close_contact.nil?,
                            contact_of_known_case_id: @close_contact.nil? ? '' : @close_contact.patient_id,
-                           exposure_notes: @close_contact.nil? ? '' : @close_contact.notes)
+                           exposure_notes: @close_contact.nil? ? '' : @close_contact.notes,
+                           preferred_contact_method: 'Unknown')
   end
 
   # Similar to 'new', except used for creating a new group member
