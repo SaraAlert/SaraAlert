@@ -1,0 +1,61 @@
+I"�<details open="">
+  <summary class="text-delta">
+    Table of contents
+  </summary>
+<ol id="markdown-toc">
+  <li><a href="#introduction" id="markdown-toc-introduction">Introduction</a></li>
+  <li><a href="#security" id="markdown-toc-security">Security</a></li>
+  <li><a href="#what-can-the-sara-alert-api-do" id="markdown-toc-what-can-the-sara-alert-api-do">What can the Sara Alert™ API do?</a>    <ol>
+      <li><a href="#for-monitorees" id="markdown-toc-for-monitorees">For Monitorees</a></li>
+      <li><a href="#for-symptom-reports" id="markdown-toc-for-symptom-reports">For Symptom Reports</a></li>
+      <li><a href="#for-lab-results" id="markdown-toc-for-lab-results">For Lab Results</a></li>
+    </ol>
+  </li>
+  <li><a href="#tentative-roadmap" id="markdown-toc-tentative-roadmap">Tentative Roadmap</a></li>
+</ol>
+
+</details>
+
+<h1 id="introduction">Introduction</h1>
+<p>Sara Alert strives to support interoperability standards in public health, and as a result provides a <a href="https://www.hl7.org/fhir/overview.html">FHIR</a> RESTful API for reading, writing, and updating monitoree data. The data format accepted and returned by the API corresponds to <a href="https://hl7.org/fhir/R4/">FHIR version R4</a>.</p>
+
+<p>The Sara Alert API does this by following SMART on FHIR API <a href="http://docs.smarthealthit.org/">standards and profiles</a>, as described <a href="https://smarthealthit.org/smart-on-fhir-api/">here</a>:</p>
+<blockquote>
+  <p>A key innovation in the SMART on FHIR platform is the use of a standards-based data layer building on the emerging FHIR API and resource definitions. SMART on FHIR, provides a health app interface based on open standards including HL7’s FHIR, OAuth2, and OpenID Connect. FHIR provides a detailed set of “core” data models, but leaves many fields optional and vocabularies under-constrained, in order to support diverse requirements across varied regions and use cases. But to enable substitutable health apps as well as third-party application services, developers need stronger contracts. To this end, SMART on FHIR applies a set of “profiles” that provide developers with expectations about the vocabularies that will be used to express medications, problems, labs, and other clinical data.</p>
+</blockquote>
+
+<p>This API is intended for use by public health organizations using Sara Alert, and thus Sara  Alert admins maintain a registered list of supported client applications. For access to a live production or demonstration environment, please contact system administrators at <code class="language-plaintext highlighter-rouge">sarasupport@aimsplatform.com</code> to discuss adding your client application to the approved list.</p>
+
+<h1 id="security">Security</h1>
+<p>As indicated in the previous section, the API follows SMART on FHIR API standards, which includes support for both the <a href="http://hl7.org/fhir/smart-app-launch/index.html">SMART App Launch</a> and <a href="https://hl7.org/fhir/uv/bulkdata/authorization/index.html">SMART Backend Services</a> protocols. The SMART App Launch protocol is intended for use by user-facing apps, where access is granted based on a human user entering their existing Sara Alert username and password. The SMART Backend Services protocol is intended for backend services to autonomously use the Sara Alert API and access is granted based on a signed token. Detailed documentation of these two workflows can be found in the <a href="api-getting-started">Getting Started</a> page.</p>
+
+<h1 id="what-can-the-sara-alert-api-do">What can the Sara Alert™ API do?</h1>
+
+<p>At base, the API exists to allow other software systems to <strong>read</strong> and <strong>write</strong> Sara Alert data. Reading can mean either requesting specific data, e.g. “give me Monitoree X’s information”, or it can mean searching data, e.g. “give me the Monitoree with the e-mail address jane@example<span></span>.com”. Writing data can mean putting new data into the system, e.g. “enroll this person as a new Monitoree”, or it can mean updating existing data, e.g. “change this Monitoree’s preferred reporting method to Opt-Out”.</p>
+
+<p>The examples above are in terms of Monitorees, but the API also supports Symptom Reports and Lab Results. However, these entities are currently only supported for reading data.</p>
+
+<h3 id="for-monitorees">For Monitorees</h3>
+<p><strong>A client can read and write the following data elements:</strong><br />Workflow, First Name, Middle Name, Last Name, Date of Birth, Sex, White, Black or African American, American Indian or Alaskan Native, Asian, Native Hawaiian or Other Pacific Islander, Ethnicity, Primary Language, Interpretation Requirement, Address 1, Town/City, State, Zip, Country, Preferred Reporting Method, Preferred Contact Time, Primary Telephone Number, Secondary Telephone Number, E-mail Address, Last Date of Exposure, Symptom Onset Date, Monitoring Status</p>
+
+<p><strong>A client can search by the following data elements:</strong> First Name, Last Name, Primary Telephone Number, E-mail Address, Monitoring Status</p>
+
+<h3 id="for-symptom-reports">For Symptom Reports</h3>
+<p><strong>A client can read the following data elements:</strong><br />Name, Answer</p>
+
+<h3 id="for-lab-results">For Lab Results</h3>
+<p><strong>A client can read the following data elements:</strong><br />Report Date, Result</p>
+
+<h1 id="tentative-roadmap">Tentative Roadmap</h1>
+<p><strong>DISCLAIMER</strong>: This roadmap is <strong>tentative</strong>, meaning we are not making any promises. Future work is subject to change at all times; we can and will modify and prioritize future work based on user needs as they arise.</p>
+
+<p>Below are the items currently planned for future work in the Sara Alert API, in roughly the order which we plan to implement them. Also note that these do not necessarily occur serially; multiple items may be worked in parallel.</p>
+<ol>
+  <li>Expand support for more data elements: Currently the API supports a subset of the data elements supported by the Sara Alert application. We want to get to a place where all or most of those data elements are supported in the API. We are prioritizing these elements based on user needs.</li>
+  <li>Add support for Excel import and CDA PHDC XML export: In order to better support integration with NBS.</li>
+  <li>Improve validation and error reporting: We are always looking to improve data validation and reporting of errors in the API in order to make the system more robust, and to make it easier to test and debug API clients.</li>
+  <li>Improve FHIR compliance: We are also always striving to align the API as closely as possible with the FHIR specification.</li>
+</ol>
+
+<p>For detailed information about what is currently being worked, please see the Coming Soon page <a href="api-coming-soon">here</a></p>
+:ET
