@@ -146,16 +146,16 @@ class ConsumeAssessmentsJob < ApplicationJob
         else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
+          typed_reported_symptoms = if message['experiencing_symptoms']
+                                      # Remove values so that the values will appear as blank in a symptomatic report
+                                      # this will indicate that the person needs to be reached out to to get the actual values
+                                      threshold_condition.clone_symptoms_remove_values
+                                    else
+                                      # The person is not experiencing symptoms, we can infer that the bool symptoms are the opposite
+                                      # of the threshold values that represent symptomatic
+                                      threshold_condition.clone_symptoms_negate_bool_values
+                                    end
           patient.active_dependents.each do |dependent|
-            typed_reported_symptoms = if message['experiencing_symptoms']
-                                        # Remove values so that the values will appear as blank in a symptomatic report
-                                        # this will indicate that the person needs to be reached out to to get the actual values
-                                        threshold_condition.clone_symptoms_remove_values
-                                      else
-                                        # The person is not experiencing symptoms, we can infer that the bool symptoms are the opposite
-                                        # of the threshold values that represent symptomatic
-                                        threshold_condition.clone_symptoms_negate_bool_values
-                                      end
             reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
             assessment = Assessment.new(reported_condition: reported_condition, patient: dependent)
             assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
