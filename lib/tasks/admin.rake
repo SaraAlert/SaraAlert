@@ -7,6 +7,8 @@ namespace :admin do
 
   desc "Import/Update Jurisdictions"
   task import_or_update_jurisdictions: :environment do
+    include JurisdictionIdsAndPathsCacheInvalidator
+
     ActiveRecord::Base.transaction do
       config_contents = YAML.load_file('config/sara/jurisdictions.yml')
 
@@ -33,6 +35,8 @@ namespace :admin do
         combined_hash += jur.jurisdiction_path_threshold_hash
       end
 
+      JurisdictionIdsAndPathsCacheInvalidator.invalidate
+
       unique_identifier_check = if Jurisdiction.where(unique_identifier: nil).count.zero?
                                   "\e[42mChecking Jurisdictions for nil unique identifiers... no nil unique identifiers found, no further action is needed.\e[0m"
                                 else
@@ -53,6 +57,8 @@ namespace :admin do
   # Example Usage: rake admin:delete_jurisdiction_with_id ID=3
   desc "Delete Jurisdiction"
   task delete_jurisdiction_with_id: :environment do
+    include JurisdictionIdsAndPathsCacheInvalidator
+
     jur_id = ENV['ID']
     unless Jurisdiction.exists?(jur_id)
       puts "Error: Jurisdiction with id #{jur_id} not found"
@@ -89,6 +95,7 @@ namespace :admin do
       Analytic.where(jurisdiction_id: jur_id).delete_all
       jur.delete
     end
+    JurisdictionIdsAndPathsCacheInvalidator.invalidate
     rescue ActiveRecord::RecordInvalid
       puts "Jurisdiction transfer failed"
     puts "Complete"
