@@ -1,14 +1,16 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, ButtonGroup, ToggleButton, Row, Col, Form, Modal, OverlayTrigger, Tooltip, Dropdown } from 'react-bootstrap';
+
 import Select, { components } from 'react-select';
 import ReactTooltip from 'react-tooltip';
 import { ToastContainer, toast } from 'react-toastify';
-import moment from 'moment-timezone';
 import axios from 'axios';
-import confirmDialog from '../util/ConfirmDialog';
-import DateInput from '../util/DateInput';
-import supportedLanguages from '../../data/supportedLanguages.json';
+import moment from 'moment-timezone';
+
+import DateInput from '../../util/DateInput';
+import confirmDialog from '../../util/ConfirmDialog';
+import supportedLanguages from '../../../data/supportedLanguages.json';
 
 class AdvancedFilter extends React.Component {
   constructor(props) {
@@ -183,6 +185,25 @@ class AdvancedFilter extends React.Component {
           type: 'number',
           options: ['Successful', 'Unsuccessful', 'All'],
         },
+        {
+          name: 'ten-day-quarantine',
+          title: 'Candidate to Reduce Quarantine after 10 Days (Boolean)',
+          description: 'All asymptomatic records that meet CDC criteria to end quarantine after Day 10 (based on last date of exposure)',
+          type: 'boolean',
+          tooltip:
+            'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom ' +
+            'Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.',
+        },
+        {
+          name: 'seven-day-quarantine',
+          title: 'Candidate to Reduce Quarantine after 7 Days (Boolean)',
+          description:
+            'All asymptomatic records that meet CDC criteria to end quarantine after Day 7 (based on last date of exposure and most recent lab result)',
+          type: 'boolean',
+          tooltip:
+            'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom ' +
+            'Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.',
+        },
       ],
       savedFilters: [],
       activeFilter: null,
@@ -202,7 +223,7 @@ class AdvancedFilter extends React.Component {
       this.setState({ savedFilters: response.data }, () => {
         // Apply filter if it exists in local storage
         let sessionFilter = localStorage.getItem(`SaraFilter`);
-        if (parseInt(sessionFilter)) {
+        if (this.props.updateStickySettings && parseInt(sessionFilter)) {
           this.setFilter(
             this.state.savedFilters.find(filter => {
               return filter.id === parseInt(sessionFilter);
@@ -246,7 +267,9 @@ class AdvancedFilter extends React.Component {
   clear = () => {
     this.setState({ activeFilter: null, applied: false }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilter);
-      localStorage.setItem(`SaraFilter`, null);
+      if (this.props.updateStickySettings) {
+        localStorage.setItem(`SaraFilter`, null);
+      }
     });
   };
 
@@ -261,7 +284,9 @@ class AdvancedFilter extends React.Component {
   setFilter = (filter, apply = false) => {
     if (filter) {
       this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter?.contents || [] }, () => {
-        localStorage.setItem(`SaraFilter`, filter.id);
+        if (this.props.updateStickySettings) {
+          localStorage.setItem(`SaraFilter`, filter.id);
+        }
         if (apply) {
           this.apply();
         }
@@ -399,7 +424,9 @@ class AdvancedFilter extends React.Component {
       })
       .then(() => {
         toast.success('Filter successfully deleted.');
-        localStorage.removeItem(`SaraFilter`);
+        if (this.props.updateStickySettings) {
+          localStorage.removeItem(`SaraFilter`);
+        }
         this.setState({
           show: false,
           applied: false,
@@ -497,10 +524,14 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  renderRelativeTooltip = (filter, value, index) => {
-    const tooltipId = `${filter.name}-${index}`;
+  /**
+   * Gets the string inside the tooltip for relative date filter options.
+   * @param {Object} filter - Filter currently selected
+   * @param {*} value - Filter value
+   */
+  getRelativeTooltipString(filter, value) {
     const filterName = filter.title.replace(' (Relative Date)', '');
-    let rangeString, start, end;
+    let statement, rangeString, start, end;
 
     // set variables for date options including a time stamp
     if (filter.hasTimestamp) {
@@ -536,17 +567,44 @@ class AdvancedFilter extends React.Component {
       }
     }
 
-    const statement = `${filterName} “${value.when}” relative date periods include records ${rangeString}.  The current setting of "${value.when}  ${value.number} ${value.unit}" will return records with ${filterName} date from ${start} through ${end}.`;
-    return (
-      <div style={{ display: 'inline' }}>
-        <span data-for={tooltipId} data-tip="" className="ml-1 tooltip-af">
-          <i className="fas fa-question-circle px-0"></i>
-        </span>
-        <ReactTooltip id={tooltipId} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container">
-          <span>{statement}</span>
-        </ReactTooltip>
-      </div>
-    );
+    statement = `${filterName} “${value.when}” relative date periods include records ${rangeString}.
+                 The current setting of "${value.when}  ${value.number} ${value.unit}" will return records with ${filterName} date from ${start} through ${end}.`;
+    return statement;
+  }
+
+  /**
+   * Renders a tooltip for the specific filter option/type.
+   * @param {Object} filter - Filter currently selected
+   * @param {*} value - Filter value
+   * @param {Number} index  - Filter index
+   */
+  renderOptionTooltip = (filter, value, index) => {
+    const tooltipId = `${filter.name}-${index}`;
+    let statement;
+
+    // Relative dates all get a specific tooltip
+    // NOTE: Right now because of how this is set up, relative dates can't have a tooltip in addition to the one that is shown
+    // here once "more" is selected.
+    if (filter.title.includes('(Relative Date)')) {
+      statement = this.getRelativeTooltipString(filter, value);
+    } else {
+      // Otherwise base it on specific filter option
+      statement = filter.tooltip;
+    }
+
+    // Only render if there is a valid statement for this filter option.
+    if (statement) {
+      return (
+        <div style={{ display: 'inline' }}>
+          <span data-for={tooltipId} data-tip="" className="ml-1 tooltip-af">
+            <i className="fas fa-question-circle px-0"></i>
+          </span>
+          <ReactTooltip id={tooltipId} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container">
+            <span>{statement}</span>
+          </ReactTooltip>
+        </div>
+      );
+    }
   };
 
   // Modal to specify filter name
@@ -555,6 +613,7 @@ class AdvancedFilter extends React.Component {
       <Modal
         show={this.state.showFilterNameModal}
         centered
+        className="advanced-filter-modal-container"
         onHide={() => {
           this.setState({ showFilterNameModal: false });
         }}>
@@ -818,7 +877,7 @@ class AdvancedFilter extends React.Component {
                       </Form.Control>
                     </Col>
                     <Col md="2" className="text-center my-auto">
-                      {this.renderRelativeTooltip(filterOption, value, index)}
+                      {this.renderOptionTooltip(filterOption, value, index)}
                     </Col>
                   </React.Fragment>
                 )}
@@ -837,6 +896,9 @@ class AdvancedFilter extends React.Component {
               </Form.Group>
             )}
           </Col>
+          {filterOption && filterOption.tooltip && filterOption.type !== 'relative' && (
+            <span className="align-middle mx-2">{this.renderOptionTooltip(filterOption, value, index)}</span>
+          )}
           <Col className="py-0" md={2}>
             <div className="float-right">
               <Button variant="danger" onClick={() => this.remove(index)}>
@@ -856,7 +918,7 @@ class AdvancedFilter extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Modal show={this.state.show} centered dialogClassName="modal-af" onHide={this.onHide}>
+        <Modal show={this.state.show} centered dialogClassName="modal-af" className="advanced-filter-modal-container" onHide={this.onHide}>
           <Modal.Header>
             <Modal.Title>Advanced Filter: {this.state.activeFilter ? this.state.activeFilter.name : 'untitled'}</Modal.Title>
           </Modal.Header>
@@ -983,6 +1045,7 @@ AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
   workflow: PropTypes.string,
+  updateStickySettings: PropTypes.bool,
 };
 
 export default AdvancedFilter;

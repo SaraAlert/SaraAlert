@@ -38,7 +38,7 @@ class PublicHealthHeader extends React.Component {
         const config = { headers: { 'content-type': 'multipart/form-data' } };
         const formData = new FormData();
         formData.append('file', this.state.file);
-        const url = `/import/${this.props.workflow}/${this.state.fileType === 'epix' ? 'epix' : 'comprehensive_monitorees'}`;
+        const url = `/import/${this.props.workflow}/${this.state.fileType === 'epix' ? 'epix' : 'sara_alert_format'}`;
         axios.post(url, formData, config).then(response => {
           this.setState({
             uploading: false,
@@ -163,7 +163,19 @@ class PublicHealthHeader extends React.Component {
               )}
             </Button>
           )}
-          {this.props.abilities.export && <Export authenticity_token={this.props.authenticity_token} workflow={this.props.workflow}></Export>}
+          {this.props.abilities.export && (
+            <Export
+              authenticity_token={this.props.authenticity_token}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              jurisdiction={this.props.jurisdiction}
+              tabs={this.props.tabs}
+              workflow={this.props.workflow}
+              query={this.props.query}
+              all_monitorees_count={this.state.counts.exposure + this.state.counts.isolation}
+              current_monitorees_count={this.props.current_monitorees_count}
+              custom_export_options={this.props.custom_export_options}
+            />
+          )}
           {this.props.abilities.import && (
             <DropdownButton
               as={ButtonGroup}
@@ -202,13 +214,19 @@ class PublicHealthHeader extends React.Component {
 
 PublicHealthHeader.propTypes = {
   authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
   workflow: PropTypes.oneOf(['exposure', 'isolation']),
+  jurisdiction: PropTypes.object,
+  tabs: PropTypes.object,
   abilities: PropTypes.exact({
     analytics: PropTypes.bool,
     enrollment: PropTypes.bool,
     export: PropTypes.bool,
     import: PropTypes.bool,
   }),
+  query: PropTypes.object,
+  current_monitorees_count: PropTypes.number,
+  custom_export_options: PropTypes.object,
 };
 
 export default PublicHealthHeader;

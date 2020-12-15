@@ -129,6 +129,20 @@ class Assessment < ApplicationRecord
     )
   end
 
+  def custom_details(fields, patient_identifiers)
+    assessment_details = {}
+    assessment_details[:id] = id || '' if fields.include?(:id)
+    assessment_details[:patient_id] = patient_id || '' if fields.include?(:patient_id)
+    assessment_details[:user_defined_id_statelocal] = patient_identifiers[:user_defined_id_statelocal]
+    assessment_details[:user_defined_id_cdc] = patient_identifiers[:user_defined_id_cdc]
+    assessment_details[:user_defined_id_nndss] = patient_identifiers[:user_defined_id_nndss]
+    assessment_details[:symptomatic] = symptomatic || false if fields.include?(:symptomatic)
+    assessment_details[:who_reported] = who_reported || '' if fields.include?(:who_reported)
+    assessment_details[:created_at] = created_at || '' if fields.include?(:created_at)
+    assessment_details[:updated_at] = updated_at || '' if fields.include?(:updated_at)
+    assessment_details
+  end
+
   private
 
   def update_patient_linelist_after_save

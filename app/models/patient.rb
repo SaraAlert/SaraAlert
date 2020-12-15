@@ -19,34 +19,18 @@ class Patient < ApplicationRecord
     end
   end
 
-  validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
-                                                  'Enrolled more than 14 days after last date of exposure (system)',
-                                                  'Enrolled more than 10 days after last date of exposure (system)',
-                                                  'Enrolled on last day of monitoring period (system)',
-                                                  'Completed Monitoring (system)',
-                                                  'Meets Case Definition',
-                                                  'Lost to follow-up during monitoring period',
-                                                  'Lost to follow-up (contact never established)',
-                                                  'Transferred to another jurisdiction',
-                                                  'Person Under Investigation (PUI)',
-                                                  'Case confirmed',
-                                                  'Past monitoring period',
-                                                  'Meets criteria to discontinue isolation',
-                                                  'Deceased',
-                                                  'Duplicate',
-                                                  'Other',
-                                                  nil, ''] }
-
-  validates :monitoring_plan, inclusion: {
-    in: VALID_ENUMS[:monitoring_plan],
-    message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[:monitoring_plan].reject(&:blank?).join("', '")}'"
+  validates :monitoring_reason, inclusion: {
+    in: VALID_PATIENT_ENUMS[:monitoring_reason],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:monitoring_reason].reject(&:blank?).join("', '")}'"
   }
-
-  validates :exposure_risk_assessment, inclusion: { in: ['High',
-                                                         'Medium',
-                                                         'Low',
-                                                         'No Identified Risk',
-                                                         nil, ''] }
+  validates :monitoring_plan, inclusion: {
+    in: VALID_PATIENT_ENUMS[:monitoring_plan],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:monitoring_plan].reject(&:blank?).join("', '")}'"
+  }
+  validates :exposure_risk_assessment, inclusion: {
+    in: VALID_PATIENT_ENUMS[:exposure_risk_assessment],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:exposure_risk_assessment].reject(&:blank?).join("', '")}'"
+  }
 
   %i[address_state
      ethnicity
@@ -57,8 +41,8 @@ class Patient < ApplicationRecord
      primary_telephone_type
      secondary_telephone_type].each do |enum_field|
     validates enum_field, on: :api, inclusion: {
-      in: VALID_ENUMS[enum_field],
-      message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
+      in: VALID_PATIENT_ENUMS[enum_field],
+      message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].join("', '")}'"
     }, allow_blank: true
   end
 
@@ -534,6 +518,51 @@ class Patient < ApplicationRecord
     end
   }
 
+  # Criteria for this CDC quarantine guidance which can be found here:
+  # https://www.cdc.gov/coronavirus/2019-ncov/more/scientific-brief-options-to-reduce-quarantine.html
+  #
+  # Record must:
+  # - be unpurged, open, in exposure workflow, and not in continuous exposure
+  # - has no symptomatic reports
+  # - have reported within 10-13 days after their last date of exposure
+  # - be 10 or more days past their last date of exposure
+  scope :ten_day_quarantine_candidates, lambda { |user_curr_datetime|
+    where(purged: false, monitoring: true, isolation: false, continuous_exposure: false)
+      .where_assoc_not_exists(:assessments, symptomatic: true)
+      .where_assoc_exists(:assessments) do
+        # CAST is necessary to guarantee correct comparison between datetime and date.
+        where('CAST(assessments.created_at AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 10 DAY) '\
+              'AND DATE_ADD(last_date_of_exposure, INTERVAL 13 DAY)')
+      end
+      .where('? >= DATE_ADD(patients.last_date_of_exposure, INTERVAL 10 DAY)', user_curr_datetime.to_date)
+  }
+
+  # Criteria for this CDC quarantine guidance which can be found here:
+  # https://www.cdc.gov/coronavirus/2019-ncov/more/scientific-brief-options-to-reduce-quarantine.html
+  #
+  # Record must:
+  # - be unpurged, open, in exposure workflow, and not in continuous exposure
+  #-  has no symptomatic reports
+  # - have reported within 7-9 days after their last date of exposure and
+  # - be 7 or more days past their last date of exposure
+  # - have a negative PCR or Antigen test that was collected between 5-9 days after their last date of exposure
+  # rubocop:disable Style/MultilineBlockChain
+  scope :seven_day_quarantine_candidates, lambda { |user_curr_datetime|
+    where(purged: false, monitoring: true, isolation: false, continuous_exposure: false)
+      .where_assoc_not_exists(:assessments, symptomatic: true)
+      .where_assoc_exists(:assessments) do
+        # CAST is necessary to guarantee correct comparison between datetime and date.
+        where('CAST(assessments.created_at AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY) '\
+              'AND DATE_ADD(last_date_of_exposure, INTERVAL 9 DAY)')
+      end
+      .where('? >= DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY)', user_curr_datetime.to_date)
+      .where_assoc_exists(:laboratories) do
+        where(result: 'negative', lab_type: %w[PCR ANTIGEN])
+          .where('specimen_collection BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 5 DAY) AND DATE_ADD(last_date_of_exposure, INTERVAL 9 DAY)')
+      end
+  }
+  # rubocop:enable Style/MultilineBlockChain
+
   # Gets the current date in the patient's timezone
   def curr_date_in_timezone
     Time.now.getlocal(address_timezone_offset)
@@ -685,7 +714,7 @@ class Patient < ApplicationRecord
 
   # Date when patient is expected to be purged
   def expected_purge_date
-    (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822
+    monitoring ? '' : (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822
   end
 
   # Determine if this patient's phone number has blocked communication with SaraAlert

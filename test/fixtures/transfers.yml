@@ -12,18 +12,18 @@ patient_4_from_2_to_4:
   to_jurisdiction_id: 4
   who_id: 13
   created_at: <%= 10.hours.ago %>
-patient_6_from_5_to_2:
+patient_6_from_2_to_5:
   id: 3
   patient_id: 6
-  from_jurisdiction_id: 5
-  to_jurisdiction_id: 2
-  who_id: 13
-  created_at: <%= 7.days.ago %>
-patient_8_from_2_to_5:
-  id: 4
-  patient_id: 8
   from_jurisdiction_id: 2
   to_jurisdiction_id: 5
+  who_id: 13
+  created_at: <%= 7.days.ago %>
+patient_8_from_5_to_2:
+  id: 4
+  patient_id: 8
+  from_jurisdiction_id: 5
+  to_jurisdiction_id: 2
   who_id: 13
   created_at: <%= 7.days.ago %>
 patient_41_from_6_to_7:
@@ -40,17 +40,17 @@ patient_42_from_7_to_6:
   to_jurisdiction_id: 6
   who_id: 7
   created_at: <%= 5.hours.ago %>
-patient_43_from_4_to_5:
+patient_43_from_5_to_4:
   id: 7
   patient_id: 43
-  from_jurisdiction_id: 4
-  to_jurisdiction_id: 5
-  who_id: 1
-  created_at: <%= 12.hours.ago %>
-patient_44_from_5_to_4:
-  id: 8
-  patient_id: 44
   from_jurisdiction_id: 5
   to_jurisdiction_id: 4
+  who_id: 1
+  created_at: <%= 12.hours.ago %>
+patient_44_from_4_to_5:
+  id: 8
+  patient_id: 44
+  from_jurisdiction_id: 4
+  to_jurisdiction_id: 5
   who_id: 1
   created_at: <%= 22.hours.ago %>

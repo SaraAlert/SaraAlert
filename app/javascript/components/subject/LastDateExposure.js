@@ -101,6 +101,17 @@ class LastDateExposure extends React.Component {
     });
   }
 
+  endOfMonitoringTooltipText = () => {
+    return (
+      <div>
+        Calculated by the system as Last Date of Exposure + {this.props.monitoring_period_days} days
+        <div>
+          <i>Only relevant for Exposure Workflow</i>
+        </div>
+      </div>
+    );
+  };
+
   createModal(title, message, close, submit) {
     const update_continuous_exposure = title === 'Continuous Exposure';
     return (
@@ -266,7 +277,7 @@ class LastDateExposure extends React.Component {
               <Row className="reports-actions-title">
                 <Col>
                   <span className="nav-input-label">END OF MONITORING</span>
-                  <InfoTooltip tooltipTextKey="endOfMonitoring" location="right"></InfoTooltip>
+                  <InfoTooltip getCustomText={this.endOfMonitoringTooltipText} location="right"></InfoTooltip>
                 </Col>
               </Row>
               <Row>
@@ -286,6 +297,7 @@ class LastDateExposure extends React.Component {
 LastDateExposure.propTypes = {
   is_household_member: PropTypes.bool,
   authenticity_token: PropTypes.string,
+  monitoring_period_days: PropTypes.number,
   patient: PropTypes.object,
 };
 

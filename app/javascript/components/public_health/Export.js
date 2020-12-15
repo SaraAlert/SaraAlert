@@ -4,6 +4,7 @@ import { Button, ButtonGroup, Modal, DropdownButton, Dropdown } from 'react-boot
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 
+import CustomExport from './CustomExport';
 import reportError from '../util/ReportError';
 
 class Export extends React.Component {
@@ -14,11 +15,21 @@ class Export extends React.Component {
       showSaraFormatModal: false,
       showAllPurgeEligibleModal: false,
       showAllModal: false,
+      showCustomFormatModal: false,
     };
-    this.submit = this.submit.bind(this);
   }
 
-  submit(endpoint) {
+  componentDidMount() {
+    // Grab saved user presets
+    this.reloadExportPresets();
+  }
+
+  reloadExportPresets = () => {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios.get(window.BASE_PATH + '/user_export_presets').then(response => this.setState({ savedExportPresets: response.data }));
+  };
+
+  submit = endpoint => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'get',
@@ -44,7 +55,7 @@ class Export extends React.Component {
           showAllModal: false,
         });
       });
-  }
+  };
 
   createModal(title, toggle, submit, endpoint) {
     return (
@@ -91,28 +102,38 @@ class Export extends React.Component {
               <i className="fas fa-download"></i> Export{' '}
             </React.Fragment>
           }>
-          <Dropdown.Item onClick={() => this.setState({ showCSVModal: true })}>Line list CSV ({this.props.workflow})</Dropdown.Item>
-          <Dropdown.Item onClick={() => this.setState({ showSaraFormatModal: true })}>Sara Alert Format ({this.props.workflow})</Dropdown.Item>
+          <Dropdown.Item onClick={() => this.setState({ showCSVModal: true })}>Line list CSV ({this.props.query.workflow})</Dropdown.Item>
+          <Dropdown.Item onClick={() => this.setState({ showSaraFormatModal: true })}>Sara Alert Format ({this.props.query.workflow})</Dropdown.Item>
           <Dropdown.Item onClick={() => this.setState({ showAllPurgeEligibleModal: true })}>Excel Export For Purge-Eligible Monitorees</Dropdown.Item>
           <Dropdown.Item onClick={() => this.setState({ showAllModal: true })}>Excel Export For All Monitorees</Dropdown.Item>
+          {this.state.savedExportPresets && this.state.savedExportPresets.length > 0 && <Dropdown.Divider />}
+          {this.state.savedExportPresets?.map((savedPreset, index) => {
+            return (
+              <Dropdown.Item key={`sep-${index}`} onClick={() => this.setState({ savedPreset, showCustomFormatModal: true })}>
+                {savedPreset.name}
+              </Dropdown.Item>
+            );
+          })}
+          <Dropdown.Divider />
+          <Dropdown.Item onClick={() => this.setState({ showCustomFormatModal: true })}>Custom Format...</Dropdown.Item>
         </DropdownButton>
         {this.state.showCSVModal &&
           this.createModal(
-            `Line list CSV (${this.props.workflow})`,
+            `Line list CSV (${this.props.query.workflow})`,
             () => {
               this.setState({ showCSVModal: false });
             },
             this.submit,
-            `/export/csv/patients/linelist/${this.props.workflow}`
+            `/export/csv_linelist/${this.props.query.workflow}`
           )}
         {this.state.showSaraFormatModal &&
           this.createModal(
-            `Sara Alert Format (${this.props.workflow})`,
+            `Sara Alert Format (${this.props.query.workflow})`,
             () => {
               this.setState({ showSaraFormatModal: false });
             },
             this.submit,
-            `/export/excel/patients/comprehensive/${this.props.workflow}`
+            `/export/sara_alert_format/${this.props.query.workflow}`
           )}
         {this.state.showAllPurgeEligibleModal &&
           this.createModal(
@@ -121,7 +142,7 @@ class Export extends React.Component {
               this.setState({ showAllPurgeEligibleModal: false });
             },
             this.submit,
-            '/export/excel/patients/full_history/purgeable'
+            '/export/full_history_patients/purgeable'
           )}
         {this.state.showAllModal &&
           this.createModal(
@@ -130,7 +151,7 @@ class Export extends React.Component {
               this.setState({ showAllModal: false });
             },
             this.submit,
-            '/export/excel/patients/full_history/all'
+            '/export/full_history_patients/all'
           )}
         <ToastContainer
           position="top-center"
@@ -142,14 +163,36 @@ class Export extends React.Component {
           draggable
           pauseOnHover
         />
+        {this.state.showCustomFormatModal && (
+          <CustomExport
+            authenticity_token={this.props.authenticity_token}
+            jurisdiction_paths={this.props.jurisdiction_paths}
+            jurisdiction={this.props.jurisdiction}
+            tabs={this.props.tabs}
+            preset={this.state.savedPreset}
+            presets={this.state.savedExportPresets}
+            patient_query={this.props.query}
+            current_monitorees_count={this.props.current_monitorees_count}
+            all_monitorees_count={this.props.all_monitorees_count}
+            options={this.props.custom_export_options}
+            onClose={() => this.setState({ showCustomFormatModal: false, savedPreset: null })}
+            reloadExportPresets={this.reloadExportPresets}
+          />
+        )}
       </React.Fragment>
     );
   }
 }
 
 Export.propTypes = {
-  workflow: PropTypes.string,
   authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
+  jurisdiction: PropTypes.object,
+  tabs: PropTypes.object,
+  query: PropTypes.object,
+  all_monitorees_count: PropTypes.number,
+  current_monitorees_count: PropTypes.number,
+  custom_export_options: PropTypes.object,
 };
 
 export default Export;

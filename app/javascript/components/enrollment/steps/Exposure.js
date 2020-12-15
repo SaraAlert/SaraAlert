@@ -51,9 +51,9 @@ class Exposure extends React.Component {
         value = jurisdiction_id;
         axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
         axios
-          .get('/jurisdictions/assigned_users', {
-            params: {
-              jurisdiction_id,
+          .post('/jurisdictions/assigned_users', {
+            query: {
+              jurisdiction: jurisdiction_id,
               scope: 'exact',
             },
           })
@@ -624,7 +624,7 @@ class Exposure extends React.Component {
                     <Form.Group as={Col} md="6" className="mb-2 pt-2">
                       <Form.Label className="nav-input-label">
                         ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
-                        <InfoTooltip tooltipTextKey="assigned_user" location="top"></InfoTooltip>
+                        <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
                       </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['assigned_user']}

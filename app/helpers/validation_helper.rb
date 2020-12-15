@@ -72,27 +72,33 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
 
   VALID_STATES = STATE_ABBREVIATIONS.values
 
-  VALID_ENUMS = {
+  VALID_PATIENT_ENUMS = {
+    gender_identity: ['Male (Identifies as male)', 'Female (Identifies as female)', 'Transgender Male (Female-to-Male [FTM])',
+                      'Transgender Female (Male-to-Female [MTF]', 'Genderqueer / gender nonconforming (neither exclusively male nor female)', 'Another',
+                      'Chose not to disclose'],
+    sexual_orientation: ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'],
     ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino'],
     preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown'],
     primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],
     secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],
     preferred_contact_time: %w[Morning Afternoon Evening],
     additional_planned_travel_type: %w[Domestic International],
-    exposure_risk_assessment: ['High', 'Medium', 'Low', 'No Identified Risk'],
-    monitoring_plan: ['None',
-                      'Daily active monitoring',
-                      'Self-monitoring with public health supervision',
-                      'Self-monitoring with delegated supervision',
-                      'Self-observation',
-                      '',
-                      nil],
+    exposure_risk_assessment: ['High', 'Medium', 'Low', 'No Identified Risk', '', nil],
+    monitoring_reason: ['Completed Monitoring', 'Meets criteria to shorten quarantine', 'Enrolled more than 14 days after last date of exposure (system)',
+                        'Enrolled more than 10 days after last date of exposure (system)', 'Enrolled on last day of monitoring period (system)',
+                        'Completed Monitoring (system)', 'Meets Case Definition', 'Lost to follow-up during monitoring period',
+                        'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction', 'Person Under Investigation (PUI)',
+                        'Case confirmed', 'Past monitoring period', 'Meets criteria to discontinue isolation', 'Deceased', 'Duplicate', 'Other', '', nil],
+    monitoring_plan: ['None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision',
+                      'Self-observation', '', nil],
     case_status: ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'],
     lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'],
     result: %w[positive negative indeterminate other],
     sex: %w[Male Female Unknown],
     address_state: VALID_STATES,
-    monitored_address_state: VALID_STATES
+    monitored_address_state: VALID_STATES,
+    public_health_action: ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing'],
+    source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other']
   }.freeze
 
   VALID_EXPOSURE_ENUMS = {
@@ -109,7 +115,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     end
   end
 
-  NORMALIZED_ENUMS = normalize_enums(VALID_ENUMS)
+  NORMALIZED_ENUMS = normalize_enums(VALID_PATIENT_ENUMS)
 
   NORMALIZED_EXPOSURE_ENUMS = normalize_enums(VALID_EXPOSURE_ENUMS)
 

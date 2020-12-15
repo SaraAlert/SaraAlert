@@ -12,7 +12,14 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  lastDateOfExposure: <div> Used by the system to automatically calculate the monitoring period. </div>,
+  lastDateOfExposure: (
+    <div>
+      Used by the system to automatically calculate the End of Monitoring Date.
+      <div>
+        <i>Only relevant for Exposure Workflow</i>
+      </div>
+    </div>
+  ),
 
   primaryLanguage: (
     <div>
@@ -215,14 +222,6 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  endOfMonitoring: (
-    <div>
-      Calculated by the system based on Last Date of Exposure
-      <div>
-        <i>Only relevant for Exposure Workflow</i>
-      </div>
-    </div>
-  ),
   extendedIsolation: (
     <div>
       Used by the system to determine eligibility to appear on the <i>Records Requiring Review</i> line list. A case cannot appear on the{' '}
@@ -260,7 +259,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  exposure_nonReporting: (
+  exposure_non_reporting: (
     <div>
       Monitorees on this list require public health follow-up to collect missing symptom report(s). Follow-up with these monitorees should be based on current
       guidelines and available resources.
@@ -285,7 +284,7 @@ const TOOLTIP_TEXT = {
   ),
 
   // ISOLATION WORKFLOW LINE LIST DEFINITIONS
-  isolation_recordsRequiringReview: (
+  isolation_records_requiring_review: (
     <div>
       These cases meet one of the recovery definitions and require review by public health to validate that it is safe to discontinue isolation. The recovery
       definition logic has been designed to be sensitive; as a result, cases that do not meet requirements for recovery may appear. To view which recovery
@@ -294,7 +293,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  isolation_nonReporting: (
+  isolation_non_reporting: (
     <div>
       Monitorees on this list require public health follow-up to collect missing symptom report(s). Follow-up with these cases should be based on current
       guidelines and available resources.
@@ -329,7 +328,7 @@ class InfoTooltip extends React.Component {
     // If multiple instances of the Tooltip Exist on a page, the <ReactTooltip/> cannnot find
     // the correct instance (due to the lack of `data-for`/`id` pairs). Therefore we generate
     // custom string for each instance
-    this.customID = this.makeid(this.props.tooltipTextKey.length || 10).substring(0, 6);
+    this.customID = this.makeid(this.props.tooltipTextKey?.length || 10).substring(0, 6);
   }
 
   makeid = length => {
@@ -348,7 +347,8 @@ class InfoTooltip extends React.Component {
           <i className="fas fa-question-circle px-0"></i>
         </span>
         <ReactTooltip id={this.customID} multiline={true} place={this.props.location} type="dark" effect="solid" className="tooltip-container">
-          <span>{TOOLTIP_TEXT[this.props.tooltipTextKey]}</span>
+          {this.props.tooltipTextKey && <span>{TOOLTIP_TEXT[this.props.tooltipTextKey]}</span>}
+          {!this.props.tooltipTextKey && this.props.getCustomText && <span>{this.props.getCustomText()}</span>}
         </ReactTooltip>
       </div>
     );
@@ -357,6 +357,7 @@ class InfoTooltip extends React.Component {
 
 InfoTooltip.propTypes = {
   tooltipTextKey: PropTypes.string,
+  getCustomText: PropTypes.func,
   location: PropTypes.string, // top, right, bottom, left
 };
 

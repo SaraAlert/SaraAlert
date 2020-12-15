@@ -127,6 +127,10 @@ select.form-control {
   border-right: 3px solid black !important;
 }
 
+.g-border-top {
+  border-top: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
 .g-border-bottom {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
 }
@@ -196,6 +200,13 @@ select.form-control {
   // will be drawn in front of any other modals
   background-color: rgba(20, 20, 20, 0.60);
   z-index: 2000;
+}
+
+.advanced-filter-modal-container {
+  // The aggressive z-index ensures that this modal
+  // will be drawn in front of any other modals except the confirm-dialog box
+  background-color: rgba(20, 20, 20, 0.60);
+  z-index: 1999;
 }
 
 .modal-import {

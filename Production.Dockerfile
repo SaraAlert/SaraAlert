@@ -16,7 +16,7 @@ RUN mkdir -p /app/disease-trakker/app/assets/stylesheets
 
 COPY Gemfile Gemfile.lock /app/disease-trakker/
 WORKDIR /app/disease-trakker
-RUN gem install bundler && bundle config set without 'development test' && bundle config set deployment 'true'
+RUN gem install bundler -v 2.1.4 && bundle config set without 'development test' && bundle config set deployment 'true'
 RUN bundle install --jobs $(nproc)
 RUN yarn install --no-optional
 

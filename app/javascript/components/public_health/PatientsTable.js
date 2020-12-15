@@ -22,13 +22,15 @@ import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 
-import AdvancedFilter from './AdvancedFilter';
+import AdvancedFilter from './query/AdvancedFilter';
 import BadgeHOH from '../util/BadgeHOH';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import UpdateAssignedUser from './actions/UpdateAssignedUser';
 import InfoTooltip from '../util/InfoTooltip';
 import CustomTable from '../layout/CustomTable';
+import JurisdictionFilter from './query/JurisdictionFilter';
+import AssignedUserFilter from './query/AssignedUserFilter';
 import EligibilityTooltip from '../util/EligibilityTooltip';
 import confirmDialog from '../util/ConfirmDialog';
 
@@ -53,7 +55,7 @@ class PatientsTable extends React.Component {
           { field: 'risk_level', label: 'Risk Level', isSortable: true, tooltip: null },
           { field: 'monitoring_plan', label: 'Monitoring Plan', isSortable: true, tooltip: null },
           { field: 'public_health_action', label: 'Latest Public Health Action', isSortable: true, tooltip: null },
-          { field: 'expected_purge_date', label: 'Eligible For Purge After', isSortable: true, tooltip: 'purgeDate', filter: this.formatTimestamp },
+          { field: 'expected_purge_date', label: 'Eligible for Purge After', isSortable: true, tooltip: 'purgeDate', filter: this.formatTimestamp },
           { field: 'reason_for_closure', label: 'Reason for Closure', isSortable: true, tooltip: null },
           { field: 'closed_at', label: 'Closed At', isSortable: true, tooltip: null, filter: this.formatTimestamp },
           { field: 'transferred_at', label: 'Transferred At', isSortable: true, tooltip: null, filter: this.formatTimestamp },
@@ -71,15 +73,12 @@ class PatientsTable extends React.Component {
       selectAll: false,
       jurisdiction_paths: {},
       assigned_users: [],
-      form: {
-        jurisdiction_path: props.jurisdiction.path,
-        assigned_user: '',
-      },
       query: {
+        workflow: props.workflow,
         tab: Object.keys(props.tabs)[0],
         jurisdiction: props.jurisdiction.id,
         scope: 'all',
-        user: 'all',
+        user: null,
         search: '',
         page: 0,
         entries: 25,
@@ -87,9 +86,7 @@ class PatientsTable extends React.Component {
       },
       entryOptions: [10, 15, 25, 50, 100],
       cancelToken: axios.CancelToken.source(),
-      filter: null,
     };
-    this.state.jurisdiction_paths[props.jurisdiction.id] = props.jurisdiction.path;
   }
 
   componentDidMount() {
@@ -103,16 +100,16 @@ class PatientsTable extends React.Component {
     // select tab and fetch patients
     this.handleTabSelect(tab);
 
-    // Select page if it exists in local storage
-    let page = localStorage.getItem(`SaraPage`);
-    if (page) {
-      this.handlePageUpdate(JSON.parse(page));
+    // Set jurisdiction if it exists in local storage
+    let jurisdiction = localStorage.getItem('SaraJurisdiction');
+    if (jurisdiction) {
+      this.handleJurisdictionChange(parseInt(jurisdiction));
     }
 
-    // Set entries if it exists in local storage
-    let entries = localStorage.getItem(`SaraEntries`);
-    if (parseInt(entries)) {
-      this.handleEntriesChange(parseInt(entries));
+    // Set assigned user if it exists in local storage
+    let assigned_user = localStorage.getItem('SaraAssignedUser');
+    if (assigned_user) {
+      this.handleAssignedUserChange(assigned_user);
     }
 
     // Set search if it exists in local storage
@@ -130,6 +127,18 @@ class PatientsTable extends React.Component {
       );
     }
 
+    // Select page if it exists in local storage
+    let page = localStorage.getItem(`SaraPage`);
+    if (page) {
+      this.handlePageUpdate(JSON.parse(page));
+    }
+
+    // Set entries if it exists in local storage
+    let entries = localStorage.getItem(`SaraEntries`);
+    if (parseInt(entries)) {
+      this.handleEntriesChange(parseInt(entries));
+    }
+
     // fetch workflow and tab counts
     Object.keys(this.props.tabs).forEach(tab => {
       axios.get(`/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
@@ -138,9 +147,6 @@ class PatientsTable extends React.Component {
         this.setState(count);
       });
     });
-
-    // fetch list of jurisdiction paths
-    this.updateJurisdictionPaths();
   }
 
   clearAllFilters = async () => {
@@ -153,7 +159,11 @@ class PatientsTable extends React.Component {
       localStorage.removeItem(`SaraAssignedUser`);
       localStorage.removeItem(`SaraScope`);
       location.reload();
-      this.setState({ filter: null });
+      this.setState(state => {
+        const query = state.query;
+        delete query.filter;
+        return { query };
+      });
     }
   };
 
@@ -212,53 +222,47 @@ class PatientsTable extends React.Component {
     );
   };
 
-  handleChange = event => {
-    localStorage.removeItem(`SaraPage`);
-    const form = this.state.form;
-    const query = this.state.query;
-    if (event.target.id === 'jurisdiction_path') {
-      this.setState({ form: { ...form, jurisdiction_path: event.target.value } });
-      const jurisdictionId = Object.keys(this.state.jurisdiction_paths).find(id => this.state.jurisdiction_paths[parseInt(id)] === event.target.value);
-      if (jurisdictionId) {
-        this.updateTable({ ...query, jurisdiction: jurisdictionId, page: 0 });
-        this.updateAssignedUsers(jurisdictionId, this.state.query.scope, this.props.workflow, this.state.query.tab);
-      }
-    } else if (event.target.id === 'assigned_user') {
-      if (event.target.value === '') {
-        this.setState({ form: { ...form, assigned_user: event.target.value } });
-        this.updateTable({ ...query, user: 'all', page: 0 });
-      } else if (!isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999) {
-        this.setState({ form: { ...form, assigned_user: event.target.value } });
-        this.updateTable({ ...query, user: event.target.value, page: 0 });
-      }
-    } else if (event.target.id === 'search') {
-      this.updateTable({ ...query, search: event.target.value, page: 0 });
-      localStorage.setItem(`SaraSearch`, event.target.value);
+  handleJurisdictionChange = jurisdiction => {
+    if (jurisdiction !== this.state.query.jurisdiction) {
+      this.updateTable({ ...this.state.query, jurisdiction, page: 0 });
+      this.updateAssignedUsers(jurisdiction, this.state.query.scope, this.props.workflow, this.state.query.tab);
+      localStorage.removeItem(`SaraPage`);
+      localStorage.setItem(`SaraJurisdiction`, jurisdiction);
     }
   };
 
-  handleScopeChange(scope) {
+  handleScopeChange = scope => {
     if (scope !== this.state.query.scope) {
-      const query = this.state.query;
-      this.updateTable({ ...query, scope, page: 0 });
-      this.updateAssignedUsers(this.props.jurisdiction.id, scope, this.props.workflow, this.state.query.tab);
+      this.updateTable({ ...this.state.query, scope, page: 0 });
+      this.updateAssignedUsers(this.state.query.jurisdiction, scope, this.props.workflow, this.state.query.tab);
+      localStorage.removeItem(`SaraPage`);
+      localStorage.setItem(`SaraScope`, scope);
     }
-  }
+  };
 
-  handleUserChange(user) {
+  handleAssignedUserChange = user => {
     if (user !== this.state.query.user) {
-      const form = this.state.form;
-      const query = this.state.query;
-      this.setState({ form: { ...form, assigned_user: '' } });
-      this.updateTable({ ...query, user, page: 0 });
+      this.updateTable({ ...this.state.query, user, page: 0 });
+      localStorage.removeItem(`SaraPage`);
+      if (user) {
+        localStorage.setItem(`SaraAssignedUser`, user);
+      } else {
+        localStorage.removeItem(`SaraAssignedUser`);
+      }
     }
-  }
+  };
 
-  handleKeyPress(event) {
+  handleSearchChange = event => {
+    this.updateTable({ ...this.state.query, search: event.target?.value, page: 0 });
+    localStorage.removeItem(`SaraPage`);
+    localStorage.setItem(`SaraSearch`, event.target.value);
+  };
+
+  handleKeyPress = event => {
     if (event.which === 13) {
       event.preventDefault();
     }
-  }
+  };
 
   /**
    * Callback called when child Table component detects a selection change.
@@ -285,22 +289,20 @@ class PatientsTable extends React.Component {
     if (query.tab === 'transferred_out') {
       query.jurisdiction = this.props.jurisdiction.id;
       query.scope = 'all';
-      query.user = 'all';
+      query.user = null;
     }
 
     this.setState({ query, cancelToken, loading: true }, () => {
       this.queryServer(query);
     });
+
+    // set query
+    this.props.setQuery(query);
   };
 
   queryServer = _.debounce(query => {
     axios
-      .post('/public_health/patients', {
-        workflow: this.props.workflow,
-        ...query,
-        filter: this.state.filter,
-        cancelToken: this.state.cancelToken.token,
-      })
+      .post('/public_health/patients', { query, cancelToken: this.state.cancelToken.token })
       .catch(error => {
         if (!axios.isCancel(error)) {
           this.setState(state => {
@@ -323,6 +325,9 @@ class PatientsTable extends React.Component {
               actionsEnabled: false,
             };
           });
+
+          // update count for custom export
+          this.props.setFilteredMonitoreesCount(response.data.total);
         } else {
           this.setState({
             selectedPatients: [],
@@ -330,36 +335,33 @@ class PatientsTable extends React.Component {
             actionsEnabled: false,
             loading: false,
           });
+
+          // update count for custom export
+          this.props.setFilteredMonitoreesCount(0);
         }
       });
   }, 500);
 
-  advancedFilterUpdate(filter) {
+  advancedFilterUpdate = filter => {
     localStorage.removeItem(`SaraPage`);
     this.setState(
-      state => ({ filter: filter?.filter(field => field?.filterOption != null), query: { ...state.query, page: 0 } }),
+      state => {
+        const query = state.query;
+        query.filter = filter?.filter(field => field?.filterOption != null);
+        query.page = 0;
+        return { query };
+      },
       () => {
         this.updateTable(this.state.query);
       }
     );
-  }
-
-  updateJurisdictionPaths() {
-    axios.get('/jurisdictions/paths').then(response => {
-      this.setState({ jurisdiction_paths: response.data.jurisdiction_paths });
-    });
-  }
+  };
 
   updateAssignedUsers(jurisdiction_id, scope, workflow, tab) {
     if (tab !== 'transferred_out') {
       axios
-        .get('/jurisdictions/assigned_users', {
-          params: {
-            jurisdiction_id,
-            scope,
-            workflow: workflow,
-            tab: tab,
-          },
+        .post('/jurisdictions/assigned_users', {
+          query: { jurisdiction: jurisdiction_id, scope, workflow, tab },
         })
         .then(response => {
           this.setState({ assigned_users: response.data.assigned_users });
@@ -445,100 +447,21 @@ class PatientsTable extends React.Component {
                   {this.state.query.tab !== 'transferred_out' && (
                     <React.Fragment>
                       <Col lg={17} md={15} className="my-1">
-                        <InputGroup size="sm">
-                          <InputGroup.Prepend>
-                            <InputGroup.Text className="rounded-0">
-                              <i className="fas fa-map-marked-alt"></i>
-                              <span className="ml-1">Jurisdiction</span>
-                            </InputGroup.Text>
-                          </InputGroup.Prepend>
-                          <Form.Control
-                            type="text"
-                            autoComplete="off"
-                            id="jurisdiction_path"
-                            list="jurisdiction_paths"
-                            value={this.state.form.jurisdiction_path}
-                            onChange={this.handleChange}
-                          />
-                          <datalist id="jurisdiction_paths">
-                            {Object.entries(this.state.jurisdiction_paths).map(([id, path]) => {
-                              return (
-                                <option value={path} key={id}>
-                                  {path}
-                                </option>
-                              );
-                            })}
-                          </datalist>
-                          <OverlayTrigger overlay={<Tooltip>Include Sub-Jurisdictions</Tooltip>}>
-                            <Button
-                              id="allJurisdictions"
-                              size="sm"
-                              variant={this.state.query.scope === 'all' ? 'primary' : 'outline-secondary'}
-                              style={{ outline: 'none', boxShadow: 'none' }}
-                              onClick={() => this.handleScopeChange('all')}>
-                              All
-                            </Button>
-                          </OverlayTrigger>
-                          <OverlayTrigger overlay={<Tooltip>Exclude Sub-Jurisdictions</Tooltip>}>
-                            <Button
-                              id="exactJurisdiction"
-                              size="sm"
-                              variant={this.state.query.scope === 'exact' ? 'primary' : 'outline-secondary'}
-                              style={{ outline: 'none', boxShadow: 'none' }}
-                              onClick={() => this.handleScopeChange('exact')}>
-                              Exact
-                            </Button>
-                          </OverlayTrigger>
-                        </InputGroup>
+                        <JurisdictionFilter
+                          jurisdiction_paths={this.props.jurisdiction_paths}
+                          jurisdiction={this.state.query.jurisdiction}
+                          scope={this.state.query.scope}
+                          onJurisdictionChange={this.handleJurisdictionChange}
+                          onScopeChange={this.handleScopeChange}
+                        />
                       </Col>
                       <Col lg={7} md={9} className="my-1">
-                        <InputGroup size="sm">
-                          <InputGroup.Prepend>
-                            <InputGroup.Text className="rounded-0">
-                              <i className="fas fa-users"></i>
-                              <span className="ml-1">Assigned User</span>
-                            </InputGroup.Text>
-                          </InputGroup.Prepend>
-                          <Form.Control
-                            type="text"
-                            autoComplete="off"
-                            id="assigned_user"
-                            list="assigned_users"
-                            value={this.state.form.assigned_user}
-                            onChange={this.handleChange}
-                          />
-                          <datalist id="assigned_users">
-                            {this.state.assigned_users?.map(num => {
-                              return (
-                                <option value={num} key={num}>
-                                  {num}
-                                </option>
-                              );
-                            })}
-                          </datalist>
-                          <OverlayTrigger
-                            overlay={<Tooltip>Search for {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'} with any or no assigned user</Tooltip>}>
-                            <Button
-                              id="allAssignedUsers"
-                              size="sm"
-                              variant={this.state.query.user === 'all' ? 'primary' : 'outline-secondary'}
-                              style={{ outline: 'none', boxShadow: 'none' }}
-                              onClick={() => this.handleUserChange('all')}>
-                              All
-                            </Button>
-                          </OverlayTrigger>
-                          <OverlayTrigger
-                            overlay={<Tooltip>Search for {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'} with no assigned user</Tooltip>}>
-                            <Button
-                              id="noAssignedUser"
-                              size="sm"
-                              variant={this.state.query.user === 'none' ? 'primary' : 'outline-secondary'}
-                              style={{ outline: 'none', boxShadow: 'none' }}
-                              onClick={() => this.handleUserChange('none')}>
-                              None
-                            </Button>
-                          </OverlayTrigger>
-                        </InputGroup>
+                        <AssignedUserFilter
+                          workflow={this.props.workflow}
+                          assigned_users={this.state.assigned_users}
+                          assigned_user={this.state.query.user}
+                          onAssignedUserChange={this.handleAssignedUserChange}
+                        />
                       </Col>
                     </React.Fragment>
                   )}
@@ -556,14 +479,15 @@ class PatientsTable extends React.Component {
                     autoComplete="off"
                     size="sm"
                     id="search"
-                    value={this.state.query.search}
-                    onChange={this.handleChange}
+                    value={this.state.query.search || ''}
+                    onChange={this.handleSearchChange}
                     onKeyPress={this.handleKeyPress}
                   />
                   <AdvancedFilter
                     advancedFilterUpdate={this.advancedFilterUpdate}
                     authenticity_token={this.props.authenticity_token}
                     workflow={this.props.workflow}
+                    updateStickySettings={true}
                   />
                   {this.state.query !== 'transferred_out' && (
                     <DropdownButton
@@ -649,12 +573,15 @@ class PatientsTable extends React.Component {
 
 PatientsTable.propTypes = {
   authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
+  workflow: PropTypes.oneOf(['exposure', 'isolation']),
   jurisdiction: PropTypes.exact({
     id: PropTypes.number,
     path: PropTypes.string,
   }),
-  workflow: PropTypes.oneOf(['exposure', 'isolation']),
   tabs: PropTypes.object,
+  setQuery: PropTypes.func,
+  setFilteredMonitoreesCount: PropTypes.func,
 };
 
 export default PatientsTable;

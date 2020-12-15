@@ -1,5 +1,5 @@
 <% content_for :assets do %>
-<%= javascript_packs_with_chunks_tag 'datatables', 'moment' %>
+  <%= javascript_packs_with_chunks_tag 'datatables', 'moment' %>
 <% end %>
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Return to Exposure Dashboard', href: '/' }, { value: 'Monitoree Details', href: nil }], isolation: @patient&.isolation || false } %>
 
@@ -146,7 +146,12 @@
         <% end -%>
       </tbody>
     </table>
-    <%= react_component('subject/LastDateExposure', { authenticity_token: form_authenticity_token, patient: @patient, is_household_member: @household_members.count > 1 }) %>
+    <%= react_component('subject/LastDateExposure', {
+                          authenticity_token: form_authenticity_token,
+                          patient: @patient,
+                          is_household_member: @household_members.count > 1,
+                          monitoring_period_days: ADMIN_OPTIONS['monitoring_period_days'].to_i
+                        }) %>
   </div>
 </div>
 <% @patient.assessments.order('created_at').each do |assessment| -%>
