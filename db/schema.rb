@@ -105,6 +105,8 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
 
   create_table "downloads", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
+    t.binary "contents", size: :long, null: false
+    t.string "lookup", null: false
     t.string "filename", null: false
     t.string "export_type", null: false
     t.datetime "created_at", precision: 6, null: false
