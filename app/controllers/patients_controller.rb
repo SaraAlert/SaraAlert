@@ -21,13 +21,7 @@ class PatientsController < ApplicationController
 
     @jurisdiction_path = @patient.jurisdiction_path
 
-    @possible_jurisdiction_paths = if current_user.can_transfer_patients?
-                                     # Allow all jurisdictions as valid transfer options.
-                                     Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
-                                   else
-                                     # Otherwise, only show jurisdictions within hierarchy.
-                                     Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }]
-                                   end
+    @jurisdiction_paths = jurisdiction_paths_for(current_user)
 
     # Household members (dependents) for the HOH excluding HOH
     @dependents_exclude_hoh = @patient.dependents_exclude_self.where(purged: false)
@@ -749,5 +743,13 @@ class PatientsController < ApplicationController
       user_defined_symptom_onset
       extended_isolation
     ]
+  end
+
+  protected
+
+  def jurisdiction_paths_for(current_user)
+    return Jurisdiction.all_paths(include_usa: false) if current_user.can_transfer_patients?
+
+    current_user.jurisdiction.subtree_paths
   end
 end

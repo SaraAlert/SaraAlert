@@ -110,4 +110,17 @@ class Jurisdiction < ApplicationRecord
     end
     bool_symptom_labels.join(', ')
   end
+
+  def subtree_paths
+    Rails.cache.fetch("subtree_jurisdiction_ids_and_paths_for_#{self.id}", expires_in: 24.hours, race_condition_ttl: 30.seconds) do
+      Hash[subtree.pluck(:id, :path).map { |id, path| [id, path] }]
+    end
+  end
+
+  def self.all_paths(include_usa: true)
+    Rails.cache.fetch("all_jurisdiction_ids_and_paths_usa_#{include_usa}", expires_in: 24.hours, race_condition_ttl: 30.seconds) do
+      jurisdictions = include_usa ? Jurisdiction.all : Jurisdiction.all.where.not(name: 'USA')
+      Hash[jurisdictions.pluck(:id, :path).map { |id, path| [id, path] }]
+    end
+  end
 end
