@@ -1,3 +1,18 @@
+---
+layout: default
+title: Getting Started
+parent: API
+nav_order: 3
+---
+<details open markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+1. TOC
+{:toc}
+</details>
+
 ## Get Started Using the Sara Alert API
 No matter the workflow, in order to use the Sara Alert API and ensure security of application data, the client must go through a three-step process before reading or writing any data.
 
@@ -60,27 +75,27 @@ Once a client application is registered, a user must authorize the client applic
 
 3. Once the authorization code is retrieved by the client application, it can be used to get an access token. This step is  also described in detail [here](http://hl7.org/fhir/smart-app-launch/index.html#step-3-app-exchanges-authorization-code-for-access-token). Note that the authorization code does expire after 10 minutes as is necessary.
 
-    ##### POST `/oauth/token`
-	
-    **Request** Headers
+##### POST `/oauth/token`
 
-        Content-Type: application/x-www-form-urlencoded
+**Request** Headers
 
-    **Request** Body
+    Content-Type: application/x-www-form-urlencoded
 
-        client_id: <CLIENT_ID>,
-        client_secret: <CLIENT_SECRET>,
-        code: <AUTHORIZATION_CODE>,
-        grant_type: authorization_code,
-        redirect_uri: <CLIENT_REDIRECT_URI>
+**Request** Body
 
-    **Response**
+    client_id: <CLIENT_ID>,
+    client_secret: <CLIENT_SECRET>,
+    code: <AUTHORIZATION_CODE>,
+    grant_type: authorization_code,
+    redirect_uri: <CLIENT_REDIRECT_URI>
 
-        access_token: <TOKEN>,
-        token_type: "Bearer",
-        expires_in: 7200,
-        scope: <CLIENT_SCOPES>,
-        created_at: 1589830122
+**Response**
+
+    access_token: <TOKEN>,
+    token_type: "Bearer",
+    expires_in: 7200,
+    scope: <CLIENT_SCOPES>,
+    created_at: 1589830122
 
 #### Authentication
 The obtained token can then be used for all subsequent requests, via Authorization header, i.e. `'Authorization': "Bearer <TOKEN>"` and will be used to authenticate the user.
@@ -125,7 +140,7 @@ Because of the nature of this workflow, there is a lot of flexibility when imple
 Before going further, it is highly recommended to read the profile for this workflow detailed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html). Specifically, the [worked example](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#worked-example) is particularly useful.
 
 Additionally, we have provided the following resources for this workflow:
-- Step-by-step process for using this new workflow with a local version of Sara Alert [here](https://github.com/SaraAlert/saraalert-fhir-ig/wiki/Step-by-Step-Instructions-For-Local-Testing:-SMART-on-FHIR-Backend-Services-Workflow).
+- Step-by-step process for using this new workflow with a local version of Sara Alert [here](walkthrough-testing-the-backend-services-workflow).
 - Example Ruby client for interacting with the API via this new workflow can be found [here](https://github.com/SaraAlert/saraalert-fhir-ig/tree/master/examples/ruby).
 
 #### Registration
@@ -177,26 +192,26 @@ Details about each of these steps and the expected parameter is clearly outlined
 2. Request a new access token via HTTP POST to the FHIR authorization server’s token endpoint URL which is again `<ENVIRONMENT_BASE_URL>/oauth/token`
 3. Once the end-user has authorized the request, Sara Alert will respond with an access token.
 
-    ##### POST `/oauth/token`
+##### POST `/oauth/token`
 
-    **Request** Headers
+**Request** Headers
 
-        Content-Type: application/x-www-form-urlencoded
+    Content-Type: application/x-www-form-urlencoded
 
-    **Request** Body
+**Request** Body
 
-        client_assertion: <CLIENT_SIGNED_JWT_ASSERTION>,
-        client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer,
-        grant_type: client_credentials,
-        scope: <CLIENT_SCOPES (space separated)>
+    client_assertion: <CLIENT_SIGNED_JWT_ASSERTION>,
+    client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer,
+    grant_type: client_credentials,
+    scope: <CLIENT_SCOPES (space separated)>
 
-    **Response**
+**Response**
 
-        access_token: <TOKEN>,
-        token_type: "Bearer",
-        expires_in: 7200,
-        scope: <CLIENT_SCOPES>,
-        created_at: 1589830122
+    access_token: <TOKEN>,
+    token_type: "Bearer",
+    expires_in: 7200,
+    scope: <CLIENT_SCOPES>,
+    created_at: 1589830122
 
 #### Authentication
 The obtained token can then be used for all subsequent requests, via Authorization header, i.e. `'Authorization': "Bearer <TOKEN>"` and will be used to authenticate the user.

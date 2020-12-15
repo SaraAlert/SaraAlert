@@ -1,10 +1,10 @@
 ---
-layout: page
-title: "API Coming Soon"
-permalink: /api/coming-soon
+layout: default
+title: Coming Soon
+parent: API
+nav_order: 2
 ---
-
-**Below you will find a list of ongoing work that affects the Sara Alert™ API. This page will be updated regularly. If you have any questions on the information here, please email them to our API Help Desk, saraalert-interop@mitre.org. For past release notes, please see [API Release Notes](https://github.com/SaraAlert/SaraAlert/wiki/API-Release-Notes).**
+**Below you will find a list of ongoing work that affects the Sara Alert™ API. This page will be updated regularly. If you have any questions on the information here, please email them to our API Help Desk, saraalert-interop@mitre.org. For past release notes, please see [API Release Notes](api-release-notes).**
 
 ## Planned for 1.18.0* (previously was targeting 1.17):
 * Adding support for the following attributes on the Patient resource:

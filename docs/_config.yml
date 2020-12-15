@@ -1,0 +1,7 @@
+title: Sara Alert™
+theme: just-the-docs
+
+# Aux links for the upper right navigation
+aux_links:
+  "Sara Alert™ on GitHub":
+    - "https://github.com/SaraAlert/SaraAlert"

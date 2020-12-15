@@ -1,4 +1,10 @@
-This page documents a set of steps to connect to the Sara Alert FHIR API using the SMART on FHIR Backend Services Workflow as described in  [Getting Started](https://github.com/SaraAlert/SaraAlert/wiki/API-Getting-Started#smart-on-fhir-backend-services-workflow).
+---
+layout: default
+title: "Walkthrough: Testing the Backend Services Workflow"
+parent: API
+nav_order: 5
+---
+This page documents a set of steps to connect to the Sara Alert FHIR API using the SMART on FHIR Backend Services Workflow as described in  [Getting Started](api-getting-started#smart-on-fhir-backend-services-workflow).
 
 **If you are testing against a local instance of Sara Alert, follow all of the instructions below. If you are testing against the demo server, ignore sections with (LOCAL TESTING ONLY), and note that some numbers in the list of instructions will be skipped.**
 
@@ -6,16 +12,19 @@ This page documents a set of steps to connect to the Sara Alert FHIR API using t
 If you are testing on the demo server, skip to the next section.
 <details>
 <summary>Expand only if testing on a LOCAL instance of Sara Alert</summary>
+<div markdown="1">
 
 **1.** Clone and run Sara Alert following the steps in the [README](https://github.com/SaraAlert/SaraAlert/blob/master/README.md) for local setup. Make sure to have the database, Redis, and Sidekiq running for the full experience. At a minimum, the database and Redis need to be running.
+
 **2.** Optionally, connect to the database to query some of the tables as we go through the workflow using `mysql --user=disease_trakker`
+</div>
 </details>
 
 ## Create a JSON Web Key (JWK)
 
 **3.** For this tutorial, use https://mkjwk.org. Create a JWK with the following settings: Key Size `2048`, Key Use `Signature`, Algorithm `RS384`, Key ID `SHA-256`, Show X.509 `Yes`. Click the "Generate" button.
 
-![mkjwk example](https://github.com/SaraAlert/saraalert-fhir-ig/blob/master/wiki/mkjwk.png)
+![mkjwk example](/assets/images/mkjwk.png)
 
 Either keep this tool open with the generated values or save off all of the displayed values somewhere:
 - Public and Private Keypair
@@ -27,8 +36,10 @@ Either keep this tool open with the generated values or save off all of the disp
 
 ## Register a New API Client Application (LOCAL TESTING ONLY)
 If you are testing on the demo server, skip to the next section.
+
 <details>
 <summary>Expand only if testing on a LOCAL instance of Sara Alert</summary>
+<div markdown="1">
 
 **4.** Run the `admin:create_oauth_app_for_backend_services_workflow` rake task to both create a new "shadow user" to be used by this new application when creating/updating records, and to create the new OAuth application as well. This rake task requires that you first set an environment variable called `API_FILE_PATH` to the path of a json file that contains needed data. 
 
@@ -62,7 +73,7 @@ Successfully created user with OAuth Application!
 Client ID: <GENERATED_CLIENT_ID>
 ```
 
-**6.** OPTIONAL: Verify the application was properly registered by querying the database.
+**5.** OPTIONAL: Verify the application was properly registered by querying the database.
 
 ```
 mysql> select * from oauth_applications;
@@ -77,13 +88,13 @@ mysql> select * from oauth_applications;
 |    |           |                    |                       |                                | system/QuestionnaireResponse.read |              |                            |                            |                     |                 |
 +----+-----------+--------------------+-----------------------+--------------------------------+-----------------------------------+--------------+----------------------------+----------------------------+---------------------+-----------------+
 2 rows in set (0.00 sec)
-
 ```
+</div>
 </details>
 
 ## Request Access Token: Create a Signed JWT
 
-6. We need a signed JWT to request an access token. In the tutorial use https://jwt.io/#debugger-io
+**6.** We need a signed JWT to request an access token. In the tutorial use https://jwt.io/#debugger-io
 
 In the `Decoded` section, enter the following `HEADER`:
 
@@ -110,6 +121,7 @@ If using DEMO server:
 
 <details>
 <summary> OR: Expand if using LOCAL server</summary>
+<div markdown="1">
 
 ```javascript
 {
@@ -120,10 +132,10 @@ If using DEMO server:
   "jti":1599600191
 }
 ```
-
+</div>
 </details>
 
-![jwt.io example](https://github.com/SaraAlert/saraalert-fhir-ig/blob/master/wiki/jwtio.png)
+![jwt.io example](/assets/images/jwtio.png)
 
 Set the `"exp"` field to be 5 minutes in the future (this is time in seconds since 1 Jan 1970), and set the `"jti"` to be random non-repeating number.
 
@@ -139,7 +151,7 @@ We are going to use your JWT in the next step, Request an Access Token.
 
 ## Request an Access Token: Build Request
 
-7. Using Postman, curl, or whatever HTTP library you like request an Access Token...
+**7.** Using Postman, curl, or whatever HTTP library you like request an Access Token...
 
 REQUEST
 
@@ -156,6 +168,7 @@ curl --location --request POST 'https://demo.saraalert.org/oauth/token' \
 
 <details>
 <summary> OR: Expand if using LOCAL server</summary>
+<div markdown="1">
 
 ```
 curl --location --request POST 'http://localhost:3000/oauth/token' \
@@ -166,6 +179,7 @@ curl --location --request POST 'http://localhost:3000/oauth/token' \
      --data-urlencode 'client_assertion=<JWT FROM STEP 6>' \
      --data-urlencode 'client_id=myTestApp'
 ```
+</div>
 </details>
 
 Make sure you use the proper `client_id` and `scope` that you registered in previous steps.
@@ -184,7 +198,7 @@ We are going to use the `"access_token"` value in API requests.
 
 ## FHIR Requests
 
-8. Using Postman, curl, or whatever HTTP library you like request some FHIR Resources...
+**8.** Using Postman, curl, or whatever HTTP library you like request some FHIR Resources...
 
 REQUEST
 
@@ -197,12 +211,14 @@ curl  --location --request GET 'http://demo.saraalert.org/fhir/r4/Patient/1' \
 
 <details>
 <summary>OR: Expand if using LOCAL server</summary>
+<div markdown="1">
 
 ```
 curl  --location --request GET 'http://localhost:3000/fhir/r4/Patient/1' \
       --header 'Accept: application/fhir+json' \
       --header 'Authorization: Bearer fXHoedJMq-mdf8cqQvw5a4AY7SOb92McbJvDzNSP5q4'
 ```
+</div>
 </details>
 
 Make sure you replace the token in the example with the token you obtained in Step #7.
