@@ -12,6 +12,34 @@
 
 ActiveRecord::Schema.define(version: 2020_12_09_221804) do
 
+  create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.bigint "byte_size", null: false
+    t.string "checksum", null: false
+    t.datetime "created_at", null: false
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
     t.datetime "created_at", precision: 6, null: false
@@ -105,12 +133,11 @@ ActiveRecord::Schema.define(version: 2020_12_09_221804) do
 
   create_table "downloads", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
-    t.binary "contents", size: :long, null: false
-    t.string "lookup", null: false
     t.string "filename", null: false
     t.string "export_type", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "marked_for_deletion", default: false
     t.index ["user_id"], name: "index_downloads_on_user_id"
   end
 
@@ -394,11 +421,7 @@ ActiveRecord::Schema.define(version: 2020_12_09_221804) do
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
     t.boolean "head_of_household"
-<<<<<<< HEAD
     t.string "time_zone_offset"
-    t.integer "contact_attempts", default: 0
-=======
->>>>>>> master
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
@@ -504,6 +527,8 @@ ActiveRecord::Schema.define(version: 2020_12_09_221804) do
     t.index ["password_changed_at"], name: "index_users_on_password_changed_at"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "jwt_identifiers", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
