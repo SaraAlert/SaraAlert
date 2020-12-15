@@ -19,8 +19,6 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
-    @jurisdiction_path = @patient.jurisdiction_path
-
     @possible_jurisdiction_paths = if current_user.can_transfer_patients?
                                      # Allow all jurisdictions as valid transfer options.
                                      Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
