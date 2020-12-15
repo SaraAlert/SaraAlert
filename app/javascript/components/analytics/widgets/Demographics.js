@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Card, Col, Row } from 'react-bootstrap';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import CustomizedAxisTick from './CustomizedAxisTick';
+import InfoTooltip from '../../util/InfoTooltip';
 import _ from 'lodash';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
@@ -61,7 +62,7 @@ class Demographics extends React.Component {
     this.raceChartData = this.mapToChartFormat(RACES, this.raceData);
     this.soChartData = this.mapToChartFormat(SEXUAL_ORIENTATIONS, this.soData);
     this.barGraphData = [
-      { title: 'Age (Years)', data: this.ageChartData },
+      { title: 'Current Age (Years)', data: this.ageChartData },
       { title: 'Sex', data: this.sexChartData },
       { title: 'Ethnicity', data: this.ethnicityChartData },
       { title: 'Race', data: this.raceChartData },
@@ -94,7 +95,16 @@ class Demographics extends React.Component {
         {this.barGraphData.map((graphData, i) => (
           <Col xl="12" key={i}>
             <div className="mx-2 mt-3 analytics-chart-borders">
-              <h4 className="text-center">{graphData.title}</h4>
+              <h4 className="text-center">
+                {graphData.title}
+                {graphData.title === 'Current Age (Years)' ? (
+                  <span className="h6">
+                    <InfoTooltip tooltipTextKey="analyticsAgeTip" location="right"></InfoTooltip>
+                  </span>
+                ) : (
+                  ''
+                )}
+              </h4>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart
                   width={500}
@@ -126,7 +136,12 @@ class Demographics extends React.Component {
     <Card.Body className="mt-4">
       <Row>
         <Col md="12">
-          <h4 className="text-left mt-2 mb-n1">Age (Years)</h4>
+          <div className="text-left mt-2 mb-n1">
+            <span className="h4">Current Age (Years)</span>
+            <span className="h6">
+              <InfoTooltip tooltipTextKey="analyticsAgeTip" location="right"></InfoTooltip>
+            </span>
+          </div>
           <table className="analytics-table">
             <thead>
               <tr>
