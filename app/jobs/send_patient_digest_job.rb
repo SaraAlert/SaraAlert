@@ -16,11 +16,14 @@ class SendPatientDigestJob < ApplicationJob
       # Execute query, figure out how many meet requirements (if none skip email)
       next unless patients.size.positive?
 
+      # Construct helper URLs
+      patient_urls = patients.pluck(:id).collect { |p_id| "https://#{ActionMailer::Base.default_url_options[:host]}/patients/#{p_id}" }
+
       # Grab users who need an email
       users = User.where(jurisdiction_id: jur.id, role: %w[super_user public_health public_health_enroller])
       users.each do |user|
         # Send email to this user
-        UserMailer.send_patient_digest_job_email(patients.to_a, user).deliver_later
+        UserMailer.send_patient_digest_job_email(patient_urls, user).deliver_now
         sent << { id: user.id, jur_id: jur.id, user_jur_id: user.jurisdiction_id }
       end
     end
