@@ -191,12 +191,12 @@ class ExportController < ApplicationController
     unsanitized_config = params.require(:config).permit(:format, data: {})
     config = {
       user_id: current_user.id,
-      export_type: export_type,
-      filename_data_type: false
+      export_type: export_type
     }
 
     # Validate format param
     config[:format] = unsanitized_config.require(:format)
+    config[:filename_data_type] = config[:format] == 'csv'
     return head :bad_request unless EXPORT_FORMATS.include?(config[:format])
 
     # Validate data

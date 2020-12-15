@@ -1,8 +1,10 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, ButtonGroup, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
+
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
+import _ from 'lodash';
 
 import CustomExport from './CustomExport';
 import reportError from '../util/ReportError';
@@ -171,7 +173,9 @@ class Export extends React.Component {
             tabs={this.props.tabs}
             preset={this.state.savedPreset}
             presets={this.state.savedExportPresets}
-            patient_query={this.props.query}
+            patient_query={_.pickBy(this.props.query, (value, key) => {
+              return ['workflow', 'tab', 'jurisdiction', 'scope', 'user', 'search', 'filter', 'tz_offset'].includes(key);
+            })}
             current_monitorees_count={this.props.current_monitorees_count}
             all_monitorees_count={this.props.all_monitorees_count}
             options={this.props.custom_export_options}
