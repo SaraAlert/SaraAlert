@@ -47,9 +47,9 @@ class CountyLevelMaps extends React.Component {
   componentDidMount = () => {
     this.chart = am4core.create(`chartdiv-${this.props.id}`, am4maps.MapChart);
     this.chart.projection = new am4maps.projections.AlbersUsa();
-    this.chart.seriesContainer.draggable = false;
-    this.chart.seriesContainer.resizable = false;
-    this.chart.seriesContainer.wheelable = false;
+    this.chart.seriesContainer.draggable = true;
+    this.chart.seriesContainer.resizable = true;
+    this.chart.seriesContainer.wheelable = true;
     this.chart.maxZoomLevel = 1;
     this.heatLegend = this.chart.createChild(am4maps.HeatLegend);
 
@@ -116,9 +116,9 @@ class CountyLevelMaps extends React.Component {
 
     this.territoryChart = am4core.create(`territorydiv-${this.props.id}`, am4maps.MapChart);
     this.territoryChart.projection = new am4maps.projections.Miller();
-    this.territoryChart.seriesContainer.draggable = false;
-    this.territoryChart.seriesContainer.resizable = false;
-    this.territoryChart.seriesContainer.wheelable = false;
+    this.territoryChart.seriesContainer.draggable = true;
+    this.territoryChart.seriesContainer.resizable = true;
+    this.territoryChart.seriesContainer.wheelable = true;
     this.territoryChart.maxZoomLevel = 1;
 
     // It appears the separatorLines must be mounted on the chart instance (as opposed to a Series)
