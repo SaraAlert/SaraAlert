@@ -99,7 +99,12 @@ class CacheAnalyticsJob < ApplicationJob
               .order(Arel.sql(age_groups), :isolation)
               .size
               .map do |(age_group, isolation), total|
-                counts.append(monitoree_count(analytic_id, true, 'Age Group', age_group.nil? ? 'Missing' : age_group, total, isolation ? 'Isolation' : 'Exposure'))
+                counts.append(monitoree_count(analytic_id,
+                                              true,
+                                              'Age Group',
+                                              age_group.nil? ? 'Missing' : age_group,
+                                              total,
+                                              isolation ? 'Isolation' : 'Exposure'))
               end
     counts
   end
