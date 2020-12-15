@@ -15,8 +15,8 @@ const RACES = [
   'American Indian or Alaska Native',
   'Native Hawaiian or Other Pacific Islander',
   'More Than One Race',
-  'Missing',
   'Unknown',
+  'Missing',
 ];
 const SEXUAL_ORIENTATIONS = [
   'Straight or Heterosexual',
@@ -24,8 +24,8 @@ const SEXUAL_ORIENTATIONS = [
   'Bisexual',
   'Another',
   'Choose not to disclose',
-  'Missing',
   'Don’t know',
+  'Missing',
 ];
 
 class Demographics extends React.Component {
