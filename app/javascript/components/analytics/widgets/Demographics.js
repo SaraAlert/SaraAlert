@@ -5,9 +5,9 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import _ from 'lodash';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
-const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80', 'FAKE_BIRTHDATE'];
-const SEXES = ['Male', 'Female', 'Unknown'];
-const ETHNICITIES = ['Hispanic or Latino', 'Not Hispanic or Latino'];
+const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80', 'Missing', 'FAKE_BIRTHDATE'];
+const SEXES = ['Male', 'Female', 'Unknown', 'Missing'];
+const ETHNICITIES = ['Hispanic or Latino', 'Not Hispanic or Latino', 'Missing'];
 const RACES = [
   'White',
   'Black or African American',
@@ -15,9 +15,18 @@ const RACES = [
   'American Indian or Alaska Native',
   'Native Hawaiian or Other Pacific Islander',
   'More Than One Race',
+  'Missing',
   'Unknown',
 ];
-const SEXUAL_ORIENTATIONS = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'];
+const SEXUAL_ORIENTATIONS = [
+  'Straight or Heterosexual',
+  'Lesbian, Gay, or Homosexual',
+  'Bisexual',
+  'Another',
+  'Choose not to disclose',
+  'Missing',
+  'Don’t know',
+];
 
 class Demographics extends React.Component {
   constructor(props) {

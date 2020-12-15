@@ -6,7 +6,7 @@ import { Card } from 'react-bootstrap';
 const WORKFLOWS = ['Exposure', 'Isolation'];
 
 // Provide a separate array, as object-iteration order is not guaranteed in JS
-const CONTACT_METHOD_HEADERS = ['Email', 'SMS Weblink', 'SMS Text', 'Phone Call', 'Opt-Out', 'Unknown', 'Total'];
+const CONTACT_METHOD_HEADERS = ['Email', 'SMS Weblink', 'SMS Text', 'Phone Call', 'Opt-Out', 'Unknown', 'Missing', 'Total'];
 
 // Maps the difference between what we have server-side and what we want to display to the client
 const CONTACT_METHOD_MAPPINGS = {
@@ -16,6 +16,7 @@ const CONTACT_METHOD_MAPPINGS = {
   'Telephone call': 'Phone Call',
   'Opt-out': 'Opt-Out',
   Unknown: 'Unknown',
+  Missing: 'Missing',
 };
 
 // The goal was to have as few hard-coded options as possisble.
