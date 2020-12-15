@@ -46,7 +46,3 @@ dump.rdb
 coverage
 gemsurance_report.html
 tls/
-
-# Ignore Jekyll generated files
-_site
-.jekyll-cache
