@@ -15,7 +15,7 @@ class CustomizedAxisTick extends React.Component {
   render() {
     const { x, y, payload } = this.props;
     return (
-      <Text x={x} y={y} width={65} textAnchor="middle" verticalAnchor="start" style={{ fontSize: '.8rem' }}>
+      <Text x={x} y={y} width={65} textAnchor="middle" verticalAnchor="start" className="recharts-custom-tick">
         {payload.value}
       </Text>
     );
