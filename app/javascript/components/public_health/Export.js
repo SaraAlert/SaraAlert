@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import _ from 'lodash';
 
+import ConfirmExport from './ConfirmExport';
 import CustomExport from './CustomExport';
 import reportError from '../util/ReportError';
 
@@ -119,42 +120,30 @@ class Export extends React.Component {
           <Dropdown.Divider />
           <Dropdown.Item onClick={() => this.setState({ showCustomFormatModal: true })}>Custom Format...</Dropdown.Item>
         </DropdownButton>
-        {this.state.showCSVModal &&
-          this.createModal(
-            `Line list CSV (${this.props.query.workflow})`,
-            () => {
-              this.setState({ showCSVModal: false });
-            },
-            this.submit,
-            `/export/csv_linelist/${this.props.query.workflow}`
-          )}
-        {this.state.showSaraFormatModal &&
-          this.createModal(
-            `Sara Alert Format (${this.props.query.workflow})`,
-            () => {
-              this.setState({ showSaraFormatModal: false });
-            },
-            this.submit,
-            `/export/sara_alert_format/${this.props.query.workflow}`
-          )}
-        {this.state.showAllPurgeEligibleModal &&
-          this.createModal(
-            'Excel Export For Purge-Eligible Monitorees',
-            () => {
-              this.setState({ showAllPurgeEligibleModal: false });
-            },
-            this.submit,
-            '/export/full_history_patients/purgeable'
-          )}
-        {this.state.showAllModal &&
-          this.createModal(
-            'Excel Export For All Monitorees',
-            () => {
-              this.setState({ showAllModal: false });
-            },
-            this.submit,
-            '/export/full_history_patients/all'
-          )}
+        <ConfirmExport
+          show={this.state.showCSVModal}
+          title={`Line list CSV (${this.props.query.workflow})`}
+          onCancel={() => this.setState({ showCSVModal: false })}
+          onStartExport={() => this.submit(`/export/csv_linelist/${this.props.query.workflow}`)}
+        />
+        <ConfirmExport
+          show={this.state.showSaraFormatModal}
+          title={`Sara Alert Format (${this.props.query.workflow})`}
+          onCancel={() => this.setState({ showSaraFormatModal: false })}
+          onStartExport={() => this.submit(`/export/sara_alert_format/${this.props.query.workflow}`)}
+        />
+        <ConfirmExport
+          show={this.state.showAllPurgeEligibleModal}
+          title={'Excel Export For Purge-Eligible Monitorees'}
+          onCancel={() => this.setState({ showAllPurgeEligibleModal: false })}
+          onStartExport={() => this.submit('/export/full_history_patients/purgeable')}
+        />
+        <ConfirmExport
+          show={this.state.showAllModal}
+          title={'Excel Export For All Monitorees'}
+          onCancel={() => this.setState({ showAllModal: false })}
+          onStartExport={() => this.submit('/export/full_history_patients/all')}
+        />
         <ToastContainer
           position="top-center"
           autoClose={3000}
