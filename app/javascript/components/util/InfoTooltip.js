@@ -320,6 +320,12 @@ const TOOLTIP_TEXT = {
       See User Guide for list of fields that are not purged for use in the analytics summary.{' '}
     </div>
   ),
+  analyticsAgeTip: (
+    <div>
+      Current Age is calculated as:
+      <div>Current Date - Date of Birth</div>
+    </div>
+  ),
 };
 
 class InfoTooltip extends React.Component {
