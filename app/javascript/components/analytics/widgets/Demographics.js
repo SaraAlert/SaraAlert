@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card, Col, Row } from 'react-bootstrap';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import CustomizedAxisTick from './CustomizedAxisTick';
 import _ from 'lodash';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
@@ -106,7 +107,7 @@ class Demographics extends React.Component {
                     bottom: 5,
                   }}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
+                  <XAxis dataKey="name" interval={0} tick={<CustomizedAxisTick />} height={100} />
                   <YAxis />
                   <Tooltip />
                   <Legend />
