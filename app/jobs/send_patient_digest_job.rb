@@ -20,7 +20,7 @@ class SendPatientDigestJob < ApplicationJob
       users = User.where(jurisdiction_id: jur.id, role: %w[super_user public_health public_health_enroller])
       users.each do |user|
         # Send email to this user
-        UserMailer.send_patient_digest_job_email(patients, user).deliver_later
+        UserMailer.send_patient_digest_job_email(patients.to_a, user).deliver_later
         sent << { id: user.id, jur_id: jur.id, user_jur_id: user.jurisdiction_id }
       end
     end
