@@ -9,6 +9,7 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
 
+import ConfirmExport from './ConfirmExport';
 import PatientsFilters from './custom_export/PatientsFilters';
 import reportError from '../util/ReportError';
 
@@ -518,30 +519,12 @@ class CustomExport extends React.Component {
             )}
           </Modal.Footer>
         </Modal>
-        <Modal size="lg" className="advanced-filter-modal-container" show={this.state.show_confirm_export_modal} centered>
-          <Modal.Header>
-            <Modal.Title>Custom Export Format</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              After clicking <b>Start Export</b>, Sara Alert will gather all of the monitoree data that comprises your request and generate an export file. Sara
-              Alert will then send your user account an email with a one-time download link. This process may take several minutes to complete, based on the
-              amount of data present.
-            </p>
-            <p>
-              NOTE: The system will store one of each type of export file. If you initiate another export of this file type, any old files will be overwritten
-              and download links that have not been accessed will be invalid. Only one of each export type is allowed per user per hour.
-            </p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary btn-square" onClick={() => this.setState({ show_confirm_export_modal: false })}>
-              Cancel
-            </Button>
-            <Button variant="primary btn-square" onClick={this.export}>
-              Start Export
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <ConfirmExport
+          show={this.state.show_confirm_export_modal}
+          title={`Custom Export Format ${this.state.preset?.name ? `(${this.state.preset.name})` : ''}`}
+          onCancel={() => this.setState({ show_confirm_export_modal: false })}
+          onStartExport={this.export}
+        />
       </React.Fragment>
     );
   }
