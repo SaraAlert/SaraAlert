@@ -9,12 +9,12 @@ class JurisdictionsController < ApplicationController
 
   # Get jurisdiction ids and paths of viewable jurisdictions
   def jurisdiction_paths
-    render json: { jurisdiction_paths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }] }
+    render json: { jurisdiction_paths: current_user.jurisdiction.subtree_paths }
   end
 
   # Get all jurisdiction ids and paths
   def all_jurisdiction_paths
-    render json: { all_jurisdiction_paths: Hash[Jurisdiction.all.pluck(:id, :path).map { |id, path| [id, path] }] }
+    render json: { all_jurisdiction_paths: Jurisdiction.all_paths(include_usa: true) }
   end
 
   # Get list of assigned users unique to jurisdiction
