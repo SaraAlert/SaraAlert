@@ -135,7 +135,7 @@ If using DEMO server:
 </div>
 </details>
 
-<img src="assets/images/jwtio.png" alt="jwt.io example"/>
+![jwt.io example](https://github.com/SaraAlert/SaraAlert/blob/gh-pages/assets/images/jwtio.png)
 
 Set the `"exp"` field to be 5 minutes in the future (this is time in seconds since 1 Jan 1970), and set the `"jti"` to be random non-repeating number.
 
