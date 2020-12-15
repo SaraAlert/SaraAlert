@@ -188,7 +188,7 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
 
   def export_custom(user_label, settings)
     @@system_test_utils.login(user_label)
-    @@public_health_dashboard.export_custom(settings)
+    @@public_health_dashboard.export_custom(user_label, settings)
     @@system_test_utils.logout
   end
 

@@ -59,7 +59,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     @@public_health_export_verifier.verify_full_history_patient(patient_label.split('_')[1].to_i)
   end
 
-  def export_custom(settings)
+  def export_custom(user_label, settings)
     click_on 'Export'
     click_on settings[:preset] || 'Custom Format...'
 
@@ -85,9 +85,15 @@ class PublicHealthDashboard < ApplicationSystemTestCase
       sleep(1)
     end
 
+    # Verify preset
+    @@public_health_export_verifier.verify_preset(user_label, settings) if settings[:actions]&.include?(:save)
+
     # Start or cancel export
     click_on 'Start Export' if settings[:confirm] == :start
     click_on 'Cancel' if settings[:confirm] == :cancel
+
+    # Verify export
+    @@public_health_export_verifier.verify_custom(user_label, settings) if settings[:actions]&.include?(:export) && settings[:confirm] == :start
   end
 
   def import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
