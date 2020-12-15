@@ -643,10 +643,12 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
     patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
     if fields.include?(:expected_purge_date)
-      patient_details[:expected_purge_date] = patient[:updated_at].nil? ? '' : (patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''
+      purgeable = patient[:monitoring] || patient[:updated_at].nil?
+      patient_details[:expected_purge_date] = purgeable ? '' : (patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''
     end
     if fields.include?(:expected_purge_ts)
-      patient_details[:expected_purge_ts] = patient[:updated_at].nil? ? '' : (patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes) || ''
+      purgeable = patient[:monitoring] || patient[:updated_at].nil?
+      patient_details[:expected_purge_ts] = purgeable ? '' : (patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes) || ''
     end
     patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase || '' if fields.include?(:full_status)
     patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '' if fields.include?(:status)

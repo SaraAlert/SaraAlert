@@ -36,7 +36,8 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
       },
       name: 'Custom Preset 1',
       format: :xlsx,
-      actions: %i[save export]
+      actions: %i[save export],
+      confirm: :start
     }
     @@public_health_test_helper.export_custom('state1_epi', settings)
   end
