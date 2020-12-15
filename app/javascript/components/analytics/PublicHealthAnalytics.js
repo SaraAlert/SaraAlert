@@ -74,7 +74,7 @@ class PublicHealthAnalytics extends React.Component {
                   <ReactTooltip id="analytics-refresh" multiline={true} place="right" effect="solid" className="tooltip-container">
                     <div className="font-weight-bold p-2">
                       The data on this page refreshes once a day. Therefore, any changes to records throughout the day will not be reflected on this page until
-                      it is refreshed around 11:30 PM EST.
+                      it is refreshed around 12:00 midnight EST.
                     </div>
                   </ReactTooltip>
                 </div>
