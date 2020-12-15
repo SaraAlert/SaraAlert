@@ -1,3 +1,19 @@
+---
+layout: default
+title: API
+nav_order: 2
+has_children: true
+has_toc: false
+---
+<details open markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+1. TOC
+{:toc}
+</details>
+
 # Introduction
 Sara Alert strives to support interoperability standards in public health, and as a result provides a [FHIR](https://www.hl7.org/fhir/overview.html) RESTful API for reading, writing, and updating monitoree data. The data format accepted and returned by the API corresponds to [FHIR version R4](https://hl7.org/fhir/R4/).
 
@@ -7,7 +23,7 @@ The Sara Alert API does this by following SMART on FHIR API [standards and profi
 This API is intended for use by public health organizations using Sara Alert, and thus Sara  Alert admins maintain a registered list of supported client applications. For access to a live production or demonstration environment, please contact system administrators at `sarasupport@aimsplatform.com` to discuss adding your client application to the approved list.
 
 # Security
-As indicated in the previous section, the API follows SMART on FHIR API standards, which includes support for both the [SMART App Launch](http://hl7.org/fhir/smart-app-launch/index.html) and [SMART Backend Services](https://hl7.org/fhir/uv/bulkdata/authorization/index.html) protocols. The SMART App Launch protocol is intended for use by user-facing apps, where access is granted based on a human user entering their existing Sara Alert username and password. The SMART Backend Services protocol is intended for backend services to autonomously use the Sara Alert API and access is granted based on a signed token. Detailed documentation of these two workflows can be found in the [Getting Started](https://github.com/SaraAlert/SaraAlert/wiki/API-Getting-Started) page.
+As indicated in the previous section, the API follows SMART on FHIR API standards, which includes support for both the [SMART App Launch](http://hl7.org/fhir/smart-app-launch/index.html) and [SMART Backend Services](https://hl7.org/fhir/uv/bulkdata/authorization/index.html) protocols. The SMART App Launch protocol is intended for use by user-facing apps, where access is granted based on a human user entering their existing Sara Alert username and password. The SMART Backend Services protocol is intended for backend services to autonomously use the Sara Alert API and access is granted based on a signed token. Detailed documentation of these two workflows can be found in the [Getting Started](api-getting-started) page.
 
 # What can the Sara Alert™ API do?
 
@@ -36,4 +52,4 @@ Below are the items currently planned for future work in the Sara Alert API, in 
 3. Improve validation and error reporting: We are always looking to improve data validation and reporting of errors in the API in order to make the system more robust, and to make it easier to test and debug API clients.
 4. Improve FHIR compliance: We are also always striving to align the API as closely as possible with the FHIR specification.
 
-For detailed information about what is currently being worked, please see the Coming Soon page [here](https://github.com/SaraAlert/SaraAlert/wiki/API-Coming-Soon)
+For detailed information about what is currently being worked, please see the Coming Soon page [here](api-coming-soon)
