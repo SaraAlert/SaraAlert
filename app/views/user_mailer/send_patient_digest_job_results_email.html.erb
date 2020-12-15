@@ -8,9 +8,9 @@
   Sent
 </h2>
 <br />
-ID
+UID, JID, UJID
 <br />
 <% @sent.each do |s| %>
-  <%= s[:id] %>
+  <%= s[:id] %>, <%= s[:jur_id] %>, <%= s[:user_jur_id] %>
   <br />
 <% end %>
