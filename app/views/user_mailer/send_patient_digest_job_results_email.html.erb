@@ -5,10 +5,17 @@
   <%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %>
 </h2>
 <h2>
-  Sent digest email to <b><%= @sent.count %></b> users.
+  Sent digest email to <b><%= @jurisdiction_ids.count %></b> jurisdiction(s):
 </h2>
+<br />
+JID
+<br />
+<% @jurisdiction_ids.each do |jur_id| %>
+  <%= jur_id %>
+  <br />
+<% end %>
 <h2>
-  Sent
+  Sent digest email to <b><%= @sent.count %></b> users:
 </h2>
 <br />
 UID, JID, UJID
