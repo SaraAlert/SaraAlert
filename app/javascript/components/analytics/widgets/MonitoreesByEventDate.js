@@ -16,7 +16,6 @@ class MonitoreesByEventDate extends React.Component {
     super(props);
     this.state = {
       graphData: {},
-      lastDateInQuestion: [],
     };
   }
 
@@ -56,7 +55,6 @@ class MonitoreesByEventDate extends React.Component {
     ).sort();
     this.setState({
       graphData: WORKFLOWS.map(workflow => this.mapToChartFormat(DATES_OF_INTEREST, this.parseOutFields(DATES_OF_INTEREST, dateRangeInQuestion), workflow)),
-      lastDateInQuestion: _.last(DATES_OF_INTEREST),
     });
   }
 
@@ -93,10 +91,6 @@ class MonitoreesByEventDate extends React.Component {
                 </Col>
               ))}
             </Row>
-            <div className="text-secondary text-right">
-              <i className="fas fa-exclamation-circle mr-1"></i>
-              Illnesses that began {this.state.lastDateInQuestion} may not yet be reported
-            </div>
           </Card.Body>
         </Card>
       </React.Fragment>
