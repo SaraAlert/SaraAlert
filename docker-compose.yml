@@ -5,6 +5,7 @@ services:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
       - REDIS_URL=redis://redis-enrollment:6379/1
+      - REDIS_CACHE_URL=redis://cache-enrollment:6379/0
     env_file:
       - .env-prod-enrollment
     restart: unless-stopped
@@ -183,6 +184,7 @@ services:
       - dt-net-enrollment
 
 volumes:
+  cache-enrollment:
   redis-enrollment:
   redis-bridge:
   mysql-assessment:
