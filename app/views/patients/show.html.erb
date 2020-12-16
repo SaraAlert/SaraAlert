@@ -79,8 +79,7 @@
         <%= react_component('subject/ContactAttempt', { authenticity_token: form_authenticity_token, patient: @patient }) %>
       </div>
     </div>
-    <% columns = [] %>
-    <% @patient.assessments.includes([:reported_condition]).each { |assessment| columns.concat(assessment.all_symptom_names) } %>
+    <% columns = Assessment.get_symptom_names_for_assessments(@patient.assessments.pluck(:id)) %>
     <% columns = columns.uniq.sort %>
     <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font">
       <thead>
@@ -111,12 +110,13 @@
           <td><%= assessment.who_reported %></td>
           <td><%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %></td>
           <% columns.each do |column| -%>
-          <% if assessment.get_reported_symptom_by_name(column) == nil %>
+          <% reported_condition = assessment.get_reported_symptom_by_name(column)%>
+          <% if reported_condition == nil %>
           <td></td>
           <% end %>
-          <%passes_threshold = assessment.symptom_passes_threshold(column)%>
-          <%symptom_value = assessment.get_reported_symptom_value(column)%>
-          <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
+          <% passes_threshold = assessment.symptom_passes_threshold(column) %>
+          <% symptom_value = reported_condition&.value %>
+          <% if reported_condition&.type == "BoolSymptom"%>
           <% if symptom_value == true %>
           <% symptom_value = 'Yes' %>
           <% elsif symptom_value == false %>
@@ -124,7 +124,7 @@
           <%end%>
           <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
           <% end %>
-          <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
+          <% if reported_condition&.type == "FloatSymptom" || reported_condition&.type == "IntegerSymptom"%>
           <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
           <% end %>
           <% end -%>
