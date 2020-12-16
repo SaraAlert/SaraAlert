@@ -172,6 +172,15 @@ services:
     networks:
       - dt-net-assessment
       - dt-net-enrollment
+  cache-enrollment:
+    image: "redis:alpine"
+    volumes:
+      - 'cache-enrollment:/data'
+      - '~/redis/conf:/usr/local/etc/redis'
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    networks:
+      - dt-net-enrollment
 
 volumes:
   redis-enrollment:
