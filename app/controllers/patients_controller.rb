@@ -40,6 +40,8 @@ class PatientsController < ApplicationController
 
     @history_types = History::HISTORY_TYPES
 
+    @patient_hash = @patient.to_h
+
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
   end

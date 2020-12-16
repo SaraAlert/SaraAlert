@@ -4,12 +4,12 @@
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Return to Exposure Dashboard', href: '/' }, { value: 'Monitoree Details', href: nil }], isolation: @patient&.isolation || false } %>
 
 <% if current_user.can_download_monitoree_data? %>
-<%= react_component('subject/DownloadMonitoree', { authenticity_token: form_authenticity_token, patient: @patient }) %>
+<%= react_component('subject/DownloadMonitoree', { authenticity_token: form_authenticity_token, patient: @patient_hash }) %>
 <% end %>
 
 <%= react_component('patient/PatientPage', {
                       current_user: current_user,
-                      patient: @patient,
+                      patient: @patient_hash,
                       dependents: @dependents_exclude_hoh,
                       patient_id: @patient.user_defined_id_statelocal || '',
                       dashboardUrl: '/public_health',
@@ -28,7 +28,7 @@
                         authenticity_token: form_authenticity_token,
                         has_dependents: @dependents_exclude_hoh.exists?,
                         in_household_with_member_with_ce_in_exposure: @household_members_with_ce_in_exposure_excludes_patient.count > 1,
-                        patient: @patient,
+                        patient: @patient_hash,
                         jurisdiction_paths: @possible_jurisdiction_paths,
                         assigned_users: @patient.jurisdiction.assigned_users,
                         monitoring_reasons: ValidationHelper::USER_SELECTABLE_MONITORING_REASONS
@@ -39,7 +39,7 @@
 <% if current_user.can_view_patient_assessments? %>
   <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
   <%= react_component('assessment/AssessmentTable', {
-                        patient: @patient,
+                        patient: @patient_hash,
                         is_household_member: @household_members.count > 1,
                         report_eligibility: @patient.report_eligibility,
                         patient_status: @patient.status,
@@ -82,7 +82,7 @@
           <td><%= lab.result %></td>
           <td>
             <div class="btn-group btn-group-sm" role="group">
-              <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: lab }) %>
+              <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient_hash, lab: lab }) %>
             </div>
           </td>
         </tr>
@@ -94,7 +94,7 @@
     <% end %>
     <div class="pb-1">
       <div class="btn-group" role="group">
-        <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new }) %>
+        <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient_hash, lab: Laboratory.new }) %>
       </div>
     </div>
   </div>
@@ -137,7 +137,7 @@
           <td><%= cc.enrolled_id ? 'Yes' : 'No' %> </td>
           <td>
             <div class="btn-group btn-group-sm" role="group">
-              <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
+              <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient_hash, close_contact: cc, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
             </div>
           </td>
         </tr>
@@ -149,7 +149,7 @@
     <% end %>
     <div class="pb-1">
       <div class="btn-group" role="group">
-        <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
+        <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient_hash, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
       </div>
     </div>
   </div>

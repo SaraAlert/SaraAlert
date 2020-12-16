@@ -1162,5 +1162,9 @@ class Patient < ApplicationRecord
               end
     History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: comment)
   end
+
+  def to_h
+    attributes
+  end
 end
 # rubocop:enable Metrics/ClassLength
