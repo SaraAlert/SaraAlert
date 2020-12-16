@@ -93,7 +93,7 @@ class Assessment < ApplicationRecord
 
   # Gets all symptom names for a given array of assessment IDs.
   def self.get_symptom_names_for_assessments(assessment_ids)
-    reported_condition_ids = ReportedCondition.where(type: "ReportedCondition", assessment_id: assessment_ids).pluck(:id)
+    reported_condition_ids = ReportedCondition.where(type: 'ReportedCondition', assessment_id: assessment_ids).pluck(:id)
     Symptom.where(condition_id: reported_condition_ids).pluck(:name)
   end
 
