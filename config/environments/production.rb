@@ -54,7 +54,12 @@ Rails.application.configure do
   config.log_tags = [ :request_id ]
 
   # Use a different cache store in production.
-  config.cache_store = :redis_cache_store
+  config.cache_store = :redis_cache_store, {
+    url: ENV['REDIS_CACHE_URL']
+    error_handler: -> (method:, returning:, exception:) {
+      Raven.capture_exception(exception, level: 'warning', tags: { method: method, returning: returning })
+    }
+  }
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter     = :resque
