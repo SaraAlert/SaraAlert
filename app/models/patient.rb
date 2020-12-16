@@ -410,6 +410,11 @@ class Patient < ApplicationRecord
     where('last_date_of_exposure >= ?', time_frame)
   }
 
+  # All individuals with a last date of exposure within the given time frame
+  scope :symptom_onset_in_time_frame, lambda { |time_frame|
+    where('symptom_onset >= ?', time_frame)
+  }
+
   # All individuals enrolled within the given time frame
   scope :enrolled_in_time_frame, lambda { |time_frame|
     case time_frame
