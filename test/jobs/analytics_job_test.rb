@@ -101,7 +101,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 4, true, 'Last Exposure Date', days_ago(5), 6)
     verify_monitoree_count(active_counts, 5, true, 'Last Exposure Date', days_ago(3), 1)
     verify_monitoree_count(active_counts, 6, true, 'Last Exposure Date', days_ago(1), 1)
-    assert_equal(9, active_counts.length)
+    assert_equal(8, active_counts.length)
   end
 
   test 'monitoree counts by last exposure week' do
