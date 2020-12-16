@@ -44,7 +44,7 @@ class Vaccine extends React.Component {
     this.setState({ [field]: date }, () => {
       this.setState(state => {
         return {
-          vaccinated: state.first_vac_date && state.second_vac_date ? true : false,
+          vaccinated: state.first_vac_date && state.second_vac_date ? true : state.vaccinated,
           vaccinationInvalid: moment(state.second_vac_date).isBefore(state.first_vac_date, 'day'),
         };
       });
