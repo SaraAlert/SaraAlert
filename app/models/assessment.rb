@@ -93,7 +93,8 @@ class Assessment < ApplicationRecord
 
   # Gets all symptom names for a given array of assessment IDs.
   def self.get_symptom_names_for_assessments(assessment_ids)
-    reported_condition_ids = ReportedCondition.where(type: 'ReportedCondition', assessment_id: assessment_ids).pluck(:id)
+    threshold_cond_hashes = ReportedCondition.where(type: 'ReportedCondition', assessment_id: assessment_ids).pluck(:threshold_condition_hash)
+    condition_ids = ThresholdCondition.where(type: 'ThresholdCondition', threshold_condition_hash: threshold_cond_hashes)
     Symptom.where(condition_id: reported_condition_ids).pluck(:name)
   end
 
