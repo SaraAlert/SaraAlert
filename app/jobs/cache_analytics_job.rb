@@ -286,7 +286,7 @@ class CacheAnalyticsJob < ApplicationJob
 
     monitorees.where(isolation: true)
               .monitoring_active(true)
-              .exposed_in_time_frame(NUM_PAST_DAYS.days.ago.to_date.to_datetime)
+              .symptom_onset_in_time_frame(NUM_PAST_DAYS.days.ago.to_date.to_datetime)
               .group(:symptom_onset)
               .order(:symptom_onset)
               .size
@@ -316,7 +316,7 @@ class CacheAnalyticsJob < ApplicationJob
               end
     monitorees.where(isolation: true)
               .monitoring_active(true)
-              .exposed_in_time_frame(NUM_PAST_WEEKS.weeks.ago.to_date.to_datetime)
+              .symptom_onset_in_time_frame(NUM_PAST_WEEKS.weeks.ago.to_date.to_datetime)
               .group(symptom_onset_weeks)
               .order(Arel.sql(symptom_onset_weeks))
               .size
@@ -347,7 +347,7 @@ class CacheAnalyticsJob < ApplicationJob
               end
     monitorees.where(isolation: true)
               .monitoring_active(true)
-              .exposed_in_time_frame(NUM_PAST_MONTHS.months.ago.to_date.to_datetime)
+              .symptom_onset_in_time_frame(NUM_PAST_MONTHS.months.ago.to_date.to_datetime)
               .group(symptom_onset_months)
               .order(Arel.sql(symptom_onset_months))
               .size
