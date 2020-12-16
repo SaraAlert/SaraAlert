@@ -55,7 +55,7 @@ Rails.application.configure do
 
   # Use a different cache store in production.
   config.cache_store = :redis_cache_store, {
-    url: ENV['REDIS_CACHE_URL']
+    url: ENV['REDIS_CACHE_URL'],
     error_handler: -> (method:, returning:, exception:) {
       Raven.capture_exception(exception, level: 'warning', tags: { method: method, returning: returning })
     }
