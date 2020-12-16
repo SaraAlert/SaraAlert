@@ -95,7 +95,7 @@ class Assessment < ApplicationRecord
   def self.get_symptom_names_for_assessments(assessment_ids)
     threshold_cond_hashes = ReportedCondition.where(type: 'ReportedCondition', assessment_id: assessment_ids).pluck(:threshold_condition_hash)
     condition_ids = ThresholdCondition.where(type: 'ThresholdCondition', threshold_condition_hash: threshold_cond_hashes)
-    Symptom.where(condition_id: reported_condition_ids).pluck(:name)
+    Symptom.where(condition_id: condition_ids).pluck(:name)
   end
 
   def translations
