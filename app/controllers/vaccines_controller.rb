@@ -8,15 +8,12 @@ class VaccinesController < ApplicationController
   def create
     redirect_to root_url && return unless current_user.can_create_patient_vaccines?
 
-    permitted_params = params.permit(:vaccinated, :first_vac_date, :second_vac_date, :patient_id)
+    permitted_params = params.require(:vaccine).permit(:vaccinated, :first_vac_date, :second_vac_date, :patient_id)
     
-    vac = Vaccine.new(vaccinated: permitted_params.require(:vaccinated),
-                      first_vac_date: permitted_params.require(:first_vac_date),  
-                      second_vac_date: permitted_params.require(:second_vac_date))
-    vac.patient_id = permitted_params.require(:patient_id)
+    vac = Vaccine.new(permitted_params)
     vac.save!
     
-    History.vac_record(patient: params.permit(:patient_id)[:patient_id],
+    History.vac_record(patient: permitted_params[:patient_id],
                        created_by: current_user.email,
                        comment: "User added a new vaccine record (ID: #{vac.id}).")
   end
@@ -24,14 +21,13 @@ class VaccinesController < ApplicationController
   def update
     redirect_to root_url && return unless current_user.can_edit_patient_vaccines?
 
-    permitted_params = params.permit(:vaccinated, :first_vac_date, :second_vac_date, :patient_id)
+    permitted_params = params.require(:vaccine).permit(:vaccinated, :first_vac_date, :second_vac_date, :patient_id)
+    permitted_id = params.require(:id)
     
-    vac = Vaccine.find_by(id: params.permit(:id)[:id])
-    vac.update!(vaccinated: permitted_params.require(:vaccinated),
-                first_vac_date: permitted_params.require(:first_vac_date),  
-                second_vac_date: permitted_params.require(:second_vac_date))
+    vac = Vaccine.find_by(id: permitted_id)
+    vac.update!(permitted_params)
 
-    History.vac_record_edit(patient: permitted_params.require(:patient_id),
+    History.vac_record_edit(patient: permitted_params[:patient_id],
                             created_by: current_user.email,
                             comment: "User edited a vaccine record (ID: #{vac.id}).")
   end
