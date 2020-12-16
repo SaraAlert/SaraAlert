@@ -137,10 +137,10 @@ class ConsumeAssessmentsJob < ApplicationJob
           typed_reported_symptoms = Condition.build_symptoms(message['reported_symptoms_array'])
           reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
           assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
-          assessment.symptomatic = assessment.symptomatic?
           reported_condition.transaction do
-            assessment.save!
             reported_condition.save!
+            assessment.symptomatic = assessment.symptomatic?
+            assessment.save!
             queue.commit
           end
         else
@@ -158,14 +158,15 @@ class ConsumeAssessmentsJob < ApplicationJob
                                       end
             reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
             assessment = Assessment.new(reported_condition: reported_condition, patient: dependent)
-            assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
+
             # If current user in the collection of patient + patient dependents is the patient, then that means
             # that they reported for themselves, else we are creating an assessment for the dependent and
             # that means that it was the proxy who reported for them
             assessment.who_reported = patient.submission_token == dependent.submission_token ? 'Monitoree' : 'Proxy'
             reported_condition.transaction do
-              assessment.save!
               reported_condition.save!
+              assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
+              assessment.save!
               queue.commit
             end
           end

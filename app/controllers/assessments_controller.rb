@@ -111,7 +111,6 @@ class AssessmentsController < ApplicationController
       reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: threshold_condition_hash)
 
       @assessment = Assessment.new(reported_condition: reported_condition)
-      @assessment.symptomatic = @assessment.symptomatic?
 
       @assessment.patient = patient
 
@@ -119,8 +118,10 @@ class AssessmentsController < ApplicationController
       @assessment.who_reported = current_user.nil? ? 'Monitoree' : current_user.email
 
       reported_condition.transaction do
-        @assessment.save!
         reported_condition.save!
+
+        @assessment.symptomatic = @assessment.symptomatic?
+        @assessment.save!
 
         # Save a new receipt and clear out any older ones
         AssessmentReceipt.where(submission_token: submission_token_from_params).delete_all
