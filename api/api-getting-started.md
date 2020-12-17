@@ -236,6 +236,6 @@ Sara Alert has a script that generates demo data for testing provided in the sou
 Developers can use the same syntax to create a test application with a `jurisdiction_id`, a `user_id` and a `public_key_set`.
 NOTE: The public_key_set *must* be serialized into a JSON string using `to_json` before storing.
 
-Fortunately, there are many tools available and is easy to generate JWKS at https://mkjwk.org/ for the public key set, which also then be used to create a JWT at https://jwt.io.
+Fortunately, there are many tools available and is easy to generate JWKS at <https://mkjwk.org> for the public key set, which also then be used to create a JWT at <https://jwt.io>.
 
 It is also recommended to use a tool such as Postman to interact with the Sara Alert API for testing this workflow.
