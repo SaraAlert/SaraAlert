@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Carousel } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { debounce, pickBy, identity } from 'lodash';
+import { pickBy, identity } from 'lodash';
 import axios from 'axios';
 import libphonenumber from 'google-libphonenumber';
 import _ from 'lodash';
@@ -34,12 +34,6 @@ class Enrollment extends React.Component {
         blocked_sms: this.props.blocked_sms,
       },
     };
-    this.setEnrollmentState = debounce(this.setEnrollmentState.bind(this), 1000);
-    this.submit = this.submit.bind(this);
-    this.next = this.next.bind(this);
-    this.previous = this.previous.bind(this);
-    this.handleConfirmDuplicate = this.handleConfirmDuplicate.bind(this);
-    this.goto = this.goto.bind(this);
   }
 
   componentDidMount() {
@@ -48,7 +42,7 @@ class Enrollment extends React.Component {
     };
   }
 
-  setEnrollmentState(enrollmentState) {
+  setEnrollmentState = enrollmentState => {
     let currentEnrollmentState = this.state.enrollmentState;
     this.setState({
       enrollmentState: {
@@ -58,7 +52,7 @@ class Enrollment extends React.Component {
         blocked_sms: enrollmentState.blocked_sms,
       },
     });
-  }
+  };
 
   handleConfirmDuplicate = async (data, groupMember, message, reenableSubmit, confirmText) => {
     if (await confirmDialog(confirmText)) {
@@ -86,13 +80,26 @@ class Enrollment extends React.Component {
     }
   };
 
-  submit(_event, groupMember, reenableSubmit) {
+  submit = (_event, groupMember, reenableSubmit) => {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
 
     let diffKeys = Object.keys(this.state.enrollmentState.patient).filter(
       k => _.get(this.state.enrollmentState.patient, k) !== _.get(this.props.patient, k) || k === 'id'
     );
+
+    // Manually add close contact keys to diffKeys if enrolling from a close contact
+    // They are passed in as props and thus are not added by triggering the onChange
+    if (!this.editMode && this.props.cc_id) {
+      const closeContactKeys = ['first_name', 'last_name', 'primary_telephone', 'email', 'contact_of_known_case', 'contact_of_known_case_id', 'exposure_notes'];
+      closeContactKeys.forEach(key => {
+        // only add the key if it is not already there
+        if (!diffKeys.includes(key)) {
+          diffKeys.push(key);
+        }
+      });
+    }
+
     let data = new Object({
       patient: this.props.parent_id ? this.state.enrollmentState.patient : _.pick(this.state.enrollmentState.patient, diffKeys),
       propagated_fields: this.state.enrollmentState.propagatedFields,
@@ -159,9 +166,9 @@ class Enrollment extends React.Component {
       .catch(err => {
         reportError(err);
       });
-  }
+  };
 
-  next() {
+  next = () => {
     let index = this.state.index;
     let lastIndex = this.state.lastIndex;
     if (lastIndex) {
@@ -173,16 +180,16 @@ class Enrollment extends React.Component {
         this.setState({ index: index + 1, lastIndex: null });
       });
     }
-  }
+  };
 
-  previous() {
+  previous = () => {
     let index = this.state.index;
     this.setState({ direction: 'prev' }, () => {
       this.setState({ index: index - 1, lastIndex: null });
     });
-  }
+  };
 
-  goto(targetIndex) {
+  goto = targetIndex => {
     let index = this.state.index;
     if (targetIndex > index) {
       this.setState({ direction: 'next' }, () => {
@@ -193,9 +200,10 @@ class Enrollment extends React.Component {
         this.setState({ index: targetIndex, lastIndex: index });
       });
     }
-  }
+  };
 
   render() {
+    console.log(this.props.propagated_fields);
     return (
       <React.Fragment>
         <Carousel
