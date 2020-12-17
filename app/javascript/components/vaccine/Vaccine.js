@@ -16,7 +16,9 @@ class Vaccine extends React.Component {
       vaccinated: this.props.vac.vaccinated || false,
       first_vac_date: this.props.vac.first_vac_date,
       second_vac_date: this.props.vac.second_vac_date,
-      vaccinationInvalid: false,
+      firstDateInvalid: false,
+      secondDateInvalid: false,
+      onLoadInvalid: false,
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -31,7 +33,9 @@ class Vaccine extends React.Component {
         vaccinated: this.props.vac.vaccinated || false,
         first_vac_date: this.props.vac.first_vac_date,
         second_vac_date: this.props.vac.second_vac_date,
-        vaccinationInvalid: false,
+        firstDateInvalid: false,
+        secondDateInvalid: false,
+        onLoadInvalid: true,
       };
     });
   }
@@ -45,7 +49,9 @@ class Vaccine extends React.Component {
       this.setState(state => {
         return {
           vaccinated: state.first_vac_date && state.second_vac_date ? true : state.vaccinated,
-          vaccinationInvalid: moment(state.second_vac_date).isBefore(state.first_vac_date, 'day'),
+          firstDateInvalid: state.first_vac_date ? false : true,
+          secondDateInvalid: moment(state.second_vac_date).isBefore(state.first_vac_date, 'day'),
+          onLoadInvalid: false,
         };
       });
     });
@@ -90,6 +96,9 @@ class Vaccine extends React.Component {
                   placement="bottom"
                   customClass="form-control-lg"
                 />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.firstDateInvalid && <span>First Vaccination Date can not be empty.</span>}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
@@ -106,7 +115,7 @@ class Vaccine extends React.Component {
                   customClass="form-control-lg"
                 />
                 <Form.Control.Feedback className="d-block" type="invalid">
-                  {this.state.vaccinationInvalid && <span>Second vaccination date cannot be before first.</span>}
+                  {this.state.secondDateInvalid && <span>Second vaccination date cannot be before first.</span>}
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
@@ -130,7 +139,10 @@ class Vaccine extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disabled={this.state.loading || this.state.vaccinationInvalid} onClick={submit}>
+          <Button
+            variant="primary btn-square"
+            disabled={this.state.loading || this.state.onLoadInvalid || this.state.firstDateInvalid || this.state.secondDateInvalid}
+            onClick={submit}>
             Create
           </Button>
         </Modal.Footer>
