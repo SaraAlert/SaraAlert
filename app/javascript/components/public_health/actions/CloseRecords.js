@@ -25,6 +25,7 @@ class CloseRecords extends React.Component {
         'Deceased',
         'Duplicate',
         'Other',
+        'Did not meet criteria for monitoring',
       ],
       monitoring_reason: '',
       reasoning: '',

@@ -30,6 +30,7 @@ class Patient < ApplicationRecord
                                                   'Case confirmed',
                                                   'Past monitoring period',
                                                   'Meets criteria to discontinue isolation',
+                                                  'Did not meet criteria for monitoring',
                                                   'Deceased',
                                                   'Duplicate',
                                                   'Other',

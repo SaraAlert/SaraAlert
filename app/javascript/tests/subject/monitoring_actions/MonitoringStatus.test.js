@@ -23,7 +23,8 @@ const monitoringReasons = [
   'Meets criteria to discontinue isolation',
   'Deceased',
   'Duplicate',
-  'Other'
+  'Other',
+  'Did not meet criteria for monitoring'
 ];
 
 function getWrapper(patient, hasDependents, inHouseholdWithCeInExposure) {
