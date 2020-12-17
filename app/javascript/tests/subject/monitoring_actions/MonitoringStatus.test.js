@@ -21,10 +21,10 @@ const monitoringReasons = [
   'Person Under Investigation (PUI)',
   'Case confirmed',
   'Meets criteria to discontinue isolation',
+  'Did not meet criteria for monitoring',
   'Deceased',
   'Duplicate',
-  'Other',
-  'Did not meet criteria for monitoring'
+  'Other'
 ];
 
 function getWrapper(patient, hasDependents, inHouseholdWithCeInExposure) {
