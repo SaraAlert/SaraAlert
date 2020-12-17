@@ -13,7 +13,7 @@ nav_order: 4
 {:toc}
 </details>
 
-## API Specification
+# API Specification
 
 For the purposes of this documentation, when describing an API route, [base] includes `/fhir/r4`.
 JSON is currently the only supported format. Please make use of the `application/fhir+json` mime type for the Accept header. The Content-Type header must also correspond to this mime type.
@@ -31,7 +31,7 @@ Because the Sara Alert API follows the FHIR specification, there is a mapping be
 
 <a name="supported-scopes"/>
 
-### Supported Scopes
+## Supported Scopes
 For applications following the [SMART-on-FHIR App Launch Framework "Standalone Launch" Workflow](#standalone-launch), these are the available scopes:
 
 * `user/Patient.read`,
@@ -55,16 +55,17 @@ Please note a given application and request for access token can have have multi
 
 <a name="cap"/>
 
-### CapabilityStatement and Well-Known Uniform Resource Identifiers
+## CapabilityStatement and Well-Known Uniform Resource Identifiers
 
 <a name="cap-get"/>
 
 A capability statement is available at `[base]/metadata`:
 
-#### GET `[base]/metadata`
+### GET `[base]/metadata`
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -229,16 +230,18 @@ A capability statement is available at `[base]/metadata`:
   "resourceType": "CapabilityStatement"
 }
 ```
+  </div>
 </details>
 
 <a name="wk-get"/>
 
 A Well Known statement is also available at `/.well-known/smart-configuration` or `[base]/.well-known/smart-configuration`:
 
-#### GET `[base]/.well-known/smart-configuration`
+### GET `[base]/.well-known/smart-configuration`
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -256,22 +259,24 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
     ]
 }
 ```
+  </div>
 </details>
 
 <a name="read"/>
 
-### Reading
+## Reading
 
 The API supports reading monitorees, monitoree lab results, and monitoree daily reports.
 
 <a name="read-get-pat"/>
 
-#### GET `[base]/Patient/[:id]`
+### GET `[base]/Patient/[:id]`
 
 Get a monitoree via an id, e.g.:
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -393,17 +398,19 @@ Get a monitoree via an id, e.g.:
   "resourceType": "Patient"
 }
 ```
+  </div>
 </details>
 
 
 <a name="read-get-obs"/>
 
-#### GET `[base]/Observation/[:id]`
+### GET `[base]/Observation/[:id]`
 
 Get a monitoree lab result via an id, e.g.:
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -420,17 +427,19 @@ Get a monitoree lab result via an id, e.g.:
   "resourceType": "Observation"
 }
 ```
+  </div>
 </details>
 
 
 <a name="read-get-que"/>
 
-#### GET `[base]/QuestionnaireResponse/[:id]`
+### GET `[base]/QuestionnaireResponse/[:id]`
 
 Get a monitoree daily report via an id, e.g.:
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -537,17 +546,19 @@ Get a monitoree daily report via an id, e.g.:
   "resourceType": "QuestionnaireResponse"
 }
 ```
+  </div>
 </details>
 
 
 <a name="read-get-all"/>
 
-#### GET `[base]/Patient/[:id]/$everything`
+### GET `[base]/Patient/[:id]/$everything`
 
 Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab results, and all their daily reports.
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -789,20 +800,21 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
   "resourceType": "Bundle"
 }
 ```
+  </div>
 </details>
 
 
 <a name="create"/>
 
-### Creating
+## Creating
 
 The API supports creating new monitorees.
 
-#### Extensions
+### Extensions
 
 <a name="create-ext"/>
 
-Along with supporting the US Core extensions for race, ethnicity, and birthsex, Sara Alert includes four additional extensions for things specific to the Sara Alert workflows.
+Along with supporting the US Core extensions for [race](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-race.html), [ethnicity](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-ethnicity.html), and [birthsex](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-birthsex.html), Sara Alert includes four additional extensions for things specific to the Sara Alert workflows.
 
 Use `http://saraalert.org/StructureDefinition/preferred-contact-method` for specifying the monitorees Sara Alert preferred contact method (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, `SMS Text-message`, `Opt-out`, and `Unknown`).
 
@@ -850,16 +862,16 @@ Use `http://saraalert.org/StructureDefinition/isolation` to specify if the monit
 }
 ```
 
-#### POST `[base]/Patient`
+### POST `[base]/Patient`
 
 <a name="create-post-pat"/>
 
 To create a new monitoree, simply POST a FHIR Patient resource.
 
-##### Request Body
-
+**Request Body:**
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -977,15 +989,17 @@ To create a new monitoree, simply POST a FHIR Patient resource.
   "resourceType": "Patient"
 }
 ```
+  </div>
 </details>
 
 
-#### Response
+**Response:**
 
 On success, the server will return the newly created resource with an id. This is can be used to retrieve or update the record moving forward.
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -1107,26 +1121,27 @@ On success, the server will return the newly created resource with an id. This i
   "resourceType": "Patient"
 }
 ```
+  </div>
 </details>
 
 
 <a name="update"/>
 
-### Updating
+## Updating
 An update request creates a new current version for an existing resource.
 
 **PLEASE NOTE:** The API supports `PUT` and `PATCH` requests, which update an existing resource in different ways. A `PUT` request will replace the entire existing resource. This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with null values. A `PATCH` request will only modify the attributes indicated in the request, which must follow the [JSON Patch specification](https://tools.ietf.org/html/rfc6902). Omitted attributes are unchanged. For further details on the contents of a `PATCH` request, see the [JSON Patch documentation](http://jsonpatch.com/).
 
 <a name="update-put-pat"/>
 
-#### PUT `[base]/Patient/[:id]`
+### PUT `[base]/Patient/[:id]`
 
 **NOTE:** This is a `PUT` operation, it will replace the entire resource. If you intend to modify specific attributes instead, see [PATCH](#update-patch-pat).
 
-#### Request Body
-
+**Request Body:**
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -1244,15 +1259,17 @@ An update request creates a new current version for an existing resource.
   "resourceType": "Patient"
 }
 ```
+  </div>
 </details>
 
 
-#### Response
+**Response:**
 
 On success, the server will update the existing resource given the id.
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -1374,20 +1391,22 @@ On success, the server will update the existing resource given the id.
   "resourceType": "Patient"
 }
 ```
+  </div>
 </details>
 
 <a name="update-patch-pat"/>
 
-#### PATCH `[base]/Patient/[:id]`
+### PATCH `[base]/Patient/[:id]`
 
 **NOTE:** This is a `PATCH` operation, it will only modify specified attributes. If you intend to replace the entire resource instead, see [PUT](#update-put-pat).
 
-#### Request Body
+**Request Body:**
 
 Assume the Patient resource was originally as shown in the example Patient [GET](#read-get-pat), and the patch is specified as below.
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 [
@@ -1395,15 +1414,17 @@ Assume the Patient resource was originally as shown in the example Patient [GET]
   { "op": "replace", "path": "/birthDate", "value": "1985-03-30" }
 ]
 ```
+  </div>
 </details>
 
 
-#### Response
+**Response:**
 
 On success, the server will update the attributes indicated by the request.
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -1512,25 +1533,27 @@ On success, the server will update the attributes indicated by the request.
   "resourceType": "Patient"
 }
 ```
+  </div>
 </details>
 
 
 <a name="search"/>
 
-### Searching
+## Searching
 
 The API supports searching for monitorees.
 
 <a name="search-get"/>
 
-#### GET `[base]/Patient?parameter(s)`
+### GET `[base]/Patient?parameter(s)`
 
-The current parameters allowed are: `given`, `family`, `telecom`, `email`, `active`, `subject`, and `_id`. Search results will be paginated by default (see: https://www.hl7.org/fhir/http.html#paging), although you can request a different page size using the `_count` param (defaults to 10, but will allow up to 500). Utilize the `page` param to navigate through the results, as demonstrated in the `[base]/Patient?_count=2` example below under the `link` entry.
+The current parameters allowed are: `given`, `family`, `telecom`, `email`, `active`, `subject`, and `_id`. Search results will be paginated by default (see: <https://www.hl7.org/fhir/http.html#paging>), although you can request a different page size using the `_count` param (defaults to 10, but will allow up to 500). Utilize the `page` param to navigate through the results, as demonstrated in the `[base]/Patient?_count=2` example below under the `link` entry.
 
-GET `[base]/Patient?given=testy&family=mctest`
+GET `[base]/Patient?given=john&family=doe`
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -1666,9 +1689,10 @@ GET `[base]/Patient?given=testy&family=mctest`
   "resourceType": "Bundle"
 }
 ```
+  </div>
 </details>
 
-#### GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
+### GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
 You can use search to find Monitoree daily reports by using the `subject` parameter.
 
 <a name="search-questionnaire-subj"/>
@@ -1677,6 +1701,7 @@ GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -1846,9 +1871,10 @@ GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
   "resourceType": "QuestionnaireResponse"
 }
 ```
+  </div>
 </details>
 
-#### GET `[base]/Observation?subject=Patient/[:id]`
+### GET `[base]/Observation?subject=Patient/[:id]`
 
 You can also use search to find Monitoree laboratory results by using the `subject` parameter.
 
@@ -1858,6 +1884,7 @@ GET `[base]/Observation?subject=Patient/[:id]`
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -1888,9 +1915,10 @@ GET `[base]/Observation?subject=Patient/[:id]`
   "resourceType": "Bundle"
 }
 ```
+  </div>
 </details>
 
-#### GET `[base]/Patient`
+### GET `[base]/Patient`
 
 By not specifying any search parameters, you can request all resources of the specified type.
 
@@ -1900,6 +1928,7 @@ GET `[base]/Patient?_count=2`
 
 <details>
   <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
 
 ```json
 {
@@ -2166,5 +2195,6 @@ GET `[base]/Patient?_count=2`
   "resourceType": "Bundle"
 }
 ```
+  </div>
 </details>
 
