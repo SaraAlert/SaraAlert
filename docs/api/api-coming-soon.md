@@ -6,25 +6,9 @@ nav_order: 2
 ---
 **Below you will find a list of ongoing work that affects the Sara Alert™ API. This page will be updated regularly. If you have any questions on the information here, please email them to our API Help Desk, saraalert-interop@mitre.org. For past release notes, please see [API Release Notes](api-release-notes).**
 
-## Planned for 1.18.0* (previously was targeting 1.17):
-* Adding support for the following attributes on the Patient resource:
-  * Monitoring Plan
-    * Validates one of: 'None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision', 'Self-observation'
-  * Assigned User
-    * Validates in range [1, 9999]
-  * Additional Planned Travel Start Date
-  * Port of Origin
-  * Date of Departure
-  * Date of Arrival
-  * Flight or Vessel Number
-  * Flight or Vessel Carrier
-  * Notes
-  * Travel Related Notes
-  * Additional Planned Travel Notes
-  * Primary Phone Type
-  * Secondary Phone Type
-  * State/Local ID
-* Adding a `Patient` PATCH endpoint. This will allow for PATCH style updates in addition to the existing PUT.
+## Planned for 1.19*:
+
+Check back soon for an updated list of planned items.
 
 ***
 
