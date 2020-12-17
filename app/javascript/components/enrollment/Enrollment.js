@@ -84,26 +84,10 @@ class Enrollment extends React.Component {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
 
-    let diffKeys = Object.keys(this.state.enrollmentState.patient).filter(
-      k => _.get(this.state.enrollmentState.patient, k) !== _.get(this.props.patient, k) || k === 'id'
-    );
-
-    // Manually add preferred contact method for new enrollment if it is not changed
-    if (!this.editMode && !diffKeys.includes('preferred_contact_method')) {
-      diffKeys.push('preferred_contact_method');
-    }
-
-    // Manually add close contact keys to diffKeys if enrolling from a close contact
-    // They are passed in as props and thus are not added by triggering the onChange
-    if (!this.editMode && this.props.cc_id) {
-      const closeContactKeys = ['first_name', 'last_name', 'primary_telephone', 'email', 'contact_of_known_case', 'contact_of_known_case_id', 'exposure_notes'];
-      closeContactKeys.forEach(key => {
-        // only add the key if it is not already there
-        if (!diffKeys.includes(key)) {
-          diffKeys.push(key);
-        }
-      });
-    }
+    // If enrolling, include ALL fields in diff keys. If editing, only include the ones that have changed
+    let diffKeys = this.props.editMode
+      ? Object.keys(this.state.enrollmentState.patient).filter(k => _.get(this.state.enrollmentState.patient, k) !== _.get(this.props.patient, k) || k === 'id')
+      : Object.keys(this.state.enrollmentState.patient);
 
     let data = new Object({
       patient: this.props.parent_id ? this.state.enrollmentState.patient : _.pick(this.state.enrollmentState.patient, diffKeys),
