@@ -4,6 +4,32 @@ title: Release Notes
 parent: API
 nav_order: 1
 ---
+# 1.18.1
+* Added support for the following attributes on the Patient resource:
+  * **Monitoring Plan**
+    * Validates one of: 'None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision', 'Self-observation'
+  * **Assigned User**
+    * Validates in range [1, 9999]
+  * **Additional Planned Travel Start Date**
+  * **Port of Origin**
+  * **Date of Departure**
+  * **Date of Arrival**
+  * **Flight or Vessel Number**
+  * **Flight or Vessel Carrier**
+  * **Notes**
+  * **Travel Related Notes**
+  * **Additional Planned Travel Notes**
+  * **Primary Phone Type**
+    * Validates one of: 'Smartphone', 'Plain Cell', 'Landline'
+  * **Secondary Phone Type**
+    * Validates one of: 'Smartphone', 'Plain Cell', 'Landline'
+  * **State/Local ID**
+    * Expressed as a `Patient.identifier`, where `Identifier.system` is equal to `http://saraalert.org/SaraAlert/state-local-id`, and `Identifier.value` is set to the State/Local ID.
+* Added a `Patient` PATCH endpoint. This allows for PATCH style updates with JSON Patch in addition to the existing PUT.
+* Added a check for JSON validity in POST and PUT endpoints. The service will now return a 400 error in the event of invalid JSON.
+
+***
+
 # 1.16.0
 * The following data elements are now required on the Patient resource:
   * **State**, **Date of Birth**, **First Name**, **Last Name** are always required
