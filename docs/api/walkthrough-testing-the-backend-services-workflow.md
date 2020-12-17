@@ -22,7 +22,7 @@ If you are testing on the demo server, skip to the next section.
 
 ## Create a JSON Web Key (JWK)
 
-**3.** For this tutorial, use https://mkjwk.org. Create a JWK with the following settings: Key Size `2048`, Key Use `Signature`, Algorithm `RS384`, Key ID `SHA-256`, Show X.509 `Yes`. Click the "Generate" button.
+**3.** For this tutorial, use <https://mkjwk.org>. Create a JWK with the following settings: Key Size `2048`, Key Use `Signature`, Algorithm `RS384`, Key ID `SHA-256`, Show X.509 `Yes`. Click the "Generate" button.
 
 ![mkjwk example](/assets/images/mkjwk.png)
 
@@ -94,7 +94,7 @@ mysql> select * from oauth_applications;
 
 ## Request Access Token: Create a Signed JWT
 
-**6.** We need a signed JWT to request an access token. In the tutorial use https://jwt.io/#debugger-io
+**6.** We need a signed JWT to request an access token. In the tutorial use <https://jwt.io/#debugger-io>
 
 In the `Decoded` section, enter the following `HEADER`:
 
