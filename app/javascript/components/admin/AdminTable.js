@@ -56,12 +56,10 @@ class AdminTable extends React.Component {
 
   /**
    * Creates a "Audit" button for each row of the table.
-   * @param {*} value - Value in the given row at the given column.
-   * @param {Object} rowData - Data in the row this button will be created in
-   * @param {Number} colData - Column data for the col this filter is a part of.
+   * @param {Object} rowData - Data about the cell this filter is called on.
    */
-  // eslint-disable-next-line no-unused-vars
-  createAuditButton(value, rowData, colData, rowIndex, colIndex) {
+  createAuditButton(data) {
+    const rowData = data.rowData;
     return (
       <div id={rowData.id} className="float-left edit-button">
         <i className="fas fa-user-clock"></i>

@@ -103,12 +103,10 @@ class AuditModal extends React.Component {
 
   /**
    * Formats values in the timestamp column to be human readable
-   * @param {*} value - Value in the given row at the given column.
-   * @param {Object} rowData - Data in the row this button will be created in
-   * @param {Number} colData - Column data for the col this filter is a part of.
+   * @param {Object} data - Data about the cell this filter is called on.
    */
-  // eslint-disable-next-line no-unused-vars
-  formatTimestamp(timestamp, rowData, colData, rowIndex, colIndex) {
+  formatTimestamp(data) {
+    const timestamp = data.value;
     const ts = moment.tz(timestamp, 'UTC');
     return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
   }
@@ -129,12 +127,11 @@ class AuditModal extends React.Component {
 
   /**
    * Formatting method for displaying each audit action in the table.
-   * @param {*} change - Audit to display holding the updated element ({String} name) and the before & after values ({Array} details)
-   * @param {Object} rowData - Data in the row this button will be created in
-   * @param {Number} colData - Column data for the col this filter is a part of.
+   * @param {Object} data - Data about the cell this filter is called on.
    */
-  // eslint-disable-next-line no-unused-vars
-  formatChange = (change, rowData, colData, rowIndex, colIndex) => {
+  formatChange = data => {
+    //Audit to display holding the updated element ({String} name) and the before & after values ({Array} details)
+    const change = data.value;
     switch (change.name) {
       case 'locked_at':
         // Generic audit message in case before & after values not provided
