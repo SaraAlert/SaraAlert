@@ -62,7 +62,7 @@ class CloseContact extends React.Component {
               patient_id: this.props.patient.id,
               first_name: this.state.first_name || '',
               last_name: this.state.last_name || '',
-              primary_telephone: this.state.primary_telephone || '',
+              primary_telephone: this.state.primary_telephone ? phoneUtil.format(phoneUtil.parse(this.state.primary_telephone, 'US'), PNF.E164) : '',
               email: this.state.email || '',
               notes: this.state.notes || '',
               enrolled_id: this.state.enrolled_id || null,
