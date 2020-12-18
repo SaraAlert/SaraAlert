@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Carousel } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { pickBy, identity } from 'lodash';
+import { debounce, pickBy, identity } from 'lodash';
 import axios from 'axios';
 import libphonenumber from 'google-libphonenumber';
 import _ from 'lodash';
@@ -42,7 +42,7 @@ class Enrollment extends React.Component {
     };
   }
 
-  setEnrollmentState = enrollmentState => {
+  setEnrollmentState = debounce(enrollmentState => {
     let currentEnrollmentState = this.state.enrollmentState;
     this.setState({
       enrollmentState: {
@@ -52,7 +52,7 @@ class Enrollment extends React.Component {
         blocked_sms: enrollmentState.blocked_sms,
       },
     });
-  };
+  }, 1000);
 
   handleConfirmDuplicate = async (data, groupMember, message, reenableSubmit, confirmText) => {
     if (await confirmDialog(confirmText)) {
