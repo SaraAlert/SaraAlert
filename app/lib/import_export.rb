@@ -296,7 +296,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     created_at: 'Report Created Date',
     updated_at: 'Report Updated Date',
     symptoms: 'Symptoms Reported'
-  }.merge(Hash[Symptom.distinct.pluck(:name, :label)].transform_keys(&:to_sym)).freeze
+  }.freeze
 
   LABORATORY_FIELD_NAMES = {
     patient_id: 'Sara Alert ID',
