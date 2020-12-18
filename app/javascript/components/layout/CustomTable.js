@@ -138,7 +138,7 @@ class CustomTable extends React.Component {
             <Spinner variant="secondary" animation="border" size="lg" />
           </div>
         )}
-        <Table striped bordered hover size="sm">
+        <Table responsive striped bordered hover size="sm">
           <thead>
             <tr>
               {this.props.columnData.map(data => {
@@ -153,29 +153,28 @@ class CustomTable extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.rowData.map((data, row) => {
+            {this.props.rowData.map((rowData, rowIndex) => {
               return (
-                <tr key={row} id={data.id ? data.id : row}>
-                  {Object.values(this.props.columnData).map((col, index) => {
-                    let value = data[col.field];
-                    if (col.options) {
+                <tr key={rowIndex} id={rowData.id ? rowData.id : rowIndex} className={this.props.getRowClassName ? this.props.getRowClassName(rowData) : ''}>
+                  {Object.values(this.props.columnData).map((colData, colIndex) => {
+                    let value = rowData[colData.field];
+                    if (colData.options) {
                       // If this column has value options, use the data value as a key to those options
-                      value = col.options[data[col.field]];
-                    } else if (col.filter) {
-                      // If this column has a filter, apply the filter to the value
-                      // Send along string of the ID and HoH bool if needed
-                      value = col.filter(data[col.field], data.id?.toString(), data.is_hoh);
+                      value = colData.options[rowData[colData.field]];
+                    } else if (colData.filter) {
+                      // If this column has a filter function to be applied, send along data and col index
+                      value = colData.filter(value, rowData, colData, rowIndex, colIndex);
                     }
                     return (
-                      <td key={index} className={col.className ? col.className : ''}>
-                        {col.onClick && <span onClick={() => (col.onClick(data.id.toString()) ? col.onClick : null)}>{value}</span>}
-                        {!col.onClick && value}
+                      <td key={colIndex} className={colData.className ? colData.className : ''}>
+                        {colData.onClick && <span onClick={() => (colData.onClick(rowData.id.toString()) ? colData.onClick : null)}>{value}</span>}
+                        {!colData.onClick && value}
                       </td>
                     );
                   })}
                   {this.props.isEditable && (
                     <td>
-                      <div className="float-left edit-button" onClick={() => this.handleEditClick(row)}>
+                      <div className="float-left edit-button" onClick={() => this.handleEditClick(rowIndex)}>
                         <i className="fas fa-edit"></i>
                       </div>
                     </td>
@@ -184,9 +183,8 @@ class CustomTable extends React.Component {
                     <td>
                       <input
                         type="checkbox"
-                        aria-label="Table Select Monitoree Row"
-                        checked={this.props.selectAll || this.props.selectedRows.includes(row)}
-                        onChange={e => this.handleCheckboxChange(e, row)}></input>
+                        checked={this.props.selectAll || this.props.selectedRows.includes(rowIndex)}
+                        onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
                     </td>
                   )}
                 </tr>
@@ -277,6 +275,7 @@ CustomTable.propTypes = {
   page: PropTypes.number,
   entries: PropTypes.number,
   entryOptions: PropTypes.array,
+  getRowClassName: PropTypes.func,
 };
 
 CustomTable.defaultProps = {

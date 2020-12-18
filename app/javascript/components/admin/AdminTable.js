@@ -56,11 +56,14 @@ class AdminTable extends React.Component {
 
   /**
    * Creates a "Audit" button for each row of the table.
-   * @param {string} userId
+   * @param {*} value - Value in the given row at the given column.
+   * @param {Object} rowData - Data in the row this button will be created in
+   * @param {Number} colData - Column data for the col this filter is a part of.
    */
-  createAuditButton(_, userId) {
+  // eslint-disable-next-line no-unused-vars
+  createAuditButton(value, rowData, colData, rowIndex, colIndex) {
     return (
-      <div id={userId} className="float-left edit-button">
+      <div id={rowData.id} className="float-left edit-button">
         <i className="fas fa-user-clock"></i>
       </div>
     );
@@ -648,12 +651,10 @@ class AdminTable extends React.Component {
                 }
                 className="ml-3"
                 disabled={!this.state.actionsEnabled}>
-                {this.state.query.tab !== 'closed' && (
-                  <Dropdown.Item className="px-3" onClick={this.handleResetPasswordClick}>
-                    <i className="fas fa-undo"></i>
-                    <span className="ml-2">Reset Password</span>
-                  </Dropdown.Item>
-                )}
+                <Dropdown.Item className="px-3" onClick={this.handleResetPasswordClick}>
+                  <i className="fas fa-undo"></i>
+                  <span className="ml-2">Reset Password</span>
+                </Dropdown.Item>
                 <Dropdown.Item className="px-3" onClick={this.handleReset2FAClick}>
                   <i className="fas fa-key"></i>
                   <span className="ml-2">Reset 2FA</span>

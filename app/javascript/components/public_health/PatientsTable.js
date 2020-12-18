@@ -369,39 +369,44 @@ class PatientsTable extends React.Component {
     }
   }
 
-  linkPatient = (name, id, isHoH) => {
+  // eslint-disable-next-line no-unused-vars
+  linkPatient = (name, rowData, colData) => {
     if (this.state.query.tab === 'transferred_out') {
       return name;
     }
-    if (isHoH) {
+    if (rowData.is_hoh) {
       return (
         <div>
-          <BadgeHOH patientId={id} customClass={'badge-hoh ml-1'} location={'right'} />
-          <a href={`/patients/${id}`}>{name}</a>
+          <BadgeHOH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
+          <a href={`/patients/${rowData.id}`}>{name}</a>
         </div>
       );
     }
-    return <a href={`/patients/${id}`}>{name}</a>;
+    return <a href={`/patients/${rowData.id}`}>{name}</a>;
   };
 
-  formatTimestamp(timestamp) {
+  // eslint-disable-next-line no-unused-vars
+  formatTimestamp(timestamp, rowData, colData, rowIndex, colIndex) {
     const ts = moment.tz(timestamp, 'UTC');
     return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
   }
 
-  formatDate(date) {
+  // eslint-disable-next-line no-unused-vars
+  formatDate(date, rowData, colData, rowIndex, colIndex) {
     return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
   }
 
-  formatEndOfMonitoring(endOfMonitoring) {
+  // eslint-disable-next-line no-unused-vars
+  formatEndOfMonitoring(endOfMonitoring, rowData, colData, rowIndex, colIndex) {
     if (endOfMonitoring === 'Continuous Exposure') {
       return 'Continuous Exposure';
     }
     return moment(endOfMonitoring, 'YYYY-MM-DD').format('MM/DD/YYYY');
   }
 
-  createEligibilityTooltip(reportEligibility, patientId) {
-    return <EligibilityTooltip id={patientId} report_eligibility={reportEligibility} inline={false} />;
+  // eslint-disable-next-line no-unused-vars
+  createEligibilityTooltip(reportEligibility, rowData, colData, rowIndex, colIndex) {
+    return <EligibilityTooltip id={rowData.id.toString()} report_eligibility={reportEligibility} inline={false} />;
   }
 
   render() {
