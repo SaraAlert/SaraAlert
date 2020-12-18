@@ -86,9 +86,7 @@ Rails.application.routes.draw do
   resources :patients, param: :submission_token do
     resources :assessments, only: [:create, :new, :index]
   end
-
-  post '/patients/:patient_id/assessments/table', to: 'assessments#table'
-
+  
   resources :user_filters, only: [:index, :create, :update, :destroy]
 
   resources :user_export_presets, only: [:index, :create, :update, :destroy]

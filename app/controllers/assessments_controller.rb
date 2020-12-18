@@ -3,7 +3,31 @@
 # AssessmentsController: for assessment actions
 class AssessmentsController < ApplicationController
   include AssessmentQueryHelper
-  def index; end
+
+  def index
+    redirect_to(root_url) if ADMIN_OPTIONS['report_mode']
+    redirect_to(root_url) && return unless current_user&.can_view_patient_assessments?
+
+    permitted_params = params.permit(:entries, :page, :search, :order, :direction)
+
+    patient_id = params.require(:patient_id)
+    search_text = permitted_params[:search]
+    sort_order = permitted_params[:order]
+    sort_direction = permitted_params[:direction]
+    entries = permitted_params[:entries]&.to_i
+    page = permitted_params[:page]&.to_i
+
+    patient = current_user.get_patient(patient_id)
+    assessments = patient&.assessments
+    redirect_to(root_url) && return if patient.nil? || assessments.nil?
+
+    assessments = search(assessments, search_text)
+    assessments = sort(assessments, sort_order, sort_direction)
+    assessments = paginate(assessments, entries, page)
+    assessments = format(assessments)
+
+    render json: assessments
+  end
 
   def new
     permitted_params = params.permit(:patient_submission_token, :unique_identifier, :lang, :initials_age)
@@ -174,31 +198,6 @@ class AssessmentsController < ApplicationController
     comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
     History.report_updated(patient: patient, created_by: current_user.email, comment: comment)
     redirect_to(patient_assessments_url) && return
-  end
-
-  def table
-    redirect_to(root_url) if ADMIN_OPTIONS['report_mode']
-    redirect_to(root_url) && return unless current_user&.can_view_patient_assessments?
-
-    permitted_params = params.permit(:entries, :page, :search, :order, :direction)
-
-    patient_id = params.require(:patient_id)
-    search_text = permitted_params[:search]
-    sort_order = permitted_params[:order]
-    sort_direction = permitted_params[:direction]
-    entries = permitted_params[:entries]
-    page = permitted_params[:page]
-
-    patient = current_user.get_patient(patient_id)
-    assessments = patient&.assessments
-    redirect_to(root_url) && return if patient.nil? || assessments.nil?
-
-    assessments = search(assessments, search_text)
-    assessments = sort(assessments, sort_order, sort_direction)
-    assessments = paginate(assessments, entries, page)
-    assessments = format(assessments)
-
-    render json: assessments
   end
 
   # For report mode instances, this is the default landing
