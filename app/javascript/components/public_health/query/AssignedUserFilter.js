@@ -39,6 +39,7 @@ class AssignedUserFilter extends React.Component {
         </InputGroup.Prepend>
         <Form.Control
           id="assigned_user"
+          aria-label="Dashboard Assigned User Filter"
           type="text"
           autoComplete="off"
           list="assigned_users"

@@ -147,7 +147,7 @@ class CustomTable extends React.Component {
               {this.props.isEditable && <th>Edit</th>}
               {this.props.isSelectable && (
                 <th>
-                  <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll}></input>
+                  <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll} aria-label="Table Monitoree Select All"></input>
                 </th>
               )}
             </tr>
@@ -184,6 +184,7 @@ class CustomTable extends React.Component {
                     <td>
                       <input
                         type="checkbox"
+                        aria-label="Table Select Monitoree Row"
                         checked={this.props.selectAll || this.props.selectedRows.includes(row)}
                         onChange={e => this.handleCheckboxChange(e, row)}></input>
                     </td>
@@ -205,7 +206,13 @@ class CustomTable extends React.Component {
                       <span className="ml-1">Show</span>
                     </InputGroup.Text>
                   </InputGroup.Prepend>
-                  <Form.Control as="select" size="md" name="entries" value={this.props.entries} onChange={this.props.handleEntriesChange}>
+                  <Form.Control
+                    as="select"
+                    size="md"
+                    name="entries"
+                    value={this.props.entries}
+                    onChange={this.props.handleEntriesChange}
+                    aria-label="Adjust number of records">
                     {this.props.entryOptions.map(num => {
                       return (
                         <option key={num} value={num}>

@@ -57,13 +57,15 @@ class PublicHealthAnalytics extends React.Component {
     if (this.state.hasErrors) {
       return (
         <div className="text-center mt-4" style={{ width: '100%' }}>
-          <h5>We are still crunching the latest numbers.</h5>
-          <h5>Please check back later...</h5>
+          <h1 className="sr-only">Analytics</h1>
+          <div className="h5">We are still crunching the latest numbers.</div>
+          <div className="h5">Please check back later...</div>
         </div>
       );
     } else {
       return (
         <React.Fragment>
+          <h1 className="sr-only">Analytics</h1>
           <Row className="mx-0 px-0 mt-1 mb-4 ">
             <Col className="mx-2 px-0">
               <div className="display-6">

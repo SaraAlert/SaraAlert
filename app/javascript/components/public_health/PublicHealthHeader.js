@@ -90,10 +90,10 @@ class PublicHealthHeader extends React.Component {
           {this.state.importData && (
             <React.Fragment>
               {this.state.importData.errors.length > 0 && (
-                <Modal.Title as="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} (error)</Modal.Title>
+                <Modal.Title className="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} (error)</Modal.Title>
               )}
               {this.state.importData.errors.length === 0 && (
-                <Modal.Title as="h5">
+                <Modal.Title className="h5">
                   {this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} ({this.props.workflow})
                 </Modal.Title>
               )}
@@ -121,8 +121,8 @@ class PublicHealthHeader extends React.Component {
     return (
       <Modal size="md" show={this.state.showUploadModal} onHide={() => this.setState({ showUploadModal: false, importType: null })}>
         <Modal.Header closeButton>
-          {this.state.importType === 'epix' && <Modal.Title as="h5">{`Import Epi-X (${this.props.workflow})`}</Modal.Title>}
-          {this.state.importType === 'saf' && <Modal.Title as="h5">{`Import Sara Alert Format (${this.props.workflow})`}</Modal.Title>}
+          {this.state.importType === 'epix' && <Modal.Title className="h5">{`Import Epi-X (${this.props.workflow})`}</Modal.Title>}
+          {this.state.importType === 'saf' && <Modal.Title className="h5">{`Import Sara Alert Format (${this.props.workflow})`}</Modal.Title>}
         </Modal.Header>
         <Modal.Body>
           {this.state.importType === 'saf' && (

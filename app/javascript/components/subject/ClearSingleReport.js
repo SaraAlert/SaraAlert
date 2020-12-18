@@ -68,7 +68,7 @@ class ClearSingleReport extends React.Component {
           )}
           <Form.Group>
             <Form.Label>Please describe your reasoning:</Form.Label>
-            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
+            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} aria-label="Reasoning Text Area" />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>

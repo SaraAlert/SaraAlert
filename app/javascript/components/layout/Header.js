@@ -62,7 +62,14 @@ class Header extends React.Component {
                 </Navbar.Text>
                 <a className="white-border-right"></a>
                 <div className="dropdown">
-                  <Nav.Link className="text-white py-0" id="helpMenuButton" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <Nav.Link
+                    className="text-white py-0"
+                    id="helpMenuButton"
+                    href="#"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    aria-label="Help">
                     <i className="fas fa-question-circle fa-fw"></i>
                   </Nav.Link>
                   <div className="dropdown-menu dropdown-menu-right" aria-labelledby="helpMenuButton">

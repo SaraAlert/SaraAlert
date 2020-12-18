@@ -68,8 +68,9 @@ class Arrival extends React.Component {
   render() {
     return (
       <React.Fragment>
+        <h1 className="sr-only">Monitoree Arrival Information</h1>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Monitoree Arrival Information</Card.Header>
+          <Card.Header className="h5">Monitoree Arrival Information</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row>
@@ -218,6 +219,7 @@ class Arrival extends React.Component {
                   <Form.Control
                     isInvalid={this.state.errors['travel_related_notes']}
                     as="textarea"
+                    aria-label="Travel Related Notes Text Area"
                     rows="5"
                     size="lg"
                     className="form-square"

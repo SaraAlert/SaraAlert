@@ -62,6 +62,7 @@ class DateInput extends React.Component {
           <div>
             <DatePicker
               id={this.props.id}
+              aria-label="Date Picker"
               selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}
               minDate={this.props.minDate && moment(this.props.minDate, 'YYYY-MM-DD').toDate()}
               maxDate={this.props.maxDate && moment(this.props.maxDate, 'YYYY-MM-DD').toDate()}
