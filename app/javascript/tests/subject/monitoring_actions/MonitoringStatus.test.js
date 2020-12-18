@@ -15,6 +15,7 @@ const monitoringReasons = [
   '--',
   'Completed Monitoring',
   'Meets criteria to shorten quarantine',
+  'Does not meet criteria for monitoring',
   'Meets Case Definition',
   'Lost to follow-up during monitoring period',
   'Lost to follow-up (contact never established)',
