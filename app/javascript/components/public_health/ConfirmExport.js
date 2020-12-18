@@ -3,9 +3,21 @@ import { PropTypes } from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 
 class ConfirmExport extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+    };
+  }
+
+  submit = () => {
+    this.setState({ loading: true });
+    this.props.onStartExport();
+  };
+
   render() {
     return (
-      <Modal size="lg" className="confirm-export-modal-container" show={this.props.show} centered>
+      <Modal size="lg" className="confirm-export-modal-container" show={this.props.show} onHide={this.props.onCancel} centered>
         <Modal.Header>
           <Modal.Title>{this.props.title}</Modal.Title>
         </Modal.Header>
@@ -24,7 +36,12 @@ class ConfirmExport extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onCancel}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={this.props.onStartExport}>
+          <Button variant="primary btn-square" disabled={this.state.loading} onClick={this.submit}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
             Start Export
           </Button>
         </Modal.Footer>

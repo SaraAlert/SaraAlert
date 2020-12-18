@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, ButtonGroup, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
+import { ButtonGroup, DropdownButton, Dropdown } from 'react-bootstrap';
 
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
@@ -59,39 +59,6 @@ class Export extends React.Component {
         });
       });
   };
-
-  createModal(title, toggle, submit, endpoint) {
-    return (
-      <Modal size="lg" show centered onHide={toggle}>
-        <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            After clicking <b>Start Export</b>, Sara Alert will gather all of the monitoree data that comprises your request and generate an export file. Sara
-            Alert will then send your user account an email with a one-time download link. This process may take several minutes to complete, based on the
-            amount of data present.
-          </p>
-          <p>
-            NOTE: The system will store one of each type of export file. If you initiate another export of this file type, any old files will be overwritten and
-            download links that have not been accessed will be invalid. Only one of each export type is allowed per user per hour.
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary btn-square"
-            onClick={() => {
-              submit(endpoint);
-            }}>
-            Start Export
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
 
   render() {
     return (
