@@ -95,11 +95,8 @@ class Patient < ApplicationRecord
   has_many :transfers
   has_many :laboratories
   has_many :close_contacts
-<<<<<<< HEAD
   has_many :contact_attempts
-=======
   has_many :vaccines
->>>>>>> 5fdd0506... controller, components, views, routes, models.
 
   around_save :inform_responder, if: :responder_id_changed?
   around_destroy :inform_responder

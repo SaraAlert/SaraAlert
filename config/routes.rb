@@ -122,8 +122,6 @@ Rails.application.routes.draw do
   get '/404', to: 'errors#not_found'
   get '/422', to: 'errors#unprocessable'
   get '/500', to: 'errors#internal_server_error'
-<<<<<<< HEAD
-=======
 
   #SAA additions
   get 'contact_us', to: 'contact_us#show'
@@ -134,5 +132,4 @@ Rails.application.routes.draw do
 
   post '/vaccines', to: 'vaccines#create'
   post '/vaccines/:id', to: 'vaccines#update'
->>>>>>> 5fdd0506... controller, components, views, routes, models.
 end
