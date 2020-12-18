@@ -14,7 +14,7 @@
           "event": "incomingCall"
         },
         {
-          "next": "sms_or_voice",
+          "next": "initialize_retry_count",
           "event": "incomingRequest"
         }
       ],
@@ -44,8 +44,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 270,
-          "y": 0
+          "x": -540,
+          "y": 40
         },
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
@@ -68,8 +68,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 660,
-          "y": 1740
+          "x": -150,
+          "y": 1780
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -82,7 +82,7 @@
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "bad_response",
+          "next": "increment_retry_count",
           "event": "noMatch"
         },
         {
@@ -117,8 +117,8 @@
       "properties": {
         "input": "{{widgets.sms_assessment_prompt.inbound.Body}}",
         "offset": {
-          "x": 280,
-          "y": 700
+          "x": -530,
+          "y": 740
         }
       }
     },
@@ -141,8 +141,8 @@
       ],
       "properties": {
         "offset": {
-          "x": -480,
-          "y": 920
+          "x": -1210,
+          "y": 1020
         },
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
@@ -164,8 +164,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 510,
-          "y": 2060
+          "x": -300,
+          "y": 2100
         },
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
@@ -179,7 +179,7 @@
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "bad_response",
+          "next": "increment_retry_count",
           "event": "noMatch"
         },
         {
@@ -214,8 +214,8 @@
       "properties": {
         "input": "{{widgets.bad_response.inbound.Body}}",
         "offset": {
-          "x": 280,
-          "y": 1070
+          "x": -510,
+          "y": 1450
         }
       }
     },
@@ -233,8 +233,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 350,
-          "y": 1740
+          "x": -460,
+          "y": 1780
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -314,7 +314,7 @@
           "event": "speech"
         },
         {
-          "next": "say_lets_try_again",
+          "next": "increment_retry_count_en",
           "event": "timeout"
         }
       ],
@@ -323,7 +323,7 @@
         "speech_timeout": "auto",
         "offset": {
           "x": 1090,
-          "y": 1340
+          "y": 1540
         },
         "loop": 1,
         "hints": "yes, yeah, yup, no, nope, nah",
@@ -341,7 +341,7 @@
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "say_lets_try_again",
+          "next": "increment_retry_count_en",
           "event": "noMatch"
         },
         {
@@ -376,8 +376,8 @@
       "properties": {
         "input": "{{widgets.voice_reply_to_prompt.SpeechResult}}",
         "offset": {
-          "x": 1090,
-          "y": 1670
+          "x": 1230,
+          "y": 1880
         }
       }
     },
@@ -393,8 +393,8 @@
       "properties": {
         "voice": "Polly.Joanna",
         "offset": {
-          "x": 1740,
-          "y": 1340
+          "x": 1630,
+          "y": 1630
         },
         "loop": 1,
         "say": "{{flow.data.try_again}}",
@@ -467,8 +467,8 @@
       ],
       "properties": {
         "offset": {
-          "x": -860,
-          "y": 1320
+          "x": -1670,
+          "y": 1720
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -489,8 +489,8 @@
       ],
       "properties": {
         "offset": {
-          "x": -1270,
-          "y": 1320
+          "x": -2080,
+          "y": 1720
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -755,7 +755,7 @@
           "event": "speech"
         },
         {
-          "next": "lets_try_again_spanish",
+          "next": "increment_retry_count_es",
           "event": "timeout"
         }
       ],
@@ -789,8 +789,8 @@
       "properties": {
         "voice": "Polly.Conchita",
         "offset": {
-          "x": 3210,
-          "y": 1440
+          "x": 2890,
+          "y": 1450
         },
         "loop": 1,
         "say": "{{flow.data.try_again}}",
@@ -802,7 +802,7 @@
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "lets_try_again_spanish",
+          "next": "increment_retry_count_es",
           "event": "noMatch"
         },
         {
@@ -1053,7 +1053,7 @@
           "event": "speech"
         },
         {
-          "next": "lets_try_again_french",
+          "next": "increment_retry_count_fr",
           "event": "timeout"
         }
       ],
@@ -1087,7 +1087,7 @@
       "properties": {
         "voice": "Polly.Chantal",
         "offset": {
-          "x": 4350,
+          "x": 4030,
           "y": 1450
         },
         "loop": 1,
@@ -1100,7 +1100,7 @@
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "lets_try_again_french",
+          "next": "increment_retry_count_fr",
           "event": "noMatch"
         },
         {
@@ -1201,8 +1201,8 @@
       "properties": {
         "input": "{{trigger.message.OptOutType}}",
         "offset": {
-          "x": -420,
-          "y": -710
+          "x": -1230,
+          "y": -730
         }
       }
     },
@@ -1263,8 +1263,8 @@
       ],
       "properties": {
         "offset": {
-          "x": -480,
-          "y": 2140
+          "x": -1290,
+          "y": 2180
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -1312,8 +1312,8 @@
       "properties": {
         "input": "{{widgets.sms_assessment_prompt.inbound.OptOutType}}",
         "offset": {
-          "x": -420,
-          "y": 300
+          "x": -1230,
+          "y": 340
         }
       }
     },
@@ -1357,8 +1357,8 @@
       "properties": {
         "input": "{{widgets.bad_response.inbound.OptOutType}}",
         "offset": {
-          "x": -470,
-          "y": 1320
+          "x": -1290,
+          "y": 1440
         }
       }
     },
@@ -1375,13 +1375,375 @@
       ],
       "properties": {
         "offset": {
-          "x": -80,
-          "y": 2130
+          "x": -890,
+          "y": 2170
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"patient_submission_token\": \"{{flow.sid}}\", \"response_status\": \"opt_in\" }",
         "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+      }
+    },
+    {
+      "name": "initialize_retry_count",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "sms_or_voice",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "value": "0",
+            "key": "retry_count"
+          }
+        ],
+        "offset": {
+          "x": 1640,
+          "y": -670
+        }
+      }
+    },
+    {
+      "name": "increment_retry_count",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_on_retry_sms",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "value": "{%- if flow.variables.retry_count -%}\n  {{flow.variables.retry_count | plus: 1}}\n{%- else -%}\n  0\n{%- endif -%}",
+            "key": "retry_count"
+          }
+        ],
+        "offset": {
+          "x": -1590,
+          "y": 590
+        }
+      }
+    },
+    {
+      "name": "split_on_retry_sms",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "max_retries_exceeded_sms",
+          "event": "noMatch"
+        },
+        {
+          "next": "bad_response",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less than 4",
+              "arguments": [
+                "{{flow.variables.retry_count}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.retry_count}}",
+        "offset": {
+          "x": -1590,
+          "y": 810
+        }
+      }
+    },
+    {
+      "name": "max_retries_exceeded_sms",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "send_assessment_sms_max_retries",
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1600,
+          "y": 1020
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "{{flow.data.max_retries_message}}"
+      }
+    },
+    {
+      "name": "split_on_retry_en",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "max_retries_exceeded_en",
+          "event": "noMatch"
+        },
+        {
+          "next": "say_lets_try_again",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less than 4",
+              "arguments": [
+                "{{flow.variables.retry_count}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.retry_count}}",
+        "offset": {
+          "x": 620,
+          "y": 1720
+        }
+      }
+    },
+    {
+      "name": "increment_retry_count_en",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_on_retry_en",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "value": "{%- if flow.variables.retry_count -%}\n  {{flow.variables.retry_count | plus: 1}}\n{%- else -%}\n  0\n{%- endif -%}",
+            "key": "retry_count"
+          }
+        ],
+        "offset": {
+          "x": 610,
+          "y": 1520
+        }
+      }
+    },
+    {
+      "name": "max_retries_exceeded_en",
+      "type": "say-play",
+      "transitions": [
+        {
+          "next": "voice_send_max_retry",
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "voice": "Polly.Joanna",
+        "offset": {
+          "x": 670,
+          "y": 2010
+        },
+        "loop": 1,
+        "say": "{{flow.data.max_retries_message}}",
+        "language": "en-US"
+      }
+    },
+    {
+      "name": "voice_send_max_retry",
+      "type": "make-http-request",
+      "transitions": [
+        {
+          "event": "success"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 2050,
+          "y": 2240
+        },
+        "method": "POST",
+        "content_type": "application/json;charset=utf-8",
+        "body": "{\"response_status\": \"max_retries_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+      }
+    },
+    {
+      "name": "send_assessment_sms_max_retries",
+      "type": "make-http-request",
+      "transitions": [
+        {
+          "event": "success"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1600,
+          "y": 1240
+        },
+        "method": "POST",
+        "content_type": "application/json;charset=utf-8",
+        "body": "{\"response_status\": \"max_retries_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+      }
+    },
+    {
+      "name": "increment_retry_count_es",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_on_retry_es",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "value": "{%- if flow.variables.retry_count -%}\n  {{flow.variables.retry_count | plus: 1}}\n{%- else -%}\n  0\n{%- endif -%}",
+            "key": "retry_count"
+          }
+        ],
+        "offset": {
+          "x": 2000,
+          "y": 1200
+        }
+      }
+    },
+    {
+      "name": "split_on_retry_es",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "max_retries_exceeded_es",
+          "event": "noMatch"
+        },
+        {
+          "next": "lets_try_again_spanish",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less than 4",
+              "arguments": [
+                "{{flow.variables.retry_count}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.retry_count}}",
+        "offset": {
+          "x": 2010,
+          "y": 1400
+        }
+      }
+    },
+    {
+      "name": "max_retries_exceeded_es",
+      "type": "say-play",
+      "transitions": [
+        {
+          "next": "voice_send_max_retry",
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "voice": "Polly.Conchita",
+        "offset": {
+          "x": 2020,
+          "y": 1620
+        },
+        "loop": 1,
+        "say": "{{flow.data.max_retries_message}}",
+        "language": "es-ES"
+      }
+    },
+    {
+      "name": "max_retries_exceeded_fr",
+      "type": "say-play",
+      "transitions": [
+        {
+          "next": "voice_send_max_retry",
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "voice": "Polly.Chantal",
+        "offset": {
+          "x": 3280,
+          "y": 1740
+        },
+        "loop": 1,
+        "say": "{{flow.data.max_retries_message}}",
+        "language": "fr-CA"
+      }
+    },
+    {
+      "name": "split_on_retry_fr",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "max_retries_exceeded_fr",
+          "event": "noMatch"
+        },
+        {
+          "next": "lets_try_again_french",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less than 4",
+              "arguments": [
+                "{{flow.variables.retry_count}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.retry_count}}",
+        "offset": {
+          "x": 3270,
+          "y": 1520
+        }
+      }
+    },
+    {
+      "name": "increment_retry_count_fr",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_on_retry_fr",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "value": "{%- if flow.variables.retry_count -%}\n  {{flow.variables.retry_count | plus: 1}}\n{%- else -%}\n  0\n{%- endif -%}",
+            "key": "retry_count"
+          }
+        ],
+        "offset": {
+          "x": 3260,
+          "y": 1320
+        }
       }
     }
   ],
