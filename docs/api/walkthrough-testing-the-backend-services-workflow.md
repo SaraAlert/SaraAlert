@@ -24,7 +24,7 @@ If you are testing on the demo server, skip to the next section.
 
 **3.** For this tutorial, use <https://mkjwk.org>. Create a JWK with the following settings: Key Size `2048`, Key Use `Signature`, Algorithm `RS384`, Key ID `SHA-256`, Show X.509 `Yes`. Click the "Generate" button.
 
-![mkjwk example](/assets/images/mkjwk.png)
+![mkjwk example](/SaraAlert/assets/images/mkjwk.png)
 
 Either keep this tool open with the generated values or save off all of the displayed values somewhere:
 - Public and Private Keypair
@@ -135,7 +135,7 @@ If using DEMO server:
 </div>
 </details>
 
-![jwt.io example](/assets/images/jwtio.png)
+![jwt.io example](/SaraAlert/assets/images/jwtio.png)
 
 Set the `"exp"` field to be 5 minutes in the future (this is time in seconds since 1 Jan 1970), and set the `"jti"` to be random non-repeating number.
 
