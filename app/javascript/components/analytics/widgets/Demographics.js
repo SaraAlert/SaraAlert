@@ -95,7 +95,7 @@ class Demographics extends React.Component {
         {this.barGraphData.map((graphData, i) => (
           <Col xl="12" key={i}>
             <div className="mx-2 mt-3 analytics-chart-borders">
-              <h4 className="text-center">
+              <div className="text-center h4">
                 {graphData.title}
                 {graphData.title === 'Current Age (Years)' ? (
                   <span className="h6">
@@ -104,7 +104,7 @@ class Demographics extends React.Component {
                 ) : (
                   ''
                 )}
-              </h4>
+              </div>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart
                   width={500}
@@ -174,7 +174,7 @@ class Demographics extends React.Component {
           )}
         </Col>
         <Col md="12">
-          <h4 className="text-left mt-2 mb-n1">Race</h4>
+          <div className="text-left mt-2 mb-n1 h4">Race</div>
           <table className="analytics-table">
             <thead>
               <tr>
@@ -201,7 +201,7 @@ class Demographics extends React.Component {
           </table>
         </Col>
         <Col md="12">
-          <h4 className="text-left mt-3 mb-n1">Sex</h4>
+          <div className="text-left mt-3 mb-n1 h4">Sex</div>
           <table className="analytics-table">
             <thead>
               <tr>
@@ -226,7 +226,7 @@ class Demographics extends React.Component {
               </tbody>
             ))}
           </table>
-          <h4 className="text-left mt-3 mb-n1">Ethnicity</h4>
+          <div className="text-left mt-3 mb-n1 h4">Ethnicity</div>
           <table className="analytics-table">
             <thead>
               <tr>
@@ -255,7 +255,7 @@ class Demographics extends React.Component {
         <Col md="12">
           {this.showSexualOrientationData && (
             <div>
-              <h4 className="text-left mt-3 mb-n1">Sexual Orientation</h4>
+              <div className="text-left mt-3 mb-n1 h4">Sexual Orientation</div>
               <table className="analytics-table">
                 <thead>
                   <tr>

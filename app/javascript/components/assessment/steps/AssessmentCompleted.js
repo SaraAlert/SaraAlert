@@ -20,9 +20,7 @@ class AssessmentCompleted extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-0 card-square align-item-center">
-          <Card.Header className="text-center" as="h4">
-            {this.props.translations[this.props.lang]['web']['title']}
-          </Card.Header>
+          <Card.Header className="text-center h4">{this.props.translations[this.props.lang]['web']['title']}</Card.Header>
           <Card.Body className="text-center">
             <Form.Label className="text-center pt-1">
               <b>{this.props.translations[this.props.lang]['web']['thank-you']}</b>

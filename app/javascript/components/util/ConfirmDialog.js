@@ -27,6 +27,7 @@ class Confirmation extends React.Component {
       enableEscape = true,
       extraOption = undefined,
     } = this.props;
+
     return (
       <Modal
         className="static-modal-container confirm-dialog"
@@ -42,7 +43,9 @@ class Confirmation extends React.Component {
         <Modal.Body>
           <p className="mb-0">{confirmation}</p>
           {additionalNote && <p className="mb-0 mt-4">{additionalNote}</p>}
-          {extraOption && <Form.Check type="checkbox" id="extra_option" label={extraOption} className="mt-4" onChange={this.handleChange} />}
+          {extraOption && (
+            <Form.Check type="checkbox" id="extra_option" label={extraOption} className="mt-4" onChange={this.handleChange} aria-label="Extra Option" />
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => proceed(false)}>

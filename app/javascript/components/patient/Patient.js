@@ -96,14 +96,14 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h4>
+                  <div className="h4">
                     <b>IDENTIFICATION</b>
-                  </h4>
+                  </div>
                 </div>
                 <div>
                   {this.props.goto && (
                     <Button variant="link" className="pt-0" onClick={() => this.props.goto(0)}>
-                      <h5>(Edit)</h5>
+                      <div className="h5">(Edit)</div>
                     </Button>
                   )}
                 </div>
@@ -186,14 +186,14 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h4>
+                  <div className="h4">
                     <b>CONTACT INFORMATION</b>
-                  </h4>
+                  </div>
                 </div>
                 <div>
                   {this.props.goto && (
                     <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}>
-                      <h5>(Edit)</h5>
+                      <div className="h5">(Edit)</div>
                     </Button>
                   )}
                 </div>
@@ -255,14 +255,14 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h4>
+                      <div className="h4">
                         <b>ADDRESS</b>
-                      </h4>
+                      </div>
                     </div>
                     <div>
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(1)}>
-                          <h5>(Edit)</h5>
+                          <div className="h5">(Edit)</div>
                         </Button>
                       )}
                     </div>
@@ -344,14 +344,14 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h4>
+                      <div className="h4">
                         <b>ARRIVAL INFORMATION</b>
-                      </h4>
+                      </div>
                     </div>
                     <div>
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(3)}>
-                          <h5>(Edit)</h5>
+                          <div className="h5">(Edit)</div>
                         </Button>
                       )}
                     </div>
@@ -434,14 +434,14 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h4>
+                      <div className="h4">
                         <b>PLANNED TRAVEL</b>
-                      </h4>
+                      </div>
                     </div>
                     <div>
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(4)}>
-                          <h5>(Edit)</h5>
+                          <div className="h5">(Edit)</div>
                         </Button>
                       )}
                     </div>
@@ -506,14 +506,14 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h4>
+                      <div className="h4">
                         <b>POTENTIAL EXPOSURE INFORMATION</b>
-                      </h4>
+                      </div>
                     </div>
                     <div>
                       {this.props.goto && !this.props.details.isolation && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
-                          <h5>(Edit)</h5>
+                          <div className="h5">(Edit)</div>
                         </Button>
                       )}
                     </div>
@@ -619,9 +619,9 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h4>
+                      <div className="h4">
                         <b>NOTES</b>
-                      </h4>
+                      </div>
                     </div>
                     <div>
                       {this.props.goto && (
@@ -675,9 +675,9 @@ class Patient extends React.Component {
                   <Row>
                     <Col>
                       <div className="float-left">
-                        <h4>
+                        <div className="h4">
                           <b>CASE INFORMATION</b>
-                        </h4>
+                        </div>
                       </div>
                       <div>
                         {this.props.goto && (

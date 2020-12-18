@@ -17,22 +17,22 @@ class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
   end
 
   def verify_monitoree_counts_by_age_group(analytic_id, active_monitoring)
-    element = find('span', text: 'Current Age (Years)').first(:xpath, './/..//..//table/tbody')
+    element = find('span', class: 'h4', text: 'Current Age (Years)').first(:xpath, './/..//..//table/tbody')
     verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, 'Age Group')
   end
 
   def verify_monitoree_counts_by_sex(analytic_id, active_monitoring)
-    element = find('h4', text: 'Sex').first(:xpath, './/..//table/tbody')
+    element = find('div', class: 'h4', text: 'Sex').first(:xpath, './/..//table/tbody')
     verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, 'Sex')
   end
 
   def verify_monitoree_counts_by_risk_factor(analytic_id, active_monitoring)
-    element = find('h4', text: 'Risk Factors').first(:xpath, './/..//table/tbody')
+    element = find('div', class: 'h4', text: 'Risk Factors').first(:xpath, './/..//table/tbody')
     verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, 'Risk Factor')
   end
 
   def verify_monitoree_counts_by_exposure_country(analytic_id, active_monitoring)
-    element = find('h4', text: 'Country of Exposure').first(:xpath, './/..//..//table/tbody')
+    element = find('div', class: 'h4', text: 'Country of Exposure').first(:xpath, './/..//..//table/tbody')
     verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, 'Exposure Country')
   end
 

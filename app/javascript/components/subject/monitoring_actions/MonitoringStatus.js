@@ -155,7 +155,7 @@ class MonitoringStatus extends React.Component {
           )}
           <Form.Group>
             <Form.Label>Please include any additional details:</Form.Label>
-            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
+            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} aria-label="Additional Details Text Area" />
           </Form.Group>
           {this.props.patient.isolation && !this.state.monitoring && this.props.in_household_with_member_with_ce_in_exposure && !this.state.apply_to_household && (
             <div className="update-dependent-lde">

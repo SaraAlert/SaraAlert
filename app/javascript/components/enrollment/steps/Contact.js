@@ -220,8 +220,9 @@ class Contact extends React.Component {
   render() {
     return (
       <React.Fragment>
+        <h1 className="sr-only">Monitoree Contact Information</h1>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Monitoree Contact Information</Card.Header>
+          <Card.Header className="h5">Monitoree Contact Information</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row className="pb-3">

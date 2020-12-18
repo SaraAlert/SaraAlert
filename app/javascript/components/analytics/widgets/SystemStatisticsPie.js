@@ -32,11 +32,11 @@ class SystemStatisticsPie extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square">
-          <Card.Header as="h5">System Statistics</Card.Header>
+          <Card.Header className="h5">System Statistics</Card.Header>
           <Card.Body className="pb-1">
             <Row className="text-center">
               <Col className="">
-                <h4 className="mb-0"> Total Monitorees </h4>
+                <div className="mb-0 h4"> Total Monitorees </div>
                 <div style={{ width: '100%', height: 250 }} className="recharts-wrapper">
                   <ResponsiveContainer>
                     <PieChart onMouseEnter={this.onPieEnter}>

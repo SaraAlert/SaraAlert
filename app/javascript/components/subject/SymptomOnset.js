@@ -56,7 +56,7 @@ class SymptomOnset extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Col>
+        <Form.Group as={Col} controlId="symptom_onset">
           <Row className="reports-actions-title">
             <Col>
               <Form.Label className="nav-input-label">
@@ -113,7 +113,7 @@ class SymptomOnset extends React.Component {
           <Row>
             <Col></Col>
           </Row>
-        </Col>
+        </Form.Group>
       </React.Fragment>
     );
   }

@@ -65,7 +65,7 @@ class ContactAttempt extends React.Component {
           </Form.Group>
           <p>Please include any additional details:</p>
           <Form.Group>
-            <Form.Control as="textarea" rows="2" id="note" onChange={this.handleChange} />
+            <Form.Control as="textarea" rows="2" id="note" onChange={this.handleChange} aria-label="Additional Details Text Area" />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>

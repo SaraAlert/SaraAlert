@@ -56,7 +56,7 @@ class AddReportingNote extends React.Component {
         <Modal.Body>
           <p>Please enter your note about the assessment (ID: {id}) below.</p>
           <Form.Group>
-            <Form.Control as="textarea" rows="2" id="comment" onChange={this.handleChange} />
+            <Form.Control as="textarea" rows="2" id="comment" onChange={this.handleChange} aria-label="Enter Assessment Note Text Area" />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
