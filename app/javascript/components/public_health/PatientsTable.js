@@ -369,8 +369,9 @@ class PatientsTable extends React.Component {
     }
   }
 
-  // eslint-disable-next-line no-unused-vars
-  linkPatient = (name, rowData, colData) => {
+  linkPatient = data => {
+    const name = data.value;
+    const rowData = data.rowData;
     if (this.state.query.tab === 'transferred_out') {
       return name;
     }
@@ -385,27 +386,28 @@ class PatientsTable extends React.Component {
     return <a href={`/patients/${rowData.id}`}>{name}</a>;
   };
 
-  // eslint-disable-next-line no-unused-vars
-  formatTimestamp(timestamp, rowData, colData, rowIndex, colIndex) {
+  formatTimestamp(data) {
+    const timestamp = data.value;
     const ts = moment.tz(timestamp, 'UTC');
     return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
   }
 
-  // eslint-disable-next-line no-unused-vars
-  formatDate(date, rowData, colData, rowIndex, colIndex) {
+  formatDate(data) {
+    const date = data.value;
     return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
   }
 
-  // eslint-disable-next-line no-unused-vars
-  formatEndOfMonitoring(endOfMonitoring, rowData, colData, rowIndex, colIndex) {
+  formatEndOfMonitoring(data) {
+    const endOfMonitoring = data.value;
     if (endOfMonitoring === 'Continuous Exposure') {
       return 'Continuous Exposure';
     }
     return moment(endOfMonitoring, 'YYYY-MM-DD').format('MM/DD/YYYY');
   }
 
-  // eslint-disable-next-line no-unused-vars
-  createEligibilityTooltip(reportEligibility, rowData, colData, rowIndex, colIndex) {
+  createEligibilityTooltip(data) {
+    const reportEligibility = data.value;
+    const rowData = data.rowData;
     return <EligibilityTooltip id={rowData.id.toString()} report_eligibility={reportEligibility} inline={false} />;
   }
 

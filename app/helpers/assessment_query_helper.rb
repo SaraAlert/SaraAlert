@@ -7,7 +7,7 @@ module AssessmentQueryHelper
   end
 
   def search(assessments, search)
-    return assessments if search.nil? || search.blank?
+    return assessments if search.blank?
 
     assessments.where('id like ?', "#{search&.downcase}%").or(
       assessments.where('who_reported like ?', "#{search&.downcase}%")

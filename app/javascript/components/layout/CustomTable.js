@@ -153,7 +153,7 @@ class CustomTable extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.rowData.map((rowData, rowIndex) => {
+            {this.props.rowData?.map((rowData, rowIndex) => {
               return (
                 <tr key={rowIndex} id={rowData.id ? rowData.id : rowIndex} className={this.props.getRowClassName ? this.props.getRowClassName(rowData) : ''}>
                   {Object.values(this.props.columnData).map((colData, colIndex) => {
@@ -162,8 +162,9 @@ class CustomTable extends React.Component {
                       // If this column has value options, use the data value as a key to those options
                       value = colData.options[rowData[colData.field]];
                     } else if (colData.filter) {
-                      // If this column has a filter function to be applied, send along data and col index
-                      value = colData.filter(value, rowData, colData, rowIndex, colIndex);
+                      // If this column has a filter function to be applied, send along data for filter to use as it wishes
+                      const filterData = { value: value, rowData: rowData, colData: colData, rowIndex: rowIndex, colIndex: colIndex };
+                      value = colData.filter(filterData);
                     }
                     return (
                       <td key={colIndex} className={colData.className ? colData.className : ''}>
@@ -190,9 +191,15 @@ class CustomTable extends React.Component {
                 </tr>
               );
             })}
+            {!this.props.rowData?.length && (
+              <tr>
+                <td colSpan={this.props.columnData?.length} className="text-center">
+                  No data available in table.
+                </td>
+              </tr>
+            )}
           </tbody>
         </Table>
-        {this.props.rowData.length === 0 && <div className="text-center">No data available in table.</div>}
         <div className="d-flex justify-content-between">
           <Form inline className="align-middle">
             <Row className="fixed-row-size">

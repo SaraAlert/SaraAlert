@@ -79,12 +79,12 @@ class PatientReportsTable extends React.Component {
     }
   };
 
-  // eslint-disable-next-line no-unused-vars
-  filterSymptomCell = (value, rowData, colData, rowIndex, colIndex) => {
-    const symptomName = colData.field;
+  filterSymptomCell = data => {
+    const rowData = data.rowData;
+    const symptomName = data.colData.field;
     const passesThreshold = rowData.passes_threshold_data[symptomName.toString()];
     const className = passesThreshold ? 'concern' : '';
-    return <span className={className}>{value}</span>;
+    return <span className={className}>{data.value}</span>;
   };
 
   /**
@@ -109,10 +109,12 @@ class PatientReportsTable extends React.Component {
   queryServer = _.debounce(query => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post('/patients/' + this.props.patient.id + '/assessments/table', {
-        patient_id: this.props.patient.id,
-        ...query,
-        cancelToken: this.state.cancelToken.token,
+      .get('/patients/' + this.props.patient.submission_token + '/assessments', {
+        params: {
+          patient_id: this.props.patient.id,
+          ...query,
+          cancelToken: this.state.cancelToken.token,
+        },
       })
       .catch(error => {
         if (!axios.isCancel(error)) {
@@ -129,7 +131,6 @@ class PatientReportsTable extends React.Component {
       })
       .then(response => {
         if (response && response.data && response.data) {
-          console.log(response.data);
           this.setState(state => {
             return {
               table: { ...state.table, rowData: response.data.table_data, totalRows: response.data.total },
@@ -144,10 +145,10 @@ class PatientReportsTable extends React.Component {
 
   /**
    * Formats values in the timestamp column to be human readable
-   * @param {String} timestamp
+   * @param {Object} data - Data about the cell this filter is called on.
    */
-  // eslint-disable-next-line no-unused-vars
-  formatTimestamp(timestamp, rowData, colData, rowIndex, colIndex) {
+  formatTimestamp(data) {
+    const timestamp = data.value;
     const ts = moment.tz(timestamp, 'UTC');
     return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
   }
@@ -244,8 +245,9 @@ class PatientReportsTable extends React.Component {
     });
   };
 
-  // eslint-disable-next-line no-unused-vars
-  createActionsButton = (value, rowData, colData, rowIndex, colIndex) => {
+  createActionsButton = data => {
+    const rowIndex = data.rowIndex;
+    const rowData = data.rowData;
     return (
       <DropdownButton
         size="sm"
@@ -255,12 +257,14 @@ class PatientReportsTable extends React.Component {
             <i className="fas fa-cogs fw"></i>
           </React.Fragment>
         }>
-        <Dropdown.Item className="px-4" onClick={() => this.handleEditReportClick(rowIndex)}>
+        <Dropdown.Item className="px-4 hi" onClick={() => this.handleEditReportClick(rowIndex)}>
           <i className="fas fa-edit fa-fw"></i>
           <span className="ml-2">Edit</span>
         </Dropdown.Item>
         <AddReportNote assessment={rowData} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
-        <ClearSingleReport assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+        {!this.props.patient.isolation && (
+          <ClearSingleReport assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+        )}
       </DropdownButton>
     );
   };
@@ -283,7 +287,7 @@ class PatientReportsTable extends React.Component {
                     <i className="fas fa-plus fa-fw"></i>
                     <span className="ml-2">Add New Report</span>
                   </Button>
-                  <ClearReports authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+                  {!this.props.patient.isolation && <ClearReports authenticity_token={this.props.authenticity_token} patient={this.props.patient} />}
                   <PauseNotifications authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
                   <ContactAttempt authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
                 </Col>
@@ -301,19 +305,21 @@ class PatientReportsTable extends React.Component {
                   </InputGroup>
                 </Col>
               </Row>
-              <CustomTable
-                columnData={this.state.table.colData}
-                rowData={this.state.table.rowData}
-                totalRows={this.state.table.totalRows}
-                handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
-                handleEntriesChange={this.handleEntriesChange}
-                isLoading={this.state.isLoading}
-                page={this.state.query.page}
-                handlePageUpdate={this.handlePageUpdate}
-                entryOptions={this.state.entryOptions}
-                entries={this.state.query.entries}
-                getRowClassName={this.getRowClassName}
-              />
+              <div className="mb-4">
+                <CustomTable
+                  columnData={this.state.table.colData}
+                  rowData={this.state.table.rowData}
+                  totalRows={this.state.table.totalRows}
+                  handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
+                  handleEntriesChange={this.handleEntriesChange}
+                  isLoading={this.state.isLoading}
+                  page={this.state.query.page}
+                  handlePageUpdate={this.handlePageUpdate}
+                  entryOptions={this.state.entryOptions}
+                  entries={this.state.query.entries}
+                  getRowClassName={this.getRowClassName}
+                />
+              </div>
             </div>
             <LastDateExposure
               authenticity_token={this.props.authenticity_token}
