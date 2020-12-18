@@ -41,11 +41,11 @@ class ClearReports extends React.Component {
     });
   };
 
-  createModal(title, toggle, submit) {
+  createModal(toggle, submit) {
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>Mark All As Reviewed</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {!this.props.patient.isolation && (
@@ -91,7 +91,7 @@ class ClearReports extends React.Component {
         <Button onClick={this.toggleClearReportsModal} className="mr-2">
           <i className="fas fa-check"></i> Mark All As Reviewed
         </Button>
-        {this.state.showClearReportsModal && this.createModal('Mark All As Reviewed', this.toggleClearReportsModal, this.clearReports)}
+        {this.state.showClearReportsModal && this.createModal(this.toggleClearReportsModal, this.clearReports)}
       </React.Fragment>
     );
   }
