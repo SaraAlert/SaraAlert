@@ -6,6 +6,7 @@
       "type": "trigger",
       "transitions": [
         {
+          "next": "OptOutTypeNotBlank",
           "event": "incomingMessage"
         },
         {
@@ -13,7 +14,7 @@
           "event": "incomingCall"
         },
         {
-          "next": "split_on_language",
+          "next": "sms_or_voice",
           "event": "incomingRequest"
         }
       ],
@@ -29,7 +30,7 @@
       "type": "send-and-wait-for-reply",
       "transitions": [
         {
-          "next": "check_yes_no",
+          "next": "OptOutTypeNotBlankReply",
           "event": "incomingMessage"
         },
         {
@@ -43,18 +44,18 @@
       ],
       "properties": {
         "offset": {
-          "x": 250,
-          "y": 480
+          "x": 270,
+          "y": 0
         },
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
         "body": "{{flow.data.prompt}}",
-        "timeout": 64800
+        "timeout": "64800"
       }
     },
     {
-      "name": "send_assessment_data",
+      "name": "send_assessment_data_no",
       "type": "make-http-request",
       "transitions": [
         {
@@ -67,13 +68,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 250,
-          "y": 1560
+          "x": 660,
+          "y": 1740
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"{{widgets.sms_assessment_prompt.inbound.Body}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -85,16 +86,30 @@
           "event": "noMatch"
         },
         {
-          "next": "send_assessment_data",
+          "next": "send_assessment_data_yes",
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value matches_any_of yes,Yes,no,No",
+              "friendly_name": "If value matches_any_of yes",
               "arguments": [
                 "{{widgets.sms_assessment_prompt.inbound.Body}}"
               ],
               "type": "matches_any_of",
-              "value": "yes,Yes,no,No,YES,NO,Yes.,No.,\"Yes\",\"No\",\"yes\",\"no\",\"Yes.\",\"No.\""
+              "value": "yes,Yes,YES,Yes.,“Yes”,yes”,“Yes.“,yeah,YEAH,Yeah,“yeah”,“Yeah”,si,Si,sí,SI,SÍ,oui,OUI,Oui, oui.,OUI.,Oui.,Haa, HAA,Haa.,HAA."
+            }
+          ]
+        },
+        {
+          "next": "send_assessment_data_no",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value matches_any_of no",
+              "arguments": [
+                "{{widgets.sms_assessment_prompt.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "no,No,NO.,No.,“No”,“no”,“No.“,nope,NOPE,“nope”,“Nope”,Nope,“Nope”,Non,non,NON,Non. NON.,non.,Maya,MAYA,maya,Maya.,maya.,MAYA."
             }
           ]
         }
@@ -102,8 +117,8 @@
       "properties": {
         "input": "{{widgets.sms_assessment_prompt.inbound.Body}}",
         "offset": {
-          "x": 260,
-          "y": 910
+          "x": 280,
+          "y": 700
         }
       }
     },
@@ -112,7 +127,7 @@
       "type": "send-and-wait-for-reply",
       "transitions": [
         {
-          "next": "check_yes_no_again",
+          "next": "OptOutTypeNotBlankRetry",
           "event": "incomingMessage"
         },
         {
@@ -126,14 +141,14 @@
       ],
       "properties": {
         "offset": {
-          "x": -670,
-          "y": 1100
+          "x": -480,
+          "y": 920
         },
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
         "body": "{{flow.data.try_again}}",
-        "timeout": 3600
+        "timeout": "3600"
       }
     },
     {
@@ -149,8 +164,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 100,
-          "y": 2000
+          "x": 510,
+          "y": 2060
         },
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
@@ -168,16 +183,30 @@
           "event": "noMatch"
         },
         {
-          "next": "send_assessment_data_from_sms_retry",
+          "next": "send_assessment_data_yes",
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value matches_any_of yes,Yes,no,No",
+              "friendly_name": "If value matches_any_of yes",
               "arguments": [
                 "{{widgets.bad_response.inbound.Body}}"
               ],
               "type": "matches_any_of",
-              "value": "yes,Yes,no,No,YES,NO,Yes.,No.,\"Yes\",\"No\",\"yes\",\"no\",\"Yes.\",\"No.\""
+              "value": "yes,Yes,YES,Yes.,“Yes”,yes”,“Yes.“,yeah,YEAH,Yeah,“yeah”,“Yeah”,si,Si,sí,SI,SÍ,oui,OUI,Oui, oui.,OUI.,Oui.,Haa, HAA,Haa.,HAA."
+            }
+          ]
+        },
+        {
+          "next": "send_assessment_data_no",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value matches_any_of no",
+              "arguments": [
+                "{{widgets.bad_response.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "no,No,NO.,No.,“No”,“no”,“No.“,nope,NOPE,“nope”,“Nope”,Nope,“Nope”,Non,non,NON,Non. NON.,non.,Maya,MAYA,maya,Maya.,maya.,MAYA."
             }
           ]
         }
@@ -185,13 +214,13 @@
       "properties": {
         "input": "{{widgets.bad_response.inbound.Body}}",
         "offset": {
-          "x": -270,
-          "y": 1310
+          "x": 280,
+          "y": 1070
         }
       }
     },
     {
-      "name": "send_assessment_data_from_sms_retry",
+      "name": "send_assessment_data_yes",
       "type": "make-http-request",
       "transitions": [
         {
@@ -204,57 +233,13 @@
       ],
       "properties": {
         "offset": {
-          "x": -60,
-          "y": 1560
+          "x": 350,
+          "y": 1740
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"{{widgets.bad_response.inbound.Body}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "sms_or_voice_english_flow",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "event": "noMatch"
-        },
-        {
-          "next": "sms_assessment_prompt",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to SMS",
-              "arguments": [
-                "{{flow.data.medium}}"
-              ],
-              "type": "equal_to",
-              "value": "SMS"
-            }
-          ]
-        },
-        {
-          "next": "call_user",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to VOICE",
-              "arguments": [
-                "{{flow.data.medium}}"
-              ],
-              "type": "equal_to",
-              "value": "VOICE"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{flow.data.medium}}",
-        "offset": {
-          "x": 330,
-          "y": 190
-        }
+        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"Yes\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -360,7 +345,7 @@
           "event": "noMatch"
         },
         {
-          "next": "voice_send_assessment_data",
+          "next": "voice_send_assessment_no",
           "event": "match",
           "conditions": [
             {
@@ -369,7 +354,21 @@
                 "{{widgets.voice_reply_to_prompt.SpeechResult}}"
               ],
               "type": "matches_any_of",
-              "value": "yes,Yes,no,No,Yes.,No.,Yeah,yeah,Yeah."
+              "value": "no,No.,nope,Nope.,nope."
+            }
+          ]
+        },
+        {
+          "next": "voice_send_assessment_yes",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value matches_any_of yes,Yes,Yes.,Yeah,yeah,Yeah.",
+              "arguments": [
+                "{{widgets.voice_reply_to_prompt.SpeechResult}}"
+              ],
+              "type": "matches_any_of",
+              "value": "yes,Yes,Yes.,Yeah,yeah,Yeah."
             }
           ]
         }
@@ -380,48 +379,6 @@
           "x": 1090,
           "y": 1670
         }
-      }
-    },
-    {
-      "name": "voice_send_assessment_data",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "next": "thank_you_voice",
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 1410,
-          "y": 1920
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_voice\", \n\"experiencing_symptoms\":\"{{widgets.voice_reply_to_prompt.SpeechResult}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "thank_you_voice",
-      "type": "say-play",
-      "transitions": [
-        {
-          "event": "audioComplete"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Joanna",
-        "offset": {
-          "x": 1420,
-          "y": 2180
-        },
-        "loop": 1,
-        "say": "{{flow.data.thanks}}",
-        "language": "en-US"
       }
     },
     {
@@ -436,8 +393,8 @@
       "properties": {
         "voice": "Polly.Joanna",
         "offset": {
-          "x": 2000,
-          "y": 1350
+          "x": 1740,
+          "y": 1340
         },
         "loop": 1,
         "say": "{{flow.data.try_again}}",
@@ -457,13 +414,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 1890,
-          "y": 1090
+          "x": 1630,
+          "y": 1080
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -510,13 +467,13 @@
       ],
       "properties": {
         "offset": {
-          "x": -360,
-          "y": 740
+          "x": -860,
+          "y": 1320
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -538,7 +495,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -554,13 +511,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 1970,
-          "y": 830
+          "x": 1710,
+          "y": 820
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -573,8 +530,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 1340,
-          "y": -520
+          "x": 1310,
+          "y": -690
         },
         "loop": 1,
         "say": "Hello, you have reached Sara Alert outside of your daily report requirement, please contact your public health department directly if you are experiencing symptoms."
@@ -585,11 +542,10 @@
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "sms_or_voice_english_flow",
           "event": "noMatch"
         },
         {
-          "next": "sms_or_voice_english_flow",
+          "next": "call_user",
           "event": "match",
           "conditions": [
             {
@@ -603,7 +559,7 @@
           ]
         },
         {
-          "next": "sms_or_voice_spanish_flow",
+          "next": "call_user_spanish",
           "event": "match",
           "conditions": [
             {
@@ -617,7 +573,7 @@
           ]
         },
         {
-          "next": "sms_or_voice_french_flow",
+          "next": "call_user_french",
           "event": "match",
           "conditions": [
             {
@@ -631,7 +587,7 @@
           ]
         },
         {
-          "next": "sms_or_voice_somali_flow",
+          "next": "voice_send_error_somali",
           "event": "match",
           "conditions": [
             {
@@ -648,82 +604,9 @@
       "properties": {
         "input": "{{flow.data.language}}",
         "offset": {
-          "x": 1721,
-          "y": -349
+          "x": 1920,
+          "y": -20
         }
-      }
-    },
-    {
-      "name": "sms_or_voice_spanish_flow",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "event": "noMatch"
-        },
-        {
-          "next": "sms_assessment_spanish_prompt",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to SMS",
-              "arguments": [
-                "{{flow.data.medium}}"
-              ],
-              "type": "equal_to",
-              "value": "SMS"
-            }
-          ]
-        },
-        {
-          "next": "call_user_spanish",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to VOICE",
-              "arguments": [
-                "{{flow.data.medium}}"
-              ],
-              "type": "equal_to",
-              "value": "VOICE"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{flow.data.medium}}",
-        "offset": {
-          "x": 4020,
-          "y": 110
-        }
-      }
-    },
-    {
-      "name": "sms_assessment_spanish_prompt",
-      "type": "send-and-wait-for-reply",
-      "transitions": [
-        {
-          "next": "check_yes_no_spanish",
-          "event": "incomingMessage"
-        },
-        {
-          "next": "send_assessment_sms_no_response_spanish",
-          "event": "timeout"
-        },
-        {
-          "next": "send_assessment_sms_error_spanish",
-          "event": "deliveryFailure"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 3510,
-          "y": 580
-        },
-        "service": "{{trigger.message.InstanceSid}}",
-        "channel": "{{trigger.message.ChannelSid}}",
-        "from": "{{flow.channel.address}}",
-        "body": "{{flow.data.prompt}}",
-        "timeout": 64800
       }
     },
     {
@@ -750,8 +633,8 @@
         "machine_detection_speech_threshold": "2400",
         "detect_answering_machine": true,
         "offset": {
-          "x": 4650,
-          "y": 470
+          "x": 2190,
+          "y": 550
         },
         "recording_channels": "mono",
         "timeout": 60,
@@ -763,238 +646,6 @@
         "from": "{{flow.channel.address}}",
         "to": "{{contact.channel.address}}",
         "machine_detection_silence_timeout": "10000"
-      }
-    },
-    {
-      "name": "send_assessment_sms_no_response_spanish",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 2590,
-          "y": 1230
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"no_answer_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "check_yes_no_spanish",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "next": "bad_response_spanish",
-          "event": "noMatch"
-        },
-        {
-          "next": "send_assessment_data_spanish_yes",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of si,Si",
-              "arguments": [
-                "{{widgets.sms_assessment_spanish_prompt.inbound.Body}}"
-              ],
-              "type": "matches_any_of",
-              "value": "si, Si, sí, SI, SÍ"
-            }
-          ]
-        },
-        {
-          "next": "send_assessment_data_from_sms_no",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of no, No",
-              "arguments": [
-                "{{widgets.sms_assessment_spanish_prompt.inbound.Body}}"
-              ],
-              "type": "matches_any_of",
-              "value": "no, No, NO"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{widgets.sms_assessment_spanish_prompt.inbound.Body}}",
-        "offset": {
-          "x": 3950,
-          "y": 860
-        }
-      }
-    },
-    {
-      "name": "bad_response_spanish",
-      "type": "send-and-wait-for-reply",
-      "transitions": [
-        {
-          "next": "check_yes_no_again_spanish",
-          "event": "incomingMessage"
-        },
-        {
-          "next": "send_assessment_sms_no_response_spanish",
-          "event": "timeout"
-        },
-        {
-          "next": "send_assessment_sms_error_spanish",
-          "event": "deliveryFailure"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 3510,
-          "y": 1110
-        },
-        "service": "{{trigger.message.InstanceSid}}",
-        "channel": "{{trigger.message.ChannelSid}}",
-        "from": "{{flow.channel.address}}",
-        "body": "{{flow.data.try_again}}",
-        "timeout": 3600
-      }
-    },
-    {
-      "name": "send_assessment_sms_error_spanish",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 2930,
-          "y": 1230
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "check_yes_no_again_spanish",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "next": "bad_response_spanish",
-          "event": "noMatch"
-        },
-        {
-          "next": "send_assessment_data_spanish_yes",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of si,Si",
-              "arguments": [
-                "{{widgets.bad_response_spanish.inbound.Body}}"
-              ],
-              "type": "matches_any_of",
-              "value": "si, Si, sí, SI, SÍ"
-            }
-          ]
-        },
-        {
-          "next": "send_assessment_data_from_sms_no",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of no, No",
-              "arguments": [
-                "{{widgets.bad_response_spanish.inbound.Body}}"
-              ],
-              "type": "matches_any_of",
-              "value": "no, No, NO"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{widgets.bad_response_spanish.inbound.Body}}",
-        "offset": {
-          "x": 3390,
-          "y": 1380
-        }
-      }
-    },
-    {
-      "name": "send_assessment_data_from_sms_no",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "next": "send_thank_you_spanish",
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 3430,
-          "y": 2130
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "send_assessment_data_spanish_yes",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "next": "send_thank_you_spanish",
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 4010,
-          "y": 2130
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"Yes\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "send_thank_you_spanish",
-      "type": "send-message",
-      "transitions": [
-        {
-          "event": "sent"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 3680,
-          "y": 2430
-        },
-        "service": "{{trigger.message.InstanceSid}}",
-        "channel": "{{trigger.message.ChannelSid}}",
-        "from": "{{flow.channel.address}}",
-        "to": "{{contact.channel.address}}",
-        "body": "{{flow.data.thanks}}"
       }
     },
     {
@@ -1023,8 +674,8 @@
       "properties": {
         "input": "{{widgets.call_user_spanish.AnsweredBy}}",
         "offset": {
-          "x": 4670,
-          "y": 850
+          "x": 2210,
+          "y": 930
         }
       }
     },
@@ -1041,13 +692,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 5560,
-          "y": 1050
+          "x": 3100,
+          "y": 1130
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1063,13 +714,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 5220,
-          "y": 1060
+          "x": 2760,
+          "y": 1140
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1084,8 +735,8 @@
       "properties": {
         "voice": "Polly.Conchita",
         "offset": {
-          "x": 4850,
-          "y": 1121
+          "x": 2390,
+          "y": 1200
         },
         "loop": 1,
         "say": "{{flow.data.intro}}",
@@ -1112,8 +763,8 @@
         "voice": "Polly.Conchita",
         "speech_timeout": "auto",
         "offset": {
-          "x": 4880,
-          "y": 1370
+          "x": 2420,
+          "y": 1450
         },
         "loop": 1,
         "hints": "si, no",
@@ -1138,8 +789,8 @@
       "properties": {
         "voice": "Polly.Conchita",
         "offset": {
-          "x": 5930,
-          "y": 1370
+          "x": 3210,
+          "y": 1440
         },
         "loop": 1,
         "say": "{{flow.data.try_again}}",
@@ -1155,7 +806,7 @@
           "event": "noMatch"
         },
         {
-          "next": "voice_send_assessment_spanish_yes",
+          "next": "voice_send_assessment_yes",
           "event": "match",
           "conditions": [
             {
@@ -1169,7 +820,7 @@
           ]
         },
         {
-          "next": "voice_send_assessment_spanish_no",
+          "next": "voice_send_assessment_no",
           "event": "match",
           "conditions": [
             {
@@ -1186,13 +837,13 @@
       "properties": {
         "input": "{{widgets.voice_reply_to_prompt_spanish.SpeechResult}}",
         "offset": {
-          "x": 4890,
-          "y": 1670
+          "x": 2430,
+          "y": 1750
         }
       }
     },
     {
-      "name": "voice_send_assessment_spanish_yes",
+      "name": "voice_send_assessment_yes",
       "type": "make-http-request",
       "transitions": [
         {
@@ -1205,13 +856,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 4880,
-          "y": 2060
+          "x": 2460,
+          "y": 2220
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_voice\", \n\"experiencing_symptoms\":\"Yes\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1225,8 +876,8 @@
       "properties": {
         "voice": "Polly.Conchita",
         "offset": {
-          "x": 5130,
-          "y": 2380
+          "x": 2711,
+          "y": 2540
         },
         "loop": 1,
         "say": "{{flow.data.thanks}}",
@@ -1234,7 +885,7 @@
       }
     },
     {
-      "name": "voice_send_assessment_spanish_no",
+      "name": "voice_send_assessment_no",
       "type": "make-http-request",
       "transitions": [
         {
@@ -1247,86 +898,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 5350,
-          "y": 2050
+          "x": 2931,
+          "y": 2211
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_voice\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "sms_or_voice_french_flow",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "event": "noMatch"
-        },
-        {
-          "next": "sms_assessment_french_prompt",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to SMS",
-              "arguments": [
-                "{{flow.data.medium}}"
-              ],
-              "type": "equal_to",
-              "value": "SMS"
-            }
-          ]
-        },
-        {
-          "next": "call_user_french",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to VOICE",
-              "arguments": [
-                "{{flow.data.medium}}"
-              ],
-              "type": "equal_to",
-              "value": "VOICE"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{flow.data.medium}}",
-        "offset": {
-          "x": 7990,
-          "y": 80
-        }
-      }
-    },
-    {
-      "name": "sms_assessment_french_prompt",
-      "type": "send-and-wait-for-reply",
-      "transitions": [
-        {
-          "next": "check_yes_no_french",
-          "event": "incomingMessage"
-        },
-        {
-          "next": "send_assessment_sms_no_response_french",
-          "event": "timeout"
-        },
-        {
-          "next": "send_assessment_sms_error_french",
-          "event": "deliveryFailure"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 7480,
-          "y": 550
-        },
-        "service": "{{trigger.message.InstanceSid}}",
-        "channel": "{{trigger.message.ChannelSid}}",
-        "from": "{{flow.channel.address}}",
-        "body": "{{flow.data.prompt}}",
-        "timeout": 64800
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1353,8 +931,8 @@
         "machine_detection_speech_threshold": "2400",
         "detect_answering_machine": true,
         "offset": {
-          "x": 8620,
-          "y": 440
+          "x": 3400,
+          "y": 550
         },
         "recording_channels": "mono",
         "timeout": 60,
@@ -1366,51 +944,6 @@
         "from": "{{flow.channel.address}}",
         "to": "{{contact.channel.address}}",
         "machine_detection_silence_timeout": "10000"
-      }
-    },
-    {
-      "name": "check_yes_no_french",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "next": "bad_response_french",
-          "event": "noMatch"
-        },
-        {
-          "next": "french_send_assessment_data_from_sms_no",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of_non",
-              "arguments": [
-                "{{widgets.sms_assessment_french_prompt.inbound.Body}}"
-              ],
-              "type": "matches_any_of",
-              "value": "Non, non, NON, Non. NON., non."
-            }
-          ]
-        },
-        {
-          "next": "french_send_assessment_data_yes",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of_oui",
-              "arguments": [
-                "{{widgets.sms_assessment_french_prompt.inbound.Body}}"
-              ],
-              "type": "matches_any_of",
-              "value": "oui, OUI, Oui, oui.,OUI.,Oui."
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{widgets.sms_assessment_french_prompt.inbound.Body}}",
-        "offset": {
-          "x": 7920,
-          "y": 830
-        }
       }
     },
     {
@@ -1439,82 +972,9 @@
       "properties": {
         "input": "{{widgets.call_user_french.AnsweredBy}}",
         "offset": {
-          "x": 8640,
-          "y": 820
+          "x": 3420,
+          "y": 930
         }
-      }
-    },
-    {
-      "name": "send_assessment_sms_no_response_french",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 6560,
-          "y": 1200
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"no_answer_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "send_assessment_sms_error_french",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 6900,
-          "y": 1200
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "bad_response_french",
-      "type": "send-and-wait-for-reply",
-      "transitions": [
-        {
-          "next": "check_yes_no_again_french",
-          "event": "incomingMessage"
-        },
-        {
-          "next": "send_assessment_sms_no_response_french",
-          "event": "timeout"
-        },
-        {
-          "next": "send_assessment_sms_error_french",
-          "event": "deliveryFailure"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 7660,
-          "y": 1080
-        },
-        "service": "{{trigger.message.InstanceSid}}",
-        "channel": "{{trigger.message.ChannelSid}}",
-        "from": "{{flow.channel.address}}",
-        "body": "{{flow.data.try_again}}",
-        "timeout": 3600
       }
     },
     {
@@ -1529,8 +989,8 @@
       "properties": {
         "voice": "Polly.Chantal",
         "offset": {
-          "x": 8820,
-          "y": 1090
+          "x": 3600,
+          "y": 1200
         },
         "loop": 1,
         "say": "{{flow.data.intro}}",
@@ -1550,13 +1010,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 9190,
-          "y": 1030
+          "x": 3970,
+          "y": 1140
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1572,58 +1032,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 9710,
-          "y": 1040
+          "x": 4300,
+          "y": 1140
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "check_yes_no_again_french",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "next": "bad_response_french",
-          "event": "noMatch"
-        },
-        {
-          "next": "french_send_assessment_data_yes",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of oui",
-              "arguments": [
-                "{{widgets.bad_response_french.inbound.Body}}"
-              ],
-              "type": "matches_any_of",
-              "value": "oui, OUI, Oui, oui.,OUI.,Oui."
-            }
-          ]
-        },
-        {
-          "next": "french_send_assessment_data_from_sms_no",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of non",
-              "arguments": [
-                "{{widgets.bad_response_french.inbound.Body}}"
-              ],
-              "type": "matches_any_of",
-              "value": "Non, non, NON, Non. NON., non."
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{widgets.bad_response_french.inbound.Body}}",
-        "offset": {
-          "x": 7550,
-          "y": 1420
-        }
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1646,8 +1061,8 @@
         "voice": "Polly.Chantal",
         "speech_timeout": "auto",
         "offset": {
-          "x": 8850,
-          "y": 1340
+          "x": 3630,
+          "y": 1450
         },
         "loop": 1,
         "hints": "si, no",
@@ -1672,81 +1087,12 @@
       "properties": {
         "voice": "Polly.Chantal",
         "offset": {
-          "x": 9920,
-          "y": 1380
+          "x": 4350,
+          "y": 1450
         },
         "loop": 1,
         "say": "{{flow.data.try_again}}",
         "language": "fr-CA"
-      }
-    },
-    {
-      "name": "french_send_assessment_data_from_sms_no",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "next": "send_thank_you_french",
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 7400,
-          "y": 2100
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "french_send_assessment_data_yes",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "next": "send_thank_you_french",
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 7980,
-          "y": 2100
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"Yes\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "send_thank_you_french",
-      "type": "send-message",
-      "transitions": [
-        {
-          "event": "sent"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 7700,
-          "y": 2490
-        },
-        "service": "{{trigger.message.InstanceSid}}",
-        "channel": "{{trigger.message.ChannelSid}}",
-        "from": "{{flow.channel.address}}",
-        "to": "{{contact.channel.address}}",
-        "body": "{{flow.data.thanks}}"
       }
     },
     {
@@ -1758,7 +1104,7 @@
           "event": "noMatch"
         },
         {
-          "next": "voice_send_assessment_french_yes",
+          "next": "voice_send_assessment_yes",
           "event": "match",
           "conditions": [
             {
@@ -1772,7 +1118,7 @@
           ]
         },
         {
-          "next": "voice_send_assessment_french_no",
+          "next": "voice_send_assessment_no",
           "event": "match",
           "conditions": [
             {
@@ -1789,17 +1135,16 @@
       "properties": {
         "input": "{{widgets.voice_reply_to_prompt_french.SpeechResult}}",
         "offset": {
-          "x": 8860,
-          "y": 1640
+          "x": 3640,
+          "y": 1750
         }
       }
     },
     {
-      "name": "voice_send_assessment_french_yes",
+      "name": "voice_send_error_somali",
       "type": "make-http-request",
       "transitions": [
         {
-          "next": "thank_you_voice_french",
           "event": "success"
         },
         {
@@ -1808,66 +1153,68 @@
       ],
       "properties": {
         "offset": {
-          "x": 8850,
-          "y": 2030
+          "x": 4000,
+          "y": 550
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_voice\", \n\"experiencing_symptoms\":\"Yes\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
-      "name": "voice_send_assessment_french_no",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "next": "thank_you_voice_french",
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 9320,
-          "y": 2020
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_voice\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "thank_you_voice_french",
-      "type": "say-play",
-      "transitions": [
-        {
-          "event": "audioComplete"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Chantal",
-        "offset": {
-          "x": 9100,
-          "y": 2350
-        },
-        "loop": 1,
-        "say": "{{flow.data.thanks}}",
-        "language": "fr-CA"
-      }
-    },
-    {
-      "name": "sms_or_voice_somali_flow",
+      "name": "OptOutTypeNotBlank",
       "type": "split-based-on",
       "transitions": [
         {
           "event": "noMatch"
         },
         {
-          "next": "sms_assessment_somali_prompt",
+          "next": "PostOptOutInfoSTART",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "{{trigger.message.OptOutType}}",
+              "arguments": [
+                "{{trigger.message.OptOutType}}"
+              ],
+              "type": "equal_to",
+              "value": "START"
+            }
+          ]
+        },
+        {
+          "next": "PostOptOutInfoSTOP",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to STOP",
+              "arguments": [
+                "{{trigger.message.OptOutType}}"
+              ],
+              "type": "equal_to",
+              "value": "STOP"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{trigger.message.OptOutType}}",
+        "offset": {
+          "x": -420,
+          "y": -710
+        }
+      }
+    },
+    {
+      "name": "sms_or_voice",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "event": "noMatch"
+        },
+        {
+          "next": "sms_assessment_prompt",
           "event": "match",
           "conditions": [
             {
@@ -1881,7 +1228,7 @@
           ]
         },
         {
-          "next": "voice_send_error_somali",
+          "next": "split_on_language",
           "event": "match",
           "conditions": [
             {
@@ -1898,272 +1245,125 @@
       "properties": {
         "input": "{{flow.data.medium}}",
         "offset": {
-          "x": 11840,
-          "y": 120
+          "x": 1640,
+          "y": -410
         }
       }
     },
     {
-      "name": "sms_assessment_somali_prompt",
-      "type": "send-and-wait-for-reply",
+      "name": "PostOptOutInfoSTOP",
+      "type": "make-http-request",
       "transitions": [
         {
-          "next": "check_yes_no_somali",
-          "event": "incomingMessage"
+          "event": "success"
         },
         {
-          "next": "send_assessment_sms_no_response_somali",
-          "event": "timeout"
-        },
-        {
-          "next": "send_assessment_sms_error_somali",
-          "event": "deliveryFailure"
+          "event": "failed"
         }
       ],
       "properties": {
         "offset": {
-          "x": 11400,
-          "y": 630
+          "x": -480,
+          "y": 2140
         },
-        "service": "{{trigger.message.InstanceSid}}",
-        "channel": "{{trigger.message.ChannelSid}}",
-        "from": "{{flow.channel.address}}",
-        "body": "{{flow.data.prompt}}",
-        "timeout": 64800
+        "method": "POST",
+        "content_type": "application/json;charset=utf-8",
+        "body": "{\"patient_submission_token\": \"{{flow.sid}}\", \"response_status\": \"opt_out\" }",
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
-      "name": "check_yes_no_somali",
+      "name": "OptOutTypeNotBlankReply",
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "bad_response_somali",
+          "next": "check_yes_no",
           "event": "noMatch"
         },
         {
-          "next": "somali_send_assessment_data_yes",
+          "next": "PostOptOutInfoSTOP",
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value matches_any_of Haa",
+              "friendly_name": "{{trigger.message.OptOutType}}",
               "arguments": [
-                "{{widgets.sms_assessment_somali_prompt.inbound.Body}}"
+                "{{widgets.sms_assessment_prompt.inbound.OptOutType}}"
               ],
-              "type": "matches_any_of",
-              "value": "Haa, HAA,Haa.,HAA."
+              "type": "equal_to",
+              "value": "STOP"
             }
           ]
         },
         {
-          "next": "somali_send_assessment_data_from_sms_no",
+          "next": "PostOptOutInfoSTART",
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value matches_any_of maya",
+              "friendly_name": "If value equal_to START",
               "arguments": [
-                "{{widgets.sms_assessment_somali_prompt.inbound.Body}}"
+                "{{widgets.sms_assessment_prompt.inbound.OptOutType}}"
               ],
-              "type": "matches_any_of",
-              "value": "Maya, MAYA, maya, Maya., maya., MAYA."
+              "type": "equal_to",
+              "value": "START"
             }
           ]
         }
       ],
       "properties": {
-        "input": "{{widgets.sms_assessment_somali_prompt.inbound.Body}}",
+        "input": "{{widgets.sms_assessment_prompt.inbound.OptOutType}}",
         "offset": {
-          "x": 12130,
-          "y": 780
+          "x": -420,
+          "y": 300
         }
       }
     },
     {
-      "name": "bad_response_somali",
-      "type": "send-and-wait-for-reply",
-      "transitions": [
-        {
-          "next": "check_yes_no_again_somali",
-          "event": "incomingMessage"
-        },
-        {
-          "event": "timeout"
-        },
-        {
-          "event": "deliveryFailure"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 11400,
-          "y": 1160
-        },
-        "service": "{{trigger.message.InstanceSid}}",
-        "channel": "{{trigger.message.ChannelSid}}",
-        "from": "{{flow.channel.address}}",
-        "body": "{{flow.data.try_again}}",
-        "timeout": 3600
-      }
-    },
-    {
-      "name": "send_assessment_sms_error_somali",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 10820,
-          "y": 1280
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "send_assessment_sms_no_response_somali",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 10480,
-          "y": 1280
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"no_answer_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "check_yes_no_again_somali",
+      "name": "OptOutTypeNotBlankRetry",
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "bad_response_somali",
+          "next": "check_yes_no_again",
           "event": "noMatch"
         },
         {
-          "next": "somali_send_assessment_data_yes",
+          "next": "PostOptOutInfoSTART",
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value matches_any_of Haa",
+              "friendly_name": "{{trigger.message.OptOutType}}",
               "arguments": [
-                "{{widgets.bad_response_somali.inbound.Body}}"
+                "{{widgets.bad_response.inbound.OptOutType}}"
               ],
-              "type": "matches_any_of",
-              "value": "Haa, HAA,Haa.,HAA."
+              "type": "equal_to",
+              "value": "START"
             }
           ]
         },
         {
-          "next": "somali_send_assessment_data_from_sms_no",
+          "next": "PostOptOutInfoSTOP",
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value matches_any_of Maya",
+              "friendly_name": "If value equal_to STOP",
               "arguments": [
-                "{{widgets.bad_response_somali.inbound.Body}}"
+                "{{widgets.bad_response.inbound.OptOutType}}"
               ],
-              "type": "matches_any_of",
-              "value": "Maya, MAYA, maya, Maya., maya., MAYA."
+              "type": "equal_to",
+              "value": "STOP"
             }
           ]
         }
       ],
       "properties": {
-        "input": "{{widgets.bad_response_somali.inbound.Body}}",
+        "input": "{{widgets.bad_response.inbound.OptOutType}}",
         "offset": {
-          "x": 11400,
-          "y": 1540
+          "x": -470,
+          "y": 1320
         }
       }
     },
     {
-      "name": "somali_send_assessment_data_from_sms_no",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "next": "send_thank_you_somali",
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 11980,
-          "y": 2070
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "somali_send_assessment_data_yes",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "next": "send_thank_you_somali",
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 11620,
-          "y": 2080
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"Yes\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
-      }
-    },
-    {
-      "name": "send_thank_you_somali",
-      "type": "send-message",
-      "transitions": [
-        {
-          "event": "sent"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 11820,
-          "y": 2540
-        },
-        "service": "{{trigger.message.InstanceSid}}",
-        "channel": "{{trigger.message.ChannelSid}}",
-        "from": "{{flow.channel.address}}",
-        "to": "{{contact.channel.address}}",
-        "body": "{{flow.data.thanks}}"
-      }
-    },
-    {
-      "name": "voice_send_error_somali",
+      "name": "PostOptOutInfoSTART",
       "type": "make-http-request",
       "transitions": [
         {
@@ -2175,13 +1375,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 12180,
-          "y": 510
+          "x": -80,
+          "y": 2130
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://sara.public.saraalert.org/report/twilio"
+        "body": "{\"patient_submission_token\": \"{{flow.sid}}\", \"response_status\": \"opt_in\" }",
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     }
   ],

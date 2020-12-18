@@ -15,6 +15,7 @@ class CloseRecords extends React.Component {
       monitoring: false,
       monitoring_reasons: [
         'Completed Monitoring',
+        'Meets criteria to shorten quarantine',
         'Meets Case Definition',
         'Lost to follow-up during monitoring period',
         'Lost to follow-up (contact never established)',

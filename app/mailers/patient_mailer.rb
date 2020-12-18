@@ -5,6 +5,7 @@ class PatientMailer < ApplicationMailer
   default from: 'notifications@saraalert.org'
 
   def enrollment_email(patient)
+    # Should not be sending enrollment email if no valid email
     return if patient&.email.blank?
 
     # Gather patients and jurisdictions
@@ -24,30 +25,36 @@ class PatientMailer < ApplicationMailer
   end
 
   def enrollment_sms_text_based(patient)
+    # Should not be sending enrollment sms if no valid number
     return if patient&.primary_telephone.blank?
+
+    if patient.blocked_sms
+      add_fail_history_sms_blocked(patient)
+      return
+    end
 
     lang = patient.select_language
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
-    account_sid = ENV['TWILLIO_API_ACCOUNT']
-    auth_token = ENV['TWILLIO_API_KEY']
-    from = ENV['TWILLIO_SENDING_NUMBER']
-    client = Twilio::REST::Client.new(account_sid, auth_token)
-    client.messages.create(
-      from: from,
-      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
-      body: contents
-    )
-  rescue Twilio::REST::RestError => e
-    Rails.logger.warn e.error_message
-    add_fail_history_sms(patient)
+
+    success = TwilioSender.send_sms(patient, contents)
+    add_success_history(patient, patient) if success
+    add_fail_history_sms(patient) unless success
+
+    # Always update the last contact time so the system does not try and send sms again.
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   # Right now the wording of this message is the same as for enrollment
   def assessment_sms_weblink(patient)
-    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    if patient&.primary_telephone.blank?
+      add_fail_history_blank_field(patient, 'primary phone number')
+      return
+    end
+    if patient.blocked_sms
+      add_fail_history_sms_blocked(patient)
+      return
+    end
 
-    num = patient.primary_telephone
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |dependent|
       lang = dependent.select_language
@@ -56,49 +63,26 @@ class PatientMailer < ApplicationMailer
                                                                   lang&.to_s || 'en',
                                                                   dependent&.initials_age)
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
-      account_sid = ENV['TWILLIO_API_ACCOUNT']
-      auth_token = ENV['TWILLIO_API_KEY']
-      from = ENV['TWILLIO_SENDING_NUMBER']
-      client = Twilio::REST::Client.new(account_sid, auth_token)
-      client.messages.create(
-        from: from,
-        to: Phonelib.parse(num, 'US').full_e164,
-        body: contents
-      )
-      add_success_history(dependent, patient)
+
+      success = TwilioSender.send_sms(patient, contents)
+      if success
+        add_success_history(dependent, patient)
+      else
+        add_fail_history_sms(dependent)
+      end
     end
-    patient.update(last_assessment_reminder_sent: DateTime.now)
-  rescue Twilio::REST::RestError => e
-    Rails.logger.warn e.error_message
-    add_fail_history_sms(patient)
-    patient.update(last_assessment_reminder_sent: DateTime.now)
-  end
-
-  def assessment_sms_reminder(patient)
-    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
-
-    lang = patient.select_language
-    contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
-    account_sid = ENV['TWILLIO_API_ACCOUNT']
-    auth_token = ENV['TWILLIO_API_KEY']
-    from = ENV['TWILLIO_SENDING_NUMBER']
-    client = Twilio::REST::Client.new(account_sid, auth_token)
-    client.messages.create(
-      from: from,
-      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
-      body: contents
-    )
-    add_success_history(patient, patient)
-    # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
-  rescue Twilio::REST::RestError => e
-    Rails.logger.warn e.error_message
-    add_fail_history_sms(patient)
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_sms(patient)
-    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    if patient&.primary_telephone.blank?
+      add_fail_history_blank_field(patient, 'primary phone number')
+      return
+    end
+    if patient.blocked_sms
+      add_fail_history_sms_blocked(patient)
+      return
+    end
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
@@ -116,32 +100,29 @@ class PatientMailer < ApplicationMailer
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
     contents += I18n.t('assessments.sms.prompt.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '.'
     contents += I18n.t('assessments.sms.prompt.daily4', locale: lang)
-    account_sid = ENV['TWILLIO_API_ACCOUNT']
-    auth_token = ENV['TWILLIO_API_KEY']
-    from = ENV['TWILLIO_SENDING_NUMBER']
-    client = Twilio::REST::Client.new(account_sid, auth_token)
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
     # The medium parameter will either be SMS or VOICE
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.split('-').first.upcase,
                try_again: I18n.t('assessments.sms.prompt.try-again', locale: lang),
+               max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
-    client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
-      from: from,
-      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
-      parameters: params
-    )
-    add_success_history(patient, patient)
+
+    if TwilioSender.start_studio_flow(patient, params)
+      add_success_history(patient, patient)
+    else
+      add_fail_history_sms(patient)
+    end
+
     # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
-  rescue Twilio::REST::RestError => e
-    Rails.logger.warn e.error_message
-    add_fail_history_sms(patient)
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_voice(patient)
-    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    if patient&.primary_telephone.blank?
+      add_fail_history_blank_field(patient, 'primary phone number')
+      return
+    end
 
     lang = patient.select_language
     lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
@@ -163,33 +144,30 @@ class PatientMailer < ApplicationMailer
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
     contents += I18n.t('assessments.phone.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '?'
     contents += I18n.t('assessments.phone.daily4', locale: lang)
-    account_sid = ENV['TWILLIO_API_ACCOUNT']
-    auth_token = ENV['TWILLIO_API_KEY']
-    from = ENV['TWILLIO_SENDING_NUMBER']
-    client = Twilio::REST::Client.new(account_sid, auth_token)
+
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
     # The medium parameter will either be SMS or VOICE
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'VOICE', language: lang.to_s.split('-').first.upcase,
                intro: I18n.t('assessments.phone.intro', locale: lang),
                try_again: I18n.t('assessments.phone.try-again', locale: lang),
+               max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
-    client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
-      from: from,
-      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
-      parameters: params
-    )
-    add_success_history(patient, patient)
+
+    if TwilioSender.start_studio_flow(patient, params)
+      add_success_history(patient, patient)
+    else
+      add_fail_history_voice(patient)
+    end
     # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
-  rescue Twilio::REST::RestError => e
-    Rails.logger.warn e.error_message
-    History.report_reminder(patient: patient, comment: "Sara Alert failed to call monitoree at #{patient.primary_telephone}.")
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_email(patient)
-    add_fail_history_blank_field(patient, 'email') && return if patient&.email.blank?
+    if patient&.email.blank?
+      add_fail_history_blank_field(patient, 'email')
+      return
+    end
 
     @lang = patient.select_language
     # Gather patients and jurisdictions
@@ -231,9 +209,36 @@ class PatientMailer < ApplicationMailer
     History.report_reminder(patient: patient, comment: comment)
   end
 
+  def add_fail_history_voice(patient)
+    comment = "Sara Alert attempted to call monitoree at #{patient.primary_telephone}, but the call could not be completed."
+    History.report_reminder(patient: patient, comment: comment)
+  end
+
   def add_fail_history_blank_field(patient, type)
     History.report_reminder(patient: patient,
                             comment: "Sara Alert could not send a report reminder to this monitoree via \
                                      #{patient.preferred_contact_method}, because the monitoree #{type} was blank.")
+  end
+
+  def add_fail_history_sms_blocked(patient)
+    comment = "The system was unable to send an SMS to this monitoree #{patient.primary_telephone}, because monitoree blocked Sara Alert."
+    History.contact_attempt(patient: patient, comment: comment)
+    return if patient.dependents_exclude_self.blank?
+
+    create_contact_attempt_history_for_dependents(patient.dependents_exclude_self, "The system was unable to send an SMS to this monitoree's
+       HoH #{patient.primary_telephone}, because the monitoree's head of household blocked Sara Alert.")
+  end
+
+  # Use the import method here to generate less SQL statements for a bulk insert of
+  # dependent histories instead of 1 statement per dependent.
+  def create_contact_attempt_history_for_dependents(dependents, comment)
+    histories = []
+    dependents.each do |dependent|
+      histories << History.new(patient: dependent,
+                               created_by: 'Sara Alert System',
+                               comment: comment,
+                               history_type: 'Contact Attempt')
+    end
+    History.import! histories
   end
 end

@@ -138,6 +138,7 @@ class MonitoringStatus extends React.Component {
                   --
                 </option>
                 <option>Completed Monitoring</option>
+                <option>Meets criteria to shorten quarantine</option>
                 <option>Meets Case Definition</option>
                 <option>Lost to follow-up during monitoring period</option>
                 <option>Lost to follow-up (contact never established)</option>

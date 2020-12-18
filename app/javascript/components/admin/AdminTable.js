@@ -4,6 +4,7 @@ import { Button, DropdownButton, Dropdown, InputGroup, Form, OverlayTrigger, Too
 import 'react-toastify/dist/ReactToastify.css';
 import UserModal from './UserModal';
 import EmailModal from './EmailModal';
+import AuditModal from './AuditModal';
 import confirmDialog from '../util/ConfirmDialog';
 import axios from 'axios';
 import { CSVLink } from 'react-csv';
@@ -17,13 +18,14 @@ class AdminTable extends React.Component {
       table: {
         colData: [
           { label: 'Id', field: 'id', isSortable: true },
-          { label: 'Email', field: 'email', isSortable: true },
+          { label: 'Email', field: 'email', className: 'wrap', isSortable: true },
           { label: 'Jurisdiction', field: 'jurisdiction_path', isSortable: true },
           { label: 'Role', field: 'role_title', isSortable: false },
           { label: 'Status', field: 'is_locked', isSortable: false, options: { true: 'Locked', false: 'Unlocked' } },
           { label: 'API Enabled', field: 'is_api_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: '2FA Enabled', field: 'is_2fa_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: 'Failed Login Attempts', field: 'num_failed_logins', isSortable: true },
+          { label: 'Audit', field: 'Audit', isSortable: false, tooltip: null, filter: this.createAuditButton, onClick: this.handleAuditClick },
         ],
         rowData: [],
         totalRows: 0,
@@ -37,17 +39,31 @@ class AdminTable extends React.Component {
       },
       entryOptions: [10, 15, 25, 50, 100],
       showEditUserModal: false,
+      showAuditModal: false,
       showAddUserModal: false,
       showEmailAllModal: false,
       actionsEnabled: false,
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
       editRow: null,
+      auditRow: null,
       csvData: [],
       jurisdiction_paths: {},
     };
     // Ref for the CSVLink component used to click it when async data fetch has completed
     this.csvLink = React.createRef();
+  }
+
+  /**
+   * Creates a "Audit" button for each row of the table.
+   * @param {string} userId
+   */
+  createAuditButton(_, userId) {
+    return (
+      <div id={userId} className="float-left edit-button">
+        <i className="fas fa-user-clock"></i>
+      </div>
+    );
   }
 
   componentDidMount() {
@@ -113,6 +129,17 @@ class AdminTable extends React.Component {
         })
         .then(handleSuccess)
         .catch(handleError);
+    });
+  };
+
+  /**
+   * Called when the audit button is clicked on a given row.
+   * Updates the state to show the appropriate modal for auditing a user and the the current row being audited.
+   */
+  handleAuditClick = user_id => {
+    this.setState({
+      showAuditModal: true,
+      auditRow: this.state.table.rowData.find(u => u.id == user_id),
     });
   };
 
@@ -203,6 +230,16 @@ class AdminTable extends React.Component {
     this.setState({
       showEditUserModal: false,
       showAddUserModal: false,
+      editRow: null,
+    });
+  };
+
+  /**
+   * Closes the user audit modal by updating state.
+   */
+  handleAuditModalClose = () => {
+    this.setState({
+      showAuditModal: false,
       editRow: null,
     });
   };
@@ -624,6 +661,7 @@ class AdminTable extends React.Component {
           handleSelect={this.handleSelect}
           handleEdit={this.handleEditClick}
           handleEntriesChange={this.handleEntriesChange}
+          isSelectable={true}
           isEditable={true}
           isLoading={this.state.isLoading}
           page={this.state.query.page}
@@ -643,6 +681,14 @@ class AdminTable extends React.Component {
             jurisdiction_paths={Object.keys(this.state.jurisdiction_paths)}
             roles={this.props.role_types}
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
+          />
+        )}
+        {this.state.showAuditModal && (
+          <AuditModal
+            show={this.state.showAuditModal}
+            onClose={this.handleAuditModalClose}
+            user={this.state.auditRow === null ? {} : this.state.auditRow}
+            authenticity_token={this.props.authenticity_token}
           />
         )}
         {this.state.showEmailAllModal && (

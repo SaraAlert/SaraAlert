@@ -19,7 +19,6 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
   @@public_health_patient_page = PublicHealthPatientPage.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  # rubocop:disable Metrics/ParameterLists
   def verify_patients_on_dashboard(user_label, verify_scope: false)
     jurisdiction_id = @@system_test_utils.login(user_label)
     @@public_health_dashboard_verifier.verify_patients_on_dashboard(jurisdiction_id, verify_scope: verify_scope)
@@ -163,9 +162,9 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_line_list_csv(user_label, workflow, action)
+  def export_csv_linelist(user_label, workflow, action)
     @@system_test_utils.login(user_label)
-    @@public_health_dashboard.export_line_list_csv(user_label, workflow, action)
+    @@public_health_dashboard.export_csv_linelist(user_label, workflow, action)
     @@system_test_utils.logout
   end
 
@@ -175,21 +174,21 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_excel_purge_eligible_monitorees(user_label, workflow, action)
+  def export_full_history_patients(user_label, workflow, action, scope)
     @@system_test_utils.login(user_label)
-    @@public_health_dashboard.export_excel_purge_eligible_monitorees(user_label, workflow, action)
+    @@public_health_dashboard.export_full_history_patients(user_label, workflow, action, scope)
     @@system_test_utils.logout
   end
 
-  def export_excel_all_monitorees(user_label, workflow, action)
+  def export_full_history_patient(user_label, patient_label)
     @@system_test_utils.login(user_label)
-    @@public_health_dashboard.export_excel_all_monitorees(user_label, workflow, action)
+    @@public_health_dashboard.export_full_history_patient(patient_label)
     @@system_test_utils.logout
   end
 
-  def export_excel_single_monitoree(user_label, patient_label)
+  def export_custom(user_label, settings)
     @@system_test_utils.login(user_label)
-    @@public_health_dashboard.export_excel_single_monitoree(patient_label)
+    @@public_health_dashboard.export_custom(user_label, settings)
     @@system_test_utils.logout
   end
 
@@ -216,5 +215,4 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@public_health_dashboard.download_sara_alert_format_guidance(workflow)
     @@system_test_utils.logout
   end
-  # rubocop:enable Metrics/ParameterLists
 end

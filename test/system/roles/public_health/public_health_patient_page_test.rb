@@ -7,7 +7,7 @@ SimpleCov.command_name 'SystemTestCasePublicHealthPatientPage'
 require_relative 'public_health_test_helper'
 require_relative '../../lib/system_test_utils'
 
-class PublicHealthTest < ApplicationSystemTestCase
+class PublicHealthPatientPageTest < ApplicationSystemTestCase
   @@public_health_test_helper = PublicHealthTestHelper.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 

@@ -8,6 +8,7 @@ class Patient < ApplicationRecord
   include PatientDetailsHelper
   include ValidationHelper
   include ActiveModel::Validations
+  include FhirHelper
 
   columns.each do |column|
     case column.type
@@ -18,46 +19,30 @@ class Patient < ApplicationRecord
     end
   end
 
-  validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
-                                                  'Enrolled more than 14 days after last date of exposure (system)',
-                                                  'Enrolled on last day of monitoring period (system)',
-                                                  'Completed Monitoring (system)',
-                                                  'Meets Case Definition',
-                                                  'Lost to follow-up during monitoring period',
-                                                  'Lost to follow-up (contact never established)',
-                                                  'Transferred to another jurisdiction',
-                                                  'Person Under Investigation (PUI)',
-                                                  'Case confirmed',
-                                                  'Past monitoring period',
-                                                  'Meets criteria to discontinue isolation',
-                                                  'Did not meet criteria for monitoring',
-                                                  'Deceased',
-                                                  'Duplicate',
-                                                  'Other',
-                                                  nil, ''] }
-
-  validates :monitoring_plan, inclusion: { in: ['None',
-                                                'Daily active monitoring',
-                                                'Self-monitoring with public health supervision',
-                                                'Self-monitoring with delegated supervision',
-                                                'Self-observation',
-                                                nil, ''] }
-
-  validates :exposure_risk_assessment, inclusion: { in: ['High',
-                                                         'Medium',
-                                                         'Low',
-                                                         'No Identified Risk',
-                                                         nil, ''] }
+  validates :monitoring_reason, inclusion: {
+    in: VALID_PATIENT_ENUMS[:monitoring_reason],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:monitoring_reason].reject(&:blank?).join("', '")}'"
+  }
+  validates :monitoring_plan, inclusion: {
+    in: VALID_PATIENT_ENUMS[:monitoring_plan],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:monitoring_plan].reject(&:blank?).join("', '")}'"
+  }
+  validates :exposure_risk_assessment, inclusion: {
+    in: VALID_PATIENT_ENUMS[:exposure_risk_assessment],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:exposure_risk_assessment].reject(&:blank?).join("', '")}'"
+  }
 
   %i[address_state
      ethnicity
      monitored_address_state
      preferred_contact_method
      preferred_contact_time
-     sex].each do |enum_field|
+     sex
+     primary_telephone_type
+     secondary_telephone_type].each do |enum_field|
     validates enum_field, on: :api, inclusion: {
-      in: VALID_ENUMS[enum_field],
-      message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
+      in: VALID_PATIENT_ENUMS[enum_field],
+      message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].join("', '")}'"
     }, allow_blank: true
   end
 
@@ -68,7 +53,10 @@ class Patient < ApplicationRecord
 
   %i[date_of_birth
      last_date_of_exposure
-     symptom_onset].each do |date_field|
+     symptom_onset
+     additional_planned_travel_start_date
+     date_of_departure
+     date_of_arrival].each do |date_field|
     validates date_field, on: :api, date: true
   end
 
@@ -107,6 +95,7 @@ class Patient < ApplicationRecord
   has_many :transfers
   has_many :laboratories
   has_many :close_contacts
+  has_many :contact_attempts
 
   around_save :inform_responder, if: :responder_id_changed?
   around_destroy :inform_responder
@@ -399,6 +388,20 @@ class Patient < ApplicationRecord
       non_reporting
     when 'Asymptomatic'
       asymptomatic
+    when 'Exposure Symptomatic'
+      exposure_symptomatic
+    when 'Exposure Non-Reporting'
+      exposure_non_reporting
+    when 'Exposure Asymptomatic'
+      exposure_asymptomatic
+    when 'Exposure PUI'
+      exposure_under_investigation
+    when 'Isolation Requiring Review'
+      isolation_requiring_review
+    when 'Isolation Non-Reporting'
+      isolation_non_reporting
+    when 'Isolation Reporting'
+      isolation_reporting
     end
   }
 
@@ -407,11 +410,18 @@ class Patient < ApplicationRecord
     where('last_date_of_exposure >= ?', time_frame)
   }
 
+  # All individuals with a last date of exposure within the given time frame
+  scope :symptom_onset_in_time_frame, lambda { |time_frame|
+    where('symptom_onset >= ?', time_frame)
+  }
+
   # All individuals enrolled within the given time frame
   scope :enrolled_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Last 24 Hours'
       where('patients.created_at >= ?', 24.hours.ago)
+    when 'Last 7 Days'
+      where('patients.created_at >= ? AND patients.created_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('patients.created_at >= ? AND patients.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'
@@ -426,6 +436,8 @@ class Patient < ApplicationRecord
     case time_frame
     when 'Last 24 Hours'
       where('patients.closed_at >= ?', 24.hours.ago)
+    when 'Last 7 Days'
+      where('patients.closed_at >= ? AND patients.closed_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('patients.closed_at >= ? AND patients.closed_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'
@@ -434,6 +446,51 @@ class Patient < ApplicationRecord
       none
     end
   }
+
+  # Criteria for this CDC quarantine guidance which can be found here:
+  # https://www.cdc.gov/coronavirus/2019-ncov/more/scientific-brief-options-to-reduce-quarantine.html
+  #
+  # Record must:
+  # - be unpurged, open, in exposure workflow, and not in continuous exposure
+  # - has no symptomatic reports
+  # - have reported within 10-13 days after their last date of exposure
+  # - be 10 or more days past their last date of exposure
+  scope :ten_day_quarantine_candidates, lambda { |user_curr_datetime|
+    where(purged: false, monitoring: true, isolation: false, continuous_exposure: false)
+      .where_assoc_not_exists(:assessments, symptomatic: true)
+      .where_assoc_exists(:assessments) do
+        # CAST is necessary to guarantee correct comparison between datetime and date.
+        where('CAST(assessments.created_at AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 10 DAY) '\
+              'AND DATE_ADD(last_date_of_exposure, INTERVAL 13 DAY)')
+      end
+      .where('? >= DATE_ADD(patients.last_date_of_exposure, INTERVAL 10 DAY)', user_curr_datetime.to_date)
+  }
+
+  # Criteria for this CDC quarantine guidance which can be found here:
+  # https://www.cdc.gov/coronavirus/2019-ncov/more/scientific-brief-options-to-reduce-quarantine.html
+  #
+  # Record must:
+  # - be unpurged, open, in exposure workflow, and not in continuous exposure
+  #-  has no symptomatic reports
+  # - have reported within 7-9 days after their last date of exposure and
+  # - be 7 or more days past their last date of exposure
+  # - have a negative PCR or Antigen test that was collected between 5-9 days after their last date of exposure
+  # rubocop:disable Style/MultilineBlockChain
+  scope :seven_day_quarantine_candidates, lambda { |user_curr_datetime|
+    where(purged: false, monitoring: true, isolation: false, continuous_exposure: false)
+      .where_assoc_not_exists(:assessments, symptomatic: true)
+      .where_assoc_exists(:assessments) do
+        # CAST is necessary to guarantee correct comparison between datetime and date.
+        where('CAST(assessments.created_at AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY) '\
+              'AND DATE_ADD(last_date_of_exposure, INTERVAL 9 DAY)')
+      end
+      .where('? >= DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY)', user_curr_datetime.to_date)
+      .where_assoc_exists(:laboratories) do
+        where(result: 'negative', lab_type: %w[PCR ANTIGEN])
+          .where('specimen_collection BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 5 DAY) AND DATE_ADD(last_date_of_exposure, INTERVAL 9 DAY)')
+      end
+  }
+  # rubocop:enable Style/MultilineBlockChain
 
   # Gets the current date in the patient's timezone
   def curr_date_in_timezone
@@ -584,9 +641,22 @@ class Patient < ApplicationRecord
     return (created_at.to_date + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
   end
 
-  # Date when patient is expected to be purged
+  # Date when patient is expected to be purged (with timezone displayed as 'UTC')
+  def expected_purge_ts
+    monitoring ? '' : (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes) || ''
+  end
+
+  # Date when patient is expected to be purged (with timezone displayed as '+00:00')
   def expected_purge_date
-    (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822
+    exp_purge_ts = expected_purge_ts # avoid calling expected_purge_ts twice
+    exp_purge_ts.blank? ? '' : exp_purge_ts.rfc2822
+  end
+
+  # Determine if this patient's phone number has blocked communication with SaraAlert
+  def blocked_sms
+    return false if primary_telephone.nil?
+
+    BlockedNumber.exists?(phone_number: primary_telephone)
   end
 
   # Send initial enrollment notification via patient's preferred contact method
@@ -655,8 +725,8 @@ class Patient < ApplicationRecord
       when 'evening'
         return unless evening.include? hour
       else
-        # Default to roughly afternoon if preferred contact time is not specified
-        return unless (11..17).include? hour
+        # Default to afternoon if preferred contact time is not specified
+        return unless (12..16).include? hour
       end
     end
 
@@ -815,87 +885,7 @@ class Patient < ApplicationRecord
   # extensions for sex, race, and ethnicity.
   # https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-patient.html
   def as_fhir
-    FHIR::Patient.new(
-      meta: FHIR::Meta.new(lastUpdated: updated_at.strftime('%FT%T%:z')),
-      id: id,
-      active: monitoring,
-      name: [FHIR::HumanName.new(given: [first_name, middle_name].reject(&:blank?), family: last_name)],
-      telecom: [
-        primary_telephone ? FHIR::ContactPoint.new(system: 'phone', value: primary_telephone, rank: 1) : nil,
-        secondary_telephone ? FHIR::ContactPoint.new(system: 'phone', value: secondary_telephone, rank: 2) : nil,
-        email ? FHIR::ContactPoint.new(system: 'email', value: email, rank: 1) : nil
-      ].reject(&:nil?),
-      birthDate: date_of_birth&.strftime('%F'),
-      address: [
-        FHIR::Address.new(
-          line: [address_line_1, address_line_2].reject(&:blank?),
-          city: address_city,
-          district: address_county,
-          state: address_state,
-          postalCode: address_zip
-        )
-      ],
-      communication: [
-        language_coding(primary_language) ? FHIR::Patient::Communication.new(
-          language: FHIR::CodeableConcept.new(coding: [language_coding(primary_language)]),
-          preferred: interpretation_required
-        ) : nil
-      ].reject(&:nil?),
-      extension: [
-        us_core_race(white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander),
-        us_core_ethnicity(ethnicity),
-        us_core_birthsex(sex),
-        to_preferred_contact_method_extension(preferred_contact_method),
-        to_preferred_contact_time_extension(preferred_contact_time),
-        to_symptom_onset_date_extension(symptom_onset),
-        to_last_exposure_date_extension(last_date_of_exposure),
-        to_isolation_extension(isolation),
-        to_string_extension(jurisdiction.jurisdiction_path_string, 'full-assigned-jurisdiction-path')
-      ].reject(&:nil?)
-    )
-  end
-
-  # Create a hash of atttributes that corresponds to a Sara Alert Patient (and can be used to
-  # create new ones, or update existing ones), using the given FHIR::Patient.
-  def self.from_fhir(patient, default_jurisdiction_id)
-    {
-      monitoring: patient&.active.nil? ? false : patient.active,
-      first_name: patient&.name&.first&.given&.first,
-      middle_name: patient&.name&.first&.given&.second,
-      last_name: patient&.name&.first&.family,
-      primary_telephone: PatientHelper.from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.first&.value),
-      secondary_telephone: PatientHelper.from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value),
-      email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
-      date_of_birth: patient&.birthDate,
-      age: Patient.calc_current_age_fhir(patient&.birthDate),
-      address_line_1: patient&.address&.first&.line&.first,
-      address_line_2: patient&.address&.first&.line&.second,
-      address_city: patient&.address&.first&.city,
-      address_county: patient&.address&.first&.district,
-      address_state: patient&.address&.first&.state,
-      address_zip: patient&.address&.first&.postalCode,
-      monitored_address_line_1: patient&.address&.first&.line&.first,
-      monitored_address_line_2: patient&.address&.first&.line&.second,
-      monitored_address_city: patient&.address&.first&.city,
-      monitored_address_county: patient&.address&.first&.district,
-      monitored_address_state: patient&.address&.first&.state,
-      monitored_address_zip: patient&.address&.first&.postalCode,
-      primary_language: patient&.communication&.first&.language&.coding&.first&.display,
-      interpretation_required: patient&.communication&.first&.preferred,
-      white: PatientHelper.race_code?(patient, '2106-3'),
-      black_or_african_american: PatientHelper.race_code?(patient, '2054-5'),
-      american_indian_or_alaska_native: PatientHelper.race_code?(patient, '1002-5'),
-      asian: PatientHelper.race_code?(patient, '2028-9'),
-      native_hawaiian_or_other_pacific_islander: PatientHelper.race_code?(patient, '2076-8'),
-      ethnicity: PatientHelper.ethnicity(patient),
-      sex: PatientHelper.birthsex(patient),
-      preferred_contact_method: PatientHelper.from_preferred_contact_method_extension(patient),
-      preferred_contact_time: PatientHelper.from_preferred_contact_time_extension(patient),
-      symptom_onset: PatientHelper.from_symptom_onset_date_extension(patient),
-      last_date_of_exposure: PatientHelper.from_last_exposure_date_extension(patient),
-      isolation: PatientHelper.from_isolation_extension(patient),
-      jurisdiction_id: PatientHelper.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id)
-    }
+    patient_as_fhir(self)
   end
 
   # Override as_json to include linelist
@@ -932,8 +922,8 @@ class Patient < ApplicationRecord
 
       diffs << {
         attribute: attribute,
-        before: attribute == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
-        after: attribute == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
+        before: attribute.to_sym == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
+        after: attribute.to_sym == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
       }
     end
     diffs

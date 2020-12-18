@@ -37,6 +37,8 @@ class Transfer < ApplicationRecord
     case time_frame
     when 'Last 24 Hours'
       where('transfers.created_at >= ?', 24.hours.ago)
+    when 'Last 7 Days'
+      where('transfers.created_at >= ? AND transfers.created_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('transfers.created_at >= ? AND transfers.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'
@@ -45,6 +47,21 @@ class Transfer < ApplicationRecord
       none
     end
   }
+
+  def custom_details(fields, patient_identifiers, user_emails, jurisdiction_paths)
+    transfer_details = {}
+    transfer_details[:id] = id || '' if fields.include?(:id)
+    transfer_details[:patient_id] = patient_id || '' if fields.include?(:patient_id)
+    transfer_details[:user_defined_id_statelocal] = patient_identifiers[:user_defined_id_statelocal]
+    transfer_details[:user_defined_id_cdc] = patient_identifiers[:user_defined_id_cdc]
+    transfer_details[:user_defined_id_nndss] = patient_identifiers[:user_defined_id_nndss]
+    transfer_details[:who] = user_emails[who_id] || '' if fields.include?(:who)
+    transfer_details[:from_jurisdiction] = jurisdiction_paths[from_jurisdiction_id] || '' if fields.include?(:from_jurisdiction)
+    transfer_details[:to_jurisdiction] = jurisdiction_paths[to_jurisdiction_id] || '' if fields.include?(:to_jurisdiction)
+    transfer_details[:created_at] = created_at || '' if fields.include?(:created_at)
+    transfer_details[:updated_at] = updated_at || '' if fields.include?(:updated_at)
+    transfer_details
+  end
 
   private
 

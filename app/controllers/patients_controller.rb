@@ -19,8 +19,6 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
-    @jurisdiction_path = @patient.jurisdiction_path
-
     @possible_jurisdiction_paths = if current_user.can_transfer_patients?
                                      # Allow all jurisdictions as valid transfer options.
                                      Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
@@ -62,7 +60,8 @@ class PatientsController < ApplicationController
                            email: @close_contact.nil? ? '' : @close_contact.email,
                            contact_of_known_case: !@close_contact.nil?,
                            contact_of_known_case_id: @close_contact.nil? ? '' : @close_contact.patient_id,
-                           exposure_notes: @close_contact.nil? ? '' : @close_contact.notes)
+                           exposure_notes: @close_contact.nil? ? '' : @close_contact.notes,
+                           preferred_contact_method: 'Unknown')
   end
 
   # Similar to 'new', except used for creating a new group member
@@ -522,6 +521,15 @@ class PatientsController < ApplicationController
     duplicate_contact ||= (patient[:email] == patient.responder[:email]) unless patient[:email].blank?
     # They are removeable from the household if their current responder does not have duplicate contact information
     render json: { removeable: !duplicate_contact }
+  end
+
+  # Check to see if a phone number has blocked SMS communications with SaraAlert
+  def sms_eligibility_check
+    redirect_to(root_url) && return unless current_user.can_edit_patient?
+
+    phone_number = params.require(:phone_number)
+    blocked = BlockedNumber.exists?(phone_number: phone_number)
+    render json: { sms_eligible: !blocked }
   end
 
   # Construct a diff for a patient update to keep track of changes

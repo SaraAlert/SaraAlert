@@ -1,5 +1,3 @@
-import mockAnalyticsData from './mockAnalytics'
-
 const mockUser1 = {
   api_enabled: true,
   authy_enabled: false,

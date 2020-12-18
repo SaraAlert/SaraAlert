@@ -103,7 +103,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_without_propogation_label])
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
-    new_jurisdiction = MONITOREES[edited_monitoree_without_propogation_label]['potential_exposure_info']['jurisdiction_id']
+    new_jurisdiction = MONITOREES[edited_monitoree_without_propogation_label]['potential_exposure_information']['jurisdiction_id']
     assert page.has_content?(new_jurisdiction)
     @@system_test_utils.logout
 
@@ -124,7 +124,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_with_propogation_label])
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
-    newer_jurisdiction = MONITOREES[edited_monitoree_with_propogation_label]['potential_exposure_info']['jurisdiction_id']
+    newer_jurisdiction = MONITOREES[edited_monitoree_with_propogation_label]['potential_exposure_information']['jurisdiction_id']
     assert page.has_content?(newer_jurisdiction)
     click_on @@system_test_utils.get_displayed_name(MONITOREES[group_member_label])
     assert page.has_content?(newer_jurisdiction)
@@ -157,8 +157,8 @@ class WorkflowTest < ApplicationSystemTestCase
     @@system_test_utils.wait_for_enrollment_submission
 
     # parent should have been updated but not child, verify history
-    old_assigned_user = MONITOREES[monitoree_label]['potential_exposure_info']['assigned_user'] || ''
-    new_assigned_user = MONITOREES[edited_monitoree_without_propogation_label]['potential_exposure_info']['assigned_user'] || ''
+    old_assigned_user = MONITOREES[monitoree_label]['potential_exposure_information']['assigned_user'] || ''
+    new_assigned_user = MONITOREES[edited_monitoree_without_propogation_label]['potential_exposure_information']['assigned_user'] || ''
     assert page.has_content?(new_assigned_user)
     @@public_health_patient_page_history_verifier.verify_assigned_user(epi_enroller_user_label, new_assigned_user, '')
     click_on @@system_test_utils.get_displayed_name(MONITOREES[group_member_label])
@@ -172,7 +172,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@system_test_utils.wait_for_enrollment_submission
 
     # parent and child should have been updated, verify history
-    newer_assigned_user = MONITOREES[edited_monitoree_with_propogation_label]['potential_exposure_info']['assigned_user'] || ''
+    newer_assigned_user = MONITOREES[edited_monitoree_with_propogation_label]['potential_exposure_information']['assigned_user'] || ''
     assert page.has_content?(newer_assigned_user)
     @@public_health_patient_page_history_verifier.verify_assigned_user(epi_enroller_user_label, newer_assigned_user, '')
     click_on @@system_test_utils.get_displayed_name(MONITOREES[group_member_label])

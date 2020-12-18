@@ -42,7 +42,7 @@ class Assessment < ApplicationRecord
   # symptom_passes_threshold will return true if the REQUIRED symptom with the given name in the reported condition
   # meets the definition of symptomatic as defined in the assocated ThresholdCondition
   def symptom_passes_threshold(symptom_name, threshold_symptom = nil)
-    reported_symptom = reported_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first
+    reported_symptom = reported_condition&.symptoms&.find_by(name: symptom_name)
     # This will be the case if a symptom is no longer being tracked and the assessments table is looking for its value
     return nil if reported_symptom.nil? || reported_symptom.value.nil?
 
@@ -71,12 +71,12 @@ class Assessment < ApplicationRecord
   end
 
   def get_threshold_symptom(symptom_name)
-    threshold_condition = reported_condition&.threshold_condition
-    threshold_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first
+    reported_condition&.threshold_condition&.symptoms&.find_by(name: symptom_name)
   end
 
   def get_reported_symptom_value(symptom_name)
-    reported_symptom = reported_condition.symptoms.select { |symp| symp.name == symptom_name }[0]
+    reported_symptom = reported_condition&.symptoms&.find_by(name: symptom_name)
+
     # This will be the case if a symptom is no longer being tracked and the assessments table is looking for its value
     return nil if reported_symptom.nil?
 
@@ -84,11 +84,18 @@ class Assessment < ApplicationRecord
   end
 
   def all_symptom_names
-    reported_condition&.threshold_condition&.symptoms&.collect { |x| x.name } || []
+    reported_condition&.threshold_condition&.symptoms&.pluck(:name)
   end
 
   def get_reported_symptom_by_name(symptom_name)
-    reported_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first || nil
+    reported_condition&.symptoms&.find_by(name: symptom_name)
+  end
+
+  # Gets all symptom names for a given array of assessment IDs.
+  def self.get_symptom_names_for_assessments(assessment_ids)
+    threshold_cond_hashes = ReportedCondition.where(type: 'ReportedCondition', assessment_id: assessment_ids).pluck(:threshold_condition_hash)
+    condition_ids = ThresholdCondition.where(type: 'ThresholdCondition', threshold_condition_hash: threshold_cond_hashes)
+    Symptom.where(condition_id: condition_ids).pluck(:name)
   end
 
   def translations
@@ -127,6 +134,20 @@ class Assessment < ApplicationRecord
         end
       end
     )
+  end
+
+  def custom_details(fields, patient_identifiers)
+    assessment_details = {}
+    assessment_details[:id] = id || '' if fields.include?(:id)
+    assessment_details[:patient_id] = patient_id || '' if fields.include?(:patient_id)
+    assessment_details[:user_defined_id_statelocal] = patient_identifiers[:user_defined_id_statelocal]
+    assessment_details[:user_defined_id_cdc] = patient_identifiers[:user_defined_id_cdc]
+    assessment_details[:user_defined_id_nndss] = patient_identifiers[:user_defined_id_nndss]
+    assessment_details[:symptomatic] = symptomatic || false if fields.include?(:symptomatic)
+    assessment_details[:who_reported] = who_reported || '' if fields.include?(:who_reported)
+    assessment_details[:created_at] = created_at || '' if fields.include?(:created_at)
+    assessment_details[:updated_at] = updated_at || '' if fields.include?(:updated_at)
+    assessment_details
   end
 
   private

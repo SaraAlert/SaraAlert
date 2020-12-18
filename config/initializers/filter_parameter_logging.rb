@@ -50,3 +50,6 @@ Rails.application.config.filter_parameters += %i[lab_type specimen_collection re
 
 # Assessment filters
 Rails.application.config.filter_parameters += %i[symptomatic]
+
+# History Items
+Rails.application.config.filter_parameters += %i[comment]

@@ -12,7 +12,14 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  lastDateOfExposure: <div> Used by the system to automatically calculate the monitoring period. </div>,
+  lastDateOfExposure: (
+    <div>
+      Used by the system to automatically calculate the End of Monitoring Date.
+      <div>
+        <i>Only relevant for Exposure Workflow</i>
+      </div>
+    </div>
+  ),
 
   primaryLanguage: (
     <div>
@@ -131,6 +138,21 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  blockedSMS: (
+    <div>
+      The owner of this phone number has texted &quot;STOP&quot; in response to a Sara Alert text message. This means that this phone number cannot receive text
+      messages from Sara Alert and should not be assigned SMS Preferred Reporting Methods unless the user replies &quot;START&quot; to a Sara Alert message.
+    </div>
+  ),
+
+  blockedSMSContactMethod: (
+    <div>
+      This Preferred Reporting Method is currently invalid because this phone number has blocked SMS communication with Sara Alert by texting &quot;STOP&quot;.
+      To fix this issue, the monitoree may either select email or telephone as their Preferred Reporting Method or reply &quot;START&quot; to a Sara Alert
+      message to unblock SMS communication.
+    </div>
+  ),
+
   continuousExposure: (
     <div>
       Allows a user to indicate that a monitoree has an ongoing exposure to one or more cases. If checked, the monitoring period will be extended indefinitely
@@ -145,7 +167,7 @@ const TOOLTIP_TEXT = {
       The “Needs Review” column tells you which reports the system considers as symptomatic (red highlight). The “Review” and “Mark All As Reviewed” functions
       allow a user to tell the system not to consider that report as symptomatic. This indicates that the disease of interest is not suspected after review of
       the monitoree&apos;s symptom report(s).
-      <br></br>
+      <br />
       The system will automatically generate the{' '}
       <i>
         <b>Symptom Onset</b>
@@ -158,20 +180,20 @@ const TOOLTIP_TEXT = {
   exposureSymptomOnset: (
     <div>
       <b>Exposure Workflow</b>
-      <br></br>
+      <br />
       <i>
         <b>Symptom Onset</b>
       </i>{' '}
       date is used by the system to determine if a record should appear on the <i>Symptomatic</i> line list. This field is auto-populated with the date of the
       earliest report flagged as symptomatic (red highlighted) in the report history table <i>unless a date has been entered by a user.</i>
-      <br></br>A{' '}
+      <br />A{' '}
       <i>
         <b>Symptom Onset</b>
       </i>{' '}
       date should only be entered by a user in the exposure workflow if the monitoree is under investigation for the disease of interest and the monitoree
       indicates their symptom onset date differs from what is available in the reports table. If a user entered a symptom onset date, the field will need to be
       manually cleared by a user to move the record off of the <i>Symptomatic</i> line list.
-      <br></br>
+      <br />
       To clear an auto-populated{' '}
       <i>
         <b>Symptom Onset</b>
@@ -183,14 +205,14 @@ const TOOLTIP_TEXT = {
   isolationSymptomOnset: (
     <div>
       <b>Isolation Workflow</b>
-      <br></br>
+      <br />
       <i>
         <b>Symptom Onset</b>
       </i>{' '}
       date is used by the system to determine if the non-test based recovery definition has been met which determines if a record should appear on the{' '}
       <i>Records Requiring Review </i>line list. This field is auto-populated with the date of the earliest report flagged as symptomatic (red highlighted) in
       the report history table <i>unless a date has been entered by a user.</i>
-      <br></br>
+      <br />
       If a record is moved from the isolation workflow to the exposure workflow (e.g., case ruled out and returned to monitoring due to exposure), the system
       will clear a user entered{' '}
       <i>
@@ -200,14 +222,6 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  endOfMonitoring: (
-    <div>
-      Calculated by the system based on Last Date of Exposure
-      <div>
-        <i>Only relevant for Exposure Workflow</i>
-      </div>
-    </div>
-  ),
   extendedIsolation: (
     <div>
       Used by the system to determine eligibility to appear on the <i>Records Requiring Review</i> line list. A case cannot appear on the{' '}
@@ -245,7 +259,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  exposure_nonReporting: (
+  exposure_non_reporting: (
     <div>
       Monitorees on this list require public health follow-up to collect missing symptom report(s). Follow-up with these monitorees should be based on current
       guidelines and available resources.
@@ -270,7 +284,7 @@ const TOOLTIP_TEXT = {
   ),
 
   // ISOLATION WORKFLOW LINE LIST DEFINITIONS
-  isolation_recordsRequiringReview: (
+  isolation_records_requiring_review: (
     <div>
       These cases meet one of the recovery definitions and require review by public health to validate that it is safe to discontinue isolation. The recovery
       definition logic has been designed to be sensitive; as a result, cases that do not meet requirements for recovery may appear. To view which recovery
@@ -279,7 +293,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  isolation_nonReporting: (
+  isolation_non_reporting: (
     <div>
       Monitorees on this list require public health follow-up to collect missing symptom report(s). Follow-up with these cases should be based on current
       guidelines and available resources.
@@ -306,6 +320,12 @@ const TOOLTIP_TEXT = {
       See User Guide for list of fields that are not purged for use in the analytics summary.{' '}
     </div>
   ),
+  analyticsAgeTip: (
+    <div>
+      Current Age is calculated as:
+      <div>Current Date - Date of Birth</div>
+    </div>
+  ),
 };
 
 class InfoTooltip extends React.Component {
@@ -314,7 +334,7 @@ class InfoTooltip extends React.Component {
     // If multiple instances of the Tooltip Exist on a page, the <ReactTooltip/> cannnot find
     // the correct instance (due to the lack of `data-for`/`id` pairs). Therefore we generate
     // custom string for each instance
-    this.customID = this.makeid(this.props.tooltipTextKey.length || 10).substring(0, 6);
+    this.customID = this.makeid(this.props.tooltipTextKey?.length || 10).substring(0, 6);
   }
 
   makeid = length => {
@@ -333,7 +353,8 @@ class InfoTooltip extends React.Component {
           <i className="fas fa-question-circle px-0"></i>
         </span>
         <ReactTooltip id={this.customID} multiline={true} place={this.props.location} type="dark" effect="solid" className="tooltip-container">
-          <span>{TOOLTIP_TEXT[this.props.tooltipTextKey]}</span>
+          {this.props.tooltipTextKey && <span>{TOOLTIP_TEXT[this.props.tooltipTextKey]}</span>}
+          {!this.props.tooltipTextKey && this.props.getCustomText && <span>{this.props.getCustomText()}</span>}
         </ReactTooltip>
       </div>
     );
@@ -342,6 +363,7 @@ class InfoTooltip extends React.Component {
 
 InfoTooltip.propTypes = {
   tooltipTextKey: PropTypes.string,
+  getCustomText: PropTypes.func,
   location: PropTypes.string, // top, right, bottom, left
 };
 

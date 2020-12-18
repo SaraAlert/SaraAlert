@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       get '/.well-known/smart-configuration', to: 'api#well_known'
       get '/:resource_type/:id', to: 'api#show'
       put '/:resource_type/:id', to: 'api#update'
+      patch '/:resource_type/:id', to: 'api#update'
       post '/:resource_type', to: 'api#create'
       get '/:resource_type', to: 'api#search'
       post '/:resource_type/_search', to: 'api#search'
@@ -33,11 +34,14 @@ Rails.application.routes.draw do
   end
   get '/.well-known/smart-configuration', to: 'fhir/r4/api#well_known'
   get '/redirect', to: redirect { |params, request| "/oauth/authorize/native?#{request.params.to_query}" }
+  get '/patients/sms_eligibility_check', to: 'patients#sms_eligibility_check'
 
   resources :patients, only: [:index, :new, :create, :show, :edit, :update]
 
   resources :admin, only: [:index]
   get 'admin/users', to: 'admin#users'
+
+  post 'users/audits/:id', to: 'users#audits'
 
   post 'admin/create_user', to: 'admin#create_user'
   post 'admin/edit_user', to: 'admin#edit_user'
@@ -46,22 +50,26 @@ Rails.application.routes.draw do
   post 'admin/email_all', to: 'admin#email_all'
 
   resources :histories, only: [:create]
+  resources :contact_attempts, only: [:create]
 
   post '/laboratories', to: 'laboratories#create'
   post '/laboratories/:id', to: 'laboratories#update'
 
   get '/jurisdictions/paths', to: 'jurisdictions#jurisdiction_paths', as: :jurisdiction_paths
-  get '/jurisdictions/assigned_users', to: 'jurisdictions#assigned_users_for_viewable_patients', as: :assigned_users_for_viewable_patients
+  get '/jurisdictions/allpaths', to: 'jurisdictions#all_jurisdiction_paths', as: :all_jurisdiction_paths
+  post '/jurisdictions/assigned_users', to: 'jurisdictions#assigned_users_for_viewable_patients', as: :assigned_users_for_viewable_patients
 
   post '/close_contacts', to: 'close_contacts#create'
   post '/close_contacts/:id', to: 'close_contacts#update'
 
   get '/patients/:id/group', to: 'patients#new_group_member'
 
-  get '/export/csv/patients/:type/:workflow', to: 'export#csv'
-  get '/export/excel/patients/comprehensive/:workflow', to: 'export#excel_comprehensive_patients'
-  get '/export/excel/patients/full_history/:scope', to: 'export#excel_full_history_patients'
-  get '/export/excel/patients/full_history/patient/:patient_id', to: 'export#excel_full_history_patient'
+  get '/export/csv_linelist/:workflow', to: 'export#csv_linelist'
+  get '/export/sara_alert_format/:workflow', to: 'export#sara_alert_format'
+  get '/export/full_history_patients/:scope', to: 'export#full_history_patients'
+  get '/export/full_history_patient/:patient_id', to: 'export#full_history_patient'
+  post '/export/custom', to: 'export#custom_export'
+  get '/export/nbs/patient/:patient_id', to: 'export#nbs_patient'
   get '/export/download/:lookup', to: 'downloads#download', as: :export_download
 
   post '/import/:workflow/:format', to: 'import#import'
@@ -80,6 +88,8 @@ Rails.application.routes.draw do
   end
 
   resources :user_filters, only: [:index, :create, :update, :destroy]
+
+  resources :user_export_presets, only: [:index, :create, :update, :destroy]
 
   post '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#create', as: :create_patient_assessment_jurisdiction_report
   post '/twilio', to: 'assessments#create', as: :create_patient_assessment_jurisdiction_report_twilio
@@ -101,6 +111,7 @@ Rails.application.routes.draw do
   get '/public_health', to: 'public_health#exposure', as: :public_health
   get '/public_health/isolation', to: 'public_health#isolation', as: :public_health_isolation
   post '/public_health/patients', to: 'public_health#patients', as: :public_health_patients
+  post '/public_health/patients/count', to: 'public_health#patients_count', as: :public_health_patients_count
   get '/public_health/patients/counts/workflow', to: 'public_health#workflow_counts', as: :workflow_counts
   get '/public_health/patients/counts/:workflow/:tab', to: 'public_health#tab_counts', as: :tab_counts
 

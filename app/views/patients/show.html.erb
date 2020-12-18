@@ -1,10 +1,10 @@
 <% content_for :assets do %>
-<%= javascript_packs_with_chunks_tag 'datatables', 'moment' %>
+  <%= javascript_packs_with_chunks_tag 'datatables', 'moment' %>
 <% end %>
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Return to Exposure Dashboard', href: '/' }, { value: 'Monitoree Details', href: nil }], isolation: @patient&.isolation || false } %>
 
 <% if current_user.can_download_monitoree_data? %>
-<%= react_component('subject/DownloadMonitoreeExcel', { authenticity_token: form_authenticity_token, patient: @patient }) %>
+<%= react_component('subject/DownloadMonitoree', { authenticity_token: form_authenticity_token, patient: @patient }) %>
 <% end %>
 
 <%= react_component('patient/PatientPage', {
@@ -15,7 +15,8 @@
                       dashboardUrl: '/public_health',
                       authenticity_token: form_authenticity_token,
                       hideBody: current_user.can_modify_subject_status?,
-                      jurisdiction_path: @patient.jurisdiction[:path]
+                      jurisdiction_path: @patient.jurisdiction[:path],
+                      blocked_sms: @patient.blocked_sms
                     }) %>
 
 <% if current_user.can_modify_subject_status? %>
@@ -78,8 +79,7 @@
         <%= react_component('subject/ContactAttempt', { authenticity_token: form_authenticity_token, patient: @patient }) %>
       </div>
     </div>
-    <% columns = [] %>
-    <% @patient.assessments.includes([:reported_condition]).each { |assessment| columns.concat(assessment.all_symptom_names) } %>
+    <% columns = Assessment.get_symptom_names_for_assessments(@patient.assessments.pluck(:id)) %>
     <% columns = columns.uniq.sort %>
     <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font">
       <thead>
@@ -99,10 +99,10 @@
       <tbody>
         <% @patient.assessments.order('created_at').each do |assessment| -%>
         <% if assessment.symptomatic %>
-          <tr class="table-danger">
-        <% else %>
-          <tr>
-        <% end %>
+        <tr class="table-danger">
+          <% else %>
+        <tr>
+          <% end %>
           <td><%= assessment.id %></td>
           <% unless @patient.isolation %>
           <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
@@ -110,12 +110,13 @@
           <td><%= assessment.who_reported %></td>
           <td><%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %></td>
           <% columns.each do |column| -%>
-          <% if assessment.get_reported_symptom_by_name(column) == nil %>
+          <% reported_condition = assessment.get_reported_symptom_by_name(column)%>
+          <% if reported_condition == nil %>
           <td></td>
           <% end %>
-          <%passes_threshold = assessment.symptom_passes_threshold(column)%>
-          <%symptom_value = assessment.get_reported_symptom_value(column)%>
-          <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
+          <% passes_threshold = assessment.symptom_passes_threshold(column) %>
+          <% symptom_value = reported_condition&.value %>
+          <% if reported_condition&.type == "BoolSymptom"%>
           <% if symptom_value == true %>
           <% symptom_value = 'Yes' %>
           <% elsif symptom_value == false %>
@@ -123,7 +124,7 @@
           <%end%>
           <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
           <% end %>
-          <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
+          <% if reported_condition&.type == "FloatSymptom" || reported_condition&.type == "IntegerSymptom"%>
           <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
           <% end %>
           <% end -%>
@@ -145,7 +146,12 @@
         <% end -%>
       </tbody>
     </table>
-    <%= react_component('subject/LastDateExposure', { authenticity_token: form_authenticity_token, patient: @patient, is_household_member: @household_members.count > 1 }) %>
+    <%= react_component('subject/LastDateExposure', {
+                          authenticity_token: form_authenticity_token,
+                          patient: @patient,
+                          is_household_member: @household_members.count > 1,
+                          monitoring_period_days: ADMIN_OPTIONS['monitoring_period_days'].to_i
+                        }) %>
   </div>
 </div>
 <% @patient.assessments.order('created_at').each do |assessment| -%>
@@ -247,7 +253,7 @@
         <tr>
           <td><%= cc.first_name %></td>
           <td><%= cc.last_name %></td>
-          <td><%= cc.primary_telephone %></td>
+          <td><%= cc.primary_telephone.present? && cc.primary_telephone.length > 10 ? cc.primary_telephone&.gsub('+1', '')&.gsub(/\D/, '')&.insert(3, '-')&.insert(7, '-') : '' %></td>
           <td><%= cc.email %></td>
           <td><%= cc.contact_attempts %></td>
           <td>
@@ -269,7 +275,7 @@
 <% end %>
 
 <% if current_user.can_modify_subject_status? %>
-  <%= react_component('history/HistoryComponent', { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token, history_types: @history_types }) %>
+<%= react_component('history/HistoryComponent', { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token, history_types: @history_types }) %>
 <% end %>
 
 <script>

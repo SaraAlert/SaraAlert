@@ -9,7 +9,6 @@ class PublicHealthPatientPageActions < ApplicationSystemTestCase
   @@public_health_patient_page_history_verifier = PublicHealthPatientPageHistoryVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  # rubocop:disable Metrics/ParameterLists
   def update_monitoring_status(user_label, patient_label, monitoring_status, monitoring_reason, reasoning)
     return unless monitoring_status != find('#monitoring_status')['value']
 
@@ -95,5 +94,4 @@ class PublicHealthPatientPageActions < ApplicationSystemTestCase
       assert_not_equal(assigned_user, page.find_field('assigned_user').value)
     end
   end
-  # rubocop:enable Metrics/ParameterLists
 end

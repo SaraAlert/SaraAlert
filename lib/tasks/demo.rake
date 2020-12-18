@@ -182,9 +182,21 @@ namespace :demo do
       laboratory_histories = demo_populate_laboratories(today, days_ago, existing_patients)
       histories = histories.concat(laboratory_histories)
 
+      # Create close contacts
+      close_contacts_histories = demo_populate_close_contacts(today, days_ago, existing_patients)
+      histories = histories.concat(close_contacts_histories)
+
       # Create transfers
       transfer_histories = demo_populate_transfers(today, existing_patients, jurisdictions, assigned_users)
       histories = histories.concat(transfer_histories)
+
+      # Create close contacts
+      close_contacts_histories = demo_populate_close_contacts(today, days_ago, existing_patients)
+      histories = histories.concat(close_contacts_histories)
+
+      # Create contact attempts
+      contact_attempt_histories = demo_populate_contact_attempts(today, existing_patients)
+      histories = histories.concat(contact_attempt_histories)
 
       # Create histories
       demo_populate_histories(today, histories)
@@ -201,15 +213,8 @@ namespace :demo do
   end
 
   def demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, counties)
-    territory_names = ['American Samoa',
-      'District of Columbia',
-      'Federated States of Micronesia',
-      'Guam',
-      'Marshall Islands',
-      'Northern Mariana Islands',
-      'Palau',
-      'Puerto Rico',
-      'Virgin Islands']
+    territory_names = ['American Samoa', 'District of Columbia', 'Federated States of Micronesia', 'Guam', 'Marshall Islands', 'Northern Mariana Islands',
+                       'Palau', 'Puerto Rico', 'Virgin Islands'].freeze
 
     printf("Generating monitorees...")
     patients = []
@@ -220,13 +225,16 @@ namespace :demo do
 
       # Identification
       sex = Faker::Gender.binary_type
+      sexualOrientations = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know', 'Unknown'].freeze
       patient[:sex] = rand < 0.9 ? sex : 'Unknown' if rand < 0.9
+      patient[:gender_identity] = ValidationHelper::VALID_PATIENT_ENUMS[:gender_identity].sample if rand < 0.7
+      patient[:sexual_orientation] = ValidationHelper::VALID_PATIENT_ENUMS[:sexual_orientation].sample if rand < 0.6
       patient[:first_name] = "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
       patient[:middle_name] = "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}" if rand < 0.7
       patient[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
       patient[:date_of_birth] = Faker::Date.birthday(min_age: 1, max_age: 85)
       patient[:age] = ((Date.today - patient[:date_of_birth]) / 365.25).round
-      patient[%i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample] = true
+      %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample(rand(0..4)).each { |race| patient[race] = true }
       patient[:ethnicity] = rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino'
       patient[:primary_language] = rand < 0.7 ? 'English' : Faker::Nation.language
       patient[:secondary_language] = Faker::Nation.language if rand < 0.4
@@ -237,12 +245,12 @@ namespace :demo do
       patient[:user_defined_id_nndss] = Faker::Code.rut if rand < 0.2
 
       # Contact Information
-      patient[:preferred_contact_method] = ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown'].sample
-      patient[:preferred_contact_time] = ['Morning', 'Afternoon', 'Evening', nil].sample if patient[:preferred_contact_method] != 'E-mailed Web Link'
+      patient[:preferred_contact_method] = ValidationHelper::VALID_PATIENT_ENUMS[:preferred_contact_method].sample
+      patient[:preferred_contact_time] = ValidationHelper::VALID_PATIENT_ENUMS[:preferred_contact_time].sample if patient[:preferred_contact_method] != 'E-mailed Web Link' && rand < 0.6
       patient[:primary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:preferred_contact_method] != 'E-mailed Web Link' || rand < 0.5
-      patient[:primary_telephone_type] = ['Smartphone', 'Plain Cell', 'Landline'].sample if patient[:primary_telephone]
+      patient[:primary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:primary_telephone_type].sample if patient[:primary_telephone]
       patient[:secondary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:primary_telephone] && rand < 0.5
-      patient[:secondary_telephone_type] = ['Smartphone', 'Plain Cell', 'Landline'].sample if patient[:secondary_telephone]
+      patient[:secondary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:secondary_telephone_type].sample if patient[:secondary_telephone]
       patient[:email] = "#{rand(1000000000..9999999999)}fake@example.com" if patient[:preferred_contact_method] == 'E-mailed Web Link' || rand < 0.5
 
       # Address
@@ -276,9 +284,9 @@ namespace :demo do
         patient[:foreign_address_line_1] = Faker::Address.street_address if rand < 0.95
         patient[:foreign_address_city] = Faker::Nation.capital_city if rand < 0.95
         patient[:foreign_address_country] = Faker::Address.country if rand < 0.95
-        patient[:foreign_address_line_2] = Faker::Address.secondary_address if rand < 0.4
+        patient[:foreign_address_line_2] = Faker::Address.secondary_address if rand < 0.6
         patient[:foreign_address_zip] = Faker::Address.zip_code if rand < 0.95
-        patient[:foreign_address_line_3] = Faker::Address.secondary_address if patient[:foreign_address_line2] && rand < 0.3
+        patient[:foreign_address_line_3] = Faker::Address.secondary_address if patient[:foreign_address_line_2] && rand < 0.4
         patient[:foreign_address_state] = Faker::Address.community if rand < 0.7
         patient[:foreign_monitored_address_line_1] = Faker::Address.street_address if rand < 0.95
         patient[:foreign_monitored_address_city] = Faker::Nation.capital_city if rand < 0.95
@@ -294,7 +302,8 @@ namespace :demo do
       if rand < 0.7
         patient[:port_of_origin] = Faker::Address.city
         patient[:date_of_departure] = today - (rand < 0.3 ? 1.day : 0.days)
-        patient[:source_of_report] = ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other', nil].sample
+        patient[:source_of_report] = ValidationHelper::VALID_PATIENT_ENUMS[:source_of_report].sample if rand < 0.7
+        patient[:source_of_report_specify] = Faker::TvShows::SiliconValley.invention if patient[:source_of_report] == 'Other'
         patient[:flight_or_vessel_number] = "#{('A'..'Z').to_a.sample}#{rand(10)}#{rand(10)}#{rand(10)}"
         patient[:flight_or_vessel_carrier] = "#{Faker::Name.first_name} Airlines"
         patient[:port_of_entry_into_usa] = Faker::Address.city
@@ -319,10 +328,17 @@ namespace :demo do
       end
 
       # Potential Exposure Info
-      patient[:last_date_of_exposure] = today - rand(5).days
-      patient[:continuous_exposure] = rand < 0.15
+      patient[:isolation] = days_ago > 10 ? rand < 0.9 : rand < 0.4
+      if patient[:isolation]
+        patient[:symptom_onset] = today - rand(10).days
+        patient[:user_defined_symptom_onset] = true
+      else
+        patient[:continuous_exposure] = rand < 0.3
+        patient[:last_date_of_exposure] = today - rand(5).days unless patient[:continuous_exposure]
+      end
       patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
       patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
+      patient[:exposure_notes] = Faker::Games::LeagueOfLegends.quote if rand < 0.5
       if rand < 0.85
         patient[:contact_of_known_case] = rand < 0.3
         patient[:contact_of_known_case_id] = Faker::Code.ean if patient[:contact_of_known_case] && rand < 0.5
@@ -338,10 +354,9 @@ namespace :demo do
         patient[:was_in_health_care_facility_with_known_cases_facility_name] = Faker::GreekPhilosophers.name if patient[:was_in_health_care_facility_with_known_cases] && rand < 0.15
       end
       patient[:jurisdiction_id] = jurisdictions.sample[:id]
-      patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.9
-      patient[:exposure_risk_assessment] = ['High', 'Medium', 'Low', 'No Identified Risk', nil].sample
-      patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
-                                  'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
+      patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.8
+      patient[:exposure_risk_assessment] = ValidationHelper::VALID_PATIENT_ENUMS[:exposure_risk_assessment].sample
+      patient[:monitoring_plan] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_plan].sample
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
@@ -352,19 +367,14 @@ namespace :demo do
       patient[:updated_at] = patient_ts
 
       # Update monitoring status
-      patient[:isolation] = days_ago > 10 ? rand < 0.9 : rand < 0.4
-      patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'].sample : nil
+      patient[:extended_isolation] = today + rand(10).days if patient[:isolation] && rand < 0.3
+      patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable'].sample : ['Suspect', 'Unknown', 'Not a Case', nil].sample
       patient[:monitoring] = rand < 0.95
       patient[:closed_at] = patient[:updated_at] unless patient[:monitoring]
-      patient[:monitoring_reason] = ['Completed Monitoring', 'Meets Case Definition', 'Lost to follow-up during monitoring period',
-                                    'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
-                                    'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
-                                    'Meets criteria to discontinue isolation', 'Did not meet criteria for monitoring', 'Deceased', 
-                                    'Duplicate', 'Other'].sample unless patient[:monitoring].nil?
-      patient[:public_health_action] = patient[:isolation] || rand < 0.9 ? 'None' : ['Recommended medical evaluation of symptoms',
-                                                                                    'Document results of medical evaluation',
-                                                                                    'Recommended laboratory testing'].sample
+      patient[:monitoring_reason] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_reason].sample unless patient[:monitoring].nil?
+      patient[:public_health_action] = patient[:isolation] || rand < 0.8 ? 'None' : ValidationHelper::VALID_PATIENT_ENUMS[:public_health_action].sample
       patient[:pause_notifications] = rand < 0.1
+      patient[:last_assessment_reminder_sent] = today - rand(7).days if rand < 0.3
 
       patients << patient
     end
@@ -386,7 +396,7 @@ namespace :demo do
       # enrollment
       histories << History.new(
         patient_id: patient[:id],
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: 'User enrolled monitoree.',
         history_type: 'Enrollment',
         created_at: patient[:created_at],
@@ -395,7 +405,7 @@ namespace :demo do
       # monitoring status
       histories << History.new(
         patient_id: patient[:id],
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: "User changed monitoring status to \"Not Monitoring\". Reason: #{patient[:monitoring_reason]}",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -403,7 +413,7 @@ namespace :demo do
       ) unless patient[:monitoring]
       # exposure risk assessment
       histories << History.new(
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: "User changed exposure risk assessment to \"#{patient[:exposure_risk_assessment]}\".",
         patient_id: patient[:id],
         history_type: 'Monitoring Change',
@@ -413,7 +423,7 @@ namespace :demo do
       # case status
       histories << History.new(
         patient_id: patient[:id],
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: "User changed case status to \"#{patient[:case_status]}\", and chose to \"Continue Monitoring in Isolation Workflow\".",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -422,7 +432,7 @@ namespace :demo do
       # public health action
       histories << History.new(
         patient_id: patient[:id],
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: "User changed latest public health action to \"#{patient[:public_health_action]}\".",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -431,7 +441,7 @@ namespace :demo do
       # pause notifications
       histories << History.new(
         patient_id: patient[:id],
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: "User paused notifications for this monitoree.",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -465,7 +475,7 @@ namespace :demo do
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
         comment: "User created a new report.",
         history_type: 'Report Created',
         created_at: assessment_ts,
@@ -591,7 +601,7 @@ namespace :demo do
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
         comment: "User added a new lab result.",
         history_type: 'Lab Result',
         created_at: lab_ts,
@@ -599,6 +609,50 @@ namespace :demo do
       )
     end
     Laboratory.import! laboratories
+    printf(" done.\n")
+
+    return histories
+  end
+
+  def demo_populate_close_contacts(today, days_ago, existing_patients)
+    printf("Generating close contacts...")
+    close_contacts = []
+    histories = []
+    patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
+    enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).pluck(:id).sample(existing_patients.count * rand(5..15) / 100)
+    enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
+    patient_ids.each_with_index do |patient_id, index|
+      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
+      close_contact_ts = create_fake_timestamp(today, today)
+      close_contact = {
+        patient_id: patient_id,
+        created_at: close_contact_ts,
+        updated_at: close_contact_ts,
+        notes: rand < 0.7 ? Faker::Hacker.say_something_smart : nil,
+        contact_attempts: rand < 0.4 ? rand(1..5) : nil
+      }
+      if index < enrolled_close_contacts.size
+        close_contact[:enrolled_id] = enrolled_close_contacts[index][0]
+        close_contact[:first_name] = enrolled_close_contacts[index][1]
+        close_contact[:last_name] = enrolled_close_contacts[index][2]
+        close_contact[:primary_telephone] = enrolled_close_contacts[index][3]
+        close_contact[:email] = enrolled_close_contacts[index][4]
+      else
+        close_contact[:enrolled_id] = nil
+        close_contact[:first_name] = "#{rand < 0.5 ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
+        close_contact[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
+        close_contact[:primary_telephone] = rand < 0.85 ? "+155555501#{rand(9)}#{rand(9)}" : nil
+        close_contact[:email] = rand < 0.75 ? "#{rand(1000000000..9999999999)}fake@example.com" : nil
+      end
+      close_contacts << close_contact
+      histories << History.new(
+        patient_id: patient_id,
+        created_by: 'Sara Alert System',
+        comment: "User created a new close contact.",
+        history_type: 'Close Contact'
+      )
+    end
+    CloseContact.import! close_contacts
     printf(" done.\n")
 
     return histories
@@ -629,7 +683,7 @@ namespace :demo do
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
         comment: "User changed jurisdiction from \"#{jurisdiction_paths[jur_id]}\" to #{jurisdiction_paths[to_jurisdiction]}.",
         history_type: 'Monitoring Change',
         created_at: transfer_ts,
@@ -643,26 +697,90 @@ namespace :demo do
     return histories
   end
 
-  def demo_populate_histories(today, histories)
-    # add manual contact attempts
-    patient_ids_and_contact_attempts = Patient.monitoring_open.pluck(:id, :contact_attempts).sample(Patient.monitoring_open.size * 0.2)
-    patient_ids = patient_ids_and_contact_attempts.collect(&:first)
-    patient_ids.each do |patient_id|
-      timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+  def demo_populate_close_contacts(today, days_ago, existing_patients)
+    printf("Generating close contacts...")
+    close_contacts = []
+    histories = []
+    patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
+    enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).pluck(:id).sample(existing_patients.count * rand(5..15) / 100)
+    enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
+    patient_ids.each_with_index do |patient_id, index|
+      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
+      close_contact_ts = create_fake_timestamp(today, today)
+      close_contact = {
+        patient_id: patient_id,
+        created_at: close_contact_ts,
+        updated_at: close_contact_ts,
+        notes: rand < 0.7 ? Faker::Hacker.say_something_smart : nil,
+        contact_attempts: rand < 0.4 ? rand(1..5) : nil
+      }
+      if index < enrolled_close_contacts.size
+        close_contact[:enrolled_id] = enrolled_close_contacts[index][0]
+        close_contact[:first_name] = enrolled_close_contacts[index][1]
+        close_contact[:last_name] = enrolled_close_contacts[index][2]
+        close_contact[:primary_telephone] = enrolled_close_contacts[index][3]
+        close_contact[:email] = enrolled_close_contacts[index][4]
+      else
+        close_contact[:enrolled_id] = nil
+        close_contact[:first_name] = "#{rand < 0.5 ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
+        close_contact[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
+        close_contact[:primary_telephone] = rand < 0.85 ? "+155555501#{rand(9)}#{rand(9)}" : nil
+        close_contact[:email] = rand < 0.75 ? "#{rand(1000000000..9999999999)}fake@example.com" : nil
+      end
+      close_contacts << close_contact
       histories << History.new(
         patient_id: patient_id,
-        created_by: rand < 0.7 ? User.all.select { |u| u.role?('public_health') }.sample[:email] : 'Sara Alert System',
-        comment: "#{rand < 0.5 ? 'Successful' : 'Unsuccessful'} contact attempt.#{rand < 0.65 ? " #{Faker::Marketing.buzzwords}" : ''}",
-        history_type: 'Contact Attempt',
-        created_at: timestamp,
-        updated_at: timestamp,
+        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        comment: "User created a new close contact.",
+        history_type: 'Close Contact',
+        created_at: close_contact_ts,
+        updated_at: close_contact_ts
       )
     end
+    CloseContact.import! close_contacts
+    printf(" done.\n")
 
-    # update patient contact attempts
-    Patient.update(patient_ids, patient_ids_and_contact_attempts.collect(&:second).map { |contact_attempts| { contact_attempts: contact_attempts + 1 } })
+    return histories
+  end
 
-    # write histories
+  def demo_populate_contact_attempts(today, existing_patients)
+    printf("Generating contact attempts...")
+    contact_attempts = []
+    histories = []
+    patients_contact_attempts = existing_patients.pluck(:id).sample(existing_patients.count * rand(10..20) / 100)
+    patients_contact_attempts.each_with_index do |patient_id, index|
+      printf("\rGenerating contact attempt #{index+1} of #{patients_contact_attempts.length}...")
+      successful = rand < 0.45
+      note = rand < 0.65 ? " #{Faker::TvShows::GameOfThrones.quote}" : ''
+      contact_attempt_ts = create_fake_timestamp(today, today)
+      user = User.all.select { |u| u.role?('public_health') }.sample
+      manual_attempt = rand < 0.7
+      if manual_attempt
+        contact_attempts << ContactAttempt.new(
+          patient_id: patient_id,
+          user_id: user[:id],
+          successful: successful,
+          note: note,
+          created_at: contact_attempt_ts,
+          updated_at: contact_attempt_ts
+        )
+      end
+      histories << History.new(
+        patient_id: patient_id,
+        created_by: manual_attempt ? user[:email] : 'Sara Alert System',
+        comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}",
+        history_type: 'Contact Attempt',
+        created_at: contact_attempt_ts,
+        updated_at: contact_attempt_ts
+      )
+    end
+    ContactAttempt.import! contact_attempts
+    printf(" done.\n")
+
+    return histories
+  end
+
+  def demo_populate_histories(today, histories)
     printf("Writing histories...")
     History.import! histories
     printf(" done.\n")
@@ -749,6 +867,6 @@ namespace :demo do
   end
 
   def create_fake_timestamp(from, to)
-    Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :day)
+    Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
   end
 end

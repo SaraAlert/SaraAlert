@@ -6,7 +6,7 @@ SimpleCov.command_name 'SystemTestCaseEnrollerEnrollment'
 
 require_relative 'enroller_test_helper'
 
-class EnrollerTest < ApplicationSystemTestCase
+class EnrollerEnrollmentTest < ApplicationSystemTestCase
   @@enroller_test_helper = EnrollerTestHelper.new(nil)
 
   test 'enroll monitoree with all fields' do

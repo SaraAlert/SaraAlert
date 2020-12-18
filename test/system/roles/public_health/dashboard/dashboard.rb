@@ -21,6 +21,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def search_for_and_view_monitoree(tab, monitoree_label)
+    sleep(0.5)
     @@system_test_utils.go_to_tab(tab)
     fill_in 'search', with: MONITOREES[monitoree_label]['identification']['last_name']
     click_on @@system_test_utils.get_monitoree_display_name(monitoree_label)
@@ -30,9 +31,9 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     fill_in 'search', with: MONITOREES[monitoree_label]['identification']['last_name']
   end
 
-  def export_line_list_csv(user_label, workflow, action)
+  def export_csv_linelist(user_label, workflow, action)
     start_export(workflow, "Line list CSV (#{workflow})", action)
-    @@public_health_export_verifier.verify_line_list_csv(user_label, workflow) if action == :export
+    @@public_health_export_verifier.verify_csv_linelist(user_label, workflow) if action == :export
   end
 
   def export_sara_alert_format(user_label, workflow, action)
@@ -40,34 +41,61 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     @@public_health_export_verifier.verify_sara_alert_format(user_label, workflow) if action == :export
   end
 
-  def export_excel_purge_eligible_monitorees(user_label, workflow, action)
-    start_export(workflow, 'Excel Export For Purge-Eligible Monitorees', action)
-    @@public_health_export_verifier.verify_excel_purge_eligible_monitorees(user_label) if action == :export
-  end
-
-  def export_excel_all_monitorees(user_label, workflow, action)
-    start_export(workflow, 'Excel Export For All Monitorees', action)
-    @@public_health_export_verifier.verify_excel_all_monitorees(user_label) if action == :export
-  end
-
-  def export_excel_single_monitoree(patient_label)
-    search_for_and_view_patient('all', patient_label)
-    click_on 'Download Excel Export'
-    @@public_health_export_verifier.verify_excel_single_monitoree(patient_label.split('_')[1].to_i)
+  def export_full_history_patients(user_label, workflow, action, scope)
+    start_export(workflow, "Excel Export For #{scope == :purgeable ? 'Purge-Eligible' : 'All'} Monitorees", action)
+    @@public_health_export_verifier.verify_full_history_patients(user_label, scope) if action == :export
   end
 
   def start_export(workflow, export_type, action)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Export'
     click_on export_type
-    if action == :export
-      click_on 'Start Export'
-    else
-      click_on 'Cancel'
-    end
+    click_on action == :export ? 'Start Export' : 'Cancel'
   end
 
-  # rubocop:disable Metrics/ParameterLists
+  def export_full_history_patient(patient_label)
+    search_for_and_view_patient('all', patient_label)
+    click_on 'Download Excel Export'
+    @@public_health_export_verifier.verify_full_history_patient(patient_label.split('_')[1].to_i)
+  end
+
+  def export_custom(user_label, settings)
+    click_on 'Export'
+    click_on settings[:preset] || 'Custom Format...'
+
+    # Choose which records to export
+    choose "select-monitoree-records-#{settings[:records]}" if settings[:records].present?
+
+    # Choose which elements to export
+    settings[:elements]&.each_value do |data_type|
+      data_type[:checked]&.each do |label|
+        find('span', class: 'rct-title', text: label).click
+      end
+    end
+
+    # Provide optional custom export format name
+    fill_in 'preset', with: settings[:name] if settings[:name].present?
+
+    # Select file format
+    click_on "custom-export-format-#{settings[:format]}" if settings[:format]
+
+    # Save, update, or delete preset
+    settings[:actions]&.each do |action|
+      click_on "custom-export-action-#{action}"
+      sleep(1)
+    end
+
+    # Verify preset
+    @@public_health_export_verifier.verify_preset(user_label, settings) if settings[:actions]&.include?(:save)
+
+    # Start or cancel export
+    click_on 'Start Export' if settings[:confirm] == :start
+    click_on 'Cancel' if settings[:confirm] == :cancel
+
+    # Verify export
+    @@public_health_export_verifier.verify_custom(user_label, settings) if settings[:actions]&.include?(:export) && settings[:confirm] == :start
+  end
+
   def import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
@@ -125,7 +153,6 @@ class PublicHealthDashboard < ApplicationSystemTestCase
       find('.modal-header').find('.close').click
     end
   end
-  # rubocop:enable Metrics/ParameterLists
 
   def import_and_cancel(workflow, file_name, file_type)
     click_on 'Isolation Monitoring' if workflow == :isolation

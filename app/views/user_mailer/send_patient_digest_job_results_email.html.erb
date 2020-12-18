@@ -1,0 +1,26 @@
+<h1>
+  Sara Alert Send Patient Digest Job Results  (<%= ActionMailer::Base.default_url_options[:host] %>)
+</h1>
+<h2>
+  <%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %>
+</h2>
+<h2>
+  Sent digest email to <b><%= @jurisdiction_ids.count %></b> jurisdiction(s):
+</h2>
+<br />
+JID
+<br />
+<% @jurisdiction_ids.each do |jur_id| %>
+  <%= jur_id %>
+  <br />
+<% end %>
+<h2>
+  Sent digest email to <b><%= @sent.count %></b> users:
+</h2>
+<br />
+UID, JID, UJID
+<br />
+<% @sent.each do |s| %>
+  <%= s[:id] %>, <%= s[:jur_id] %>, <%= s[:user_jur_id] %>
+  <br />
+<% end %>

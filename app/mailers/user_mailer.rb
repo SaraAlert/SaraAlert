@@ -34,6 +34,12 @@ class UserMailer < ApplicationMailer
     mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Send Purge Warnings Job Results (#{ActionMailer::Base.default_url_options[:host]})")
   end
 
+  def send_patient_digest_job_results_email(sent, jurisdiction_ids)
+    @sent = sent
+    @jurisdiction_ids = jurisdiction_ids
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Send Patient Digest Job Results (#{ActionMailer::Base.default_url_options[:host]})")
+  end
+
   def close_job_email(closed, not_closed, eligible)
     @closed = closed
     @not_closed = not_closed
@@ -42,6 +48,8 @@ class UserMailer < ApplicationMailer
   end
 
   def cache_analytics_job_email(cached, not_cached, eligible)
+    return unless ADMIN_OPTIONS['job_run_email'].present?
+
     @cached = cached
     @not_cached = not_cached
     @eligible = eligible
@@ -55,9 +63,9 @@ class UserMailer < ApplicationMailer
     end
   end
 
-  def download_email(user, export_type, lookups, batch_size)
+  def download_email(user, export_label, lookups, batch_size)
     @user = user
-    @export_type = export_type
+    @export_label = export_label
     @lookups = lookups
     @batch_size = batch_size
     mail(to: user.email.strip, subject: 'Your Sara Alert system export is ready') do |format|

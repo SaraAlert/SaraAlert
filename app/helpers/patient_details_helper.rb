@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Helper methods for the linelist and comprehensive details
+# Helper methods for the linelist and full history details
 module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   # Current patient status
   def status
@@ -49,15 +49,15 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       closed_at: closed_at&.rfc2822 || '',
       transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || '',
-      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''),
+      expected_purge_date: expected_purge_date,
       symptom_onset: symptom_onset&.strftime('%F') || '',
       extended_isolation: extended_isolation || ''
     }
   end
 
   # All information about this subject
-  def comprehensive_details
-    labs = Laboratory.where(patient_id: id).order(report: :desc)
+  def full_history_details
+    labs = Laboratory.where(patient_id: id).order(specimen_collection: :desc)
     {
       first_name: first_name || '',
       middle_name: middle_name || '',
@@ -128,7 +128,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       last_date_of_exposure: last_date_of_exposure&.strftime('%F') || '',
       potential_exposure_location: potential_exposure_location || '',
       potential_exposure_country: potential_exposure_country || '',
-      contact_of_known_case: contact_of_known_case || '',
+      contact_of_known_case: contact_of_known_case || false,
       contact_of_known_case_id: contact_of_known_case_id || '',
       travel_to_affected_country_or_area: travel_to_affected_country_or_area || false,
       was_in_health_care_facility_with_known_cases: was_in_health_care_facility_with_known_cases || false,
@@ -143,7 +143,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       exposure_risk_assessment: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
       exposure_notes: exposure_notes || '',
-      status: '',
+      full_status: '',
       symptom_onset: symptom_onset&.strftime('%F') || '',
       case_status: case_status || '',
       lab_1_type: labs[0] ? (labs[0].lab_type || '') : '',

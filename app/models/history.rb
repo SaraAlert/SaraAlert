@@ -19,6 +19,8 @@ class History < ApplicationRecord
     report_note: 'Report Note',
     lab_result: 'Lab Result',
     lab_result_edit: 'Lab Result Edit',
+    close_contact: 'Close Contact',
+    close_contact_edit: 'Close Contact Edit',
     contact_attempt: 'Contact Attempt',
     welcome_message_sent: 'Welcome Message Sent',
     record_automatically_closed: 'Record Automatically Closed'
@@ -42,6 +44,8 @@ class History < ApplicationRecord
     case time_frame
     when 'Last 24 Hours'
       where('histories.created_at >= ?', 24.hours.ago)
+    when 'Last 7 Days'
+      where('histories.created_at >= ? AND histories.created_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('histories.created_at >= ? AND histories.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'
@@ -93,6 +97,14 @@ class History < ApplicationRecord
 
   def self.lab_result_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a lab result.')
     create_history(patient, created_by, HISTORY_TYPES[:lab_result_edit], comment)
+  end
+
+  def self.close_contact(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new close contact.')
+    create_history(patient, created_by, HISTORY_TYPES[:close_contact], comment)
+  end
+
+  def self.close_contact_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a close contact.')
+    create_history(patient, created_by, HISTORY_TYPES[:close_contact_edit], comment)
   end
 
   def self.contact_attempt(patient: nil, created_by: 'Sara Alert System', comment: 'The system attempted to make contact with the monitoree.')
@@ -283,6 +295,21 @@ class History < ApplicationRecord
       history_created_at: created_at || '',
       history_updated_at: updated_at || ''
     }
+  end
+
+  def custom_details(fields, patient_identifiers)
+    history_details = {}
+    history_details[:id] = id || '' if fields.include?(:id)
+    history_details[:patient_id] = patient_id || '' if fields.include?(:patient_id)
+    history_details[:user_defined_id_statelocal] = patient_identifiers[:user_defined_id_statelocal]
+    history_details[:user_defined_id_cdc] = patient_identifiers[:user_defined_id_cdc]
+    history_details[:user_defined_id_nndss] = patient_identifiers[:user_defined_id_nndss]
+    history_details[:created_by] = created_by || '' if fields.include?(:created_by)
+    history_details[:history_type] = history_type || '' if fields.include?(:history_type)
+    history_details[:comment] = comment || '' if fields.include?(:comment)
+    history_details[:created_at] = created_at || '' if fields.include?(:created_at)
+    history_details[:updated_at] = updated_at || '' if fields.include?(:updated_at)
+    history_details
   end
 
   private_class_method def self.create_history(patient, created_by, type, comment)
