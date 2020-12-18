@@ -262,7 +262,7 @@ The applications should be running on port 443 with Nginx proxying traffic betwe
 
 ## API
 
-See [API documentation](API.md) for more information.
+See [API documentation](https://saraalert.github.io/SaraAlert/api/) for more information.
 
 ## Testing
 
