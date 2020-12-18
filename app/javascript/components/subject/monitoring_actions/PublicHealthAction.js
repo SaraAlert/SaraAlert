@@ -128,7 +128,7 @@ class PublicHealthAction extends React.Component {
           )}
           <Form.Group>
             <Form.Label>Please include any additional details:</Form.Label>
-            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleReasoningChange} />
+            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleReasoningChange} aria-label="Additional Details Text Area" />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>

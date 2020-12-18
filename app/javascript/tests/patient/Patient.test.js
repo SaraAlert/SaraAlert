@@ -52,7 +52,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#identification');
-        expect(section.find('h4').text()).toEqual('IDENTIFICATION');
+        expect(section.find('.h4').text()).toEqual('IDENTIFICATION');
         expect(section.find(Button).length).toEqual(0);
         identificationFields.forEach(function(field, index) {
             expect(section.find('b').at(index+1).text()).toEqual(field+':');
@@ -63,7 +63,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#contact-information');
-        expect(section.find('h4').text()).toEqual('CONTACT INFORMATION');
+        expect(section.find('.h4').text()).toEqual('CONTACT INFORMATION');
         expect(section.find(Button).length).toEqual(0);
         contactFields.forEach(function(field, index) {
             expect(section.find('b').at(index+1).text()).toEqual(field+':');
@@ -74,7 +74,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#address');
-        expect(section.find('h4').text()).toEqual('ADDRESS');
+        expect(section.find('.h4').text()).toEqual('ADDRESS');
         expect(section.find(Button).length).toEqual(0);
 
         const detailRow = section.find(Row).at(1);
@@ -88,7 +88,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient4} dependents={[ ]} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#address');
-        expect(section.find('h4').text()).toEqual('ADDRESS');
+        expect(section.find('.h4').text()).toEqual('ADDRESS');
         expect(section.find(Button).length).toEqual(0);
 
         const detailRow = section.find(Row).at(1);
@@ -102,7 +102,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#arrival-information');
-        expect(section.find('h4').text()).toEqual('ARRIVAL INFORMATION');
+        expect(section.find('.h4').text()).toEqual('ARRIVAL INFORMATION');
         expect(section.find(Button).length).toEqual(0);
 
         const departedColumn = section.find('.departed-col');
@@ -133,7 +133,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#planned-travel');
-        expect(section.find('h4').text()).toEqual('PLANNED TRAVEL');
+        expect(section.find('.h4').text()).toEqual('PLANNED TRAVEL');
         expect(section.find(Button).length).toEqual(0);
         additionalTravelFields.forEach(function(field, index) {
             expect(section.find('b').at(index+1).text()).toEqual(field+':');
@@ -153,7 +153,7 @@ describe('Patient', () => {
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#potential-exposure-information');
 
-        expect(section.find('h4').text()).toEqual('POTENTIAL EXPOSURE INFORMATION');
+        expect(section.find('.h4').text()).toEqual('POTENTIAL EXPOSURE INFORMATION');
         expect(section.find(Button).length).toEqual(0);
         expect(section.find(Row).at(1).find('b').at(0).text()).toEqual('Last Date of Exposure:');
         expect(section.find(Row).at(1).find('span').at(0).text()).toEqual(dateFormatter(mockPatient2.last_date_of_exposure));
@@ -169,7 +169,7 @@ describe('Patient', () => {
     it('Properly renders notes section', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
-        expect(wrapper.find('#monitoree-notes').find('h4').text()).toEqual('NOTES');
+        expect(wrapper.find('#monitoree-notes').find('.h4').text()).toEqual('NOTES');
         expect(wrapper.find('#monitoree-notes').find(Button).exists()).toBeFalsy();
         expect(wrapper.find('#monitoree-notes').find(Row).at(1).find('span').text()).toEqual(mockPatient1.exposure_notes);
     });
@@ -204,7 +204,7 @@ describe('Patient', () => {
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#case-information');
 
-        expect(section.find('h4').text()).toEqual('CASE INFORMATION');
+        expect(section.find('.h4').text()).toEqual('CASE INFORMATION');
         expect(section.find(Button).length).toEqual(0);
         expect(section.find(Row).at(1).find('b').at(0).text()).toEqual('Symptom Onset:');
         expect(section.find(Row).at(1).find('span').at(0).text().includes(dateFormatter(mockPatient1.symptom_onset))).toBeTruthy();

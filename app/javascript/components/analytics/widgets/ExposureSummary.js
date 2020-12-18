@@ -83,7 +83,7 @@ class ExposureSummary extends React.Component {
         {this.barGraphData.map((graphData, i) => (
           <Col xl="12" key={i}>
             <div className="mx-2 mt-3 analytics-chart-borders">
-              <h4 className="text-center">{graphData.title}</h4>
+              <div className="text-center h4">{graphData.title}</div>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart
                   width={500}
@@ -116,7 +116,7 @@ class ExposureSummary extends React.Component {
       <Card.Body className="mt-4">
         <Row>
           <Col md="12">
-            <h4 className="text-left mt-3 mb-n1"> Risk Factors </h4>
+            <div className="text-left mt-3 mb-n1 h4"> Risk Factors </div>
             <table className="analytics-table">
               <thead>
                 <tr>
@@ -143,7 +143,7 @@ class ExposureSummary extends React.Component {
             </table>
           </Col>
           <Col md="12">
-            <h4 className="text-left mt-3 mb-n1"> Country of Exposure </h4>
+            <div className="text-left mt-3 mb-n1 h4"> Country of Exposure </div>
             <table className="analytics-table">
               <thead>
                 <tr>

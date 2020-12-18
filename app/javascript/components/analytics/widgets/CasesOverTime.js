@@ -13,7 +13,7 @@ class ReportingSummary extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square">
-          <Card.Header as="h5">Total Assessments Over Time</Card.Header>
+          <Card.Header className="h5">Total Assessments Over Time</Card.Header>
           <Card.Body>
             <div style={{ width: '100%', height: '286px' }} className="recharts-wrapper">
               <ResponsiveContainer>

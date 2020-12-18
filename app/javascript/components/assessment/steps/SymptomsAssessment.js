@@ -67,6 +67,7 @@ class SymptomsAssessment extends React.Component {
         type="checkbox"
         checked={noSymptomsChecked}
         disabled={boolSymptomsSelected}
+        aria-label="No Symptoms check"
         label={
           <div>
             <b>{this.props.translations[this.props.lang]['symptoms']['no-symptoms']}</b>
@@ -89,6 +90,7 @@ class SymptomsAssessment extends React.Component {
         key={`key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
         checked={symp.value}
         disabled={noSymptomsChecked}
+        aria-label={`${symp.name} Symptom Check`}
         label={
           <div>
             <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b>{' '}
@@ -128,7 +130,7 @@ class SymptomsAssessment extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-0 card-square">
-          <Card.Header as="h4">
+          <Card.Header className="h4">
             {this.props.translations[this.props.lang]['web']['title']}&nbsp;
             {this.props.patient_initials && this.props.patient_age !== null && (
               <span>

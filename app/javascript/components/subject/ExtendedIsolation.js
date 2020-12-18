@@ -135,7 +135,13 @@ class ExtendedIsolation extends React.Component {
               </Form.Group>
               <p>Please include any additional details:</p>
               <Form.Group>
-                <Form.Control as="textarea" rows="2" id="reasoning" onChange={event => this.setState({ reasoning: event.target.value })} />
+                <Form.Control
+                  as="textarea"
+                  rows="2"
+                  id="reasoning"
+                  onChange={event => this.setState({ reasoning: event.target.value })}
+                  aria-label="Additional Details Text Area"
+                />
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>

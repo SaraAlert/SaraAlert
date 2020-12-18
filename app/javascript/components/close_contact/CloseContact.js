@@ -92,12 +92,13 @@ class CloseContact extends React.Component {
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
+          <h1 className="sr-only">{title}</h1>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Row>
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="first_name">
                 <Form.Label className="nav-input-label">First Name</Form.Label>
                 <Form.Control size="lg" id="first_name" className="form-square" value={this.state.first_name || ''} onChange={this.handleChange} />
                 <Form.Control.Feedback className="d-block" type="invalid">
@@ -106,7 +107,7 @@ class CloseContact extends React.Component {
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="last_name">
                 <Form.Label className="nav-input-label">Last Name</Form.Label>
                 <Form.Control size="lg" id="last_name" className="form-square" value={this.state.last_name || ''} onChange={this.handleChange} />
                 <Form.Control.Feedback className="d-block" type="invalid">
@@ -115,7 +116,7 @@ class CloseContact extends React.Component {
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="primary_telephone">
                 <Form.Label className="nav-input-label">Phone Number</Form.Label>
                 <PhoneInput
                   id="primary_telephone"
@@ -130,7 +131,7 @@ class CloseContact extends React.Component {
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="email">
                 <Form.Label className="nav-input-label">Email</Form.Label>
                 <Form.Control size="lg" id="email" className="form-square" value={this.state.email || ''} onChange={this.handleChange} />
                 <Form.Control.Feedback className="d-block" type="invalid">
@@ -139,10 +140,11 @@ class CloseContact extends React.Component {
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="notes">
                 <Form.Label className="nav-input-label">Notes</Form.Label>
                 <Form.Control
                   as="textarea"
+                  aria-label="Notes Text Area"
                   rows="5"
                   id="notes"
                   className="form-square"

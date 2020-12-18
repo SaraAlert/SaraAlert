@@ -262,6 +262,7 @@ class Exposure extends React.Component {
             <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
             <DateInput
               id="symptom_onset"
+              aria-label="Symptom Onset Date"
               date={this.state.current.patient.symptom_onset}
               minDate={'2020-01-01'}
               maxDate={moment()
@@ -283,6 +284,7 @@ class Exposure extends React.Component {
               as="select"
               size="lg"
               className="form-square"
+              aria-label="Case Status Select"
               onChange={this.handleChange}
               value={this.state.current.patient.case_status || ''}>
               <option></option>
@@ -303,6 +305,7 @@ class Exposure extends React.Component {
               rows="4"
               size="lg"
               className="form-square"
+              aria-label="Additional Info on Case"
               placeholder="enter additional information about case"
               maxLength="2000"
               value={this.state.current.patient.exposure_notes || ''}
@@ -329,6 +332,7 @@ class Exposure extends React.Component {
             </Form.Label>
             <DateInput
               id="last_date_of_exposure"
+              aria-label="Last Date of Exposure"
               date={this.state.current.patient.last_date_of_exposure}
               minDate={'2020-01-01'}
               maxDate={moment()
@@ -364,6 +368,7 @@ class Exposure extends React.Component {
               as="select"
               size="lg"
               className="form-square"
+              aria-label="Potential Exposure Country Select"
               value={this.state.current.patient.potential_exposure_country || ''}
               onChange={this.handleChange}>
               <option></option>
@@ -408,6 +413,7 @@ class Exposure extends React.Component {
               placeholder="enter case ID"
               value={this.state.current.patient.contact_of_known_case_id || ''}
               onChange={this.handleChange}
+              aria-label="Enter Case Id"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['contact_of_known_case_id']}
@@ -445,6 +451,7 @@ class Exposure extends React.Component {
               placeholder="enter facility name"
               value={this.state.current.patient.was_in_health_care_facility_with_known_cases_facility_name || ''}
               onChange={this.handleChange}
+              aria-label="Enter Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['was_in_health_care_facility_with_known_cases_facility_name']}
@@ -470,6 +477,7 @@ class Exposure extends React.Component {
               placeholder="enter facility name"
               value={this.state.current.patient.laboratory_personnel_facility_name || ''}
               onChange={this.handleChange}
+              aria-label="Enter Laboratory Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['laboratory_personnel_facility_name']}
@@ -495,6 +503,7 @@ class Exposure extends React.Component {
               placeholder="enter facility name"
               value={this.state.current.patient.healthcare_personnel_facility_name || ''}
               onChange={this.handleChange}
+              aria-label="Enter Healthcare Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['healthcare_personnel_facility_name']}
@@ -532,6 +541,7 @@ class Exposure extends React.Component {
               placeholder="enter description"
               value={this.state.current.patient.member_of_a_common_exposure_cohort_type || ''}
               onChange={this.handleChange}
+              aria-label="Enter Cohort Description"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['member_of_a_common_exposure_cohort_type']}
@@ -544,6 +554,7 @@ class Exposure extends React.Component {
             <Form.Control
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
+              aria-label="Notes Text Area"
               rows="4"
               size="lg"
               className="form-square"
@@ -565,9 +576,11 @@ class Exposure extends React.Component {
   render() {
     return (
       <React.Fragment>
+        {!this.props.currentState.isolation && <h1 className="sr-only">Monitoree Potential Exposure Information</h1>}
+        {this.props.currentState.isolation && <h1 className="sr-only">Monitoree Case Information</h1>}
         <Card className="mx-2 card-square">
-          {!this.props.currentState.isolation && <Card.Header as="h5">Monitoree Potential Exposure Information</Card.Header>}
-          {this.props.currentState.isolation && <Card.Header as="h5">Monitoree Case Information</Card.Header>}
+          {!this.props.currentState.isolation && <Card.Header className="h2">Monitoree Potential Exposure Information</Card.Header>}
+          {this.props.currentState.isolation && <Card.Header className="h2">Monitoree Case Information</Card.Header>}
           <Card.Body>
             <Form>
               <Form.Row className="pb-3 h-100">

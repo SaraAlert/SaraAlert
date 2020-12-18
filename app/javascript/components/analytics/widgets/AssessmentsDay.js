@@ -13,7 +13,7 @@ class AssessmentsDay extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square">
-          <Card.Header as="h5">Report Type Over Time</Card.Header>
+          <Card.Header className="h5">Report Type Over Time</Card.Header>
           <Card.Body>
             <div style={{ width: '100%', height: '300px' }} className="recharts-wrapper">
               <ResponsiveContainer>
