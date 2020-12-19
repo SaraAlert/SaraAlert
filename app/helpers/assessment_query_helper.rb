@@ -21,7 +21,6 @@ module AssessmentQueryHelper
     # Satisfy brakeman with additional sanitation logic
     dir = direction == 'asc' ? 'asc' : 'desc'
 
-    # TODO: order assessments by their value for each symptom
     case order
     when 'id'
       assessments = assessments.order(id: dir)
@@ -31,6 +30,30 @@ module AssessmentQueryHelper
       assessments = assessments.order(who_reported: dir)
     when 'created_at'
       assessments = assessments.order(created_at: dir)
+    else
+      # Verify this is a sort request for a symptom column.
+      symptom_columns = Assessment.get_symptom_names_for_assessments(assessments.pluck(:id))
+      return assessments unless symptom_columns.include?(order)
+
+      # Find assessment IDs based on the value of the symptom in the specified column
+      ordered_values = assessments.map do |a|
+        symptom = a.get_reported_symptom_by_name(order)
+        # This check makes BoolSymptoms have a value of 1 or 0 rather than true/false so they can be compared
+        value = symptom&.bool_value.nil? ? symptom&.value : (symptom&.value ? 1 : 0)
+        { id: a.id, val: value }
+      end
+
+      # This sort makes it so nil values are considered the smallest (and always at the bottom in descending order)
+      ordered_values = ordered_values.sort { |a, b| a[:val] && b[:val] ? a[:val] <=> b[:val] : a[:val] ? 1 : -1 }
+
+      # Reverse if in descending order
+      ordered_values = ordered_values.reverse if dir == 'desc'
+
+      # Collect just the assessment IDs
+      ordered_assessment_ids = ordered_values.collect { |res| res[:id] }
+
+      # Find the assessment records based on the order of the IDs that were sorted above
+      assessments = assessments.order_as_specified(id: ordered_assessment_ids)
     end
     assessments
   end

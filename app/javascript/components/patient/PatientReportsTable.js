@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, DropdownButton, Button, Row, Col, Dropdown, InputGroup, OverlayTrigger, Form, Tooltip } from 'react-bootstrap';
+import { Card, Button, Row, Col, Dropdown, InputGroup, OverlayTrigger, Form, Tooltip } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import CustomTable from '../layout/CustomTable';
 import reportError from '../util/ReportError';
@@ -66,7 +66,10 @@ class PatientReportsTable extends React.Component {
   };
 
   populateSymptomCols = () => {
-    for (const symptom of this.props.symptoms) {
+    const sorted_symptoms = this.props.symptoms.sort((a, b) => {
+      return a?.name?.localeCompare(b?.name);
+    });
+    for (const symptom of sorted_symptoms) {
       const symptom_col = { label: symptom.label, field: symptom.name, isSortable: true, filter: this.filterSymptomCell };
       this.setState(state => {
         const updated_table_data = { ...state.table };
@@ -247,24 +250,26 @@ class PatientReportsTable extends React.Component {
   createActionsButton = data => {
     const rowIndex = data.rowIndex;
     const rowData = data.rowData;
+    // Set the direction to be "up" when there are not enough rows in the table to have space for the dropdown.
+    // The table custom class handles the rest.
+    // NOTE: If this dropdown increases in height, the custom table class passed CustomTable will need to be updated.
+    const direction = this.state.table.rowData && this.state.table.rowData.length > 2 ? null : 'up';
     return (
-      <DropdownButton
-        size="sm"
-        variant="primary"
-        title={
-          <React.Fragment>
-            <i className="fas fa-cogs fw"></i>
-          </React.Fragment>
-        }>
-        <Dropdown.Item className="px-4 hi" onClick={() => this.handleEditReportClick(rowIndex)}>
-          <i className="fas fa-edit fa-fw"></i>
-          <span className="ml-2">Edit</span>
-        </Dropdown.Item>
-        <AddReportNote assessment={rowData} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
-        {!this.props.patient.isolation && (
-          <ClearSingleReport assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
-        )}
-      </DropdownButton>
+      <Dropdown drop={direction}>
+        <Dropdown.Toggle id={`report-action-button-${rowData.id}`} size="sm" variant="primary">
+          <i className="fas fa-cogs fw"></i>
+        </Dropdown.Toggle>
+        <Dropdown.Menu className="test-class" drop={'up'}>
+          <Dropdown.Item className="px-4 hi" onClick={() => this.handleEditReportClick(rowIndex)}>
+            <i className="fas fa-edit fa-fw"></i>
+            <span className="ml-2">Edit</span>
+          </Dropdown.Item>
+          <AddReportNote assessment={rowData} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+          {!this.props.patient.isolation && (
+            <ClearSingleReport assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+          )}
+        </Dropdown.Menu>
+      </Dropdown>
     );
   };
 
@@ -300,7 +305,7 @@ class PatientReportsTable extends React.Component {
                         </InputGroup.Text>
                       </OverlayTrigger>
                     </InputGroup.Prepend>
-                    <Form.Control id="search-input" autoComplete="off" size="md" name="search" onChange={this.handleSearchChange} />
+                    <Form.Control id="reports-search-input" autoComplete="off" size="md" name="search" onChange={this.handleSearchChange} />
                   </InputGroup>
                 </Col>
               </Row>
@@ -317,6 +322,7 @@ class PatientReportsTable extends React.Component {
                   entryOptions={this.state.entryOptions}
                   entries={this.state.query.entries}
                   getRowClassName={this.getRowClassName}
+                  getCustomTableClassName={() => 'reports-table'}
                 />
               </div>
             </div>

@@ -272,3 +272,10 @@ select.form-control {
   word-break: break-all;
 }
 
+// This is we deal with slight vertical overflow from a dropdown in a table that needs to be horizontal scrollable.
+// See this for the core issue: https://stackoverflow.com/a/6433475
+.reports-table{
+  padding-top: 80px;
+  margin-top: -80px;
+}
+
