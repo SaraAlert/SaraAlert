@@ -156,7 +156,6 @@ class AssessmentsController < ApplicationController
         # Create history if assessment was created by user
         History.report_created(patient: patient, created_by: current_user.email, comment: "User created a new report (ID: #{@assessment.id}).") if current_user
       end
-      redirect_to(patient_assessments_url)
     end
   end
 
@@ -197,7 +196,6 @@ class AssessmentsController < ApplicationController
     comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
     comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
     History.report_updated(patient: patient, created_by: current_user.email, comment: comment)
-    redirect_to(patient_assessments_url) && return
   end
 
   # For report mode instances, this is the default landing
