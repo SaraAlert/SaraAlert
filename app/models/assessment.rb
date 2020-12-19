@@ -2,6 +2,8 @@
 
 # Assessment: assessment model
 class Assessment < ApplicationRecord
+  extend OrderAsSpecified
+
   columns.each do |column|
     case column.type
     when :text
