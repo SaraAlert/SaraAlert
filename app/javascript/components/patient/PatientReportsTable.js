@@ -40,7 +40,6 @@ class PatientReportsTable extends React.Component {
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
       editRow: null,
-      actionsEnabled: false,
       showReportModal: false,
     };
   }
@@ -333,12 +332,14 @@ class PatientReportsTable extends React.Component {
           <ReportModal
             show={this.state.showAddReportModal}
             onClose={this.handleAddReportModalClose}
+            assessment={{}}
             current_user={this.props.current_user}
             symptoms={this.props.symptoms}
             patient={this.props.patient}
             authenticity_token={this.props.authenticity_token}
             translations={this.props.translations}
             calculated_age={this.props.calculated_age}
+            idPre={'new'}
             mode="create"
           />
         )}
@@ -346,15 +347,16 @@ class PatientReportsTable extends React.Component {
           <ReportModal
             show={this.state.showEditReportModal}
             onClose={this.handleEditReportModalClose}
-            current_user={this.props.current_user}
             assessment={this.state.table.rowData[this.state.editRow]}
+            current_user={this.props.current_user}
             threshold_condition_hash={this.state.table.rowData[this.state.editRow].threshold_condition_hash}
             symptoms={this.state.table.rowData[this.state.editRow].symptoms}
             patient={this.props.patient}
             authenticity_token={this.props.authenticity_token}
             translations={this.props.translations}
             calculated_age={this.props.calculated_age}
-            mode="edit"
+            updateId={this.state.table.rowData[this.state.editRow].id}
+            idPre={this.state.table.rowData[this.state.editRow].id.toString()}
           />
         )}
       </React.Fragment>

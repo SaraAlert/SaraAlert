@@ -15,16 +15,17 @@ class ReportModal extends React.Component {
         <Modal.Body>
           <Assessment
             current_user={this.props.current_user}
-            assessment={this.props.mode === 'edit' ? this.props.assessment : {}}
+            assessment={this.props.assessment}
             threshold_hash={this.props.threshold_condition_hash}
             symptoms={this.props.symptoms}
-            idPre={this.props.mode === 'edit' ? this.props.assessment.id.toString() : 'new'}
+            idPre={this.props.idPre}
             patient_submission_token={this.props.patient.submission_token}
             patient_initials={this.props.patient.initials}
             patient_age={this.props.calculated_age}
             authenticity_token={this.props.authenticity_token}
             reload={true}
             patient_id={this.props.patient.id}
+            updateId={this.props.updateId}
             translations={this.props.translations}
             lang={'en'}
           />
@@ -41,11 +42,12 @@ ReportModal.propTypes = {
   assessment: PropTypes.object,
   threshold_hash: PropTypes.string,
   symptoms: PropTypes.array,
-  mode: PropTypes.string,
   translations: PropTypes.object,
   patient: PropTypes.object,
   calculated_age: PropTypes.number,
   threshold_condition_hash: PropTypes.string,
+  updateId: PropTypes.number,
+  idPre: PropTypes.string,
   authenticity_token: PropTypes.string,
 };
 
