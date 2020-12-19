@@ -45,30 +45,23 @@ class PatientReportsTable extends React.Component {
   }
 
   componentDidMount() {
+    // Populate the remaining column data with the symptom data
     this.populateSymptomCols();
+
+    // Fetch initial table data
     this.updateTable(this.state.query);
   }
 
   /**
-   * Handles change of input in the search bar. Updates table based on input.
-   * @param {SyntheticEvent} event - Event when the search input changes
+   * Populates the state with the symptom column data passed by props.
    */
-  handleSearchChange = event => {
-    const value = event.target.value;
-    this.setState(
-      state => {
-        return { query: { ...state.query, search: value } };
-      },
-      () => {
-        this.updateTable(this.state.query);
-      }
-    );
-  };
-
   populateSymptomCols = () => {
+    // Sort alphabetically
     const sorted_symptoms = this.props.symptoms.sort((a, b) => {
       return a?.name?.localeCompare(b?.name);
     });
+
+    // Create column for each symptom that has a special filter
     for (const symptom of sorted_symptoms) {
       const symptom_col = { label: symptom.label, field: symptom.name, isSortable: true, filter: this.filterSymptomCell };
       this.setState(state => {
@@ -81,6 +74,11 @@ class PatientReportsTable extends React.Component {
     }
   };
 
+  /**
+   * Updates the content of a given cell in the table based on the row/col data.
+   * Specifically, if a given value passes a symptom threshold - it highlights the text red.
+   * @param {Object} data - Data about the cell this filter is called on.
+   */
   filterSymptomCell = data => {
     const rowData = data.rowData;
     const symptomName = data.colData.field;
@@ -106,7 +104,8 @@ class PatientReportsTable extends React.Component {
   };
 
   /**
-   * Returns updated table data via an axios POST request.
+   * Returns updated table data via an axios GET request.
+   * Debounces the query to avoid too many querys at once when someone is typing in the search bar, for example.
    */
   queryServer = _.debounce(query => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -146,16 +145,6 @@ class PatientReportsTable extends React.Component {
   }, 500);
 
   /**
-   * Formats values in the timestamp column to be human readable
-   * @param {Object} data - Data about the cell this filter is called on.
-   */
-  formatTimestamp(data) {
-    const timestamp = data.value;
-    const ts = moment.tz(timestamp, 'UTC');
-    return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
-  }
-
-  /**
    * Called when table is to be updated because of a sorting change.
    * @param {Object} query - Updated query for table data after change.
    */
@@ -164,6 +153,22 @@ class PatientReportsTable extends React.Component {
       state => ({
         query: { ...state.query, ...query },
       }),
+      () => {
+        this.updateTable(this.state.query);
+      }
+    );
+  };
+
+  /**
+   * Handles change of input in the search bar. Updates table based on input.
+   * @param {SyntheticEvent} event - Event when the search input changes
+   */
+  handleSearchChange = event => {
+    const value = event.target.value;
+    this.setState(
+      state => {
+        return { query: { ...state.query, search: value } };
+      },
       () => {
         this.updateTable(this.state.query);
       }
@@ -247,12 +252,26 @@ class PatientReportsTable extends React.Component {
     });
   };
 
+  /**
+   * Formats values in the timestamp column to be human readable
+   * @param {Object} data - Data about the cell this filter is called on.
+   */
+  formatTimestamp(data) {
+    const timestamp = data.value;
+    const ts = moment.tz(timestamp, 'UTC');
+    return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
+  }
+
+  /**
+   * Creates the action button & dropdown for each row in the table.
+   * @param {Object} data - Data about the cell this filter is called on.
+   */
   createActionsButton = data => {
     const rowIndex = data.rowIndex;
     const rowData = data.rowData;
     // Set the direction to be "up" when there are not enough rows in the table to have space for the dropdown.
     // The table custom class handles the rest.
-    // NOTE: If this dropdown increases in height, the custom table class passed CustomTable will need to be updated.
+    // NOTE: If this dropdown increases in height, the custom table class passed to CustomTable will need to be updated.
     const direction = this.state.table.rowData && this.state.table.rowData.length > 2 ? null : 'up';
     return (
       <Dropdown drop={direction}>
@@ -273,6 +292,11 @@ class PatientReportsTable extends React.Component {
     );
   };
 
+  /**
+   * Determines row classname. Row will be updated with a class that makes it red if the assessment
+   * is considered symptomatic.
+   * @param {Object} rowData - Assessment data.
+   */
   getRowClassName = rowData => {
     return rowData.symptomatic === 'Yes' ? 'table-danger' : '';
   };
