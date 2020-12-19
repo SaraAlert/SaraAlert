@@ -6,6 +6,7 @@ module AssessmentQueryHelper
     Assessment.where(patient_id: patient_ids).order(:patient_id)
   end
 
+  # Queries assessments by ID or reporter based on search text.
   def search(assessments, search)
     return assessments if search.blank?
 
@@ -14,6 +15,7 @@ module AssessmentQueryHelper
     )
   end
 
+  # Sorts assessments based on given column and direction.
   def sort(assessments, order, direction)
     # Order by created_at date by default
     return assessments.order(created_at: 'desc') if order.blank? || direction.blank?
@@ -58,12 +60,14 @@ module AssessmentQueryHelper
     assessments
   end
 
+  # Paginates assessments data.
   def paginate(assessments, entries, page)
     return assessments if entries.blank? || entries <= 0 || page.blank? || page.negative?
 
     assessments.paginate(per_page: entries, page: page + 1)
   end
 
+  # Formats assessments to be displayed on the frontend.
   def format(assessments)
     table_data = []
     columns = Assessment.get_symptom_names_for_assessments(assessments.pluck(:id))
@@ -80,9 +84,9 @@ module AssessmentQueryHelper
 
       passes_threshold_data = {}
       columns.each do |symptom_name|
-        reported_condition = assessment.get_reported_symptom_by_name(symptom_name)
-        value = reported_condition&.value
-        value = value == true ? 'Yes' : 'No' if reported_condition&.type == 'BoolSymptom'
+        symptom = assessment.get_reported_symptom_by_name(symptom_name)
+        value = symptom&.value
+        value = value == true ? 'Yes' : 'No' if symptom&.type == 'BoolSymptom'
         details[symptom_name] = value.blank? ? '' : value
         passes_threshold_data[symptom_name] = assessment.symptom_passes_threshold(symptom_name)
       end
