@@ -74,7 +74,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -239,7 +239,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"Yes\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -420,7 +420,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -473,7 +473,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -495,7 +495,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -517,7 +517,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -698,7 +698,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -720,7 +720,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -862,7 +862,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_voice\", \n\"experiencing_symptoms\":\"Yes\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -904,7 +904,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_voice\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1016,7 +1016,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1038,7 +1038,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1159,7 +1159,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1269,7 +1269,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"patient_submission_token\": \"{{flow.sid}}\", \"response_status\": \"opt_out\" }",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1381,7 +1381,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"patient_submission_token\": \"{{flow.sid}}\", \"response_status\": \"opt_in\" }",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1575,7 +1575,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"max_retries_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
@@ -1597,7 +1597,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"max_retries_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "https://demo.saraalert.org/report/twilio"
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
