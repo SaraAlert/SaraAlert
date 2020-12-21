@@ -227,17 +227,15 @@ The following environment variables need to be set on the enrollment instances, 
 
 **Container Dependencies**
 
-1. Create a directory for the deployment.
-2. Move both docker compose files and both environment variable files from the previous section into this folder.
-3. Within this deployment directory, create two subdirectories.
-* First, create `tls` and place your `.key` and `.crt` files for the webserver inside.
-* Name the files `puma.key` and `puma.crt`.
-* Ensure the `.crt` and `.key` files within the `tls` directory are at least `0x004` permissions so they can be read inside the container.
-* Second, create `/redis/conf` and place the `redis.conf` file from the root of this project in it.
-* Ensure the permissions are at least `0x660` so that Redis can write any additional configuration to the file if required for any additional configuration you may have put in that file. [source](https://hub.docker.com/_/redis/) (If you want to use your own redis.conf section)
-
-
-The Nginx configuration is also staged within the same directory. You will need to move the `nginx.conf` provided in the root of this repository into `~/tls/nginx.conf`.
+1. Create a directory for the deployment on the container host.
+2. Move both docker compose files and both environment variable files (from the Getting Started and Environment Variable Setup sections) into this folder.
+3. Within this deployment directory, create two subdirectories; the first called `tls` and the second called `redis/conf`.
+4. Place your `.key` and `.crt` files for the webserver inside.
+5. Rename the files to `puma.key` and `puma.crt`.
+6. Ensure the `.crt` and `.key` files within the `tls` directory are at least `0x004` permissions so they can be read inside the container.
+7. Move the `redis.conf` file from the root of this project in the `redis/conf` directory; customize the configuration as required but please note that this configuration is only for the application cache (i.e. `Rails.cache` methods) NOT for `ActiveJob`, mail queues, or other queues.
+8. Ensure the permissions are at least `0x600` so that the Redis container can write additional configuration to the file if required for any additional configuration you may have put in that file. [Source](https://hub.docker.com/_/redis/) (Found in the "If you want to use your own redis.conf" section).
+9. Move the `nginx.conf` provided in the root of this repository into `tls/nginx.conf`.
 
 **Deployment**
 
