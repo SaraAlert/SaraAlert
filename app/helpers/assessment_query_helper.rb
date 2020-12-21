@@ -86,8 +86,12 @@ module AssessmentQueryHelper
       symptoms.pluck(:name).each do |symptom_name|
         symptom = assessment.get_reported_symptom_by_name(symptom_name)
         value = symptom&.value
-        value = value == true ? 'Yes' : 'No' if symptom&.type == 'BoolSymptom'
-        details[symptom_name] = value.blank? ? '' : value
+        # NOTE: We must check if the value is nil here before making this change.
+        # Otherwise, text responses of "Yes" will show "No" in each row because the value for each symptom is still empty, for example.
+        if symptom&.type == 'BoolSymptom' && !value.nil?
+          value = value == true ? 'Yes' : 'No'
+        end
+        details[symptom_name] = value.nil? ? '' : value
         passes_threshold_data[symptom_name] = assessment.symptom_passes_threshold(symptom_name)
       end
       details[:passes_threshold_data] = passes_threshold_data
