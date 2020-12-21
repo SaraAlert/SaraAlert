@@ -74,7 +74,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -239,7 +239,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"Yes\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -420,7 +420,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -473,7 +473,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -495,7 +495,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -517,7 +517,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -698,7 +698,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -720,7 +720,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -847,7 +847,7 @@
       "type": "make-http-request",
       "transitions": [
         {
-          "next": "thank_you_voice_spanish",
+          "next": "thank_you_split_on_language",
           "event": "success"
         },
         {
@@ -856,13 +856,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 2460,
-          "y": 2220
+          "x": 2360,
+          "y": 2970
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_voice\", \n\"experiencing_symptoms\":\"Yes\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -876,8 +876,8 @@
       "properties": {
         "voice": "Polly.Conchita",
         "offset": {
-          "x": 2711,
-          "y": 2540
+          "x": 2650,
+          "y": 3840
         },
         "loop": 1,
         "say": "{{flow.data.thanks}}",
@@ -889,7 +889,7 @@
       "type": "make-http-request",
       "transitions": [
         {
-          "next": "thank_you_voice_spanish",
+          "next": "thank_you_split_on_language",
           "event": "success"
         },
         {
@@ -898,13 +898,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 2931,
-          "y": 2211
+          "x": 2810,
+          "y": 2970
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_voice\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -1016,7 +1016,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -1038,7 +1038,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -1159,7 +1159,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -1269,7 +1269,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"patient_submission_token\": \"{{flow.sid}}\", \"response_status\": \"opt_out\" }",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -1381,7 +1381,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"patient_submission_token\": \"{{flow.sid}}\", \"response_status\": \"opt_in\" }",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -1569,13 +1569,13 @@
       ],
       "properties": {
         "offset": {
-          "x": 2050,
+          "x": 2040,
           "y": 2240
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"max_retries_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -1597,7 +1597,7 @@
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"max_retries_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+        "url": "https://demo.saraalert.org/report/twilio"
       }
     },
     {
@@ -1743,6 +1743,103 @@
         "offset": {
           "x": 3260,
           "y": 1320
+        }
+      }
+    },
+    {
+      "name": "thank_you_voice_english",
+      "type": "say-play",
+      "transitions": [
+        {
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "voice": "Polly.Joanna",
+        "offset": {
+          "x": 2130,
+          "y": 3850
+        },
+        "loop": 1,
+        "say": "{{flow.data.thanks}}",
+        "language": "en-US"
+      }
+    },
+    {
+      "name": "thank_you_voice_french",
+      "type": "say-play",
+      "transitions": [
+        {
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "voice": "Polly.Chantal",
+        "offset": {
+          "x": 3110,
+          "y": 3820
+        },
+        "loop": 1,
+        "say": "{{flow.data.thanks}}",
+        "language": "fr-CA"
+      }
+    },
+    {
+      "name": "thank_you_split_on_language",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "thank_you_voice_english",
+          "event": "noMatch"
+        },
+        {
+          "next": "thank_you_voice_english",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to EN",
+              "arguments": [
+                "{{flow.data.language}}"
+              ],
+              "type": "equal_to",
+              "value": "EN"
+            }
+          ]
+        },
+        {
+          "next": "thank_you_voice_spanish",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to ES",
+              "arguments": [
+                "{{flow.data.language}}"
+              ],
+              "type": "equal_to",
+              "value": "ES"
+            }
+          ]
+        },
+        {
+          "next": "thank_you_voice_french",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to FR",
+              "arguments": [
+                "{{flow.data.language}}"
+              ],
+              "type": "equal_to",
+              "value": "FR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.data.language}}",
+        "offset": {
+          "x": 2460,
+          "y": 3240
         }
       }
     }
