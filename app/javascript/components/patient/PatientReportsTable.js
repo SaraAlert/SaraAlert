@@ -23,7 +23,9 @@ class PatientReportsTable extends React.Component {
         colData: [
           { label: 'Actions', field: '', isSortable: false, filter: this.createActionsButton },
           { label: 'ID', field: 'id', isSortable: true },
-          { label: 'Needs Review', field: 'symptomatic', isSortable: true },
+          // NOTE: This column is only shown in the Exposure workflow. There is a check when the table data
+          // is initially loaded that removes this column data if the Patient is in the Isolation workflow.
+          { label: 'Needs Review', field: 'symptomatic', isSortable: true, tooltip: 'exposureNeedsReviewColumn' },
           { label: 'Reporter', field: 'who_reported', isSortable: true },
           { label: 'Created At', field: 'created_at', isSortable: true, filter: this.formatTimestamp },
         ],
@@ -103,6 +105,10 @@ class PatientReportsTable extends React.Component {
             if (isInitialLoad) {
               const symptomColData = this.getSymptomCols(response.data.symptoms);
               updatedColData = state.table.colData.concat(symptomColData);
+              // Only show the Needs Review column if the patient is in the Exposure workflow
+              if (this.props.patient.isolation) {
+                delete updatedColData[2];
+              }
             }
             return {
               table: {
