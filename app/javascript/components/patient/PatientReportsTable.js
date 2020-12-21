@@ -383,6 +383,7 @@ class PatientReportsTable extends React.Component {
             threshold_condition_hash={this.props.threshold_condition_hash}
             symptoms={this.props.symptoms}
             patient={this.props.patient}
+            patient_initials={this.props.patient_initials}
             authenticity_token={this.props.authenticity_token}
             translations={this.props.translations}
             calculated_age={this.props.calculated_age}
@@ -398,6 +399,7 @@ class PatientReportsTable extends React.Component {
             threshold_condition_hash={this.state.table.rowData[this.state.editRow].threshold_condition_hash}
             symptoms={this.state.table.rowData[this.state.editRow].symptoms}
             patient={this.props.patient}
+            patient_initials={this.props.patient_initials}
             authenticity_token={this.props.authenticity_token}
             translations={this.props.translations}
             calculated_age={this.props.calculated_age}
@@ -418,6 +420,7 @@ PatientReportsTable.propTypes = {
   report_eligibility: PropTypes.object,
   patient_status: PropTypes.string,
   calculated_age: PropTypes.number,
+  patient_initials: PropTypes.string,
   monitoring_period_days: PropTypes.number,
   current_user: PropTypes.object,
   translations: PropTypes.object,

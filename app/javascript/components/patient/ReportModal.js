@@ -20,7 +20,7 @@ class ReportModal extends React.Component {
             symptoms={this.props.symptoms}
             idPre={this.props.idPre}
             patient_submission_token={this.props.patient.submission_token}
-            patient_initials={this.props.patient.initials}
+            patient_initials={this.props.patient_initials}
             patient_age={this.props.calculated_age}
             authenticity_token={this.props.authenticity_token}
             reload={true}
@@ -44,6 +44,7 @@ ReportModal.propTypes = {
   translations: PropTypes.object,
   patient: PropTypes.object,
   calculated_age: PropTypes.number,
+  patient_initials: PropTypes.string,
   threshold_condition_hash: PropTypes.string,
   updateId: PropTypes.number,
   idPre: PropTypes.string,
