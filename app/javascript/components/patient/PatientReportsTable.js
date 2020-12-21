@@ -45,53 +45,16 @@ class PatientReportsTable extends React.Component {
   }
 
   componentDidMount() {
-    // Populate the remaining column data with the symptom data
-    this.populateSymptomCols();
-
     // Fetch initial table data
-    this.updateTable(this.state.query);
+    this.updateTable(this.state.query, true);
   }
-
-  /**
-   * Populates the state with the symptom column data passed by props.
-   */
-  populateSymptomCols = () => {
-    // Sort alphabetically
-    const sorted_symptoms = this.props.symptoms.sort((a, b) => {
-      return a?.name?.localeCompare(b?.name);
-    });
-
-    // Create column for each symptom that has a special filter
-    for (const symptom of sorted_symptoms) {
-      const symptom_col = { label: symptom.label, field: symptom.name, isSortable: true, filter: this.filterSymptomCell };
-      this.setState(state => {
-        const updated_table_data = { ...state.table };
-        updated_table_data.colData.push(symptom_col);
-        return {
-          table: updated_table_data,
-        };
-      });
-    }
-  };
-
-  /**
-   * Updates the content of a given cell in the table based on the row/col data.
-   * Specifically, if a given value passes a symptom threshold - it highlights the text red.
-   * @param {Object} data - Data about the cell this filter is called on.
-   */
-  filterSymptomCell = data => {
-    const rowData = data.rowData;
-    const symptomName = data.colData.field;
-    const passesThreshold = rowData.passes_threshold_data[symptomName.toString()];
-    const className = passesThreshold ? 'concern' : '';
-    return <span className={className}>{data.value}</span>;
-  };
 
   /**
    * Called when table data is to be updated because of some change to the table setting.
    * @param {Object} query - Updated query for table data after change.
+   * @param {Boolean} isInitialLoad - Flag for if it's the initial load on component mount.
    */
-  updateTable = query => {
+  updateTable = (query, isInitialLoad = false) => {
     // cancel any previous unfinished requests to prevent race condition inconsistencies
     this.state.cancelToken.cancel();
 
@@ -99,15 +62,17 @@ class PatientReportsTable extends React.Component {
     const cancelToken = axios.CancelToken.source();
 
     this.setState({ query, cancelToken, isLoading: true }, () => {
-      this.queryServer(query);
+      this.queryServer(query, isInitialLoad);
     });
   };
 
   /**
    * Returns updated table data via an axios GET request.
    * Debounces the query to avoid too many querys at once when someone is typing in the search bar, for example.
+   * @param {Object} query - Updated query for table data after change.
+   * @param {Boolean} isInitialLoad - Flag for if it's the initial load on component mount. Used to determine if colData needs to be updated.
    */
-  queryServer = _.debounce(query => {
+  queryServer = _.debounce((query, isInitialLoad = false) => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .get('/patients/' + this.props.patient.submission_token + '/assessments', {
@@ -133,8 +98,19 @@ class PatientReportsTable extends React.Component {
       .then(response => {
         if (response && response.data && response.data) {
           this.setState(state => {
+            let updatedColData = state.table.colData;
+            // If first load, populate symptom columns in the table.
+            if (isInitialLoad) {
+              const symptomColData = this.getSymptomCols(response.data.symptoms);
+              updatedColData = state.table.colData.concat(symptomColData);
+            }
             return {
-              table: { ...state.table, rowData: response.data.table_data, totalRows: response.data.total },
+              table: {
+                ...state.table,
+                colData: updatedColData,
+                rowData: response.data.table_data,
+                totalRows: response.data.total,
+              },
               isLoading: false,
             };
           });
@@ -143,6 +119,40 @@ class PatientReportsTable extends React.Component {
         }
       });
   }, 500);
+
+  /**
+   * Generates column data for symptoms.
+   * NOTE: These are the aggregate symptoms from all assessments in the table, to ensure no
+   * data loss if patient has been transferred between jurisdictions with different symptom
+   * configurations.
+   */
+  getSymptomCols = symptoms => {
+    // Sort alphabetically
+    const sortedSymptoms = symptoms.sort((a, b) => {
+      return a?.name?.localeCompare(b?.name);
+    });
+
+    // Create column data for each symptom
+    let symptomColData = [];
+    for (const symptom of sortedSymptoms) {
+      symptomColData.push({ label: symptom?.label, field: symptom?.name, isSortable: true, filter: this.filterSymptomCell });
+    }
+
+    return symptomColData;
+  };
+
+  /**
+   * Updates the content of a given cell in the table based on the row/col data.
+   * Specifically, if a given value passes a symptom threshold - it highlights the text red.
+   * @param {Object} data - Data about the cell this filter is called on.
+   */
+  filterSymptomCell = data => {
+    const rowData = data.rowData;
+    const symptomName = data.colData.field;
+    const passesThreshold = rowData.passes_threshold_data[symptomName.toString()];
+    const className = passesThreshold ? 'concern' : '';
+    return <span className={className}>{data.value}</span>;
+  };
 
   /**
    * Called when table is to be updated because of a sorting change.
@@ -364,13 +374,13 @@ class PatientReportsTable extends React.Component {
             onClose={this.handleAddReportModalClose}
             assessment={{}}
             current_user={this.props.current_user}
+            threshold_condition_hash={this.props.threshold_condition_hash}
             symptoms={this.props.symptoms}
             patient={this.props.patient}
             authenticity_token={this.props.authenticity_token}
             translations={this.props.translations}
             calculated_age={this.props.calculated_age}
             idPre={'new'}
-            mode="create"
           />
         )}
         {this.state.showEditReportModal && (
@@ -397,6 +407,7 @@ class PatientReportsTable extends React.Component {
 PatientReportsTable.propTypes = {
   patient: PropTypes.object,
   symptoms: PropTypes.array,
+  threshold_condition_hash: PropTypes.string,
   is_household_member: PropTypes.bool,
   report_eligibility: PropTypes.object,
   patient_status: PropTypes.string,

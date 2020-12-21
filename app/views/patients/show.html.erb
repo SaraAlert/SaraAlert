@@ -35,9 +35,11 @@
 </div>
 <% end %>
 
+<%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
 <%= react_component('patient/PatientReportsTable', {
                       patient: @patient,
-                      symptoms: @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms.symptoms.uniq,
+                      symptoms: reporting_condition.symptoms,
+                      threshold_condition_hash: reporting_condition.threshold_condition_hash,
                       is_household_member: @household_members.count > 1,
                       report_eligibility: @patient.report_eligibility,
                       patient_status: @patient.status,

@@ -40,7 +40,6 @@ ReportModal.propTypes = {
   onClose: PropTypes.func,
   current_user: PropTypes.object,
   assessment: PropTypes.object,
-  threshold_hash: PropTypes.string,
   symptoms: PropTypes.array,
   translations: PropTypes.object,
   patient: PropTypes.object,

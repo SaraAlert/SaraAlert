@@ -126,6 +126,8 @@ class AssessmentsController < ApplicationController
       redirect_to(root_url) && return unless patient
 
       threshold_condition_hash = params.permit(:threshold_hash)[:threshold_hash]
+      redirect_to(root_url) && return if threshold_condition_hash.blank?
+
       threshold_condition = ThresholdCondition.find_by(threshold_condition_hash: threshold_condition_hash)
       redirect_to(root_url) && return unless threshold_condition
 
