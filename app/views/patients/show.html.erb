@@ -38,12 +38,13 @@
 <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
 <%= react_component('patient/PatientReportsTable', {
                       patient: @patient,
-                      symptoms: reporting_condition.symptoms,
-                      threshold_condition_hash: reporting_condition.threshold_condition_hash,
                       is_household_member: @household_members.count > 1,
                       report_eligibility: @patient.report_eligibility,
                       patient_status: @patient.status,
                       calculated_age: @patient.calc_current_age,
+                      patient_initials: @patient.initials,
+                      symptoms: reporting_condition.symptoms,
+                      threshold_condition_hash: reporting_condition.threshold_condition_hash,
                       monitoring_period_days: ADMIN_OPTIONS['monitoring_period_days'].to_i,
                       current_user: current_user,
                       translations: Assessment.new.translations,

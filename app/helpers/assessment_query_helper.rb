@@ -79,7 +79,7 @@ module AssessmentQueryHelper
         who_reported: assessment.who_reported,
         created_at: assessment.created_at,
         threshold_condition_hash: reported_condition&.threshold_condition&.threshold_condition_hash,
-        symptoms: reported_condition&.symptoms
+        symptoms: reported_condition&.symptoms.uniq(&:name)
       }
 
       passes_threshold_data = {}
