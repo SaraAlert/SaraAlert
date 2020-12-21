@@ -267,7 +267,7 @@ class AuditModal extends React.Component {
   };
 
   /**
-   * Called when the number of entries to be shown on a page changes.
+   * Called when the number of entries to be shown on a page changes. Resets page to be 0.
    * Updates state and then calls table update handler.
    * @param {SyntheticEvent} event - Event when num entries changes
    */
@@ -276,7 +276,7 @@ class AuditModal extends React.Component {
     this.setState(
       state => {
         return {
-          query: { ...state.query, entries: value },
+          query: { ...state.query, entries: value, page: 0 },
         };
       },
       () => {
