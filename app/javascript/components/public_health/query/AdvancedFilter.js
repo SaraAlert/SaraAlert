@@ -866,7 +866,7 @@ class AdvancedFilter extends React.Component {
                         onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
                       />
                     </Col>
-                    <Col md="5" className="pr-0">
+                    <Col md="6" className="pr-0">
                       <Form.Control
                         as="select"
                         value={value.unit}
@@ -877,9 +877,6 @@ class AdvancedFilter extends React.Component {
                         <option value="weeks">week(s)</option>
                         <option value="months">month(s)</option>
                       </Form.Control>
-                    </Col>
-                    <Col md="2" className="text-center my-auto">
-                      {this.renderOptionTooltip(filterOption, value, index)}
                     </Col>
                   </React.Fragment>
                 )}
@@ -898,7 +895,9 @@ class AdvancedFilter extends React.Component {
               </Form.Group>
             )}
           </Col>
-          {filterOption && filterOption.tooltip && <span className="align-middle mx-2">{this.renderOptionTooltip(filterOption, value, index)}</span>}
+          {filterOption && (filterOption.tooltip || relativeOption === 'custom') && (
+            <span className="align-middle mx-2">{this.renderOptionTooltip(filterOption, value, index)}</span>
+          )}
           <Col className="py-0" md={2}>
             <div className="float-right">
               <Button variant="danger" onClick={() => this.remove(index)}>
