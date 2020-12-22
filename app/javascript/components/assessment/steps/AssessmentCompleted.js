@@ -6,15 +6,14 @@ class AssessmentCompleted extends React.Component {
   constructor(props) {
     super(props);
     this.state = { ...this.props, ...this.props.currentState };
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(event) {
+  handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     this.setState({ [event.target.id]: value }, () => {
       this.props.setAssessmentState({ ...this.state });
     });
-  }
+  };
 
   render() {
     return (

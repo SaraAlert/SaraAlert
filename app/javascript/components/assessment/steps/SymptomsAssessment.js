@@ -12,13 +12,9 @@ class SymptomsAssessment extends React.Component {
       noSymptomsCheckbox: false,
       selectedBoolSymptomCount: 0,
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleNoSymptomChange = this.handleNoSymptomChange.bind(this);
-    this.updateBoolSymptomCount = this.updateBoolSymptomCount.bind(this);
-    this.navigate = this.navigate.bind(this);
   }
 
-  handleChange(event) {
+  handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let field_id = event.target.id.split('_idpre')[0];
@@ -27,9 +23,9 @@ class SymptomsAssessment extends React.Component {
       this.props.setAssessmentState({ ...this.state.current });
     });
     this.updateBoolSymptomCount();
-  }
+  };
 
-  handleNoSymptomChange(event) {
+  handleNoSymptomChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     this.setState({ noSymptomsCheckbox: value }, () => {
       // Make sure pre-selected options are cleared
@@ -43,14 +39,14 @@ class SymptomsAssessment extends React.Component {
         this.setState({ current: current });
       }
     });
-  }
+  };
 
-  updateBoolSymptomCount() {
+  updateBoolSymptomCount = () => {
     let trueBoolSymptoms = this.state.current.symptoms.filter(s => {
       return s.type === 'BoolSymptom' && s.value;
     });
     this.setState({ selectedBoolSymptomCount: trueBoolSymptoms.length });
-  }
+  };
 
   navigate() {
     this.setState({ loading: true }, () => {
