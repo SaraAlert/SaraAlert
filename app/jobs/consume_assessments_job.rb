@@ -137,12 +137,18 @@ class ConsumeAssessmentsJob < ApplicationJob
           typed_reported_symptoms = Condition.build_symptoms(message['reported_symptoms_array'])
           reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
           assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
-          reported_condition.transaction do
-            reported_condition.save!
-            assessment.symptomatic = assessment.symptomatic?
-            assessment.save!
-            queue.commit
+          begin
+            reported_condition.transaction do
+              reported_condition.save!
+              assessment.symptomatic = assessment.symptomatic?
+              assessment.save!
+            end
+          rescue ActiveRecord::RecordInvalid
+            Rails.logger.info(
+              "ConsumeAssessmentsJob: Unable to save assessment due to validation error for patient ID: #{patient.id}"
+            )
           end
+          queue.commit
         else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
@@ -163,12 +169,16 @@ class ConsumeAssessmentsJob < ApplicationJob
             # that they reported for themselves, else we are creating an assessment for the dependent and
             # that means that it was the proxy who reported for them
             assessment.who_reported = patient.submission_token == dependent.submission_token ? 'Monitoree' : 'Proxy'
-            reported_condition.transaction do
-              reported_condition.save!
-              assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
-              assessment.save!
-              queue.commit
+            begin
+              reported_condition.transaction do
+                reported_condition.save!
+                assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
+                assessment.save!
+              end
+            rescue ActiveRecord::RecordInvalid
+              Rails.logger.info "ConsumeAssessmentsJob: Unable to save assessment due to validation error for patient ID: #{dependent.id}"
             end
+            queue.commit
           end
         end
       rescue JSON::ParserError
