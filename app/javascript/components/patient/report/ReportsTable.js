@@ -1,21 +1,21 @@
 import React from 'react';
 import { Card, Button, Row, Col, Dropdown, InputGroup, OverlayTrigger, Form, Tooltip } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import CustomTable from '../layout/CustomTable';
-import reportError from '../util/ReportError';
-import LastDateExposure from '../subject/LastDateExposure';
-import CurrentStatus from '../subject/CurrentStatus';
-import ClearReports from '../subject/ClearReports';
-import PauseNotifications from '../subject/PauseNotifications';
-import ContactAttempt from '../subject/ContactAttempt';
-import AddReportNote from '../subject/AddReportNote';
-import ClearSingleReport from '../subject/ClearSingleReport';
+import CustomTable from '../../layout/CustomTable';
+import reportError from '../../util/ReportError';
+import LastDateExposure from '../../subject/LastDateExposure';
+import CurrentStatus from '../../subject/CurrentStatus';
+import ClearReports from '../../subject/ClearReports';
+import PauseNotifications from '../../subject/PauseNotifications';
+import ContactAttempt from '../../subject/ContactAttempt';
+import AddReportNote from './AddReportNote';
+import ClearSingleReport from '../../subject/ClearSingleReport';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import ReportModal from './ReportModal';
 
-class PatientReportsTable extends React.Component {
+class ReportsTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -128,7 +128,7 @@ class PatientReportsTable extends React.Component {
 
   /**
    * Generates column data for symptoms.
-   * NOTE: These are the aggregate symptoms from all assessments in the table, to ensure no
+   * NOTE: These are the aggregate symptoms from all reports in the table, to ensure no
    * data loss if patient has been transferred between jurisdictions with different symptom
    * configurations.
    */
@@ -299,9 +299,9 @@ class PatientReportsTable extends React.Component {
             <i className="fas fa-edit fa-fw"></i>
             <span className="ml-2">Edit</span>
           </Dropdown.Item>
-          <AddReportNote assessment={rowData} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+          <AddReportNote report={rowData} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
           {!this.props.patient.isolation && (
-            <ClearSingleReport assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+            <ClearSingleReport report_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
           )}
         </Dropdown.Menu>
       </Dropdown>
@@ -309,9 +309,9 @@ class PatientReportsTable extends React.Component {
   };
 
   /**
-   * Determines row classname. Row will be updated with a class that makes it red if the assessment
+   * Determines row classname. Row will be updated with a class that makes it red if the report
    * is considered symptomatic.
-   * @param {Object} rowData - Assessment data.
+   * @param {Object} rowData - Report data.
    */
   getRowClassName = rowData => {
     return rowData.symptomatic === 'Yes' ? 'table-danger' : '';
@@ -380,7 +380,7 @@ class PatientReportsTable extends React.Component {
           <ReportModal
             show={this.state.showAddReportModal}
             onClose={this.handleAddReportModalClose}
-            assessment={{}}
+            report={{}}
             current_user={this.props.current_user}
             threshold_condition_hash={this.props.threshold_condition_hash}
             symptoms={this.props.symptoms}
@@ -396,7 +396,7 @@ class PatientReportsTable extends React.Component {
           <ReportModal
             show={this.state.showEditReportModal}
             onClose={this.handleEditReportModalClose}
-            assessment={this.state.table.rowData[this.state.editRow]}
+            report={this.state.table.rowData[this.state.editRow]}
             current_user={this.props.current_user}
             threshold_condition_hash={this.state.table.rowData[this.state.editRow].threshold_condition_hash}
             symptoms={this.state.table.rowData[this.state.editRow].symptoms}
@@ -414,7 +414,7 @@ class PatientReportsTable extends React.Component {
   }
 }
 
-PatientReportsTable.propTypes = {
+ReportsTable.propTypes = {
   patient: PropTypes.object,
   symptoms: PropTypes.array,
   threshold_condition_hash: PropTypes.string,
@@ -429,4 +429,4 @@ PatientReportsTable.propTypes = {
   authenticity_token: PropTypes.string,
 };
 
-export default PatientReportsTable;
+export default ReportsTable;
