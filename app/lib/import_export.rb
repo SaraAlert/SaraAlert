@@ -713,6 +713,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       assessment_details = assessment.custom_details(fields, patients_identifiers[assessment.patient_id]) || {}
       if fields.include?(:symptoms)
         symptom_names_and_labels&.map(&:first)&.each do |symptom_name|
+          # Nil check in case for some reason there were assessments with nil ReportedCondition
           next if assessments_hash[assessment[:id]].nil?
 
           assessment_details[symptom_name.to_sym] = assessments_hash[assessment[:id]][symptom_name]
