@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { Carousel } from 'react-bootstrap';
 import axios from 'axios';
 
-import SymptomsAssessment from './steps/SymptomsAssessment';
-import AssessmentCompleted from './steps/AssessmentCompleted';
-import reportError from '../util/ReportError';
+import SymptomsReport from './SymptomsReport';
+import ReportCompleted from './ReportCompleted';
+import reportError from '../../util/ReportError';
 
-class Assessment extends React.Component {
+class Report extends React.Component {
   constructor(props) {
     super(props);
     this.state = { index: 0, direction: null };
@@ -85,9 +85,9 @@ class Assessment extends React.Component {
           direction={this.state.direction}
           onSelect={() => {}}>
           <Carousel.Item>
-            <SymptomsAssessment
+            <SymptomsReport
               submit={this.submit}
-              assessment={this.props.assessment}
+              report={this.props.report}
               symptoms={this.props.symptoms}
               idPre={this.props.idPre}
               translations={this.props.translations}
@@ -97,7 +97,7 @@ class Assessment extends React.Component {
             />
           </Carousel.Item>
           <Carousel.Item>
-            <AssessmentCompleted translations={this.props.translations} lang={this.props.lang || 'en'} contact_info={this.props.contact_info || {}} />
+            <ReportCompleted translations={this.props.translations} lang={this.props.lang || 'en'} contact_info={this.props.contact_info || {}} />
           </Carousel.Item>
         </Carousel>
       </React.Fragment>
@@ -105,7 +105,7 @@ class Assessment extends React.Component {
   }
 }
 
-Assessment.propTypes = {
+Report.propTypes = {
   translations: PropTypes.object,
   contact_info: PropTypes.object,
   lang: PropTypes.string,
@@ -116,11 +116,11 @@ Assessment.propTypes = {
   patient_age: PropTypes.number,
   symptoms: PropTypes.array,
   threshold_hash: PropTypes.string,
-  assessment: PropTypes.object,
+  report: PropTypes.object,
   updateId: PropTypes.number,
   reload: PropTypes.bool,
   idPre: PropTypes.string,
   current_user: PropTypes.object,
 };
 
-export default Assessment;
+export default Report;

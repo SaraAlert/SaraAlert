@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Form, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
 
-import reportError from '../util/ReportError';
+import reportError from '../../util/ReportError';
 
 class AddReportingNote extends React.Component {
   constructor(props) {
@@ -35,7 +35,7 @@ class AddReportingNote extends React.Component {
       axios
         .post(window.BASE_PATH + '/histories', {
           patient_id: this.props.patient.id,
-          comment: 'User left a note for a report (ID: ' + this.props.assessment.id + '). Note is: ' + this.state.comment,
+          comment: 'User left a note for a report (ID: ' + this.props.report.id + '). Note is: ' + this.state.comment,
           type: 'Report Note',
         })
         .then(() => {
@@ -54,7 +54,7 @@ class AddReportingNote extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Please enter your note about the assessment (ID: {id}) below.</p>
+          <p>Please enter your note about the report (ID: {id}) below.</p>
           <Form.Group>
             <Form.Control as="textarea" rows="2" id="comment" onChange={this.handleChange} aria-label="Enter Assessment Note Text Area" />
           </Form.Group>
@@ -83,7 +83,7 @@ class AddReportingNote extends React.Component {
           <i className="fas fa-comment-medical fa-fw"></i> Add Note
         </Button>
         {this.state.showAddReportingNoteModal &&
-          this.createModal('Add Note To Report', this.toggleAddReportingNoteModal, this.addReportingNote, this.props.assessment.id)}
+          this.createModal('Add Note To Report', this.toggleAddReportingNoteModal, this.addReportingNote, this.props.report.id)}
       </React.Fragment>
     );
   }
@@ -91,7 +91,7 @@ class AddReportingNote extends React.Component {
 
 AddReportingNote.propTypes = {
   authenticity_token: PropTypes.string,
-  assessment: PropTypes.object,
+  report: PropTypes.object,
   patient: PropTypes.object,
 };
 
