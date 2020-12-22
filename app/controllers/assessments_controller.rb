@@ -144,19 +144,27 @@ class AssessmentsController < ApplicationController
       # Determine if a user created this assessment or a monitoree
       @assessment.who_reported = current_user.nil? ? 'Monitoree' : current_user.email
 
-      reported_condition.transaction do
-        reported_condition.save!
+      begin
+        reported_condition.transaction do
+          reported_condition.save!
 
-        @assessment.symptomatic = @assessment.symptomatic?
-        @assessment.save!
+          @assessment.symptomatic = @assessment.symptomatic?
+          @assessment.save!
 
-        # Save a new receipt and clear out any older ones
-        AssessmentReceipt.where(submission_token: submission_token_from_params).delete_all
-        @assessment_receipt = AssessmentReceipt.new(submission_token: submission_token_from_params)
-        @assessment_receipt.save
+          # Save a new receipt and clear out any older ones
+          AssessmentReceipt.where(submission_token: submission_token_from_params).delete_all
+          @assessment_receipt = AssessmentReceipt.new(submission_token: submission_token_from_params)
+          @assessment_receipt.save
 
-        # Create history if assessment was created by user
-        History.report_created(patient: patient, created_by: current_user.email, comment: "User created a new report (ID: #{@assessment.id}).") if current_user
+          # Create history if assessment was created by user
+          if current_user
+            History.report_created(patient: patient, created_by: current_user.email, comment: "User created a new report (ID: #{@assessment.id}).")
+          end
+        end
+      rescue ActiveRecord::RecordInvalid
+        Rails.logger.info(
+          "AssessmentsController: Unable to save assessment due to validation error for patient ID: #{patient.id}"
+        )
       end
     end
   end
