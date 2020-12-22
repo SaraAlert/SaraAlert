@@ -35,7 +35,7 @@ module AssessmentQueryHelper
     else
       # Verify this is a sort request for a symptom column.
       symptom_columns = Assessment.get_unique_symptoms_for_assessments(assessments.pluck(:id)).pluck(:name)
-      return assessments unless symptom_columns.include?(order)
+      return assessments unless symptom_columns&.include?(order)
 
       # Find assessment IDs based on the value of the symptom in the specified column
       ordered_values = assessments.map do |a|
@@ -71,6 +71,7 @@ module AssessmentQueryHelper
   def format(assessments)
     table_data = []
     symptoms = Assessment.get_unique_symptoms_for_assessments(assessments.pluck(:id))
+
     assessments.each do |assessment|
       reported_condition = assessment.reported_condition
       details = {
@@ -83,7 +84,7 @@ module AssessmentQueryHelper
       }
 
       passes_threshold_data = {}
-      symptoms.pluck(:name).each do |symptom_name|
+      symptoms&.pluck(:name).each do |symptom_name|
         symptom = assessment.get_reported_symptom_by_name(symptom_name)
         value = symptom&.value
         # NOTE: We must check if the value is nil here before making this change.
@@ -97,6 +98,6 @@ module AssessmentQueryHelper
       details[:passes_threshold_data] = passes_threshold_data
       table_data << details
     end
-    { table_data: table_data, symptoms: symptoms, total: assessments.total_entries }
+    { table_data: table_data, symptoms: symptoms ? symptoms : [], total: assessments.total_entries }
   end
 end
