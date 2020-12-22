@@ -36,7 +36,7 @@
 <% end %>
 
 <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
-<%= react_component('patient/PatientReportsTable', {
+<%= react_component('patient/report/ReportsTable', {
                       patient: @patient,
                       is_household_member: @household_members.count > 1,
                       report_eligibility: @patient.report_eligibility,
