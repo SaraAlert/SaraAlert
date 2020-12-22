@@ -22,7 +22,13 @@ class ConsumeAssessmentsJob < ApplicationJob
         end
 
         if message['response_status'].in? %w[opt_out opt_in]
-          handle_opt_in_opt_out(message)
+          begin
+            handle_opt_in_opt_out(message)
+          rescue StandardError => e
+            Rails.logger.info(
+              "ConsumeAssessmentsJob: failure handling opt-in/opt-out message (message response status: #{message['response_status']}), (error: #{e})"
+            )
+          end
           queue.commit
           next
         end
