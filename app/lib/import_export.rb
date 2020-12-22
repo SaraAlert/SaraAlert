@@ -698,7 +698,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
       symptoms = Symptom.where(condition_id: conditions&.pluck(:id)).order(:label)
 
-      conditions_hash = Hash[conditions&.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
+      conditions_hash = Hash[conditions&.pluck(:id, :assessment_id)&.map { |id, assessment_id| [id, assessment_id] }]
                         .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
       symptoms&.each do |symptom|
         conditions_hash[symptom[:condition_id]][:symptoms][symptom[:name]] = symptom.value
