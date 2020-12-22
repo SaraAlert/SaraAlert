@@ -143,9 +143,10 @@ class ConsumeAssessmentsJob < ApplicationJob
               assessment.symptomatic = assessment.symptomatic?
               assessment.save!
             end
-          rescue ActiveRecord::RecordInvalid
+          rescue ActiveRecord::RecordInvalid => e
             Rails.logger.info(
-              "ConsumeAssessmentsJob: Unable to save assessment due to validation error for patient ID: #{patient.id}"
+              "AssessmentsController: Unable to save assessment due to validation error for patient ID: #{patient.id}. " \
+              "Error: #{e}"
             )
           end
           queue.commit
@@ -175,8 +176,11 @@ class ConsumeAssessmentsJob < ApplicationJob
                 assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
                 assessment.save!
               end
-            rescue ActiveRecord::RecordInvalid
-              Rails.logger.info "ConsumeAssessmentsJob: Unable to save assessment due to validation error for patient ID: #{dependent.id}"
+            rescue ActiveRecord::RecordInvalid => e
+              Rails.logger.info(
+                "AssessmentsController: Unable to save assessment due to validation error for patient ID: #{dependent.id}. " \
+                "Error: #{e}"
+              )
             end
             queue.commit
           end
