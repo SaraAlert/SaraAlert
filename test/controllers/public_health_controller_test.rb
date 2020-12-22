@@ -470,15 +470,18 @@ class PublicHealthControllerTest < ActionController::TestCase
 
   test 'advanced filter quarantine option ten_day contains patient when querying from different timezones' do
     user = create(:public_health_enroller_user)
-    patient = create(:patient, creator: user, monitoring: true, last_date_of_exposure: 15.days.ago)
-    assessment = create(:assessment, patient: patient, symptomatic: false)
-    js_timezone_offsets = [-120, -480, -720, 300, 360, 420, 480, 660]
-    (10..15).to_a.each do |lde|
-      patient.update(last_date_of_exposure: lde.days.ago)
-      assessment.update(created_at: 1.days.ago) if lde == 14
-      assessment.update(created_at: 2.days.ago) if lde == 15
-      js_timezone_offsets.each do |offset|
-        patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, offset, :ten_day)
+    patient = create(:patient, creator: user, monitoring: true)
+    assessment = create(:assessment, patient: patient, symptomatic: false, created_at: patient.curr_date_in_timezone)
+    %w[massachusetts colorado california].each do |state|
+      patient.update(monitored_address_state: state)
+      assessment.update(created_at: patient.curr_date_in_timezone)
+      (10..15).to_a.each do |lde|
+        patient.update(last_date_of_exposure: (patient.curr_date_in_timezone - lde.days))
+        assessment.update(created_at: patient.curr_date_in_timezone - 1.days) if lde == 14
+        assessment.update(created_at: patient.curr_date_in_timezone - 2.days) if lde == 15
+        patient.reload
+
+        patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, nil, :ten_day)
         assert_equal(patients.count, 1)
       end
     end
@@ -487,17 +490,19 @@ class PublicHealthControllerTest < ActionController::TestCase
   test 'advanced filter quarantine option seven_day contains patient when querying from different timezones' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user, monitoring: true, last_date_of_exposure: 15.days.ago)
-    assessment = create(:assessment, patient: patient, symptomatic: false)
+    assessment = create(:assessment, patient: patient, symptomatic: false, created_at: patient.curr_date_in_timezone)
     laboratory = create(:laboratory, patient: patient, result: 'negative', lab_type: 'ANTIGEN', specimen_collection: DateTime.now)
-    js_timezone_offsets = [-120, -480, -720, 300, 360, 420, 480, 660]
-    (7..12).to_a.each do |lde|
-      patient.update(last_date_of_exposure: lde.days.ago)
-      if lde > 9
-        assessment.update(created_at: 3.days.ago)
-        laboratory.update(specimen_collection: 3.days.ago)
-      end
-      js_timezone_offsets.each do |offset|
-        patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, offset, :seven_day)
+    %w[massachusetts colorado california].each do |state|
+      patient.update(monitored_address_state: state)
+      assessment.update(created_at: patient.curr_date_in_timezone)
+      laboratory.update(specimen_collection: DateTime.now)
+      (7..12).to_a.each do |lde|
+        patient.update(last_date_of_exposure: patient.curr_date_in_timezone - lde.days)
+        if lde > 9
+          assessment.update(created_at: patient.curr_date_in_timezone - 3.days)
+          laboratory.update(specimen_collection: patient.curr_date_in_timezone - 3.days)
+        end
+        patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, nil, :seven_day)
         assert_equal(patients.count, 1)
       end
     end

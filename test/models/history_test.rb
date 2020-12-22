@@ -55,11 +55,11 @@ class HistoryTest < ActiveSupport::TestCase
     end
 
     assert_no_difference("History.in_time_frame('Last 24 Hours').size", 1) do
-      create(:history, history_type: 'Comment').update(created_at: 25.hours.ago)
+      create(:history, history_type: 'Comment').update(created_at: DateTime.now.utc - 25.hours)
     end
 
     assert_no_difference("History.in_time_frame('Last 14 Days').size") do
-      create(:history, history_type: 'Comment').update(created_at: 15.days.ago)
+      create(:history, history_type: 'Comment').update(created_at: DateTime.now.utc - 15.days)
     end
 
     # Specific case where we don't want the number to change throughout the day
@@ -68,11 +68,11 @@ class HistoryTest < ActiveSupport::TestCase
     end
 
     assert_difference("History.in_time_frame('Last 14 Days').size", 1) do
-      create(:history, history_type: 'Comment').update(created_at: 1.day.ago)
+      create(:history, history_type: 'Comment').update(created_at: DateTime.now.utc - 1.day)
     end
 
     assert_difference("History.in_time_frame('Total').size", 1) do
-      create(:history, history_type: 'Comment').update(created_at: 15.days.ago)
+      create(:history, history_type: 'Comment').update(created_at: DateTime.now.utc - 15.days)
     end
   end
 end

@@ -20,8 +20,8 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now,
-                     last_date_of_exposure: nil,
-                     created_at: 20.days.ago)
+                     last_date_of_exposure: nil)
+    patient.update(created_at: patient.curr_date_in_timezone.to_date - 20.days)
     ClosePatientsJob.perform_now
     # Reload attributes after job
     patient.reload
@@ -35,14 +35,14 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
-                     last_date_of_exposure: 20.days.ago)
+                     latest_assessment_at: Time.now)
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 20.days)
 
     ClosePatientsJob.perform_now
 
     # Verify fields changed
     updated_patient = Patient.find_by(id: patient.id)
-    assert_equal(updated_patient.closed_at.to_date, DateTime.now.to_date)
+    assert_equal(updated_patient.closed_at.to_date, updated_patient.curr_date_in_timezone.utc.to_date)
     assert_equal(updated_patient.monitoring, false)
   end
 
@@ -53,8 +53,8 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
-                     last_date_of_exposure: 20.days.ago)
+                     latest_assessment_at: Time.now)
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 20.days)
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
@@ -68,9 +68,9 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
-                     last_date_of_exposure: 20.days.ago,
-                     created_at: 7.days.ago)
+                     latest_assessment_at: Time.now)
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 20.days)
+    patient.update(created_at: patient.curr_date_in_timezone.to_date - 7.days)
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
@@ -85,8 +85,8 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now,
-                     last_date_of_exposure: 20.days.ago,
                      created_at: Time.now)
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 20.days)
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
@@ -101,8 +101,8 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now,
-                     last_date_of_exposure: 14.days.ago,
                      created_at: Time.now)
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 14.days)
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
@@ -117,8 +117,8 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now,
-                     last_date_of_exposure: 20.days.ago,
                      email: 'testpatient@example.com')
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 20.days)
 
     ClosePatientsJob.perform_now
     assert_equal(ActionMailer::Base.deliveries.count, 2)
@@ -134,8 +134,8 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
-                     last_date_of_exposure: 20.days.ago)
+                     latest_assessment_at: Time.now)
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 20.days)
     email = ClosePatientsJob.perform_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -149,8 +149,8 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
-                     last_date_of_exposure: 20.days.ago)
+                     latest_assessment_at: Time.now)
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 20.days)
 
     allow_any_instance_of(Patient).to(receive(:save!) do
       raise StandardError, 'Test StandardError'

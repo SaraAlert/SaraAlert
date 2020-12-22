@@ -5,6 +5,17 @@ require 'test_case'
 class DatabaseTest < ActiveSupport::TestCase
   include PatientHelper
 
+  test 'date between works as expected' do
+    [
+      "SELECT CAST(CONVERT_TZ('2021-01-10 18:59:59', 'UTC', 'UTC') AS DATE)"\
+      "  BETWEEN CAST(DATE_ADD('2020-12-31 18:59:59', INTERVAL 10 DAY) AS DATE)"\
+      "  AND CAST(DATE_ADD('2020-12-31 18:59:59', INTERVAL 13 DAY) AS DATE)"
+    ].each do |sql|
+      result = ActiveRecord::Base.connection.execute(sql).first
+      assert_equal 1, result[0]
+    end
+  end
+
   test 'null and empty comparison works as expected' do
     patient_1 = create(:patient, monitored_address_state: nil)
     patient_2 = create(:patient, monitored_address_state: '')

@@ -165,7 +165,7 @@ class TransferTest < ActiveSupport::TestCase
     end
 
     assert_difference("Transfer.in_time_frame('Last 14 Days').size", 1) do
-      create(:transfer).update(created_at: 1.day.ago)
+      create(:transfer).update(created_at: Date.today.to_datetime - 1.day)
     end
 
     # Specific case where we don't want the number to change throughout the day
@@ -174,11 +174,11 @@ class TransferTest < ActiveSupport::TestCase
     end
 
     assert_no_difference("Transfer.in_time_frame('Last 14 Days').size") do
-      create(:transfer).update(created_at: 15.days.ago)
+      create(:transfer).update(created_at: Date.today.to_datetime - 15.day)
     end
 
     assert_difference("Transfer.in_time_frame('Total').size", 1) do
-      create(:transfer).update(created_at: 15.days.ago)
+      create(:transfer).update(created_at: Date.today.to_datetime - 15.day)
     end
   end
 end

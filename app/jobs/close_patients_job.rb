@@ -18,11 +18,12 @@ class ClosePatientsJob < ApplicationJob
       patient[:closed_at] = DateTime.now
 
       # If the patient was enrolled already past their monitoring period based on their last date of exposure, specify special reason for closure
+      local_created_at_date = patient.created_at.getlocal(patient.address_timezone_offset).to_date
       if !patient.last_date_of_exposure.nil? &&
-         ((patient.last_date_of_exposure.beginning_of_day + ADMIN_OPTIONS['monitoring_period_days'].days) < patient.created_at.beginning_of_day)
+         ((patient.last_date_of_exposure.beginning_of_day + ADMIN_OPTIONS['monitoring_period_days'].days) < local_created_at_date)
         patient[:monitoring_reason] = 'Enrolled more than 14 days after last date of exposure (system)'
       elsif !patient.last_date_of_exposure.nil? &&
-            ((patient.last_date_of_exposure.beginning_of_day + ADMIN_OPTIONS['monitoring_period_days'].days) == patient.created_at.beginning_of_day)
+            ((patient.last_date_of_exposure.beginning_of_day + ADMIN_OPTIONS['monitoring_period_days'].days) == local_created_at_date)
         # If the patient was enrolled on their last day of monitoring based on their last date of exposure, specify special reason for closure
         patient[:monitoring_reason] = 'Enrolled on last day of monitoring period (system)'
       else

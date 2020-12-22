@@ -1033,7 +1033,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_not p.monitoring
 
     # Closed at date should have been set to today
-    assert_equal DateTime.now.to_date, p.closed_at&.to_date
+    assert_equal DateTime.now.utc.to_date, p.closed_at&.to_date
   end
 
   test 'should be bad request via update due to invalid JSON' do

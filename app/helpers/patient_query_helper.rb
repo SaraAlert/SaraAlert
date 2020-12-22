@@ -426,19 +426,19 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   # rubocop:enable Metrics/MethodLength
 
   # Handles a given quarantine option from the advanced filter.
-  def advanced_filter_quarantine_option(patients, filter, tz_offset, option_type)
+  def advanced_filter_quarantine_option(patients, filter, _tz_offset, option_type)
     # Adjust for difference between client and server timezones.
     # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
     # NOTE: + because js and ruby offsets are flipped. Both of these values are in seconds.
-    tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
-    user_curr_datetime = DateTime.now - tz_diff
+    # tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
+    # user_curr_datetime = DateTime.now - tz_diff
 
     # Get all patients who meet this criteria based on the option type
     case option_type
     when :ten_day
-      query = patients.ten_day_quarantine_candidates(user_curr_datetime)
+      query = patients.ten_day_quarantine_candidates
     when :seven_day
-      query = patients.seven_day_quarantine_candidates(user_curr_datetime)
+      query = patients.seven_day_quarantine_candidates
     end
 
     # Based on if the user selected true/false, return appropriate patients

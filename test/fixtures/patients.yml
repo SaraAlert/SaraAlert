@@ -11,7 +11,7 @@ patient_1:
   first_name: 'Domingo54'
   middle_name: 'Simonis31'
   last_name: 'Boehm62'
-  date_of_birth: <%= 25.years.ago %>
+  date_of_birth: <%= 25.years.ago - 1.day %>
   sex: 'Male'
   american_indian_or_alaska_native: true
   ethnicity: 'Not Hispanic or Latino'
@@ -67,7 +67,7 @@ patient_2:
   first_name: 'Chris32'
   middle_name: 'Abernathy31'
   last_name: 'Kirlin44'
-  date_of_birth: <%= 29.years.ago %>
+  date_of_birth: <%= 29.years.ago - 1.day %>
   sex: 'Male'
   native_hawaiian_or_other_pacific_islander: true
   ethnicity: 'Hispanic or Latino'
@@ -111,7 +111,7 @@ patient_3:
   monitoring: true
   first_name: 'Brianne43'
   last_name: 'Johnson09'
-  date_of_birth: <%= 42.years.ago %>
+  date_of_birth: <%= 42.years.ago - 1.day %>
   sex: 'Female'
   address_line_1: '41585 Sauer Divide'
   address_city: 'North Ranae'
@@ -138,7 +138,7 @@ patient_4:
   monitoring: true
   first_name: 'Lavern91'
   last_name: 'Ruecker20'
-  date_of_birth: <%= 16.years.ago %>
+  date_of_birth: <%= 16.years.ago - 1.day %>
   sex: 'Female'
   address_line_1: '91227 Rueben Skyway'
   address_city: 'Port Kaycee'
@@ -164,7 +164,7 @@ patient_5:
   closed_at: <%= 1.hour.ago %>
   first_name: 'Nicolas00'
   last_name: 'McClure72'
-  date_of_birth: <%= 14.years.ago %>
+  date_of_birth: <%= 14.years.ago - 1.day %>
   sex: 'Unknown'
   address_line_1: '74671 Beahan Stravenue'
   address_city: 'South Wilmertown'
@@ -191,7 +191,7 @@ patient_6:
   monitoring: true
   first_name: 'Kendall65'
   last_name: 'Roberts79'
-  date_of_birth: <%= 42.years.ago %>
+  date_of_birth: <%= 42.years.ago - 1.day %>
   sex: 'Male'
   address_line_1: '3212 Granville Corners'
   address_city: 'Emoryburgh'
@@ -219,7 +219,7 @@ patient_7:
   monitoring: true
   first_name: 'Emory10'
   last_name: "O'Reilly83"
-  date_of_birth: <%= 46.years.ago %>
+  date_of_birth: <%= 46.years.ago - 1.day %>
   sex: 'Unknown'
   address_line_1: '55068 Elliott Garden'
   address_city: 'Mohammedville'
@@ -245,7 +245,7 @@ patient_8:
   monitoring: true
   first_name: 'Carmelina02'
   last_name: 'Kunze43'
-  date_of_birth: <%= 8.years.ago %>
+  date_of_birth: <%= 8.years.ago - 1.day %>
   sex: 'Female'
   address_line_1: '94238 Douglas Tunnel'
   address_city: 'Port Kermithaven'
@@ -275,7 +275,7 @@ patient_9:
   monitoring: true
   first_name: 'Borer35'
   last_name: 'Pollich01'
-  date_of_birth: <%= 6.years.ago %>
+  date_of_birth: <%= 6.years.ago - 1.day %>
   sex: 'Female'
   address_line_1: '65278 Ledner Island'
   address_city: 'West Amosfurt'
@@ -304,7 +304,7 @@ patient_10:
   monitoring: true
   first_name: 'Hettinger54'
   last_name: 'Schmitt03'
-  date_of_birth: <%= 9.years.ago %>
+  date_of_birth: <%= 9.years.ago - 1.day %>
   address_line_1: '7135 Michaela Stravenue'
   address_city: 'North Maciefort'
   address_state: 'Massachusetts'
@@ -330,7 +330,7 @@ patient_11:
   monitoring: true
   first_name: 'Danelle24'
   last_name: 'Nikolaus58'
-  date_of_birth: <%= 6.years.ago %>
+  date_of_birth: <%= 6.years.ago - 1.day %>
   exposure_risk_assessment: 'Medium'
   address_line_1: '55660 McCullough Summit'
   address_city: 'South Arthur'
@@ -352,7 +352,7 @@ patient_12:
   first_name: 'David'
   last_name: 'Smith'
   sex: 'Male'
-  date_of_birth: <%= 100.years.ago %>
+  date_of_birth: <%= 100.years.ago - 1.day %>
   address_state: 'Massachusetts'
   address_county: 'Suffolk'
   exposure_risk_assessment: 'No Identified Risk'
@@ -375,7 +375,7 @@ patient_13:
   first_name: 'Stephen'
   last_name: 'Yoo'
   sex: 'Male'
-  date_of_birth: <%= 69.years.ago %>
+  date_of_birth: <%= 69.years.ago - 1.day %>
   address_state: 'Massachusetts'
   address_county: 'Suffolk'
   exposure_risk_assessment: 'Medium'
@@ -399,7 +399,7 @@ patient_14:
   first_name: 'Sarah'
   last_name: 'Chung'
   sex: 'Female'
-  date_of_birth: <%= 66.years.ago %>
+  date_of_birth: <%= 66.years.ago - 1.day %>
   address_state: 'Massachusetts'
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: <%= 318.days.ago %>
@@ -421,7 +421,7 @@ patient_15:
   first_name: 'Jon'
   last_name: 'Snow'
   sex: 'Unknown'
-  date_of_birth: <%= 50.years.ago %>
+  date_of_birth: <%= 50.years.ago - 1.day %>
   address_state: 'Massachusetts'
   address_county: 'Lake'
   exposure_risk_assessment: 'High'
@@ -445,7 +445,7 @@ patient_16:
   first_name: 'Stephen'
   last_name: 'Curry'
   sex: 'Male'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_state: 'Massachusetts'
   address_county: 'Lake'
   exposure_risk_assessment: 'High'
@@ -468,7 +468,7 @@ patient_17:
   first_name: 'Arya'
   last_name: 'Stark'
   sex: 'Unknown'
-  date_of_birth: <%= 36.years.ago %>
+  date_of_birth: <%= 36.years.ago - 1.day %>
   address_state: 'Massachusetts'
   address_county: 'Lake'
   exposure_risk_assessment: 'No Identified Risk'
@@ -492,7 +492,7 @@ patient_18:
   first_name: 'Theon'
   last_name: 'Greyjoy'
   sex: 'Unknown'
-  date_of_birth: <%= 35.years.ago %>
+  date_of_birth: <%= 35.years.ago - 1.day %>
   address_state: 'Massachusetts'
   address_county: 'Lake'
   exposure_risk_assessment: 'Low'
@@ -515,7 +515,7 @@ patient_19:
   first_name: 'Laura'
   last_name: 'Smith'
   sex: 'Female'
-  date_of_birth: <%= 19.years.ago %>
+  date_of_birth: <%= 19.years.ago - 1.day %>
   address_county: 'Lake'
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: <%= 34.days.ago %>
@@ -538,7 +538,7 @@ patient_20:
   first_name: 'Ruby'
   last_name: 'Kim'
   sex: 'Female'
-  date_of_birth: <%= 5.years.ago %>
+  date_of_birth: <%= 5.years.ago - 1.day %>
   exposure_risk_assessment: 'High'
   last_date_of_exposure: <%= 1.day.ago %>
   potential_exposure_country: 'Malaysia'
@@ -758,7 +758,7 @@ patient_41:
   first_name: 'Anderson32'
   last_name: 'Alec38'
   sex: 'Female'
-  date_of_birth: <%= 35.years.ago %>
+  date_of_birth: <%= 35.years.ago - 1.day %>
   address_line_1: '796 Lesch Heights'
   address_city: 'Laurenceborough'
   address_state: 'New York'
@@ -782,7 +782,7 @@ patient_42:
   first_name: 'Armstrong46'
   last_name: 'Shirly90'
   sex: 'Male'
-  date_of_birth: <%= 48.years.ago %>
+  date_of_birth: <%= 48.years.ago - 1.day %>
   address_line_1: '45727 Skiles Parkways'
   address_city: 'Yundtborough'
   address_state: 'California'
@@ -806,7 +806,7 @@ patient_43:
   first_name: 'Bruen19'
   last_name: 'Bayer45'
   sex: 'Male'
-  date_of_birth: <%= 79.years.ago %>
+  date_of_birth: <%= 79.years.ago - 1.day %>
   address_line_1: '656 Gracie Drives'
   address_city: 'East Dewayneberg'
   address_state: 'New York'
@@ -831,7 +831,7 @@ patient_44:
   first_name: 'Edward54'
   last_name: 'Kilback94'
   sex: 'Female'
-  date_of_birth: <%= 61.years.ago %>
+  date_of_birth: <%= 61.years.ago - 1.day %>
   address_line_1: '5309 Nan Centers Suite 344'
   address_city: 'Ailenemouth'
   address_state: 'California'
@@ -855,7 +855,7 @@ patient_45:
   first_name: 'Gibson07'
   last_name: 'Altenwerth59'
   sex: 'Female'
-  date_of_birth: <%= 2.years.ago %>
+  date_of_birth: <%= 2.years.ago - 1.day %>
   address_line_1: '544 Saul Green'
   address_city: 'Port Walter'
   address_state: 'California'
@@ -877,7 +877,7 @@ patient_46:
   first_name: 'Sung30'
   last_name: 'Bartoletti13'
   sex: 'Unknown'
-  date_of_birth: <%= 18.years.ago %>
+  date_of_birth: <%= 18.years.ago - 1.day %>
   address_line_1: '630 Frederick Land Apt. 170'
   address_city: 'Haydenburgh'
   address_state: 'California'
@@ -900,7 +900,7 @@ patient_47:
   first_name: 'Ryan00'
   last_name: 'Auer09'
   sex: 'Unknown'
-  date_of_birth: <%= 22.years.ago %>
+  date_of_birth: <%= 22.years.ago - 1.day %>
   address_line_1: '37549 Von Overpass Suite 450'
   address_city: 'Boston'
   address_state: 'Massachusetts'
@@ -922,7 +922,7 @@ patient_48:
   first_name: 'Champlin07'
   last_name: 'Hills72'
   sex: 'Male'
-  date_of_birth: <%= 31.years.ago %>
+  date_of_birth: <%= 31.years.ago - 1.day %>
   address_line_1: '7854 Funk Junctions'
   address_city: 'South Douglasview'
   address_state: 'California'
@@ -944,7 +944,7 @@ patient_49:
   first_name: 'Bayer47'
   last_name: 'Mann80'
   sex: 'Male'
-  date_of_birth: <%= 63.years.ago %>
+  date_of_birth: <%= 63.years.ago - 1.day %>
   address_line_1: '630 Frederick Land Apt. 170'
   address_city: 'Port Clementeland'
   address_state: 'California'
@@ -968,7 +968,7 @@ patient_50:
   first_name: 'Abbott24'
   last_name: 'Mante21'
   sex: 'Male'
-  date_of_birth: <%= 52.years.ago %>
+  date_of_birth: <%= 52.years.ago - 1.day %>
   address_line_1: '144 Jama Spurs'
   address_city: 'West April'
   address_state: 'California'
@@ -1019,7 +1019,7 @@ patient_52:
   middle_name: 'Lane00'
   last_name: 'Stehr98'
   sex: 'Female'
-  date_of_birth: <%= 35.years.ago %>
+  date_of_birth: <%= 35.years.ago - 1.day %>
   address_line_1: '1000 Micah Summit'
   address_city: 'Port Madalene'
   address_state: 'New Mexico'
@@ -1043,7 +1043,7 @@ patient_53:
   middle_name: 'Ava95'
   last_name: 'Stehr98'
   sex: 'Male'
-  date_of_birth: <%= 25.years.ago %>
+  date_of_birth: <%= 25.years.ago - 1.day %>
   address_line_1: '1000 Micah Summit'
   address_city: 'Port Madalene'
   address_state: 'New Mexico'
@@ -1067,7 +1067,7 @@ patient_54:
   middle_name: 'Kevin79'
   last_name: 'Gusikowski64'
   sex: 'Female'
-  date_of_birth: <%= 35.years.ago %>
+  date_of_birth: <%= 35.years.ago - 1.day %>
   address_line_1: '664 Ashley Station'
   address_city: 'Kemmerside'
   address_state: 'Utah'
@@ -1091,7 +1091,7 @@ patient_55:
   middle_name: 'Patrice81'
   last_name: 'Lindgren51'
   sex: 'Female'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '664 Ashley Station'
   address_city: 'Kemmerside'
   address_state: 'Utah'
@@ -1113,7 +1113,7 @@ patient_56:
   first_name: 'Debra23'
   last_name: 'Riddle03'
   sex: 'Female'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '740 Lanney Street'
   address_city: 'Bighton'
   address_state: 'New Mexico'
@@ -1133,7 +1133,7 @@ patient_57:
   first_name: 'Fred93'
   last_name: 'Bostwick48'
   sex: 'Male'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '740 Lanney Street'
   address_city: 'Bighton'
   address_state: 'New Mexico'
@@ -1153,7 +1153,7 @@ patient_58:
   first_name: 'Marie79'
   last_name: 'Tellwick84'
   sex: 'Female'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '7829 Lanney Street'
   address_city: 'Bighton'
   address_state: 'Utah'
@@ -1173,7 +1173,7 @@ patient_59:
   first_name: 'Elwind85'
   last_name: 'Norris78'
   sex: 'Male'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '983 Lanney Street'
   address_city: 'Bighton'
   address_state: 'Utah'
@@ -1192,7 +1192,7 @@ patient_60:
   first_name: 'Theodore43'
   last_name: 'Maxwell18'
   sex: 'Male'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '40 Lanney Street'
   address_city: 'Bighton'
   address_state: 'New Mexico'
@@ -1213,7 +1213,7 @@ patient_61:
   first_name: 'Madeline43'
   last_name: 'Maxwell18'
   sex: 'Female'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '40 Lanney Street'
   address_city: 'Bighton'
   address_state: 'New Mexico'
@@ -1234,7 +1234,7 @@ patient_62:
   first_name: 'Robert53'
   last_name: 'Maxwell18'
   sex: 'Male'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '40 Lanney Street'
   address_city: 'Bighton'
   address_state: 'New Mexico'
@@ -1256,7 +1256,7 @@ patient_63:
   first_name: 'Dimitri11'
   last_name: 'Haverford73'
   sex: 'Male'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '98 Lanney Street'
   address_city: 'Bighton'
   address_state: 'Utah'
@@ -1278,7 +1278,7 @@ patient_64:
   first_name: 'Tiffany89'
   last_name: 'Haverford73'
   sex: 'Female'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '98 Lanney Street'
   address_city: 'Bighton'
   address_state: 'Utah'
@@ -1300,7 +1300,7 @@ patient_65:
   first_name: 'River75'
   last_name: 'Haverford73'
   sex: 'Male'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '98 Lanney Street'
   address_city: 'Bighton'
   address_state: 'Utah'
@@ -1322,7 +1322,7 @@ patient_66:
   first_name: 'Person66'
   last_name: 'LastName66'
   sex: 'Male'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '98 Lanney Street'
   address_city: 'Bighton'
   address_state: 'Utah'
@@ -1346,7 +1346,7 @@ patient_67:
   first_name: 'Person67'
   last_name: 'LastName67'
   sex: 'Male'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '98 Lanney Street'
   address_city: 'Bighton'
   address_state: 'Utah'
@@ -1370,7 +1370,7 @@ patient_68:
   first_name: 'Person68'
   last_name: 'LastName68'
   sex: 'Male'
-  date_of_birth: <%= 45.years.ago %>
+  date_of_birth: <%= 45.years.ago - 1.day %>
   address_line_1: '98 Lanney Street'
   address_city: 'Bighton'
   address_state: 'Utah'
