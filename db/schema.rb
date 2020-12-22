@@ -396,6 +396,7 @@ ActiveRecord::Schema.define(version: 2021_01_20_170347) do
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
     t.boolean "head_of_household"
+    t.string "time_zone", default: "America/New_York"
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
