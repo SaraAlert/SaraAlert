@@ -33,7 +33,7 @@ describe('Patient', () => {
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
 
         expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
-        expect(wrapper.find('#monitoree-details-header').find('h3').text().includes(nameFormatter(mockPatient1))).toBeTruthy();
+        expect(wrapper.find('#monitoree-details-header').find('.h3').text().includes(nameFormatter(mockPatient1))).toBeTruthy();
         expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeTruthy();
         expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
         expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
