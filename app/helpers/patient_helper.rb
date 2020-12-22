@@ -133,7 +133,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       'rhodeisland' => { offset: -4, observes_dst: true },
       'southcarolina' => { offset: -4, observes_dst: true },
       'southdakota' => { offset: -5, observes_dst: true },
-      'tennessee' => { offset: -5, dobserves_dstst: true },
+      'tennessee' => { offset: -5, observes_dst: true },
       'texas' => { offset: -5, observes_dst: true },
       'utah' => { offset: -6, observes_dst: true },
       'vermont' => { offset: -4, observes_dst: true },
