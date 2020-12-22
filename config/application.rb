@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module SARAAlert
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.0
+    config.load_defaults 6.1
     # Load environment variables from config/local_env.yml
     config.before_configuration do
       env_file = File.join(Rails.root, 'config', 'local_env.yml')

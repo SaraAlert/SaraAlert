@@ -2,8 +2,8 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
@@ -12,21 +12,21 @@
 
 ActiveRecord::Schema.define(version: 2020_12_10_084736) do
 
-  create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "analytics", charset: "utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["jurisdiction_id", "created_at", "id"], name: "analytics_index_chain_1"
   end
 
-  create_table "assessment_receipts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "assessment_receipts", charset: "utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "submission_token"
     t.index ["submission_token"], name: "index_assessment_receipts_on_submission_token"
   end
 
-  create_table "assessments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "assessments", charset: "utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "patient_id"
@@ -37,7 +37,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["symptomatic", "patient_id", "created_at"], name: "assessments_index_chain_2"
   end
 
-  create_table "audits", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "audits", charset: "utf8", force: :cascade do |t|
     t.integer "auditable_id"
     t.string "auditable_type"
     t.integer "associated_id"
@@ -59,12 +59,12 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["user_id", "user_type"], name: "user_index"
   end
 
-  create_table "blocked_numbers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "blocked_numbers", charset: "utf8", force: :cascade do |t|
     t.string "phone_number", null: false
     t.index ["phone_number"], name: "index_blocked_phone_number"
   end
 
-  create_table "close_contacts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "close_contacts", charset: "utf8", force: :cascade do |t|
     t.bigint "patient_id"
     t.string "first_name"
     t.string "last_name"
@@ -78,7 +78,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["patient_id"], name: "index_close_contacts_on_patient_id"
   end
 
-  create_table "conditions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "conditions", charset: "utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "jurisdiction_id"
@@ -91,7 +91,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["type", "threshold_condition_hash", "id"], name: "conditions_index_chain_2"
   end
 
-  create_table "contact_attempts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "contact_attempts", charset: "utf8", force: :cascade do |t|
     t.bigint "patient_id"
     t.bigint "user_id"
     t.boolean "successful"
@@ -103,7 +103,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["user_id"], name: "index_contact_attempts_on_user_id"
   end
 
-  create_table "downloads", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "downloads", charset: "utf8", force: :cascade do |t|
     t.bigint "user_id"
     t.binary "contents", size: :long, null: false
     t.string "lookup", null: false
@@ -114,7 +114,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["user_id"], name: "index_downloads_on_user_id"
   end
 
-  create_table "export_receipts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "export_receipts", charset: "utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "user_id"
@@ -122,7 +122,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["user_id"], name: "index_export_receipts_on_user_id"
   end
 
-  create_table "histories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "histories", charset: "utf8", force: :cascade do |t|
     t.bigint "patient_id"
     t.text "comment"
     t.string "created_by"
@@ -132,13 +132,13 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["patient_id"], name: "index_histories_on_patient_id"
   end
 
-  create_table "jurisdiction_lookups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "jurisdiction_lookups", charset: "utf8", force: :cascade do |t|
     t.string "old_unique_identifier"
     t.binary "new_unique_identifier", limit: 255
     t.index ["old_unique_identifier"], name: "index_jurisdiction_lookups_on_old_unique_identifier"
   end
 
-  create_table "jurisdictions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "jurisdictions", charset: "utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "name"
@@ -153,7 +153,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 
-  create_table "jwt_identifiers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "jwt_identifiers", charset: "utf8", force: :cascade do |t|
     t.string "value"
     t.datetime "expiration_date"
     t.bigint "application_id", null: false
@@ -162,7 +162,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["application_id"], name: "index_jwt_identifiers_on_application_id"
   end
 
-  create_table "laboratories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "laboratories", charset: "utf8", force: :cascade do |t|
     t.bigint "patient_id"
     t.string "lab_type"
     t.date "specimen_collection"
@@ -174,7 +174,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["result", "patient_id"], name: "laboratories_index_chain_1"
   end
 
-  create_table "monitoree_counts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "monitoree_counts", charset: "utf8", force: :cascade do |t|
     t.bigint "analytic_id"
     t.boolean "active_monitoring"
     t.string "category_type"
@@ -186,7 +186,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["analytic_id"], name: "index_monitoree_counts_on_analytic_id"
   end
 
-  create_table "monitoree_maps", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "monitoree_maps", charset: "utf8", force: :cascade do |t|
     t.bigint "analytic_id"
     t.string "level"
     t.string "workflow"
@@ -198,7 +198,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["analytic_id"], name: "index_monitoree_maps_on_analytic_id"
   end
 
-  create_table "monitoree_snapshots", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "monitoree_snapshots", charset: "utf8", force: :cascade do |t|
     t.bigint "analytic_id"
     t.string "time_frame"
     t.integer "new_enrollments"
@@ -218,7 +218,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["analytic_id"], name: "index_monitoree_snapshots_on_analytic_id"
   end
 
-  create_table "oauth_access_grants", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "oauth_access_grants", charset: "utf8", force: :cascade do |t|
     t.bigint "resource_owner_id", null: false
     t.bigint "application_id", null: false
     t.string "token", null: false
@@ -232,7 +232,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true
   end
 
-  create_table "oauth_access_tokens", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "oauth_access_tokens", charset: "utf8", force: :cascade do |t|
     t.bigint "resource_owner_id"
     t.bigint "application_id", null: false
     t.string "token", null: false
@@ -248,7 +248,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
   end
 
-  create_table "oauth_applications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "oauth_applications", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
     t.string "uid", null: false
     t.string "secret", null: false
@@ -263,7 +263,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
-  create_table "old_passwords", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "old_passwords", charset: "utf8", force: :cascade do |t|
     t.string "encrypted_password", null: false
     t.string "password_archivable_type", null: false
     t.integer "password_archivable_id", null: false
@@ -271,14 +271,14 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["password_archivable_type", "password_archivable_id"], name: "index_password_archivable"
   end
 
-  create_table "patient_lookups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "patient_lookups", charset: "utf8", force: :cascade do |t|
     t.string "old_submission_token"
     t.binary "new_submission_token", limit: 255
     t.index ["new_submission_token"], name: "index_patient_lookups_on_new_submission_token"
     t.index ["old_submission_token"], name: "index_patient_lookups_on_old_submission_token"
   end
 
-  create_table "patients", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "patients", charset: "utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "responder_id"
@@ -422,7 +422,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["user_defined_id_statelocal"], name: "index_patients_on_user_defined_id_statelocal"
   end
 
-  create_table "sessions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "sessions", charset: "utf8", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"
     t.datetime "created_at", precision: 6, null: false
@@ -431,7 +431,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
-  create_table "symptoms", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "symptoms", charset: "utf8", force: :cascade do |t|
     t.string "name"
     t.string "label"
     t.string "notes"
@@ -449,7 +449,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["name", "bool_value", "condition_id"], name: "symptoms_index_chain_1"
   end
 
-  create_table "transfers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "transfers", charset: "utf8", force: :cascade do |t|
     t.bigint "patient_id"
     t.integer "to_jurisdiction_id"
     t.integer "from_jurisdiction_id"
@@ -462,7 +462,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["who_id"], name: "index_transfers_on_who_id"
   end
 
-  create_table "user_export_presets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "user_export_presets", charset: "utf8", force: :cascade do |t|
     t.bigint "user_id"
     t.string "name", null: false
     t.json "config", null: false
@@ -471,7 +471,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["user_id"], name: "index_user_export_presets_on_user_id"
   end
 
-  create_table "user_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "user_filters", charset: "utf8", force: :cascade do |t|
     t.bigint "user_id"
     t.json "contents", null: false
     t.string "name", null: false
@@ -480,7 +480,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.index ["user_id"], name: "index_user_filters_on_user_id"
   end
 
-  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "users", charset: "utf8", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.integer "sign_in_count", default: 0, null: false
