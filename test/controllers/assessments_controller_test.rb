@@ -180,8 +180,8 @@ class AssessmentsControllerTest < ActionController::TestCase
             symptoms: symptoms
           }
           assert_redirected_to :patient_assessments
-          assert_match /Symptom updates/, History.last.comment
-          assert_match /fever=Yes/, History.last.comment
+          assert_match(/Symptom updates/, History.last.comment)
+          assert_match(/fever=Yes/, History.last.comment)
         end
       end
     end
@@ -234,8 +234,8 @@ class AssessmentsControllerTest < ActionController::TestCase
             symptoms: symptoms
           }
           assert_redirected_to :patient_assessments
-          assert_match /Symptom updates/, History.last.comment
-          assert_match /temperature=100.4/, History.last.comment
+          assert_match(/Symptom updates/, History.last.comment)
+          assert_match(/temperature=100.4/, History.last.comment)
         end
       end
     end
@@ -289,8 +289,8 @@ class AssessmentsControllerTest < ActionController::TestCase
             symptoms: symptoms
           }
           assert_redirected_to :patient_assessments
-          assert_match /Symptom updates/, History.last.comment
-          assert_match /daysWithoutFever=3/, History.last.comment
+          assert_match(/Symptom updates/, History.last.comment)
+          assert_match(/daysWithoutFever=3/, History.last.comment)
         end
       end
     end
