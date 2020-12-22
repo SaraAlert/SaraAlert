@@ -13,22 +13,14 @@ class Assessment extends React.Component {
   constructor(props) {
     super(props);
     this.state = { index: 0, direction: null, assessmentState: { symptoms: this.props.symptoms } };
-    this.setAssessmentState = this.setAssessmentState.bind(this);
-    this.next = this.next.bind(this);
-    this.previous = this.previous.bind(this);
-    this.goto = this.goto.bind(this);
-    this.submit = this.submit.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.hasChanges = this.hasChanges.bind(this);
-    this.fieldIsEmptyOrNew = this.fieldIsEmptyOrNew.bind(this);
   }
 
-  setAssessmentState(assessmentState) {
+  setAssessmentState = assessmentState => {
     let currentAssessmentState = this.state.assessmentState;
     this.setState({ assessmentState: { ...currentAssessmentState, ...assessmentState } });
-  }
+  };
 
-  next() {
+  next = () => {
     let index = this.state.index;
     let lastIndex = this.state.lastIndex;
     if (lastIndex) {
@@ -40,16 +32,16 @@ class Assessment extends React.Component {
         this.setState({ index: index + 1, lastIndex: null });
       });
     }
-  }
+  };
 
-  previous() {
+  previous = () => {
     let index = this.state.index;
     this.setState({ direction: 'prev' }, () => {
       this.setState({ index: index - 1, lastIndex: null });
     });
-  }
+  };
 
-  goto(targetIndex) {
+  goto = targetIndex => {
     let index = this.state.index;
     if (targetIndex > index) {
       this.setState({ direction: 'next' }, () => {
@@ -60,13 +52,15 @@ class Assessment extends React.Component {
         this.setState({ index: targetIndex, lastIndex: index });
       });
     }
+  };
+
   }
 
   hasChanges() {
     return !_.isEqual(this.state.assessmentState, this.props.assessment);
   }
 
-  fieldIsEmptyOrNew(object) {
+  fieldIsEmptyOrNew = object => {
     const keysToIgnore = ['who_reported'];
     let allFieldsEmpty = true;
     _.map(object, (value, key) => {
@@ -79,9 +73,9 @@ class Assessment extends React.Component {
     } else {
       return false;
     }
-  }
+  };
 
-  submit() {
+  submit = () => {
     var submitData = this.state.assessmentState;
     submitData.threshold_hash = this.props.threshold_hash;
     var self = this;
@@ -105,7 +99,7 @@ class Assessment extends React.Component {
       // No need to say thanks for reporting if we want to reload the page
       this.goto(1);
     }
-  }
+  };
 
   handleSubmit = async () => {
     if (this.fieldIsEmptyOrNew(this.props.assessment)) {
