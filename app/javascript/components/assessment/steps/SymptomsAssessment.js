@@ -53,17 +53,8 @@ class SymptomsAssessment extends React.Component {
     this.setState({ selectedBoolSymptomCount: trueBoolSymptoms.length });
   };
 
-  // TODO: This needs to use generic symptoms lists and not be hard-coded
   hasChanges = () => {
-    let currentAssessment = _.cloneDeep(this.props.assessment);
-    let symptoms = ['cough', 'difficulty_breathing', 'symptomatic'];
-    // Having falsey values on them causes the comparison to fail.
-    symptoms.forEach(symptom => {
-      if (currentAssessment[parseInt(symptom)] === false) {
-        delete currentAssessment[parseInt(symptom)];
-      }
-    });
-    return !_.isEqual(this.state.assessmentState, currentAssessment);
+    return !_.isEqual(this.state.assessmentState, this.props.assessment);
   };
 
   fieldIsEmptyOrNew = object => {
