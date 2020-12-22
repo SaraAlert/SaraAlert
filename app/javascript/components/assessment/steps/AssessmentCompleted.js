@@ -5,15 +5,7 @@ import { Card, Form } from 'react-bootstrap';
 class AssessmentCompleted extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, ...this.props.currentState };
   }
-
-  handleChange = event => {
-    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    this.setState({ [event.target.id]: value }, () => {
-      this.props.setAssessmentState({ ...this.state });
-    });
-  };
 
   render() {
     return (
@@ -74,8 +66,6 @@ AssessmentCompleted.propTypes = {
   contact_info: PropTypes.object,
   translations: PropTypes.object,
   lang: PropTypes.string,
-  currentState: PropTypes.object,
-  setAssessmentState: PropTypes.func,
 };
 
 export default AssessmentCompleted;
