@@ -22,13 +22,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         end
 
         if message['response_status'].in? %w[opt_out opt_in]
-          begin
-            handle_opt_in_opt_out(message)
-          rescue StandardError => e
-            Rails.logger.info(
-              "ConsumeAssessmentsJob: failure handling opt-in/opt-out message (message response status: #{message['response_status']}), (error: #{e})"
-            )
-          end
+          handle_opt_in_opt_out(message)
           queue.commit
           next
         end
@@ -197,7 +191,12 @@ class ConsumeAssessmentsJob < ApplicationJob
     # therefore the patient.submission_token will not be available. We get the responder associated with the opt_in
     # or opt_out phone number by requesting the phone number who sent the message in the associated flow execution id
     phone_numbers = TwilioSender.get_phone_numbers_from_flow_execution(message['patient_submission_token'])
-    return if phone_numbers.nil?
+    if phone_numbers.nil?
+      Rails.logger.info(
+        "ConsumeAssessmentsJob: failure fetching number for opt-in/opt-out message (message response status: #{message['response_status']})"
+      )
+      return
+    end
 
     monitoree_number = Phonelib.parse(phone_numbers[:monitoree_number], 'US').full_e164
     sara_number = phone_numbers[:sara_number]
