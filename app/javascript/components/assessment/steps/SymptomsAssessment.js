@@ -168,53 +168,51 @@ class SymptomsAssessment extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
-        <Card className="mx-0 card-square">
-          <Card.Header className="h4">
-            {this.props.translations[this.props.lang]['web']['title']}&nbsp;
-            {this.props.patient_initials && this.props.patient_age !== null && (
-              <span>
-                ({this.props.patient_initials}-{this.props.patient_age})
-              </span>
-            )}
-            {this.props.patient_initials && this.props.patient_age === null && <span>({this.props.patient_initials})</span>}
-            {!this.props.patient_initials && this.props.patient_age !== null && <span>({this.props.patient_age})</span>}
-          </Card.Header>
-          <Card.Body>
-            <Form.Row>
-              <Form.Label className="nav-input-label pb-3">{this.props.translations[this.props.lang]['web']['bool-title']}</Form.Label>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group className="pt-1">
-                {this.state.assessmentState.symptoms
-                  .filter(x => {
-                    return x.type === 'BoolSymptom';
-                  })
-                  .sort((a, b) => {
-                    return a?.name?.localeCompare(b?.name);
-                  })
-                  .map(symp => this.boolSymptom(symp))}
-                {this.noSymptom()}
-                {this.state.assessmentState.symptoms
-                  .filter(x => {
-                    return x.type === 'FloatSymptom';
-                  })
-                  .map(symp => this.floatSymptom(symp))}
-              </Form.Group>
-            </Form.Row>
-            <Form.Row className="pt-4">
-              <Button variant="primary" block size="lg" className="btn-block btn-square" disabled={this.state.loading} onClick={this.navigate}>
-                {this.state.loading && (
-                  <React.Fragment>
-                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                  </React.Fragment>
-                )}
-                {this.props.translations[this.props.lang]['web']['submit']}
-              </Button>
-            </Form.Row>
-          </Card.Body>
-        </Card>
-      </React.Fragment>
+      <Card className="mx-0 card-square">
+        <Card.Header className="h4">
+          {this.props.translations[this.props.lang]['web']['title']}&nbsp;
+          {this.props.patient_initials && this.props.patient_age !== null && (
+            <span>
+              ({this.props.patient_initials}-{this.props.patient_age})
+            </span>
+          )}
+          {this.props.patient_initials && this.props.patient_age === null && <span>({this.props.patient_initials})</span>}
+          {!this.props.patient_initials && this.props.patient_age !== null && <span>({this.props.patient_age})</span>}
+        </Card.Header>
+        <Card.Body>
+          <Form.Row>
+            <Form.Label className="nav-input-label pb-3">{this.props.translations[this.props.lang]['web']['bool-title']}</Form.Label>
+          </Form.Row>
+          <Form.Row>
+            <Form.Group className="pt-1">
+              {this.state.assessmentState.symptoms
+                .filter(x => {
+                  return x.type === 'BoolSymptom';
+                })
+                .sort((a, b) => {
+                  return a?.name?.localeCompare(b?.name);
+                })
+                .map(symp => this.boolSymptom(symp))}
+              {this.noSymptom()}
+              {this.state.assessmentState.symptoms
+                .filter(x => {
+                  return x.type === 'FloatSymptom';
+                })
+                .map(symp => this.floatSymptom(symp))}
+            </Form.Group>
+          </Form.Row>
+          <Form.Row className="pt-4">
+            <Button variant="primary" block size="lg" className="btn-block btn-square" disabled={this.state.loading} onClick={this.navigate}>
+              {this.state.loading && (
+                <React.Fragment>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                </React.Fragment>
+              )}
+              {this.props.translations[this.props.lang]['web']['submit']}
+            </Button>
+          </Form.Row>
+        </Card.Body>
+      </Card>
     );
   }
 }
