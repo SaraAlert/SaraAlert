@@ -412,6 +412,21 @@ class Patient < ApplicationRecord
       )
   }
 
+  # Convert Patient's latest_assessment_at from UTC to the Patient's local time
+  # Is that time after the date (NOT TIME) of now UTC converted to the Patient's time zone
+  # AND they have a latest_assessment_at set.
+  scope :submitted_assessment_today, lambda {
+    where(
+      'CONVERT_TZ(patients.latest_assessment_at, "UTC", patients.time_zone)'\
+      ' >= DATE(CONVERT_TZ(?, "+00:00", patients.time_zone))'\
+      'AND CONVERT_TZ(patients.latest_assessment_at, "UTC", patients.time_zone)'\
+      ' < DATE_ADD(DATE(CONVERT_TZ(?, "+00:00", patients.time_zone)), INTERVAL 1 DAY)',
+      Time.now.getlocal('-00:00'),
+      Time.now.getlocal('-00:00')
+    )
+      .where.not(latest_assessment_at: nil)
+  }
+
   # Any individual who is currently under investigation (exposure workflow only)
   scope :exposure_under_investigation, lambda {
     where(isolation: false)
@@ -655,29 +670,30 @@ class Patient < ApplicationRecord
   }
   # rubocop:enable Style/MultilineBlockChain
 
-  # Gets the current date in the patient's timezone
-  def curr_date_in_timezone
-    Time.now.getlocal(address_timezone_offset)
-  end
-
-  # Checks is at the end of or past their monitoring period
-  def end_of_monitoring_period?
-    return false if continuous_exposure
-
-    monitoring_period_days = ADMIN_OPTIONS['monitoring_period_days'].days
-
-    # If there is a last date of exposure - base monitoring period off of that date
-    monitoring_end_date = if !last_date_of_exposure.nil?
-                            last_date_of_exposure.beginning_of_day + monitoring_period_days
-                          else
-                            # Otherwise, if there is no last date of exposure - base monitoring period off of creation date
-                            created_at.beginning_of_day + monitoring_period_days
-                          end
-
-    # If it is the last day of or past the monitoring period
-    # NOTE: beginning_of_day is used as monitoring period is based of date not the specific time
-    curr_date_in_timezone.beginning_of_day >= monitoring_end_date
-  end
+  # Patients in the exposure workflow have finished their monitoring period IF:
+  # - not in continuous exposure
+  #    AND EITHER
+  # - last exposure date is on or after (today - 'monitoring_period_days') in patient local time
+  #    OR
+  # - last exposure date is null and created date is on or after (today - 'monitoring_period_days') in patient local time
+  scope :end_of_monitoring_period, lambda {
+    where(continuous_exposure: false)
+      .where(
+        '('\
+        '  patients.last_date_of_exposure IS NOT NULL AND '\
+        '  DATE_ADD(patients.last_date_of_exposure, INTERVAL ? DAY)'\
+        '    <= DATE(CONVERT_TZ(?, "UTC", patients.time_zone))'\
+        ') OR ('\
+        '  patients.last_date_of_exposure IS NULL AND '\
+        '  DATE_ADD(DATE(CONVERT_TZ(patients.created_at, "UTC", patients.time_zone)), INTERVAL ? DAY)'\
+        '    <= DATE(CONVERT_TZ(?, "UTC", patients.time_zone))'\
+        ')',
+        ADMIN_OPTIONS['monitoring_period_days'],
+        Time.now.getlocal('-00:00'),
+        ADMIN_OPTIONS['monitoring_period_days'],
+        Time.now.getlocal('-00:00')
+      )
+  }
 
   # Patients are eligible to be automatically closed by the system IF:
   #  - in exposure workflow
@@ -689,15 +705,15 @@ class Patient < ApplicationRecord
   #  - not in continuous exposure
   #     AND
   #  - on the last day of or past their monitoring period
-  def self.close_eligible
+  scope :close_eligible, lambda {
     exposure_asymptomatic
-      .where(continuous_exposure: false)
-      .select do |patient|
-        # Submitted an assessment today AND is at the end of or past their monitoring period
-        (!patient.latest_assessment_at.nil? &&
-          patient.latest_assessment_at.getlocal(patient.address_timezone_offset) >= patient.curr_date_in_timezone.beginning_of_day &&
-          patient.end_of_monitoring_period?)
-      end
+      .submitted_assessment_today
+      .end_of_monitoring_period
+  }
+
+  # Gets the current date in the patient's timezone
+  def curr_date_in_timezone
+    Time.now.getlocal(address_timezone_offset)
   end
 
   # Order individuals based on their public health assigned risk assessment

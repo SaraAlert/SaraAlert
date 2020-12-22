@@ -2969,6 +2969,118 @@ class PatientTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['monitoring_period_days'] = original_monitoring_period
   end
 
+  test 'submitted_assessment_today scope' do
+    [
+      { monitored_address_state: nil, address_state: nil },
+      { monitored_address_state: 'minnesota', address_state: nil },
+      { monitored_address_state: nil, address_state: 'minnesota' },
+      { monitored_address_state: 'montana', address_state: nil },
+      { monitored_address_state: nil, address_state: 'florida' }
+    ].each do |state_params|
+      patient = create(:patient)
+      patient.update(state_params)
+      patient.reload
+
+      # assessment is 3 days before
+      assessment = create(:assessment, patient: patient)
+      assessment.update(created_at: 3.days.ago)
+      assessment.reload
+      patient.reload
+      assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
+
+      # assessment is 11:59 PM day before
+      yesterday_local = Time.now.getlocal(patient.address_timezone_offset) - 1.day
+      assessment.update(created_at: yesterday_local.change(hour: 23, minute: 59))
+      assessment.reload
+      patient.reload
+      assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
+
+      # assessment is 12:00 AM current day
+      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, minute: 0))
+      assessment.reload
+      patient.reload
+      assert_not_nil Patient.submitted_assessment_today.find_by(id: patient.id)
+
+      # assessment is 12:00 PM current day
+      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 12))
+      assessment.reload
+      patient.reload
+      assert_not_nil Patient.submitted_assessment_today.find_by(id: patient.id)
+
+      # assessment is 11:59 PM current day
+      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 23, minute: 59))
+      assessment.reload
+      patient.reload
+      assert_not_nil Patient.submitted_assessment_today.find_by(id: patient.id)
+
+      # assessment is 12:00 AM next day
+      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, minute: 0) + 1.day)
+      assessment.reload
+      patient.reload
+      assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
+
+      # assessment is 9:00 AM next day
+      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 9, minute: 0) + 1.day)
+      assessment.reload
+      patient.reload
+      assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
+    end
+  end
+
+  test 'end_of_monitoring_period scope' do
+    original_monitoring_period = ADMIN_OPTIONS['monitoring_period_days']
+    [
+      14,
+      21,
+      60
+    ].each do |monitoring_period|
+      ADMIN_OPTIONS['monitoring_period_days'] = monitoring_period
+      [
+        { monitored_address_state: nil, address_state: nil },
+        { monitored_address_state: 'minnesota', address_state: nil },
+        { monitored_address_state: nil, address_state: 'minnesota' },
+        { monitored_address_state: 'montana', address_state: nil },
+        { monitored_address_state: nil, address_state: 'florida' }
+      ].each do |state_params|
+        # Created now should be in the monitoring period
+        patient = create(:patient, state_params)
+        assert_nil Patient.end_of_monitoring_period.find_by(id: patient.id)
+
+        # Created at within monitoring period
+        patient.update(created_at: Time.now.getlocal(patient.address_timezone_offset) - 4.days)
+        patient.reload
+        assert_nil Patient.end_of_monitoring_period.find_by(id: patient.id)
+
+        # Created at on edge of monitoring period
+        edge_of_period = Time.now.getlocal(patient.address_timezone_offset) - monitoring_period.days
+        patient.update(created_at: edge_of_period.change(hour: 0, minute: 0))
+        patient.reload
+        assert_not_nil Patient.end_of_monitoring_period.find_by(id: patient.id)
+
+        # Created at before monitoring period
+        patient.update(created_at: edge_of_period - 1.day)
+        patient.reload
+        assert_not_nil Patient.end_of_monitoring_period.find_by(id: patient.id)
+
+        # Exposure date today within monitoring period
+        patient.update(last_date_of_exposure: Time.now.getlocal(patient.address_timezone_offset) - 4.days)
+        patient.reload
+        assert_nil Patient.end_of_monitoring_period.find_by(id: patient.id)
+
+        # Exposure date on edge of monitoring period
+        patient.update(last_date_of_exposure: edge_of_period)
+        patient.reload
+        assert_not_nil Patient.end_of_monitoring_period.find_by(id: patient.id)
+
+        # Exposure date before monitoring period
+        patient.update(last_date_of_exposure: edge_of_period - 1.day)
+        patient.reload
+        assert_not_nil Patient.end_of_monitoring_period.find_by(id: patient.id)
+      end
+    end
+    ADMIN_OPTIONS['monitoring_period_days'] = original_monitoring_period
+  end
+
   test 'has_usable_preferred_contact_method scope' do
     patient = create(:patient)
 
