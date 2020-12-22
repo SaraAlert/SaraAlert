@@ -69,14 +69,14 @@ class Patient extends React.Component {
       <React.Fragment>
         <Row id="monitoree-details-header">
           <Col className="mt-1">
-            <h3>
+            <div className="h3">
               <span className="pr-2">
                 {`${this.props.details.first_name ? this.props.details.first_name : ''}${
                   this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''
                 }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}
               </span>
               {this.props?.dependents && this.props?.dependents?.length > 0 && <BadgeHOH patientId={String(this.props.details.id)} location={'right'} />}
-            </h3>
+            </div>
           </Col>
           <Col md="auto" className="jurisdiction-user-box mr-3">
             <Row id="jurisdiction-path">
@@ -626,7 +626,7 @@ class Patient extends React.Component {
                     <div>
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
-                          <h5>(Edit)</h5>
+                          <div className="h5">(Edit)</div>
                         </Button>
                       )}
                     </div>
@@ -682,7 +682,7 @@ class Patient extends React.Component {
                       <div>
                         {this.props.goto && (
                           <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
-                            <h5>(Edit)</h5>
+                            <div className="h5">(Edit)</div>
                           </Button>
                         )}
                       </div>
