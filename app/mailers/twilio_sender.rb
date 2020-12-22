@@ -46,6 +46,8 @@ class TwilioSender
       Rails.logger.warn e.error_message
       return
     end
+    return if execution.nil? || execution.context.nil? || execution.context['trigger'].nil? || execution.context['trigger']['message'].nil?
+
     phone_number_from = execution.context['trigger']['message']['From'] || nil
     phone_number_to = execution.context['trigger']['message']['To'] || nil
     return { monitoree_number: phone_number_from, sara_number: phone_number_to } if !phone_number_from.nil? && !phone_number_to.nil?
