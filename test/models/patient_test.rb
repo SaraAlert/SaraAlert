@@ -2498,23 +2498,6 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.last_assessment_reminder_sent_eligible?
   end
 
-  test 'within preferred contact time scope utc' do
-    patient = create(:patient, monitored_address_state: 'Florida', preferred_contact_time: nil)
-    # Production system will run in UTC
-    # Before window
-    Timecop.freeze((Time.now.utc).change(hour: 13)) do
-      assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
-    end
-    # During window
-    Timecop.freeze((Time.now.utc).change(hour: 17)) do
-      assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
-    end
-    # After window
-    Timecop.freeze((Time.now.utc).change(hour: 23)) do
-      assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
-    end
-  end
-
   test 'update handles monitoring change' do
     patient = create(:patient, continuous_exposure: true, monitoring: true, closed_at: nil)
     assert patient.update({ monitoring: false })
@@ -2750,6 +2733,23 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal('America/New_York', patient.time_zone)
   end
 
+  test 'within preferred contact time scope utc' do
+    patient = create(:patient, monitored_address_state: 'florida', preferred_contact_time: nil)
+    # Production system will run in UTC
+    # Before window
+    Timecop.freeze((Time.now.utc).change(hour: 13)) do
+      assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+    end
+    # During window
+    Timecop.freeze((Time.now.utc).change(hour: 17)) do
+      assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+    end
+    # After window
+    Timecop.freeze((Time.now.utc).change(hour: 23)) do
+      assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+    end
+  end
+
   test 'within_preferred_contact_time scope' do
     patient = create(:patient)
     [
@@ -2857,6 +2857,182 @@ class PatientTest < ActiveSupport::TestCase
         assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
     end
+  end
+
+  test 'has_not_reported_recently scope' do
+    # Example: 1 day reporting period => was patient last assessment before midnight today?
+    # Example: 2 day reporting period => was patient last assessment before midnight yesterday?
+    # Example: 7 day reporting period => was patient last assessment before midnight 6 days ago?
+    original_reporting_period = ADMIN_OPTIONS['reporting_period_minutes']
+    [
+      1440,
+      1440 * 2,
+      1440 * 7,
+      1440 * 21
+    ].each do |reporting_period|
+      ADMIN_OPTIONS['reporting_period_minutes'] = reporting_period
+      [
+        { monitored_address_state: nil, address_state: nil },
+        { monitored_address_state: 'california', address_state: nil },
+        { monitored_address_state: nil, address_state: 'minnesota' },
+        { monitored_address_state: 'montana', address_state: nil },
+        { monitored_address_state: nil, address_state: 'florida' }
+      ].each do |state_params|
+        patient = create(:patient, state_params)
+        # Patient with no reports (latest_report_at is NULL)
+        assert_not_nil Patient.has_not_reported_recently.find_by(id: patient.id)
+
+        # Report outside of window
+        create(:assessment, patient: patient, created_at: 30.days.ago)
+        patient.reload
+        assert_not_nil Patient.has_not_reported_recently.find_by(id: patient.id)
+
+        # Report on right before start of window (23:59:59)
+        assessment_2 = create(
+          :assessment,
+          patient: patient,
+          created_at: (
+            Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes
+          )
+        )
+        patient.reload
+        assert_not_nil Patient.has_not_reported_recently.find_by(id: patient.id)
+
+        # Report on front edge of window (00:00:00)
+        assessment_2.update(
+          created_at: assessment_2.created_at + 1.second
+        )
+        assessment_2.reload
+        patient.reload
+        assert_nil Patient.has_not_reported_recently.find_by(id: patient.id)
+
+        # Report inside of window
+        assessment_2.update(created_at: Time.now.getlocal(patient.address_timezone_offset))
+        assessment_2.reload
+        patient.reload
+        assert_nil Patient.has_not_reported_recently.find_by(id: patient.id)
+      end
+    end
+    ADMIN_OPTIONS['reporting_period_minutes'] = original_reporting_period
+  end
+
+  test 'is_being_monitored scope' do
+    original_monitoring_period = ADMIN_OPTIONS['monitoring_period_days']
+    [
+      14,
+      21,
+      60
+    ].each do |monitoring_period|
+      ADMIN_OPTIONS['monitoring_period_days'] = monitoring_period
+      [
+        { monitored_address_state: nil, address_state: nil },
+        { monitored_address_state: 'minnesota', address_state: nil },
+        { monitored_address_state: nil, address_state: 'minnesota' },
+        { monitored_address_state: 'montana', address_state: nil },
+        { monitored_address_state: nil, address_state: 'florida' }
+      ].each do |state_params|
+        # Created now should be in the monitoring period
+        patient = create(:patient, state_params)
+        assert_not_nil Patient.is_being_monitored.find_by(id: patient.id)
+
+        # Created at within monitoring period
+        patient.update(created_at: Time.now.getlocal(patient.address_timezone_offset) - 4.days)
+        patient.reload
+        assert_not_nil Patient.is_being_monitored.find_by(id: patient.id)
+
+        # Created at on edge of monitoring period
+        patient.update(created_at: Time.now.getlocal(patient.address_timezone_offset) - monitoring_period.days)
+        patient.reload
+        assert_not_nil Patient.is_being_monitored.find_by(id: patient.id)
+
+        # Created at before monitoring period
+        patient.update(created_at: Time.now.getlocal(patient.address_timezone_offset) - monitoring_period.days - 1.day)
+        patient.reload
+        assert_nil Patient.is_being_monitored.find_by(id: patient.id)
+
+        # Exposure date today within monitoring period
+        patient.update(last_date_of_exposure: Time.now.getlocal(patient.address_timezone_offset) - 4.days)
+        patient.reload
+        assert_not_nil Patient.is_being_monitored.find_by(id: patient.id)
+
+        # Exposure date on edge of monitoring period
+        patient.update(last_date_of_exposure: Time.now.getlocal(patient.address_timezone_offset) - monitoring_period.days)
+        patient.reload
+        assert_not_nil Patient.is_being_monitored.find_by(id: patient.id)
+
+        # Exposure date before monitoring period
+        patient.update(last_date_of_exposure: Time.now.getlocal(patient.address_timezone_offset) - monitoring_period.days - 1.day)
+        patient.reload
+        assert_nil Patient.is_being_monitored.find_by(id: patient.id)
+      end
+    end
+    ADMIN_OPTIONS['monitoring_period_days'] = original_monitoring_period
+  end
+
+  test 'has_usable_preferred_contact_method scope' do
+    patient = create(:patient)
+
+    # eligible contact methods
+    ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |contact_method|
+      patient.update(preferred_contact_method: contact_method)
+      patient.reload
+      assert_not_nil Patient.has_usable_preferred_contact_method.find_by(id: patient.id)
+    end
+    # not eligible contact methods
+    ['Unknown', 'Opt-out', '', nil].each do |contact_method|
+      patient.update(preferred_contact_method: contact_method)
+      patient.reload
+      assert_nil Patient.has_usable_preferred_contact_method.find_by(id: patient.id)
+    end
+  end
+
+  test 'reminder_not_sent_recently scope' do
+    # Example: 1 day reporting period => was patient last assessment before midnight today?
+    # Example: 2 day reporting period => was patient last assessment before midnight yesterday?
+    # Example: 7 day reporting period => was patient last assessment before midnight 6 days ago?
+    original_reporting_period = ADMIN_OPTIONS['reporting_period_minutes']
+    [
+      1440,
+      1440 * 2,
+      1440 * 7,
+      1440 * 21
+    ].each do |reporting_period|
+      ADMIN_OPTIONS['reporting_period_minutes'] = reporting_period
+      [
+        { monitored_address_state: nil, address_state: nil },
+        { monitored_address_state: 'california', address_state: nil },
+        { monitored_address_state: nil, address_state: 'minnesota' },
+        { monitored_address_state: 'montana', address_state: nil },
+        { monitored_address_state: nil, address_state: 'florida' }
+      ].each do |state_params|
+        patient = create(:patient, state_params)
+        # Patient with no reports (latest_report_at is NULL)
+        assert_not_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
+
+        # Report outside of window
+        patient.update(last_assessment_reminder_sent: 30.days.ago)
+        patient.reload
+        assert_not_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
+
+        # Report on right before start of window (23:59:59)
+        patient.update(
+          last_assessment_reminder_sent: Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes
+        )
+        patient.reload
+        assert_not_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
+
+        # Report on front edge of window (00:00:00)
+        patient.update(last_assessment_reminder_sent: patient.last_assessment_reminder_sent + 1.second)
+        patient.reload
+        assert_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
+
+        # Report inside of window
+        patient.update(last_assessment_reminder_sent: Time.now.getlocal(patient.address_timezone_offset))
+        patient.reload
+        assert_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
+      end
+    end
+    ADMIN_OPTIONS['reporting_period_minutes'] = original_reporting_period
   end
 end
 # rubocop:enable Metrics/ClassLength
