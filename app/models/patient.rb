@@ -149,6 +149,152 @@ class Patient < ApplicationRecord
       .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
   }
 
+  # Patients who are eligible for reminders
+  #
+  # GENERAL SCOPE OVERVIEW:
+  # - Everything before the OR is essentially checking if the HoH or the patient
+  #   who isn't in a household is eligible on their own.
+  # - Everything within the OR is checking if the HoH has any DEPENDENTS (excluding self)
+  #   that would make the HoH eligible to receive notifications for them.
+  scope :better_reminder_eligible, lambda {
+    joins(:dependents)
+      .monitoring_open
+      .within_preferred_contact_time
+      .has_not_reported_recently
+      .is_being_monitored
+      .has_usable_preferred_contact_method
+      .where('patients.id = patients.responder_id')
+      .where(pause_notifications: false)
+      .reminder_not_sent_recently
+      .or(has_eligible_dependents)
+  }
+
+  # Pateints should be reminded to report once within the reporting period.
+  #
+  # Period is based on the reporting_period_minutes, but is rounded by days.
+  #
+  # Example: 1 day reporting period => was patient last reminder before midnight today?
+  # Example: 2 day reporting period => was patient last reminder before midnight yesterday?
+  # Example: 7 day reporting period => was patient last reminder before midnight 6 days ago?
+  scope :reminder_not_sent_recently, lambda {
+    where(
+      # Converting to a timezone, then casting to date effectively gives us
+      # the start of the day in that timezone to make comparisons with.
+      'patients.last_assessment_reminder_sent IS NULL OR '\
+      'DATE_ADD('\
+      '    DATE(CONVERT_TZ(patients.last_assessment_reminder_sent, "UTC", patients.time_zone)),'\
+      '    INTERVAL ? DAY'\
+      ') < CONVERT_TZ(?, "UTC", patients.time_zone)',
+      (ADMIN_OPTIONS['reporting_period_minutes'] / 1440).to_i,
+      Time.now.getlocal('-00:00')
+    )
+  }
+
+  # Non-eligible contact methods are: ['Unknown', 'Opt-out', '', nil]
+  scope :has_usable_preferred_contact_method, lambda {
+    where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
+  }
+
+  # Check if the HoH has any dependents that make them eligible to
+  # recieve notifications on the dependent's behalf.
+  # The joined table is referred to as `dependents_patients` and is used for all
+  # checks made on the dependents. Anywhere the `patients` table is specified or
+  # where a hash is used for a condition are checks made on the HoH.
+  #
+  # A dependent patient makes the HoH reminder eligible if:
+  # - HoH is not purged
+  # - HoH has a usable preferred contact method
+  # - HoH has not paused notifications
+  # - current HoH local time is within the preferred contact time window
+  # - patient has monitoring ON
+  # - patient is not purged
+  # - patient is in isolation
+  #   OR
+  #   patient is in continuous exposure
+  #   OR
+  #   patient last date of exposure is on or after (today - monitoring_period_days)
+  #   OR
+  #   patient last date of exposure is null and created at of exposure is on or after (today - monitoring_period_days)
+  scope :has_eligible_dependents, lambda {
+    joins(:dependents)
+      .where(purged: false)
+      .where(head_of_household: true)
+      .where('patients.id = patients.responder_id')
+      .where(
+        # Ignore any joined rows where the dependents_patients is the HoH itself.
+        'dependents_patients.id != dependents_patients.responder_id'
+      )
+      .has_usable_preferred_contact_method
+      .where(
+        # HoH is unconditionally ineligible if it has paused notifications
+        pause_notifications: false
+      )
+      .where('dependents_patients.monitoring = ?', true)
+      .where('dependents_patients.purged = ?', false)
+      .where(
+        'dependents_patients.isolation = ? '\
+        'OR dependents_patients.continuous_exposure = ? '\
+        'OR dependents_patients.last_date_of_exposure >= DATE_SUB(DATE(CONVERT_TZ(?, "UTC", dependents_patients.time_zone)), INTERVAL ? DAY) '\
+        'OR ('\
+        '  dependents_patients.last_date_of_exposure IS NULL '\
+        '  AND dependents_patients.created_at >= DATE_SUB(DATE(CONVERT_TZ(?, "UTC", dependents_patients.time_zone)), INTERVAL ? DAY)'\
+        ')',
+        true,
+        true,
+        Time.now.getlocal('-00:00'),
+        ADMIN_OPTIONS['monitoring_period_days'],
+        Time.now.getlocal('-00:00'),
+        ADMIN_OPTIONS['monitoring_period_days']
+      )
+      .within_preferred_contact_time
+      .reminder_not_sent_recently
+  }
+
+  # Patients should be monitored are any of the below:
+  # - In isolation
+  # - In continuous exposure
+  # - last date of exposure is on or after (today - monitoring_period_days)
+  #   OR
+  #   last date of exposure is null and created at of exposure is on or after (today - monitoring_period_days)
+  scope :is_being_monitored, lambda {
+    where(
+      'patients.isolation = ? '\
+      'OR patients.continuous_exposure = ? '\
+      'OR patients.last_date_of_exposure >= DATE_SUB(DATE(CONVERT_TZ(?, "UTC", patients.time_zone)), INTERVAL ? DAY) '\
+      'OR ('\
+      '  patients.last_date_of_exposure IS NULL '\
+      '  AND patients.created_at >= DATE_SUB(DATE(CONVERT_TZ(?, "UTC", patients.time_zone)), INTERVAL ? DAY)'\
+      ')',
+      true,
+      true,
+      Time.now.getlocal('-00:00'),
+      ADMIN_OPTIONS['monitoring_period_days'],
+      Time.now.getlocal('-00:00'),
+      ADMIN_OPTIONS['monitoring_period_days']
+    )
+  }
+
+  # A patient has not reported within the reporting period if either:
+  # - last assessment is null
+  # - latest assessment date is before the beginning of the day in patient local
+  #   time for (time now - reporting_period_minutes).beginning of day
+  scope :has_not_reported_recently, lambda {
+    where(
+      # Converting to a timezone, then casting to date effectively gives us
+      # the start of the day in that timezone to make comparisons with.
+      'patients.latest_assessment_at IS NULL OR '\
+      'DATE_ADD('\
+      '    DATE(CONVERT_TZ(patients.latest_assessment_at, "UTC", patients.time_zone)),'\
+      '    INTERVAL ? DAY'\
+      ') < CONVERT_TZ(?, "UTC", patients.time_zone)',
+      # Example: 1 day reporting period => was patient last assessment before midnight today?
+      # Example: 2 day reporting period => was patient last assessment before midnight yesterday?
+      # Example: 7 day reporting period => was patient last assessment before midnight 6 days ago?
+      (ADMIN_OPTIONS['reporting_period_minutes'] / 1440).to_i,
+      Time.now.getlocal('-00:00')
+    )
+  }
+
   scope :within_preferred_contact_time, lambda {
     where(
       # If preferred contact time is X,
