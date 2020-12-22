@@ -5,6 +5,18 @@ require 'test_case'
 class DatabaseTest < ActiveSupport::TestCase
   include PatientHelper
 
+  test 'DATE_SUB and DATE_ADD work was expected' do
+    [
+      "SELECT '2021-01-03' = DATE(DATE_SUB(CONVERT_TZ('2021-01-04 00:00:00', 'UTC', 'UTC'), INTERVAL 1440 MINUTE))",
+      "SELECT '2021-01-03' = DATE(DATE_SUB(CONVERT_TZ('2021-01-04 00:00:00', 'UTC', 'UTC'), INTERVAL 720 MINUTE))",
+      "SELECT '2021-01-02' = DATE(DATE_SUB(CONVERT_TZ('2021-01-04 00:00:00', 'UTC', 'UTC'), INTERVAL 1441 MINUTE))",
+      "SELECT '2021-01-03' = DATE(DATE_SUB(DATE('2021-01-04'), INTERVAL 1 DAY))"
+    ].each do |sql|
+      result = ActiveRecord::Base.connection.execute(sql).first
+      assert_equal 1, result[0]
+    end
+  end
+
   test 'null and empty comparison works as expected' do
     patient_1 = create(:patient, monitored_address_state: nil)
     patient_2 = create(:patient, monitored_address_state: '')
@@ -74,6 +86,43 @@ class DatabaseTest < ActiveSupport::TestCase
       query = ActiveRecord::Base.connection.raw_connection.prepare("SELECT CONVERT_TZ(?, 'UTC', ?);")
       sql_time = query.execute(rails_utc_time, patient.time_zone).first[0]
       assert_equal sql_time.strftime('%Y-%m-%d %H:%M:%S'), rails_local_time.strftime('%Y-%m-%d %H:%M:%S')
+    end
+  end
+
+  test 'MySQL date compare works as expected' do
+    dt = Time.now.getlocal('-00:00').beginning_of_day
+    query = ActiveRecord::Base.connection.raw_connection.prepare('SELECT Date(?) = ?')
+    results = query.execute(dt, dt)
+    assert_equal 1, results.first.first
+    query.close
+
+    # This test isd a sanity check to verify that casting to a DATE in MySQL
+    # effectively gives us the beginning of the day and is considered less than
+    # one second past the beginning of the day
+    dt += 1.second
+    query = ActiveRecord::Base.connection.raw_connection.prepare('SELECT Date(?) < ?')
+    results = query.execute(dt, dt)
+    assert_equal 1, results.first.first
+    query.close
+
+    query = ActiveRecord::Base.connection.raw_connection.prepare('SELECT Date(?) > ?')
+    results = query.execute(dt, dt)
+    assert_equal 0, results.first.first
+    query.close
+
+    query = ActiveRecord::Base.connection.raw_connection.prepare('SELECT Date(?) != ?')
+    results = query.execute(dt, dt)
+    assert_equal 1, results.first.first
+    query.close
+  end
+
+  test 'MySQL hour works as expected' do
+    (0..23).each do |hour|
+      dt = Time.now.getlocal('-00:00').change(hour: hour)
+      query = ActiveRecord::Base.connection.raw_connection.prepare('SELECT HOUR(?)')
+      results = query.execute(dt)
+      assert_equal hour, results.first.first
+      query.close
     end
   end
 end
