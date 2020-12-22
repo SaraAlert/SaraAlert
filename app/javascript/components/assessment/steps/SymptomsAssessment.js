@@ -1,27 +1,32 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card, Button, Form } from 'react-bootstrap';
+import _ from 'lodash';
+import confirmDialog from '../../util/ConfirmDialog';
 
 class SymptomsAssessment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       ...this.props,
-      current: { ...this.props.currentState },
+      assessmentState: { symptoms: this.props.symptoms },
       loading: false,
       noSymptomsCheckbox: false,
       selectedBoolSymptomCount: 0,
     };
   }
 
+  setAssessmentState = assessmentState => {
+    let currentAssessmentState = this.state.assessmentState;
+    this.setState({ assessmentState: { ...currentAssessmentState, ...assessmentState } });
+  };
+
   handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    let current = this.state.current;
+    let assessment = this.state.assessmentState;
     let field_id = event.target.id.split('_idpre')[0];
-    Object.values(current.symptoms).find(symp => symp.name === field_id).value = value;
-    this.setState({ current: { ...current } }, () => {
-      this.props.setAssessmentState({ ...this.state.current });
-    });
+    Object.values(assessment.symptoms).find(symp => symp.name === field_id).value = value;
+    this.setAssessmentState({ ...this.state.assessmentState });
     this.updateBoolSymptomCount();
   };
 
@@ -30,31 +35,76 @@ class SymptomsAssessment extends React.Component {
     this.setState({ noSymptomsCheckbox: value }, () => {
       // Make sure pre-selected options are cleared
       if (this.state.noSymptomsCheckbox) {
-        let current = { ...this.state.current };
-        for (const symptom in current?.symptoms) {
-          if (current?.symptoms[parseInt(symptom)]?.type == 'BoolSymptom') {
-            current.symptoms[parseInt(symptom)].value = false;
+        let assessment = { ...this.state.assessmentState };
+        for (const symptom in assessment?.symptoms) {
+          if (assessment?.symptoms[parseInt(symptom)]?.type == 'BoolSymptom') {
+            assessment.symptoms[parseInt(symptom)].value = false;
           }
         }
-        this.setState({ current: current });
+        this.setAssessmentState({ ...this.state.assessmentState });
       }
     });
   };
 
   updateBoolSymptomCount = () => {
-    let trueBoolSymptoms = this.state.current.symptoms.filter(s => {
+    let trueBoolSymptoms = this.state.assessmentState.symptoms.filter(s => {
       return s.type === 'BoolSymptom' && s.value;
     });
     this.setState({ selectedBoolSymptomCount: trueBoolSymptoms.length });
   };
 
-  navigate() {
-    this.setState({ loading: true }, () => {
-      this.props.submit();
+  // TODO: This needs to use generic symptoms lists and not be hard-coded
+  hasChanges = () => {
+    let currentAssessment = _.cloneDeep(this.props.assessment);
+    let symptoms = ['cough', 'difficulty_breathing', 'symptomatic'];
+    // Having falsey values on them causes the comparison to fail.
+    symptoms.forEach(symptom => {
+      if (currentAssessment[parseInt(symptom)] === false) {
+        delete currentAssessment[parseInt(symptom)];
+      }
     });
-  }
+    return !_.isEqual(this.state.assessmentState, currentAssessment);
+  };
 
-  noSymptom() {
+  fieldIsEmptyOrNew = object => {
+    const keysToIgnore = ['who_reported'];
+    let allFieldsEmpty = true;
+    _.map(object, (value, key) => {
+      if (object[String(key)] !== null && !keysToIgnore.includes(key)) {
+        allFieldsEmpty = false;
+      }
+    });
+    if (allFieldsEmpty || _.isEmpty(this.props.assessment)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  navigate = () => {
+    this.setState({ loading: true }, () => {
+      this.handleSubmit();
+    });
+  };
+
+  handleSubmit = async () => {
+    if (this.fieldIsEmptyOrNew(this.props.assessment)) {
+      this.props.submit(this.state.assessmentState);
+    } else {
+      if (this.hasChanges()) {
+        if (await confirmDialog("Are you sure you'd like to modify this report?")) {
+          this.props.submit(this.state.assessmentState);
+        } else {
+          this.setState({ loading: false });
+          // to do: reset modal??
+        }
+      } else {
+        this.props.submit(this.state.assessmentState);
+      }
+    }
+  };
+
+  noSymptom = () => {
     let noSymptomsChecked = this.state.noSymptomsCheckbox;
     let boolSymptomsSelected = this.state.selectedBoolSymptomCount > 0 ? true : false;
 
@@ -72,7 +122,7 @@ class SymptomsAssessment extends React.Component {
         className="pb-2"
         onChange={this.handleNoSymptomChange}></Form.Check>
     );
-  }
+  };
 
   boolSymptom = symp => {
     // null bool values will default to false
@@ -136,7 +186,7 @@ class SymptomsAssessment extends React.Component {
             </Form.Row>
             <Form.Row>
               <Form.Group className="pt-1">
-                {this.state.current.symptoms
+                {this.state.assessmentState.symptoms
                   .filter(x => {
                     return x.type === 'BoolSymptom';
                   })
@@ -145,7 +195,7 @@ class SymptomsAssessment extends React.Component {
                   })
                   .map(symp => this.boolSymptom(symp))}
                 {this.noSymptom()}
-                {this.state.current.symptoms
+                {this.state.assessmentState.symptoms
                   .filter(x => {
                     return x.type === 'FloatSymptom';
                   })
@@ -170,13 +220,12 @@ class SymptomsAssessment extends React.Component {
 }
 
 SymptomsAssessment.propTypes = {
+  assessment: PropTypes.object,
+  symptoms: PropTypes.array,
   translations: PropTypes.object,
   patient_initials: PropTypes.string,
   patient_age: PropTypes.number,
   lang: PropTypes.string,
-  currentState: PropTypes.object,
-  setAssessmentState: PropTypes.func,
-  goto: PropTypes.func,
   submit: PropTypes.func,
   idPre: PropTypes.string,
 };
