@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import Assessment from '../assessment/Assessment';
+import Report from './Report';
 
 class ReportModal extends React.Component {
   constructor(props) {
@@ -13,9 +13,9 @@ class ReportModal extends React.Component {
       <Modal show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
         <Modal.Header closeButton></Modal.Header>
         <Modal.Body>
-          <Assessment
+          <Report
             current_user={this.props.current_user}
-            assessment={this.props.assessment}
+            report={this.props.report}
             threshold_hash={this.props.threshold_condition_hash}
             symptoms={this.props.symptoms}
             idPre={this.props.idPre}
@@ -39,7 +39,7 @@ ReportModal.propTypes = {
   show: PropTypes.bool,
   onClose: PropTypes.func,
   current_user: PropTypes.object,
-  assessment: PropTypes.object,
+  report: PropTypes.object,
   symptoms: PropTypes.array,
   translations: PropTypes.object,
   patient: PropTypes.object,

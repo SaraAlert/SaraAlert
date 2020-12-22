@@ -4,29 +4,29 @@ import { Card, Button, Form } from 'react-bootstrap';
 import _ from 'lodash';
 import confirmDialog from '../../util/ConfirmDialog';
 
-class SymptomsAssessment extends React.Component {
+class SymptomsReport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       ...this.props,
-      assessmentState: { symptoms: this.props.symptoms },
+      reportState: { symptoms: this.props.symptoms },
       loading: false,
       noSymptomsCheckbox: false,
       selectedBoolSymptomCount: 0,
     };
   }
 
-  setAssessmentState = assessmentState => {
-    let currentAssessmentState = this.state.assessmentState;
-    this.setState({ assessmentState: { ...currentAssessmentState, ...assessmentState } });
+  setReportState = reportState => {
+    let currentReportState = this.state.reportState;
+    this.setState({ reportState: { ...currentReportState, ...reportState } });
   };
 
   handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    let assessment = this.state.assessmentState;
+    let report = this.state.reportState;
     let field_id = event.target.id.split('_idpre')[0];
-    Object.values(assessment.symptoms).find(symp => symp.name === field_id).value = value;
-    this.setAssessmentState({ ...this.state.assessmentState });
+    Object.values(report.symptoms).find(symp => symp.name === field_id).value = value;
+    this.setReportState({ ...this.state.reportState });
     this.updateBoolSymptomCount();
   };
 
@@ -35,26 +35,26 @@ class SymptomsAssessment extends React.Component {
     this.setState({ noSymptomsCheckbox: value }, () => {
       // Make sure pre-selected options are cleared
       if (this.state.noSymptomsCheckbox) {
-        let assessment = { ...this.state.assessmentState };
-        for (const symptom in assessment?.symptoms) {
-          if (assessment?.symptoms[parseInt(symptom)]?.type == 'BoolSymptom') {
-            assessment.symptoms[parseInt(symptom)].value = false;
+        let report = { ...this.state.reportState };
+        for (const symptom in report?.symptoms) {
+          if (report?.symptoms[parseInt(symptom)]?.type == 'BoolSymptom') {
+            report.symptoms[parseInt(symptom)].value = false;
           }
         }
-        this.setAssessmentState({ ...this.state.assessmentState });
+        this.setReportState({ ...this.state.reportState });
       }
     });
   };
 
   updateBoolSymptomCount = () => {
-    let trueBoolSymptoms = this.state.assessmentState.symptoms.filter(s => {
+    let trueBoolSymptoms = this.state.reportState.symptoms.filter(s => {
       return s.type === 'BoolSymptom' && s.value;
     });
     this.setState({ selectedBoolSymptomCount: trueBoolSymptoms.length });
   };
 
   hasChanges = () => {
-    return !_.isEqual(this.state.assessmentState, this.props.assessment);
+    return !_.isEqual(this.state.reportState, this.props.report);
   };
 
   fieldIsEmptyOrNew = object => {
@@ -65,7 +65,7 @@ class SymptomsAssessment extends React.Component {
         allFieldsEmpty = false;
       }
     });
-    if (allFieldsEmpty || _.isEmpty(this.props.assessment)) {
+    if (allFieldsEmpty || _.isEmpty(this.props.report)) {
       return true;
     } else {
       return false;
@@ -79,18 +79,18 @@ class SymptomsAssessment extends React.Component {
   };
 
   handleSubmit = async () => {
-    if (this.fieldIsEmptyOrNew(this.props.assessment)) {
-      this.props.submit(this.state.assessmentState);
+    if (this.fieldIsEmptyOrNew(this.props.report)) {
+      this.props.submit(this.state.reportState);
     } else {
       if (this.hasChanges()) {
         if (await confirmDialog("Are you sure you'd like to modify this report?")) {
-          this.props.submit(this.state.assessmentState);
+          this.props.submit(this.state.reportState);
         } else {
           this.setState({ loading: false });
           // to do: reset modal??
         }
       } else {
-        this.props.submit(this.state.assessmentState);
+        this.props.submit(this.state.reportState);
       }
     }
   };
@@ -176,7 +176,7 @@ class SymptomsAssessment extends React.Component {
           </Form.Row>
           <Form.Row>
             <Form.Group className="pt-1">
-              {this.state.assessmentState.symptoms
+              {this.state.reportState.symptoms
                 .filter(x => {
                   return x.type === 'BoolSymptom';
                 })
@@ -185,7 +185,7 @@ class SymptomsAssessment extends React.Component {
                 })
                 .map(symp => this.boolSymptom(symp))}
               {this.noSymptom()}
-              {this.state.assessmentState.symptoms
+              {this.state.reportState.symptoms
                 .filter(x => {
                   return x.type === 'FloatSymptom';
                 })
@@ -208,8 +208,8 @@ class SymptomsAssessment extends React.Component {
   }
 }
 
-SymptomsAssessment.propTypes = {
-  assessment: PropTypes.object,
+SymptomsReport.propTypes = {
+  report: PropTypes.object,
   symptoms: PropTypes.array,
   translations: PropTypes.object,
   patient_initials: PropTypes.string,
@@ -219,4 +219,4 @@ SymptomsAssessment.propTypes = {
   idPre: PropTypes.string,
 };
 
-export default SymptomsAssessment;
+export default SymptomsReport;
