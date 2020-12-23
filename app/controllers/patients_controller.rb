@@ -16,11 +16,11 @@ class PatientsController < ApplicationController
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
 
-    @laboratories = @patient.laboratories.order(:created_at)
-    @close_contacts = @patient.close_contacts.order(:created_at)
-
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
+
+    @laboratories = @patient.laboratories.order(:created_at)
+    @close_contacts = @patient.close_contacts.order(:created_at)
 
     @possible_jurisdiction_paths = if current_user.can_transfer_patients?
                                      # Allow all jurisdictions as valid transfer options.
