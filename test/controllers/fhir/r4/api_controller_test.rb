@@ -195,7 +195,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       travel_related_notes: 'travel related notes',
       additional_planned_travel_related_notes: 'additional travel related notes',
       primary_telephone_type: 'Plain Cell',
-      secondary_telephone_type: 'Landline'
+      secondary_telephone_type: 'Landline',
+      black_or_african_american: true,
+      asian: true
     )
     @patient_2 = Patient.find_by(id: 2).as_fhir
 
@@ -916,6 +918,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, json_response['id']
     p = Patient.find_by(id: 1)
     assert_not p.nil?
+    assert p.black_or_african_american
+    assert p.asian
     assert_equal 'Patient', json_response['resourceType']
     assert_equal 'Kirlin44', json_response['name'].first['family']
     assert_equal 'SMS Texted Weblink', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
