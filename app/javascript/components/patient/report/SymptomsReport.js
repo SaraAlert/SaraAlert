@@ -12,7 +12,10 @@ class SymptomsReport extends React.Component {
       reportState: { symptoms: this.props.symptoms },
       loading: false,
       noSymptomsCheckbox: false,
-      selectedBoolSymptomCount: 0,
+      // ensure this is updated when editing a report
+      selectedBoolSymptomCount: this.props.symptoms.filter(x => {
+        return x.type === 'BoolSymptom' && x.value;
+      }).length,
     };
   }
 
