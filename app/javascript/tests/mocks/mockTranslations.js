@@ -5,7 +5,7 @@ const mockTranslations = {
         'name': 'Cough',
         'notes': ''
       },
-      'difficulty-breathing': {
+      'difficulty_breathing': {
         'name': 'Difficulty Breathing',
         'notes': ''
       },
@@ -13,7 +13,7 @@ const mockTranslations = {
         'name': 'Fever',
         'notes': 'Feeling feverish or have a measured temperature at or above 100.4°F/38°C'
       },
-      'used-a-fever-reducer': {
+      'used_a_fever_reducer': {
         'name': 'Used A Fever Reducer',
         'notes': 'In the past 24 hours, have you used any medicine that reduces fevers?'
       },
@@ -21,11 +21,11 @@ const mockTranslations = {
         'name': 'Chills',
         'notes': ''
       },
-      'repeated-shaking-with-chills': {
+      'repeated_shaking_with_chills': {
         'name': 'Repeated Shaking with Chills',
         'notes': ''
       },
-      'muscle-pain': {
+      'muscle_pain': {
         'name': 'Muscle Pain',
         'notes': ''
       },
@@ -33,15 +33,15 @@ const mockTranslations = {
         'name': 'Headache',
         'notes': ''
       },
-      'sore-throat': {
+      'sore_throat': {
         'name': 'Sore Throat',
         'notes': ''
       },
-      'new-loss-of-taste-or-smell': {
+      'new_loss_of_taste_or_smell': {
         'name': 'New Loss of Taste or Smell',
         'notes': ''
       },
-      'pulse-ox': {
+      'pulse_ox': {
         'name': 'Pulse Ox',
         'notes': 'What was your lowest oxygen level in the past 24 hours?'
       },
@@ -49,7 +49,7 @@ const mockTranslations = {
         'name': 'Fatigue',
         'notes': ''
       },
-      'nausea-or-vomiting': {
+      'nausea_or_vomiting': {
         'name': 'Nausea Or Vomiting',
         'notes': ''
       },
@@ -57,11 +57,11 @@ const mockTranslations = {
         'name': 'Diarrhea',
         'notes': ''
       },
-      'nasal-congestion': {
+      'nasal_congestion': {
         'name': 'Nasal Congestion',
         'notes': ''
       },
-      'runny-nose': {
+      'runny_nose': {
         'name': 'Runny Nose',
         'notes': ''
       },
@@ -73,20 +73,20 @@ const mockTranslations = {
         'name': 'Other',
         'notes': 'I would like someone to call me to follow-up on other symptoms or additional needs'
       },
-      'no-symptoms': 'I am not experiencing any symptoms',
-      'new-loss-of-smell': {
+      'no_symptoms': 'I am not experiencing any symptoms',
+      'new_loss_of_smell': {
         'name': 'New Loss of Smell',
         'notes': ''
       },
-      'new-loss-of-taste': {
+      'new_loss_of_taste': {
         'name': 'New Loss of Taste',
         'notes': ''
       },
-      'shortness-of-breath': {
+      'shortness_of_breath': {
         'name': 'Shortness of Breath',
         'notes': ''
       },
-      'congestion-or-runny-nose': {
+      'congestion_or_runny_nose': {
         'name': 'Congestion or Runny Nose',
         'notes': ''
       }
@@ -175,7 +175,7 @@ const mockTranslations = {
         'name': 'Tos',
         'notes': ''
       },
-      'difficulty-breathing': {
+      'difficulty_breathing': {
         'name': 'Problemas para respirar',
         'notes': ''
       },
@@ -183,7 +183,7 @@ const mockTranslations = {
         'name': 'Fiebre',
         'notes': 'Si siente que tiene fiebre o tiene una temperatura igual o superior a 100.4°F/38°C'
       },
-      'used-a-fever-reducer': {
+      'used_a_fever_reducer': {
         'name': 'Tomó medicina para reducir la fiebre',
         'notes': 'En las últimas 24 horas, ¿ha tomado algún medicamento para reducir la fiebre?'
       },
@@ -191,11 +191,11 @@ const mockTranslations = {
         'name': 'Escalofrío',
         'notes': ''
       },
-      'repeated-shaking-with-chills': {
+      'repeated_shaking_with_chills': {
         'name': 'Tiembla repetidamente y tiene escalofríos',
         'notes': ''
       },
-      'muscle-pain': {
+      'muscle_pain': {
         'name': 'Dolor muscular',
         'notes': ''
       },
@@ -203,15 +203,15 @@ const mockTranslations = {
         'name': 'Dolor de cabeza',
         'notes': ''
       },
-      'sore-throat': {
+      'sore_throat': {
         'name': 'Dolor de garganta',
         'notes': ''
       },
-      'new-loss-of-taste-or-smell': {
+      'new_loss_of_taste_or_smell': {
         'name': 'Perdió recientemente el sentido del olfato y de gusto',
         'notes': ''
       },
-      'pulse-ox': {
+      'pulse_ox': {
         'name': 'oxímetro de pulso',
         'notes': 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
       },
@@ -219,7 +219,7 @@ const mockTranslations = {
         'name': 'Fatiga',
         'notes': ''
       },
-      'nausea-or-vomiting': {
+      'nausea_or_vomiting': {
         'name': 'Náuseas o vómitos',
         'notes': ''
       },
@@ -227,11 +227,11 @@ const mockTranslations = {
         'name': 'Diarrea',
         'notes': ''
       },
-      'nasal-congestion': {
+      'nasal_congestion': {
         'name': 'Congestión nasal',
         'notes': ''
       },
-      'runny-nose': {
+      'runny_nose': {
         'name': 'Exceso de moco en la nariz',
         'notes': ''
       },
@@ -243,20 +243,20 @@ const mockTranslations = {
         'name': 'Otro',
         'notes': 'Me gustaría que alguien me llamara para hacer un seguimiento de otros síntomas o necesidades adicionales'
       },
-      'no-symptoms': 'No tengo ningún síntoma.',
-      'new-loss-of-smell': {
+      'no_symptoms': 'No tengo ningún síntoma.',
+      'new_loss_of_smell': {
         'name': 'Pérdida reciente el olfato',
         'notes': ''
       },
-      'new-loss-of-taste': {
+      'new_loss_of_taste': {
         'name': 'Pérdida reciente del gusto',
         'notes': ''
       },
-      'shortness-of-breath': {
+      'shortness_of_breath': {
         'name': 'Falta de aire',
         'notes': ''
       },
-      'congestion-or-runny-nose': {
+      'congestion_or_runny_nose': {
         'name': 'Congestión nasal o un exceso de moco en la nariz',
         'notes': ''
       }
@@ -345,7 +345,7 @@ const mockTranslations = {
         'name': 'Tos',
         'notes': ''
       },
-      'difficulty-breathing': {
+      'difficulty_breathing': {
         'name': 'Problemas para respirar',
         'notes': ''
       },
@@ -353,7 +353,7 @@ const mockTranslations = {
         'name': 'Fiebre',
         'notes': 'Se siente que tiene fiebre o tiene una temperatura igual o superior a 100.4°F/38°C'
       },
-      'used-a-fever-reducer': {
+      'used_a_fever_reducer': {
         'name': 'Tomó medicina para reducir la fiebre',
         'notes': 'En las últimas 24 horas, ¿ha tomado algún medicamento para reducir la fiebre?'
       },
@@ -361,11 +361,11 @@ const mockTranslations = {
         'name': 'Escalofrío',
         'notes': ''
       },
-      'repeated-shaking-with-chills': {
+      'repeated_shaking_with_chills': {
         'name': 'Tiembla repetidamente y tiene escalofríos',
         'notes': ''
       },
-      'muscle-pain': {
+      'muscle_pain': {
         'name': 'Dolor muscular',
         'notes': ''
       },
@@ -373,15 +373,15 @@ const mockTranslations = {
         'name': 'Dolor de cabeza',
         'notes': ''
       },
-      'sore-throat': {
+      'sore_throat': {
         'name': 'Dolor de garganta',
         'notes': ''
       },
-      'new-loss-of-taste-or-smell': {
+      'new_loss_of_taste_or_smell': {
         'name': 'Perdió recientemente el sentido del olfato y de gusto',
         'notes': ''
       },
-      'pulse-ox': {
+      'pulse_ox': {
         'name': 'oxímetro de pulso',
         'notes': 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
       },
@@ -389,7 +389,7 @@ const mockTranslations = {
         'name': 'Fatiga',
         'notes': ''
       },
-      'nausea-or-vomiting': {
+      'nausea_or_vomiting': {
         'name': 'Náuseas o vómitos',
         'notes': ''
       },
@@ -397,11 +397,11 @@ const mockTranslations = {
         'name': 'Diarrea',
         'notes': ''
       },
-      'nasal-congestion': {
+      'nasal_congestion': {
         'name': 'Congestión nasal',
         'notes': ''
       },
-      'runny-nose': {
+      'runny_nose': {
         'name': 'Exceso de moco en la nariz',
         'notes': ''
       },
@@ -413,20 +413,20 @@ const mockTranslations = {
         'name': 'Otro',
         'notes': 'Me gustaría que alguien me llamara para hacer un seguimiento de otros síntomas o necesidades adicionales'
       },
-      'no-symptoms': 'No tengo ningún síntoma.',
-      'new-loss-of-smell': {
+      'no_symptoms': 'No tengo ningún síntoma.',
+      'new_loss_of_smell': {
         'name': 'Pérdida reciente el olfato',
         'notes': ''
       },
-      'new-loss-of-taste': {
+      'new_loss_of_taste': {
         'name': 'Pérdida reciente del gusto',
         'notes': ''
       },
-      'shortness-of-breath': {
+      'shortness_of_breath': {
         'name': 'Falta de aire',
         'notes': ''
       },
-      'congestion-or-runny-nose': {
+      'congestion_or_runny_nose': {
         'name': 'Congestión nasal o un exceso de moco en la nariz',
         'notes': ''
       }
@@ -515,7 +515,7 @@ const mockTranslations = {
         'name': 'Toux',
         'notes': ''
       },
-      'difficulty-breathing': {
+      'difficulty_breathing': {
         'name': 'Difficultés respiratoires',
         'notes': ''
       },
@@ -523,19 +523,19 @@ const mockTranslations = {
         'name': 'Fièvre',
         'notes': 'Sensation de fébrilité ou température mesurée supérieure ou égale à 38 °C (100,4 °F)'
       },
-      'used-a-fever-reducer': {
+      'used_a_fever_reducer': {
         'name': 'Utilisation d’un agent pour diminuer la fièvre',
-        'notes': 'Avez-vous utilisé un médicament pour diminuer la fièvre au cours des dernières 24 heures?'
+        'notes': 'Avez_vous utilisé un médicament pour diminuer la fièvre au cours des dernières 24 heures?'
       },
       'chills': {
         'name': 'Frissons',
         'notes': ''
       },
-      'repeated-shaking-with-chills': {
+      'repeated_shaking_with_chills': {
         'name': 'Tremblements répétés accompagnés de frissons',
         'notes': ''
       },
-      'muscle-pain': {
+      'muscle_pain': {
         'name': 'Douleurs musculaires',
         'notes': ''
       },
@@ -543,15 +543,15 @@ const mockTranslations = {
         'name': 'Maux de tête',
         'notes': ''
       },
-      'sore-throat': {
+      'sore_throat': {
         'name': 'Maux de gorge',
         'notes': ''
       },
-      'new-loss-of-taste-or-smell': {
+      'new_loss_of_taste_or_smell': {
         'name': `Une nouvelle perte de goût ou de l'odorat`,
         'notes': ''
       },
-      'pulse-ox': {
+      'pulse_ox': {
         'name': 'd’oxymétrie de pouls',
         'notes': 'Saisissez votre mesure d’oxymétrie de pouls la plus faible au cours des dernières 24 heures'
       },
@@ -559,7 +559,7 @@ const mockTranslations = {
         'name': 'Fatigue',
         'notes': ''
       },
-      'nausea-or-vomiting': {
+      'nausea_or_vomiting': {
         'name': 'Nausées ou vomissements',
         'notes': ''
       },
@@ -567,11 +567,11 @@ const mockTranslations = {
         'name': 'Diarrhée',
         'notes': ''
       },
-      'nasal-congestion': {
+      'nasal_congestion': {
         'name': 'Congestion nasale',
         'notes': ''
       },
-      'runny-nose': {
+      'runny_nose': {
         'name': 'Nez qui coule',
         'notes': ''
       },
@@ -583,25 +583,25 @@ const mockTranslations = {
         'name': 'Other',
         'notes': `J'aimerais que quelqu'un m'appelle pour faire le suivi d'autres symptômes ou d’autre chose`
       },
-      'no-symptoms': 'Aucun symptôme',
-      'new-loss-of-smell': {
+      'no_symptoms': 'Aucun symptôme',
+      'new_loss_of_smell': {
         'name': 'Nouvelle perte de l’odorat',
         'notes': ''
       },
-      'new-loss-of-taste': {
+      'new_loss_of_taste': {
         'name': 'Nouvelle perte de goût',
         'notes': ''
       },
-      'shortness-of-breath': {
+      'shortness_of_breath': {
         'name': 'Essoufflement',
         'notes': ''
       },
-      'congestion-or-runny-nose': {
+      'congestion_or_runny_nose': {
         'name': 'Congestion nasale ou nez qui coule',
         'notes': ''
       }
     },
-    'threshold-op': {
+    'threshold_op': {
       'less-than': 'moins que',
       'less-than-or-equal': 'inférieur ou égal à',
       'greater-than': 'plus grand que',
@@ -685,7 +685,7 @@ const mockTranslations = {
         'name': 'Qufac',
         'notes': ''
       },
-      'difficulty-breathing': {
+      'difficulty_breathing': {
         'name': 'Neef-qabasho',
         'notes': ''
       },
@@ -693,7 +693,7 @@ const mockTranslations = {
         'name': 'Qandho',
         'notes': 'Dareemida xummad ama xaraarad cabbirkeedu yahay ama ka sareysa 100.4°F/38°C'
       },
-      'used-a-fever-reducer': {
+      'used_a_fever_reducer': {
         'name': 'Isticmaalay Xanuun-baa’bi’iye',
         'notes': '24-kii saac ee la soo dhaafay, ma isticmaashay wax daawo ah oo qanshada baa’bi’isa?'
       },
@@ -701,11 +701,11 @@ const mockTranslations = {
         'name': 'Qarqaryo',
         'notes': ''
       },
-      'repeated-shaking-with-chills': {
+      'repeated_shaking_with_chills': {
         'name': 'Gariir wata Qarqaryo oo soo noqnoqda',
         'notes': ''
       },
-      'muscle-pain': {
+      'muscle_pain': {
         'name': 'Murqo-xanuun',
         'notes': ''
       },
@@ -713,15 +713,15 @@ const mockTranslations = {
         'name': 'Madax-xanuun',
         'notes': ''
       },
-      'sore-throat': {
+      'sore_throat': {
         'name': 'Cune-xanuun',
         'notes': ''
       },
-      'new-loss-of-taste-or-smell': {
+      'new_loss_of_taste_or_smell': {
         'name': 'Luminta cusub ee dhadhanka ama urta',
         'notes': ''
       },
-      'pulse-ox': {
+      'pulse_ox': {
         'name': 'Aksijiinta Dhiiggaaga',
         'notes': 'Geli cabbirka aksijiinta dhiiggaaga ee ugu hooseeya ee la qaaday 24-kii saac ee la soo dhaafay'
       },
@@ -729,7 +729,7 @@ const mockTranslations = {
         'name': 'Daal',
         'notes': ''
       },
-      'nausea-or-vomiting': {
+      'nausea_or_vomiting': {
         'name': 'Lalabbo ama matagid',
         'notes': ''
       },
@@ -737,11 +737,11 @@ const mockTranslations = {
         'name': 'Shuban',
         'notes': ''
       },
-      'nasal-congestion': {
+      'nasal_congestion': {
         'name': 'Nasal Congestion',
         'notes': ''
       },
-      'runny-nose': {
+      'runny_nose': {
         'name': 'Runny Nose',
         'notes': ''
       },
@@ -753,20 +753,20 @@ const mockTranslations = {
         'name': 'Other',
         'notes': 'I would like someone to call me to follow-up on other symptoms or additional needs'
       },
-      'no-symptoms': 'Astaamo ma laha',
-      'new-loss-of-smell': {
+      'no_symptoms': 'Astaamo ma laha',
+      'new_loss_of_smell': {
         'name': 'ur cusub kaa lunta',
         'notes': ''
       },
-      'new-loss-of-taste': {
+      'new_loss_of_taste': {
         'name': 'Dhadhan kaa lunta',
         'notes': ''
       },
-      'shortness-of-breath': {
+      'shortness_of_breath': {
         'name': 'Neef qabatin',
         'notes': ''
       },
-      'congestion-or-runny-nose': {
+      'congestion_or_runny_nose': {
         'name': 'San xidhan ama duuf leh',
         'notes': ''
       }

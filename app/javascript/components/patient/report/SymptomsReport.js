@@ -105,6 +105,7 @@ class SymptomsReport extends React.Component {
     return (
       <Form.Check
         type="checkbox"
+        id="no-symptoms-check"
         checked={noSymptomsChecked}
         disabled={boolSymptomsSelected}
         aria-label="No Symptoms check"
