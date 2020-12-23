@@ -525,9 +525,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       # Replace symptoms field with actual symptom fields
       if data[:assessments][:checked].include?(:symptoms)
-        data[:assessments][:headers] = data[:assessments][:checked].map { |field| ASSESSMENT_FIELD_NAMES[field] } if data[:assessments][:headers].nil?
-        data[:assessments][:headers].delete('Symptoms Reported')
-        data[:assessments][:headers].concat(symptom_names_and_labels.map(&:second))
         data[:assessments][:checked].delete(:symptoms)
         data[:assessments][:checked].concat(symptom_names_and_labels.map(&:first).map(&:to_sym))
       end
@@ -559,8 +556,13 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   # Extracts patient data values given relevant fields
   def extract_patients_details(patients, fields)
     # perform the following queries in bulk only if requested for better performance
-    patients_jurisdiction_names = get_patients_jurisdiction_names(patients) if fields.include?(:jurisdiction_name)
-    patients_jurisdiction_paths = get_patients_jurisdiction_paths(patients) if fields.include?(:jurisdiction_path)
+    if fields.include?(:jurisdiction_name)
+      jurisdiction_names = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :name).map { |id, name| [id, name] }]
+    end
+    if fields.include?(:jurisdiction_path)
+      jurisdiction_paths = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :path).map { |id, path| [id, path] }]
+    end
+
     patients_transfers = get_patients_transfers(patients) if (fields & %i[transferred_from transferred_to]).any?
     patients_laboratories = get_patients_laboratories(patients) if (fields & PATIENT_LAB_FIELDS).any?
     patients_creators = Hash[User.find(patients.pluck(:creator_id)).pluck(:id, :email)] if fields.include?(:creator)
@@ -575,8 +577,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       patient_details[:creator] = patients_creators[patient.creator_id] || '' if fields.include?(:creator)
 
       # populate jurisdiction if requested
-      patient_details[:jurisdiction_name] = patients_jurisdiction_names[patient.id] || '' if fields.include?(:jurisdiction_name)
-      patient_details[:jurisdiction_path] = patients_jurisdiction_paths[patient.id] || '' if fields.include?(:jurisdiction_path)
+      patient_details[:jurisdiction_name] = jurisdiction_names[patient.jurisdiction_id] || '' if fields.include?(:jurisdiction_name)
+      patient_details[:jurisdiction_path] = jurisdiction_paths[patient.jurisdiction_id] || '' if fields.include?(:jurisdiction_path)
 
       # populate latest transfer from and to if requested
       if patients_transfers&.key?(patient.id)
@@ -652,8 +654,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Gets a hash of the latest transfers of each patient
   def get_patients_transfers(patients)
-    transfers = patients.pluck(:id, :latest_transfer_at)
-    transfers = Transfer.where(patient_id: transfers.map { |lt| lt[0] }, created_at: transfers.map { |lt| lt[1] })
+    transfers = Transfer.where(patient_id: patients.pluck(:id), created_at: patients.pluck(:latest_transfer_at))
     jurisdictions = Jurisdiction.find(transfers.pluck(:from_jurisdiction_id, :to_jurisdiction_id).flatten.uniq)
     jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map { |id, path| [id, path] }]
     Hash[transfers.pluck(:patient_id, :created_at, :from_jurisdiction_id, :to_jurisdiction_id)
@@ -670,26 +671,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   # Gets a hash of the 2 latest laboratories of each patient
   def get_patients_laboratories(patients)
     Laboratory.where(patient_id: patients.pluck(:id)).order(specimen_collection: :desc).group_by(&:patient_id).transform_values { |v| v.take(2) }
-  end
-
-  # Gets a hash containing mappings between jurisdiction id and name for each patient
-  def get_patients_jurisdiction_names(patients)
-    jurisdiction_names = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :name).map { |id, name| [id, name] }]
-    patients_jurisdiction_names = {}
-    patients.each do |patient|
-      patients_jurisdiction_names[patient.id] = jurisdiction_names[patient.jurisdiction_id]
-    end
-    patients_jurisdiction_names
-  end
-
-  # Gets a hash containing mappings between jurisdiction id and path for each patient
-  def get_patients_jurisdiction_paths(patients)
-    jurisdiction_paths = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :path).map { |id, path| [id, path] }]
-    patients_jurisdiction_paths = {}
-    patients.each do |patient|
-      patients_jurisdiction_paths[patient.id] = jurisdiction_paths[patient.jurisdiction_id]
-    end
-    patients_jurisdiction_paths
   end
 
   # Extracts assessment data values given relevant fields
@@ -748,66 +729,166 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Writes export data to file(s)
-  def write_export_data_to_files(config, exported_data, index)
+  def write_export_data_to_files(config, patients_group, index, data)
     case config[:format]
     when 'csv'
-      csv_export(config, exported_data, index)
+      csv_export(config, patients_group, index, data)
     when 'xlsx'
-      xlsx_export(config, exported_data, index)
+      xlsx_export(config, patients_group, index, data)
     end
   end
 
   # Creates a list of csv files from exported data
-  def csv_export(config, exported_data, index)
+  def csv_export(config, patients_group, index, data)
+    # Grab all assessment/report headers because symptom data must be aggregate across all records in this file
+    # This call updates the data object in place.
+    update_assessment_headers(patients_group, data)
+
     files = []
+    csvs = {}
+    packages = {}
+    fields = {}
+
+    # 1) Generate CSVs and packages and fields for each data type
     CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
       next unless config.dig(:data, data_type, :checked).present?
 
+      fields[data_type] = config.dig(:data, data_type, :checked)
       package = CSV.generate(headers: true) do |csv|
-        fields = config.dig(:data, data_type, :checked)
-        csv << (config.dig(:data, data_type, :headers) || fields.map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
+        # create CSV with column headers
+        csv << (config.dig(:data, data_type, :headers) || fields[data_type].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
+        csvs[data_type] = csv
+      end
+      packages[data_type] = package
+    end
+
+    # Get export data in batches to decrease size of export data hash maintained in memory
+    patients_group.in_batches(of: 500) do |batch_group|
+      exported_data = get_export_data(batch_group, data)
+
+      CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+        next unless config.dig(:data, data_type, :checked).present?
+
         exported_data[data_type]&.each do |record|
-          csv << fields.map { |field| record[field] }
+          csvs[data_type] << fields[data_type].map { |field| record[field] }
         end
       end
-      files << { filename: build_export_filename(config, data_type, index, false), content: Base64.encode64(package) }
+    end
+
+    CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+      next unless config.dig(:data, data_type, :checked).present?
+
+      files << { filename: build_export_filename(config, data_type, index, false), content: Base64.encode64(packages[data_type]) }
     end
     files
   end
 
   # Creates a list of excel files from exported data
-  def xlsx_export(config, exported_data, index)
+  def xlsx_export(config, patients_group, index, data)
+    # Grab all assessment/report headers because symptom data must be aggregate across all records in this file
+    # This call updates the data object in place.
+    update_assessment_headers(patients_group, data)
+
+    # Separate files for each data type
     if config[:separate_files].present?
       files = []
+      packages = {}
+      sheets = {}
+      fields = {}
+
+      # 1) This initial loops creates all of the files and column headers which should not be done in the batched loop
       CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
         next unless config.dig(:data, data_type, :checked).present?
 
+        # For each data type, create a new file
         Axlsx::Package.new do |package|
-          xlsx_sheet(config, exported_data, data_type, package)
-          files << { filename: build_export_filename(config, data_type, index, false), content: Base64.encode64(package.to_stream.read) }
+          # Add worksheet to this file and add column headers
+          fields[data_type] = config.dig(:data, data_type, :checked)
+          package.workbook.add_worksheet(name: config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label)) do |sheet|
+            sheet.add_row(config.dig(:data, data_type, :headers) || fields[data_type].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
+            sheets[data_type] = sheet
+          end
+          packages[data_type] = package
         end
       end
-      files
-    else
-      Axlsx::Package.new do |package|
+
+      # 2) Get export data in batches to decrease size of export data hash maintained in memory
+      patients_group.in_batches(of: 500) do |batch_group|
+        exported_data = get_export_data(batch_group, data)
+
+        #  Write to appropriate sheets (in each file)
         CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
           next unless config.dig(:data, data_type, :checked).present?
 
-          xlsx_sheet(config, exported_data, data_type, package)
+          fields = fields[data_type]
+          write_xlsx_rows(config, exported_data, data_type, sheets[data_type], fields)
         end
+      end
+
+      # 3) Build final file for each data type
+      CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+        next unless config.dig(:data, data_type, :checked).present?
+
+        files << { filename: build_export_filename(config, data_type, index, false), content: Base64.encode64(packages[data_type].to_stream.read) }
+      end
+
+      files
+    else
+      # One file for each data type, each data type in a different tab
+      Axlsx::Package.new do |package|
+        sheets = {}
+        fields = {}
+
+        # 1) This initial loops writes all of column headers which should not be done in the batched loop
+        CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+          next unless config.dig(:data, data_type, :checked).present?
+
+          fields[data_type] = config.dig(:data, data_type, :checked)
+          # Create an excel worksheet in the file and add the column headers for this data type
+          package.workbook.add_worksheet(name: config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label)) do |sheet|
+            sheet.add_row(config.dig(:data, data_type, :headers) || fields[data_type].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
+            sheets[data_type] = sheet
+          end
+        end
+
+        # 2) Get export data in batches to decrease size of export data hash maintained in memory
+        patients_group.in_batches(of: 500) do |batch_group|
+          exported_data = get_export_data(batch_group, data)
+
+          CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+            next unless config.dig(:data, data_type, :checked).present?
+
+            write_xlsx_rows(config, exported_data, data_type, sheets[data_type], fields[data_type])
+          end
+        end
+
+        # 3) Return the single file with all data
         return [{ filename: build_export_filename(config, nil, index, false), content: Base64.encode64(package.to_stream.read) }]
       end
     end
   end
 
-  def xlsx_sheet(config, exported_data, data_type, package)
-    package.workbook.add_worksheet(name: config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label)) do |sheet|
-      fields = config.dig(:data, data_type, :checked)
-      sheet.add_row(config.dig(:data, data_type, :headers) || fields.map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
-      exported_data[data_type]&.each do |record|
-        sheet.add_row(fields.map { |field| record[field] }, { types: Array.new(fields.length, :string) })
-      end
+  # Writes rows to a specific sheet for a given data type
+  def write_xlsx_rows(_config, exported_data, data_type, sheet, fields)
+    exported_data[data_type]&.each do |record|
+      sheet.add_row(fields.map { |field| record[field] }, { types: Array.new(fields.length, :string) })
     end
+  end
+
+  # Finds the assessment headers and symptom labels that should be the column headers
+  def update_assessment_headers(patients_group, data)
+    # Don't update if assessment data isn't needed
+    return unless data.dig(:assessments, :checked).present?
+
+    # Symptom columns are aggregate across all patients in this file
+    data[:assessments][:headers] = data[:assessments][:checked].map { |field| ASSESSMENT_FIELD_NAMES[field] } if data[:assessments][:headers].nil?
+
+    # Don't update if symptom data isn't needed
+    return unless data[:assessments][:checked].include?(:symptoms)
+
+    symptom_labels = patients_group.joins(assessments: [{ reported_condition: :symptoms }]).pluck('symptoms.label').uniq.sort
+    data[:assessments][:headers].delete('Symptoms Reported')
+    data[:assessments][:headers].concat(symptom_labels)
   end
 
   # Builds a file name using the base name, index, date, and extension.
