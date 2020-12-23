@@ -13,23 +13,20 @@ class AddReportingNote extends React.Component {
       comment: '',
       loading: false,
     };
-    this.toggleAddReportingNoteModal = this.toggleAddReportingNoteModal.bind(this);
-    this.addReportingNote = this.addReportingNote.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  toggleAddReportingNoteModal() {
+  toggleAddReportingNoteModal = () => {
     let current = this.state.showAddReportingNoteModal;
     this.setState({
       showAddReportingNoteModal: !current,
     });
-  }
+  };
 
-  handleChange(event) {
+  handleChange = event => {
     this.setState({ [event.target.id]: event.target.value });
-  }
+  };
 
-  addReportingNote() {
+  addReportingNote = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -45,16 +42,16 @@ class AddReportingNote extends React.Component {
           reportError(error);
         });
     });
-  }
+  };
 
-  createModal(title, toggle, submit, id) {
+  createModal(toggle, submit) {
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>Add Note To Report</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Please enter your note about the report (ID: {id}) below.</p>
+          <p>Please enter your note about the report (ID: {this.props.report.id}) below.</p>
           <Form.Group>
             <Form.Control as="textarea" rows="2" id="comment" onChange={this.handleChange} aria-label="Enter Assessment Note Text Area" />
           </Form.Group>
@@ -82,8 +79,7 @@ class AddReportingNote extends React.Component {
         <Button variant="link" onClick={this.toggleAddReportingNoteModal} className="dropdown-item">
           <i className="fas fa-comment-medical fa-fw"></i> Add Note
         </Button>
-        {this.state.showAddReportingNoteModal &&
-          this.createModal('Add Note To Report', this.toggleAddReportingNoteModal, this.addReportingNote, this.props.report.id)}
+        {this.state.showAddReportingNoteModal && this.createModal(this.toggleAddReportingNoteModal, this.addReportingNote)}
       </React.Fragment>
     );
   }
