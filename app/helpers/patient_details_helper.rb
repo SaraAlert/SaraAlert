@@ -56,8 +56,8 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   end
 
   # All information about this subject
-  def full_history_details
-    labs = Laboratory.where(patient_id: id).order(specimen_collection: :desc)
+  def comprehensive_details
+    labs = Laboratory.where(patient_id: id).order(report: :desc)
     {
       first_name: first_name || '',
       middle_name: middle_name || '',
@@ -143,7 +143,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       exposure_risk_assessment: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
       exposure_notes: exposure_notes || '',
-      full_status: '',
+      status: '',
       symptom_onset: symptom_onset&.strftime('%F') || '',
       case_status: case_status || '',
       lab_1_type: labs[0] ? (labs[0].lab_type || '') : '',
