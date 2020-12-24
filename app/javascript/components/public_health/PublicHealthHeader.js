@@ -38,7 +38,7 @@ class PublicHealthHeader extends React.Component {
         const config = { headers: { 'content-type': 'multipart/form-data' } };
         const formData = new FormData();
         formData.append('file', this.state.file);
-        const url = `/import/${this.props.workflow}/${this.state.fileType === 'epix' ? 'epix' : 'sara_alert_format'}`;
+        const url = `/import/${this.props.workflow}/${this.state.fileType === 'epix' ? 'epix' : 'comprehensive_monitorees'}`;
         axios.post(url, formData, config).then(response => {
           this.setState({
             uploading: false,
@@ -90,10 +90,10 @@ class PublicHealthHeader extends React.Component {
           {this.state.importData && (
             <React.Fragment>
               {this.state.importData.errors.length > 0 && (
-                <Modal.Title className="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} (error)</Modal.Title>
+                <Modal.Title as="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} (error)</Modal.Title>
               )}
               {this.state.importData.errors.length === 0 && (
-                <Modal.Title className="h5">
+                <Modal.Title as="h5">
                   {this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} ({this.props.workflow})
                 </Modal.Title>
               )}
@@ -121,8 +121,8 @@ class PublicHealthHeader extends React.Component {
     return (
       <Modal size="md" show={this.state.showUploadModal} onHide={() => this.setState({ showUploadModal: false, importType: null })}>
         <Modal.Header closeButton>
-          {this.state.importType === 'epix' && <Modal.Title className="h5">{`Import Epi-X (${this.props.workflow})`}</Modal.Title>}
-          {this.state.importType === 'saf' && <Modal.Title className="h5">{`Import Sara Alert Format (${this.props.workflow})`}</Modal.Title>}
+          {this.state.importType === 'epix' && <Modal.Title as="h5">{`Import Epi-X (${this.props.workflow})`}</Modal.Title>}
+          {this.state.importType === 'saf' && <Modal.Title as="h5">{`Import Sara Alert Format (${this.props.workflow})`}</Modal.Title>}
         </Modal.Header>
         <Modal.Body>
           {this.state.importType === 'saf' && (
@@ -163,18 +163,7 @@ class PublicHealthHeader extends React.Component {
               )}
             </Button>
           )}
-          {this.props.abilities.export && (
-            <Export
-              authenticity_token={this.props.authenticity_token}
-              jurisdiction_paths={this.props.jurisdiction_paths}
-              jurisdiction={this.props.jurisdiction}
-              tabs={this.props.tabs}
-              workflow={this.props.workflow}
-              query={this.props.query}
-              all_monitorees_count={this.state.counts.exposure + this.state.counts.isolation}
-              current_monitorees_count={this.props.current_monitorees_count}
-            />
-          )}
+          {this.props.abilities.export && <Export authenticity_token={this.props.authenticity_token} workflow={this.props.workflow}></Export>}
           {this.props.abilities.import && (
             <DropdownButton
               as={ButtonGroup}
@@ -213,18 +202,13 @@ class PublicHealthHeader extends React.Component {
 
 PublicHealthHeader.propTypes = {
   authenticity_token: PropTypes.string,
-  jurisdiction_paths: PropTypes.object,
   workflow: PropTypes.oneOf(['exposure', 'isolation']),
-  jurisdiction: PropTypes.object,
-  tabs: PropTypes.object,
   abilities: PropTypes.exact({
     analytics: PropTypes.bool,
     enrollment: PropTypes.bool,
     export: PropTypes.bool,
     import: PropTypes.bool,
   }),
-  query: PropTypes.object,
-  current_monitorees_count: PropTypes.number,
 };
 
 export default PublicHealthHeader;
