@@ -134,22 +134,12 @@ class MonitoringStatus extends React.Component {
             <Form.Group>
               <Form.Label>Please select reason for status change:</Form.Label>
               <Form.Control as="select" size="lg" className="form-square" id="monitoring_reason" onChange={this.handleChange} defaultValue={-1}>
-                <option value={-1} disabled>
-                  --
-                </option>
-                <option>Completed Monitoring</option>
-                <option>Meets criteria to shorten quarantine</option>
-                <option>Does not meet criteria for monitoring</option>
-                <option>Meets Case Definition</option>
-                <option>Lost to follow-up during monitoring period</option>
-                <option>Lost to follow-up (contact never established)</option>
-                <option>Transferred to another jurisdiction</option>
-                <option>Person Under Investigation (PUI)</option>
-                <option>Case confirmed</option>
-                <option>Meets criteria to discontinue isolation</option>
-                <option>Deceased</option>
-                <option>Duplicate</option>
-                <option>Other</option>
+                <option></option>
+                {this.props.monitoring_reasons.map((option, index) => (
+                  <option key={`option-${index}`} value={option}>
+                    {option}
+                  </option>
+                ))}
               </Form.Control>
             </Form.Group>
           )}
@@ -255,6 +245,7 @@ MonitoringStatus.propTypes = {
   authenticity_token: PropTypes.string,
   has_dependents: PropTypes.bool,
   in_household_with_member_with_ce_in_exposure: PropTypes.bool,
+  monitoring_reasons: PropTypes.array,
 };
 
 export default MonitoringStatus;
