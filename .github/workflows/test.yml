@@ -735,7 +735,6 @@ jobs:
       test-model-controller,
       test-system-public-health-dashboard,
       test-system-public-health-import-export,
-      test-system-public-health-custom-export,
       test-system-public-health-patient-page,
       test-system-enroller-dashboard,
       test-system-enroller-enrollment,
