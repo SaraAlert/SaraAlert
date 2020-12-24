@@ -22,11 +22,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   RISK_FACTOR_FIELDS = %i[contact_of_known_case was_in_health_care_facility_with_known_cases].freeze
   # TODO: when workflow specific case status validation re-enabled: uncomment
   # WORKFLOW_SPECIFIC_FIELDS = %i[case_status].freeze
-  NON_IMPORTED_PATIENT_FIELDS = %i[full_status lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report
-                                   lab_2_result].freeze
 
   def verify_epi_x_field_validation(jurisdiction_id, workflow, file_name)
-    sheet = get_xlsx(file_name).sheet(0)
+    sheet = get_xslx(file_name).sheet(0)
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       row.each_with_index do |value, index|
@@ -36,17 +34,17 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   end
 
   def verify_sara_alert_format_field_validation(jurisdiction_id, workflow, file_name)
-    sheet = get_xlsx(file_name).sheet(0)
+    sheet = get_xslx(file_name).sheet(0)
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       row.each_with_index do |value, index|
-        verify_validation(jurisdiction_id, workflow, SARA_ALERT_FORMAT_FIELDS[index], value)
+        verify_validation(jurisdiction_id, workflow, COMPREHENSIVE_FIELDS[index], value)
       end
     end
   end
 
   def verify_epi_x_import_page(jurisdiction_id, workflow, file_name)
-    sheet = get_xlsx(file_name).sheet(0)
+    sheet = get_xslx(file_name).sheet(0)
     find('.modal-body').all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
       verify_existence(card, 'State/Local ID', row[0], index)
@@ -78,7 +76,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   end
 
   def verify_sara_alert_format_import_page(jurisdiction_id, workflow, file_name)
-    sheet = get_xlsx(file_name).sheet(0)
+    sheet = get_xslx(file_name).sheet(0)
     find('.modal-body').all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
       verify_existence(card, 'State/Local ID', row[15], index)
@@ -112,7 +110,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   end
 
   def verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
-    sheet = get_xlsx(file_name).sheet(0)
+    sheet = get_xslx(file_name).sheet(0)
     sleep(2) # wait for db write
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_num|
@@ -149,7 +147,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   end
 
   def verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
-    sheet = get_xlsx(file_name).sheet(0)
+    sheet = get_xslx(file_name).sheet(0)
     sleep(2) # wait for db write
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_num|
@@ -162,7 +160,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         assert_nil(patient, "Patient should not be found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_num}")
       else
         assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_num}")
-        SARA_ALERT_FORMAT_FIELDS.each_with_index do |field, index|
+        COMPREHENSIVE_FIELDS.each_with_index do |field, index|
           if TELEPHONE_FIELDS.include?(field)
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif BOOL_FIELDS.include?(field)
@@ -177,21 +175,21 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           # TODO: when workflow specific case status validation re-enabled: remove the next 3 lines
           elsif field == :case_status # isolation workflow specific enum field
-            normalized_cell_value = NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])].to_s
+            normalized_cell_value = NORMALIZED_ENUMS[field][unformat_enum_field(row[index])].to_s
             assert_equal(workflow == :isolation ? normalized_cell_value : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           # TODO: when workflow specific case status validation re-enabled: uncomment
           # elsif field == :case_status
           #   normalized_cell_value = if workflow == :isolation
-          #                             NORMALIZED_ISOLATION_ENUMS[field][normalize_enum_field_value(row[index])].to_s
+          #                             NORMALIZED_ISOLATION_ENUMS[field][unformat_enum_field(row[index])].to_s
           #                           else
-          #                             NORMALIZED_EXPOSURE_ENUMS[field][normalize_enum_field_value(row[index])].to_s
+          #                             NORMALIZED_EXPOSURE_ENUMS[field][unformat_enum_field(row[index])].to_s
           #                           end
           #   assert_equal(normalized_cell_value, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :jurisdiction_path
             assert_equal(row[index] ? row[index].to_s : user_jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, "#{field} mismatch in row #{row_num}")
           elsif ENUM_FIELDS.include?(field)
-            assert_equal(NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif !NON_IMPORTED_PATIENT_FIELDS.include?(field)
+            assert_equal(NORMALIZED_ENUMS[field][unformat_enum_field(row[index])].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+          elsif !field.nil?
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end
         end
@@ -210,14 +208,14 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       # if VALIDATION[field][:checks].include?(:required) && (!value || value.blank?)
       #   assert page.has_content?("Required field '#{VALIDATION[field][:label]}' is missing"), "Error message for #{field}"
       # end
-      if value && !value.blank? && VALIDATION[field][:checks].include?(:enum) && !NORMALIZED_ENUMS[field].keys.include?(normalize_enum_field_value(value))
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:enum) && !NORMALIZED_ENUMS[field].keys.include?(unformat_enum_field(value))
         assert page.has_content?("'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       # TODO: when workflow specific case status validation re-enabled: uncomment
       # if value && !value.blank? && WORKFLOW_SPECIFIC_FIELDS.include?(field)
-      #   if workflow == :exposure && !NORMALIZED_EXPOSURE_ENUMS[field].keys.include?(normalize_enum_field_value(value))
+      #   if workflow == :exposure && !NORMALIZED_EXPOSURE_ENUMS[field].keys.include?(unformat_enum_field(value))
       #     assert page.has_content?('for monitorees imported into the Exposure workflow'), "Error message for #{field} incorrect"
-      #   elsif workflow == :isolation && !NORMALIZED_ISOLATION_ENUMS[field].keys.include?(normalize_enum_field_value(value))
+      #   elsif workflow == :isolation && !NORMALIZED_ISOLATION_ENUMS[field].keys.include?(unformat_enum_field(value))
       #     assert page.has_content?('for cases imported into the Isolation workflow'), "Error message for #{field} incorrect"
       #   end
       # end
@@ -303,7 +301,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     %w[true false].include?(value.to_s.downcase) ? (value.to_s.downcase == 'true') : nil
   end
 
-  def get_xlsx(file_name)
+  def get_xslx(file_name)
     Roo::Spreadsheet.open(file_fixture(file_name).to_s)
   end
 end
