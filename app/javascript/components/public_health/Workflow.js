@@ -42,6 +42,7 @@ class Workflow extends React.Component {
           workflow={this.props.workflow}
           jurisdiction={this.props.jurisdiction}
           tabs={this.props.tabs}
+          monitoring_reasons={this.props.monitoring_reasons}
           setQuery={query => this.setState({ query })}
           setFilteredMonitoreesCount={current_monitorees_count => this.setState({ current_monitorees_count })}
         />
@@ -57,6 +58,7 @@ Workflow.propTypes = {
   workflow: PropTypes.string,
   tabs: PropTypes.object,
   custom_export_options: PropTypes.object,
+  monitoring_reasons: PropTypes.array,
 };
 
 export default Workflow;
