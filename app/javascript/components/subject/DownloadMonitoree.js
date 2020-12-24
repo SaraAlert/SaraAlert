@@ -21,7 +21,7 @@ class DownloadMonitoreeExcel extends React.Component {
     this.setState({ loadingExcel: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .get(window.BASE_PATH + '/export/full_history_patient/' + this.props.patient.id, {})
+        .get(window.BASE_PATH + '/export/excel/patients/full_history/patient/' + this.props.patient.id, {})
         .then(response => {
           var fileDate = moment().format();
           FileDownload(
@@ -32,7 +32,6 @@ class DownloadMonitoreeExcel extends React.Component {
         })
         .catch(error => {
           reportError(error);
-          this.setState({ loadingExcel: false });
         });
     });
   };
@@ -52,7 +51,6 @@ class DownloadMonitoreeExcel extends React.Component {
         })
         .catch(error => {
           reportError(error);
-          this.setState({ loadingNBS: false });
         });
     });
   };

@@ -34,7 +34,6 @@ class Workflow extends React.Component {
           abilities={this.props.abilities}
           query={this.state.query}
           current_monitorees_count={this.state.current_monitorees_count}
-          custom_export_options={this.props.custom_export_options}
         />
         <PatientsTable
           authenticity_token={this.props.authenticity_token}
@@ -56,7 +55,6 @@ Workflow.propTypes = {
   jurisdiction: PropTypes.object,
   workflow: PropTypes.string,
   tabs: PropTypes.object,
-  custom_export_options: PropTypes.object,
 };
 
 export default Workflow;

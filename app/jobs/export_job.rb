@@ -9,58 +9,125 @@ class ExportJob < ApplicationJob
   # Adds additional files as needed if records exceeds batch size.
   RECORD_BATCH_SIZE = 10_000
 
-  def perform(config)
-    # Get user in order to query viewable patients
-    user = User.find_by(id: config[:user_id])
+  def perform(user_id, export_type)
+    user = User.find_by(id: user_id)
     return if user.nil?
 
     # Delete any existing downloads of this type
-    user.downloads.where(export_type: config[:export_type]).delete_all
-
-    # Extract data
-    data = config[:data]
-    return if data.nil?
+    user.downloads.where(export_type: export_type).delete_all
 
     # Construct export
     lookups = []
-    patients = patients_by_query(user, data.dig(:patients, :query) || {})
-
-    # Custom export is already sorted by id, calling order on custom export patients leads to invalid SQL statement because id is not in select list
-    patients = patients.order(:id) unless config[:export_type] == :custom
-    patients.find_in_batches(batch_size: RECORD_BATCH_SIZE).with_index do |patients_group, index|
-      exported_data = get_export_data(patients_group, data)
-      files = write_export_data_to_files(config, exported_data, index)
-      lookups.concat(create_lookups(config, files))
+    case export_type
+    when 'csv_exposure'
+      patients = user.viewable_patients.where(isolation: false).where(purged: false)
+      base_filename = 'Sara-Alert-Linelist-Exposure'
+      file_extension = 'csv'
+      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
+        data = csv_line_list(group)
+        lookups << get_file(user_id, data, build_filename(base_filename, index + 1, file_extension), export_type)
+      end
+    when 'csv_isolation'
+      patients = user.viewable_patients.where(isolation: true).where(purged: false)
+      base_filename = 'Sara-Alert-Linelist-Isolation'
+      file_extension = 'csv'
+      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
+        data = csv_line_list(group)
+        lookups << get_file(user_id, data, build_filename(base_filename, index + 1, file_extension), export_type)
+      end
+    when 'sara_format_exposure'
+      patients = user.viewable_patients.where(isolation: false).where(purged: false)
+      base_filename = 'Sara-Alert-Format-Exposure'
+      file_extension = 'xlsx'
+      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
+        data = sara_alert_format(group)
+        lookups << get_file(user_id, data, build_filename(base_filename, index + 1, file_extension), export_type)
+      end
+    when 'sara_format_isolation'
+      patients = user.viewable_patients.where(isolation: true).where(purged: false)
+      base_filename = 'Sara-Alert-Format-Isolation'
+      file_extension = 'xlsx'
+      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
+        data = sara_alert_format(group)
+        lookups << get_file(user_id, data, build_filename(base_filename, index + 1, file_extension), export_type)
+      end
+    when 'full_history_all'
+      patients = user.viewable_patients.where(purged: false)
+      file_extension = 'xlsx'
+      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
+        file_index = index + 1
+        lookups << get_file(user_id,
+                            excel_export_monitorees(group),
+                            build_filename('Sara-Alert-Full-Export-Monitorees', file_index, file_extension),
+                            export_type)
+        lookups << get_file(user_id,
+                            excel_export_assessments(group),
+                            build_filename('Sara-Alert-Full-Export-Assessments', file_index, file_extension),
+                            export_type)
+        lookups << get_file(user_id,
+                            excel_export_lab_results(group),
+                            build_filename('Sara-Alert-Full-Export-Lab-Results', file_index, file_extension),
+                            export_type)
+        lookups << get_file(user_id,
+                            excel_export_histories(group),
+                            build_filename('Sara-Alert-Full-Export-Histories', file_index, file_extension),
+                            export_type)
+      end
+    when 'full_history_purgeable'
+      patients = user.viewable_patients.purge_eligible
+      file_extension = 'xlsx'
+      patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
+        file_index = index + 1
+        lookups << get_file(user_id,
+                            excel_export_monitorees(group),
+                            build_filename('Sara-Alert-Purge-Eligible-Export-Monitorees', file_index, file_extension),
+                            export_type)
+        lookups << get_file(user_id,
+                            excel_export_assessments(group),
+                            build_filename('Sara-Alert-Purge-Eligible-Export-Assessments', file_index, file_extension),
+                            export_type)
+        lookups << get_file(user_id,
+                            excel_export_lab_results(group),
+                            build_filename('Sara-Alert-Purge-Eligible-Export-Lab-Results', file_index, file_extension),
+                            export_type)
+        lookups << get_file(user_id,
+                            excel_export_histories(group),
+                            build_filename('Sara-Alert-Purge-Eligible-Export-Histories', file_index, file_extension),
+                            export_type)
+      end
     end
-
     return if lookups.empty?
 
     # Sort lookups by filename so that they are grouped together accordingly after batching
     lookups = lookups.sort_by { |lookup| lookup[:filename] }
 
     # Send an email to user
-    UserMailer.download_email(user, EXPORT_TYPES[config[:export_type]][:label] || 'default', lookups, RECORD_BATCH_SIZE).deliver_later
+    UserMailer.download_email(user, export_type, lookups, RECORD_BATCH_SIZE).deliver_later
   end
 
-  # Creates lookups for files
-  def create_lookups(config, files)
-    lookups = []
+  # Builds a file name using the base name, index, date, and extension.
+  # Ex: "Sara-Alert-Linelist-Isolation-2020-09-01T14:15:05-04:00-1"
+  def build_filename(base_name, file_index, file_extension)
+    "#{base_name}-#{DateTime.now}-#{file_index}.#{file_extension}"
+  end
 
-    # Write
-    files&.each do |file|
-      lookup = SecureRandom.uuid
-      if ActiveRecord::Base.logger.formatter.nil?
-        download = Download.insert(user_id: config[:user_id], export_type: config[:export_type], filename: file[:filename],
-                                   lookup: lookup, contents: file[:content], created_at: DateTime.now, updated_at: DateTime.now)
-      else
-        ActiveRecord::Base.logger.silence do
-          download = Download.insert(user_id: config[:user_id], export_type: config[:export_type], filename: file[:filename],
-                                     lookup: lookup, contents: file[:content], created_at: DateTime.now, updated_at: DateTime.now)
-        end
+  # Gets a single download with the provided filename information and containing the provided data.
+  def get_file(user_id, data, full_filename, export_type)
+    { lookup: save_download(user_id, data, full_filename, export_type), filename: full_filename }
+  end
+
+  # Save a download file and return the lookup
+  def save_download(user_id, data, filename, export_type)
+    lookup = SecureRandom.uuid
+    if ActiveRecord::Base.logger.formatter.nil?
+      download = Download.insert(user_id: user_id, contents: data, filename: filename, lookup: lookup,
+                                 export_type: export_type, created_at: DateTime.now, updated_at: DateTime.now)
+    else
+      ActiveRecord::Base.logger.silence do
+        download = Download.insert(user_id: user_id, contents: data, filename: filename, lookup: lookup,
+                                   export_type: export_type, created_at: DateTime.now, updated_at: DateTime.now)
       end
-      lookups << { lookup: lookup, filename: file[:filename] }
     end
-
-    lookups
+    lookup
   end
 end

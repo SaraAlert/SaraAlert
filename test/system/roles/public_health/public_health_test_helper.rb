@@ -162,9 +162,9 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_csv_linelist(user_label, workflow, action)
+  def export_line_list_csv(user_label, workflow, action)
     @@system_test_utils.login(user_label)
-    @@public_health_dashboard.export_csv_linelist(user_label, workflow, action)
+    @@public_health_dashboard.export_line_list_csv(user_label, workflow, action)
     @@system_test_utils.logout
   end
 
@@ -174,21 +174,21 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_full_history_patients(user_label, workflow, action, scope)
+  def export_excel_purge_eligible_monitorees(user_label, workflow, action)
     @@system_test_utils.login(user_label)
-    @@public_health_dashboard.export_full_history_patients(user_label, workflow, action, scope)
+    @@public_health_dashboard.export_excel_purge_eligible_monitorees(user_label, workflow, action)
     @@system_test_utils.logout
   end
 
-  def export_full_history_patient(user_label, patient_label)
+  def export_excel_all_monitorees(user_label, workflow, action)
     @@system_test_utils.login(user_label)
-    @@public_health_dashboard.export_full_history_patient(patient_label)
+    @@public_health_dashboard.export_excel_all_monitorees(user_label, workflow, action)
     @@system_test_utils.logout
   end
 
-  def export_custom(user_label, settings)
+  def export_excel_single_monitoree(user_label, patient_label)
     @@system_test_utils.login(user_label)
-    @@public_health_dashboard.export_custom(user_label, settings)
+    @@public_health_dashboard.export_excel_single_monitoree(patient_label)
     @@system_test_utils.logout
   end
 

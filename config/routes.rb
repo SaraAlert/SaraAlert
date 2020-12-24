@@ -64,11 +64,10 @@ Rails.application.routes.draw do
 
   get '/patients/:id/group', to: 'patients#new_group_member'
 
-  get '/export/csv_linelist/:workflow', to: 'export#csv_linelist'
-  get '/export/sara_alert_format/:workflow', to: 'export#sara_alert_format'
-  get '/export/full_history_patients/:scope', to: 'export#full_history_patients'
-  get '/export/full_history_patient/:patient_id', to: 'export#full_history_patient'
-  post '/export/custom', to: 'export#custom_export'
+  get '/export/csv/patients/:type/:workflow', to: 'export#csv'
+  get '/export/excel/patients/comprehensive/:workflow', to: 'export#excel_comprehensive_patients'
+  get '/export/excel/patients/full_history/:scope', to: 'export#excel_full_history_patients'
+  get '/export/excel/patients/full_history/patient/:patient_id', to: 'export#excel_full_history_patient'
   get '/export/nbs/patient/:patient_id', to: 'export#nbs_patient'
   get '/export/download/:lookup', to: 'downloads#download', as: :export_download
 
