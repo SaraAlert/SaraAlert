@@ -10,6 +10,29 @@ class Patient < ApplicationRecord
   include ActiveModel::Validations
   include FhirHelper
 
+  MONITORING_REASONS = [
+    'Not Monitoring',
+    'Completed Monitoring',
+    'Meets criteria to shorten quarantine',
+    'Does not meet criteria for monitoring',
+    'Enrolled more than 14 days after last date of exposure (system)',
+    'Enrolled more than 10 days after last date of exposure (system)',
+    'Enrolled on last day of monitoring period (system)',
+    'Completed Monitoring (system)',
+    'Meets Case Definition',
+    'Lost to follow-up during monitoring period',
+    'Lost to follow-up (contact never established)',
+    'Transferred to another jurisdiction',
+    'Person Under Investigation (PUI)',
+    'Case confirmed',
+    'Past monitoring period',
+    'Meets criteria to discontinue isolation',
+    'Deceased',
+    'Duplicate',
+    'Other',
+    ''
+  ].freeze
+
   columns.each do |column|
     case column.type
     when :text

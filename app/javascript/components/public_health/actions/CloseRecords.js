@@ -13,29 +13,13 @@ class CloseRecords extends React.Component {
       apply_to_household: false,
       loading: false,
       monitoring: false,
-      monitoring_reasons: [
-        'Completed Monitoring',
-        'Meets criteria to shorten quarantine',
-        'Does not meet criteria for monitoring',
-        'Meets Case Definition',
-        'Lost to follow-up during monitoring period',
-        'Lost to follow-up (contact never established)',
-        'Transferred to another jurisdiction',
-        'Person Under Investigation (PUI)',
-        'Case confirmed',
-        'Meets criteria to discontinue isolation',
-        'Deceased',
-        'Duplicate',
-        'Other',
-      ],
       monitoring_reason: '',
       reasoning: '',
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.submit = this.submit.bind(this);
+    this.monitoring_reasons = this.props.monitoring_reasons.filter(x => x);
   }
 
-  handleChange(event) {
+  handleChange = event => {
     if (event.target.id === 'monitoring_reason') {
       this.setState({ monitoring_reason: event.target.value });
     } else if (event.target.id === 'reasoning') {
@@ -43,9 +27,9 @@ class CloseRecords extends React.Component {
     } else if (event.target.id === 'apply_to_household') {
       this.setState({ apply_to_household: event.target.checked });
     }
-  }
+  };
 
-  submit() {
+  submit = () => {
     let idArray = this.props.patients.map(x => x['id']);
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
 
@@ -68,7 +52,7 @@ class CloseRecords extends React.Component {
           this.setState({ loading: false });
         });
     });
-  }
+  };
 
   render() {
     return (
@@ -83,8 +67,10 @@ class CloseRecords extends React.Component {
           <Form.Group>
             <Form.Label>Please select reason for status change:</Form.Label>
             <Form.Control as="select" size="lg" className="form-square" id="monitoring_reason" onChange={this.handleChange} defaultValue={-1}>
-              <option value={''}>--</option>
-              {this.state.monitoring_reasons.map((option, index) => (
+              <option value={-1} disabled>
+                --
+              </option>
+              {this.monitoring_reasons.map((option, index) => (
                 <option key={`option-${index}`} value={option}>
                   {option}
                 </option>
@@ -127,6 +113,7 @@ CloseRecords.propTypes = {
   authenticity_token: PropTypes.string,
   patients: PropTypes.array,
   close: PropTypes.func,
+  monitoring_reasons: PropTypes.array,
 };
 
 export default CloseRecords;

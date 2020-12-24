@@ -30,7 +30,8 @@
                         in_household_with_member_with_ce_in_exposure: @household_members_with_ce_in_exposure_excludes_patient.count > 1,
                         patient: @patient,
                         jurisdiction_paths: @possible_jurisdiction_paths,
-                        assigned_users: @patient.jurisdiction.assigned_users
+                        assigned_users: @patient.jurisdiction.assigned_users,
+                        monitoring_reasons: Patient::MONITORING_REASONS
                       }) %>
 </div>
 <% end %>

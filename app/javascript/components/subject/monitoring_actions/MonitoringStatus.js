@@ -23,6 +23,7 @@ class MonitoringStatus extends React.Component {
       apply_to_household_cm_exp_only: false,
       apply_to_household_cm_exp_only_date: moment(new Date()).format('YYYY-MM-DD'),
     };
+    this.monitoring_reasons = this.props.monitoring_reasons.filter(x => x);
   }
 
   handleMonitoringStatusChange = event => {
@@ -137,19 +138,11 @@ class MonitoringStatus extends React.Component {
                 <option value={-1} disabled>
                   --
                 </option>
-                <option>Completed Monitoring</option>
-                <option>Meets criteria to shorten quarantine</option>
-                <option>Does not meet criteria for monitoring</option>
-                <option>Meets Case Definition</option>
-                <option>Lost to follow-up during monitoring period</option>
-                <option>Lost to follow-up (contact never established)</option>
-                <option>Transferred to another jurisdiction</option>
-                <option>Person Under Investigation (PUI)</option>
-                <option>Case confirmed</option>
-                <option>Meets criteria to discontinue isolation</option>
-                <option>Deceased</option>
-                <option>Duplicate</option>
-                <option>Other</option>
+                {this.monitoring_reasons.map((option, index) => (
+                  <option key={`option-${index}`} value={option}>
+                    {option}
+                  </option>
+                ))}
               </Form.Control>
             </Form.Group>
           )}
@@ -254,6 +247,7 @@ MonitoringStatus.propTypes = {
   authenticity_token: PropTypes.string,
   has_dependents: PropTypes.bool,
   in_household_with_member_with_ce_in_exposure: PropTypes.bool,
+  monitoring_reasons: PropTypes.array,
 };
 
 export default MonitoringStatus;
