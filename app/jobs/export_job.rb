@@ -23,11 +23,12 @@ class ExportJob < ApplicationJob
 
     # Construct export
     lookups = []
+
     patients = patients_by_query(user, data.dig(:patients, :query) || {})
 
-    # Custom export is already sorted by id, calling order on custom export patients leads to invalid SQL statement because id is not in select list
-    patients = patients.order(:id) unless config[:export_type] == :custom
-    patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |patients_group, index|
+    # NOTE: The reorder here clears out any other sorting that may have been added to this query as it should just be sorting by ID when
+    # getting batches. in_batches appears to NOT sort within batches, so ordering is also done deeper down.
+    patients.reorder('').in_batches(of: RECORD_BATCH_SIZE).each_with_index do |patients_group, index|
       files = write_export_data_to_files(config, patients_group, index, data)
       lookups.concat(create_lookups(config, files))
     end
