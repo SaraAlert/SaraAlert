@@ -78,7 +78,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     # Filter by assigned jurisdiction
     patients = patients.where(jurisdiction_id: jurisdiction.subtree_ids) if jurisdiction != current_user.jurisdiction && query[:tab] != :transferred_out
 
-    # Fitler by scope
+    # Filter by scope
     patients = patients.where(jurisdiction_id: jurisdiction.id) if query[:scope] == 'exact' && query[:tab] != :transferred_out
 
     # Filter by assigned user

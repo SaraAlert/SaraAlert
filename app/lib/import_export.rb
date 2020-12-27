@@ -508,16 +508,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                                           [id, { user_defined_id_statelocal: statelocal, user_defined_id_cdc: cdc, user_defined_id_nndss: nndss }]
                                         end]
 
-    if data.dig(:patients, :checked).present?
-      # Replace race field with actual race fields
-      if data[:patients][:checked].include?(:race)
-        race_index = data[:patients][:checked].index(:race)
-        data[:patients][:checked].delete(:race)
-        data[:patients][:checked].insert(race_index, *PATIENT_RACE_FIELDS)
-      end
-
-      exported_data[:patients] = extract_patients_details(patients, data[:patients][:checked])
-    end
+    exported_data[:patients] = extract_patients_details(patients, data[:patients][:checked]) if data.dig(:patients, :checked).present?
 
     if data.dig(:assessments, :checked).present?
       assessments = assessments_by_patient_ids(patients_identifiers.keys)
@@ -654,7 +645,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Gets a hash of the latest transfers of each patient
   def get_patients_transfers(patients)
-    transfers = Transfer.where(patient_id: patients.pluck(:id), created_at: patients.pluck(:latest_transfer_at))
+    transfers = patients.pluck(:id, :latest_transfer_at)
+    transfers = Transfer.where(patient_id: transfers.map { |lt| lt[0] }, created_at: transfers.map { |lt| lt[1] })
     jurisdictions = Jurisdiction.find(transfers.pluck(:from_jurisdiction_id, :to_jurisdiction_id).flatten.uniq)
     jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map { |id, path| [id, path] }]
     Hash[transfers.pluck(:patient_id, :created_at, :from_jurisdiction_id, :to_jurisdiction_id)
@@ -744,6 +736,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     # This call updates the data object in place.
     update_assessment_headers(patients_group, data)
 
+    # Update race values to include all race values if checked. This call updates the data object in place.
+    handle_race_values(patients_group, data)
+
     files = []
     csvs = {}
     packages = {}
@@ -755,16 +750,16 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       fields[data_type] = config.dig(:data, data_type, :checked)
       package = CSV.generate(headers: true) do |csv|
-        # create CSV with column headers
+        # Create CSV with column headers
         csv << (config.dig(:data, data_type, :headers) || fields[data_type].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
         csvs[data_type] = csv
       end
       packages[data_type] = package
     end
 
-    # Get export data in batches to decrease size of export data hash maintained in memory
+    # 2) Get export data in batches to decrease size of export data hash maintained in memory
     patients_group.in_batches(of: 500) do |batch_group|
-      exported_data = get_export_data(batch_group, data)
+      exported_data = get_export_data(batch_group.order(:id), data)
 
       CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
         next unless config.dig(:data, data_type, :checked).present?
@@ -775,6 +770,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
     end
 
+    # 3) Write new file for each data type
     CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
       next unless config.dig(:data, data_type, :checked).present?
 
@@ -788,6 +784,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     # Grab all assessment/report headers because symptom data must be aggregate across all records in this file
     # This call updates the data object in place.
     update_assessment_headers(patients_group, data)
+
+    # Update race values to include all race values if checked. This call updates the data object in place.
+    handle_race_values(patients_group, data)
 
     # Separate files for each data type
     if config[:separate_files].present?
@@ -814,14 +813,13 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
       patients_group.in_batches(of: 500) do |batch_group|
-        exported_data = get_export_data(batch_group, data)
+        exported_data = get_export_data(batch_group.order(:id), data)
 
         #  Write to appropriate sheets (in each file)
         CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
           next unless config.dig(:data, data_type, :checked).present?
 
-          fields = fields[data_type]
-          write_xlsx_rows(config, exported_data, data_type, sheets[data_type], fields)
+          write_xlsx_rows(config, exported_data, data_type, sheets[data_type], fields[data_type])
         end
       end
 
@@ -853,7 +851,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
         # 2) Get export data in batches to decrease size of export data hash maintained in memory
         patients_group.in_batches(of: 500) do |batch_group|
-          exported_data = get_export_data(batch_group, data)
+          exported_data = get_export_data(batch_group.order(:id), data)
 
           CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
             next unless config.dig(:data, data_type, :checked).present?
@@ -889,6 +887,17 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     symptom_labels = patients_group.joins(assessments: [{ reported_condition: :symptoms }]).pluck('symptoms.label').uniq.sort
     data[:assessments][:headers].delete('Symptoms Reported')
     data[:assessments][:headers].concat(symptom_labels)
+  end
+
+  # Finds the race values that should be included if the Race (All Race Fields) option is checked in custom export
+  def handle_race_values(_patients_group, data)
+    # Don't update if patient data isn't needed or race data isn't checked
+    return unless data.dig(:patients, :checked).present? && data[:patients][:checked].include?(:race)
+
+    # Replace race field with actual race fields
+    race_index = data[:patients][:checked].index(:race)
+    data[:patients][:checked].delete(:race)
+    data[:patients][:checked].insert(race_index, *PATIENT_RACE_FIELDS)
   end
 
   # Builds a file name using the base name, index, date, and extension.
