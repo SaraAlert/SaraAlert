@@ -756,14 +756,14 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       fields[data_type] = config.dig(:data, data_type, :checked)
       package = CSV.generate(headers: true) do |csv|
-        # create CSV with column headers
+        # Create CSV with column headers
         csv << (config.dig(:data, data_type, :headers) || fields[data_type].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
         csvs[data_type] = csv
       end
       packages[data_type] = package
     end
 
-    # Get export data in batches to decrease size of export data hash maintained in memory
+    # 2) Get export data in batches to decrease size of export data hash maintained in memory
     patients_group.in_batches(of: 500) do |batch_group|
       exported_data = get_export_data(batch_group.order(:id), data)
 
@@ -776,6 +776,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
     end
 
+    # 3) Write new file for each data type
     CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
       next unless config.dig(:data, data_type, :checked).present?
 
@@ -821,8 +822,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
           next unless config.dig(:data, data_type, :checked).present?
 
-          data_type_fields = fields[data_type]
-          write_xlsx_rows(config, exported_data, data_type, sheets[data_type], data_type_fields)
+          write_xlsx_rows(config, exported_data, data_type, sheets[data_type], fields[data_type])
         end
       end
 
