@@ -654,7 +654,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Gets a hash of the latest transfers of each patient
   def get_patients_transfers(patients)
-    transfers = Transfer.where(patient_id: patients.pluck(:id), created_at: patients.pluck(:latest_transfer_at))
+    transfers = patients.pluck(:id, :latest_transfer_at)
+    transfers = Transfer.where(patient_id: transfers.map { |lt| lt[0] }, created_at: transfers.map { |lt| lt[1] })
     jurisdictions = Jurisdiction.find(transfers.pluck(:from_jurisdiction_id, :to_jurisdiction_id).flatten.uniq)
     jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map { |id, path| [id, path] }]
     Hash[transfers.pluck(:patient_id, :created_at, :from_jurisdiction_id, :to_jurisdiction_id)
