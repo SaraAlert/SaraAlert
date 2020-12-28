@@ -95,7 +95,9 @@ class Assessment < ApplicationRecord
 
   # Gets all unique symptoms (based on name) for a given array of assessment IDs.
   def self.get_unique_symptoms_for_assessments(assessment_ids)
-    threshold_cond_hashes = ReportedCondition.where(type: 'ReportedCondition', assessment_id: assessment_ids).pluck(:threshold_condition_hash)
+    threshold_cond_hashes = ReportedCondition.where(type: 'ReportedCondition', assessment_id: assessment_ids)&.pluck(:threshold_condition_hash)
+    return if threshold_cond_hashes.nil?
+
     condition_ids = ThresholdCondition.where(type: 'ThresholdCondition', threshold_condition_hash: threshold_cond_hashes)
     Symptom.where(condition_id: condition_ids)&.uniq(&:name)
   end
