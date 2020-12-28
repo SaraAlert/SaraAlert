@@ -192,15 +192,15 @@ class AssessmentsController < ApplicationController
         new_val = symptom.bool_value
         old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
         has_changed = [true, false].include?(new_val) && [true, false].include?(old_val) && new_val != old_val
-        delta << symptom.name + '=' + (new_val ? 'Yes' : 'No') if has_changed
+        delta << "#{symptom.label} (\"#{old_val ? 'Yes' : 'No'}\" to \"#{new_val ? 'Yes' : 'No'}\")" if has_changed
       when 'FloatSymptom'
         new_val = symptom.float_value
         old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.float_value
-        delta << "#{symptom.name}=#{new_val}" if new_val != old_val
+        delta << "#{symptom.label} (\"#{old_val}\" to \"#{new_val}\")" if new_val != old_val
       when 'IntegerSymptom'
         new_val = symptom.int_value
         old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.int_value
-        delta << "#{symptom.name}=#{new_val}" if new_val != old_val
+        delta << "#{symptom.label} (\"#{old_val}\" to \"#{new_val}\")" if new_val != old_val
       end
     end
 

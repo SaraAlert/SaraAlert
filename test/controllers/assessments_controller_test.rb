@@ -207,7 +207,7 @@ class AssessmentsControllerTest < ActionController::TestCase
           }
           assert_redirected_to :patient_assessments
           assert_match(/Symptom updates/, History.last.comment)
-          assert_match(/fever=Yes/, History.last.comment)
+          assert_match(/Fever \("No" to "Yes"\)/, History.last.comment)
         end
       end
     end
@@ -261,7 +261,7 @@ class AssessmentsControllerTest < ActionController::TestCase
           }
           assert_redirected_to :patient_assessments
           assert_match(/Symptom updates/, History.last.comment)
-          assert_match(/temperature=100.4/, History.last.comment)
+          assert_match(/Temperature \("99.8" to "100.4"\)/, History.last.comment)
         end
       end
     end
@@ -316,7 +316,7 @@ class AssessmentsControllerTest < ActionController::TestCase
           }
           assert_redirected_to :patient_assessments
           assert_match(/Symptom updates/, History.last.comment)
-          assert_match(/daysWithoutFever=3/, History.last.comment)
+          assert_match(/Days Without Fever \("2" to "3"\)/, History.last.comment)
         end
       end
     end
