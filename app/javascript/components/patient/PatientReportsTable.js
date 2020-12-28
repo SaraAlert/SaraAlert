@@ -98,7 +98,7 @@ class PatientReportsTable extends React.Component {
         }
       })
       .then(response => {
-        if (response && response.data && response.data) {
+        if (response && response.data && response.data.table_data && response.data.symptoms && response.data.total) {
           this.setState(state => {
             let updatedColData = state.table.colData;
             // If first load, populate symptom columns in the table.
