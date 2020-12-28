@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  use_doorkeeper
+  use_doorkeeper do
+    controllers tokens: 'tokens'
+  end
 
   if ADMIN_OPTIONS['report_mode']
     root to: 'assessments#landing'
