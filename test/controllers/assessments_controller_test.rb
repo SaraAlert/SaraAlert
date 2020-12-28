@@ -143,7 +143,6 @@ class AssessmentsControllerTest < ActionController::TestCase
     assert_redirected_to :root
   end
 
-
   def update_report_test(role)
     patient_submission_token = patients(:patient_1).submission_token
     assessment = assessments(:patient_1_assessment_2)
