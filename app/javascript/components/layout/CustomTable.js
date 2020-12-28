@@ -185,6 +185,7 @@ class CustomTable extends React.Component {
                       <td>
                         <input
                           type="checkbox"
+                          aria-label="Table Select Monitoree Row"
                           checked={this.props.selectAll || this.props.selectedRows.includes(rowIndex)}
                           onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
                       </td>
