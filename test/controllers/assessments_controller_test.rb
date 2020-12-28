@@ -90,35 +90,49 @@ class AssessmentsControllerTest < ActionController::TestCase
     assert_redirected_to :already_reported_report
   end
 
-  test 'successful create report as user' do
+  def create_report_test(role)
     ADMIN_OPTIONS['report_mode'] = false
     patient_submission_token = patients(:patient_1).submission_token
     unique_identifier = patients(:patient_1).jurisdiction.unique_identifier
     AssessmentReceipt.create(submission_token: patient_submission_token)
-    %i[public_health_enroller_user public_health_user contact_tracer_user super_user].each do |role|
-      user = create(role)
-      sign_in user
-      assert_no_difference 'AssessmentReceipt.count' do
-        assert_difference 'Assessment.count', 1 do
-          post :create, params: {
-            patient_submission_token: patient_submission_token,
-            unique_identifier: unique_identifier,
-            experiencing_symptoms: 'yes',
-            symptoms: [
-              {
-                name: 'Cough',
-                value: false,
-                type: 'BoolSymptom',
-                label: 'Cough',
-                notes: 'Have you coughed today?'
-              }
-            ]
-          }
-        end
+    user = create(role)
+    sign_in user
+    assert_no_difference 'AssessmentReceipt.count' do
+      assert_difference 'Assessment.count', 1 do
+        post :create, params: {
+          patient_submission_token: patient_submission_token,
+          unique_identifier: unique_identifier,
+          experiencing_symptoms: 'yes',
+          symptoms: [
+            {
+              name: 'Cough',
+              value: false,
+              type: 'BoolSymptom',
+              label: 'Cough',
+              notes: 'Have you coughed today?'
+            }
+          ]
+        }
       end
       assert_redirected_to :patient_assessments
       sign_out user
     end
+  end
+
+  test 'successful create report as public_health_enroller_user' do
+    create_report_test('public_health_enroller_user')
+  end
+
+  test 'successful create report as public_health_user' do
+    create_report_test('public_health_user')
+  end
+
+  test 'successful create report as contact_tracer_user' do
+    create_report_test('contact_tracer_user')
+  end
+
+  test 'successful create report as super_user' do
+    create_report_test('super_user')
   end
 
   test 'redirected on bad update params' do
@@ -129,36 +143,48 @@ class AssessmentsControllerTest < ActionController::TestCase
     assert_redirected_to :root
   end
 
-  test 'redirected on ' do
-  end
 
-  test 'successfuly update report as user' do
+  def update_report_test(role)
     patient_submission_token = patients(:patient_1).submission_token
     assessment = assessments(:patient_1_assessment_2)
 
     # edit the assessment
-    %i[public_health_user public_health_enroller_user contact_tracer_user super_user].each do |role|
-      user = create(role)
-      symptoms = symptoms_param(assessment.reported_condition.symptoms)
-      expected_change = !symptoms.first[:value]
-      symptoms.first[:value] = expected_change
-      sign_in user
-      assert_changes 'History.count' do
-        assert_no_difference 'AssessmentReceipt.count' do
-          assert_no_difference 'Assessment.count' do
-            post :update, params: {
-              patient_submission_token: patient_submission_token,
-              id: assessment.id,
-              experiencing_symptoms: 'yes',
-              symptoms: symptoms
-            }
-            assert_redirected_to :patient_assessments
-          end
+    user = create(role)
+    symptoms = symptoms_param(assessment.reported_condition.symptoms)
+    expected_change = !symptoms.first[:value]
+    symptoms.first[:value] = expected_change
+    sign_in user
+    assert_changes 'History.count' do
+      assert_no_difference 'AssessmentReceipt.count' do
+        assert_no_difference 'Assessment.count' do
+          post :update, params: {
+            patient_submission_token: patient_submission_token,
+            id: assessment.id,
+            experiencing_symptoms: 'yes',
+            symptoms: symptoms
+          }
+          assert_redirected_to :patient_assessments
         end
       end
       assessment.reload
       assert_equal expected_change, assessment.reported_condition.symptoms.first.bool_value
     end
+  end
+
+  test 'successfuly update report as public_health_user' do
+    update_report_test('public_health_user')
+  end
+
+  test 'successfuly update report as public_health_enroller_user' do
+    update_report_test('public_health_enroller_user')
+  end
+
+  test 'successfuly update report as contact_tracer_user' do
+    update_report_test('contact_tracer_user')
+  end
+
+  test 'successfuly update report as super_user' do
+    update_report_test('super_user')
   end
 
   test 'successfuly update with old_submission_token' do
