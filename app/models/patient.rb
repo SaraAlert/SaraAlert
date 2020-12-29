@@ -117,34 +117,9 @@ class Patient < ApplicationRecord
     where(purged: false)
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
-      .where.not('latest_assessment_at >= ?', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
-      .or(
-        where(purged: false)
-          .where(pause_notifications: false)
-          .where('patients.id = patients.responder_id')
-          .where(latest_assessment_at: nil)
-      )
-      .distinct
-  }
-
-  # Patients who are eligible for reminders:
-  #   - not purged AND
-  #   - notifications not paused AND
-  #   - valid preferred contact method AND
-  #   - HoH or not in a household AND
-  #   - we haven't sent them an assessment within the past 12 hours AND
-  #   - they haven't completed an assessment today OR they haven't completed an assessment at all
-  #   - (TODO in this scope rather than send_assessment) actively monitored OR has dependents that are being actively monitored
-  #
-  # NOTE: This method is currently being tested to be swapped in as the new reminder_eligible scope.
-  #       Once swapped in, the send_assessment method can be cut down to remove redundant logic.
-  scope :optimal_reminder_eligible, lambda {
-    where(purged: false)
-      .where(pause_notifications: false)
       .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
-      .where('patients.id = patients.responder_id')
       .where('last_assessment_reminder_sent <= ? OR last_assessment_reminder_sent IS NULL', 12.hours.ago)
-      .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.getlocal('-04:00').beginning_of_day)
+      .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
       .distinct
   }
 
@@ -684,13 +659,6 @@ class Patient < ApplicationRecord
   # Send a daily assessment to this monitoree (if currently eligible). By setting send_now to true, an assessment
   # will be sent immediately without any consideration of the monitoree's preferred_contact_time.
   def send_assessment(send_now: false)
-    return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
-
-    return if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent > 12.hours.ago
-
-    # Do not allow messages to go to household members
-    return unless responder_id == id
-
     # Stop execution if in CI
     return if Rails.env.test?
 
