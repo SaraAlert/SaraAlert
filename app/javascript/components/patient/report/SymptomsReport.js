@@ -9,7 +9,7 @@ class SymptomsReport extends React.Component {
     super(props);
     this.state = {
       ...this.props,
-      reportState: { symptoms: this.props.symptoms },
+      reportState: { symptoms: _.cloneDeep(this.props.symptoms) },
       loading: false,
       noSymptomsCheckbox: false,
       // ensure this is updated when editing a report
@@ -19,17 +19,12 @@ class SymptomsReport extends React.Component {
     };
   }
 
-  setReportState = reportState => {
-    let currentReportState = this.state.reportState;
-    this.setState({ reportState: { ...currentReportState, ...reportState } });
-  };
-
   handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let report = this.state.reportState;
     let field_id = event.target.id.split('_idpre')[0];
     Object.values(report.symptoms).find(symp => symp.name === field_id).value = value;
-    this.setReportState({ ...this.state.reportState });
+    this.setState({ reportState: report });
     this.updateBoolSymptomCount();
   };
 
@@ -44,7 +39,7 @@ class SymptomsReport extends React.Component {
             report.symptoms[parseInt(symptom)].value = false;
           }
         }
-        this.setReportState({ ...this.state.reportState });
+        this.setState({ reportState: report });
       }
     });
   };
@@ -57,7 +52,7 @@ class SymptomsReport extends React.Component {
   };
 
   hasChanges = () => {
-    return !_.isEqual(this.state.reportState, this.props.report);
+    return !_.isEqual(this.state.reportState.symptoms, this.props.symptoms);
   };
 
   fieldIsEmptyOrNew = object => {
@@ -90,7 +85,6 @@ class SymptomsReport extends React.Component {
           this.props.submit(this.state.reportState);
         } else {
           this.setState({ loading: false });
-          // to do: reset modal??
         }
       } else {
         this.props.submit(this.state.reportState);
