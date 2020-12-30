@@ -2144,18 +2144,44 @@ class PatientTest < ActiveSupport::TestCase
   end
   
   test 'get_updates_from_monitoring_changes handles monitoring change' do
+    patient = create(:patient, continuous_exposure: true, monitoring: true, closed_at: nil)
+    updates = patient.get_updates_from_monitoring_changes({monitoring: false})
+    assert_not updates[:monitoring]
+    assert_not updates[:continuous_exposure]
+    assert_not_nil updates[:closed_at]
   end
 
   test 'get_updates_from_monitoring_changes handles workflow change' do
-  end
-
-  test 'get_updates_from_monitoring_changes handles symptom_onset change' do
+    patient = create(:patient,
+                     isolation: true,
+                     extended_isolation: DateTime.now + 1.day,
+                     user_defined_symptom_onset: true,
+                     symptom_onset: DateTime.now - 1.day)
+    created_at = DateTime.now.to_date - 1.day
+    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: created_at)
+    updates = patient.get_updates_from_monitoring_changes({isolation: false})
+    assert_equal({isolation: false, extended_isolation: nil, user_defined_symptom_onset: false, symptom_onset: created_at}, updates)
   end
 
   test 'get_updates_from_monitoring_changes handles case_status change' do
+    patient = create(:patient, public_health_action: 'Recommended medical evaluation of symptoms')
+    updates = patient.get_updates_from_monitoring_changes({case_status: 'Unknown'})
+    assert_equal({case_status: 'Unknown', public_health_action: 'None'}, updates)
+  end
+
+  test 'get_updates_from_monitoring_changes handles symptom_onset change' do
+    patient = create(:patient, symptom_onset: DateTime.now - 1.day)
+    created_at = DateTime.now.to_date - 2.day
+    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: created_at)
+    updates = patient.get_updates_from_monitoring_changes({symptom_onset: nil})
+    assert_equal({symptom_onset: created_at, user_defined_symptom_onset: false}, updates)
   end
 
   test 'get_updates_from_monitoring_changes handles continuous_exposure change' do
+    patient = create(:patient, monitoring: false, continuous_exposure: false)
+    updates = patient.get_updates_from_monitoring_changes({continuous_exposure: true})
+    # The update to continuous_exposure is removed altogether, since it is not allowed when patient is not monitoring
+    assert_equal({}, updates)
   end
 end
 # rubocop:enable Metrics/ClassLength
