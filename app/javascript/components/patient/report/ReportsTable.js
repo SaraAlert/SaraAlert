@@ -1,18 +1,19 @@
 import React from 'react';
-import { Card, Button, Row, Col, Dropdown, InputGroup, OverlayTrigger, Form, Tooltip } from 'react-bootstrap';
+import _ from 'lodash';
 import { PropTypes } from 'prop-types';
-import CustomTable from '../../layout/CustomTable';
-import reportError from '../../util/ReportError';
-import LastDateExposure from '../../subject/LastDateExposure';
-import CurrentStatus from '../../subject/CurrentStatus';
-import ClearReports from '../../subject/ClearReports';
-import PauseNotifications from '../../subject/PauseNotifications';
-import ContactAttempt from '../../subject/ContactAttempt';
-import AddReportNote from './AddReportNote';
-import ClearSingleReport from '../../subject/ClearSingleReport';
 import axios from 'axios';
 import moment from 'moment-timezone';
-import _ from 'lodash';
+import { Card, Button, Row, Col, Dropdown, InputGroup, OverlayTrigger, Form, Tooltip } from 'react-bootstrap';
+
+import AddReportNote from './AddReportNote';
+import ClearReports from '../../subject/ClearReports';
+import ClearSingleReport from '../../subject/ClearSingleReport';
+import ContactAttempt from '../../subject/ContactAttempt';
+import CurrentStatus from '../../subject/CurrentStatus';
+import CustomTable from '../../layout/CustomTable';
+import LastDateExposure from '../../subject/LastDateExposure';
+import PauseNotifications from '../../subject/PauseNotifications';
+import reportError from '../../util/ReportError';
 import ReportModal from './ReportModal';
 
 class ReportsTable extends React.Component {
