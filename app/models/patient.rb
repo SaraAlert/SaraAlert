@@ -964,16 +964,10 @@ class Patient < ApplicationRecord
           all_updates[:continuous_exposure] = false
         end
       when :isolation
-        # If record is being moved to Exposure workflow from Isolation workflow
-        unless new_attribute_value
-          all_updates[:extended_isolation] = nil
-          # NOTE: The below will overwrite any new value they may set for symptom onset as they can not be set in the exposure workflow.
-          all_updates[:user_defined_symptom_onset] = false
-          all_updates[:symptom_onset] = calculated_symptom_onset
-        end
+        add_updates_from_isolation_change(all_updates, new_attribute_value)
       when :case_status
         # If Case Status has been updated to one of the values meant for the Exposure workflow, reset the Public Health Action.
-        if ['Suspect', 'Unknown', 'Not a Case'].include?(new_attribute_value) && patient[:public_health_action] != 'None'
+        if ['Suspect', 'Unknown', 'Not a Case'].include?(new_attribute_value) && public_health_action != 'None'
           all_updates[:public_health_action] = 'None'
         end
       when :symptom_onset
@@ -984,14 +978,28 @@ class Patient < ApplicationRecord
         end
       when :continuous_exposure
         # Do not allow continuous exposure to be set for records that are closed
-        all_updates.delete(:continuous_exposure) if all_updates[:continuous_exposure] && !all_updates[:monitoring].nil? && !all_updates[:monitoring]
+        all_updates.delete(:continuous_exposure) if all_updates[:continuous_exposure] && !monitoring
+      when :jurisdiction_id
+        # Do not allow jurisdiction to be set if it does not exist
+        jur = Jurisdiction.find_by_id(new_attribute_value)
+        all_updates.delete(:jurisdiction_id) if jur.nil?
       end
     end
 
     all_updates
   end
 
-  def update_patient_monitoring_history(all_updates, patient_before, history_data)
+  def add_updates_from_isolation_change(updates, new_isolation_value)
+    # If record is being moved to Exposure workflow from Isolation workflow
+    unless new_isolation_value
+      updates[:extended_isolation] = nil
+      # NOTE: The below will overwrite any new value they may set for symptom onset as they can not be set in the exposure workflow.
+      updates[:user_defined_symptom_onset] = false
+      updates[:symptom_onset] = calculated_symptom_onset
+    end
+  end
+
+  def update_patient_monitoring_history(all_updates, patient_before, history_data, diff_state)
     all_updates&.keys&.each do |attribute|
       updated_value = self[attribute]
       next if patient_before[attribute] == self[attribute]
@@ -1025,49 +1033,53 @@ class Patient < ApplicationRecord
       when :continuous_exposure
         History.continuous_exposure(history_data)
       when :isolation
-        unless updated_value
-          # If moved from Isolation workflow to Exposure workflow and Extended Isolation was cleared
-          if !patient_before[:extended_isolation].nil? && extended_isolation.nil?
-            History.monitoring_change(
-              patient: self,
-              created_by: 'Sara Alert System',
-              comment: 'System cleared Extended Isolation Date because monitoree was moved from isolation to exposure workflow.'
-            )
-          end
-
-          # If moved from Isolation worklflow to Exposure and symptom onset had to be cleared
-          if !patient_before[:symptom_onset].nil? && symptom_onset.nil?
-            comment = if !patient_before[:symptom_onset].nil? && !new_symptom_onset.nil?
-                        "System changed Symptom Onset Date from #{patient_before[:symptom_onset].strftime('%m/%d/%Y')} to #{new_symptom_onset.strftime('%m/%d/%Y')}
-                        because monitoree was moved from isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on
-                        daily reports."
-                      elsif patient_before[:symptom_onset].nil? && !new_symptom_onset.nil?
-                        "System changed Symptom Onset Date from blank to #{new_symptom_onset.strftime('%m/%d/%Y')} because monitoree was moved from isolation to
-                        exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
-                      elsif !patient_before[:symptom_onset].nil? && new_symptom_onset.nil?
-                        "System cleared Symptom Onset Date from #{patient_before[:symptom_onset].strftime('%m/%d/%Y')} to blank because monitoree was moved from isolation to
-                        exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
-                      else
-                        'System changed Symptom Onset Date. This allows the system to show monitoree on appropriate line list based on daily reports.'
-                      end
-            History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: comment)
-          end
-        end
+        update_patient_history_for_isolation(patient_before, updated_value)
       when :symptom_onset
         History.symptom_onset(history_data)
       when :case_status
         History.case_status(history_data, diff_state)
 
         # If Case Status was updated to one of the values meant for the Exposure workflow and the Public Health Action was reset.
-        if ['Suspect', 'Unknown', 'Not a Case'].include?(new_attribute_value) && patient_before[:public_health_action] != 'None' && public_health_action == 'None'
+        if ['Suspect', 'Unknown', 'Not a Case'].include?(updated_value) && patient_before[:public_health_action] != 'None' && public_health_action == 'None'
           message = monitoring ?
-          "System changed Latest Public Health Action from \"#{public_health_action}\" to \"None\" so that the monitoree will appear on
+          "System changed Latest Public Health Action from \"#{patient_before[:public_health_action]}\" to \"None\" so that the monitoree will appear on
           the appropriate line list in the exposure workflow to continue monitoring." : "System changed Latest Public Health Action
-          from \"#{public_health_action}\" to \"None\"."
+          from \"#{patient_before[:public_health_action]}\" to \"None\"."
           History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: message)
         end
       when :jurisdiction_id
         History.jurisdiction(history_data)
+      end
+    end
+  end
+
+  def update_patient_history_for_isolation(patient_before, new_isolation_value)
+    unless new_isolation_value
+      # If moved from Isolation workflow to Exposure workflow and Extended Isolation was cleared
+      if !patient_before[:extended_isolation].nil? && extended_isolation.nil?
+        History.monitoring_change(
+          patient: self,
+          created_by: 'Sara Alert System',
+          comment: 'System cleared Extended Isolation Date because monitoree was moved from isolation to exposure workflow.'
+        )
+      end
+
+      # If moved from Isolation worklflow to Exposure and symptom onset had to be cleared
+      if patient_before[:symptom_onset].nil? != symptom_onset
+        comment = if !patient_before[:symptom_onset].nil? && !symptom_onset.nil?
+                    "System changed Symptom Onset Date from #{patient_before[:symptom_onset].strftime('%m/%d/%Y')} to #{symptom_onset.strftime('%m/%d/%Y')}
+                    because monitoree was moved from isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on
+                    daily reports."
+                  elsif patient_before[:symptom_onset].nil? && !symptom_onset.nil?
+                    "System changed Symptom Onset Date from blank to #{symptom_onset.strftime('%m/%d/%Y')} because monitoree was moved from isolation to
+                    exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
+                  elsif !patient_before[:symptom_onset].nil? && symptom_onset.nil?
+                    "System cleared Symptom Onset Date from #{patient_before[:symptom_onset].strftime('%m/%d/%Y')} to blank because monitoree was moved from isolation to
+                    exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
+                  else
+                    'System changed Symptom Onset Date. This allows the system to show monitoree on appropriate line list based on daily reports.'
+                  end
+        History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: comment)
       end
     end
   end

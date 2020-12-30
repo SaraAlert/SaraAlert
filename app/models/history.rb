@@ -213,7 +213,7 @@ class History < ApplicationRecord
       # monitoree went from actively monitoring to not monitoring
       history[:note] = ', and chose to "End Monitoring"'
       # monitoree went from exposure to isolation (only applies to when user deliberately selected to continue monitoring in isolation workflow)
-    elsif !history[:patient_before][:isolation].present? && history[:updates][:isolation].present? && diff_state.include?(:isolation)
+    elsif !history[:patient_before][:isolation].present? && history[:updates][:isolation].present? && !diff_state.nil? && diff_state.include?(:isolation)
       history[:note] = ', and chose to "Continue Monitoring in Isolation Workflow"'
     end
 
