@@ -29,9 +29,7 @@ class ExportJob < ApplicationJob
     # NOTE: The reorder here clears out any other sorting that may have been added to this query as it should just be sorting by ID when
     # getting batches. in_batches appears to NOT sort within batches, so ordering is also done deeper down.
     patients.reorder('').in_batches(of: RECORD_BATCH_SIZE).each_with_index do |patients_group, index|
-      # Duplicate the config as it gets changed in the following method calls and should be fresh each batch.
-      config_dup = config.deep_dup
-      files = write_export_data_to_files(config_dup, patients_group, index, config_dup[:data])
+      files = write_export_data_to_files(config, patients_group, index)
       lookups.concat(create_lookups(config, files))
     end
 

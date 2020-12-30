@@ -512,13 +512,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     if data.dig(:assessments, :checked).present?
       assessments = assessments_by_patient_ids(patients_identifiers.keys)
-      exported_data[:assessments], symptom_names_and_labels = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
-
-      # Replace symptoms field with actual symptom fields
-      if data[:assessments][:checked].include?(:symptoms)
-        data[:assessments][:checked].delete(:symptoms)
-        data[:assessments][:checked].concat(symptom_names_and_labels.map(&:first).map(&:to_sym))
-      end
+      exported_data[:assessments] = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
     end
 
     if data.dig(:laboratories, :checked).present?
@@ -694,7 +688,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
       assessments_details << assessment_details
     end
-    [assessments_details, symptom_names_and_labels]
+    assessments_details
   end
 
   # Extracts laboratory data values given relevant fields
@@ -721,37 +715,31 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Writes export data to file(s)
-  def write_export_data_to_files(config, patients_group, index, data)
+  def write_export_data_to_files(config, patients_group, index)
     case config[:format]
     when 'csv'
-      csv_export(config, patients_group, index, data)
+      csv_export(config, patients_group, index)
     when 'xlsx'
-      xlsx_export(config, patients_group, index, data)
+      xlsx_export(config, patients_group, index)
     end
   end
 
   # Creates a list of csv files from exported data
-  def csv_export(config, patients_group, index, data)
-    # Grab all assessment/report headers because symptom data must be aggregate across all records in this file
-    # This call updates the data object in place.
-    update_assessment_headers(patients_group, data)
-
-    # Update race values to include all race values if checked. This call updates the data object in place.
-    handle_race_values(patients_group, data)
+  def csv_export(config, patients_group, index)
+    # Get all of the field data based on the config
+    field_data = get_field_data(patients_group, config)
 
     files = []
     csvs = {}
     packages = {}
-    fields = {}
 
-    # 1) Generate CSVs and packages and fields for each data type
+    # 1) Generate CSVs and packages for each data type
     CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
       next unless config.dig(:data, data_type, :checked).present?
 
-      fields[data_type] = config.dig(:data, data_type, :checked)
+      # Create CSV with column headers
       package = CSV.generate(headers: true) do |csv|
-        # Create CSV with column headers
-        csv << (config.dig(:data, data_type, :headers) || fields[data_type].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
+        csv << field_data.dig(data_type, :headers)
         csvs[data_type] = csv
       end
       packages[data_type] = package
@@ -759,13 +747,15 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # 2) Get export data in batches to decrease size of export data hash maintained in memory
     patients_group.in_batches(of: 500) do |batch_group|
-      exported_data = get_export_data(batch_group.order(:id), data)
+      # The config should be passed to this function rather than data, because it determines values
+      # based on the original configuration.
+      exported_data = get_export_data(batch_group.order(:id), config[:data])
 
       CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
         next unless config.dig(:data, data_type, :checked).present?
 
         exported_data[data_type]&.each do |record|
-          csvs[data_type] << fields[data_type].map { |field| record[field] }
+          csvs[data_type] << field_data[data_type][:checked].map { |field| record[field] }
         end
       end
     end
@@ -780,20 +770,15 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Creates a list of excel files from exported data
-  def xlsx_export(config, patients_group, index, data)
-    # Grab all assessment/report headers because symptom data must be aggregate across all records in this file
-    # This call updates the data object in place.
-    update_assessment_headers(patients_group, data)
-
-    # Update race values to include all race values if checked. This call updates the data object in place.
-    handle_race_values(patients_group, data)
+  def xlsx_export(config, patients_group, index)
+    # Get all of the field data based on the config
+    field_data = get_field_data(patients_group, config)
 
     # Separate files for each data type
     if config[:separate_files].present?
       files = []
       packages = {}
       sheets = {}
-      fields = {}
 
       # 1) This initial loops creates all of the files and column headers which should not be done in the batched loop
       CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
@@ -802,9 +787,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         # For each data type, create a new file
         Axlsx::Package.new do |package|
           # Add worksheet to this file and add column headers
-          fields[data_type] = config.dig(:data, data_type, :checked)
           package.workbook.add_worksheet(name: config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label)) do |sheet|
-            sheet.add_row(config.dig(:data, data_type, :headers) || fields[data_type].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
+            sheet.add_row(field_data.dig(data_type, :headers))
             sheets[data_type] = sheet
           end
           packages[data_type] = package
@@ -813,13 +797,13 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
       patients_group.in_batches(of: 500) do |batch_group|
-        exported_data = get_export_data(batch_group.order(:id), data)
+        exported_data = get_export_data(batch_group.order(:id), config[:data])
 
         #  Write to appropriate sheets (in each file)
         CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
           next unless config.dig(:data, data_type, :checked).present?
 
-          write_xlsx_rows(config, exported_data, data_type, sheets[data_type], fields[data_type])
+          write_xlsx_rows(config, exported_data, data_type, sheets[data_type], field_data[data_type][:checked])
         end
       end
 
@@ -844,19 +828,19 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           fields[data_type] = config.dig(:data, data_type, :checked)
           # Create an excel worksheet in the file and add the column headers for this data type
           package.workbook.add_worksheet(name: config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label)) do |sheet|
-            sheet.add_row(config.dig(:data, data_type, :headers) || fields[data_type].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) })
+            sheet.add_row(field_data.dig(data_type, :headers))
             sheets[data_type] = sheet
           end
         end
 
         # 2) Get export data in batches to decrease size of export data hash maintained in memory
         patients_group.in_batches(of: 500) do |batch_group|
-          exported_data = get_export_data(batch_group.order(:id), data)
+          exported_data = get_export_data(batch_group.order(:id), config[:data])
 
           CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
             next unless config.dig(:data, data_type, :checked).present?
 
-            write_xlsx_rows(config, exported_data, data_type, sheets[data_type], fields[data_type])
+            write_xlsx_rows(config, exported_data, data_type, sheets[data_type], field_data[data_type][:checked])
           end
         end
 
@@ -873,24 +857,36 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
   end
 
-  # Finds the assessment headers and symptom labels that should be the column headers
-  def update_assessment_headers(patients_group, data)
+  def get_field_data(patients_group, config)
+    data = config[:data].deep_dup
+
+    # Populate the headers if they're not pre-determined
+    CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+      next unless config.dig(:data, data_type, :checked).present? && data.dig(data_type, :headers).blank?
+
+      data[data_type][:headers] = data[data_type][:checked].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) }
+    end
+
+    update_assessment_data(patients_group, data)
+    update_race_data(patients_group, data)
+    data
+  end
+
+  def update_assessment_data(patients_group, data)
     # Don't update if assessment data isn't needed
-    return unless data.dig(:assessments, :checked).present?
+    return unless data.dig(:assessments, :checked).present? && data[:assessments][:checked].include?(:symptoms)
 
-    # Symptom columns are aggregate across all patients in this file
-    data[:assessments][:headers] = data[:assessments][:checked].map { |field| ASSESSMENT_FIELD_NAMES[field] } if data[:assessments][:headers].nil?
+    symptom_names_and_labels = patients_group.joins(assessments: [{ reported_condition: :symptoms }]).pluck('symptoms.name, symptoms.label').uniq.sort
 
-    # Don't update if symptom data isn't needed
-    return unless data[:assessments][:checked].include?(:symptoms)
-
-    symptom_labels = patients_group.joins(assessments: [{ reported_condition: :symptoms }]).pluck('symptoms.label').uniq.sort
     data[:assessments][:headers].delete('Symptoms Reported')
-    data[:assessments][:headers].concat(symptom_labels)
+    data[:assessments][:headers].concat(symptom_names_and_labels.map(&:second))
+
+    data[:assessments][:checked].delete(:symptoms)
+    data[:assessments][:checked].concat(symptom_names_and_labels.map(&:first).map(&:to_sym))
   end
 
   # Finds the race values that should be included if the Race (All Race Fields) option is checked in custom export
-  def handle_race_values(_patients_group, data)
+  def update_race_data(_patients_group, data)
     # Don't update if patient data isn't needed or race data isn't checked
     return unless data.dig(:patients, :checked).present? && data[:patients][:checked].include?(:race)
 
