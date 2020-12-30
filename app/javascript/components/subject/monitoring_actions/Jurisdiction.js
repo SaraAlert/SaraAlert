@@ -63,11 +63,14 @@ class Jurisdiction extends React.Component {
 
   submit = () => {
     const diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
+    // If the jurisdiction_path changed, this means the underlying id must also have changed
+    if (diffState.indexOf('jurisdiction_path') > -1) {
+      diffState.push('jurisdiction_id');
+    }
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
-          patient: this.props.patient,
           jurisdiction_id: Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === this.state.jurisdiction_path),
           reasoning: this.state.reasoning,
           apply_to_household: this.state.apply_to_household,
