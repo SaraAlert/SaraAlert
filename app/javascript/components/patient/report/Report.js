@@ -10,29 +10,8 @@ import reportError from '../../util/ReportError';
 class Report extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: 0, direction: null };
+    this.state = { index: 0, direction: null, lastIndex: null };
   }
-
-  next = () => {
-    let index = this.state.index;
-    let lastIndex = this.state.lastIndex;
-    if (lastIndex) {
-      this.setState({ direction: 'next' }, () => {
-        this.setState({ index: lastIndex, lastIndex: null });
-      });
-    } else {
-      this.setState({ direction: 'next' }, () => {
-        this.setState({ index: index + 1, lastIndex: null });
-      });
-    }
-  };
-
-  previous = () => {
-    let index = this.state.index;
-    this.setState({ direction: 'prev' }, () => {
-      this.setState({ index: index - 1, lastIndex: null });
-    });
-  };
 
   goto = targetIndex => {
     let index = this.state.index;

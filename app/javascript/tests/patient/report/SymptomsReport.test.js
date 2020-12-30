@@ -11,7 +11,11 @@ const submitMock = jest.fn();
 function getWrapper(report, symptoms, idPre) {
   return shallow(<SymptomsReport report={report} symptoms={symptoms} patient_initials={'AA'} patient_age={39} lang={'en'}
     translations={mockTranslations} submit={submitMock} idPre={idPre} />);
-}
+};
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('SymptomsReport', () => {
   it('Properly renders all main components', () => {
@@ -91,14 +95,59 @@ describe('SymptomsReport', () => {
     });
   });
 
-  // updating float - state
-  // on change -state
+  it('Clicking "I am not experiencing any symptoms" updates state correctly', () => {
+    const wrapper = getWrapper({}, mockNewSymptoms, 'new');
+    wrapper.find('#no-symptoms-check').simulate('change', { target: { value: true } });
+    expect(wrapper.state('noSymptomsCheckbox')).toBeTruthy();
+    expect(wrapper.state('selectedBoolSymptomCount')).toEqual(0);
+    wrapper.state('reportState').symptoms.forEach(symp => {
+      if (symp.type === 'BoolSymptom') {
+        expect(symp.value).toEqual(false);
+      }
+    });
+  });
 
-  // submit loads confirm
+  it('Clicking any bool symptom updates state correctly', () => {
+    const wrapper = getWrapper({}, mockNewSymptoms, 'new');
+    const checkbox = wrapper.find(Form.Check).at(0);
+    const checkboxId = checkbox.prop('id');
+    checkbox.simulate('change', { target: { id: checkboxId, value: true } });
+    expect(wrapper.state('noSymptomsCheckbox')).toBeFalsy();
+    expect(wrapper.state('selectedBoolSymptomCount')).toEqual(1);
+    wrapper.state('reportState').symptoms.forEach(symp => {
+      if (symp.type === 'BoolSymptom') {
+        expect(symp.value).toEqual(checkboxId.includes(symp.name));
+      }
+    });
+  });
 
-  // different submit cases
+  it('Clicking the submit button calls and props.submit when creating a new report', () => {
+    const wrapper = getWrapper({}, mockNewSymptoms, 'new');
+    expect(submitMock).toHaveBeenCalledTimes(0);
+    wrapper.find(Button).simulate('click');
+    expect(submitMock).toHaveBeenCalled();
+  });
 
-  // canceling confirm
+  it('Clicking the submit button calls props.submit when editing a report with no new changes', () => {
+    const wrapper = getWrapper(mockReport1, mockSymptoms1, '777');
+    expect(submitMock).toHaveBeenCalledTimes(0);
+    wrapper.find(Button).simulate('click');
+    expect(submitMock).toHaveBeenCalled();
+  });
 
+  it('Clicking the submit button calls navigate but not submit when editing a report with no new changes', () => {
+    const wrapper = getWrapper(mockReport1, mockSymptoms1, '777');
+    const navigateSpy = jest.spyOn(wrapper.instance(), 'navigate');
+    const handleSubmitSpy = jest.spyOn(wrapper.instance(), 'handleSubmit');
+    const checkbox = wrapper.find(Form.Check).at(7);
+    checkbox.simulate('change', { target: { id: checkbox.prop('id'), value: true } });
 
+    expect(navigateSpy).toHaveBeenCalledTimes(0);
+    expect(handleSubmitSpy).toHaveBeenCalledTimes(0);
+    expect(submitMock).toHaveBeenCalledTimes(0);
+    wrapper.find(Button).simulate('click');
+    expect(navigateSpy).toHaveBeenCalled();
+    expect(handleSubmitSpy).toHaveBeenCalled();
+    expect(submitMock).toHaveBeenCalledTimes(0);
+  });
 });
