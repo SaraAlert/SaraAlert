@@ -219,6 +219,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       continuous_exposure
       user_defined_symptom_onset
       extended_isolation
+      jurisdiction_id
     ]
   end
 

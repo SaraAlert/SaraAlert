@@ -106,12 +106,10 @@ class Fhir::R4::ApiController < ActionController::API
       patient = get_patient(params.permit(:id)[:id])
       status_forbidden && return if patient.nil?
 
-      # Verify that the updated jurisdiction is valid
-      status_unprocessable_entity(format_model_validation_errors(patient)) && return unless jurisdiction_valid_for_client?(patient)
-
-      if request.patch? && !resource.nil?
+      # Get the contents from applying a patch, if needed
+      if request.patch? && !patient.nil?
         begin
-          contents = apply_patch(resource, patch)
+          contents = apply_patch(patient, patch)
         rescue StandardError => e
           status_bad_request([['Unable to apply patch', e&.message].compact.join(': ')]) && return
         end
@@ -130,8 +128,10 @@ class Fhir::R4::ApiController < ActionController::API
       # Assign any remaining updates to the patient
       # NOTE: The patient.update method does not allow a context to be passed, so first we assign the updates, then save
       patient.assign_attributes(all_updates)
-      status_unprocessable_entity(format_model_validation_errors(patient)) && return unless patient.save(context: :api)
-
+      # Verify that the updated jurisdiction and other updates are valid
+      unless jurisdiction_valid_for_client?(patient) && patient.save(context: :api)
+        status_unprocessable_entity(format_model_validation_errors(patient)) && return
+      end
       # If the jurisdiction was changed, create a Transfer
       if all_updates&.keys&.include?(:jurisdiction_id) && !all_updates[:jurisdiction_id].nil?
         Transfer.create(patient: patient, from_jurisdiction: patient_before[:jurisdiction], to_jurisdiction: patient.jurisdiction, who: @current_actor)
@@ -142,7 +142,10 @@ class Fhir::R4::ApiController < ActionController::API
       # messages are needed based on the original changes
       update_all_patient_history(request_updates, patient_before, patient)
 
-    status_ok(resource.as_fhir) && return
+      status_ok(patient.as_fhir) && return
+    else
+      status_not_found && return
+    end
   rescue JSON::ParserError
     status_bad_request(['Invalid JSON in request body'])
   rescue StandardError
@@ -165,7 +168,7 @@ class Fhir::R4::ApiController < ActionController::API
       household_status: :patient,
       propagation: :none
     }
-    patient.update_patient_monitoring_history(updates, patient_before, history_data)
+    patient.update_patient_monitoring_history(updates, patient_before, history_data, nil)
   end
 
   # Create a resource given a type.
