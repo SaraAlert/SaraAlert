@@ -10,9 +10,22 @@ class ConfirmExport extends React.Component {
     };
   }
 
+  getUrl = () => {
+    switch (this.props.exportType) {
+      case 'Line list CSV':
+        return `/export/csv_linelist/${this.props.workflow}`;
+      case 'Sara Alert Format':
+        return `/export/sara_alert_format/${this.props.workflow}`;
+      case 'Excel Export For Purge-Eligible Monitorees':
+        return '/export/full_history_patients/purgeable';
+      case 'Excel Export For All Monitorees':
+        return '/export/full_history_patients/all';
+    }
+  };
+
   submit = () => {
     this.setState({ loading: true }, () => {
-      this.props.onStartExport();
+      this.props.onStartExport(this.getUrl());
     });
   };
 
@@ -20,7 +33,9 @@ class ConfirmExport extends React.Component {
     return (
       <Modal size="lg" className="confirm-export-modal-container" show={this.props.show} onHide={this.props.onCancel} centered>
         <Modal.Header>
-          <Modal.Title>{this.props.title}</Modal.Title>
+          <Modal.Title>
+            {`${this.props.exportType}${this.props.workflow ? ` (${this.props.workflow})` : ''}${this.props.presetName ? ` (${this.props.presetName})` : ''}`}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>
@@ -53,7 +68,9 @@ class ConfirmExport extends React.Component {
 
 ConfirmExport.propTypes = {
   show: PropTypes.bool,
-  title: PropTypes.string,
+  exportType: PropTypes.string,
+  presetName: PropTypes.string,
+  workflow: PropTypes.string,
   onCancel: PropTypes.func,
   onStartExport: PropTypes.func,
 };
