@@ -500,7 +500,9 @@ class CustomExport extends React.Component {
         </Modal>
         <ConfirmExport
           show={this.state.show_confirm_export_modal}
-          title={`Custom Export Format ${this.state.preset?.name ? `(${this.state.preset.name})` : ''}`}
+          exportType={'Custom Export Format'}
+          presetName={this.state.preset?.name}
+          // title={`Custom Export Format ${this.state.preset?.name ? `(${this.state.preset.name})` : ''}`}
           onCancel={() => this.setState({ show_confirm_export_modal: false })}
           onStartExport={this.export}
         />
