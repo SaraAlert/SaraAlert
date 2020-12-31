@@ -11,8 +11,9 @@ class ConfirmExport extends React.Component {
   }
 
   submit = () => {
-    this.setState({ loading: true });
-    this.props.onStartExport();
+    this.setState({ loading: true }, () => {
+      this.props.onStartExport();
+    });
   };
 
   render() {
