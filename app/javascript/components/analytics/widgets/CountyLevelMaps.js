@@ -286,7 +286,7 @@ class CountyLevelMaps extends React.Component {
           this.chart.maxZoomLevel = 32;
           this.chart.goHome();
           setTimeout(() => {
-            this.chart.maxZoomLevel = 1;
+            this.chart.maxZoomLevel = 10;
             this.updateJurisdictionData();
             this.props.decrementSpinnerCount();
           }, 1050);
