@@ -50,7 +50,7 @@ class CountyLevelMaps extends React.Component {
     this.chart.seriesContainer.draggable = true;
     this.chart.seriesContainer.resizable = true;
     this.chart.seriesContainer.wheelable = true;
-    this.chart.maxZoomLevel = 1;
+    this.chart.maxZoomLevel = 10;
     this.heatLegend = this.chart.createChild(am4maps.HeatLegend);
 
     this.usaSeries = this.chart.series.push(new am4maps.MapPolygonSeries());
@@ -119,7 +119,7 @@ class CountyLevelMaps extends React.Component {
     this.territoryChart.seriesContainer.draggable = true;
     this.territoryChart.seriesContainer.resizable = true;
     this.territoryChart.seriesContainer.wheelable = true;
-    this.territoryChart.maxZoomLevel = 1;
+    this.territoryChart.maxZoomLevel = 10;
 
     // It appears the separatorLines must be mounted on the chart instance (as opposed to a Series)
     this.territoryChart.geodata = separatorLines;
