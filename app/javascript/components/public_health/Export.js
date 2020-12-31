@@ -89,27 +89,29 @@ class Export extends React.Component {
         </DropdownButton>
         <ConfirmExport
           show={this.state.showCSVModal}
-          title={`Line list CSV (${this.props.query.workflow})`}
+          exportType={'Line list CSV'}
+          workflow={this.props.query.workflow}
           onCancel={() => this.setState({ showCSVModal: false })}
-          onStartExport={() => this.submit(`/export/csv_linelist/${this.props.query.workflow}`)}
+          onStartExport={this.submit}
         />
         <ConfirmExport
           show={this.state.showSaraFormatModal}
-          title={`Sara Alert Format (${this.props.query.workflow})`}
+          exportType={'Sara Alert Format'}
+          workflow={this.props.query.workflow}
           onCancel={() => this.setState({ showSaraFormatModal: false })}
-          onStartExport={() => this.submit(`/export/sara_alert_format/${this.props.query.workflow}`)}
+          onStartExport={this.submit}
         />
         <ConfirmExport
           show={this.state.showAllPurgeEligibleModal}
-          title={'Excel Export For Purge-Eligible Monitorees'}
+          exportType={'Excel Export For Purge-Eligible Monitorees'}
           onCancel={() => this.setState({ showAllPurgeEligibleModal: false })}
-          onStartExport={() => this.submit('/export/full_history_patients/purgeable')}
+          onStartExport={this.submit}
         />
         <ConfirmExport
           show={this.state.showAllModal}
-          title={'Excel Export For All Monitorees'}
+          exportType={'Excel Export For All Monitorees'}
           onCancel={() => this.setState({ showAllModal: false })}
-          onStartExport={() => this.submit('/export/full_history_patients/all')}
+          onStartExport={this.submit}
         />
         <ToastContainer
           position="top-center"
