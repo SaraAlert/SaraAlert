@@ -66,6 +66,7 @@ describe('Export', () => {
     const wrapper = getExposureWrapper();
     expect(wrapper.find(Dropdown.Item).at(0).text().includes(dropdownOptions[0])).toBeTruthy();
     expect(wrapper.find(ConfirmExport).at(0).prop('show')).toBeFalsy();
+    expect(wrapper.find(ConfirmExport).at(0).prop('title')).toEqual(`Line list CSV (${mockQuery1.workflow})`);
     wrapper.find(Dropdown.Item).at(0).simulate('click');
     expect(wrapper.find(ConfirmExport).at(0).prop('show')).toBeTruthy();
   });
@@ -74,6 +75,7 @@ describe('Export', () => {
     const wrapper = getExposureWrapper();
     expect(wrapper.find(Dropdown.Item).at(1).text().includes(dropdownOptions[1])).toBeTruthy();
     expect(wrapper.find(ConfirmExport).at(1).prop('show')).toBeFalsy();
+    expect(wrapper.find(ConfirmExport).at(1).prop('title')).toEqual(`Sara Alert Format (${mockQuery1.workflow})`);
     wrapper.find(Dropdown.Item).at(1).simulate('click');
     expect(wrapper.find(ConfirmExport).at(1).prop('show')).toBeTruthy();
   });
@@ -82,6 +84,7 @@ describe('Export', () => {
     const wrapper = getExposureWrapper();
     expect(wrapper.find(Dropdown.Item).at(2).text()).toEqual(dropdownOptions[2]);
     expect(wrapper.find(ConfirmExport).at(2).prop('show')).toBeFalsy();
+    expect(wrapper.find(ConfirmExport).at(2).prop('title')).toEqual('Excel Export For Purge-Eligible Monitorees');
     wrapper.find(Dropdown.Item).at(2).simulate('click');
     expect(wrapper.find(ConfirmExport).at(2).prop('show')).toBeTruthy();
   });
@@ -90,6 +93,7 @@ describe('Export', () => {
     const wrapper = getExposureWrapper();
     expect(wrapper.find(Dropdown.Item).at(3).text()).toEqual(dropdownOptions[3]);
     expect(wrapper.find(ConfirmExport).at(3).prop('show')).toBeFalsy();
+    expect(wrapper.find(ConfirmExport).at(3).prop('title')).toEqual('Excel Export For All Monitorees');
     wrapper.find(Dropdown.Item).at(3).simulate('click');
     expect(wrapper.find(ConfirmExport).at(3).prop('show')).toBeTruthy();
   });
