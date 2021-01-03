@@ -5,9 +5,12 @@ class ExportJob < ApplicationJob
   queue_as :exports
   include ImportExport
 
-  # Limits number of records to be considered for a single exported file to handle maximum file size limit.
-  # Adds additional files as needed if records exceeds batch size.
-  RECORD_BATCH_SIZE = 10_000
+  # Limits number of Patient records to be considered for a single exported file to handle maximum file size limit.
+  # Adds additional files as needed if  exceeds batch size.
+  OUTER_BATCH_SIZE = ENV['EXPORT_OUTER_BATCH_SIZE']&.to_i || 10_000
+
+  # Inner batch size limits number of Patient records details help in memory at once before writing to file.
+  INNER_BATCH_SIZE = ENV['EXPORT_INNER_BATCH_SIZE']&.to_i || 500
 
   def perform(config)
     # Get user in order to query viewable patients
@@ -28,8 +31,8 @@ class ExportJob < ApplicationJob
 
     # NOTE: The reorder here clears out any other sorting that may have been added to this query as it should just be sorting by ID when
     # getting batches. in_batches appears to NOT sort within batches, so ordering is also done deeper down.
-    patients.reorder('').in_batches(of: RECORD_BATCH_SIZE).each_with_index do |patients_group, index|
-      files = write_export_data_to_files(config, patients_group, index)
+    patients.reorder('').in_batches(of: OUTER_BATCH_SIZE).each_with_index do |patients_group, index|
+      files = write_export_data_to_files(config, patients_group, index, INNER_BATCH_SIZE)
       lookups.concat(create_lookups(config, files))
     end
 
@@ -39,7 +42,7 @@ class ExportJob < ApplicationJob
     lookups = lookups.sort_by { |lookup| lookup[:filename] }
 
     # Send an email to user
-    UserMailer.download_email(user, EXPORT_TYPES[config[:export_type]][:label] || 'default', lookups, RECORD_BATCH_SIZE).deliver_later
+    UserMailer.download_email(user, EXPORT_TYPES[config[:export_type]][:label] || 'default', lookups, OUTER_BATCH_SIZE).deliver_later
   end
 
   # Creates lookups for files
