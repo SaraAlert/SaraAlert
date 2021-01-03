@@ -54,6 +54,7 @@ class PatientMailer < ApplicationMailer
       add_fail_history_sms_blocked(patient)
       return
     end
+    failed_dependents = []
 
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |dependent|
@@ -69,8 +70,11 @@ class PatientMailer < ApplicationMailer
         add_success_history(dependent, patient)
       else
         add_fail_history_sms(dependent)
+        failed_dependents << dependent
       end
     end
+    if failed_dependents.empty? && patient.dependents.count >= 2 && !patient.active_dependents.include?(patient)
+      add_success_history_dependents(patient)
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
@@ -204,6 +208,11 @@ class PatientMailer < ApplicationMailer
     History.report_reminder(patient: patient, comment: comment)
   end
 
+  def add_success_history_dependents(patient)
+    comment = "Sara Alert sent a report reminder to this monitoree for their active dependents via #{patient.preferred_contact_method}."
+    History.report_reminder(patient: patient, comment: comment)
+  end
+  
   def add_fail_history_sms(patient)
     comment = "Sara Alert attempted to send an SMS to #{patient.primary_telephone}, but the message could not be delivered."
     History.report_reminder(patient: patient, comment: comment)

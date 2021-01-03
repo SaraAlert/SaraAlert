@@ -259,6 +259,26 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   %i[assessment_sms_weblink].each do |mthd|
+    test "#{mthd} success histories for purged HOH" do
+      allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
+        true
+      end)
+      assert_difference '@patient.histories.length', 1 do
+        dependent = create(:patient)
+        dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
+        @patient.update(purged: true)
+        PatientMailer.send(mthd, @patient).deliver_now
+        assert_not_nil @patient.last_assessment_reminder_sent
+        @patient.reload
+        assert_equal 'Report Reminder', @patient.histories.first.history_type
+        assert_equal "Sara Alert sent a report reminder to this monitoree for their active dependents via #{patient.preferred_contact_method}.", @patient.histories.first.comment
+        @patient.update(purged: false)
+        @patient.reload
+      end
+    end
+  end
+
+  %i[assessment_sms_weblink].each do |mthd|
     test "#{mthd} no phone provided" do
       @patient.update(primary_telephone: nil)
       assert_difference '@patient.histories.length', 1 do
