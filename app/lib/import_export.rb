@@ -715,17 +715,17 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Writes export data to file(s)
-  def write_export_data_to_files(config, patients_group, index)
+  def write_export_data_to_files(config, patients_group, index, inner_batch_size)
     case config[:format]
     when 'csv'
-      csv_export(config, patients_group, index)
+      csv_export(config, patients_group, index, inner_batch_size)
     when 'xlsx'
-      xlsx_export(config, patients_group, index)
+      xlsx_export(config, patients_group, index, inner_batch_size)
     end
   end
 
   # Creates a list of csv files from exported data
-  def csv_export(config, patients_group, index)
+  def csv_export(config, patients_group, index, inner_batch_size)
     # Get all of the field data based on the config
     field_data = get_field_data(patients_group, config)
 
@@ -746,7 +746,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     # 2) Get export data in batches to decrease size of export data hash maintained in memory
-    patients_group.in_batches(of: 500) do |batch_group|
+    patients_group.in_batches(of: inner_batch_size) do |batch_group|
       # The config should be passed to this function rather than data, because it determines values
       # based on the original configuration.
       exported_data = get_export_data(batch_group.order(:id), config[:data])
@@ -770,7 +770,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Creates a list of excel files from exported data
-  def xlsx_export(config, patients_group, index)
+  def xlsx_export(config, patients_group, index, inner_batch_size)
     # Get all of the field data based on the config
     field_data = get_field_data(patients_group, config)
 
@@ -796,7 +796,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
-      patients_group.in_batches(of: 500) do |batch_group|
+      patients_group.in_batches(of: inner_batch_size) do |batch_group|
         exported_data = get_export_data(batch_group.order(:id), config[:data])
 
         #  Write to appropriate sheets (in each file)
@@ -834,7 +834,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         end
 
         # 2) Get export data in batches to decrease size of export data hash maintained in memory
-        patients_group.in_batches(of: 500) do |batch_group|
+        patients_group.in_batches(of: inner_batch_size) do |batch_group|
           exported_data = get_export_data(batch_group.order(:id), config[:data])
 
           CUSTOM_EXPORT_OPTIONS.each_key do |data_type|

@@ -169,7 +169,7 @@ class ExportController < ApplicationController
       }
     }
 
-    send_data write_export_data_to_files(config, patients, nil)[0][:content]
+    send_data write_export_data_to_files(config, patients, nil, 1)[0][:content]
   end
 
   # Single patient NBS export

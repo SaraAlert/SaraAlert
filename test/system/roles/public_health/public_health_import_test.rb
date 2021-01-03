@@ -2,7 +2,7 @@
 
 require 'application_system_test_case'
 
-SimpleCov.command_name 'SystemTestCasePublicHealthImportExport'
+SimpleCov.command_name 'SystemTestCasePublicHealthImport'
 
 require_relative 'public_health_test_helper'
 require_relative '../../lib/system_test_utils'
@@ -10,40 +10,6 @@ require_relative '../../lib/system_test_utils'
 class PublicHealthImportExportTest < ApplicationSystemTestCase
   @@public_health_test_helper = PublicHealthTestHelper.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
-
-  test 'export line list csv (exposure)' do
-    @@public_health_test_helper.export_csv_linelist('locals2c3_epi', :exposure, :cancel)
-    @@public_health_test_helper.export_csv_linelist('state1_epi', :exposure, :export)
-  end
-
-  test 'export line list csv (isolation)' do
-    @@public_health_test_helper.export_csv_linelist('locals2c4_epi', :isolation, :cancel)
-    @@public_health_test_helper.export_csv_linelist('state1_epi_enroller', :isolation, :export)
-  end
-
-  test 'export sara alert format (exposure)' do
-    @@public_health_test_helper.export_sara_alert_format('locals1c1_epi', :exposure, :cancel)
-    @@public_health_test_helper.export_sara_alert_format('state1_epi_enroller', :exposure, :export)
-  end
-
-  test 'export sara alert format (isolation)' do
-    @@public_health_test_helper.export_sara_alert_format('locals2c3_epi', :isolation, :cancel)
-    @@public_health_test_helper.export_sara_alert_format('state1_epi', :isolation, :export)
-  end
-
-  test 'export full history purge-eligible monitorees' do
-    @@public_health_test_helper.export_full_history_patients('state1_epi_enroller', :isolation, :cancel, :purgeable)
-    @@public_health_test_helper.export_full_history_patients('state1_epi', :exposure, :export, :purgeable)
-  end
-
-  test 'export full history all monitorees' do
-    @@public_health_test_helper.export_full_history_patients('locals1c1_epi', :exposure, :cancel, :all)
-    @@public_health_test_helper.export_full_history_patients('state1_epi', :isolation, :export, :all)
-  end
-
-  test 'export full history single monitoree' do
-    @@public_health_test_helper.export_full_history_patient('locals2c4_epi', 'patient_10')
-  end
 
   test 'import epi-x to exposure and accept all' do
     @@public_health_test_helper.import_epi_x('state1_epi_enroller', :exposure, 'Epi-X-Format.xlsx', :valid, nil)
