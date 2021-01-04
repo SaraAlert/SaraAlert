@@ -178,7 +178,7 @@ class AssessmentsController < ApplicationController
     patient = Patient.find_by(submission_token: submission_token)
     redirect_to(root_url) && return if patient.nil?
 
-    redirect_to(root_url) && return unless current_user&.can_edit_patient_assessments
+    redirect_to(root_url) && return unless current_user&.can_edit_patient_assessments?
 
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
     reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
