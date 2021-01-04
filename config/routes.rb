@@ -1,3 +1,6 @@
+require 'sidekiq/web'
+Sidekiq::Web.set :sessions, false
+
 Rails.application.routes.draw do
   use_doorkeeper
 
@@ -12,6 +15,12 @@ Rails.application.routes.draw do
     enable_authy: "/enable-two-factor",
     verify_authy_installation: "/verify-installation"
   }
+
+  devise_scope :user do
+    authenticate :user, lambda { |u| u.usa_admin? } do
+      mount Sidekiq::Web => '/sidekiq'
+    end
+  end
 
   as :user do
     get 'users/edit', to: 'users/registrations#edit', as: :edit_user_registration
