@@ -84,6 +84,10 @@ class Header extends React.Component {
                       <i className="fas fa-share-alt fa-fw mr-2"></i>API
                     </Nav.Link>
                     <a className="white-border-right"></a>
+                    <Nav.Link className="text-white py-0" href="/sidekiq">
+                      <i className="fas fa-hourglass fa-fw mr-2"></i>Jobs
+                    </Nav.Link>
+                    <a className="white-border-right"></a>
                   </React.Fragment>
                 )}
                 <Nav.Link className="text-white py-0" href={`${window.BASE_PATH}/users/sign_out`} data-method="DELETE">
