@@ -11,6 +11,16 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   @@public_health_test_helper = PublicHealthTestHelper.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
+  def teardown
+    # Reset ENV variables and reload export job file which has constants dependent on these ENV variables
+    ENV['EXPORT_OUTER_BATCH_SIZE'] = nil
+    ENV['EXPORT_INNER_BATCH_SIZE'] = nil
+    load 'app/jobs/export_job.rb'
+
+    # Remove any files downloaded for each test
+    FileUtils.rm_rf(Rails.root.join('tmp/downloads'))
+  end
+
   test 'export line list csv (exposure)' do
     @@public_health_test_helper.export_csv_linelist('locals2c3_epi', :exposure, :cancel)
     @@public_health_test_helper.export_csv_linelist('state1_epi', :exposure, :export)
@@ -50,6 +60,8 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   test 'export line list csv (exposure) with batching' do
     ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
+    load 'app/jobs/export_job.rb'
+
     @@public_health_test_helper.export_csv_linelist('locals2c3_epi', :exposure, :cancel)
     @@public_health_test_helper.export_csv_linelist('state1_epi', :exposure, :export)
   end
@@ -57,6 +69,8 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   test 'export line list csv (isolation) with batching' do
     ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
+    load 'app/jobs/export_job.rb'
+
     @@public_health_test_helper.export_csv_linelist('locals2c4_epi', :isolation, :cancel)
     @@public_health_test_helper.export_csv_linelist('state1_epi_enroller', :isolation, :export)
   end
@@ -64,6 +78,8 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   test 'export sara alert format (exposure) with batching' do
     ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
+    load 'app/jobs/export_job.rb'
+
     @@public_health_test_helper.export_sara_alert_format('locals1c1_epi', :exposure, :cancel)
     @@public_health_test_helper.export_sara_alert_format('state1_epi_enroller', :exposure, :export)
   end
@@ -71,6 +87,8 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   test 'export sara alert format (isolation) with batching' do
     ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
+    load 'app/jobs/export_job.rb'
+
     @@public_health_test_helper.export_sara_alert_format('locals2c3_epi', :isolation, :cancel)
     @@public_health_test_helper.export_sara_alert_format('state1_epi', :isolation, :export)
   end
@@ -78,6 +96,8 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   test 'export full history purge-eligible monitorees with batching' do
     ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
+    load 'app/jobs/export_job.rb'
+
     @@public_health_test_helper.export_full_history_patients('state1_epi_enroller', :isolation, :cancel, :purgeable)
     @@public_health_test_helper.export_full_history_patients('state1_epi', :exposure, :export, :purgeable)
   end
@@ -85,6 +105,8 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   test 'export full history all monitorees with batching' do
     ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
+    load 'app/jobs/export_job.rb'
+
     @@public_health_test_helper.export_full_history_patients('locals1c1_epi', :exposure, :cancel, :all)
     @@public_health_test_helper.export_full_history_patients('state1_epi', :isolation, :export, :all)
   end
@@ -92,6 +114,8 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   test 'export full history single monitoree with batching' do
     ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
+    load 'app/jobs/export_job.rb'
+
     @@public_health_test_helper.export_full_history_patient('locals2c4_epi', 'patient_10')
   end
 end
