@@ -55,7 +55,7 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
     @@public_health_test_helper.export_full_history_patient('locals2c4_epi', 'patient_10')
   end
 
-  # ---- Test the same exports but with smaller batching so that the batchig functionality can be tested ----
+  # ---- Test the same exports but with smaller batching so that the batching functionality can be tested ----
 
   test 'export line list csv (exposure) with batching' do
     ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'

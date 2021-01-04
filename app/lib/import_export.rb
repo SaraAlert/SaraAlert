@@ -857,6 +857,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
   end
 
+  # Gets data for this batch of patients that may not have already been present in the export config (such as specific symptoms).
   def get_field_data(patients_group, config)
     data = config[:data].deep_dup
 
@@ -872,6 +873,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data
   end
 
+  # Finds the symptoms needed for the reports columns
   def update_assessment_data(patients_group, data)
     # Don't update if assessment data isn't needed
     return unless data.dig(:assessments, :checked).present? && data[:assessments][:checked].include?(:symptoms)
