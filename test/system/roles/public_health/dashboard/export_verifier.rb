@@ -323,7 +323,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   end
 
   def download_export_files(user, export_type)
-    sleep(1) # wait for export and download to complete
+    sleep(2) # wait for export and download to complete
     Download.where(user_id: user.id, export_type: export_type.to_s).where('created_at > ?', 10.seconds.ago).find_each do |download|
       visit "/export/download/#{download.lookup}"
     end
