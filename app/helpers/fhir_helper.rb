@@ -167,7 +167,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       travel_related_notes: from_string_extension(patient, 'travel-related-notes'),
       additional_planned_travel_related_notes: from_string_extension(patient, 'additional-planned-travel-notes'),
       primary_telephone_type: from_primary_phone_type_extension(patient),
-      secondary_telephone_type: from_secondary_phone_type_extension(patient)
+      secondary_telephone_type: from_secondary_phone_type_extension(patient),
+      user_defined_id_statelocal: from_statelocal_id_extension(patient)
     }
   end
 
