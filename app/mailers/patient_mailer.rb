@@ -75,6 +75,7 @@ class PatientMailer < ApplicationMailer
     end
     if failed_dependents.empty? && patient.dependents.count >= 2 && !patient.active_dependents.include?(patient)
       add_success_history_dependents(patient)
+    end
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
@@ -212,7 +213,7 @@ class PatientMailer < ApplicationMailer
     comment = "Sara Alert sent a report reminder to this monitoree for their active dependents via #{patient.preferred_contact_method}."
     History.report_reminder(patient: patient, comment: comment)
   end
-  
+
   def add_fail_history_sms(patient)
     comment = "Sara Alert attempted to send an SMS to #{patient.primary_telephone}, but the message could not be delivered."
     History.report_reminder(patient: patient, comment: comment)
