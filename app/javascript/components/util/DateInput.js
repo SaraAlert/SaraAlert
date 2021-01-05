@@ -51,7 +51,8 @@ class DateInput extends React.Component {
                 : `date-input__clear-btn_${this.props.customClass?.includes('sm') ? 'sm' : this.props.customClass?.includes('md') ? 'md' : 'lg'}`
             }`}
             onClick={this.clearDate}
-            disabled={this.props.disabled}>
+            disabled={this.props.disabled}
+            aria-label="Clear Date Input">
             <i className="fas fa-times"></i>
           </button>
         )}
