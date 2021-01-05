@@ -80,6 +80,7 @@ class UserModal extends React.Component {
                 })}
                 onChange={this.handleJurisdictionChange}
                 placeholder=""
+                aria-label="Jurisdiction Select"
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,
@@ -101,6 +102,7 @@ class UserModal extends React.Component {
                 })}
                 onChange={this.handleRoleChange}
                 placeholder=""
+                aria-label="Role Select"
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,

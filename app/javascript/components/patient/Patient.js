@@ -102,7 +102,7 @@ class Patient extends React.Component {
                 </div>
                 <div>
                   {this.props.goto && (
-                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(0)}>
+                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(0)} aria-label="Edit Button">
                       <div className="h5">(Edit)</div>
                     </Button>
                   )}
@@ -192,7 +192,7 @@ class Patient extends React.Component {
                 </div>
                 <div>
                   {this.props.goto && (
-                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}>
+                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)} aria-label="Edit Button">
                       <div className="h5">(Edit)</div>
                     </Button>
                   )}
@@ -261,7 +261,7 @@ class Patient extends React.Component {
                     </div>
                     <div>
                       {this.props.goto && (
-                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(1)}>
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(1)} aria-label="Edit Button">
                           <div className="h5">(Edit)</div>
                         </Button>
                       )}
@@ -350,7 +350,7 @@ class Patient extends React.Component {
                     </div>
                     <div>
                       {this.props.goto && (
-                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(3)}>
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(3)} aria-label="Edit Button">
                           <div className="h5">(Edit)</div>
                         </Button>
                       )}
@@ -440,7 +440,7 @@ class Patient extends React.Component {
                     </div>
                     <div>
                       {this.props.goto && (
-                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(4)}>
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(4)} aria-label="Edit Button">
                           <div className="h5">(Edit)</div>
                         </Button>
                       )}
@@ -512,7 +512,7 @@ class Patient extends React.Component {
                     </div>
                     <div>
                       {this.props.goto && !this.props.details.isolation && (
-                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)} aria-label="Edit Button">
                           <div className="h5">(Edit)</div>
                         </Button>
                       )}
@@ -625,7 +625,7 @@ class Patient extends React.Component {
                     </div>
                     <div>
                       {this.props.goto && (
-                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)} aria-label="Edit Button">
                           <div className="h5">(Edit)</div>
                         </Button>
                       )}
@@ -681,7 +681,7 @@ class Patient extends React.Component {
                       </div>
                       <div>
                         {this.props.goto && (
-                          <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
+                          <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)} aria-label="Edit Button">
                             <div className="h5">(Edit)</div>
                           </Button>
                         )}

@@ -900,7 +900,7 @@ class AdvancedFilter extends React.Component {
           )}
           <Col className="py-0" md={2}>
             <div className="float-right">
-              <Button variant="danger" onClick={() => this.remove(index)}>
+              <Button variant="danger" onClick={() => this.remove(index)} aria-label="Remove Advanced Filter Option">
                 <i className="fas fa-minus"></i>
               </Button>
             </div>
@@ -974,7 +974,11 @@ class AdvancedFilter extends React.Component {
             })}
             <Row className="pt-2 pb-1">
               <Col>
-                <Button variant="primary" disabled={this.state.activeFilterOptions?.length > 4} onClick={() => this.add()}>
+                <Button
+                  variant="primary"
+                  disabled={this.state.activeFilterOptions?.length > 4}
+                  onClick={() => this.add()}
+                  aria-label="Add Advanced Filter Option">
                   <i className="fas fa-plus"></i>
                 </Button>
               </Col>
