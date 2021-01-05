@@ -148,7 +148,7 @@ class CustomTable extends React.Component {
                 {this.props.isEditable && <th>Edit</th>}
                 {this.props.isSelectable && (
                   <th>
-                    <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll}></input>
+                    <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll} aria-label="Table Select All Rows"></input>
                   </th>
                 )}
               </tr>
@@ -185,7 +185,7 @@ class CustomTable extends React.Component {
                       <td>
                         <input
                           type="checkbox"
-                          aria-label="Table Select Monitoree Row"
+                          aria-label="Table Select Row"
                           checked={this.props.selectAll || this.props.selectedRows.includes(rowIndex)}
                           onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
                       </td>

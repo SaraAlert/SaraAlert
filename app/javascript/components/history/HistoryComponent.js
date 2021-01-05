@@ -135,6 +135,7 @@ class HistoryComponent extends React.Component {
                 className="basic-multi-select w-25 pl-1"
                 classNamePrefix="select"
                 placeholder="Filter by Creator"
+                aria-label="History Creator Filter"
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,
@@ -145,11 +146,11 @@ class HistoryComponent extends React.Component {
                 closeMenuOnSelect={false}
                 isMulti
                 name="Filters"
-                aria-label="Filter History"
                 options={this.typeFilterData}
                 className="basic-multi-select w-25 pl-2"
                 classNamePrefix="select"
                 placeholder="Filter by Type"
+                aria-label="History Type Filter"
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,

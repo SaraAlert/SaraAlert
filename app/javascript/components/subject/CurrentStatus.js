@@ -12,69 +12,83 @@ class CurrentStatus extends React.Component {
   generateStatus(status) {
     if (status === 'exposure_symptomatic') {
       return (
-        <Badge variant="danger" className="badge-larger-font">
+        <Badge variant="danger" className="badge-larger-font" aria-label="Notification Status Exposure Symptomatic">
           symptomatic
         </Badge>
       );
     } else if (status === 'exposure_asymptomatic') {
       return (
-        <Badge variant="success" className="badge-larger-font">
+        <Badge variant="success" className="badge-larger-font" aria-label="Notification Status Exposure Asymptomatic">
           asymptomatic
         </Badge>
       );
     } else if (status === 'exposure_non_reporting') {
       return (
-        <Badge variant="warning" className="badge-larger-font">
+        <Badge variant="warning" className="badge-larger-font" aria-label="Notification Status Exposure Non Reporting">
           non-reporting
         </Badge>
       );
     } else if (status === 'exposure_under_investigation') {
       return (
-        <Badge variant="dark" className="badge-larger-font">
+        <Badge variant="dark" className="badge-larger-font" aria-label="Notification Status Exposure Under Investigation">
           PUI
         </Badge>
       );
     } else if (status === 'purged') {
-      return <Badge className="badge-muted badge-larger-font">purged</Badge>;
+      return (
+        <Badge className="badge-muted badge-larger-font" aria-label="Notification Status Purged">
+          purged
+        </Badge>
+      );
     } else if (status === 'closed') {
       return (
-        <Badge variant="secondary" className="badge-larger-font">
+        <Badge variant="secondary" className="badge-larger-font" aria-label="Notification Status Closed">
           not currently being monitored
         </Badge>
       );
     } else if (status === 'isolation_requiring_review') {
       return (
-        <Badge variant="danger" className="badge-larger-font">
+        <Badge variant="danger" className="badge-larger-font" aria-label="Notification Status Isolation Requires Review">
           requires review
         </Badge>
       );
     } else if (status === 'isolation_symp_non_test_based') {
       return (
-        <Badge variant="danger" className="badge-larger-font" data-for={`symptomatic-non-test-based`} data-tip="">
+        <Badge
+          variant="danger"
+          className="badge-larger-font"
+          aria-label="Notification Status Isolation Symptomatic Non Test Based"
+          data-for={`symptomatic-non-test-based`}
+          data-tip="">
           requires review (symptomatic non test based)
         </Badge>
       );
     } else if (status === 'isolation_asymp_non_test_based') {
       return (
-        <Badge variant="danger" className="badge-larger-font" data-for={`aymptomatic-non-test-based`} data-tip="">
+        <Badge
+          variant="danger"
+          className="badge-larger-font"
+          aria-label="Notification Status Isolation Asymptomatic Non Test Based"
+          data-for={`aymptomatic-non-test-based`}
+          data-tip="">
           requires review (asymptomatic non test based)
         </Badge>
       );
     } else if (status === 'isolation_test_based') {
       return (
-        <Badge variant="danger" className="badge-larger-font" data-for={`test-based`} data-tip="">
+        <Badge variant="danger" className="badge-larger-font" aria-label="Notification Status Isolation Test Based" data-for={`test-based`} data-tip="">
           requires review (test based)
         </Badge>
       );
     } else if (status === 'isolation_non_reporting') {
       return (
-        <Badge variant="warning" className="badge-larger-font">
+        <Badge variant="warning" className="badge-larger-font" aria-label="Notification Status Isolation Non Reporting">
           non-reporting
         </Badge>
       );
     } else if (status === 'isolation_reporting') {
       return (
-        <Badge variant="success" className="badge-larger-font">
+        <Badge variant="success" className="badge-larger-font" aria-label="Notification Status Isolation Reporting">
           reporting
         </Badge>
       );
