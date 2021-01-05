@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/yknx4/audited
+  remote: https://github.com/SaraAlert/audited.git
   revision: eae3075f6d2acc05f54c7a792e018c61fc9078b1
   branch: patch-1
   specs:

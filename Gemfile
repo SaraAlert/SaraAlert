@@ -101,7 +101,7 @@ gem 'redis-queue'
 gem 'hana', '~> 1.3.7'
 
 # Auditing model changes
-gem 'audited', git: 'https://github.com/yknx4/audited', branch: 'patch-1'
+gem 'audited', git: 'https://github.com/SaraAlert/audited.git', branch: 'patch-1'
 
 # Easier ordering for queries
 gem 'order_as_specified'
