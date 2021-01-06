@@ -105,8 +105,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       return current_user.viewable_patients.exposure_asymptomatic if tab == :asymptomatic
       return current_user.viewable_patients.exposure_under_investigation if tab == :pui
       return current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false) if tab == :closed
-      return jurisdiction.transferred_in_patients.monitoring_open.where(isolation: false) if tab == :transferred_in
-      return jurisdiction.transferred_out_patients.monitoring_open.where(isolation: false) if tab == :transferred_out
+      return jurisdiction.transferred_in_patients.where(isolation: false) if tab == :transferred_in
+      return jurisdiction.transferred_out_patients.where(isolation: false) if tab == :transferred_out
 
       current_user.viewable_patients.where(isolation: false, purged: false)
     when :isolation
@@ -114,14 +114,14 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       return current_user.viewable_patients.isolation_non_reporting if tab == :non_reporting
       return current_user.viewable_patients.isolation_reporting if tab == :reporting
       return current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true) if tab == :closed
-      return jurisdiction.transferred_in_patients.monitoring_open.where(isolation: true) if tab == :transferred_in
-      return jurisdiction.transferred_out_patients.monitoring_open.where(isolation: true) if tab == :transferred_out
+      return jurisdiction.transferred_in_patients.where(isolation: true) if tab == :transferred_in
+      return jurisdiction.transferred_out_patients.where(isolation: true) if tab == :transferred_out
 
       current_user.viewable_patients.where(isolation: true, purged: false)
     else
       return current_user.viewable_patients.monitoring_closed_without_purged if tab == :closed
-      return jurisdiction.transferred_in_patients.monitoring_open if tab == :transferred_in
-      return jurisdiction.transferred_out_patients.monitoring_open if tab == :transferred_out
+      return jurisdiction.transferred_in_patients if tab == :transferred_in
+      return jurisdiction.transferred_out_patients if tab == :transferred_out
 
       current_user.viewable_patients.where(purged: false)
     end
