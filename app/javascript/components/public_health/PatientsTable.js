@@ -488,6 +488,7 @@ class PatientsTable extends React.Component {
                     autoComplete="off"
                     size="sm"
                     id="search"
+                    aria-label="Search"
                     value={this.state.query.search || ''}
                     onChange={this.handleSearchChange}
                     onKeyPress={this.handleKeyPress}

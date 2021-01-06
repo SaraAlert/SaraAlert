@@ -347,7 +347,7 @@ class PatientReportsTable extends React.Component {
                         </InputGroup.Text>
                       </OverlayTrigger>
                     </InputGroup.Prepend>
-                    <Form.Control id="reports-search-input" autoComplete="off" size="md" name="search" onChange={this.handleSearchChange} />
+                    <Form.Control id="reports-search-input" autoComplete="off" size="md" name="search" onChange={this.handleSearchChange} aria-label="Search" />
                   </InputGroup>
                 </Col>
               </Row>
