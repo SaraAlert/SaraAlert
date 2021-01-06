@@ -35,7 +35,7 @@ class PatientMailerTest < ActionMailer::TestCase
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
   end
 
-  test 'enrollment email contents' do 
+  test 'enrollment email contents' do
     email = PatientMailer.enrollment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -271,7 +271,8 @@ class PatientMailerTest < ActionMailer::TestCase
         assert_not_nil @patient.last_assessment_reminder_sent
         @patient.reload
         assert_equal 'Report Reminder', @patient.histories.first.history_type
-        assert_equal "Sara Alert sent a report reminder to this monitoree for their active dependents via #{@patient.preferred_contact_method}.", @patient.histories.first.comment
+        assert_equal "Sara Alert sent a report reminder to this monitoree for their active dependents via #{@patient.preferred_contact_method}.", 
+          @patient.histories.first.comment
         @patient.update(purged: false)
         @patient.reload
       end

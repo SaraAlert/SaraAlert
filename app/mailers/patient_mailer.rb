@@ -73,8 +73,7 @@ class PatientMailer < ApplicationMailer
         failed_dependents << dependent
       end
     end
-    if failed_dependents.empty? && patient.dependents.count >= 2 && !patient.active_dependents.include?(patient)
-      add_success_history_dependents(patient)
+    add_success_history_dependents(patient) if failed_dependents.empty? && patient.dependents.count >= 2 && !patient.active_dependents.include?(patient)
     end
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
