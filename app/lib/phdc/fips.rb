@@ -23,7 +23,7 @@ module PHDC
     end
 
     # Alpha 3 code for given country
-    def country_to_alpha3(country)
+    def country_to_alpha_3(country)
       country = FIPS_COUNTRY[country&.strip]
       return nil if country.blank?
 
