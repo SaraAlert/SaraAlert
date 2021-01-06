@@ -289,7 +289,7 @@ module PHDC
       qrq_org << status_code_helper('completed')
       unless patient.potential_exposure_country.blank?
         code = code_helper('INV502', 'Local-codesystem-oid', 'Country of Exposure', 'LocalSystem')
-        value = value_helper_code('CE', @fips.country_to_alpha3(patient.potential_exposure_country), '1.0.3166.1', patient.potential_exposure_country)
+        value = value_helper_code('CE', @fips.country_to_alpha_3(patient.potential_exposure_country), '1.0.3166.1', patient.potential_exposure_country)
         qrq_org << comp_obs_helper('OBS', 'EVN', code, value)
       end
       unless patient.potential_exposure_location.blank?
