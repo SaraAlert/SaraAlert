@@ -22,6 +22,7 @@ class Exposure extends React.Component {
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
       assigned_users: this.props.assigned_users,
+      selected_jurisdiction: this.props.selected_jurisdiction,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
@@ -225,16 +226,23 @@ class Exposure extends React.Component {
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, async () => {
-          if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
+          if (parseInt(self.state.current.patient.jurisdiction_id) !== self.state.originalJurisdictionId) {
+            // If we set it back to the last saved value no need to confirm.
+            if (self.state.current.patient.jurisdiction_id === self.state.selected_jurisdiction) {
+              callback();
+              return;
+            }
             const originalJurisdictionPath = self.props.jurisdiction_paths[self.state.originalJurisdictionId];
-            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdiction_path}. Are you sure you want to do this?`;
+            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdiction_path}. Only users in ${self.state.jurisdiction_path} and its parent jurisdictions will be able to access this record. \n\nAre you sure you want to do this? \n\nThis will NOT be saved until the record is saved.`;
             const options = { title: 'Confirm Jurisdiction Change' };
 
             if (self.state.current.patient.assigned_user && self.state.current.patient.assigned_user === self.state.originalAssignedUser) {
-              options.additionalNote = 'Please also consider removing or updating the assigned user if it is no longer applicable.';
+              options.additionalNote =
+                'Please also consider removing or updating the assigned user before completing the transfer if the new jurisdiction uses different Assigned User codes.';
             }
 
             if (await confirmDialog(message, options)) {
+              self.setState({ selected_jurisdiction: self.state.current.patient.jurisdiction_id });
               callback();
             }
           } else {
@@ -811,6 +819,7 @@ Exposure.propTypes = {
   has_dependents: PropTypes.bool,
   jurisdiction_paths: PropTypes.object,
   assigned_users: PropTypes.array,
+  selected_jurisdiction: PropTypes.object,
   authenticity_token: PropTypes.string,
 };
 
