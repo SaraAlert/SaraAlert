@@ -76,9 +76,6 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     # Provide optional custom export format name
     fill_in 'preset', with: settings[:name] if settings[:name].present?
 
-    # Select file format
-    click_on "custom-export-format-#{settings[:format]}" if settings[:format]
-
     # Save, update, or delete preset
     settings[:actions]&.each do |action|
       click_on "custom-export-action-#{action}"
