@@ -64,6 +64,7 @@ class ExtendedIsolation extends React.Component {
                 onChange={date => this.setState({ extended_isolation: date, showExtendIsolationModal: true, reasoning: '' })}
                 placement="bottom"
                 customClass="form-control-lg"
+                ariaLabel="Extended Isolation to Date Input"
                 isClearable
               />
             </Col>

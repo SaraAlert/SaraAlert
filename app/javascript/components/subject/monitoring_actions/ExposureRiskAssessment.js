@@ -130,7 +130,7 @@ class ExposureRiskAssessment extends React.Component {
     return (
       <React.Fragment>
         <div className="disabled">
-          <Form.Label className="nav-input-label">
+          <Form.Label htmlFor="exposure_risk_assessment" className="nav-input-label">
             EXPOSURE RISK ASSESSMENT
             <InfoTooltip tooltipTextKey={'exposureRiskAssessment'} location="right"></InfoTooltip>
           </Form.Label>

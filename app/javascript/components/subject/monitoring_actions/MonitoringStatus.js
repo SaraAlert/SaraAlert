@@ -199,6 +199,7 @@ class MonitoringStatus extends React.Component {
                           onChange={date => this.setState({ apply_to_household_cm_exp_only_date: date })}
                           placement="bottom"
                           customClass="form-control-lg"
+                          ariaLabel="Update Last Exposure Date Input"
                         />
                       </React.Fragment>
                     )}
@@ -229,7 +230,7 @@ class MonitoringStatus extends React.Component {
     return (
       <React.Fragment>
         <div className="disabled">
-          <Form.Label className="nav-input-label">
+          <Form.Label htmlFor="monitoring_status" className="nav-input-label">
             MONITORING STATUS
             <InfoTooltip tooltipTextKey="monitoringStatus" location="right"></InfoTooltip>
           </Form.Label>

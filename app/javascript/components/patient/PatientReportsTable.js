@@ -291,7 +291,7 @@ class PatientReportsTable extends React.Component {
     const direction = this.state.table.rowData && this.state.table.rowData.length > 2 ? null : 'up';
     return (
       <Dropdown drop={direction}>
-        <Dropdown.Toggle id={`report-action-button-${rowData.id}`} size="sm" variant="primary">
+        <Dropdown.Toggle id={`report-action-button-${rowData.id}`} size="sm" variant="primary" aria-label="report-actions-dropdown">
           <i className="fas fa-cogs fw"></i>
         </Dropdown.Toggle>
         <Dropdown.Menu className="test-class" drop={'up'}>
@@ -341,7 +341,9 @@ class PatientReportsTable extends React.Component {
                       <OverlayTrigger overlay={<Tooltip>Search by id or reporter.</Tooltip>}>
                         <InputGroup.Text className="rounded-0">
                           <i className="fas fa-search"></i>
-                          <span className="ml-1">Search</span>
+                          <label htmlFor="reports-search-input" className="ml-1 mb-0">
+                            Search
+                          </label>
                         </InputGroup.Text>
                       </OverlayTrigger>
                     </InputGroup.Prepend>

@@ -66,9 +66,9 @@ class UserModal extends React.Component {
               </InputGroup>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Jurisdiction</Form.Label>
+              <Form.Label htmlFor="jurisdiction-select">Jurisdiction</Form.Label>
               <Select
-                id="jurisdiction-select"
+                inputId="jurisdiction-select"
                 name="jurisdiction"
                 defaultValue={
                   this.props.initialUserData.jurisdiction_path
@@ -80,7 +80,6 @@ class UserModal extends React.Component {
                 })}
                 onChange={this.handleJurisdictionChange}
                 placeholder=""
-                aria-label="Jurisdiction Select"
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,
@@ -88,9 +87,9 @@ class UserModal extends React.Component {
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Role</Form.Label>
+              <Form.Label htmlFor="role-select">Role</Form.Label>
               <Select
-                id="role-select"
+                inputId="role-select"
                 name="role"
                 defaultValue={
                   this.props.initialUserData.role_title
@@ -102,7 +101,6 @@ class UserModal extends React.Component {
                 })}
                 onChange={this.handleRoleChange}
                 placeholder=""
-                aria-label="Role Select"
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,
