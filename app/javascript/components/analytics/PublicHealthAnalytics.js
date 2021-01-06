@@ -109,6 +109,7 @@ class PublicHealthAnalytics extends React.Component {
             <Col xs="4">
               <span className="float-right">
                 <Switch
+                  id="epidemiological-graph-switch"
                   className="ml-2 mt-4 custom-react-switch"
                   onChange={this.toggleEpidemiologicalGraphs}
                   onColor="#557385"
@@ -122,10 +123,12 @@ class PublicHealthAnalytics extends React.Component {
           </Row>
           <Row className="mb-4 mx-1 px-0">
             <Col xs="16">
-              <h5 className="text-secondary">Among Those Currently Under Active Monitoring</h5>
+              <label htmlFor="epidemiological-graph-switch" className="h5 text-secondary">
+                Among Those Currently Under Active Monitoring
+              </label>
             </Col>
             <Col xs="8">
-              <h5 className="float-right text-secondary">View Data as Graph</h5>
+              <span className="h5 float-right text-secondary">View Data as Graph</span>
             </Col>
           </Row>
           <Row className="mb-4 mx-1 px-0">

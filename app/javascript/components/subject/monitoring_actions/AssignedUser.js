@@ -139,7 +139,7 @@ class AssignedUser extends React.Component {
     return (
       <React.Fragment>
         <div className="disabled">
-          <Form.Label className="nav-input-label">
+          <Form.Label htmlFor="assigned_user" className="nav-input-label">
             ASSIGNED USER
             <InfoTooltip tooltipTextKey="assignedUser" location="right"></InfoTooltip>
           </Form.Label>

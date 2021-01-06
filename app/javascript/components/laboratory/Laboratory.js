@@ -107,6 +107,7 @@ class Laboratory extends React.Component {
                   onChange={date => this.handleDateChange('specimen_collection', date)}
                   placement="bottom"
                   customClass="form-control-lg"
+                  ariaLabel="Specimen Collection Date Input"
                 />
               </Form.Group>
             </Row>
@@ -122,6 +123,7 @@ class Laboratory extends React.Component {
                   placement="bottom"
                   isInvalid={this.state.reportInvalid}
                   customClass="form-control-lg"
+                  ariaLabel="Report Date Input"
                 />
                 <Form.Control.Feedback className="d-block" type="invalid">
                   {this.state.reportInvalid && <span>Report Date cannot be before Specimen Collection Date.</span>}
