@@ -80,9 +80,9 @@ class CloseRecords extends React.Component {
             </span>
             {this.state.monitoring_reason === '' && <span> These records will be moved to the closed line list and the reason for closure will be blank.</span>}
           </p>
-          <Form.Group>
+          <Form.Group controlId="monitoring_reason">
             <Form.Label>Please select reason for status change:</Form.Label>
-            <Form.Control as="select" size="lg" className="form-square" id="monitoring_reason" onChange={this.handleChange} defaultValue={-1}>
+            <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange} defaultValue={-1}>
               <option value={''}>--</option>
               {this.state.monitoring_reasons.map((option, index) => (
                 <option key={`option-${index}`} value={option}>
@@ -91,9 +91,9 @@ class CloseRecords extends React.Component {
               ))}
             </Form.Control>
           </Form.Group>
-          <Form.Group>
+          <Form.Group controlId="reasoning">
             <Form.Label>Please include any additional details:</Form.Label>
-            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} aria-label="Additional Details Text Area" />
+            <Form.Control as="textarea" rows="2" onChange={this.handleChange} />
           </Form.Group>
           <Form.Group className="my-2">
             <Form.Check
