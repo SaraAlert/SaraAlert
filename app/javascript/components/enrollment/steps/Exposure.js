@@ -272,6 +272,7 @@ class Exposure extends React.Component {
               placement="bottom"
               isInvalid={!!this.state.errors['symptom_onset']}
               customClass="form-control-lg"
+              ariaLabel="Symptom Onset Date Input"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['symptom_onset']}
@@ -342,6 +343,7 @@ class Exposure extends React.Component {
               placement="bottom"
               isInvalid={!!this.state.errors['last_date_of_exposure']}
               customClass="form-control-lg"
+              ariaLabel="Last Date of Exposure Input"
               isClearable
             />
             <Form.Control.Feedback className="d-block" type="invalid">

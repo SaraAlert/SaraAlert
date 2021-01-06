@@ -480,6 +480,7 @@ class AdvancedFilter extends React.Component {
           this.changeFilterOption(index, event?.value);
         }}
         placeHolder="Select Field...."
+        aria-label="Advanced Filter Options Dropdown"
         theme={theme => ({
           ...theme,
           borderRadius: 0,
@@ -494,6 +495,7 @@ class AdvancedFilter extends React.Component {
       <Form.Group key={index + 'opkeygroup'} className="py-0 my-0">
         <Form.Control
           as="select"
+          aria-label="Advanced Filter Date Select Options"
           value={current}
           className="py-0 my-0"
           onChange={event => {
@@ -512,6 +514,7 @@ class AdvancedFilter extends React.Component {
     return (
       <Form.Control
         as="select"
+        aria-label="Advanced Filter Relative Date Select Options"
         value={current}
         onChange={event => {
           this.changeFilterRelativeOption(index, value, event.target.value);
@@ -699,6 +702,7 @@ class AdvancedFilter extends React.Component {
               <Form.Group className="py-0 my-0">
                 <Form.Control
                   as="select"
+                  aria-label="Advanced Filter Option Select"
                   value={value}
                   className="py-0 my-0"
                   onChange={event => {
@@ -722,6 +726,7 @@ class AdvancedFilter extends React.Component {
                     <Col md="8">
                       <Form.Control
                         as="select"
+                        aria-label="Advanced Filter Number Additional Options Input"
                         value={value?.option}
                         onChange={event =>
                           this.changeValue(index, {
@@ -743,6 +748,7 @@ class AdvancedFilter extends React.Component {
                   <Col md="12">
                     <Form.Control
                       as="select"
+                      aria-label="Advanced Filter Number Operator Select"
                       value={value?.operator}
                       onChange={event =>
                         this.changeValue(index, {
@@ -761,6 +767,7 @@ class AdvancedFilter extends React.Component {
                   <Col md="4">
                     <Form.Control
                       className="form-control-number"
+                      aria-label="Advanced Filter Number Input"
                       value={value?.number}
                       type="number"
                       min="0"
@@ -791,6 +798,7 @@ class AdvancedFilter extends React.Component {
                         }}
                         placement="bottom"
                         customClass="form-control-md"
+                        ariaLabel="Advanced Filter Date Input"
                         minDate={'1900-01-01'}
                         maxDate={moment()
                           .add(2, 'years')
@@ -810,6 +818,7 @@ class AdvancedFilter extends React.Component {
                           }}
                           placement="bottom"
                           customClass="form-control-md"
+                          ariaLabel="Advanced Filter Start Date Input"
                           minDate={'1900-01-01'}
                           maxDate={moment()
                             .add(2, 'years')
@@ -829,6 +838,7 @@ class AdvancedFilter extends React.Component {
                           }}
                           placement="bottom"
                           customClass="form-control-md"
+                          ariaLabel="Advanced Filter End Date Input"
                           minDate={'1900-01-01'}
                           maxDate={moment()
                             .add(2, 'years')
@@ -850,6 +860,7 @@ class AdvancedFilter extends React.Component {
                     <Col md="6" className="pr-0">
                       <Form.Control
                         as="select"
+                        aria-label="Advanced Filter Relative Date When Select"
                         value={value.when}
                         onChange={event => {
                           this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
@@ -860,6 +871,7 @@ class AdvancedFilter extends React.Component {
                     </Col>
                     <Col md="4" className="pr-0">
                       <Form.Control
+                        aria-label="Advanced Filter Relative Date Number Select"
                         value={value.number}
                         type="number"
                         min="1"
@@ -869,6 +881,7 @@ class AdvancedFilter extends React.Component {
                     <Col md="6" className="pr-0">
                       <Form.Control
                         as="select"
+                        aria-label="Advanced Filter Relative Date Unit Select"
                         value={value.unit}
                         onChange={event => {
                           this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
@@ -888,6 +901,7 @@ class AdvancedFilter extends React.Component {
                   as="input"
                   value={value}
                   className="py-0 my-0"
+                  aria-label="Advanced Filter Search Text Input"
                   onChange={event => {
                     this.changeValue(index, event.target.value);
                   }}
@@ -1010,7 +1024,7 @@ class AdvancedFilter extends React.Component {
           </Button>
         </OverlayTrigger>
         <Dropdown>
-          <Dropdown.Toggle variant="outline-secondary" size="sm" className="advanced-filter-dropdown">
+          <Dropdown.Toggle variant="outline-secondary" size="sm" className="advanced-filter-dropdown" aria-label="Advance Filter Dropdown Menu">
             {this.state.applied && (this.state.activeFilter?.name || 'untitled')}
           </Dropdown.Toggle>
           <Dropdown.Menu alignRight>
