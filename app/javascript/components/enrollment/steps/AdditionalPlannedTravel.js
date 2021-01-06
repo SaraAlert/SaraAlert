@@ -190,6 +190,7 @@ class AdditionalPlannedTravel extends React.Component {
                     isInvalid={!!this.state.errors['additional_planned_travel_start_date']}
                     isClearable
                     customClass="form-control-lg"
+                    ariaLabel="Additional Planned Travel Start Date Input"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['additional_planned_travel_start_date']}
@@ -211,6 +212,7 @@ class AdditionalPlannedTravel extends React.Component {
                     isInvalid={!!this.state.errors['additional_planned_travel_end_date']}
                     isClearable
                     customClass="form-control-lg"
+                    ariaLabel="Additional Planned Travel End Date Input"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['additional_planned_travel_end_date']}
