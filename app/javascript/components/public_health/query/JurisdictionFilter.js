@@ -36,7 +36,7 @@ class JurisdictionFilter extends React.Component {
         </InputGroup.Prepend>
         <Form.Control
           id="jurisdiction_path"
-          aria-label="Dashboard Jurisdiction Filter"
+          aria-label="Jurisdiction Filter"
           type="text"
           autoComplete="off"
           list="jurisdiction_paths"

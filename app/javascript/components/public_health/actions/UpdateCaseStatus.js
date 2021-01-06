@@ -113,7 +113,13 @@ class UpdateCaseStatus extends React.Component {
       <React.Fragment>
         <Modal.Body>
           <p>Please select the desired case status to be assigned to all selected patients:</p>
-          <Form.Control as="select" className="form-control-lg mb-3" id="case_status" onChange={this.handleChange} value={this.state.case_status}>
+          <Form.Control
+            as="select"
+            className="form-control-lg mb-3"
+            id="case_status"
+            onChange={this.handleChange}
+            value={this.state.case_status}
+            aria-label="Case Status Select">
             <option></option>
             <option>Confirmed</option>
             <option>Probable</option>
@@ -126,7 +132,13 @@ class UpdateCaseStatus extends React.Component {
               {['Confirmed', 'Probable'].includes(this.state.case_status) && !this.state.initialIsolation && (
                 <React.Fragment>
                   <p>Please select what you would like to do:</p>
-                  <Form.Control as="select" className="form-control-lg mb-3" id="follow_up" onChange={this.handleChange} value={this.state.follow_up}>
+                  <Form.Control
+                    as="select"
+                    className="form-control-lg mb-3"
+                    id="follow_up"
+                    onChange={this.handleChange}
+                    value={this.state.follow_up}
+                    aria-label="Case Status Follow Up Select">
                     <option></option>
                     <option>End Monitoring</option>
                     <option>Continue Monitoring in Isolation Workflow</option>

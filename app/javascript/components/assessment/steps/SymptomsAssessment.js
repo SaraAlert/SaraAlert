@@ -105,23 +105,17 @@ class SymptomsAssessment extends React.Component {
   };
 
   floatSymptom = symp => {
+    const key = `key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
+    const id = `${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
     return (
-      <Form.Row className="pt-3" key={`label_key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}>
-        <Form.Label className="nav-input-label" key={`label_key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}>
+      <Form.Row className="pt-3" key={key}>
+        <Form.Label className="nav-input-label" key={key} htmlFor={id}>
           <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b>{' '}
           {this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
             ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
             : ''}
         </Form.Label>
-        <Form.Control
-          size="lg"
-          id={`${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
-          key={`key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
-          className="form-square"
-          value={symp.value || ''}
-          type="number"
-          onChange={this.handleChange}
-        />
+        <Form.Control size="lg" id={id} key={key} className="form-square" value={symp.value || ''} type="number" onChange={this.handleChange} />
       </Form.Row>
     );
   };

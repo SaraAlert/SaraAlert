@@ -293,10 +293,12 @@ class Contact extends React.Component {
                 )}
               </Form.Row>
               <Form.Row>
-                <Form.Group as={Col} md="11" controlId="primary_telephone">
-                  <Form.Label className="nav-input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
+                <Form.Group as={Col} md="11">
                   <Form.Row>
                     <Form.Group as={Col}>
+                      <Form.Label htmlFor="primary_telephone" className="nav-input-label">
+                        PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}
+                      </Form.Label>
                       <PhoneInput
                         id="primary_telephone"
                         value={this.state.current.patient.primary_telephone}
@@ -312,21 +314,19 @@ class Contact extends React.Component {
                       )}
                     </Form.Group>
                   </Form.Row>
+                  {this.state.current.patient?.preferred_contact_method?.includes('SMS') && this.state.current.blocked_sms === true && (
+                    <Form.Label className="tooltip-whitespace">
+                      <i>
+                        <b>* Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert.
+                      </i>
+                      <b>
+                        <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
+                      </b>
+                    </Form.Label>
+                  )}
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['primary_telephone']}
                   </Form.Control.Feedback>
-                  <Form.Label>
-                    {this.state.current.patient?.preferred_contact_method?.includes('SMS') && this.state.current.blocked_sms === true && (
-                      <Form.Label className="tooltip-whitespace">
-                        <i>
-                          <b>* Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert.
-                        </i>
-                        <b>
-                          <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
-                        </b>
-                      </Form.Label>
-                    )}
-                  </Form.Label>
                 </Form.Group>
                 <Form.Group as={Col} md="2"></Form.Group>
                 <Form.Group as={Col} md="11" controlId="secondary_telephone">

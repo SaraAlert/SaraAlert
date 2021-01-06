@@ -23,7 +23,7 @@ class EmailModal extends React.Component {
         <Modal.Body>
           <p>{this.props.prompt}</p>
           <Form.Group>
-            <Form.Control as="textarea" rows="10" id="comment" onChange={this.handleCommentChange} />
+            <Form.Control as="textarea" rows="10" id="comment" onChange={this.handleCommentChange} aria-label="Comment" />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
