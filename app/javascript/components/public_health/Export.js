@@ -87,32 +87,40 @@ class Export extends React.Component {
           <Dropdown.Divider />
           <Dropdown.Item onClick={() => this.setState({ showCustomFormatModal: true })}>Custom Format...</Dropdown.Item>
         </DropdownButton>
-        <ConfirmExport
-          show={this.state.showCSVModal}
-          exportType={'Line list CSV'}
-          workflow={this.props.query.workflow}
-          onCancel={() => this.setState({ showCSVModal: false })}
-          onStartExport={this.submit}
-        />
-        <ConfirmExport
-          show={this.state.showSaraFormatModal}
-          exportType={'Sara Alert Format'}
-          workflow={this.props.query.workflow}
-          onCancel={() => this.setState({ showSaraFormatModal: false })}
-          onStartExport={this.submit}
-        />
-        <ConfirmExport
-          show={this.state.showAllPurgeEligibleModal}
-          exportType={'Excel Export For Purge-Eligible Monitorees'}
-          onCancel={() => this.setState({ showAllPurgeEligibleModal: false })}
-          onStartExport={this.submit}
-        />
-        <ConfirmExport
-          show={this.state.showAllModal}
-          exportType={'Excel Export For All Monitorees'}
-          onCancel={() => this.setState({ showAllModal: false })}
-          onStartExport={this.submit}
-        />
+        {this.state.showCSVModal && (
+          <ConfirmExport
+            show={this.state.showCSVModal}
+            exportType={'Line list CSV'}
+            workflow={this.props.query.workflow}
+            onCancel={() => this.setState({ showCSVModal: false })}
+            onStartExport={this.submit}
+          />
+        )}
+        {this.state.showSaraFormatModal && (
+          <ConfirmExport
+            show={this.state.showSaraFormatModal}
+            exportType={'Sara Alert Format'}
+            workflow={this.props.query.workflow}
+            onCancel={() => this.setState({ showSaraFormatModal: false })}
+            onStartExport={this.submit}
+          />
+        )}
+        {this.state.showAllPurgeEligibleModal && (
+          <ConfirmExport
+            show={this.state.showAllPurgeEligibleModal}
+            exportType={'Excel Export For Purge-Eligible Monitorees'}
+            onCancel={() => this.setState({ showAllPurgeEligibleModal: false })}
+            onStartExport={this.submit}
+          />
+        )}
+        {this.state.showAllModal && (
+          <ConfirmExport
+            show={this.state.showAllModal}
+            exportType={'Excel Export For All Monitorees'}
+            onCancel={() => this.setState({ showAllModal: false })}
+            onStartExport={this.submit}
+          />
+        )}
         <ToastContainer
           position="top-center"
           autoClose={3000}

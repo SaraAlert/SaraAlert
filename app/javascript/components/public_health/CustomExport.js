@@ -498,13 +498,15 @@ class CustomExport extends React.Component {
             )}
           </Modal.Footer>
         </Modal>
-        <ConfirmExport
-          show={this.state.show_confirm_export_modal}
-          exportType={'Custom Export Format'}
-          presetName={this.state.preset?.name}
-          onCancel={() => this.setState({ show_confirm_export_modal: false })}
-          onStartExport={this.export}
-        />
+        {this.state.show_confirm_export_modal && (
+          <ConfirmExport
+            show={this.state.show_confirm_export_modal}
+            exportType={'Custom Export Format'}
+            presetName={this.state.preset?.name}
+            onCancel={() => this.setState({ show_confirm_export_modal: false })}
+            onStartExport={this.export}
+          />
+        )}
       </React.Fragment>
     );
   }
