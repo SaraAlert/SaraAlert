@@ -34,10 +34,7 @@ describe('Export', () => {
     expect(wrapper.find(DropdownButton).exists()).toBeTruthy();
     expect(wrapper.find(Dropdown.Item).length).toEqual(5);
     expect(wrapper.find(Dropdown.Divider).length).toEqual(1);
-    expect(wrapper.find(ConfirmExport).length).toEqual(4);
-    wrapper.find(ConfirmExport).forEach(function(component) {
-      expect(component.prop('show')).toBeFalsy();
-    });
+    expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
     expect(wrapper.find(ToastContainer).exists()).toBeTruthy();
     expect(wrapper.find(CustomExport).exists()).toBeFalsy();
   });
@@ -64,42 +61,46 @@ describe('Export', () => {
 
   it('Clicking "Line list CSV" option displays Confirm Export modal', () => {
     const wrapper = getExposureWrapper();
+    expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
     expect(wrapper.find(Dropdown.Item).at(0).text().includes(dropdownOptions[0])).toBeTruthy();
-    expect(wrapper.find(ConfirmExport).at(0).prop('show')).toBeFalsy();
-    expect(wrapper.find(ConfirmExport).at(0).prop('exportType')).toEqual('Line list CSV');
-    expect(wrapper.find(ConfirmExport).at(0).prop('workflow')).toEqual('exposure');
     wrapper.find(Dropdown.Item).at(0).simulate('click');
-    expect(wrapper.find(ConfirmExport).at(0).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('exportType')).toEqual('Line list CSV');
+    expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual('exposure');
   });
 
   it('Clicking "Sara Alert Format" option displays Confirm Export modal', () => {
     const wrapper = getExposureWrapper();
+    expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
     expect(wrapper.find(Dropdown.Item).at(1).text().includes(dropdownOptions[1])).toBeTruthy();
-    expect(wrapper.find(ConfirmExport).at(1).prop('show')).toBeFalsy();
-    expect(wrapper.find(ConfirmExport).at(1).prop('exportType')).toEqual('Sara Alert Format');
-    expect(wrapper.find(ConfirmExport).at(1).prop('workflow')).toEqual('exposure');
     wrapper.find(Dropdown.Item).at(1).simulate('click');
-    expect(wrapper.find(ConfirmExport).at(1).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('exportType')).toEqual('Sara Alert Format');
+    expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual('exposure');
   });
 
   it('Clicking "Excel Export For Purge-Eligible Monitorees" option displays Confirm Export modal', () => {
     const wrapper = getExposureWrapper();
+    expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
     expect(wrapper.find(Dropdown.Item).at(2).text()).toEqual(dropdownOptions[2]);
-    expect(wrapper.find(ConfirmExport).at(2).prop('show')).toBeFalsy();
-    expect(wrapper.find(ConfirmExport).at(2).prop('exportType')).toEqual('Excel Export For Purge-Eligible Monitorees');
-    expect(wrapper.find(ConfirmExport).at(2).prop('workflow')).toEqual(undefined);
     wrapper.find(Dropdown.Item).at(2).simulate('click');
-    expect(wrapper.find(ConfirmExport).at(2).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('exportType')).toEqual('Excel Export For Purge-Eligible Monitorees');
+    expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual(undefined);
   });
 
   it('Clicking "Excel Export For All Monitorees" option displays Confirm Export modal', () => {
     const wrapper = getExposureWrapper();
+    expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
     expect(wrapper.find(Dropdown.Item).at(3).text()).toEqual(dropdownOptions[3]);
-    expect(wrapper.find(ConfirmExport).at(3).prop('show')).toBeFalsy();
-    expect(wrapper.find(ConfirmExport).at(3).prop('exportType')).toEqual('Excel Export For All Monitorees');
-    expect(wrapper.find(ConfirmExport).at(2).prop('workflow')).toEqual(undefined);
     wrapper.find(Dropdown.Item).at(3).simulate('click');
-    expect(wrapper.find(ConfirmExport).at(3).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('exportType')).toEqual('Excel Export For All Monitorees');
+    expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual(undefined);
   });
 
   it('Clicking "Custom Format..." option displays Custom Export modal', () => {
