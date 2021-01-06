@@ -94,6 +94,7 @@ class AssessmentsControllerTest < ActionController::TestCase
     ADMIN_OPTIONS['report_mode'] = false
     patient_submission_token = patients(:patient_1).submission_token
     unique_identifier = patients(:patient_1).jurisdiction.unique_identifier
+    threshold_hash = patients(:patient_1).jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash
     AssessmentReceipt.create(submission_token: patient_submission_token)
     user = create(role)
     sign_in user
@@ -103,6 +104,7 @@ class AssessmentsControllerTest < ActionController::TestCase
           patient_submission_token: patient_submission_token,
           unique_identifier: unique_identifier,
           experiencing_symptoms: 'yes',
+          threshold_hash: threshold_hash,
           symptoms: [
             {
               name: 'Cough',
@@ -114,7 +116,7 @@ class AssessmentsControllerTest < ActionController::TestCase
           ]
         }
       end
-      assert_redirected_to :patient_assessments
+      assert_equal 204, response.code.to_i
       sign_out user
     end
   end
@@ -202,7 +204,7 @@ class AssessmentsControllerTest < ActionController::TestCase
             experiencing_symptoms: 'yes',
             symptoms: symptoms
           }
-          assert_redirected_to :patient_assessments
+          assert_equal 204, response.code.to_i
         end
       end
       assessment.reload
@@ -283,7 +285,7 @@ class AssessmentsControllerTest < ActionController::TestCase
             experiencing_symptoms: 'yes',
             symptoms: symptoms
           }
-          assert_redirected_to :patient_assessments
+          assert_equal 204, response.code.to_i
           assert_match(/Symptom updates/, History.last.comment)
           assert_match(/Fever \("No" to "Yes"\)/, History.last.comment)
         end
@@ -318,7 +320,7 @@ class AssessmentsControllerTest < ActionController::TestCase
             experiencing_symptoms: 'yes',
             symptoms: symptoms
           }
-          assert_redirected_to :patient_assessments
+          assert_equal 204, response.code.to_i
         end
       end
     end
@@ -337,7 +339,7 @@ class AssessmentsControllerTest < ActionController::TestCase
             experiencing_symptoms: 'yes',
             symptoms: symptoms
           }
-          assert_redirected_to :patient_assessments
+          assert_equal 204, response.code.to_i
           assert_match(/Symptom updates/, History.last.comment)
           assert_match(/Productive Cough \("Yes" to "No"\)/, History.last.comment)
         end
@@ -373,7 +375,7 @@ class AssessmentsControllerTest < ActionController::TestCase
             experiencing_symptoms: 'yes',
             symptoms: symptoms
           }
-          assert_redirected_to :patient_assessments
+          assert_equal 204, response.code.to_i
         end
       end
     end
@@ -392,7 +394,7 @@ class AssessmentsControllerTest < ActionController::TestCase
             experiencing_symptoms: 'yes',
             symptoms: symptoms
           }
-          assert_redirected_to :patient_assessments
+          assert_equal 204, response.code.to_i
           assert_match(/Symptom updates/, History.last.comment)
           assert_match(/Temperature \("99.8" to "100.4"\)/, History.last.comment)
         end
@@ -428,7 +430,7 @@ class AssessmentsControllerTest < ActionController::TestCase
             experiencing_symptoms: 'yes',
             symptoms: symptoms
           }
-          assert_redirected_to :patient_assessments
+          assert_equal 204, response.code.to_i
         end
       end
     end
@@ -447,7 +449,7 @@ class AssessmentsControllerTest < ActionController::TestCase
             experiencing_symptoms: 'yes',
             symptoms: symptoms
           }
-          assert_redirected_to :patient_assessments
+          assert_equal 204, response.code.to_i
           assert_match(/Symptom updates/, History.last.comment)
           assert_match(/Days Without Fever \("2" to "3"\)/, History.last.comment)
         end
@@ -456,5 +458,81 @@ class AssessmentsControllerTest < ActionController::TestCase
     assessment.reload
     symptoms = symptoms_param(assessment.reported_condition.symptoms)
     assert_equal 3, symptoms.find { |d| d[:name] == 'daysWithoutFever' }[:value]
+  end
+
+  test 'update boolean assessment with nils' do
+    submission_token = patients(:patient_1).submission_token
+    assessment = assessments(:patient_1_assessment_2)
+    user = create(:public_health_user)
+    symptoms = symptoms_param(assessment.reported_condition.symptoms)
+    symptoms << {
+      name: 'productive_cough',
+      value: nil,
+      type: 'BoolSymptom',
+      label: 'Productive Cough',
+      notes: nil,
+      required: false
+    }
+    sign_in user
+
+    # create the new symptom
+    assert_changes 'History.count' do
+      assert_no_difference 'AssessmentReceipt.count' do
+        assert_no_difference 'Assessment.count' do
+          post :update, params: {
+            patient_submission_token: submission_token,
+            id: assessment.id,
+            experiencing_symptoms: 'yes',
+            symptoms: symptoms
+          }
+          assert_equal 204, response.code.to_i
+        end
+      end
+    end
+    assessment.reload
+
+    assert_nil symptoms.find { |d| d[:name] == 'productive_cough' }[:value]
+
+    # update the new symptom
+    symptoms.find { |d| d[:name] == 'productive_cough' }[:value] = false
+    assert_changes 'History.count' do
+      assert_no_difference 'AssessmentReceipt.count' do
+        assert_no_difference 'Assessment.count' do
+          post :update, params: {
+            patient_submission_token: submission_token,
+            id: assessment.id,
+            experiencing_symptoms: 'yes',
+            symptoms: symptoms
+          }
+          assert_equal 204, response.code.to_i
+          assert_no_match(/Symptom updates/, History.last.comment)
+          assert_no_match(/Productive Cough \("No" to "No"\)/, History.last.comment)
+        end
+      end
+    end
+    assessment.reload
+    symptoms = symptoms_param(assessment.reported_condition.symptoms)
+    assert_equal false, symptoms.find { |d| d[:name] == 'productive_cough' }[:value]
+
+    # update the new symptom
+    symptoms.find { |d| d[:name] == 'productive_cough' }[:value] = nil
+    assert_changes 'History.count' do
+      assert_no_difference 'AssessmentReceipt.count' do
+        assert_no_difference 'Assessment.count' do
+          post :update, params: {
+            patient_submission_token: submission_token,
+            id: assessment.id,
+            experiencing_symptoms: 'yes',
+            symptoms: symptoms
+          }
+          assert_equal 204, response.code.to_i
+          assert_no_match(/Symptom updates/, History.last.comment)
+          assert_no_match(/Productive Cough \("No" to "No"\)/, History.last.comment)
+        end
+      end
+    end
+    assessment.reload
+    symptoms = symptoms_param(assessment.reported_condition.symptoms)
+    assert_nil symptoms.find { |d| d[:name] == 'productive_cough' }[:value]
   end
 end

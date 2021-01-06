@@ -192,7 +192,7 @@ class AssessmentsController < ApplicationController
       old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.value
       case symptom.type
       when 'BoolSymptom'
-        has_changed = [true, false].include?(new_val) && [true, false].include?(old_val) && new_val != old_val
+        has_changed = old_val != new_val && !old_val.nil? && !new_val.nil?
         delta << "#{symptom.label} (\"#{old_val ? 'Yes' : 'No'}\" to \"#{new_val ? 'Yes' : 'No'}\")" if has_changed
       when 'FloatSymptom', 'IntegerSymptom'
         delta << "#{symptom.label} (\"#{old_val}\" to \"#{new_val}\")" if new_val != old_val
