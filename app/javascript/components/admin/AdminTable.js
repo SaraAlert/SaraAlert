@@ -61,7 +61,7 @@ class AdminTable extends React.Component {
   createAuditButton(data) {
     const rowData = data.rowData;
     return (
-      <div id={rowData.id} className="float-left edit-button" aria-label="Create Audit Row Row Button">
+      <div id={rowData.id} className="float-left edit-button" aria-label="Create Audit Row Button">
         <i className="fas fa-user-clock"></i>
       </div>
     );
