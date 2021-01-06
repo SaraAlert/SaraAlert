@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes, { bool } from 'prop-types';
-import { Button, Modal, InputGroup, FormControl, Form } from 'react-bootstrap';
+import { Button, Modal, InputGroup, Form } from 'react-bootstrap';
 import Select from 'react-select';
 
 class UserModal extends React.Component {
@@ -54,7 +54,7 @@ class UserModal extends React.Component {
                     <i className="fas fa-envelope"></i>
                   </InputGroup.Text>
                 </InputGroup.Prepend>
-                <FormControl
+                <Form.Control
                   id="email-input"
                   name="email"
                   defaultValue={this.props.initialUserData.email ? this.props.initialUserData.email : ''}

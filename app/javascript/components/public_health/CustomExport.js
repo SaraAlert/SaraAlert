@@ -187,7 +187,7 @@ class CustomExport extends React.Component {
           <Modal.Body className="p-0">
             <div className="p-2">
               <p className="mx-3 mt-2 mb-3">Files will be exported in the Excel (.xlsx) format.</p>
-              <h5 className="mx-3 my-2">Choose which records to export</h5>
+              <div className="h5 mx-3 my-2">Choose which records to export</div>
               <Row className="mx-3 pb-2">
                 <Col md={24}>
                   <Form.Check
@@ -303,7 +303,7 @@ class CustomExport extends React.Component {
             </div>
             <hr className="m-0" />
             <div className="p-2">
-              <h5 className="mx-3 my-2">Choose which elements to export</h5>
+              <div className="h5 mx-3 my-2">Choose which elements to export</div>
               <p className="mx-3 mb-1">Which data would you like to include for each monitoree?</p>
               <Row className="mx-3 py-2">
                 <Col md={24} className="p-1">
@@ -392,7 +392,7 @@ class CustomExport extends React.Component {
             </div>
             <hr className="m-0" />
             <div className="p-2">
-              <h5 className="mx-3 my-2">Custom export format name</h5>
+              <div className="h5 mx-3 my-2">Custom export format name</div>
               <Row className="mx-3">
                 <Col md={12} className="px-1 py-2">
                   <Form.Control
@@ -402,6 +402,7 @@ class CustomExport extends React.Component {
                     type="text"
                     className="form-square"
                     placeholder="(Optional name for saved Custom Export)"
+                    aria-label="Custom Export Name Text Input"
                     autoComplete="off"
                     value={this.state.preset?.name}
                     onChange={event => this.handlePresetChange('name', event?.target?.value)}

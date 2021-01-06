@@ -46,10 +46,13 @@ class PatientsFilters extends React.Component {
               <InputGroup.Prepend>
                 <InputGroup.Text className="rounded-0">
                   <FontAwesomeIcon icon="project-diagram" />
-                  <span className="ml-1">Workflow</span>
+                  <label htmlFor="workflow-filter" className="ml-1 mb-0">
+                    Workflow
+                  </label>
                 </InputGroup.Text>
               </InputGroup.Prepend>
               <Form.Control
+                id="workflow-filter"
                 as="select"
                 size="sm"
                 className="form-square"
@@ -69,10 +72,13 @@ class PatientsFilters extends React.Component {
               <InputGroup.Prepend>
                 <InputGroup.Text className="rounded-0">
                   <FontAwesomeIcon icon="stream" />
-                  <span className="ml-1">Line List</span>
+                  <label htmlFor="linelist-filter" className="ml-1 mb-0">
+                    Line List
+                  </label>
                 </InputGroup.Text>
               </InputGroup.Prepend>
               <Form.Control
+                id="linelist-filter"
                 as="select"
                 size="sm"
                 className="form-square"
@@ -129,7 +135,9 @@ class PatientsFilters extends React.Component {
                 <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
                   <InputGroup.Text className="rounded-0">
                     <FontAwesomeIcon icon="search" />
-                    <span className="ml-1">Dashboard Search Terms</span>
+                    <label htmlFor="search" className="ml-1 mb-0">
+                      Dashboard Search Terms
+                    </label>
                   </InputGroup.Text>
                 </OverlayTrigger>
               </InputGroup.Prepend>
