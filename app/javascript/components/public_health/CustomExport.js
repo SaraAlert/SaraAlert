@@ -186,6 +186,7 @@ class CustomExport extends React.Component {
           </Modal.Header>
           <Modal.Body className="p-0">
             <div className="p-2">
+              <p className="mx-3 mt-2 mb-3">Files will be exported in the Excel (.xlsx) format.</p>
               <h5 className="mx-3 my-2">Choose which records to export</h5>
               <Row className="mx-3 pb-2">
                 <Col md={24}>
@@ -406,29 +407,7 @@ class CustomExport extends React.Component {
                     onChange={event => this.handlePresetChange('name', event?.target?.value)}
                   />
                 </Col>
-                <Col md={6} className="px-1 pt-2">
-                  <Form.Group className="mb-0">
-                    <Button
-                      id="custom-export-format-csv"
-                      size="sm"
-                      variant={this.state.preset?.config?.format === 'csv' ? 'primary' : 'outline-secondary'}
-                      style={{ outline: 'none', boxShadow: 'none' }}
-                      onClick={() => this.handlePresetChange('config.format', 'csv')}>
-                      <FontAwesomeIcon className="mr-1" icon={['fas', 'file-csv']} />
-                      CSV
-                    </Button>
-                    <Button
-                      id="custom-export-format-xlsx"
-                      size="sm"
-                      variant={this.state.preset?.config?.format === 'xlsx' ? 'primary' : 'outline-secondary'}
-                      style={{ outline: 'none', boxShadow: 'none' }}
-                      onClick={() => this.handlePresetChange('config.format', 'xlsx')}>
-                      <FontAwesomeIcon className="mr-1" icon={['fas', 'file-excel']} />
-                      Excel
-                    </Button>
-                  </Form.Group>
-                </Col>
-                <Col md={6} className="px-1 pt-2">
+                <Col md={12} className="px-1 pt-2">
                   <Form.Group className="mb-0 float-right">
                     {this.state.preset?.id && (
                       <React.Fragment>
