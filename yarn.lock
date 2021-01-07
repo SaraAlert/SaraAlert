@@ -9625,20 +9625,21 @@ recharts-scale@^0.4.2:
     decimal.js-light "^2.4.1"
 
 recharts@^2.0.0-beta.1:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/recharts/-/recharts-2.0.0.tgz#6cb70fed6416a91da9b040a98bae7f394b9e4255"
-  integrity sha512-0ZoqQJEmhC47uZnbiOCgswS1pKj0ur4jXrnhFUT0armMNRAMPLl5sYvcq45+DKlGBlW6Zsu6DK95y/cZOlWY/w==
+  version "2.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/recharts/-/recharts-2.0.0-beta.1.tgz#dc0aa89b94233941c5af86b43db585312c45140d"
+  integrity sha512-awJH2DE6JRgp5ymzmH5dKh2Pu6prqZJCr3NRaYCcyub1fBa+fIG3ZlpLyl9hWizHPGEvfZLvcjIM+qgTsr9aSQ==
   dependencies:
     classnames "^2.2.5"
-    d3-interpolate "^2.0.1"
-    d3-scale "^3.2.3"
-    d3-shape "^2.0.0"
-    eventemitter3 "^4.0.1"
-    lodash "^4.17.19"
-    react-resize-detector "^5.2.0"
-    react-smooth "^1.0.6"
+    core-js "^3.4.2"
+    d3-interpolate "^1.3.0"
+    d3-scale "^3.1.0"
+    d3-shape "^1.3.5"
+    lodash "^4.17.5"
+    prop-types "^15.6.0"
+    react-resize-detector "^4.2.1"
+    react-smooth "^1.0.5"
     recharts-scale "^0.4.2"
-    reduce-css-calc "^2.1.7"
+    reduce-css-calc "^1.3.0"
 
 redent@^1.0.0:
   version "1.0.0"
