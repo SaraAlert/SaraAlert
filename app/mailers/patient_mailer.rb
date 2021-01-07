@@ -56,7 +56,7 @@ class PatientMailer < ApplicationMailer
     end
 
     # Cover potential race condition where multiple messages are sent for the same monitoree.
-    return unless last_assessment_reminder_sent_eligible?(patient)
+    return unless patient.last_assessment_reminder_sent_eligible?
 
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |dependent|
@@ -88,7 +88,7 @@ class PatientMailer < ApplicationMailer
     end
 
     # Cover potential race condition where multiple messages are sent for the same monitoree.
-    return unless last_assessment_reminder_sent_eligible?(patient)
+    return unless patient.last_assessment_reminder_sent_eligible?
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
@@ -130,7 +130,7 @@ class PatientMailer < ApplicationMailer
     end
 
     # Cover potential race condition where multiple messages are sent for the same monitoree.
-    return unless last_assessment_reminder_sent_eligible?(patient)
+    return unless patient.last_assessment_reminder_sent_eligible?
 
     lang = patient.select_language
     lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
@@ -177,6 +177,9 @@ class PatientMailer < ApplicationMailer
       return
     end
 
+    # Cover potential race condition where multiple messages are sent for the same monitoree.
+    return unless patient.last_assessment_reminder_sent_eligible?
+
     @lang = patient.select_language
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
@@ -184,7 +187,7 @@ class PatientMailer < ApplicationMailer
       { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
     end
 
-    update_last_assessment_reminder_sent(patient) # Update last send attempt timestamp before Twilio call
+    update_last_assessment_reminder_sent(patient) # Update last send attempt timestamp before SMTP call
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
@@ -215,12 +218,6 @@ class PatientMailer < ApplicationMailer
   # report attempt today.
   def clear_last_assessment_reminder_sent(patient)
     patient.update(last_assessment_reminder_sent: nil)
-  end
-
-  # Check last_assessment_reminder_sent to cover potential race condition of multiple reports
-  # being sent out for the same monitoree.
-  def last_assessment_reminder_sent_eligible?(patient)
-    patient.last_assessment_reminder_sent <= 12.hours.ago || patient.last_assessment_reminder_sent.nil?
   end
 
   def add_success_history(patient, parent)

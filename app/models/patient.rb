@@ -688,7 +688,7 @@ class Patient < ApplicationRecord
 
     # Check last_assessment_reminder_sent before enqueueing to cover potential race condition of multiple reports
     # being sent out for the same monitoree.
-    return unless last_assessment_reminder_sent <= 12.hours.ago || last_assessment_reminder_sent.nil?
+    return unless last_assessment_reminder_sent_eligible? || send_now
 
     if preferred_contact_method&.downcase == 'sms text-message' && ADMIN_OPTIONS['enable_sms']
       PatientMailer.assessment_sms(self).deliver_later
@@ -861,6 +861,12 @@ class Patient < ApplicationRecord
     else
       timezone_for_state('massachusetts')
     end
+  end
+
+  # Check last_assessment_reminder_sent for eligibility. This is chiefly intended to help cover potential race condition of
+  # multiple reports being sent out for the same monitoree.
+  def last_assessment_reminder_sent_eligible?
+    last_assessment_reminder_sent <= 12.hours.ago || last_assessment_reminder_sent.nil?
   end
 
   # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
