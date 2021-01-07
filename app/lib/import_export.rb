@@ -749,7 +749,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patients_group.in_batches(of: inner_batch_size) do |batch_group|
       # The config should be passed to this function rather than data, because it determines values
       # based on the original configuration.
-      exported_data = get_export_data(batch_group.order(:id), config[:data])
+      exported_data = get_export_data(batch_group, config[:data])
 
       CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
         next unless config.dig(:data, data_type, :checked).present?
@@ -797,7 +797,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
       patients_group.in_batches(of: inner_batch_size) do |batch_group|
-        exported_data = get_export_data(batch_group.order(:id), config[:data])
+        exported_data = get_export_data(batch_group, config[:data])
 
         #  Write to appropriate sheets (in each file)
         CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
@@ -816,7 +816,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       files
     else
-      # One file for each data type, each data type in a different tab
+      # One file for all data types, each data type in a different tab
       Axlsx::Package.new do |package|
         sheets = {}
         fields = {}
@@ -835,7 +835,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
         # 2) Get export data in batches to decrease size of export data hash maintained in memory
         patients_group.in_batches(of: inner_batch_size) do |batch_group|
-          exported_data = get_export_data(batch_group.order(:id), config[:data])
+          exported_data = get_export_data(batch_group, config[:data])
 
           CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
             next unless config.dig(:data, data_type, :checked).present?
@@ -861,46 +861,52 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   def get_field_data(patients_group, config)
     data = config[:data].deep_dup
 
-    # Update the data with symptom and race information
-    update_assessment_data(patients_group, data)
-    update_race_data(patients_group, data)
+    # Update the checked data (used for obtaining values) with race information
+    update_checked_race_data(data)
 
-    # Populate the headers if they're not already set (which is the case with things such as race in custom export)
-    # NOTE: This must be done AFTER the above updates to data concerning assessments and race.
-    CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
-      next unless config.dig(:data, data_type, :checked).present? && data.dig(data_type, :headers).blank?
+    # Update the header data (used for obtaining column names)
+    update_headers(data)
 
-      data[data_type][:headers] = data[data_type][:checked].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) }
-    end
+    # Update the checked and header data for assessment symptoms
+    # NOTE: this must be done after updating the general headers above
+    update_assessment_symptom_data(patients_group, data)
 
     data
   end
 
   # Finds the symptoms needed for the reports columns
-  def update_assessment_data(patients_group, data)
-    # Don't update if assessment data isn't needed
+  def update_assessment_symptom_data(patients_group, data)
+    # Don't update if assessment symptom data isn't needed
     return unless data.dig(:assessments, :checked).present? && data[:assessments][:checked].include?(:symptoms)
 
     symptom_names_and_labels = patients_group.joins(assessments: [{ reported_condition: :symptoms }]).pluck('symptoms.name, symptoms.label').uniq.sort
 
-    # NOTE: Headers are explicitly needed for symptoms because they can't be predetermined (like race options can be)
-    data[:assessments][:headers].delete('Symptoms Reported')
-    data[:assessments][:headers].concat(symptom_names_and_labels.map(&:second))
-
     data[:assessments][:checked].delete(:symptoms)
     data[:assessments][:checked].concat(symptom_names_and_labels.map(&:first).map(&:to_sym))
+
+    data[:assessments][:headers].delete('Symptoms Reported')
+    data[:assessments][:headers].concat(symptom_names_and_labels.map(&:second))
   end
 
   # Finds the race values that should be included if the Race (All Race Fields) option is checked in custom export
-  def update_race_data(_patients_group, data)
+  def update_checked_race_data(data)
     # Don't update if patient data isn't needed or race data isn't checked
     return unless data.dig(:patients, :checked).present? && data[:patients][:checked].include?(:race)
 
     # Replace race field with actual race fields
-    # NOTE: Race headers are not needed yet as they are automatically populated later based on the checked values and ALL_FIELDS_NAMES.
     race_index = data[:patients][:checked].index(:race)
     data[:patients][:checked].delete(:race)
     data[:patients][:checked].insert(race_index, *PATIENT_RACE_FIELDS)
+  end
+
+  # Update the header data (used for obtaining column names)
+  def update_headers(data)
+    # Populate the headers if they're not already set (which is the case with the custom exports)
+    CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
+      next unless data.dig(data_type, :checked).present? && data.dig(data_type, :headers).blank?
+
+      data[data_type][:headers] = data[data_type][:checked].map { |field| ALL_FIELDS_NAMES.dig(data_type, field) }
+    end
   end
 
   # Builds a file name using the base name, index, date, and extension.
