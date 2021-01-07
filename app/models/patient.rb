@@ -866,7 +866,7 @@ class Patient < ApplicationRecord
   # Check last_assessment_reminder_sent for eligibility. This is chiefly intended to help cover potential race condition of
   # multiple reports being sent out for the same monitoree.
   def last_assessment_reminder_sent_eligible?
-    last_assessment_reminder_sent <= 12.hours.ago || last_assessment_reminder_sent.nil?
+    last_assessment_reminder_sent.nil? || last_assessment_reminder_sent <= 12.hours.ago
   end
 
   # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
