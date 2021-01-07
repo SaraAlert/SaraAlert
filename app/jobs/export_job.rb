@@ -6,7 +6,7 @@ class ExportJob < ApplicationJob
   include ImportExport
 
   # Limits number of Patient records to be considered for a single exported file to handle maximum file size limit.
-  # Adds additional files as needed if  exceeds batch size.
+  # Adds additional files as needed if exceeds batch size.
   OUTER_BATCH_SIZE = ENV['EXPORT_OUTER_BATCH_SIZE']&.to_i || 10_000
 
   # Inner batch size limits number of Patient records details help in memory at once before writing to file.
@@ -30,7 +30,8 @@ class ExportJob < ApplicationJob
     patients = patients_by_query(user, data.dig(:patients, :query) || {})
 
     # NOTE: The reorder here clears out any other sorting that may have been added to this query as
-    # it should just be sorting by ID when getting batches.
+    # it should just be sorting by ID when getting batches. in_batches appears to NOT sort within batches,
+    # so explicit ordering on ID is also done deeper down.
     patients.reorder('').in_batches(of: OUTER_BATCH_SIZE).each_with_index do |patients_group, index|
       files = write_export_data_to_files(config, patients_group, index, INNER_BATCH_SIZE)
       lookups.concat(create_lookups(config, files))
