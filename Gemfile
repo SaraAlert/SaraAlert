@@ -113,7 +113,9 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'ffi-hunspell'
   gem 'gemsurance'
+  gem 'memory_profiler'
   gem 'rubocop'
+  gem 'stackprof'
 end
 
 group :development do
