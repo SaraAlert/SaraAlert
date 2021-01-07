@@ -55,6 +55,9 @@ class PatientMailer < ApplicationMailer
       return
     end
 
+    # Cover potential race condition where multiple messages are sent for the same monitoree.
+    return unless last_assessment_reminder_sent_eligible?(patient)
+
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |dependent|
       lang = dependent.select_language
@@ -83,6 +86,9 @@ class PatientMailer < ApplicationMailer
       add_fail_history_sms_blocked(patient)
       return
     end
+
+    # Cover potential race condition where multiple messages are sent for the same monitoree.
+    return unless last_assessment_reminder_sent_eligible?(patient)
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
@@ -122,6 +128,9 @@ class PatientMailer < ApplicationMailer
       add_fail_history_blank_field(patient, 'primary phone number')
       return
     end
+
+    # Cover potential race condition where multiple messages are sent for the same monitoree.
+    return unless last_assessment_reminder_sent_eligible?(patient)
 
     lang = patient.select_language
     lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
@@ -206,6 +215,12 @@ class PatientMailer < ApplicationMailer
   # report attempt today.
   def clear_last_assessment_reminder_sent(patient)
     patient.update(last_assessment_reminder_sent: nil)
+  end
+
+  # Check last_assessment_reminder_sent to cover potential race condition of multiple reports
+  # being sent out for the same monitoree.
+  def last_assessment_reminder_sent_eligible?(patient)
+    patient.last_assessment_reminder_sent <= 12.hours.ago || patient.last_assessment_reminder_sent.nil?
   end
 
   def add_success_history(patient, parent)
