@@ -64,14 +64,14 @@ class PatientMailer < ApplicationMailer
                                                                   dependent&.initials_age)
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
 
-      success = TwilioSender.send_sms(patient, contents)
-      if success
+      update_last_assessment_reminder_sent(patient) # Update last send attempt timestamp before Twilio call
+      if TwilioSender.send_sms(patient, contents)
         add_success_history(dependent, patient)
       else
         add_fail_history_sms(dependent)
+        clear_last_assessment_reminder_sent(patient) # Reset send attempt timestamp on failure
       end
     end
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_sms(patient)
@@ -108,14 +108,13 @@ class PatientMailer < ApplicationMailer
                max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
 
+    update_last_assessment_reminder_sent(patient) # Update last send attempt timestamp before Twilio call
     if TwilioSender.start_studio_flow(patient, params)
       add_success_history(patient, patient)
     else
       add_fail_history_sms(patient)
+      clear_last_assessment_reminder_sent(patient) # Reset send attempt timestamp on failure
     end
-
-    # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_voice(patient)
@@ -154,13 +153,13 @@ class PatientMailer < ApplicationMailer
                max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
 
+    update_last_assessment_reminder_sent(patient) # Update last send attempt timestamp before Twilio call
     if TwilioSender.start_studio_flow(patient, params)
       add_success_history(patient, patient)
     else
       add_fail_history_voice(patient)
+      clear_last_assessment_reminder_sent(patient) # Reset send attempt timestamp on failure
     end
-    # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_email(patient)
@@ -175,12 +174,14 @@ class PatientMailer < ApplicationMailer
     @patients = patient.active_dependents.uniq.collect do |dependent|
       { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
     end
+
+    update_last_assessment_reminder_sent(patient) # Update last send attempt timestamp before Twilio call
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
     add_success_history(patient, patient)
-    # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
+  rescue StandardError
+    clear_last_assessment_reminder_sent(patient) # Reset send attempt timestamp on failure
   end
 
   def closed_email(patient)
@@ -194,6 +195,18 @@ class PatientMailer < ApplicationMailer
   end
 
   private
+
+  # Mark the last_assessment_reminder_sent timestamp for a given patient to now. This will make the patient inelgibile
+  # to receive another message in the same day.
+  def update_last_assessment_reminder_sent(patient)
+    patient.update(last_assessment_reminder_sent: DateTime.now)
+  end
+
+  # Clear out the last_assessment_reminder_sent timestamp for a given patient so they will still be eligible for another
+  # report attempt today.
+  def clear_last_assessment_reminder_sent(patient)
+    patient.update(last_assessment_reminder_sent: nil)
+  end
 
   def add_success_history(patient, parent)
     comment = if patient == parent

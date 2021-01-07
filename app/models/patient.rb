@@ -686,6 +686,10 @@ class Patient < ApplicationRecord
       end
     end
 
+    # Final last_assessment_reminder_sent check to ensure we cover potential race condition of
+    # multiple mailer jobs being enqueued for the same monitoree.
+    return unless last_assessment_reminder_sent <= 12.hours.ago || last_assessment_reminder_sent.nil?
+
     if preferred_contact_method&.downcase == 'sms text-message' && ADMIN_OPTIONS['enable_sms']
       PatientMailer.assessment_sms(self).deliver_later
     elsif preferred_contact_method&.downcase == 'sms texted weblink' && ADMIN_OPTIONS['enable_sms']
