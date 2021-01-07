@@ -10,6 +10,12 @@ require_relative '../../lib/system_test_utils'
 class PublicHealthImportExportTest < ApplicationSystemTestCase
   @@public_health_test_helper = PublicHealthTestHelper.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
+  def setup
+    # Reset ENV variables and reload export job file which has constants dependent on these ENV variables
+    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10_000'
+    ENV['EXPORT_INNER_BATCH_SIZE'] = '500'
+    load 'app/jobs/export_job.rb'
+  end
 
   def teardown
     # Reset ENV variables and reload export job file which has constants dependent on these ENV variables

@@ -749,7 +749,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patients_group.in_batches(of: inner_batch_size) do |batch_group|
       # The config should be passed to this function rather than data, because it determines values
       # based on the original configuration.
-      exported_data = get_export_data(batch_group, config[:data])
+      exported_data = get_export_data(batch_group.order(:id), config[:data])
 
       CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
         next unless config.dig(:data, data_type, :checked).present?
@@ -797,7 +797,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
       patients_group.in_batches(of: inner_batch_size) do |batch_group|
-        exported_data = get_export_data(batch_group, config[:data])
+        exported_data = get_export_data(batch_group.order(:id), config[:data])
 
         #  Write to appropriate sheets (in each file)
         CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
@@ -835,7 +835,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
         # 2) Get export data in batches to decrease size of export data hash maintained in memory
         patients_group.in_batches(of: inner_batch_size) do |batch_group|
-          exported_data = get_export_data(batch_group, config[:data])
+          exported_data = get_export_data(batch_group.order(:id), config[:data])
 
           CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
             next unless config.dig(:data, data_type, :checked).present?
