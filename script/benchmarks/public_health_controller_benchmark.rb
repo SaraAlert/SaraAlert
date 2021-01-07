@@ -62,7 +62,12 @@ def wait_for_public_health_dashboard(max_tries = 60, wait_time = 0.5)
   end
 end
 
-Benchmark.bm(7) do |x|
+timestamp = Time.now.utc.iso8601
+benchmark_file = "script/benchmarks/output/public_health_controller_benchmark_#{timestamp}_BCM.log"
+$stdout = File.new(benchmark_file, 'w')
+$stdout.sync = true
+
+Benchmark.bm(20) do |x|
   sign_in(ph_benchmark_user)
   visit('/')
   x.report('PUBLIC_HEALTH') do
