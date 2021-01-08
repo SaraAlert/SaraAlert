@@ -4,6 +4,11 @@ title: Release Notes
 parent: API
 nav_order: 1
 ---
+# 1.20.0
+* Fixed a bug which prevented multiple races from being set at once via the [race](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-race.html) extension
+  
+***
+
 # 1.18.1
 * Added support for the following attributes on the Patient resource:
   * **Monitoring Plan**
