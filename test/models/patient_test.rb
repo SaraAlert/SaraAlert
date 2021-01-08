@@ -2131,5 +2131,16 @@ class PatientTest < ActiveSupport::TestCase
     scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
     assert_not scoped_patients.where(id: patient.id).present?
   end
+
+  test 'last assessment reminder sent eligible' do
+    patient = create(:patient)
+    assert patient.last_assessment_reminder_sent_eligible?
+
+    patient.update(last_assessment_reminder_sent: 13.hours.ago)
+    assert patient.last_assessment_reminder_sent_eligible?
+
+    patient.update(last_assessment_reminder_sent: 11.hours.ago)
+    assert_not patient.last_assessment_reminder_sent_eligible?
+  end
 end
 # rubocop:enable Metrics/ClassLength
