@@ -585,8 +585,8 @@ class Exposure extends React.Component {
         {!this.props.currentState.isolation && <h1 className="sr-only">Monitoree Potential Exposure Information</h1>}
         {this.props.currentState.isolation && <h1 className="sr-only">Monitoree Case Information</h1>}
         <Card className="mx-2 card-square">
-          {!this.props.currentState.isolation && <Card.Header className="h2">Monitoree Potential Exposure Information</Card.Header>}
-          {this.props.currentState.isolation && <Card.Header className="h2">Monitoree Case Information</Card.Header>}
+          {!this.props.currentState.isolation && <Card.Header className="h5">Monitoree Potential Exposure Information</Card.Header>}
+          {this.props.currentState.isolation && <Card.Header className="h5">Monitoree Case Information</Card.Header>}
           <Card.Body>
             <Form>
               <Form.Row className="pb-3 h-100">
