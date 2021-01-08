@@ -1,8 +1,8 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Button, Card, Form, InputGroup, OverlayTrigger } from 'react-bootstrap';
-import ReportsTable from '../../../components/patient/report/ReportsTable.js'
-import ClearReports from '../../../components/subject/ClearReports';
+import ReportsTable from '../../../components/patient/report/ReportsTable.js';
+import ClearReports from '../../../components/patient/report/ClearReports';
 import ContactAttempt from '../../../components/subject/ContactAttempt.js';
 import CurrentStatus from '../../../components/subject/CurrentStatus.js';
 import CustomTable from '../../../components/layout/CustomTable.js';
