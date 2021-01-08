@@ -111,7 +111,6 @@ class PatientMailerTest < ActionMailer::TestCase
 
       assert_difference '@patient.histories.length', 1 do
         PatientMailer.send(mthd, @patient).deliver_now
-        assert_not_nil @patient.last_assessment_reminder_sent
         @patient.reload
         assert_equal 'Report Reminder', @patient.histories.first.history_type
         comment = "Sara Alert attempted to send an SMS to #{@patient.primary_telephone}, but the message could not be delivered."
@@ -288,7 +287,6 @@ class PatientMailerTest < ActionMailer::TestCase
         PatientMailer.send(mthd, @patient).deliver_now
         @patient.reload
         assert_equal 'Report Reminder', @patient.histories.first.history_type
-        assert_not_nil @patient.last_assessment_reminder_sent
         assert_includes @patient.histories.first.comment, @patient.primary_telephone
       end
     end
@@ -420,6 +418,7 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_includes email_body, @patient.submission_token
     assert_includes email_body, dependent.submission_token
 
+    @patient.update(last_assessment_reminder_sent: nil)
     dependent.update(monitoring: false)
     email = PatientMailer.assessment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
