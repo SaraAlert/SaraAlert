@@ -6,8 +6,8 @@ import moment from 'moment-timezone';
 import { Card, Button, Row, Col, Dropdown, InputGroup, OverlayTrigger, Form, Tooltip } from 'react-bootstrap';
 
 import AddReportNote from './AddReportNote';
-import ClearReports from '../../subject/ClearReports';
-import ClearSingleReport from '../../subject/ClearSingleReport';
+import ClearReports from '../../patient/report/ClearReports';
+import ClearSingleReport from '../../patient/report/ClearSingleReport';
 import ContactAttempt from '../../subject/ContactAttempt';
 import CurrentStatus from '../../subject/CurrentStatus';
 import CustomTable from '../../layout/CustomTable';
