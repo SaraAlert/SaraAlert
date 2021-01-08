@@ -108,7 +108,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   FULL_HISTORY_LABORATORIES_FIELDS = %i[patient_id lab_type specimen_collection report result created_at updated_at].freeze
 
-  FULL_HISTORY_LABORATORIES_HEADERS = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At'].freeze
+  FULL_HISTORY_LABORATORIES_HEADERS = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result', 'Created At', 'Updated At'].freeze
 
   FULL_HISTORY_HISTORIES_FIELDS = %i[patient_id comment created_by history_type created_at updated_at].freeze
 
