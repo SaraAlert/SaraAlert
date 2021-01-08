@@ -1,8 +1,8 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Button, Modal } from 'react-bootstrap';
-import ClearSingleReport from '../../components/subject/ClearSingleReport.js'
-import { mockPatient1, mockPatient2 } from '../mocks/mockPatients'
+import ClearSingleReport from '../../../components/patient/report/ClearSingleReport.js'
+import { mockPatient1, mockPatient2 } from '../../mocks/mockPatients'
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 

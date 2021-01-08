@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Form, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
 
-import reportError from '../util/ReportError';
+import reportError from '../../util/ReportError';
 
 class ClearSingleReport extends React.Component {
   constructor(props) {
