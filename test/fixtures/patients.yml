@@ -1309,3 +1309,75 @@ patient_65:
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   last_date_of_exposure: <%= 5.days.ago %>
+patient_66:
+  id: 66
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
+  responder_id: 66
+  creator_id: 1
+  jurisdiction_id: 2
+  submission_token: 'agt4DLdERW'
+  monitoring: true
+  isolation: true
+  first_name: 'Person66'
+  last_name: 'LastName66'
+  sex: 'Male'
+  date_of_birth: <%= 45.years.ago %>
+  address_line_1: '98 Lanney Street'
+  address_city: 'Bighton'
+  address_state: 'Utah'
+  address_zip: '01937'
+  primary_telephone: '+15555554322'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  last_date_of_exposure: <%= 5.days.ago %>
+  latest_positive_lab_at: <%= 20.days.ago %>
+  latest_assessment_at: <%= 2.days.ago %>
+patient_67:
+  id: 67
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
+  responder_id: 67
+  creator_id: 1
+  jurisdiction_id: 2
+  submission_token: 'agt4DLdERW'
+  monitoring: true
+  isolation: true
+  first_name: 'Person67'
+  last_name: 'LastName67'
+  sex: 'Male'
+  date_of_birth: <%= 45.years.ago %>
+  address_line_1: '98 Lanney Street'
+  address_city: 'Bighton'
+  address_state: 'Utah'
+  address_zip: '01937'
+  primary_telephone: '+15555554322'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  last_date_of_exposure: <%= 5.days.ago %>
+  latest_positive_lab_at: <%= 20.days.ago %>
+  latest_assessment_at: <%= 2.days.ago %>
+patient_68:
+  id: 68
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
+  responder_id: 68
+  creator_id: 1
+  jurisdiction_id: 2
+  submission_token: 'agt4DLdERW'
+  monitoring: true
+  isolation: true
+  first_name: 'Person68'
+  last_name: 'LastName68'
+  sex: 'Male'
+  date_of_birth: <%= 45.years.ago %>
+  address_line_1: '98 Lanney Street'
+  address_city: 'Bighton'
+  address_state: 'Utah'
+  address_zip: '01937'
+  primary_telephone: '+15555554322'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  last_date_of_exposure: <%= 5.days.ago %>
+  latest_positive_lab_at: <%= 20.days.ago %>
+  latest_assessment_at: <%= 2.days.ago %>

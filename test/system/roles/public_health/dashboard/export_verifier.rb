@@ -19,7 +19,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     patients = user.jurisdiction.all_patients.where(isolation: workflow == :isolation)
 
     # Verify per outer batch (file)
-    patients.in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
+    patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
       csv = get_csv(build_export_filename({ export_type: export_type, format: :csv }, nil, index, true))
       verify_csv_linelist_export(csv, LINELIST_HEADERS, patients_group.order(:id))
     end
@@ -32,7 +32,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     patients = user.jurisdiction.all_patients.where(isolation: workflow == :isolation)
 
     # Verify per outer batch (file)
-    patients.in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
+    patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
       xlsx = get_xlsx(build_export_filename({ export_type: export_type, format: :xlsx }, nil, index, true))
       verify_sara_alert_format_export(xlsx, patients_group.order(:id))
     end
@@ -66,7 +66,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     patients = patients.order(:id)
 
     # Verify per outer batch (file)
-    patients.in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
+    patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
       xlsx_monitorees = get_xlsx(build_export_filename(config, :patients, index, true))
       xlsx_assessments = get_xlsx(build_export_filename(config, :assessments, index, true))
       xlsx_lab_results = get_xlsx(build_export_filename(config, :laboratories, index, true))
@@ -91,22 +91,22 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     }
     download_export_files(user, export_type)
 
-    patients = patients_by_query(user, settings.dig(:patients, :query) || {})
+    patients = patients_by_query(user, settings.dig(:data, :patients, :query) || {})
 
     if settings[:format] == :csv
       # Verify per outer batch (file)
-      patients.in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
+      patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
         export_files = {}
-        settings[:elements]&.each_key do |data_type|
-          export_files[data_type] = get_csv(build_export_filename(config, data_type, index, true)) if settings.dig(:elements, data_type, :checked)&.present?
+        settings[:data]&.each_key do |data_type|
+          export_files[data_type] = get_csv(build_export_filename(config, data_type, index, true)) if settings.dig(:data, data_type, :checked)&.present?
         end
         verify_custom_export_csv(patients_group, settings, export_files)
       end
     else
       # Verify per outer batch (file)
-      patients.in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
+      patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
         xlsx = get_xlsx(build_export_filename(config, nil, index, true))
-        verify_custom_export_xlsx(patients_group.order(:id), user, settings, xlsx)
+        verify_custom_export_xlsx(patients_group.order(:id), settings, xlsx)
       end
     end
   end
@@ -117,8 +117,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     assert_not_nil preset
     config = JSON.parse(preset[:config])
     assert_equal settings[:format].to_s, config['format'], 'Export preset format mismatch'
-    settings[:elements]&.each_key do |data_type|
-      assert_not_nil config.dig('data', data_type.to_s, 'checked') if settings[:elements][data_type][:checked].present?
+    settings[:data]&.each_key do |data_type|
+      assert_not_nil config.dig('data', data_type.to_s, 'checked') if settings[:data][data_type][:checked].present?
     end
   end
 
@@ -252,112 +252,145 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_custom_export_csv(patients, settings, export_files)
+  def verify_custom_export_xlsx(patients, settings, export_file)
+    # Duplicate because the data will be updated each call of this method (which matters with batching)
+    data = settings[:data].deep_dup
+
     patient_ids = patients.pluck(:id)
+    validate_custom_export_monitoree_details(patients, data, settings, export_file) if settings.dig(:data, :patients, :checked)&.present?
 
-    assert_equal(patients.size, export_files[:patients]&.length, 'Number of patients') if settings.dig(:elements, :patients, :checked)&.present?
+    validate_custom_export_assessmemts(patients, data, settings, export_file) if settings.dig(:data, :assessments, :checked)&.present?
 
-    if settings.dig(:elements, :assessments, :checked)&.present?
-      assessments = assessments_by_patient_ids(patient_ids)
-      assert_equal(assessments.size, export_files[:assessments]&.length, 'Number of assessments')
-    end
-
-    if settings.dig(:elements, :laboratories, :checked)&.present?
-      laboratories = laboratories_by_patient_ids(patient_ids)
-      assert_equal(laboratories.size, export_files[:laboratories]&.length, 'Number of laboratories')
-    end
-
-    if settings.dig(:elements, :close_contacts, :checked)&.present?
-      close_contacts = close_contacts_by_patient_ids(patient_ids)
-      assert_equal(close_contacts.size, export_files[:close_contacts]&.length, 'Number of close contacts')
-    end
-
-    if settings.dig(:elements, :transfers, :checked)&.present?
-      transfers = transfers_by_patient_ids(patient_ids)
-      assert_equal(transfers.size, export_files[:transfers]&.length, 'Number of transfers')
-    end
-
-    return unless settings.dig(:elements, :histories, :checked)&.present?
-
-    histories = histories_by_patient_ids(patient_ids)
-    assert_equal(histories.size, export_files[:histories]&.length, 'Number of histories')
-  end
-
-  def verify_custom_export_xlsx(patients, _user, settings, export_file)
-    patient_ids = patients.pluck(:id)
-
-    if settings.dig(:elements, :patients, :checked)&.present?
-      patients_sheet = export_file.sheet('Monitorees')
-      assert_equal(patients.size, patients_sheet.last_row - 1, 'Number of patients in Monitorees List')
-
-      checked = settings.dig(:data, :patients, :checked)
-
-      # Replace "race" option with actual race field names
-      race_index = checked.index(:race)
-      checked.delete(:race)
-      checked.insert(race_index, *PATIENT_RACE_FIELDS)
-
-      # Validate headers
-      checked.each_with_index do |header, col|
-        assert_equal(ImportExport::PATIENT_FIELD_NAMES[header], patients_sheet.cell(1, col + 1), "For header: #{header} in Monitorees List")
-      end
-
-      # Validate cell values
-      patients.each_with_index do |patient, row|
-        patient_details = { id: patient.id }.merge(patient.custom_export_details)
-
-        checked.each_with_index do |field, col|
-          cell_value = patients_sheet.cell(row + 2, col + 1)
-
-          if field == :full_status
-            assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
-          elsif field == :status
-            assert_equal(patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', ''), cell_value,
-                         "For field: #{field} in Monitorees List (row #{row + 1})")
-          elsif %i[primary_telephone secondary_telephone].include?(field)
-            assert_equal(format_phone_number(patient_details[field]).to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
-          elsif field == :creator
-            responder_email = User.find(patient.creator_id).email
-            assert_equal(responder_email, cell_value, "For field: #{field} in Monitorees List (row #{row + 1})")
-          elsif %i[created_at updated_at closed_at].include?(field)
-            assert_equal(patient[field] || '', cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
-          else
-            assert_equal(patient_details[field].to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
-          end
-        end
-      end
-
-    end
-
-    if settings.dig(:elements, :assessments, :checked)&.present?
-      assessments = assessments_by_patient_ids(patient_ids)
-      assessments_sheet = export_file.sheet('Reports')
-      assert_equal(assessments.size, assessments_sheet.last_row - 1, 'Number of assessments in Reports List')
-    end
-
-    if settings.dig(:elements, :laboratories, :checked)&.present?
+    if settings.dig(:data, :laboratories, :checked)&.present?
       laboratories = laboratories_by_patient_ids(patient_ids)
       laboratories_sheet = export_file.sheet('Lab Results')
       assert_equal(laboratories.size, laboratories_sheet.last_row - 1, 'Number of laboratories in Lab Reports List')
+
+      # TODO: Validate lab headers
+      # TODO: Validate lab cells
     end
 
-    if settings.dig(:elements, :close_contacts, :checked)&.present?
+    if settings.dig(:data, :close_contacts, :checked)&.present?
       close_contacts = close_contacts_by_patient_ids(patient_ids)
       close_contacts_sheet = export_file.sheet('Close Contacts')
       assert_equal(close_contacts.size, close_contacts_sheet.last_row - 1, 'Number of close contacts in Close Contacts List')
+
+      # TODO: Validate close contact headers
+      # TODO: Validate close contact cells
     end
 
-    if settings.dig(:elements, :transfers, :checked)&.present?
+    if settings.dig(:data, :transfers, :checked)&.present?
       transfers = transfers_by_patient_ids(patient_ids)
       transfers_sheet = export_file.sheet('Transfers')
       assert_equal(transfers.size, transfers_sheet.last_row - 1, 'Number of transfers in Transfers List')
+
+      # TODO: Validate transfers headers
+      # TODO: Validate transfers cells
     end
 
-    return unless settings.dig(:elements, :histories, :checked)&.present?
+    return unless settings.dig(:data, :histories, :checked)&.present?
 
     histories = histories_by_patient_ids(patient_ids)
     histories_sheet = export_file.sheet('History')
     assert_equal(histories.size, histories_sheet.last_row - 1, 'Number of histories in History List')
+
+    # TODO: Validate history headers
+    # TODO: Validate history cells
+  end
+
+  def validate_custom_export_monitoree_details(patients, data, _settings, export_file)
+    patients_sheet = export_file.sheet('Monitorees')
+    assert_equal(patients.size, patients_sheet.last_row - 1, 'Number of patients in Monitorees List')
+
+    checked = data.dig(:patients, :checked)
+
+    # Replace "race" option with actual race field names
+    race_index = checked.index(:race)
+    checked.delete(:race)
+    checked.insert(race_index, *PATIENT_RACE_FIELDS)
+
+    # Validate headers
+    checked.each_with_index do |header, col|
+      assert_equal(ImportExport::PATIENT_FIELD_NAMES[header], patients_sheet.cell(1, col + 1), "For header: #{header} in Monitorees List")
+    end
+
+    # Validate cell values
+    patients.each_with_index do |patient, row|
+      patient_details = { id: patient.id }.merge(patient.custom_export_details)
+      checked.each_with_index do |field, col|
+        cell_value = patients_sheet.cell(row + 2, col + 1)
+
+        if field == :full_status
+          assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
+        elsif field == :status
+          assert_equal(patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', ''), cell_value,
+                       "For field: #{field} in Monitorees List (row #{row + 1})")
+        elsif %i[primary_telephone secondary_telephone].include?(field)
+          assert_equal(format_phone_number(patient_details[field]).to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
+        elsif field == :creator
+          responder_email = User.find(patient.creator_id).email
+          assert_equal(responder_email, cell_value, "For field: #{field} in Monitorees List (row #{row + 1})")
+        elsif %i[created_at updated_at closed_at].include?(field)
+          assert_equal(patient[field] || '', cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
+        else
+          assert_equal(patient_details[field].to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
+        end
+      end
+    end
+  end
+
+  def validate_custom_export_assessmemts(patients, data, settings, export_file)
+    assessments = assessments_by_patient_ids(patients.pluck(:id))
+    assessments_sheet = export_file.sheet('Reports')
+    assert_equal(assessments.size, assessments_sheet.last_row - 1, 'Number of assessments in Reports List')
+
+    checked = data.dig(:assessments, :checked)
+
+    # Delete this value as it will be replaced with the actual symptom names later on
+    checked.delete(:symptoms)
+
+    # Get headers/col names
+    headers = checked.map { |field| ImportExport::ASSESSMENT_FIELD_NAMES[field] }
+    patients_assessments = patients.joins(assessments: [{ reported_condition: :symptoms }])
+
+    # Add symptom name headers if checked
+    if settings.dig(:data, :assessments, :checked).include?(:symptoms)
+      symptom_labels = patients_assessments.pluck('symptoms.label').uniq.sort
+      headers += symptom_labels.to_a.sort
+    end
+
+    # Validate assessment headers
+    headers.each_with_index do |header, col|
+      assert_equal(header, assessments_sheet.cell(1, col + 1), "For header: #{header} in Reports")
+    end
+
+    # Validate assessment cells
+    assessment_row = 0
+    patients.find_each do |patient|
+      patient.assessments.find_each do |assessment|
+        # Get basic field data that is checked
+        assessment_summary_arr = checked.map do |field|
+          if %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss].include?(field)
+            patient[field]
+          else
+            assessment[field]
+          end
+        end
+
+        # Get symmptom data if checked
+        if settings.dig(:data, :assessments, :checked).include?(:symptoms)
+          symptoms_hash = Hash[assessment.reported_condition.symptoms.map { |symptom| [symptom[:label], symptom.value] }]
+          symptoms_arr = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s || '' }
+          assessment_summary_arr.concat(symptoms_arr)
+        end
+
+        assessment_summary_arr.each_with_index do |value, col|
+          cell_value = assessments_sheet.cell(assessment_row + 2, col + 1)
+          assert_equal(value.to_s, cell_value || '', "For field: #{headers[col]} in Reports")
+        end
+        assessment_row += 1
+      end
+    end
   end
 
   def download_export_files(user, export_type)

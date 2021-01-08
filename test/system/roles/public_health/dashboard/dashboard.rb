@@ -60,6 +60,9 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def export_custom(user_label, settings)
+    click_on (settings[:workflow] == :exposure ? 'Exposure Monitoring' : 'Isolation Monitoring').to_s if settings[:workflow].present?
+    @@system_test_utils.go_to_tab(settings[:tab]) if settings[:tab].present?
+
     click_on 'Export'
     click_on settings[:preset] || 'Custom Format...'
 
