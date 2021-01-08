@@ -224,7 +224,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     lab_results = xlsx_lab_results.sheet('Lab Results')
     labs = Laboratory.where(patient_id: patient_ids)
     assert_equal(labs.size, lab_results.last_row - 1, 'Number of results in Lab Results')
-    lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
+    lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result', 'Created At', 'Updated At']
     lab_headers.each_with_index do |header, col|
       assert_equal(header, lab_results.cell(1, col + 1), "For header: #{header} in Lab Results")
     end
