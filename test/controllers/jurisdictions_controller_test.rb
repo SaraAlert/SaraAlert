@@ -109,31 +109,33 @@ class JurisdictionsControllerTest < ActionController::TestCase
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'exposure', tab: 'symptomatic' } },
                                                       as: :json
-          assert_equal patients.exposure_symptomatic.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+          assert_equal patients.exposure_symptomatic.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'exposure', tab: 'non_reporting' } },
                                                       as: :json
-          assert_equal patients.exposure_non_reporting.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+          assert_equal patients.exposure_non_reporting.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'exposure', tab: 'asymptomatic' } },
                                                       as: :json
-          assert_equal patients.exposure_asymptomatic.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+          assert_equal patients.exposure_asymptomatic.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'exposure', tab: 'pui' } },
                                                       as: :json
-          assert_equal patients.exposure_under_investigation.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+
+          assert_equal patients.exposure_under_investigation.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'exposure', tab: 'closed' } },
                                                       as: :json
-          assigned_users = patients.where(isolation: false, monitoring: false, purged: false).pluck(:assigned_user).sort
+          assigned_users = patients.where(isolation: false, monitoring: false, purged: false).distinct.pluck(:assigned_user).sort
           assert_equal assigned_users, JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'exposure', tab: 'transferred_in' } },
                                                       as: :json
           assigned_users = if scope == 'exact'
-                             jur.transferred_in_patients.where(isolation: false, jurisdiction: jur.id).where.not(assigned_user: nil).pluck(:assigned_user).sort
+                             jur.transferred_in_patients.where(isolation: false,
+                                                               jurisdiction: jur.id).where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
                            else
-                             jur.transferred_in_patients.where(isolation: false).where.not(assigned_user: nil).pluck(:assigned_user).sort
+                             jur.transferred_in_patients.where(isolation: false).where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
                            end
           assert_equal assigned_users, JSON.parse(response.body)['assigned_users']
 
@@ -143,26 +145,28 @@ class JurisdictionsControllerTest < ActionController::TestCase
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'isolation', tab: 'requiring_review' } },
                                                       as: :json
-          assert_equal patients.isolation_requiring_review.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+          assert_equal patients.isolation_requiring_review.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'isolation', tab: 'non_reporting' } },
                                                       as: :json
-          assert_equal patients.isolation_non_reporting.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+          assert_equal patients.isolation_non_reporting.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'isolation', tab: 'reporting' } },
                                                       as: :json
-          assert_equal patients.isolation_reporting.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+          assert_equal patients.isolation_reporting.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'isolation', tab: 'closed' } },
                                                       as: :json
-          assert_equal patients.where(isolation: true, monitoring: false, purged: false).pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+          assert_equal patients.where(isolation: true, monitoring: false, purged: false).distinct.pluck(:assigned_user).sort,
+                       JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'isolation', tab: 'transferred_in' } },
                                                       as: :json
           assigned_users = if scope == 'exact'
-                             jur.transferred_in_patients.where(isolation: true, jurisdiction: jur.id).where.not(assigned_user: nil).pluck(:assigned_user).sort
+                             jur.transferred_in_patients.where(isolation: true,
+                                                               jurisdiction: jur.id).where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
                            else
-                             jur.transferred_in_patients.where(isolation: true).where.not(assigned_user: nil).pluck(:assigned_user).sort
+                             jur.transferred_in_patients.where(isolation: true).where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
                            end
           assert_equal assigned_users, JSON.parse(response.body)['assigned_users']
 
@@ -172,14 +176,14 @@ class JurisdictionsControllerTest < ActionController::TestCase
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'all', tab: 'closed' } },
                                                       as: :json
-          assert_equal patients.where(monitoring: false, purged: false).pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+          assert_equal patients.where(monitoring: false, purged: false).distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'all', tab: 'transferred_in' } },
                                                       as: :json
           assigned_users = if scope == 'exact'
-                             jur.transferred_in_patients.where(jurisdiction: jur.id).where.not(assigned_user: nil).pluck(:assigned_user).sort
+                             jur.transferred_in_patients.where(jurisdiction: jur.id).where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
                            else
-                             jur.transferred_in_patients.where.not(assigned_user: nil).pluck(:assigned_user).sort
+                             jur.transferred_in_patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
                            end
           assert_equal assigned_users, JSON.parse(response.body)['assigned_users']
         end
