@@ -60,7 +60,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 4, true, 'Age Group', '30-39', 3)
     verify_monitoree_count(active_counts, 5, true, 'Age Group', '30-39', 2)
     verify_monitoree_count(active_counts, 6, true, 'Age Group', '40-49', 10)
-    verify_monitoree_count(active_counts, 7, true, 'Age Group', '40-49', 6)
+    verify_monitoree_count(active_counts, 7, true, 'Age Group', '40-49', 9)
     verify_monitoree_count(active_counts, 8, true, 'Age Group', '50-59', 1)
     verify_monitoree_count(active_counts, 9, true, 'Age Group', '50-59', 1)
     verify_monitoree_count(active_counts, 10, true, 'Age Group', '60-69', 1)
@@ -76,7 +76,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 1, true, 'Sex', 'Female', 10)
     verify_monitoree_count(active_counts, 2, true, 'Sex', 'Female', 6)
     verify_monitoree_count(active_counts, 3, true, 'Sex', 'Male', 11)
-    verify_monitoree_count(active_counts, 4, true, 'Sex', 'Male', 7)
+    verify_monitoree_count(active_counts, 4, true, 'Sex', 'Male', 10)
     verify_monitoree_count(active_counts, 5, true, 'Sex', 'Unknown', 3)
     verify_monitoree_count(active_counts, 6, true, 'Sex', 'Unknown', 2)
     assert_equal(7, active_counts.length)
@@ -158,7 +158,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_map(maps, 6, 'State', 'Isolation', 'California', nil, 6)
     verify_map(maps, 7, 'State', 'Isolation', 'Massachusetts', nil, 1)
     verify_map(maps, 8, 'State', 'Isolation', 'New York', nil, 1)
-    verify_map(maps, 9, 'State', 'Isolation', 'Utah', nil, 7)
+    verify_map(maps, 9, 'State', 'Isolation', 'Utah', nil, 10)
     assert_equal(10, maps.length)
   end
 
@@ -180,7 +180,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_map(maps, 13, 'County', 'Isolation', 'California', nil, 6)
     verify_map(maps, 14, 'County', 'Isolation', 'Massachusetts', nil, 1)
     verify_map(maps, 15, 'County', 'Isolation', 'New York', nil, 1)
-    verify_map(maps, 16, 'County', 'Isolation', 'Utah', nil, 7)
+    verify_map(maps, 16, 'County', 'Isolation', 'Utah', nil, 10)
     assert_equal(17, maps.length)
   end
 
