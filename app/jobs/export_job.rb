@@ -30,7 +30,8 @@ class ExportJob < ApplicationJob
     patients = patients_by_query(user, data.dig(:patients, :query) || {})
 
     # NOTE: in_batches appears to NOT sort within batches, so explicit ordering on ID is also done deeper down.
-    patients.in_batches(of: OUTER_BATCH_SIZE).each_with_index do |patients_group, index|
+    # The reorder('') here allows this ordering done later on to work properly.
+    patients.reorder('').in_batches(of: OUTER_BATCH_SIZE).each_with_index do |patients_group, index|
       files = write_export_data_to_files(config, patients_group, index, INNER_BATCH_SIZE)
       lookups.concat(create_lookups(config, files))
     end

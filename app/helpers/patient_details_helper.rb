@@ -160,4 +160,26 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       sexual_orientation: sexual_orientation || ''
     }
   end
+
+  # Getter used for testing custom exports.
+  def custom_export_details
+    additional_custom_export_details = {
+      public_health_action: public_health_action || '',
+      monitoring_status: monitoring ? 'Actively Monitoring' : 'Not Monitoring',
+      workflow: isolation ? 'Isolation' : 'Exposure',
+      age: calc_current_age || '',
+      jurisdiction_name: jurisdiction[:name] || '',
+      symptom_onset_defined_by: user_defined_symptom_onset ? 'User' : 'System',
+      continuous_exposure: continuous_exposure || false,
+      extended_isolation: extended_isolation || '',
+      end_of_monitoring: end_of_monitoring || '',
+      responder_id: responder_id || '',
+      head_of_household: head_of_household || false,
+      pause_notifications: pause_notifications || false,
+      expected_purge_ts: expected_purge_ts || '',
+      monitoring_reason: monitoring_reason || ''
+    }
+
+    full_history_details.merge(additional_custom_export_details)
+  end
 end
