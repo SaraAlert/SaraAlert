@@ -67,8 +67,8 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     choose "select-monitoree-records-#{settings[:records]}" if settings[:records].present?
 
     # Choose which elements to export
-    settings[:elements]&.each_value do |data_type|
-      data_type[:checked]&.each do |label|
+    settings[:data]&.each_value do |data_type|
+      data_type[:selected]&.each do |label|
         find('span', class: 'rct-title', text: label).click
       end
     end

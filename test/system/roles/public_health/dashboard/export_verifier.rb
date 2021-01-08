@@ -289,6 +289,44 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     if settings.dig(:elements, :patients, :checked)&.present?
       patients_sheet = export_file.sheet('Monitorees')
       assert_equal(patients.size, patients_sheet.last_row - 1, 'Number of patients in Monitorees List')
+
+      checked = settings.dig(:data, :patients, :checked)
+
+      # Replace "race" option with actual race field names
+      race_index = checked.index(:race)
+      checked.delete(:race)
+      checked.insert(race_index, *PATIENT_RACE_FIELDS)
+
+      # Validate headers
+      checked.each_with_index do |header, col|
+        assert_equal(ImportExport::PATIENT_FIELD_NAMES[header], patients_sheet.cell(1, col + 1), "For header: #{header} in Monitorees List")
+      end
+
+      # Validate cell values
+      patients.each_with_index do |patient, row|
+        patient_details = { id: patient.id }.merge(patient.custom_export_details)
+
+        checked.each_with_index do |field, col|
+          cell_value = patients_sheet.cell(row + 2, col + 1)
+
+          if field == :full_status
+            assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
+          elsif field == :status
+            assert_equal(patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', ''), cell_value,
+                         "For field: #{field} in Monitorees List (row #{row + 1})")
+          elsif %i[primary_telephone secondary_telephone].include?(field)
+            assert_equal(format_phone_number(patient_details[field]).to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
+          elsif field == :creator
+            responder_email = User.find(patient.creator_id).email
+            assert_equal(responder_email, cell_value, "For field: #{field} in Monitorees List (row #{row + 1})")
+          elsif %i[created_at updated_at closed_at].include?(field)
+            assert_equal(patient[field] || '', cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
+          else
+            assert_equal(patient_details[field].to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
+          end
+        end
+      end
+
     end
 
     if settings.dig(:elements, :assessments, :checked)&.present?
