@@ -12,23 +12,20 @@ class ClearSingleReport extends React.Component {
       showClearReportModal: false,
       loading: false,
     };
-    this.toggleClearReportModal = this.toggleClearReportModal.bind(this);
-    this.clearReport = this.clearReport.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  toggleClearReportModal() {
+  toggleClearReportModal = () => {
     let current = this.state.showClearReportModal;
     this.setState({
       showClearReportModal: !current,
     });
-  }
+  };
 
-  handleChange(event) {
+  handleChange = event => {
     this.setState({ [event.target.id]: event.target.value });
-  }
+  };
 
-  clearReport() {
+  clearReport = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -42,21 +39,21 @@ class ClearSingleReport extends React.Component {
           reportError(error);
         });
     });
-  }
+  };
 
-  createModal(title, toggle, submit) {
+  createModal(toggle, submit) {
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>Mark as Reviewed</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {!this.props.patient.isolation && (
             <p>
               You are about to clear the symptomatic report flag (red highlight) on this record. This indicates that the disease of interest is not suspected
               after review of this symptomatic report. The &quot;Needs Review&quot; status will be changed to &quot;No&quot; for this report. The record will
-              move from the symptomatic line list to the asymptomatic or non-reporting line list as appropriate unless another symptomatic report is present in
-              the reports table or a symptom onset date has been entered by a user.
+              move from the symptomatic line list to the asymptomatic or non-reporting line list as appropriate{' '}
+              <b>unless another symptomatic report is present in the reports table or a symptom onset date has been entered by a user.</b>
             </p>
           )}
           {this.props.patient.isolation && (
@@ -94,7 +91,7 @@ class ClearSingleReport extends React.Component {
         <Button variant="link" onClick={this.toggleClearReportModal} className="dropdown-item">
           <i className="fas fa-check fa-fw"></i> Review
         </Button>
-        {this.state.showClearReportModal && this.createModal('Mark As Reviewed', this.toggleClearReportModal, this.clearReport)}
+        {this.state.showClearReportModal && this.createModal(this.toggleClearReportModal, this.clearReport)}
       </React.Fragment>
     );
   }
