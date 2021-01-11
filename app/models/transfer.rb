@@ -48,6 +48,11 @@ class Transfer < ApplicationRecord
     end
   }
 
+  def self.latest_transfers(patients)
+    tuples = patients.pluck(:id, :latest_transfer_at)
+    Transfer.where("(patient_id, created_at) IN (#{tuples.collect { '(?, ?)' }.join(', ')})", *tuples.flatten)
+  end
+
   def custom_details(fields, patient_identifiers, user_emails, jurisdiction_paths)
     transfer_details = {}
     transfer_details[:id] = id || '' if fields.include?(:id)

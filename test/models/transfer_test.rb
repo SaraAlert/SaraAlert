@@ -7,6 +7,44 @@ class TransferTest < ActiveSupport::TestCase
 
   def teardown; end
 
+  test 'get lastest transfers scope' do
+    # Ensure that one patient does not have two transfers returned when a
+    # previous transfer has the same timestamp as another patient's latest transfer
+    jur_1 = create(:jurisdiction)
+    jur_2 = create(:jurisdiction)
+    user = create(:user)
+    # :created_at has precision: 6, while latest_transfer_at
+    # has no specified precision. It's unclear if this is an issue outside of
+    # the test or not - needs further investigation.
+    timestamp_1 = (Time.zone.now - 5.days).to_i
+    timestamp_2 = (Time.zone.now - 2.days).to_i
+
+    patients = [
+      build(:patient),
+      build(:patient),
+      build(:patient)
+    ]
+    transfers = [
+      Transfer.create!(patient: patients[0], from_jurisdiction: jur_1, to_jurisdiction: jur_2, who: user),
+      Transfer.create!(patient: patients[0], from_jurisdiction: jur_2, to_jurisdiction: jur_1, who: user),
+      Transfer.create!(patient: patients[1], from_jurisdiction: jur_1, to_jurisdiction: jur_2, who: user),
+      Transfer.create!(patient: patients[1], from_jurisdiction: jur_2, to_jurisdiction: jur_1, who: user),
+      Transfer.create!(patient: patients[2], from_jurisdiction: jur_2, to_jurisdiction: jur_1, who: user)
+    ]
+    transfers[0].update(created_at: Time.zone.at(timestamp_1))
+    transfers[1].update(created_at: Time.zone.at(timestamp_2))
+    transfers[2].update(created_at: Time.zone.at(timestamp_1))
+    transfers[3].update(created_at: Time.zone.at(timestamp_2))
+    transfers[4].update(created_at: Time.zone.at(timestamp_1))
+    patients[0].update(latest_transfer_at: Time.zone.at(timestamp_2))
+    patients[1].update(latest_transfer_at: Time.zone.at(timestamp_2))
+    patients[2].update(latest_transfer_at: Time.zone.at(timestamp_1))
+    transfers.each(&:reload)
+    patients.each(&:reload)
+
+    assert_equal 3, Transfer.latest_transfers(patients).size
+  end
+
   test 'create transfer' do
     assert(create(:transfer))
 
