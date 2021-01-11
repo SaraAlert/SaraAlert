@@ -84,8 +84,36 @@ body {
   border-radius: 0 !important;
 }
 
-.form-control-number {
+.form-group-inline {
+  display: inline-flex;
+}
+
+.advanced-filter-date-input {
+  width: 175px !important;
+}
+
+.advanced-filter-when-input {
+  width: 150px !important;
+}
+
+.advanced-filter-number-input {
   width: 75px !important;
+}
+
+.advanced-filter-unit-input {
+  width: 100px !important;
+}
+
+.advanced-filter-number-options {
+  width: 220px !important;
+}
+
+.advanced-filter-date-options {
+  width: 100px !important;
+}
+
+.advanced-filter-relative-options {
+  width: 120px !important;
 }
 
 .nav-input-label {
