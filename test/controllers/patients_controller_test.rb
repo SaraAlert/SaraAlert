@@ -236,4 +236,115 @@ class PatientsControllerTest < ActionController::TestCase
       sign_out user
     end
   end
+
+  test 'update status for a patient with no dependents' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    patient = create(:patient, creator: user, monitoring: true)
+
+    post :update_status, params: {
+      id: patient.id,
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_not patient.monitoring
+    assert_not_nil patient.closed_at
+    assert_equal false, patient.continuous_exposure
+    assert_match /"Monitoring" to "Not Monitoring"/, History.find_by(patient: patient).comment
+  end
+
+  test 'update status for a patient with dependents and apply to household' do 
+    user = create(:public_health_enroller_user)
+    sign_in user
+    hoh_patient = create(:patient, creator: user, monitoring: true)
+    dependent_patient = create(:patient, creator: user, monitoring: true)
+    hoh_patient.dependents << dependent_patient
+
+    post :update_status, params: {
+      id: hoh_patient.id,
+      apply_to_household: true,
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :success
+    hoh_patient.reload
+    assert_not hoh_patient.monitoring
+    dependent_patient.reload
+    assert_not dependent_patient.monitoring
+  end
+
+  test 'update status for a patient with dependents and apply to continuous exposure household' do 
+    user = create(:public_health_enroller_user)
+    sign_in user
+    hoh_patient = create(:patient, creator: user, monitoring: true)
+    dependent_patient = create(:patient, creator: user, monitoring: true)
+    dependent_patient_ce = create(:patient, creator: user, monitoring: true, continuous_exposure: true)
+    hoh_patient.dependents << [dependent_patient, dependent_patient_ce]
+
+    post :update_status, params: {
+      id: hoh_patient.id,
+      apply_to_household_cm_only: true,
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :success
+    hoh_patient.reload
+    assert_not hoh_patient.monitoring
+    dependent_patient_ce.reload
+    assert_not dependent_patient_ce.monitoring
+    dependent_patient.reload
+    assert dependent_patient.monitoring
+  end
+
+  test 'update status while ignoring fields not specified in diffState' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    patient = create(:patient, creator: user, monitoring: true)
+
+    post :update_status, params: {
+      id: patient.id,
+      patient: { monitoring: false },
+      diffState: ['foo']
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    # Monitoring does not change, since it was not in diffState
+    assert patient.monitoring
+
+    post :update_status, params: {
+      id: patient.id,
+      patient: { monitoring: false },
+      diffState: ['monitoring']
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    # Monitoring changes, since it was in diffState
+    assert_not patient.monitoring
+  end
+
+  test 'update status when jurisdiction changes' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    new_jurisdiction = create(:jurisdiction, path: "Bar")
+    patient = create(:patient, creator: user, monitoring: true)
+    old_jurisdiction = patient.jurisdiction
+
+    post :update_status, params: {
+      id: patient.id,
+      patient: { jurisdiction_id: new_jurisdiction.id }
+    }, as: :json
+    
+    assert_response :success
+    patient.reload
+    assert_equal new_jurisdiction.id, patient.jurisdiction_id
+    t = Transfer.find_by(patient_id: patient.id)
+    assert_equal old_jurisdiction.id, t.from_jurisdiction_id
+    assert_equal new_jurisdiction.id, t.to_jurisdiction_id
+    assert_equal user.id, t.who_id
+    assert_match /blank to "Bar"/, History.find_by(patient: patient).comment
+  end
 end
