@@ -5,7 +5,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   def validate_patients_query(unsanitized_query)
     # Only allow permitted params
     query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :tz_offset,
-                                     filter: [:value, :dateOption, :relativeOption, { filterOption: {}, value: {} }])
+                                     filter: [:value, :numberOption, :dateOption, :relativeOption, { filterOption: {}, value: {} }])
 
     # Validate workflow
     workflow = query[:workflow]&.to_sym || :all
@@ -41,12 +41,14 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       raise InvalidQueryError.new(:tz_offset, tz_offset) unless tz_offset.to_i.to_s == tz_offset.to_s
 
       query[:filter] = unsanitized_query[:filter].collect do |filter|
-        permitted_filter_params = filter.permit(:value, :dateOption, :relativeOption, filterOption: {}, value: {})
+        permitted_filter_params = filter.permit(:value, :numberOption, :dateOption, :relativeOption, :optionalOption, filterOption: {}, value: {})
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
           value: permitted_filter_params[:value] || filter.require(:value) || false,
+          numberOption: permitted_filter_params[:numberOption],
           dateOption: permitted_filter_params[:dateOption],
-          relativeOption: permitted_filter_params[:relativeOption]
+          relativeOption: permitted_filter_params[:relativeOption],
+          optionalOption: permitted_filter_params[:optionalOption]
         }
       end
     end
@@ -345,17 +347,32 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'manual-contact-attempts'
         # less/greater-than operators are flipped for where_assoc_count
         operator = :==
-        operator = :> if filter[:value][:operator] == 'less-than'
-        operator = :>= if filter[:value][:operator] == 'less-than-equal'
-        operator = :<= if filter[:value][:operator] == 'greater-than-equal'
-        operator = :< if filter[:value][:operator] == 'greater-than'
-        case filter[:value][:option]
+        operator = :> if filter[:numberOption]== 'less-than'
+        operator = :>= if filter[:numberOption]== 'less-than-equal'
+        operator = :<= if filter[:numberOption] == 'greater-than-equal'
+        operator = :< if filter[:numberOption] == 'greater-than'
+        case filter[:optionalOption]
         when 'Successful'
-          patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts, successful: true)
+          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts, successful: true)
         when 'Unsuccessful'
-          patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts, successful: false)
+          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts, successful: false)
         when 'All'
-          patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts)
+          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts)
+        end
+      when 'age'
+        age = filter[:value].to_i
+        age_plus_1 = age + 1;
+        case filter[:numberOption]
+        when 'equal'
+          patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year).where('date_of_birth <= ?', DateTime.now - age.year)
+        when 'less-than'
+          patients = patients.where('date_of_birth > ?', DateTime.now - age.year)
+        when 'less-than-equal'
+          patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year)
+        when 'greater-than-equal'
+          patients = patients.where('date_of_birth <= ?', DateTime.now - age.year)
+        when 'greater-than'
+          patients = patients.where('date_of_birth <= ?', DateTime.now - age_plus_1.year)
         end
       when 'ten-day-quarantine'
         patients = advanced_filter_quarantine_option(patients, filter, tz_offset, :ten_day)
