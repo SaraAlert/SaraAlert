@@ -186,6 +186,12 @@ class AdvancedFilter extends React.Component {
           options: ['Successful', 'Unsuccessful', 'All'],
         },
         {
+          name: 'age',
+          title: 'Age (Number)',
+          description: 'Current Monitoree Age',
+          type: 'number',
+        },
+        {
           name: 'ten-day-quarantine',
           title: 'Candidate to Reduce Quarantine after 10 Days (Boolean)',
           description: 'All asymptomatic records that meet CDC criteria to end quarantine after Day 10 (based on last date of exposure)',
@@ -330,11 +336,7 @@ class AdvancedFilter extends React.Component {
     } else if (filterOption.type === 'option') {
       value = filterOption.options[0];
     } else if (filterOption.type === 'number') {
-      value = {
-        number: 0,
-        operator: 'equal',
-        option: filterOption.options ? filterOption.options[0] : null,
-      };
+      value = 0;
     } else if (filterOption.type === 'date') {
       // Default to "within" type
       value = {
@@ -352,9 +354,18 @@ class AdvancedFilter extends React.Component {
     activeFilterOptions[parseInt(index)] = {
       filterOption,
       value,
+      numberOption: filterOption.type === 'number' ? 'equal' : null,
       dateOption: filterOption.type === 'date' ? 'within' : null,
       relativeOption: filterOption.type === 'relative' ? 'today' : null,
+      optionalOption: filterOption.options ? filterOption.options[0] : null,
     };
+    this.setState({ activeFilterOptions });
+  };
+
+  // Change an index filter option for type number
+  changeFilterNumberOption = (index, numberOption, value, optionalOption) => {
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value, numberOption, optionalOption };
     this.setState({ activeFilterOptions });
   };
 
@@ -380,6 +391,21 @@ class AdvancedFilter extends React.Component {
   changeFilterRelativeOption = (index, value, relativeOption) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: value, relativeOption: relativeOption };
+    this.setState({ activeFilterOptions });
+  };
+
+  // Change the optional option supported for different types if provided
+  changeFilterOptionalOption = (index, optionalOption, value, numberOption, dateOption, relativeOption) => {
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    // add all other options here
+    activeFilterOptions[parseInt(index)] = {
+      filterOption: activeFilterOptions[parseInt(index)].filterOption,
+      value,
+      optionalOption,
+      numberOption,
+      dateOption,
+      relativeOption,
+    };
     this.setState({ activeFilterOptions });
   };
 
@@ -511,23 +537,37 @@ class AdvancedFilter extends React.Component {
     );
   };
 
+  // Render number specific options
+  renderNumberOptions = (current, index, value, optionalOption) => {
+    return (
+      <Form.Control
+        as="select"
+        value={current}
+        className="advanced-filter-number-options mr-4"
+        onChange={event => this.changeFilterNumberOption(index, event.target.value, value, optionalOption)}>
+        <option value="less-than">{'less than'}</option>
+        <option value="less-than-equal">{'less than or equal to'}</option>
+        <option value="equal">{'equal to'}</option>
+        <option value="greater-than-equal">{'greater than or equal to'}</option>
+        <option value="greater-than">{'greater than'}</option>
+      </Form.Control>
+    );
+  };
+
   // Render date specific options
   renderDateOptions = (current, index) => {
     return (
-      <Form.Group key={index + 'opkeygroup'} className="py-0 my-0">
-        <Form.Control
-          as="select"
-          aria-label="Advanced Filter Date Select Options"
-          value={current}
-          className="py-0 my-0"
-          onChange={event => {
-            this.changeFilterDateOption(index, event.target.value);
-          }}>
-          <option value="within">within</option>
-          <option value="before">before</option>
-          <option value="after">after</option>
-        </Form.Control>
-      </Form.Group>
+      <Form.Control
+        as="select"
+        value={current}
+        className="advanced-filter-date-options py-0 my-0 mr-4"
+        onChange={event => {
+          this.changeFilterDateOption(index, event.target.value);
+        }}>
+        <option value="within">within</option>
+        <option value="before">before</option>
+        <option value="after">after</option>
+      </Form.Control>
     );
   };
 
@@ -538,6 +578,7 @@ class AdvancedFilter extends React.Component {
         as="select"
         aria-label="Advanced Filter Relative Date Select Options"
         value={current}
+        className="advanced-filter-relative-options py-0 my-0 mr-4"
         onChange={event => {
           this.changeFilterRelativeOption(index, value, event.target.value);
         }}>
@@ -545,6 +586,25 @@ class AdvancedFilter extends React.Component {
         <option value="tomorrow">tomorrow</option>
         <option value="yesterday">yesterday</option>
         <option value="custom">more...</option>
+      </Form.Control>
+    );
+  };
+
+  // Render optional options dropdown that is used in conjunction with other types
+  renderOptionalOptions = (current, index, options, value, numberOption, dateOption, relativeOption) => {
+    return (
+      <Form.Control
+        as="select"
+        value={current}
+        className="py-0 my-0 mr-3"
+        onChange={event => this.changeFilterOptionalOption(index, event.target.value, value, numberOption, dateOption, relativeOption)}>
+        {options.map((option, op_index) => {
+          return (
+            <option key={index + 'opkeyop-f' + op_index} value={option}>
+              {option}
+            </option>
+          );
+        })}
       </Form.Control>
     );
   };
@@ -679,7 +739,7 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render a single line "statement"
-  renderStatement = (filterOption, value, index, total, dateOption, relativeOption) => {
+  renderStatement = (filterOption, value, index, total, numberOption, dateOption, relativeOption, optionalOption) => {
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
@@ -690,9 +750,13 @@ class AdvancedFilter extends React.Component {
           </Row>
         )}
         <Row key={'rowkey-filter' + index} className="pb-1 pt-1">
-          <Col className="py-0" md="9">
+          <Col className="py-0" md={9}>
             {this.renderOptions(filterOption?.name, index)}
           </Col>
+          {/* specific dropdown for filters with a type that requires additional options (not type option) */}
+          {filterOption?.type !== 'option' && filterOption?.options && (
+            <Col md={4}>{this.renderOptionalOptions(optionalOption, index, filterOption.options, value)}</Col>
+          )}
           <Col className="py-0">
             {filterOption?.type === 'boolean' && (
               <ButtonGroup toggle>
@@ -721,102 +785,60 @@ class AdvancedFilter extends React.Component {
               </ButtonGroup>
             )}
             {filterOption?.type === 'option' && (
-              <Form.Group className="py-0 my-0">
-                <Form.Control
-                  as="select"
-                  aria-label="Advanced Filter Option Select"
-                  value={value}
-                  className="py-0 my-0"
-                  onChange={event => {
-                    this.changeValue(index, event.target.value);
-                  }}>
-                  {filterOption.options.map((option, op_index) => {
-                    return (
-                      <option key={index + 'opkeyop-f' + op_index} value={option}>
-                        {option}
-                      </option>
-                    );
-                  })}
-                </Form.Control>
-              </Form.Group>
+              <Form.Control
+                as="select"
+                value={value}
+                className="py-0 my-0"
+                onChange={event => {
+                  this.changeValue(index, event.target.value);
+                }}>
+                {filterOption.options.map((option, op_index) => {
+                  return (
+                    <option key={index + 'opkeyop-f' + op_index} value={option}>
+                      {option}
+                    </option>
+                  );
+                })}
+              </Form.Control>
             )}
             {filterOption?.type === 'number' && (
-              <Form.Group className="py-0 my-0">
-                <Row>
-                  {filterOption?.options && (
-                    // specific dropdown for filters with number type but require additional options
-                    <Col md="8">
-                      <Form.Control
-                        as="select"
-                        aria-label="Advanced Filter Number Additional Options Input"
-                        value={value?.option}
-                        onChange={event =>
-                          this.changeValue(index, {
-                            number: value?.number,
-                            operator: value?.operator,
-                            option: event?.target?.value,
-                          })
-                        }>
-                        {filterOption.options.map((option, op_index) => {
-                          return (
-                            <option key={index + 'opkeyop-f' + op_index} value={option}>
-                              {option}
-                            </option>
-                          );
-                        })}
-                      </Form.Control>
-                    </Col>
-                  )}
-                  <Col md="12">
-                    <Form.Control
-                      as="select"
-                      aria-label="Advanced Filter Number Operator Select"
-                      value={value?.operator}
-                      onChange={event =>
-                        this.changeValue(index, {
-                          number: value?.number,
-                          operator: event?.target?.value,
-                          option: value?.option,
-                        })
-                      }>
-                      <option value="less-than">{'less than'}</option>
-                      <option value="less-than-equal">{'less than or equal to'}</option>
-                      <option value="equal">{'equal to'}</option>
-                      <option value="greater-than-equal">{'greater than or equal to'}</option>
-                      <option value="greater-than">{'greater than'}</option>
-                    </Form.Control>
-                  </Col>
-                  <Col md="4">
-                    <Form.Control
-                      className="form-control-number"
-                      aria-label="Advanced Filter Number Input"
-                      value={value?.number}
-                      type="number"
-                      min="0"
-                      onChange={event =>
-                        this.changeValue(index, {
-                          number: event?.target?.value,
-                          operator: value?.operator,
-                          option: value?.option,
-                        })
-                      }
-                    />
-                  </Col>
-                </Row>
+              <Form.Group className="form-group-inline py-0 my-0">
+                {this.renderNumberOptions(numberOption, index, value, optionalOption)}
+                <Form.Control
+                  className="advanced-filter-number-input"
+                  value={value}
+                  type="number"
+                  min="0"
+                  onChange={event => this.changeValue(index, event?.target?.value)}
+                />
               </Form.Group>
             )}
             {filterOption?.type === 'date' && (
-              <Row>
-                <Col className="py-0" md="6">
-                  {this.renderDateOptions(dateOption, index)}
-                </Col>
+              <Form.Group className="form-group-inline py-0 my-0">
+                {this.renderDateOptions(dateOption, index)}
                 {dateOption !== 'within' && (
-                  <Col className="py-0">
-                    <Form.Group className="py-0 my-0">
+                  <div className="advanced-filter-date-input">
+                    <DateInput
+                      date={value}
+                      onChange={date => {
+                        this.changeValue(index, date);
+                      }}
+                      placement="bottom"
+                      customClass="form-control-md"
+                      minDate={'1900-01-01'}
+                      maxDate={moment()
+                        .add(2, 'years')
+                        .format('YYYY-MM-DD')}
+                    />
+                  </div>
+                )}
+                {dateOption === 'within' && (
+                  <React.Fragment>
+                    <div className="advanced-filter-date-input">
                       <DateInput
-                        date={value}
+                        date={value.start}
                         onChange={date => {
-                          this.changeValue(index, date);
+                          this.changeValue(index, { start: date, end: value.end });
                         }}
                         placement="bottom"
                         customClass="form-control-md"
@@ -826,115 +848,85 @@ class AdvancedFilter extends React.Component {
                           .add(2, 'years')
                           .format('YYYY-MM-DD')}
                       />
-                    </Form.Group>
-                  </Col>
-                )}
-                {dateOption === 'within' && (
-                  <React.Fragment>
-                    <Col className="pr-0" md="8">
-                      <Form.Group className="py-0 my-0">
-                        <DateInput
-                          date={value.start}
-                          onChange={date => {
-                            this.changeValue(index, { start: date, end: value.end });
-                          }}
-                          placement="bottom"
-                          customClass="form-control-md"
-                          ariaLabel="Advanced Filter Start Date Input"
-                          minDate={'1900-01-01'}
-                          maxDate={moment()
-                            .add(2, 'years')
-                            .format('YYYY-MM-DD')}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col className="py-0 px-0 text-center my-auto" md="2">
-                      <b>TO</b>
-                    </Col>
-                    <Col className="pl-0" md="8">
-                      <Form.Group className="py-0 my-0">
-                        <DateInput
-                          date={value.end}
-                          onChange={date => {
-                            this.changeValue(index, { start: value.start, end: date });
-                          }}
-                          placement="bottom"
-                          customClass="form-control-md"
-                          ariaLabel="Advanced Filter End Date Input"
-                          minDate={'1900-01-01'}
-                          maxDate={moment()
-                            .add(2, 'years')
-                            .format('YYYY-MM-DD')}
-                        />
-                      </Form.Group>
-                    </Col>
-                  </React.Fragment>
-                )}
-              </Row>
-            )}
-            {filterOption?.type === 'relative' && (
-              <Row>
-                <Col className="py-0" md="7">
-                  {this.renderRelativeOptions(relativeOption, index, value)}
-                </Col>
-                {relativeOption === 'custom' && (
-                  <React.Fragment>
-                    <Col md="6" className="pr-0">
-                      <Form.Control
-                        as="select"
-                        aria-label="Advanced Filter Relative Date When Select"
-                        value={value.when}
-                        onChange={event => {
-                          this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
-                        }}>
-                        <option value="past">in the past</option>
-                        <option value="next">in the next</option>
-                      </Form.Control>
-                    </Col>
-                    <Col md="4" className="pr-0">
-                      <Form.Control
-                        aria-label="Advanced Filter Relative Date Number Select"
-                        value={value.number}
-                        type="number"
-                        min="1"
-                        onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
+                        minDate={'1900-01-01'}
+                        maxDate={moment()
+                          .add(2, 'years')
+                          .format('YYYY-MM-DD')}
                       />
-                    </Col>
-                    <Col md="6" className="pr-0">
-                      <Form.Control
-                        as="select"
-                        aria-label="Advanced Filter Relative Date Unit Select"
-                        value={value.unit}
-                        onChange={event => {
-                          this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
-                        }}>
-                        <option value="days">day(s)</option>
-                        <option value="weeks">week(s)</option>
-                        <option value="months">month(s)</option>
-                      </Form.Control>
-                    </Col>
+                    </div>
+                    <div className="text-center my-auto mx-4">
+                      <b>TO</b>
+                    </div>
+                    <div className="advanced-filter-date-input">
+                      <DateInput
+                        date={value.end}
+                        onChange={date => {
+                          this.changeValue(index, { start: value.start, end: date });
+                        }}
+                        placement="bottom"
+                        customClass="form-control-md"
+                        minDate={'1900-01-01'}
+                        maxDate={moment()
+                          .add(2, 'years')
+                          .format('YYYY-MM-DD')}
+                      />
+                    </div>
                   </React.Fragment>
                 )}
-              </Row>
-            )}
-            {filterOption?.type === 'search' && (
-              <Form.Group className="py-0 my-0">
-                <Form.Control
-                  as="input"
-                  value={value}
-                  className="py-0 my-0"
-                  aria-label="Advanced Filter Search Text Input"
-                  onChange={event => {
-                    this.changeValue(index, event.target.value);
-                  }}
-                />
               </Form.Group>
             )}
+            {filterOption?.type === 'relative' && (
+              <Form.Group className="form-group-inline py-0 my-0">
+                {this.renderRelativeOptions(relativeOption, index, value)}
+                {relativeOption === 'custom' && (
+                  <React.Fragment>
+                    <Form.Control
+                      as="select"
+                      value={value.when}
+                      className="advanced-filter-when-input"
+                      onChange={event => {
+                        this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
+                      }}>
+                      <option value="past">in the past</option>
+                      <option value="next">in the next</option>
+                    </Form.Control>
+                    <Form.Control
+                      value={value.number}
+                      className="advanced-filter-number-input mx-4"
+                      type="number"
+                      min="1"
+                      onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
+                    />
+                    <Form.Control
+                      as="select"
+                      value={value.unit}
+                      className="advanced-filter-unit-input"
+                      onChange={event => {
+                        this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
+                      }}>
+                      <option value="days">day(s)</option>
+                      <option value="weeks">week(s)</option>
+                      <option value="months">month(s)</option>
+                    </Form.Control>
+                  </React.Fragment>
+                )}
+              </Form.Group>
+            )}
+            {filterOption?.type === 'search' && (
+              <Form.Control
+                as="input"
+                value={value}
+                className="py-0 my-0"
+                onChange={event => {
+                  this.changeValue(index, event.target.value);
+                }}
+              />
+            )}
           </Col>
-          {filterOption && (filterOption.tooltip || relativeOption === 'custom') && (
-            <span className="align-middle mx-2">{this.renderOptionTooltip(filterOption, value, index)}</span>
-          )}
-          <Col className="py-0" md={2}>
+          <Col className="py-0" md="auto">
+            {filterOption && (filterOption.tooltip || relativeOption === 'custom') && (
+              <span className="align-middle mx-3">{this.renderOptionTooltip(filterOption, value, index)}</span>
+            )}
             <div className="float-right">
               <Button variant="danger" onClick={() => this.remove(index)} aria-label="Remove Advanced Filter Option">
                 <i className="fas fa-minus"></i>
@@ -1004,8 +996,10 @@ class AdvancedFilter extends React.Component {
                 statement.value,
                 index,
                 this.state.activeFilterOptions?.length,
+                statement.numberOption,
                 statement.dateOption,
-                statement.relativeOption
+                statement.relativeOption,
+                statement.optionalOption
               );
             })}
             <Row className="pt-2 pb-1">
