@@ -87,7 +87,7 @@ describe('ReportsTable', () => {
     expect(wrapper.find(OverlayTrigger).exists()).toBeTruthy();
     expect(wrapper.find(InputGroup.Text).exists()).toBeTruthy();
     expect(wrapper.find(InputGroup.Text).find('i').hasClass('fa-search')).toBeTruthy();
-    expect(wrapper.find(InputGroup.Text).find('span').text()).toEqual('Search');
+    expect(wrapper.find(InputGroup.Text).find('label').text()).toEqual('Search');
     expect(wrapper.find(InputGroup).find(Form.Control).exists()).toBeTruthy();
   });
 
