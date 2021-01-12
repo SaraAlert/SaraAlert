@@ -347,7 +347,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'manual-contact-attempts'
         # less/greater-than operators are flipped for where_assoc_count
         operator = :==
-        operator = :> if filter[:numberOption]== 'less-than'
+        operator = :> if filter[:numberOption] == 'less-than'
         operator = :>= if filter[:numberOption]== 'less-than-equal'
         operator = :<= if filter[:numberOption] == 'greater-than-equal'
         operator = :< if filter[:numberOption] == 'greater-than'
@@ -360,19 +360,26 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts)
         end
       when 'age'
-        age = filter[:value].to_i
-        age_plus_1 = age + 1;
-        case filter[:numberOption]
-        when 'equal'
-          patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year).where('date_of_birth <= ?', DateTime.now - age.year)
-        when 'less-than'
-          patients = patients.where('date_of_birth > ?', DateTime.now - age.year)
-        when 'less-than-equal'
-          patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year)
-        when 'greater-than-equal'
-          patients = patients.where('date_of_birth <= ?', DateTime.now - age.year)
-        when 'greater-than'
-          patients = patients.where('date_of_birth <= ?', DateTime.now - age_plus_1.year)
+        # specific case where value is a range not a single value
+        if filter[:numberOption] == 'between'
+          lowAge = filter[:value][:low].to_i
+          highAge = filter[:value][:high].to_i
+          patients = patients.where('date_of_birth > ?', DateTime.now - highAge.year).where('date_of_birth <= ?', DateTime.now - lowAge.year)
+        else
+          age = filter[:value].to_i
+          age_plus_1 = age + 1;
+          case filter[:numberOption]
+          when 'equal'
+            patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year).where('date_of_birth <= ?', DateTime.now - age.year)
+          when 'less-than'
+            patients = patients.where('date_of_birth > ?', DateTime.now - age.year)
+          when 'less-than-equal'
+            patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year)
+          when 'greater-than-equal'
+            patients = patients.where('date_of_birth <= ?', DateTime.now - age.year)
+          when 'greater-than'
+            patients = patients.where('date_of_birth <= ?', DateTime.now - age_plus_1.year)
+          end
         end
       when 'ten-day-quarantine'
         patients = advanced_filter_quarantine_option(patients, filter, tz_offset, :ten_day)
