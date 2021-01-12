@@ -417,7 +417,6 @@ class Identification extends React.Component {
                   </Form.Label>
                   <Select
                     inputId="primary-language-select"
-                    id="primary-language-select"
                     value={this.getLanguageValue(this.state.current.patient.primary_language)}
                     options={this.state.languageOptions}
                     onChange={e => this.handleLanguageChange('primary_language', e)}
