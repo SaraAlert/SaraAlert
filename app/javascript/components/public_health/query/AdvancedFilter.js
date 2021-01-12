@@ -363,9 +363,20 @@ class AdvancedFilter extends React.Component {
   };
 
   // Change an index filter option for type number
-  changeFilterNumberOption = (index, numberOption, value, optionalOption) => {
+  changeFilterNumberOption = (index, prevNumberOption, newNumberOption, value, optionalOption) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
-    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value, numberOption, optionalOption };
+    let newValue = value;
+    if (prevNumberOption === 'between' && newNumberOption !== 'between') {
+      newValue = 0;
+    } else if (prevNumberOption !== 'between' && newNumberOption === 'between') {
+      newValue = { low: 0, high: 0 };
+    }
+    activeFilterOptions[parseInt(index)] = {
+      filterOption: activeFilterOptions[parseInt(index)].filterOption,
+      value: newValue,
+      numberOption: newNumberOption,
+      optionalOption,
+    };
     this.setState({ activeFilterOptions });
   };
 
@@ -544,12 +555,13 @@ class AdvancedFilter extends React.Component {
         as="select"
         value={current}
         className="advanced-filter-number-options mr-4"
-        onChange={event => this.changeFilterNumberOption(index, event.target.value, value, optionalOption)}>
-        <option value="less-than">{'less than'}</option>
-        <option value="less-than-equal">{'less than or equal to'}</option>
-        <option value="equal">{'equal to'}</option>
-        <option value="greater-than-equal">{'greater than or equal to'}</option>
-        <option value="greater-than">{'greater than'}</option>
+        onChange={event => this.changeFilterNumberOption(index, current, event.target.value, value, optionalOption)}>
+        <option value="less-than">less than</option>
+        <option value="less-than-equal">less than or equal to</option>
+        <option value="equal">equal to</option>
+        <option value="greater-than-equal">greater than or equal to</option>
+        <option value="greater-than">greater than</option>
+        <option value="between">between</option>
       </Form.Control>
     );
   };
@@ -804,13 +816,36 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'number' && (
               <Form.Group className="form-group-inline py-0 my-0">
                 {this.renderNumberOptions(numberOption, index, value, optionalOption)}
-                <Form.Control
-                  className="advanced-filter-number-input"
-                  value={value}
-                  type="number"
-                  min="0"
-                  onChange={event => this.changeValue(index, event?.target?.value)}
-                />
+                {numberOption !== 'between' && (
+                  <Form.Control
+                    className="advanced-filter-number-input"
+                    value={value}
+                    type="number"
+                    min="0"
+                    onChange={event => this.changeValue(index, event?.target?.value)}
+                  />
+                )}
+                {numberOption === 'between' && (
+                  <React.Fragment>
+                    <Form.Control
+                      className="advanced-filter-number-input"
+                      value={value.low}
+                      type="number"
+                      min="0"
+                      onChange={event => this.changeValue(index, { low: event?.target?.value, high: value.high })}
+                    />
+                    <div className="text-center my-auto mx-4">
+                      <b>AND</b>
+                    </div>
+                    <Form.Control
+                      className="advanced-filter-number-input"
+                      value={value.high}
+                      type="number"
+                      min="0"
+                      onChange={event => this.changeValue(index, { low: value.low, high: event?.target?.value })}
+                    />
+                  </React.Fragment>
+                )}
               </Form.Group>
             )}
             {filterOption?.type === 'date' && (
