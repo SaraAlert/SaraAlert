@@ -555,6 +555,7 @@ class AdvancedFilter extends React.Component {
         as="select"
         value={current}
         className="advanced-filter-number-options mr-4"
+        aria-label="Advanced Filter Number Select Options"
         onChange={event => this.changeFilterNumberOption(index, current, event.target.value, value, optionalOption)}>
         <option value="less-than">less than</option>
         <option value="less-than-equal">less than or equal to</option>
@@ -573,6 +574,7 @@ class AdvancedFilter extends React.Component {
         as="select"
         value={current}
         className="advanced-filter-date-options py-0 my-0 mr-4"
+        aria-label="Advanced Filter Date Select Options"
         onChange={event => {
           this.changeFilterDateOption(index, event.target.value);
         }}>
@@ -588,9 +590,9 @@ class AdvancedFilter extends React.Component {
     return (
       <Form.Control
         as="select"
-        aria-label="Advanced Filter Relative Date Select Options"
         value={current}
         className="advanced-filter-relative-options py-0 my-0 mr-4"
+        aria-label="Advanced Filter Relative Date Select Options"
         onChange={event => {
           this.changeFilterRelativeOption(index, value, event.target.value);
         }}>
@@ -609,6 +611,7 @@ class AdvancedFilter extends React.Component {
         as="select"
         value={current}
         className="py-0 my-0 mr-3"
+        aria-label="Advanced Filter Number Additional Options Input"
         onChange={event => this.changeFilterOptionalOption(index, event.target.value, value, numberOption, dateOption, relativeOption)}>
         {options.map((option, op_index) => {
           return (
@@ -801,6 +804,7 @@ class AdvancedFilter extends React.Component {
                 as="select"
                 value={value}
                 className="py-0 my-0"
+                aria-label="Advanced Filter Option Select"
                 onChange={event => {
                   this.changeValue(index, event.target.value);
                 }}>
@@ -819,6 +823,7 @@ class AdvancedFilter extends React.Component {
                 {numberOption !== 'between' && (
                   <Form.Control
                     className="advanced-filter-number-input"
+                    aria-label="Advanced Filter Number Input"
                     value={value}
                     type="number"
                     min="0"
@@ -829,6 +834,7 @@ class AdvancedFilter extends React.Component {
                   <React.Fragment>
                     <Form.Control
                       className="advanced-filter-number-input"
+                      aria-label="Advanced Filter Number Low Input"
                       value={value.low}
                       type="number"
                       min="0"
@@ -839,6 +845,7 @@ class AdvancedFilter extends React.Component {
                     </div>
                     <Form.Control
                       className="advanced-filter-number-input"
+                      aria-label="Advanced Filter Number High Input"
                       value={value.high}
                       type="number"
                       min="0"
@@ -860,6 +867,7 @@ class AdvancedFilter extends React.Component {
                       }}
                       placement="bottom"
                       customClass="form-control-md"
+                      ariaLabel="Advanced Filter Date Input"
                       minDate={'1900-01-01'}
                       maxDate={moment()
                         .add(2, 'years')
@@ -877,12 +885,7 @@ class AdvancedFilter extends React.Component {
                         }}
                         placement="bottom"
                         customClass="form-control-md"
-                        ariaLabel="Advanced Filter Date Input"
-                        minDate={'1900-01-01'}
-                        maxDate={moment()
-                          .add(2, 'years')
-                          .format('YYYY-MM-DD')}
-                      />
+                        ariaLabel="Advanced Filter Start Date Input"
                         minDate={'1900-01-01'}
                         maxDate={moment()
                           .add(2, 'years')
@@ -900,6 +903,7 @@ class AdvancedFilter extends React.Component {
                         }}
                         placement="bottom"
                         customClass="form-control-md"
+                        ariaLabel="Advanced Filter End Date Input"
                         minDate={'1900-01-01'}
                         maxDate={moment()
                           .add(2, 'years')
@@ -919,6 +923,7 @@ class AdvancedFilter extends React.Component {
                       as="select"
                       value={value.when}
                       className="advanced-filter-when-input"
+                      aria-label="Advanced Filter Relative Date When Select"
                       onChange={event => {
                         this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
                       }}>
@@ -928,6 +933,7 @@ class AdvancedFilter extends React.Component {
                     <Form.Control
                       value={value.number}
                       className="advanced-filter-number-input mx-4"
+                      aria-label="Advanced Filter Relative Date Number Select"
                       type="number"
                       min="1"
                       onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
@@ -936,6 +942,7 @@ class AdvancedFilter extends React.Component {
                       as="select"
                       value={value.unit}
                       className="advanced-filter-unit-input"
+                      aria-label="Advanced Filter Relative Date Unit Select"
                       onChange={event => {
                         this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
                       }}>
@@ -952,6 +959,7 @@ class AdvancedFilter extends React.Component {
                 as="input"
                 value={value}
                 className="py-0 my-0"
+                aria-label="Advanced Filter Search Text Input"
                 onChange={event => {
                   this.changeValue(index, event.target.value);
                 }}

@@ -5,7 +5,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   def validate_patients_query(unsanitized_query)
     # Only allow permitted params
     query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :tz_offset,
-                                     filter: [:value, :numberOption, :dateOption, :relativeOption, { filterOption: {}, value: {} }])
+                                     filter: [:value, :numberOption, :dateOption, :relativeOption, :optionalOption, { filterOption: {}, value: {} }])
 
     # Validate workflow
     workflow = query[:workflow]&.to_sym || :all
@@ -348,7 +348,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         # less/greater-than operators are flipped for where_assoc_count
         operator = :==
         operator = :> if filter[:numberOption] == 'less-than'
-        operator = :>= if filter[:numberOption]== 'less-than-equal'
+        operator = :>= if filter[:numberOption] == 'less-than-equal'
         operator = :<= if filter[:numberOption] == 'greater-than-equal'
         operator = :< if filter[:numberOption] == 'greater-than'
         case filter[:optionalOption]
@@ -362,12 +362,12 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'age'
         # specific case where value is a range not a single value
         if filter[:numberOption] == 'between'
-          lowAge = filter[:value][:low].to_i
-          highAge = filter[:value][:high].to_i
-          patients = patients.where('date_of_birth > ?', DateTime.now - highAge.year).where('date_of_birth <= ?', DateTime.now - lowAge.year)
+          low_age = filter[:value][:low].to_i
+          high_age = filter[:value][:high].to_i
+          patients = patients.where('date_of_birth > ?', DateTime.now - high_age.year).where('date_of_birth <= ?', DateTime.now - low_age.year)
         else
           age = filter[:value].to_i
-          age_plus_1 = age + 1;
+          age_plus_1 = age + 1
           case filter[:numberOption]
           when 'equal'
             patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year).where('date_of_birth <= ?', DateTime.now - age.year)
