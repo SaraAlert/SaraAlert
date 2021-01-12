@@ -16,7 +16,7 @@ nav_order: 4
 # API Specification
 
 For the purposes of this documentation, when describing an API route, [base] includes `/fhir/r4`.
-JSON is currently the only supported format. Please make use of the `application/fhir+json` mime type for the Accept header. The Content-Type header must also correspond to this mime type.
+JSON is currently the only supported format. Please make use of the `application/fhir+json` mime type for the Accept header. When using a POST or PUT endpoint, please also use `application/fhir+json` for the Content-Type header, and when using a PATCH endpoint, please use `application/json-patch+json`.
 
 <a name="data-representation"/>
 
@@ -1399,6 +1399,11 @@ On success, the server will update the existing resource given the id.
 ### PATCH `[base]/Patient/[:id]`
 
 **NOTE:** This is a `PATCH` operation, it will only modify specified attributes. If you intend to replace the entire resource instead, see [PUT](#update-put-pat).
+
+**Request Headers:**
+```
+Content-Type: application/json-patch+json
+```
 
 **Request Body:**
 
