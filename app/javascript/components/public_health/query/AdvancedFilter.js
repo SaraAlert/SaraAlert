@@ -190,6 +190,7 @@ class AdvancedFilter extends React.Component {
           title: 'Age (Number)',
           description: 'Current Monitoree Age',
           type: 'number',
+          includeRange: true,
         },
         {
           name: 'ten-day-quarantine',
@@ -549,7 +550,7 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render number specific options
-  renderNumberOptions = (current, index, value, optionalOption) => {
+  renderNumberOptions = (current, index, value, optionalOption, includeBetween) => {
     return (
       <Form.Control
         as="select"
@@ -562,7 +563,7 @@ class AdvancedFilter extends React.Component {
         <option value="equal">equal to</option>
         <option value="greater-than-equal">greater than or equal to</option>
         <option value="greater-than">greater than</option>
-        <option value="between">between</option>
+        {includeBetween && <option value="between">between</option>}
       </Form.Control>
     );
   };
@@ -683,10 +684,13 @@ class AdvancedFilter extends React.Component {
     let statement;
 
     // Relative dates all get a specific tooltip
+    // Filters of type number only get a tooltip if the numberOption is "between" (i.e. a range)
     // NOTE: Right now because of how this is set up, relative dates can't have a tooltip in addition to the one that is shown
     // here once "more" is selected.
     if (filter.type === 'relative') {
       statement = this.getRelativeTooltipString(filter, value);
+    } else if (filter.type === 'number') {
+      statement = '"Between" range is inclusive of numbers selected.';
     } else {
       // Otherwise base it on specific filter option
       statement = filter.tooltip;
@@ -819,7 +823,7 @@ class AdvancedFilter extends React.Component {
             )}
             {filterOption?.type === 'number' && (
               <Form.Group className="form-group-inline py-0 my-0">
-                {this.renderNumberOptions(numberOption, index, value, optionalOption)}
+                {this.renderNumberOptions(numberOption, index, value, optionalOption, filterOption.includeRange)}
                 {numberOption !== 'between' && (
                   <Form.Control
                     className="advanced-filter-number-input"
@@ -967,7 +971,7 @@ class AdvancedFilter extends React.Component {
             )}
           </Col>
           <Col className="py-0" md="auto">
-            {filterOption && (filterOption.tooltip || relativeOption === 'custom') && (
+            {filterOption && (filterOption.tooltip || numberOption === 'between' || relativeOption === 'custom') && (
               <span className="align-middle mx-3">{this.renderOptionTooltip(filterOption, value, index)}</span>
             )}
             <div className="float-right">
