@@ -101,13 +101,14 @@ gem 'redis-queue'
 gem 'hana', '~> 1.3.7'
 
 # Auditing model changes
-gem 'audited', git: 'https://github.com/SaraAlert/audited.git', branch: 'patch-1'
+gem 'audited'
 
 # Easier ordering for queries
 gem 'order_as_specified'
 
 group :development, :test do
   gem 'brakeman'
+  gem 'benchmark-ips'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'erb_lint'
   gem 'factory_bot_rails'
@@ -141,4 +142,3 @@ group :test do
 end
 
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
-gem 'benchmark-ips', group: [:development, :test]

@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/SaraAlert/audited.git
-  revision: eae3075f6d2acc05f54c7a792e018c61fc9078b1
-  branch: patch-1
-  specs:
-    audited (4.9.0)
-      activerecord (>= 4.2, < 6.2)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -83,6 +75,8 @@ GEM
     ancestry (3.2.1)
       activerecord (>= 4.2.0)
     ast (2.4.1)
+    audited (4.10.0)
+      activerecord (>= 4.2, < 6.2)
     authy (3.0.0)
       httpclient (>= 2.5.3.3)
     babel-source (5.8.35)
@@ -421,7 +415,7 @@ DEPENDENCIES
   activerecord-session_store
   activerecord_where_assoc
   ancestry
-  audited!
+  audited
   benchmark-ips
   bootsnap (>= 1.4.2)
   brakeman
