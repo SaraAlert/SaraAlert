@@ -285,7 +285,7 @@ class GeographicSummary extends React.Component {
       </Button>
     );
     return (
-      <div style={{ width: '100%' }}>
+      <div style={{ width: '96%', marginLeft: '2%' }}>
         <Row className="mb-4 mx-2 px-0">
           <Col md="24">
             <div className="text-center display-5 mb-1 mt-1 pb-4">{moment(this.dateSubset[this.state.selectedDateIndex]).format('MMMM DD, YYYY')}</div>
@@ -303,7 +303,7 @@ class GeographicSummary extends React.Component {
             </div>
           </Col>
         </Row>
-        <div style={{ width: '100%', height: '450px' }}>
+        <div>
           <div className="map-panel-mount-point">
             {this.renderSpinner()}
             <Row>
@@ -350,7 +350,7 @@ class GeographicSummary extends React.Component {
             </Button>
             {backButton}
           </Row>
-          <div className="mb-4">
+          <div>
             <Button
               variant="primary"
               size="md"
