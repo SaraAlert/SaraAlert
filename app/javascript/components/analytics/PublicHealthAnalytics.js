@@ -158,7 +158,7 @@ class PublicHealthAnalytics extends React.Component {
               <MonitoreesByEventDate stats={this.props.stats} />
             </Col>
           </Row>
-          <Row className="mb-5 pb-3 mx-1 px-0 pt-4">
+          <Row className="mb-2 pb-3 mx-1 px-0 pt-4">
             <GeographicSummary stats={this.props.stats} />
           </Row>
         </React.Fragment>
