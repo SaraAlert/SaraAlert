@@ -46,3 +46,8 @@ dump.rdb
 coverage
 gemsurance_report.html
 tls/
+
+# JMeter
+*.jmx
+*.jtl
+jmeter.log

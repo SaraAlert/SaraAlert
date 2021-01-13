@@ -135,6 +135,7 @@ group :test do
   gem 'mocha'
   gem 'rack-test'
   gem 'rspec-mocks'
+  gem 'ruby-jmeter'
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'simplecov-lcov'
