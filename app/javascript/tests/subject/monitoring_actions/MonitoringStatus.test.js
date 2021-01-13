@@ -6,7 +6,7 @@ import MonitoringStatus from '../../../components/subject/monitoring_actions/Mon
 import InfoTooltip from '../../../components/util/InfoTooltip';
 import DateInput from '../../../components/util/DateInput';
 import { mockPatient1, mockPatient3 } from '../../mocks/mockPatients';
-import mockMonitoringReasons from '../../mocks/mockMonitoringReasons'
+import { mockMonitoringReasons } from '../../mocks/mockMonitoringReasons'
 
 const currentDate = moment(new Date()).format('YYYY-MM-DD');
 const newDate = moment(new Date('9-9-2020')).format('YYYY-MM-DD');
