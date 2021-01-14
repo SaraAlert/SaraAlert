@@ -263,6 +263,9 @@ class AdvancedFilter extends React.Component {
   apply = () => {
     this.setState({ show: false, applied: true }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilterOptions);
+      if (this.props.updateStickySettings) {
+        localStorage.setItem(`SaraFilter`, this.state.activeFilter.id);
+      }
     });
   };
 
@@ -272,6 +275,26 @@ class AdvancedFilter extends React.Component {
       this.props.advancedFilterUpdate(this.state.activeFilter);
       if (this.props.updateStickySettings) {
         localStorage.setItem(`SaraFilter`, null);
+      }
+    });
+  };
+
+  // Reset modal when cancelled
+  cancel = () => {
+    // check if there was a filter applied
+    const appliedFilterId = localStorage.getItem(`SaraFilter`);
+    const appliedFilter = this.state.savedFilters.find(filter => {
+      return filter.id === parseInt(appliedFilterId);
+    });
+
+    // update state accordingly
+    const applied = appliedFilterId;
+    const activeFilter = applied ? appliedFilter : null;
+    const activeFilterOptions = applied ? appliedFilter.contents : [];
+    this.setState({ show: false, applied, activeFilter, activeFilterOptions }, () => {
+      // if no filter was applied, start again with empty default
+      if (!applied) {
+        this.add();
       }
     });
   };
@@ -287,9 +310,6 @@ class AdvancedFilter extends React.Component {
   setFilter = (filter, apply = false) => {
     if (filter) {
       this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter?.contents || [] }, () => {
-        if (this.props.updateStickySettings) {
-          localStorage.setItem(`SaraFilter`, filter.id);
-        }
         if (apply) {
           this.apply();
         }
@@ -1005,11 +1025,7 @@ class AdvancedFilter extends React.Component {
             <p className="lead mr-auto">
               Filter will be applied to the line lists in the <u>{this.props.workflow}</u> workflow until reset.
             </p>
-            <Button
-              variant="secondary btn-square"
-              onClick={() => {
-                this.setState({ show: false });
-              }}>
+            <Button variant="secondary btn-square" onClick={this.cancel}>
               Cancel
             </Button>
           </Modal.Footer>
