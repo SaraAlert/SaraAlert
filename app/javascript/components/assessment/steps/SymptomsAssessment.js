@@ -4,7 +4,7 @@ import { Card, Button, Form } from 'react-bootstrap';
 import _ from 'lodash';
 import confirmDialog from '../../util/ConfirmDialog';
 
-class SymptomsReport extends React.Component {
+class SymptomsAssessment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -63,7 +63,7 @@ class SymptomsReport extends React.Component {
         allFieldsEmpty = false;
       }
     });
-    if (allFieldsEmpty || _.isEmpty(this.props.report)) {
+    if (allFieldsEmpty || _.isEmpty(this.props.assessment)) {
       return true;
     } else {
       return false;
@@ -77,7 +77,7 @@ class SymptomsReport extends React.Component {
   };
 
   handleSubmit = async () => {
-    if (this.fieldIsEmptyOrNew(this.props.report)) {
+    if (this.fieldIsEmptyOrNew(this.props.assessment)) {
       this.props.submit(this.state.reportState);
     } else {
       if (this.hasChanges()) {
@@ -206,8 +206,8 @@ class SymptomsReport extends React.Component {
   }
 }
 
-SymptomsReport.propTypes = {
-  report: PropTypes.object,
+SymptomsAssessment.propTypes = {
+  assessment: PropTypes.object,
   symptoms: PropTypes.array,
   translations: PropTypes.object,
   patient_initials: PropTypes.string,
@@ -217,4 +217,4 @@ SymptomsReport.propTypes = {
   idPre: PropTypes.string,
 };
 
-export default SymptomsReport;
+export default SymptomsAssessment;

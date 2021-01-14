@@ -1,6 +1,6 @@
 import { mockSymptoms1, mockSymptoms2 } from './mockSymptoms'
 
-const mockReport1 = {
+const mockAssessment1 = {
   chills: 'No',
   congestion_or_runny_nose: 'No',
   cough: 'No',
@@ -45,7 +45,7 @@ const mockReport1 = {
   who_reported: 'state1_epi_enroller@example.com'
 };
 
-const mockReport2 = {
+const mockAssessment2 = {
   chills: 'No',
   congestion_or_runny_nose: 'No',
   cough: 'No',
@@ -91,6 +91,6 @@ const mockReport2 = {
 };
 
 export {
-  mockReport1,
-  mockReport2
+  mockAssessment1,
+  mockAssessment2
 };

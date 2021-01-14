@@ -5,20 +5,20 @@ import axios from 'axios';
 
 import reportError from '../../util/ReportError';
 
-class AddReportingNote extends React.Component {
+class AddAssessmentNote extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showAddReportingNoteModal: false,
+      showAddAssessmentNoteModal: false,
       comment: '',
       loading: false,
     };
   }
 
-  toggleAddReportingNoteModal = () => {
-    let current = this.state.showAddReportingNoteModal;
+  toggleAddAssessmentNoteModal = () => {
+    let current = this.state.showAddAssessmentNoteModal;
     this.setState({
-      showAddReportingNoteModal: !current,
+      showAddAssessmentNoteModal: !current,
     });
   };
 
@@ -26,13 +26,13 @@ class AddReportingNote extends React.Component {
     this.setState({ [event.target.id]: event.target.value });
   };
 
-  addReportingNote = () => {
+  AddAssessmentNote = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/histories', {
           patient_id: this.props.patient.id,
-          comment: 'User left a note for a report (ID: ' + this.props.report.id + '). Note is: ' + this.state.comment,
+          comment: 'User left a note for a report (ID: ' + this.props.assessment.id + '). Note is: ' + this.state.comment,
           type: 'Report Note',
         })
         .then(() => {
@@ -51,7 +51,7 @@ class AddReportingNote extends React.Component {
           <Modal.Title>Add Note To Report</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Please enter your note about the report (ID: {this.props.report.id}) below.</p>
+          <p>Please enter your note about the report (ID: {this.props.assessment.id}) below.</p>
           <Form.Group>
             <Form.Control as="textarea" rows="2" id="comment" onChange={this.handleChange} aria-label="Enter Assessment Note Text Area" />
           </Form.Group>
@@ -76,19 +76,19 @@ class AddReportingNote extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button variant="link" onClick={this.toggleAddReportingNoteModal} className="dropdown-item">
+        <Button variant="link" onClick={this.toggleAddAssessmentNoteModal} className="dropdown-item">
           <i className="fas fa-comment-medical fa-fw"></i> Add Note
         </Button>
-        {this.state.showAddReportingNoteModal && this.createModal(this.toggleAddReportingNoteModal, this.addReportingNote)}
+        {this.state.showAddAssessmentNoteModal && this.createModal(this.toggleAddAssessmentNoteModal, this.AddAssessmentNote)}
       </React.Fragment>
     );
   }
 }
 
-AddReportingNote.propTypes = {
+AddAssessmentNote.propTypes = {
   authenticity_token: PropTypes.string,
-  report: PropTypes.object,
+  assessment: PropTypes.object,
   patient: PropTypes.object,
 };
 
-export default AddReportingNote;
+export default AddAssessmentNote;
