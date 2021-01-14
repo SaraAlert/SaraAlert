@@ -16,7 +16,7 @@ class Assessment < ApplicationRecord
   belongs_to :patient
 
   after_save :update_patient_linelist_after_save
-  before_destroy :update_patient_linelist_before_destroy
+  after_destroy :update_patient_linelist_after_destroy
 
   # Assessments created in the last hour that are symptomatic
   scope :symptomatic_last_hour, lambda {
@@ -193,7 +193,7 @@ class Assessment < ApplicationRecord
     end
   end
 
-  def update_patient_linelist_before_destroy
+  def update_patient_linelist_after_destroy
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
     if patient.user_defined_symptom_onset.present? && !patient.symptom_onset.nil?
       patient.update(
