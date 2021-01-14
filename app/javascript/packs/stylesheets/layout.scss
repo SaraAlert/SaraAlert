@@ -31,8 +31,25 @@
   font-size: 20px !important;
 }
 
-.jurisdiction-user-box {
-  float: right;
-  background-color: #e9ecef;
-  padding: 3px 8px;
+@media (max-width: 767px) {
+  .jurisdiction-user-box {
+    float: left;
+    background-color: #e9ecef;
+    padding: 3px 8px;
+    margin-top: 15px;
+    margin-left: 15px;
+    margin-bottom: 15px;
+    min-width: 20rem;
+  }
 }
+
+
+@media (min-width: 768px) {
+  .jurisdiction-user-box {
+    float: right;
+    background-color: #e9ecef;
+    padding: 3px 8px;
+    min-width: 20rem;
+  }
+}
+
