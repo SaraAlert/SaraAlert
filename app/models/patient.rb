@@ -512,7 +512,7 @@ class Patient < ApplicationRecord
                     "WHEN exposure_risk_assessment='Medium' THEN 2",
                     "WHEN exposure_risk_assessment='Low' THEN 1",
                     "WHEN exposure_risk_assessment='No Identified Risk' THEN 0"]
-    order((['CASE'] + (asc ? order_by : order_by_rev) + ['END']).join(' '))
+    order(Arel.sql((['CASE'] + (asc ? order_by : order_by_rev) + ['END']).join(' ')))
   end
 
   # Check for potential duplicate records. Duplicate criteria is as follows:
