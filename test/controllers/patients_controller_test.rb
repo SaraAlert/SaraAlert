@@ -252,7 +252,8 @@ class PatientsControllerTest < ActionController::TestCase
     assert_not patient.monitoring
     assert_not_nil patient.closed_at
     assert_equal false, patient.continuous_exposure
-    assert_match /"Monitoring" to "Not Monitoring"/, History.find_by(patient: patient).comment
+    assert_match /"Monitoring" to "Not Monitoring"/, History.find_by(patient: patient, created_by: user.email).comment
+    assert_match /System turned off Continuous Exposure/, History.find_by(patient: patient, created_by: 'Sara Alert System').comment
   end
 
   test 'update status for a patient with dependents and apply to household' do 

@@ -123,17 +123,16 @@ class Fhir::R4::ApiController < ActionController::API
       status_unprocessable_entity && return if request_updates.nil?
 
       # Get any additional updates that may need to occur based on initial changes
-      all_updates = patient.get_updates_from_monitoring_changes(request_updates)
 
       # Assign any remaining updates to the patient
       # NOTE: The patient.update method does not allow a context to be passed, so first we assign the updates, then save
-      patient.assign_attributes(all_updates)
+      patient.assign_attributes(request_updates)
       # Verify that the updated jurisdiction and other updates are valid
       unless jurisdiction_valid_for_client?(patient) && patient.save(context: :api)
         status_unprocessable_entity(format_model_validation_errors(patient)) && return
       end
       # If the jurisdiction was changed, create a Transfer
-      if all_updates&.keys&.include?(:jurisdiction_id) && !all_updates[:jurisdiction_id].nil?
+      if request_updates&.keys&.include?(:jurisdiction_id) && !request_updates[:jurisdiction_id].nil?
         Transfer.create(patient: patient, from_jurisdiction: patient_before[:jurisdiction], to_jurisdiction: patient.jurisdiction, who: @current_actor)
       end
 
