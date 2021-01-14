@@ -709,7 +709,7 @@ class AdminTable extends React.Component {
             prompt={'Enter the message to send to all unlocked users:'}
           />
         )}
-        <ToastContainer />
+        <ToastContainer position="top-center" autoClose={2000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
       </div>
     );
   }

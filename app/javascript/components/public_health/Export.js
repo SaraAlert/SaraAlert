@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { ButtonGroup, DropdownButton, Dropdown } from 'react-bootstrap';
 
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -39,9 +39,7 @@ class Export extends React.Component {
       url: window.BASE_PATH + endpoint,
     })
       .then(() => {
-        toast.success('Export has been initiated!', {
-          containerId: 'exports',
-        });
+        toast.success('Export has been initiated!');
         this.setState({
           showCSVModal: false,
           showSaraFormatModal: false,
@@ -121,16 +119,6 @@ class Export extends React.Component {
             onStartExport={this.submit}
           />
         )}
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          enableMultiContainer
-          containerId={'exports'}
-          closeOnClick
-          pauseOnVisibilityChange
-          draggable
-          pauseOnHover
-        />
         {this.state.showCustomFormatModal && (
           <CustomExport
             authenticity_token={this.props.authenticity_token}

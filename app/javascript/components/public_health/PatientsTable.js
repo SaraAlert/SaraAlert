@@ -17,6 +17,7 @@ import {
   Tooltip,
   Row,
 } from 'react-bootstrap';
+import { ToastContainer } from 'react-toastify';
 
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -576,6 +577,7 @@ class PatientsTable extends React.Component {
             />
           )}
         </Modal>
+        <ToastContainer position="top-center" autoClose={2000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
       </div>
     );
   }

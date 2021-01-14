@@ -4,7 +4,7 @@ import { Button, ButtonGroup, ToggleButton, Row, Col, Form, Modal, OverlayTrigge
 
 import Select, { components } from 'react-select';
 import ReactTooltip from 'react-tooltip';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import moment from 'moment-timezone';
 
@@ -1052,7 +1052,6 @@ class AdvancedFilter extends React.Component {
             })}
           </Dropdown.Menu>
         </Dropdown>
-        <ToastContainer position="top-center" autoClose={2000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
       </React.Fragment>
     );
   }
