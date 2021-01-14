@@ -1,15 +1,15 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Button, Card, Form } from 'react-bootstrap';
-import SymptomsReport from '../../../components/patient/report/SymptomsReport.js'
-import { mockReport1, mockReport2 } from '../../mocks/mockReports.js';
+import SymptomsAssessment from '../../../components/assessment/steps/SymptomsAssessment.js'
+import { mockAssessment1, mockAssessment2 } from '../../mocks/mockAssessments.js';
 import { mockNewSymptoms, mockSymptoms1, mockSymptoms2 } from '../../mocks/mockSymptoms.js';
 import { mockTranslations } from '../../mocks/mockTranslations'
 
 const submitMock = jest.fn();
 
-function getWrapper(report, symptoms, idPre) {
-  return shallow(<SymptomsReport report={report} symptoms={symptoms} patient_initials={'AA'} patient_age={39} lang={'en'}
+function getWrapper(assessment, symptoms, idPre) {
+  return shallow(<SymptomsAssessment assessment={assessment} symptoms={symptoms} patient_initials={'AA'} patient_age={39} lang={'en'}
     translations={mockTranslations} submit={submitMock} idPre={idPre} />);
 };
 
@@ -17,7 +17,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe('SymptomsReport', () => {
+describe('SymptomsAssessment', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
     expect(wrapper.find(Card.Header).exists()).toBeTruthy();
@@ -42,7 +42,7 @@ describe('SymptomsReport', () => {
   });
 
   it('Properly renders checked bool symptoms when editing a report', () => {
-    const wrapper = getWrapper(mockReport1, mockSymptoms1, '777');
+    const wrapper = getWrapper(mockAssessment1, mockSymptoms1, '777');
     const boolSymptoms = mockSymptoms1.filter(x => { return x.type === 'BoolSymptom'; }).sort((a, b) => {return a?.name?.localeCompare(b?.name); });
     boolSymptoms.forEach(function(symp, index) {
       expect(wrapper.find(Form.Check).at(index).prop('checked')).toEqual(symp.value);
@@ -54,7 +54,7 @@ describe('SymptomsReport', () => {
   });
 
   it('Properly renders float symptom values when editing a report', () => {
-    const wrapper = getWrapper(mockReport2, mockSymptoms2, '777');
+    const wrapper = getWrapper(mockAssessment2, mockSymptoms2, '777');
     const checkboxes = wrapper.find(Form.Check);
     checkboxes.forEach(cb => {
       expect(cb.prop('checked')).toBeFalsy();
@@ -129,14 +129,14 @@ describe('SymptomsReport', () => {
   });
 
   it('Clicking the submit button calls props.submit when editing a report with no new changes', () => {
-    const wrapper = getWrapper(mockReport1, mockSymptoms1, '777');
+    const wrapper = getWrapper(mockAssessment1, mockSymptoms1, '777');
     expect(submitMock).toHaveBeenCalledTimes(0);
     wrapper.find(Button).simulate('click');
     expect(submitMock).toHaveBeenCalled();
   });
 
   it('Clicking the submit button calls navigate but not submit when editing a report with no new changes', () => {
-    const wrapper = getWrapper(mockReport1, mockSymptoms1, '777');
+    const wrapper = getWrapper(mockAssessment1, mockSymptoms1, '777');
     const navigateSpy = jest.spyOn(wrapper.instance(), 'navigate');
     const handleSubmitSpy = jest.spyOn(wrapper.instance(), 'handleSubmit');
     const checkbox = wrapper.find(Form.Check).at(7);
