@@ -1,16 +1,16 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Button, Modal } from 'react-bootstrap';
-import ClearReports from '../../../components/patient/report/ClearReports.js'
+import ClearAssessments from '../../../components/assessment/steps/ClearAssessments.js'
 import { mockPatient1, mockPatient2 } from '../../mocks/mockPatients'
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 
 function getWrapper(patient) {
-    return shallow(<ClearReports patient={patient} authenticity_token={authyToken} />);
+    return shallow(<ClearAssessments patient={patient} authenticity_token={authyToken} />);
 }
 
-describe('ClearReports', () => {
+describe('ClearAssessments', () => {
   it('Properly renders "Mark All As Reviewed" button', () => {
     const wrapper = getWrapper(mockPatient1);
     expect(wrapper.find(Button).length).toEqual(1);
@@ -63,13 +63,13 @@ describe('ClearReports', () => {
     expect(wrapper.state('reasoning')).toEqual('insert reasoning text here');
   });
 
-  it('Clicking the modal submit button calls the clearReports function', () => {
+  it('Clicking the modal submit button calls the ClearAssessments function', () => {
     const wrapper = getWrapper(mockPatient1);
-    const handleClearReportsSpy = jest.spyOn(wrapper.instance(), 'clearReports');
+    const handleClearAssessmentsSpy = jest.spyOn(wrapper.instance(), 'ClearAssessments');
     wrapper.find(Button).simulate('click');
-    expect(handleClearReportsSpy).toHaveBeenCalledTimes(0);
+    expect(handleClearAssessmentsSpy).toHaveBeenCalledTimes(0);
     wrapper.find(Button).at(2).simulate('click');
-    expect(handleClearReportsSpy).toHaveBeenCalledTimes(1);
+    expect(handleClearAssessmentsSpy).toHaveBeenCalledTimes(1);
   });
 
   it('Clicking the modal cancel button closes the modal', () => {

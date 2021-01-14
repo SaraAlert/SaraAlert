@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card, Form } from 'react-bootstrap';
 
-class ReportCompleted extends React.Component {
+class AssessmentCompleted extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -60,10 +60,10 @@ class ReportCompleted extends React.Component {
   }
 }
 
-ReportCompleted.propTypes = {
+AssessmentCompleted.propTypes = {
   contact_info: PropTypes.object,
   translations: PropTypes.object,
   lang: PropTypes.string,
 };
 
-export default ReportCompleted;
+export default AssessmentCompleted;
