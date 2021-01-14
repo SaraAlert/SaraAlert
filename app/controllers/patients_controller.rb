@@ -238,14 +238,9 @@ class PatientsController < ApplicationController
       end
     end
 
-    # Reset symptom onset date if moving from isolation to exposure
-    patient.add_updates_from_isolation_change(content, content[:isolation]) if !content[:isolation].nil?
-
     # Update patient history with detailed edit diff
     patient_before = patient.dup
     Patient.detailed_history_edit(patient_before, patient, allowed_params&.keys, current_user.email) if patient.update(content)
-    # Add a history update for any changes from moving from isolation to exposure
-    patient.update_patient_history_for_isolation(patient_before, content[:isolation]) if !content[:isolation].nil?
     
     render json: patient
   end
@@ -378,13 +373,12 @@ class PatientsController < ApplicationController
     patient_before = patient.dup
 
     # Get any additional updates that may need to occur based on initial changes
-    all_updates = patient.get_updates_from_monitoring_changes(updates)
 
     # Apply and save updates to the db
-    patient.update(all_updates)
+    patient.update(updates)
 
     # If the jurisdiction was changed, create a Transfer
-    if all_updates&.keys&.include?(:jurisdiction_id) && !all_updates[:jurisdiction_id].nil?
+    if updates&.keys&.include?(:jurisdiction_id) && !updates[:jurisdiction_id].nil?
       Transfer.create(patient: patient, from_jurisdiction: patient_before.jurisdiction, to_jurisdiction: patient.jurisdiction, who: current_user)
     end
 
