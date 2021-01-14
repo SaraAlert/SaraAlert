@@ -153,11 +153,11 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     when 'name'
       patients = patients.order(last_name: dir).order(first_name: dir)
     when 'jurisdiction'
-      patients = patients.includes(:jurisdiction).order(Arel.sql('jurisdictions.name ' + dir))
+      patients = patients.includes(:jurisdiction).order('jurisdictions.name ' + dir)
     when 'transferred_from'
-      patients = patients.joins('INNER JOIN jurisdictions ON jurisdictions.id = patients.latest_transfer_from').order(Arel.sql('jurisdictions.path ' + dir))
+      patients = patients.joins('INNER JOIN jurisdictions ON jurisdictions.id = patients.latest_transfer_from').order('jurisdictions.path ' + dir)
     when 'transferred_to'
-      patients = patients.includes(:jurisdiction).order(Arel.sql('jurisdictions.path ' + dir))
+      patients = patients.includes(:jurisdiction).order('jurisdictions.path ' + dir)
     when 'assigned_user'
       patients = patients.order(Arel.sql('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + dir))
     when 'state_local_id'
