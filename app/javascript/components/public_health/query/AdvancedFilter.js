@@ -283,12 +283,10 @@ class AdvancedFilter extends React.Component {
   cancel = () => {
     // check if there was a filter applied
     const appliedFilterId = localStorage.getItem(`SaraFilter`);
-    const appliedFilter = this.state.savedFilters.find(filter => {
-      return filter.id === parseInt(appliedFilterId);
-    });
+    const appliedFilter = this.state.savedFilters.find(filter => filter.id === parseInt(appliedFilterId));
 
     // update state accordingly
-    const applied = appliedFilterId;
+    const applied = !!appliedFilterId;
     const activeFilter = applied ? appliedFilter : null;
     const activeFilterOptions = applied ? appliedFilter.contents : [];
     this.setState({ show: false, applied, activeFilter, activeFilterOptions }, () => {
