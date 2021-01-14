@@ -1,7 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
-import { ToastContainer } from 'react-toastify';
 import Export from '../../components/public_health/Export.js'
 import ConfirmExport from '../../components/public_health/ConfirmExport.js'
 import CustomExport from '../../components/public_health/CustomExport.js'
@@ -35,7 +34,6 @@ describe('Export', () => {
     expect(wrapper.find(Dropdown.Item).length).toEqual(5);
     expect(wrapper.find(Dropdown.Divider).length).toEqual(1);
     expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
-    expect(wrapper.find(ToastContainer).exists()).toBeTruthy();
     expect(wrapper.find(CustomExport).exists()).toBeFalsy();
   });
 
