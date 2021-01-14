@@ -1,3 +1,5 @@
+Please title your PR like `SARAALERT-<Jira number>: <title>`, and include all numbers if the PR covers more than one, e.g. `SARAALERT-1, SARAALERT-2: <title>`. If the PR is not related to a Jira task, just give it a descriptive title.
+
 # Description
 Jira Ticket: SARAALERT-###
 
