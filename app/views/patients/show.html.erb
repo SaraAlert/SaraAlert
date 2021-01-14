@@ -146,7 +146,7 @@
 <% end %>
 
 <% if current_user.can_modify_subject_status? %>
-<%= react_component('history/HistoryComponent', { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token, history_types: @history_types }) %>
+<%= react_component('history/HistoryComponent', { patient_id: @patient.id, histories: @patient.histories.order(created_at: :desc), authenticity_token: form_authenticity_token, history_types: @history_types }) %>
 <% end %>
 
 <script>
