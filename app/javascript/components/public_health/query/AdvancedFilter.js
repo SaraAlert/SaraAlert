@@ -217,9 +217,12 @@ class AdvancedFilter extends React.Component {
       this.add();
     }
 
+    // Set a timestamp to include in url to ensure browser cache is not re-used on page navigation
+    const timestamp = `?t=${new Date().getTime()}`;
+
     // Grab saved filters
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios.get(window.BASE_PATH + '/user_filters').then(response => {
+    axios.get(window.BASE_PATH + '/user_filters' + timestamp).then(response => {
       this.setState({ savedFilters: response.data }, () => {
         // Apply filter if it exists in local storage
         let sessionFilter = localStorage.getItem(`SaraFilter`);
