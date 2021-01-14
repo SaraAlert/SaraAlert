@@ -78,20 +78,22 @@ class Patient extends React.Component {
               {this.props?.dependents && this.props?.dependents?.length > 0 && <BadgeHOH patientId={String(this.props.details.id)} location={'right'} />}
             </div>
           </Col>
-          <Col md="auto" className="jurisdiction-user-box mr-3">
-            <Row id="jurisdiction-path">
-              <Col>
-                <b>Assigned Jurisdiction:</b> {this.props.jurisdiction_path || '--'}
-              </Col>
-            </Row>
-            <Row id="assigned-user">
-              <Col>
-                <b>Assigned User:</b> {this.props.details.assigned_user || '--'}
-              </Col>
-            </Row>
+          <Col md="auto">
+            <div className="jurisdiction-user-box">
+              <Row id="jurisdiction-path">
+                <Col>
+                  <b>Assigned Jurisdiction:</b> {this.props.jurisdiction_path || '--'}
+                </Col>
+              </Row>
+              <Row id="assigned-user">
+                <Col>
+                  <b>Assigned User:</b> {this.props.details.assigned_user || '--'}
+                </Col>
+              </Row>
+            </div>
           </Col>
         </Row>
-        <Row className="pt-4 mx-1 mb-2">
+        <Row className="pt-md-4 mx-1 mb-2">
           <Col id="identification" md="12">
             <Row>
               <Col>
