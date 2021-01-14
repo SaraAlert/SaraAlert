@@ -502,17 +502,26 @@ class Patient < ApplicationRecord
 
   # Order individuals based on their public health assigned risk assessment
   def self.order_by_risk(asc: true)
-    order_by = ["WHEN exposure_risk_assessment='High' THEN 0",
-                "WHEN exposure_risk_assessment='Medium' THEN 1",
-                "WHEN exposure_risk_assessment='Low' THEN 2",
-                "WHEN exposure_risk_assessment='No Identified Risk' THEN 3",
-                'WHEN exposure_risk_assessment IS NULL THEN 4']
-    order_by_rev = ['WHEN exposure_risk_assessment IS NULL THEN 4',
-                    "WHEN exposure_risk_assessment='High' THEN 3",
-                    "WHEN exposure_risk_assessment='Medium' THEN 2",
-                    "WHEN exposure_risk_assessment='Low' THEN 1",
-                    "WHEN exposure_risk_assessment='No Identified Risk' THEN 0"]
-    order(Arel.sql((['CASE'] + (asc ? order_by : order_by_rev) + ['END']).join(' ')))
+    order_by = <<~SQL
+      CASE
+      WHEN exposure_risk_assessment='High' THEN 0
+      WHEN exposure_risk_assessment='Medium' THEN 1
+      WHEN exposure_risk_assessment='Low' THEN 2
+      WHEN exposure_risk_assessment='No Identified Risk' THEN 3
+      WHEN exposure_risk_assessment IS NULL THEN 4
+      END
+    SQL
+
+    order_by_rev = <<~SQL
+      CASE
+      WHEN exposure_risk_assessment IS NULL THEN 4
+      WHEN exposure_risk_assessment='High' THEN 3
+      WHEN exposure_risk_assessment='Medium' THEN 2
+      WHEN exposure_risk_assessment='Low' THEN 1
+      WHEN exposure_risk_assessment='No Identified Risk' THEN 0
+      END
+    SQL
+    order(Arel.sql(asc ? order_by : order_by_rev))
   end
 
   # Check for potential duplicate records. Duplicate criteria is as follows:
