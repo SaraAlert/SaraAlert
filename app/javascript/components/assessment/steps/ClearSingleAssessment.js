@@ -5,19 +5,19 @@ import axios from 'axios';
 
 import reportError from '../../util/ReportError';
 
-class ClearReports extends React.Component {
+class ClearSingleAssessment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showClearReportsModal: false,
+      showClearAssessmentModal: false,
       loading: false,
     };
   }
 
-  toggleClearReportsModal = () => {
-    let current = this.state.showClearReportsModal;
+  toggleClearAssessmentModal = () => {
+    let current = this.state.showClearAssessmentModal;
     this.setState({
-      showClearReportsModal: !current,
+      showClearAssessmentModal: !current,
     });
   };
 
@@ -25,11 +25,11 @@ class ClearReports extends React.Component {
     this.setState({ [event.target.id]: event.target.value });
   };
 
-  clearReports = () => {
+  clearReport = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status/clear', {
+        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status/clear/' + this.props.assessment_id, {
           reasoning: this.state.reasoning,
         })
         .then(() => {
@@ -45,22 +45,22 @@ class ClearReports extends React.Component {
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
-          <Modal.Title>Mark All As Reviewed</Modal.Title>
+          <Modal.Title>Mark as Reviewed</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {!this.props.patient.isolation && (
             <p>
-              You are about to clear all symptomatic report flags (red highlight) on this record. This indicates that the disease of interest is not suspected
-              after review of all of the monitoree&apos;s symptomatic reports. The &quot;Needs Review&quot; status will be changed to &quot;No&quot; for all
-              reports. The record will move from the symptomatic line list to the asymptomatic or non-reporting line list as appropriate
-              <b> unless a symptom onset date has been entered by a user.</b>
+              You are about to clear the symptomatic report flag (red highlight) on this record. This indicates that the disease of interest is not suspected
+              after review of this symptomatic report. The &quot;Needs Review&quot; status will be changed to &quot;No&quot; for this report. The record will
+              move from the symptomatic line list to the asymptomatic or non-reporting line list as appropriate{' '}
+              <b>unless another symptomatic report is present in the reports table or a symptom onset date has been entered by a user.</b>
             </p>
           )}
           {this.props.patient.isolation && (
             <p>
-              This will change any reports where the &quot;Needs Review&quot; column is &quot;Yes&quot; to &quot;No&quot;. If this case is currently under the
-              &quot;Records Requiring Review&quot; line list, they will be moved to the &quot;Reporting&quot; or &quot;Non-Reporting&quot; line list as
-              appropriate until a recovery definition is met.
+              This will change the selected report&apos;s &quot;Needs Review&quot; column from &quot;Yes&quot; to &quot;No&quot;. If this case is currently
+              under the &quot;Records Requiring Review&quot; line list, they will be moved to the &quot;Reporting&quot; or &quot;Non-Reporting&quot; line list
+              as appropriate until a recovery definition is met.
             </p>
           )}
           <Form.Group>
@@ -88,18 +88,19 @@ class ClearReports extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button onClick={this.toggleClearReportsModal} className="mr-2">
-          <i className="fas fa-check"></i> Mark All As Reviewed
+        <Button variant="link" onClick={this.toggleClearAssessmentModal} className="dropdown-item">
+          <i className="fas fa-check fa-fw"></i> Review
         </Button>
-        {this.state.showClearReportsModal && this.createModal(this.toggleClearReportsModal, this.clearReports)}
+        {this.state.showClearAssessmentModal && this.createModal(this.toggleClearAssessmentModal, this.clearReport)}
       </React.Fragment>
     );
   }
 }
 
-ClearReports.propTypes = {
+ClearSingleAssessment.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
+  assessment_id: PropTypes.number,
 };
 
-export default ClearReports;
+export default ClearSingleAssessment;

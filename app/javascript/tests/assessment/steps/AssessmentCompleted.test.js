@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Card, Form } from 'react-bootstrap';
-import ReportCompleted from '../../../components/patient/report/ReportCompleted.js'
+import AssessmentCompleted from '../../../components/assessment/steps/AssessmentCompleted.js'
 import { mockTranslations } from '../../mocks/mockTranslations'
 
 const contact = {
@@ -11,10 +11,10 @@ const contact = {
 }
 
 function getWrapper(language, contactInfo) {
-  return shallow(<ReportCompleted lang={language} translations={mockTranslations} contact_info={contactInfo} />);
+  return shallow(<AssessmentCompleted lang={language} translations={mockTranslations} contact_info={contactInfo} />);
 }
 
-describe('ReportCompleted', () => {
+describe('AssessmentCompleted', () => {
   it('Properly renders all main components in English', () => {
     const language = 'en';
     const wrapper = getWrapper(language, contact);

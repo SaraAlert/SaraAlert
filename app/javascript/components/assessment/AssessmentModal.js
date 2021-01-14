@@ -1,9 +1,9 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import Report from './Report';
+import Assessment from './Assessment';
 
-class ReportModal extends React.Component {
+class AssessmentModal extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -13,9 +13,9 @@ class ReportModal extends React.Component {
       <Modal show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
         <Modal.Header closeButton></Modal.Header>
         <Modal.Body>
-          <Report
+          <Assessment
             current_user={this.props.current_user}
-            report={this.props.report}
+            assessment={this.props.assessment}
             threshold_hash={this.props.threshold_condition_hash}
             symptoms={this.props.symptoms}
             idPre={this.props.idPre}
@@ -35,11 +35,11 @@ class ReportModal extends React.Component {
   }
 }
 
-ReportModal.propTypes = {
+AssessmentModal.propTypes = {
   show: PropTypes.bool,
   onClose: PropTypes.func,
   current_user: PropTypes.object,
-  report: PropTypes.object,
+  assessment: PropTypes.object,
   symptoms: PropTypes.array,
   translations: PropTypes.object,
   patient: PropTypes.object,
@@ -51,4 +51,4 @@ ReportModal.propTypes = {
   authenticity_token: PropTypes.string,
 };
 
-export default ReportModal;
+export default AssessmentModal;
