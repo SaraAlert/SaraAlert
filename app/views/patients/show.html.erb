@@ -31,7 +31,7 @@
                         patient: @patient,
                         jurisdiction_paths: @possible_jurisdiction_paths,
                         assigned_users: @patient.jurisdiction.assigned_users,
-                        monitoring_reasons: Patient::MONITORING_REASONS
+                        monitoring_reasons: ValidationHelper::USER_SELECTABLE_MONITORING_REASONS
                       }) %>
 </div>
 <% end %>
