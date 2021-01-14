@@ -72,6 +72,28 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
 
   VALID_STATES = STATE_ABBREVIATIONS.values
 
+  USER_SELECTABLE_MONITORING_REASONS = [
+    'Completed Monitoring',
+    'Meets criteria to shorten quarantine',
+    'Does not meet criteria for monitoring',
+    'Meets Case Definition',
+    'Lost to follow-up during monitoring period',
+    'Lost to follow-up (contact never established)',
+    'Transferred to another jurisdiction',
+    'Person Under Investigation (PUI)',
+    'Case confirmed',
+    'Past monitoring period',
+    'Meets criteria to discontinue isolation',
+    'Deceased',
+    'Duplicate',
+    'Other'
+  ].freeze
+
+  SYSTEM_SELECTABLE_MONITORING_REASONS = [
+    'Enrolled more than 14 days after last date of exposure (system)', 'Enrolled more than 10 days after last date of exposure (system)',
+    'Enrolled on last day of monitoring period (system)', 'Completed Monitoring (system)', '', nil
+  ].freeze
+
   VALID_PATIENT_ENUMS = {
     gender_identity: ['Male (Identifies as male)', 'Female (Identifies as female)', 'Transgender Male (Female-to-Male [FTM])',
                       'Transgender Female (Male-to-Female [MTF]', 'Genderqueer / gender nonconforming (neither exclusively male nor female)', 'Another',
@@ -84,12 +106,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     preferred_contact_time: %w[Morning Afternoon Evening],
     additional_planned_travel_type: %w[Domestic International],
     exposure_risk_assessment: ['High', 'Medium', 'Low', 'No Identified Risk', '', nil],
-    monitoring_reason: ['Completed Monitoring', 'Meets criteria to shorten quarantine', 'Does not meet criteria for monitoring',
-                        'Enrolled more than 14 days after last date of exposure (system)', 'Enrolled more than 10 days after last date of exposure (system)',
-                        'Enrolled on last day of monitoring period (system)', 'Completed Monitoring (system)', 'Meets Case Definition',
-                        'Lost to follow-up during monitoring period', 'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
-                        'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period', 'Meets criteria to discontinue isolation',
-                        'Deceased', 'Duplicate', 'Other', '', nil],
+    monitoring_reason: USER_SELECTABLE_MONITORING_REASONS + SYSTEM_SELECTABLE_MONITORING_REASONS,
     monitoring_plan: ['None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision',
                       'Self-observation', '', nil],
     case_status: ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'],
