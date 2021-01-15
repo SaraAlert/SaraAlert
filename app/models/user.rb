@@ -83,6 +83,17 @@ class User < ApplicationRecord
     end
   end
 
+  # Get jurisdictions that the user can transfer patients into
+  def get_jurisdictions_for_transfer
+    if can_transfer_patients?
+      # Allow all jurisdictions as valid transfer options.
+      Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
+      else
+      # Otherwise, only show jurisdictions within hierarchy.
+      Hash[jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }]
+    end
+  end
+
   # Allow information on the user's jurisdiction to be displayed
   def jurisdiction_path
     jurisdiction&.path&.map(&:name)

@@ -1114,8 +1114,40 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
+  test 'SYSTEM FLOW: should allow jurisdiction transfers when jurisdiction exists' do
     @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA, State 2'
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :success
+    json_response = JSON.parse(response.body)
+    assert_equal 'USA, State 2', json_response['extension'].filter { |e| e['url'].include? 'full-assigned-jurisdiction-path'}.first['valueString']
+    t = Transfer.find_by(patient_id: @patient_1.id)
+    assert_equal Jurisdiction.find_by(path: 'USA, State 1').id, t.from_jurisdiction_id
+    assert_equal Jurisdiction.find_by(path: 'USA, State 2').id, t.to_jurisdiction_id
+    assert_equal @system_patient_read_write_app.user_id, t.who_id
+  end
+
+  test 'USER FLOW: should allow jurisdiction transfers when jurisdiction exists' do
+    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA, State 2'
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :success
+    json_response = JSON.parse(response.body)
+    assert_equal 'USA, State 2', json_response['extension'].filter { |e| e['url'].include? 'full-assigned-jurisdiction-path'}.first['valueString']
+    t = Transfer.find_by(patient_id: @patient_1.id)
+    assert_equal Jurisdiction.find_by(path: 'USA, State 1').id, t.from_jurisdiction_id
+    assert_equal Jurisdiction.find_by(path: 'USA, State 2').id, t.to_jurisdiction_id
+    assert_equal @user.id, t.who_id
+  end
+
+  test 'SYSTEM FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
+    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA'
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
@@ -1124,11 +1156,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['issue'].length
-    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction must be within'))
+    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction does not exist'))
   end
 
   test 'USER FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
-    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA, State 2'
+    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA'
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
@@ -1137,7 +1169,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['issue'].length
-    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction must be within'))
+    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction does not exist'))
   end
 
   test 'should update Patient via patch update' do
