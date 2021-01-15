@@ -225,6 +225,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   def self.info_fields
     %i[
+      isolation
       first_name
       middle_name
       last_name
