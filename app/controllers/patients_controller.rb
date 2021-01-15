@@ -24,13 +24,7 @@ class PatientsController < ApplicationController
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
 
-    @possible_jurisdiction_paths = if current_user.can_transfer_patients?
-                                     # Allow all jurisdictions as valid transfer options.
-                                     Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
-                                   else
-                                     # Otherwise, only show jurisdictions within hierarchy.
-                                     Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }]
-                                   end
+    @possible_jurisdiction_paths = current_user.get_jurisdictions_for_transfer
 
     # Household members (dependents) for the HOH excluding HOH
     @dependents_exclude_hoh = @patient.dependents_exclude_self.where(purged: false)
