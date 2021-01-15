@@ -240,7 +240,7 @@ class PatientsControllerTest < ActionController::TestCase
   test 'update status for a patient with no dependents' do
     user = create(:public_health_enroller_user)
     sign_in user
-    patient = create(:patient, creator: user, monitoring: true)
+    patient = create(:patient, creator: user, monitoring: true, continuous_exposure: true)
 
     post :update_status, params: {
       id: patient.id,
@@ -252,11 +252,11 @@ class PatientsControllerTest < ActionController::TestCase
     assert_not patient.monitoring
     assert_not_nil patient.closed_at
     assert_equal false, patient.continuous_exposure
-    assert_match /"Monitoring" to "Not Monitoring"/, History.find_by(patient: patient, created_by: user.email).comment
-    assert_match /System turned off Continuous Exposure/, History.find_by(patient: patient, created_by: 'Sara Alert System').comment
+    assert_match(/"Monitoring" to "Not Monitoring"/, History.find_by(patient: patient, created_by: user.email).comment)
+    assert_match(/System turned off Continuous Exposure/, History.find_by(patient: patient, created_by: 'Sara Alert System').comment)
   end
 
-  test 'update status for a patient with dependents and apply to household' do 
+  test 'update status for a patient with dependents and apply to household' do
     user = create(:public_health_enroller_user)
     sign_in user
     hoh_patient = create(:patient, creator: user, monitoring: true)
@@ -276,7 +276,7 @@ class PatientsControllerTest < ActionController::TestCase
     assert_not dependent_patient.monitoring
   end
 
-  test 'update status for a patient with dependents and apply to continuous exposure household' do 
+  test 'update status for a patient with dependents and apply to continuous exposure household' do
     user = create(:public_health_enroller_user)
     sign_in user
     hoh_patient = create(:patient, creator: user, monitoring: true)
@@ -330,7 +330,7 @@ class PatientsControllerTest < ActionController::TestCase
   test 'update status when jurisdiction changes' do
     user = create(:public_health_enroller_user)
     sign_in user
-    new_jurisdiction = create(:jurisdiction, path: "Bar")
+    new_jurisdiction = create(:jurisdiction, path: 'Bar')
     patient = create(:patient, creator: user, monitoring: true)
     old_jurisdiction = patient.jurisdiction
 
@@ -338,7 +338,7 @@ class PatientsControllerTest < ActionController::TestCase
       id: patient.id,
       patient: { jurisdiction_id: new_jurisdiction.id }
     }, as: :json
-    
+
     assert_response :success
     patient.reload
     assert_equal new_jurisdiction.id, patient.jurisdiction_id
@@ -346,6 +346,6 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal old_jurisdiction.id, t.from_jurisdiction_id
     assert_equal new_jurisdiction.id, t.to_jurisdiction_id
     assert_equal user.id, t.who_id
-    assert_match /blank to "Bar"/, History.find_by(patient: patient).comment
+    assert_match(/blank to "Bar"/, History.find_by(patient: patient).comment)
   end
 end

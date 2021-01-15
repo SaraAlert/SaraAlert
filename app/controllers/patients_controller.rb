@@ -24,7 +24,7 @@ class PatientsController < ApplicationController
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
 
-    @possible_jurisdiction_paths = current_user.get_jurisdictions_for_transfer
+    @possible_jurisdiction_paths = current_user.jurisdictions_for_transfer
 
     # Household members (dependents) for the HOH excluding HOH
     @dependents_exclude_hoh = @patient.dependents_exclude_self.where(purged: false)
@@ -235,7 +235,10 @@ class PatientsController < ApplicationController
     # Update patient history with detailed edit diff
     patient_before = patient.dup
     Patient.detailed_history_edit(patient_before, patient, allowed_params&.keys, current_user.email) if patient.update(content)
-    
+
+    # Add a history update for any changes from moving from isolation to exposure
+    patient.update_patient_history_for_isolation(patient_before, content[:isolation]) unless content[:isolation].nil?
+
     render json: patient
   end
 
@@ -314,7 +317,8 @@ class PatientsController < ApplicationController
     patients = current_user.get_patients(patient_ids)
 
     patients.each do |patient|
-      update_monitoring_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent, params[:apply_to_household] ? :group : :none)
+      update_monitoring_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
+                               params[:apply_to_household] ? :group : :none)
     end
   end
 
@@ -366,8 +370,6 @@ class PatientsController < ApplicationController
 
     patient_before = patient.dup
 
-    # Get any additional updates that may need to occur based on initial changes
-
     # Apply and save updates to the db
     patient.update(updates)
 
@@ -387,9 +389,7 @@ class PatientsController < ApplicationController
       reason: params[:reasoning]
     }
 
-    # NOTE: We use updates rather than all updates here because we want to determine what History
-    # messages are needed based on the original changes
-    patient.update_patient_monitoring_history(updates, patient_before, history_data, diff_state)
+    patient.monitoring_history_edit(history_data, diff_state)
   end
 
   def clear_assessments
