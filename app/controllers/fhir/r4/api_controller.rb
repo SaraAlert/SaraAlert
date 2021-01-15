@@ -115,14 +115,12 @@ class Fhir::R4::ApiController < ActionController::API
         end
       end
 
-      # Get patient values before updates occur for later comparison 
+      # Get patient values before updates occur for later comparison
       patient_before = patient.dup
 
       # Get key value pairs from the update.
       request_updates = patient_from_fhir(contents, default_patient_jurisdiction_id)
       status_unprocessable_entity && return if request_updates.nil?
-
-      # Get any additional updates that may need to occur based on initial changes
 
       # Assign any remaining updates to the patient
       # NOTE: The patient.update method does not allow a context to be passed, so first we assign the updates, then save
@@ -131,14 +129,13 @@ class Fhir::R4::ApiController < ActionController::API
       unless jurisdiction_valid_for_update?(patient) && patient.save(context: :api)
         status_unprocessable_entity(format_model_validation_errors(patient)) && return
       end
+
       # If the jurisdiction was changed, create a Transfer
       if request_updates&.keys&.include?(:jurisdiction_id) && !request_updates[:jurisdiction_id].nil?
         Transfer.create(patient: patient, from_jurisdiction: patient_before.jurisdiction, to_jurisdiction: patient.jurisdiction, who: @current_actor)
       end
 
       # Handle creating history items based on all of the updates
-      # NOTE: We use updates rather than all updates here because we want to determine what History
-      # messages are needed based on the original changes
       update_all_patient_history(request_updates, patient_before, patient)
 
       status_ok(patient.as_fhir) && return
@@ -167,7 +164,7 @@ class Fhir::R4::ApiController < ActionController::API
       household_status: :patient,
       propagation: :none
     }
-    patient.update_patient_monitoring_history(updates, patient_before, history_data, nil)
+    patient.monitoring_history_edit(history_data, nil)
   end
 
   # Create a resource given a type.
@@ -542,12 +539,11 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   def jurisdiction_valid_for_update?(patient)
-    allowed_jurisdiction_ids = @current_actor.get_jurisdictions_for_transfer
-    if !patient.jurisdiction_id.nil? && allowed_jurisdiction_ids&.keys.include?(patient.jurisdiction_id)
-      return true
-    else
-      patient.errors.add(:jurisdiction_id, "Jurisdiction does not exist or cannot be transferred to")
-    end
+    allowed_jurisdiction_ids = @current_actor.jurisdictions_for_transfer
+    return true if !patient.jurisdiction_id.nil? && allowed_jurisdiction_ids.keys.include?(patient.jurisdiction_id)
+
+    patient.errors.add(:jurisdiction_id, 'Jurisdiction does not exist or cannot be transferred to')
+
     false
   end
 
