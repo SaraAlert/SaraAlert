@@ -7,6 +7,7 @@ import ReactTooltip from 'react-tooltip';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import moment from 'moment-timezone';
+import _ from 'lodash';
 
 import DateInput from '../../util/DateInput';
 import confirmDialog from '../../util/ConfirmDialog';
@@ -286,7 +287,7 @@ class AdvancedFilter extends React.Component {
     const appliedFilter = this.state.savedFilters.find(filter => filter.id === parseInt(appliedFilterId));
 
     // update state accordingly
-    const applied = !!appliedFilterId;
+    const applied = !_.isEmpty(appliedFilter);
     const activeFilter = applied ? appliedFilter : null;
     const activeFilterOptions = applied ? appliedFilter.contents : [];
     this.setState({ show: false, applied, activeFilter, activeFilterOptions }, () => {
