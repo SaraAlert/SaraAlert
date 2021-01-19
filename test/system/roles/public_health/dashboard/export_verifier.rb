@@ -330,8 +330,6 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         elsif field == :creator
           responder_email = User.find(patient.creator_id).email
           assert_equal(responder_email, cell_value, "For field: #{field} in Monitorees List (row #{row + 1})")
-        elsif %i[created_at updated_at closed_at].include?(field)
-          assert_equal(patient[field] || '', cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
         else
           assert_equal(patient_details[field].to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
         end
