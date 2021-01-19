@@ -18,6 +18,7 @@ class EnrollerTestHelper < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   MONITOREES = @@system_test_utils.monitorees
+  USERS = @@system_test_utils.users
 
   def view_enrolled_monitorees(user_label)
     @@system_test_utils.login(user_label)
@@ -104,6 +105,19 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     @@system_test_utils.wait_for_pop_up_alert
     page.driver.browser.switch_to.alert.accept
     @@enroller_dashboard_verifier.verify_monitoree_info_not_on_dashboard(monitoree, is_epi: is_epi)
+    @@system_test_utils.logout
+  end
+
+  def verify_patient_page_permissions(user_label)
+    user = User.find_by(email: USERS[user_label]['email'])
+    monitoree = user.patients.first
+
+    # Login and click on a monitoree
+    @@system_test_utils.login(user_label)
+    displayed_name = "#{monitoree.last_name}, #{monitoree.first_name}"
+    click_on displayed_name
+
+    @@enroller_patient_page_verifier.verify_monitoree_displayed_data(user)
     @@system_test_utils.logout
   end
 
