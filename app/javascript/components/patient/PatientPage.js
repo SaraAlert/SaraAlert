@@ -20,7 +20,7 @@ class PatientPage extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Card className="mx-2 card-square">
+        <Card id="patient-page" className="mx-2 card-square">
           <Card.Header
             className="h5"
             id="patient-info-header"
