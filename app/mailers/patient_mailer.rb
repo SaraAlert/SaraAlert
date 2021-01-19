@@ -77,12 +77,11 @@ class PatientMailer < ApplicationMailer
         patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
       end
     end
-    if patient.dependents.count >= 2 && !patient.active_dependents.include?(patient)
-      if failed_dependents
-        add_success_history_dependents(patient)
-      else
-        add_fail_history_dependents(patient)
-      end
+    return unless patient.dependents.count >= 2 && !patient.active_dependents.include?(patient)
+    if failed_dependents
+      add_fail_history_dependents(patient)
+    else
+      add_success_history_dependents(patient)
     end
   end
 
