@@ -219,7 +219,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def add_fail_history_dependents(patient)
-    comment = "Sara Alert was unable to send a report reminder to this monitoree for one or more of their Household members."
+    comment = 'Sara Alert was unable to send a report reminder to this monitoree for one or more of their Household members.'
     History.report_reminder(patient: patient, comment: comment)
   end
 

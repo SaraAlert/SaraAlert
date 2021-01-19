@@ -271,8 +271,8 @@ class PatientMailerTest < ActionMailer::TestCase
         assert_not_nil @patient.last_assessment_reminder_sent
         @patient.reload
         assert_equal 'Report Reminder', @patient.histories.first.history_type
-        assert_equal "Sara Alert sent a report reminder to this monitoree for their active dependents via #{@patient.preferred_contact_method}.", 
-          @patient.histories.first.comment
+        assert_equal "Sara Alert sent a report reminder to this monitoree for their active dependents via #{@patient.preferred_contact_method}.",
+                     @patient.histories.first.comment
         @patient.update(purged: false)
         @patient.reload
       end
