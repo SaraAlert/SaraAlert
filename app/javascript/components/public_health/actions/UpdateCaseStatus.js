@@ -26,27 +26,36 @@ class UpdateCaseStatus extends React.Component {
   }
 
   componentDidMount() {
-    const distinctCaseStatus = [...new Set(this.props.patients.map(x => x.case_status))];
-    const distinctIsolation = [...new Set(this.props.patients.map(x => x.isolation))];
-    const distinctMonitoring = [...new Set(this.props.patients.map(x => x.monitoring))];
+    axios
+      .post('/patients/current_case_status/', {
+        patient_ids: this.props.patients.map(x => x.id),
+      })
+      .then(response => {
+        const distinctCaseStatus = [...new Set(response.data.case_status)];
+        const distinctIsolation = [...new Set(response.data.isolation)];
+        const distinctMonitoring = [...new Set(response.data.monitoring)];
 
-    var state_updates = {};
-    if (distinctCaseStatus.length === 1 && distinctCaseStatus[0] !== null) {
-      state_updates.initialCaseStatus = distinctCaseStatus[0];
-      state_updates.caseStatus = distinctCaseStatus[0];
-    }
-    if (distinctIsolation.length === 1 && distinctIsolation[0] !== null) {
-      state_updates.initialIsolation = distinctIsolation[0];
-      state_updates.isolation = distinctIsolation[0];
-    }
-    if (distinctMonitoring.length === 1 && distinctMonitoring[0] !== null) {
-      state_updates.initialMonitoring = distinctMonitoring[0];
-      state_updates.monitoring = distinctMonitoring[0];
-    }
+        var state_updates = {};
+        if (distinctCaseStatus.length === 1 && distinctCaseStatus[0] !== null) {
+          state_updates.initialCaseStatus = distinctCaseStatus[0];
+          state_updates.case_status = distinctCaseStatus[0];
+        }
+        if (distinctIsolation.length === 1 && distinctIsolation[0] !== null) {
+          state_updates.initialIsolation = distinctIsolation[0];
+          state_updates.isolation = distinctIsolation[0];
+        }
+        if (distinctMonitoring.length === 1 && distinctMonitoring[0] !== null) {
+          state_updates.initialMonitoring = distinctMonitoring[0];
+          state_updates.monitoring = distinctMonitoring[0];
+        }
 
-    if (Object.keys(state_updates).length) {
-      this.setState(state_updates);
-    }
+        if (Object.keys(state_updates).length) {
+          this.setState(state_updates);
+        }
+      })
+      .catch(error => {
+        reportError(error);
+      });
   }
 
   handleChange(event) {
