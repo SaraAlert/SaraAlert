@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_08_232031) do
+ActiveRecord::Schema.define(version: 2020_12_10_084736) do
 
   create_table "analytics", charset: "utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -413,8 +413,6 @@ ActiveRecord::Schema.define(version: 2021_01_08_232031) do
     t.index ["potential_exposure_country"], name: "index_patients_on_potential_exposure_country"
     t.index ["primary_telephone", "responder_id", "id", "jurisdiction_id"], name: "patients_index_chain_two_1"
     t.index ["public_health_action"], name: "index_patients_on_public_health_action"
-    t.index ["purged", "isolation", "jurisdiction_id"], name: "patients_index_chain_three_2"
-    t.index ["purged", "isolation", "last_name", "first_name", "jurisdiction_id"], name: "patients_index_chain_five_1"
     t.index ["purged"], name: "index_patients_on_purged"
     t.index ["responder_id"], name: "index_patients_on_responder_id"
     t.index ["sex"], name: "index_patients_on_sex"

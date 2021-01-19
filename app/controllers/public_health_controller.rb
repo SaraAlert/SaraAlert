@@ -5,32 +5,10 @@ class PublicHealthController < ApplicationController
   include PatientQueryHelper
 
   before_action :authenticate_user!
+  before_action :authenticate_user_role
 
   def patients
-    # Require workflow and tab params
-    workflow = params.require(:query).require(:workflow).to_sym
-    tab = params.require(:query).require(:tab).to_sym
-
-    # Validate filter and sorting params
-    begin
-      query = validate_patients_query(params.require(:query))
-    rescue StandardError => e
-      return render json: e, status: :bad_request
-    end
-
-    # Validate pagination params
-    entries = params.require(:query)[:entries]&.to_i || 25
-    page = params.require(:query)[:page]&.to_i || 0
-    return render json: { error: 'Invalid entries or page' }, status: :bad_request unless entries >= 0 && page >= 0
-
-    # Get filtered patients
-    patients = patients_by_query(current_user, query)
-
-    # Paginate
-    patients = patients.paginate(per_page: entries, page: page + 1)
-
-    # Extract only relevant fields to be displayed by workflow and tab
-    render json: linelist(patients, workflow, tab)
+    patients_table_data(params)
   end
 
   def patients_count
@@ -71,91 +49,6 @@ class PublicHealthController < ApplicationController
     patients = patients_by_linelist(current_user, workflow, tab, current_user.jurisdiction)
 
     render json: { total: patients.size }
-  end
-
-  protected
-
-  def linelist(patients, workflow, tab)
-    # get a list of fields relevant only to this linelist
-    fields = linelist_specific_fields(workflow, tab)
-
-    # retrieve proper jurisdiction
-    patients = if tab == :transferred_in
-                 patients.joins('INNER JOIN jurisdictions ON jurisdictions.id = patients.latest_transfer_from')
-               else
-                 patients.joins(:jurisdiction)
-               end
-
-    # only select patient fields necessary to generate linelists
-    patients = patients.select('patients.id, patients.first_name, patients.last_name, patients.user_defined_id_statelocal, patients.symptom_onset, '\
-                               'patients.date_of_birth, patients.assigned_user, patients.exposure_risk_assessment, patients.monitoring_plan, '\
-                               'patients.public_health_action, patients.monitoring_reason, patients.closed_at, patients.last_date_of_exposure, '\
-                               'patients.created_at, patients.updated_at, patients.latest_assessment_at, patients.latest_transfer_at, '\
-                               'patients.continuous_exposure, patients.head_of_household, patients.purged, patients.monitoring, patients.isolation, '\
-                               'patients.responder_id, patients.pause_notifications, patients.preferred_contact_method, '\
-                               'patients.last_assessment_reminder_sent, patients.preferred_contact_time, patients.extended_isolation, '\
-                               'patients.latest_fever_or_fever_reducer_at, patients.latest_positive_lab_at, patients.negative_lab_count, '\
-                               'patients.head_of_household, jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path, '\
-                               'jurisdictions.id AS jurisdiction_id')
-
-    # execute query and get total count
-    total = patients.total_entries
-
-    linelist = []
-    patients.each do |patient|
-      # populate fields common to all linelists
-      details = {
-        id: patient[:id],
-        name: patient.displayed_name,
-        state_local_id: patient[:user_defined_id_statelocal] || '',
-        dob: patient[:date_of_birth]&.strftime('%F') || ''
-      }
-
-      # populate fields specific to this linelist only if relevant
-      details[:jurisdiction] = patient[:jurisdiction_name] || '' if fields.include?(:jurisdiction)
-      details[:transferred_from] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_from)
-      details[:transferred_to] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_to)
-      details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
-      details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
-      details[:extended_isolation] = patient[:extended_isolation] if fields.include?(:extended_isolation)
-      details[:symptom_onset] = patient.symptom_onset if fields.include?(:symptom_onset)
-      details[:risk_level] = patient[:exposure_risk_assessment] || '' if fields.include?(:risk_level)
-      details[:monitoring_plan] = patient[:monitoring_plan] || '' if fields.include?(:monitoring_plan)
-      details[:public_health_action] = patient[:public_health_action] || '' if fields.include?(:public_health_action)
-      details[:expected_purge_date] = patient.expected_purge_date || '' if fields.include?(:expected_purge_date)
-      details[:reason_for_closure] = patient[:monitoring_reason] || '' if fields.include?(:reason_for_closure)
-      details[:closed_at] = patient[:closed_at]&.rfc2822 || '' if fields.include?(:closed_at)
-      details[:transferred_at] = patient[:latest_transfer_at]&.rfc2822 || '' if fields.include?(:transferred_at)
-      details[:latest_report] = patient[:latest_assessment_at]&.rfc2822 || '' if fields.include?(:latest_report)
-      details[:status] = patient.status.to_s.gsub('_', ' ').gsub('exposure ', '')&.gsub('isolation ', '') if fields.include?(:status)
-      details[:report_eligibility] = patient.report_eligibility if fields.include?(:report_eligibility)
-      details[:is_hoh] = patient.head_of_household?
-
-      linelist << details
-    end
-
-    { linelist: linelist, fields: %i[name state_local_id dob].concat(fields), total: total }
-  end
-
-  def linelist_specific_fields(workflow, tab)
-    # This is specifically for the call from the Move to Household modal table which only needs a limited number of columns.
-    return %i[jurisdiction] if workflow == :all
-    return %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at] if tab == :closed
-
-    if workflow == :isolation
-      return %i[jurisdiction assigned_user extended_isolation symptom_onset monitoring_plan latest_report status report_eligibility] if tab == :all
-      return %i[transferred_from monitoring_plan transferred_at] if tab == :transferred_in
-      return %i[transferred_to monitoring_plan transferred_at] if tab == :transferred_out
-
-      return %i[jurisdiction assigned_user extended_isolation symptom_onset monitoring_plan latest_report report_eligibility]
-    end
-
-    return %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility] if tab == :all
-    return %i[jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility] if tab == :pui
-    return %i[transferred_from end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_in
-    return %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_out
-
-    %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
   end
 
   private
