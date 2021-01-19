@@ -2,9 +2,10 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
-
-import CustomTable from '../layout/CustomTable';
 import _ from 'lodash';
+
+import BadgeHOH from '../util/BadgeHOH';
+import CustomTable from '../layout/CustomTable';
 
 class MoveToHousehold extends React.Component {
   constructor(props) {
@@ -12,7 +13,7 @@ class MoveToHousehold extends React.Component {
     this.state = {
       table: {
         colData: [
-          { field: 'name', label: 'Monitoree', isSortable: true, tooltip: null },
+          { field: 'name', label: 'Monitoree', isSortable: true, tooltip: null, filter: this.renderPatientName },
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
           { field: 'jurisdiction', label: 'Jurisdiction', isSortable: true, tooltip: null },
           { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDate },
@@ -52,6 +53,25 @@ class MoveToHousehold extends React.Component {
       cancelToken: axios.CancelToken.source(),
     };
   }
+
+  /**
+   * Creates a link and renders HoH badge for monitoree name in table.
+   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
+   */
+  renderPatientName = data => {
+    const name = data.value;
+    const rowData = data.rowData;
+
+    if (rowData.is_hoh) {
+      return (
+        <div>
+          <BadgeHOH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
+          <a href={`/patients/${rowData.id}`}>{name}</a>
+        </div>
+      );
+    }
+    return <a href={`/patients/${rowData.id}`}>{name}</a>;
+  };
 
   /**
    * Creates a "Select" button for each row of the table.
@@ -154,7 +174,7 @@ class MoveToHousehold extends React.Component {
   queryServer = _.debounce(query => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post('/public_health/patients', {
+      .post('/patients/head_of_household_options', {
         query,
         cancelToken: this.state.cancelToken.token,
       })
@@ -211,7 +231,7 @@ class MoveToHousehold extends React.Component {
    * Grabs a formatted string with the name of the patient who is being moved to a household.
    */
   getPatientName = () => {
-    return `${this.props.patient?.last_name || ''}, ${this.props.patient?.first_name || ''} ${this.props.patient?.middle_name || ''}`;
+    return `${this.props.patient?.first_name || ''} ${this.props.patient?.middle_name || ''} ${this.props.patient?.last_name || ''}`;
   };
 
   /**
@@ -239,7 +259,7 @@ class MoveToHousehold extends React.Component {
                   Please select the new monitoree that will respond for <b>{this.getPatientName()}</b>.
                 </Form.Label>
                 <p>
-                  Monitorees that are shown below as potential Heads of Households are monitorees that are already HoHs or are self reporting. &nbsp;
+                  You may select from the provided existing Head of Households and monitorees who are self reporting. &nbsp;
                   {this.getPatientName()} will be immediately moved into the selected monitoree&apos;s household.
                 </p>
                 <InputGroup size="md">

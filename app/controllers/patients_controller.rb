@@ -2,6 +2,8 @@
 
 # PatientsController: handles all subject actions
 class PatientsController < ApplicationController
+  include PatientQueryHelper
+
   before_action :authenticate_user!
 
   # Enroller view to see enrolled subjects and button to enroll new subjects
@@ -540,6 +542,11 @@ class PatientsController < ApplicationController
     patient_ids = params[:patient_ids]
     patients = current_user.viewable_patients.where(id: patient_ids)
     render json: { case_status: patients.pluck(:case_status), isolation: patients.pluck(:isolation), monitoring: patients.pluck(:monitoring) }
+  end
+
+  # Fetches table data for viable HoH options.
+  def head_of_household_options
+    patients_table_data(params)
   end
 
   # Parameters allowed for saving to database
