@@ -610,7 +610,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     PATIENT_FIELD_TYPES[:timestamps].each do |field|
-      patient_details[field] = patient[field]&.rfc2822 || '' if fields.include?(field)
+      patient_details[field] = patient[field] || '' if fields.include?(field)
     end
 
     PATIENT_FIELD_TYPES[:booleans].each do |field|
