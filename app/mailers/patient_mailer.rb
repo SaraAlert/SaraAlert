@@ -78,6 +78,7 @@ class PatientMailer < ApplicationMailer
       end
     end
     return unless patient.dependents.count >= 2 && !patient.active_dependents.include?(patient)
+
     if failed_dependents
       add_fail_history_dependents(patient)
     else
