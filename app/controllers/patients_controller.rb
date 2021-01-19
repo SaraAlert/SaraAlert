@@ -550,6 +550,15 @@ class PatientsController < ApplicationController
     diffs
   end
 
+  # Returns case status value(s) of the selected patient(s) so bulk update modal displays correct default value
+  def current_case_status
+    redirect_to(root_url) && return unless current_user.can_edit_patient?
+
+    patient_ids = params[:patient_ids]
+    patients = current_user.viewable_patients.where(id: patient_ids)
+    render json: { case_status: patients.pluck(:case_status), isolation: patients.pluck(:isolation), monitoring: patients.pluck(:monitoring) }
+  end
+
   # Parameters allowed for saving to database
   def allowed_params
     params.require(:patient).permit(
