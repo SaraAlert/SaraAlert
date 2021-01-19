@@ -272,7 +272,8 @@ class AdvancedFilter extends React.Component {
 
   // Clear the current filter
   clear = () => {
-    this.setState({ activeFilter: null, applied: false }, () => {
+    this.setState({ activeFilterOptions: [], show: false, activeFilter: null, applied: false }, () => {
+      this.add();
       this.props.advancedFilterUpdate(this.state.activeFilter);
       if (this.props.updateStickySettings) {
         localStorage.setItem(`SaraFilter`, null);
