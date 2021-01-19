@@ -56,9 +56,9 @@ class ContactAttempt extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Group>
+          <Form.Group controlId="attempt">
             <Form.Label>Contact was:</Form.Label>
-            <Form.Control as="select" size="lg" className="form-square" id="attempt" onChange={this.handleChange}>
+            <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange}>
               <option>Successful</option>
               <option>Unsuccessful</option>
             </Form.Control>

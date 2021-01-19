@@ -4,7 +4,7 @@ import { Button, ButtonGroup, ToggleButton, Row, Col, Form, Modal, OverlayTrigge
 
 import Select, { components } from 'react-select';
 import ReactTooltip from 'react-tooltip';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import moment from 'moment-timezone';
 
@@ -217,9 +217,12 @@ class AdvancedFilter extends React.Component {
       this.add();
     }
 
+    // Set a timestamp to include in url to ensure browser cache is not re-used on page navigation
+    const timestamp = `?t=${new Date().getTime()}`;
+
     // Grab saved filters
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios.get(window.BASE_PATH + '/user_filters').then(response => {
+    axios.get(window.BASE_PATH + '/user_filters' + timestamp).then(response => {
       this.setState({ savedFilters: response.data }, () => {
         // Apply filter if it exists in local storage
         let sessionFilter = localStorage.getItem(`SaraFilter`);
@@ -480,6 +483,7 @@ class AdvancedFilter extends React.Component {
           this.changeFilterOption(index, event?.value);
         }}
         placeHolder="Select Field...."
+        aria-label="Advanced Filter Options Dropdown"
         theme={theme => ({
           ...theme,
           borderRadius: 0,
@@ -494,6 +498,7 @@ class AdvancedFilter extends React.Component {
       <Form.Group key={index + 'opkeygroup'} className="py-0 my-0">
         <Form.Control
           as="select"
+          aria-label="Advanced Filter Date Select Options"
           value={current}
           className="py-0 my-0"
           onChange={event => {
@@ -512,6 +517,7 @@ class AdvancedFilter extends React.Component {
     return (
       <Form.Control
         as="select"
+        aria-label="Advanced Filter Relative Date Select Options"
         value={current}
         onChange={event => {
           this.changeFilterRelativeOption(index, value, event.target.value);
@@ -699,6 +705,7 @@ class AdvancedFilter extends React.Component {
               <Form.Group className="py-0 my-0">
                 <Form.Control
                   as="select"
+                  aria-label="Advanced Filter Option Select"
                   value={value}
                   className="py-0 my-0"
                   onChange={event => {
@@ -722,6 +729,7 @@ class AdvancedFilter extends React.Component {
                     <Col md="8">
                       <Form.Control
                         as="select"
+                        aria-label="Advanced Filter Number Additional Options Input"
                         value={value?.option}
                         onChange={event =>
                           this.changeValue(index, {
@@ -743,6 +751,7 @@ class AdvancedFilter extends React.Component {
                   <Col md="12">
                     <Form.Control
                       as="select"
+                      aria-label="Advanced Filter Number Operator Select"
                       value={value?.operator}
                       onChange={event =>
                         this.changeValue(index, {
@@ -761,6 +770,7 @@ class AdvancedFilter extends React.Component {
                   <Col md="4">
                     <Form.Control
                       className="form-control-number"
+                      aria-label="Advanced Filter Number Input"
                       value={value?.number}
                       type="number"
                       min="0"
@@ -791,6 +801,7 @@ class AdvancedFilter extends React.Component {
                         }}
                         placement="bottom"
                         customClass="form-control-md"
+                        ariaLabel="Advanced Filter Date Input"
                         minDate={'1900-01-01'}
                         maxDate={moment()
                           .add(2, 'years')
@@ -810,6 +821,7 @@ class AdvancedFilter extends React.Component {
                           }}
                           placement="bottom"
                           customClass="form-control-md"
+                          ariaLabel="Advanced Filter Start Date Input"
                           minDate={'1900-01-01'}
                           maxDate={moment()
                             .add(2, 'years')
@@ -829,6 +841,7 @@ class AdvancedFilter extends React.Component {
                           }}
                           placement="bottom"
                           customClass="form-control-md"
+                          ariaLabel="Advanced Filter End Date Input"
                           minDate={'1900-01-01'}
                           maxDate={moment()
                             .add(2, 'years')
@@ -850,6 +863,7 @@ class AdvancedFilter extends React.Component {
                     <Col md="6" className="pr-0">
                       <Form.Control
                         as="select"
+                        aria-label="Advanced Filter Relative Date When Select"
                         value={value.when}
                         onChange={event => {
                           this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
@@ -860,6 +874,7 @@ class AdvancedFilter extends React.Component {
                     </Col>
                     <Col md="4" className="pr-0">
                       <Form.Control
+                        aria-label="Advanced Filter Relative Date Number Select"
                         value={value.number}
                         type="number"
                         min="1"
@@ -869,6 +884,7 @@ class AdvancedFilter extends React.Component {
                     <Col md="6" className="pr-0">
                       <Form.Control
                         as="select"
+                        aria-label="Advanced Filter Relative Date Unit Select"
                         value={value.unit}
                         onChange={event => {
                           this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
@@ -888,6 +904,7 @@ class AdvancedFilter extends React.Component {
                   as="input"
                   value={value}
                   className="py-0 my-0"
+                  aria-label="Advanced Filter Search Text Input"
                   onChange={event => {
                     this.changeValue(index, event.target.value);
                   }}
@@ -900,7 +917,7 @@ class AdvancedFilter extends React.Component {
           )}
           <Col className="py-0" md={2}>
             <div className="float-right">
-              <Button variant="danger" onClick={() => this.remove(index)}>
+              <Button variant="danger" onClick={() => this.remove(index)} aria-label="Remove Advanced Filter Option">
                 <i className="fas fa-minus"></i>
               </Button>
             </div>
@@ -974,7 +991,11 @@ class AdvancedFilter extends React.Component {
             })}
             <Row className="pt-2 pb-1">
               <Col>
-                <Button variant="primary" disabled={this.state.activeFilterOptions?.length > 4} onClick={() => this.add()}>
+                <Button
+                  variant="primary"
+                  disabled={this.state.activeFilterOptions?.length > 4}
+                  onClick={() => this.add()}
+                  aria-label="Add Advanced Filter Option">
                   <i className="fas fa-plus"></i>
                 </Button>
               </Col>
@@ -1006,7 +1027,7 @@ class AdvancedFilter extends React.Component {
           </Button>
         </OverlayTrigger>
         <Dropdown>
-          <Dropdown.Toggle variant="outline-secondary" size="sm" className="advanced-filter-dropdown">
+          <Dropdown.Toggle variant="outline-secondary" size="sm" className="advanced-filter-dropdown" aria-label="Advance Filter Dropdown Menu">
             {this.state.applied && (this.state.activeFilter?.name || 'untitled')}
           </Dropdown.Toggle>
           <Dropdown.Menu alignRight>
@@ -1034,7 +1055,6 @@ class AdvancedFilter extends React.Component {
             })}
           </Dropdown.Menu>
         </Dropdown>
-        <ToastContainer position="top-center" autoClose={2000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
       </React.Fragment>
     );
   }

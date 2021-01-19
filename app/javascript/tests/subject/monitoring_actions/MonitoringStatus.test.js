@@ -6,31 +6,16 @@ import MonitoringStatus from '../../../components/subject/monitoring_actions/Mon
 import InfoTooltip from '../../../components/util/InfoTooltip';
 import DateInput from '../../../components/util/DateInput';
 import { mockPatient1, mockPatient3 } from '../../mocks/mockPatients';
+import { mockMonitoringReasons } from '../../mocks/mockMonitoringReasons'
 
 const currentDate = moment(new Date()).format('YYYY-MM-DD');
 const newDate = moment(new Date('9-9-2020')).format('YYYY-MM-DD');
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const monitoringStatusValues = [ 'Actively Monitoring', 'Not Monitoring' ];
-const monitoringReasons = [
-  '--',
-  'Completed Monitoring',
-  'Meets criteria to shorten quarantine',
-  'Does not meet criteria for monitoring',
-  'Meets Case Definition',
-  'Lost to follow-up during monitoring period',
-  'Lost to follow-up (contact never established)',
-  'Transferred to another jurisdiction',
-  'Person Under Investigation (PUI)',
-  'Case confirmed',
-  'Meets criteria to discontinue isolation',
-  'Deceased',
-  'Duplicate',
-  'Other'
-];
 
 function getWrapper(patient, hasDependents, inHouseholdWithCeInExposure) {
   return shallow(<MonitoringStatus patient={patient} has_dependents={hasDependents} authenticity_token={authyToken}
-    in_household_with_member_with_ce_in_exposure={inHouseholdWithCeInExposure} />);
+    in_household_with_member_with_ce_in_exposure={inHouseholdWithCeInExposure} monitoring_reasons={mockMonitoringReasons}/>);
 }
 
 describe('MonitoringStatus', () => {
@@ -73,11 +58,10 @@ describe('MonitoringStatus', () => {
     expect(wrapper.find(Modal.Body).find('p').text().includes(`Are you sure you want to change monitoring status to "Not Monitoring"?`)).toBeTruthy();
     expect(wrapper.find(Modal.Body).find('p').find('b').text()).toEqual(' This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.');
     expect(wrapper.find('#monitoring_reason').exists()).toBeTruthy();
-    expect(wrapper.find('#monitoring_reason').find('option').length).toEqual(monitoringReasons.length);
-    monitoringReasons.forEach(function(value, index) {
-      expect(wrapper.find('#monitoring_reason').find('option').at(index).text()).toEqual(value);
+    expect(wrapper.find('#monitoring_reason').find('option').length).toEqual(mockMonitoringReasons.length + 1); // the +1 is for the extra blank
+    [''].concat(mockMonitoringReasons).forEach(function(value, index) {
+        expect(wrapper.find('#monitoring_reason').find('option').at(index).text()).toEqual(value);
     });
-    expect(wrapper.find('#monitoring_reason').find('option').at(0).prop('disabled')).toBeTruthy();
     expect(wrapper.find('#reasoning').exists()).toBeTruthy();
 
     // sets state
@@ -170,8 +154,8 @@ describe('MonitoringStatus', () => {
     expect(wrapper.state('monitoring_reason')).toEqual('');
 
     // test changing to each enabled monitoring option
-    monitoringReasons.shift();
-    monitoringReasons.forEach(function(value) {
+    mockMonitoringReasons.shift();
+    mockMonitoringReasons.forEach(function(value) {
       wrapper.find('#monitoring_reason').simulate('change', { target: { id: 'monitoring_reason', value: value } });
       expect(wrapper.state('monitoring_reason')).toEqual(value);
       expect(wrapper.state('monitoring')).toEqual(false);
@@ -215,7 +199,7 @@ describe('MonitoringStatus', () => {
     expect(wrapper.find('#apply_to_household_cm_exp_only_no').prop('checked')).toBeTruthy();
     expect(wrapper.find('#apply_to_household_cm_exp_only_yes').prop('checked')).toBeFalsy();
 
-    // change to 'YES' 
+    // change to 'YES'
     wrapper.find('#apply_to_household_cm_exp_only_yes').simulate('change', { target: { name: 'apply_to_household_cm_exp_only', id: 'apply_to_household_cm_exp_only_yes' } });
     wrapper.update();
     expect(wrapper.state('apply_to_household_cm_exp_only')).toBeTruthy();

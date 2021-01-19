@@ -82,6 +82,7 @@ class UpdateAssignedUser extends React.Component {
             list="assigned_users"
             autoComplete="off"
             className="form-control-lg"
+            aria-label="Assigned User Select"
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
             value={this.state.assigned_user}

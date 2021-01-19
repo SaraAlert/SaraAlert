@@ -25,10 +25,16 @@ function dateFormatter(date) {
     return `${moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY')}`;
 }
 
+/** formats date as it is done on the analytics page (YYYY-MM-DD HH:mm z)  */
+function analyticsDateFormatter(date) {
+    return `${moment.tz(date, 'UTC').tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm z')}`;
+}
+
 export {
     nameFormatter,
     addressLine1Formatter,
     addressLine2Formatter,
     addressFullFormatter,
-    dateFormatter
+    dateFormatter,
+    analyticsDateFormatter
 };

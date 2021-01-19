@@ -168,6 +168,7 @@ class LastDateExposure extends React.Component {
                 onChange={date => this.setState({ last_date_of_exposure: date })}
                 placement="top"
                 customClass="form-control-lg"
+                ariaLabel="Update Last Date of Exposure to Input"
               />
             </div>
           )}
@@ -240,6 +241,7 @@ class LastDateExposure extends React.Component {
                   onChange={this.openLastDateOfExposureModal}
                   placement="top"
                   customClass="form-control-lg"
+                  ariaLabel="Last Date of Exposure Input"
                   isClearable
                 />
               </Col>

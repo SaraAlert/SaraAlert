@@ -6,14 +6,13 @@ import { confirmable, createConfirmation } from 'react-confirm';
 class Confirmation extends React.Component {
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(event) {
+  handleChange = event => {
     if (event.target.id === 'extra_option') {
       this.props.extraOptionChange(event.target.checked);
     }
-  }
+  };
 
   render() {
     const {

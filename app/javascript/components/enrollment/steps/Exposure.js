@@ -272,6 +272,7 @@ class Exposure extends React.Component {
               placement="bottom"
               isInvalid={!!this.state.errors['symptom_onset']}
               customClass="form-control-lg"
+              ariaLabel="Symptom Onset Date Input"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['symptom_onset']}
@@ -297,15 +298,17 @@ class Exposure extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Row>
-          <Form.Group as={Col} md="24" controlId="exposure_notes" className="mb-2">
-            <Form.Label className="nav-input-label ml-1">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
+          <Form.Group as={Col} md="24" className="mb-2">
+            <Form.Label htmlFor="isolation_notes" className="nav-input-label ml-1">
+              NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
+            </Form.Label>
             <Form.Control
+              id="isolation_notes"
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
               rows="4"
               size="lg"
               className="form-square"
-              aria-label="Additional Info on Case"
               placeholder="enter additional information about case"
               maxLength="2000"
               value={this.state.current.patient.exposure_notes || ''}
@@ -342,6 +345,7 @@ class Exposure extends React.Component {
               placement="bottom"
               isInvalid={!!this.state.errors['last_date_of_exposure']}
               customClass="form-control-lg"
+              ariaLabel="Last Date of Exposure Input"
               isClearable
             />
             <Form.Control.Feedback className="d-block" type="invalid">
@@ -549,12 +553,14 @@ class Exposure extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Row>
-          <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-3 mb-2">
-            <Form.Label className="nav-input-label">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
+          <Form.Group as={Col} md="24" className="pt-3 mb-2">
+            <Form.Label htmlFor="exposure_notes" className="nav-input-label">
+              NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
+            </Form.Label>
             <Form.Control
+              id="exposure_notes"
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
-              aria-label="Notes Text Area"
               rows="4"
               size="lg"
               className="form-square"
@@ -579,8 +585,8 @@ class Exposure extends React.Component {
         {!this.props.currentState.isolation && <h1 className="sr-only">Monitoree Potential Exposure Information</h1>}
         {this.props.currentState.isolation && <h1 className="sr-only">Monitoree Case Information</h1>}
         <Card className="mx-2 card-square">
-          {!this.props.currentState.isolation && <Card.Header className="h2">Monitoree Potential Exposure Information</Card.Header>}
-          {this.props.currentState.isolation && <Card.Header className="h2">Monitoree Case Information</Card.Header>}
+          {!this.props.currentState.isolation && <Card.Header className="h5">Monitoree Potential Exposure Information</Card.Header>}
+          {this.props.currentState.isolation && <Card.Header className="h5">Monitoree Case Information</Card.Header>}
           <Card.Body>
             <Form>
               <Form.Row className="pb-3 h-100">
@@ -594,12 +600,11 @@ class Exposure extends React.Component {
                     </Form.Group>
                   </Form.Row>
                   <Form.Row>
-                    <Form.Group as={Col} md="18" className="mb-2 pt-2">
+                    <Form.Group as={Col} md="18" className="mb-2 pt-2" controlId="jurisdiction_id">
                       <Form.Label className="nav-input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
                         as="input"
-                        id="jurisdiction_id"
                         list="jurisdiction_paths"
                         autoComplete="off"
                         size="lg"
@@ -634,7 +639,7 @@ class Exposure extends React.Component {
                           </Form.Group>
                         )}
                     </Form.Group>
-                    <Form.Group as={Col} md="6" className="mb-2 pt-2">
+                    <Form.Group as={Col} md="6" className="mb-2 pt-2" controlId="assigned_user">
                       <Form.Label className="nav-input-label">
                         ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
                         <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
@@ -642,7 +647,6 @@ class Exposure extends React.Component {
                       <Form.Control
                         isInvalid={this.state.errors['assigned_user']}
                         as="input"
-                        id="assigned_user"
                         list="assigned_users"
                         autoComplete="off"
                         size="lg"

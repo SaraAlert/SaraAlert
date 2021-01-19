@@ -7,9 +7,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_account_update_params, only: [:update]
 
   # PUT /resource
+  # rubocop:disable Lint/UselessMethodDefinition
   def update
     super
   end
+  # rubocop:enable Lint/UselessMethodDefinition
 
   def password_expired
     redirect_to edit_user_registration_url && return

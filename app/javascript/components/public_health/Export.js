@@ -1,8 +1,8 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, ButtonGroup, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
+import { ButtonGroup, DropdownButton, Dropdown } from 'react-bootstrap';
 
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -39,9 +39,7 @@ class Export extends React.Component {
       url: window.BASE_PATH + endpoint,
     })
       .then(() => {
-        toast.success('Export has been initiated!', {
-          containerId: 'exports',
-        });
+        toast.success('Export has been initiated!');
         this.setState({
           showCSVModal: false,
           showSaraFormatModal: false,
@@ -59,39 +57,6 @@ class Export extends React.Component {
         });
       });
   };
-
-  createModal(title, toggle, submit, endpoint) {
-    return (
-      <Modal size="lg" show centered onHide={toggle}>
-        <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            After clicking <b>Start Export</b>, Sara Alert will gather all of the monitoree data that comprises your request and generate an export file. Sara
-            Alert will then send your user account an email with a one-time download link. This process may take several minutes to complete, based on the
-            amount of data present.
-          </p>
-          <p>
-            NOTE: The system will store one of each type of export file. If you initiate another export of this file type, any old files will be overwritten and
-            download links that have not been accessed will be invalid. Only one of each export type is allowed per user per hour.
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary btn-square"
-            onClick={() => {
-              submit(endpoint);
-            }}>
-            Start Export
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
 
   render() {
     return (
@@ -120,40 +85,40 @@ class Export extends React.Component {
           <Dropdown.Divider />
           <Dropdown.Item onClick={() => this.setState({ showCustomFormatModal: true })}>Custom Format...</Dropdown.Item>
         </DropdownButton>
-        <ConfirmExport
-          show={this.state.showCSVModal}
-          title={`Line list CSV (${this.props.query.workflow})`}
-          onCancel={() => this.setState({ showCSVModal: false })}
-          onStartExport={() => this.submit(`/export/csv_linelist/${this.props.query.workflow}`)}
-        />
-        <ConfirmExport
-          show={this.state.showSaraFormatModal}
-          title={`Sara Alert Format (${this.props.query.workflow})`}
-          onCancel={() => this.setState({ showSaraFormatModal: false })}
-          onStartExport={() => this.submit(`/export/sara_alert_format/${this.props.query.workflow}`)}
-        />
-        <ConfirmExport
-          show={this.state.showAllPurgeEligibleModal}
-          title={'Excel Export For Purge-Eligible Monitorees'}
-          onCancel={() => this.setState({ showAllPurgeEligibleModal: false })}
-          onStartExport={() => this.submit('/export/full_history_patients/purgeable')}
-        />
-        <ConfirmExport
-          show={this.state.showAllModal}
-          title={'Excel Export For All Monitorees'}
-          onCancel={() => this.setState({ showAllModal: false })}
-          onStartExport={() => this.submit('/export/full_history_patients/all')}
-        />
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          enableMultiContainer
-          containerId={'exports'}
-          closeOnClick
-          pauseOnVisibilityChange
-          draggable
-          pauseOnHover
-        />
+        {this.state.showCSVModal && (
+          <ConfirmExport
+            show={this.state.showCSVModal}
+            exportType={'Line list CSV'}
+            workflow={this.props.query.workflow}
+            onCancel={() => this.setState({ showCSVModal: false })}
+            onStartExport={this.submit}
+          />
+        )}
+        {this.state.showSaraFormatModal && (
+          <ConfirmExport
+            show={this.state.showSaraFormatModal}
+            exportType={'Sara Alert Format'}
+            workflow={this.props.query.workflow}
+            onCancel={() => this.setState({ showSaraFormatModal: false })}
+            onStartExport={this.submit}
+          />
+        )}
+        {this.state.showAllPurgeEligibleModal && (
+          <ConfirmExport
+            show={this.state.showAllPurgeEligibleModal}
+            exportType={'Excel Export For Purge-Eligible Monitorees'}
+            onCancel={() => this.setState({ showAllPurgeEligibleModal: false })}
+            onStartExport={this.submit}
+          />
+        )}
+        {this.state.showAllModal && (
+          <ConfirmExport
+            show={this.state.showAllModal}
+            exportType={'Excel Export For All Monitorees'}
+            onCancel={() => this.setState({ showAllModal: false })}
+            onStartExport={this.submit}
+          />
+        )}
         {this.state.showCustomFormatModal && (
           <CustomExport
             authenticity_token={this.props.authenticity_token}

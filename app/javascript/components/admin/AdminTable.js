@@ -61,7 +61,7 @@ class AdminTable extends React.Component {
   createAuditButton(data) {
     const rowData = data.rowData;
     return (
-      <div id={rowData.id} className="float-left edit-button">
+      <div id={rowData.id} className="float-left edit-button" aria-label="Open Audit Modal Row Button">
         <i className="fas fa-user-clock"></i>
       </div>
     );
@@ -678,6 +678,7 @@ class AdminTable extends React.Component {
           selectAll={this.state.table.selectAll}
           entryOptions={this.state.entryOptions}
           entries={this.state.query.entries}
+          currentUser={this.props.current_user_email}
         />
         {Object.keys(this.state.jurisdiction_paths).length && (this.state.showEditUserModal || this.state.showAddUserModal) && (
           <UserModal
@@ -708,7 +709,7 @@ class AdminTable extends React.Component {
             prompt={'Enter the message to send to all unlocked users:'}
           />
         )}
-        <ToastContainer />
+        <ToastContainer position="top-center" autoClose={2000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
       </div>
     );
   }
@@ -717,6 +718,7 @@ class AdminTable extends React.Component {
 AdminTable.propTypes = {
   authenticity_token: PropTypes.string,
   role_types: PropTypes.array,
+  current_user_email: PropTypes.string,
   is_usa_admin: PropTypes.bool,
 };
 

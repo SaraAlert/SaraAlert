@@ -115,3 +115,5 @@ Style/ExplicitBlockArgument:
   Enabled: true
 Style/SoleNestedConditional:
   Enabled: true
+Style/CombinableLoops:
+  Enabled: false

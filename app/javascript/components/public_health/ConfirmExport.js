@@ -3,11 +3,39 @@ import { PropTypes } from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 
 class ConfirmExport extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+    };
+  }
+
+  getUrl = () => {
+    switch (this.props.exportType) {
+      case 'Line list CSV':
+        return `/export/csv_linelist/${this.props.workflow}`;
+      case 'Sara Alert Format':
+        return `/export/sara_alert_format/${this.props.workflow}`;
+      case 'Excel Export For Purge-Eligible Monitorees':
+        return '/export/full_history_patients/purgeable';
+      case 'Excel Export For All Monitorees':
+        return '/export/full_history_patients/all';
+    }
+  };
+
+  submit = () => {
+    this.setState({ loading: true }, () => {
+      this.props.onStartExport(this.getUrl());
+    });
+  };
+
   render() {
     return (
-      <Modal size="lg" className="confirm-export-modal-container" show={this.props.show} centered>
+      <Modal size="lg" className="confirm-export-modal-container" show={this.props.show} onHide={this.props.onCancel} centered>
         <Modal.Header>
-          <Modal.Title>{this.props.title}</Modal.Title>
+          <Modal.Title>
+            {`${this.props.exportType}${this.props.workflow ? ` (${this.props.workflow})` : ''}${this.props.presetName ? ` (${this.props.presetName})` : ''}`}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>
@@ -24,7 +52,12 @@ class ConfirmExport extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onCancel}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={this.props.onStartExport}>
+          <Button variant="primary btn-square" disabled={this.state.loading} onClick={this.submit}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
             Start Export
           </Button>
         </Modal.Footer>
@@ -35,7 +68,9 @@ class ConfirmExport extends React.Component {
 
 ConfirmExport.propTypes = {
   show: PropTypes.bool,
-  title: PropTypes.string,
+  exportType: PropTypes.string,
+  presetName: PropTypes.string,
+  workflow: PropTypes.string,
   onCancel: PropTypes.func,
   onStartExport: PropTypes.func,
 };

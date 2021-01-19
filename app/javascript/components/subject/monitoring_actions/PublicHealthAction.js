@@ -152,7 +152,7 @@ class PublicHealthAction extends React.Component {
     return (
       <React.Fragment>
         <div className="disabled">
-          <Form.Label className="nav-input-label">
+          <Form.Label htmlFor="public_health_action" className="nav-input-label">
             LATEST PUBLIC HEALTH ACTION
             <InfoTooltip
               tooltipTextKey={this.props.patient.isolation ? 'latestPublicHealthActionInIsolation' : 'latestPublicHealthActionInExposure'}

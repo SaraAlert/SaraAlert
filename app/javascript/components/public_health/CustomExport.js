@@ -186,7 +186,8 @@ class CustomExport extends React.Component {
           </Modal.Header>
           <Modal.Body className="p-0">
             <div className="p-2">
-              <h5 className="mx-3 my-2">Choose which records to export</h5>
+              <p className="mx-3 mt-2 mb-3">Files will be exported in the Excel (.xlsx) format.</p>
+              <div className="h5 mx-3 my-2">Choose which records to export</div>
               <Row className="mx-3 pb-2">
                 <Col md={24}>
                   <Form.Check
@@ -302,7 +303,7 @@ class CustomExport extends React.Component {
             </div>
             <hr className="m-0" />
             <div className="p-2">
-              <h5 className="mx-3 my-2">Choose which elements to export</h5>
+              <div className="h5 mx-3 my-2">Choose which elements to export</div>
               <p className="mx-3 mb-1">Which data would you like to include for each monitoree?</p>
               <Row className="mx-3 py-2">
                 <Col md={24} className="p-1">
@@ -391,7 +392,7 @@ class CustomExport extends React.Component {
             </div>
             <hr className="m-0" />
             <div className="p-2">
-              <h5 className="mx-3 my-2">Custom export format name</h5>
+              <div className="h5 mx-3 my-2">Custom export format name</div>
               <Row className="mx-3">
                 <Col md={12} className="px-1 py-2">
                   <Form.Control
@@ -401,34 +402,13 @@ class CustomExport extends React.Component {
                     type="text"
                     className="form-square"
                     placeholder="(Optional name for saved Custom Export)"
+                    aria-label="Custom Export Name Text Input"
                     autoComplete="off"
                     value={this.state.preset?.name}
                     onChange={event => this.handlePresetChange('name', event?.target?.value)}
                   />
                 </Col>
-                <Col md={6} className="px-1 pt-2">
-                  <Form.Group className="mb-0">
-                    <Button
-                      id="custom-export-format-csv"
-                      size="sm"
-                      variant={this.state.preset?.config?.format === 'csv' ? 'primary' : 'outline-secondary'}
-                      style={{ outline: 'none', boxShadow: 'none' }}
-                      onClick={() => this.handlePresetChange('config.format', 'csv')}>
-                      <FontAwesomeIcon className="mr-1" icon={['fas', 'file-csv']} />
-                      CSV
-                    </Button>
-                    <Button
-                      id="custom-export-format-xlsx"
-                      size="sm"
-                      variant={this.state.preset?.config?.format === 'xlsx' ? 'primary' : 'outline-secondary'}
-                      style={{ outline: 'none', boxShadow: 'none' }}
-                      onClick={() => this.handlePresetChange('config.format', 'xlsx')}>
-                      <FontAwesomeIcon className="mr-1" icon={['fas', 'file-excel']} />
-                      Excel
-                    </Button>
-                  </Form.Group>
-                </Col>
-                <Col md={6} className="px-1 pt-2">
+                <Col md={12} className="px-1 pt-2">
                   <Form.Group className="mb-0 float-right">
                     {this.state.preset?.id && (
                       <React.Fragment>
@@ -519,12 +499,15 @@ class CustomExport extends React.Component {
             )}
           </Modal.Footer>
         </Modal>
-        <ConfirmExport
-          show={this.state.show_confirm_export_modal}
-          title={`Custom Export Format ${this.state.preset?.name ? `(${this.state.preset.name})` : ''}`}
-          onCancel={() => this.setState({ show_confirm_export_modal: false })}
-          onStartExport={this.export}
-        />
+        {this.state.show_confirm_export_modal && (
+          <ConfirmExport
+            show={this.state.show_confirm_export_modal}
+            exportType={'Custom Export Format'}
+            presetName={this.state.preset?.name}
+            onCancel={() => this.setState({ show_confirm_export_modal: false })}
+            onStartExport={this.export}
+          />
+        )}
       </React.Fragment>
     );
   }

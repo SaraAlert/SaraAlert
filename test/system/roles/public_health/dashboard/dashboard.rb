@@ -60,6 +60,9 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def export_custom(user_label, settings)
+    click_on (settings[:workflow] == :exposure ? 'Exposure Monitoring' : 'Isolation Monitoring').to_s if settings[:workflow].present?
+    @@system_test_utils.go_to_tab(settings[:tab]) if settings[:tab].present?
+
     click_on 'Export'
     click_on settings[:preset] || 'Custom Format...'
 
@@ -67,17 +70,14 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     choose "select-monitoree-records-#{settings[:records]}" if settings[:records].present?
 
     # Choose which elements to export
-    settings[:elements]&.each_value do |data_type|
-      data_type[:checked]&.each do |label|
+    settings[:data]&.each_value do |data_type|
+      data_type[:selected]&.each do |label|
         find('span', class: 'rct-title', text: label).click
       end
     end
 
     # Provide optional custom export format name
     fill_in 'preset', with: settings[:name] if settings[:name].present?
-
-    # Select file format
-    click_on "custom-export-format-#{settings[:format]}" if settings[:format]
 
     # Save, update, or delete preset
     settings[:actions]&.each do |action|
