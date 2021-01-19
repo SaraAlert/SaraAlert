@@ -7,7 +7,6 @@ import ReactTooltip from 'react-tooltip';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import moment from 'moment-timezone';
-import _ from 'lodash';
 
 import DateInput from '../../util/DateInput';
 import confirmDialog from '../../util/ConfirmDialog';
@@ -209,6 +208,7 @@ class AdvancedFilter extends React.Component {
       savedFilters: [],
       activeFilter: null,
       applied: false,
+      lastAppliedFilter: null,
     };
   }
 
@@ -262,7 +262,11 @@ class AdvancedFilter extends React.Component {
 
   // Apply the current filter
   apply = () => {
-    this.setState({ show: false, applied: true }, () => {
+    const appliedFilter = {
+      activeFilter: this.state.activeFilter,
+      activeFilterOptions: this.state.activeFilterOptions,
+    };
+    this.setState({ show: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilterOptions);
       if (this.props.updateStickySettings && this.state.activeFilter) {
         localStorage.setItem(`SaraFilter`, this.state.activeFilter.id);
@@ -283,14 +287,9 @@ class AdvancedFilter extends React.Component {
 
   // Reset modal when cancelled
   cancel = () => {
-    // check if there was a filter applied
-    const appliedFilterId = localStorage.getItem(`SaraFilter`);
-    const appliedFilter = this.state.savedFilters.find(filter => filter.id === parseInt(appliedFilterId));
-
-    // update state accordingly
-    const applied = !_.isEmpty(appliedFilter);
-    const activeFilter = applied ? appliedFilter : null;
-    const activeFilterOptions = applied ? appliedFilter.contents : [];
+    const applied = this.state.applied;
+    const activeFilter = applied ? this.state.lastAppliedFilter.activeFilter : null;
+    const activeFilterOptions = applied ? this.state.lastAppliedFilter.activeFilterOptions : [];
     this.setState({ show: false, applied, activeFilter, activeFilterOptions }, () => {
       // if no filter was applied, start again with empty default
       if (!applied) {
