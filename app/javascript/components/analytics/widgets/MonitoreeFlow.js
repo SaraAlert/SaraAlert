@@ -31,14 +31,14 @@ class MonitoreeFlow extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5"> Monitoree Flow Over Time (All Records) ​</div>
+          <div className="analytics-card-header font-weight-bold h5">Monitoree Flow Over Time (All Records)</div>
           <Card.Body className="mt-4">
             <table className="analytics-table">
               <thead>
                 <tr>
                   <th className="py-0"></th>
                   {MONITOREE_FLOW_HEADERS.map((monitoreeFlowHeader, index) => (
-                    <th key={index}> {monitoreeFlowHeader} </th>
+                    <th key={index}>{monitoreeFlowHeader}</th>
                   ))}
                 </tr>
               </thead>
@@ -46,12 +46,12 @@ class MonitoreeFlow extends React.Component {
                 <tbody key={index}>
                   <tr>
                     <td className="font-weight-bold text-left p-0">
-                      <u>{_.upperCase(WORKFLOWS[Number(index)])} WORKFLOW</u>{' '}
+                      <u>{_.upperCase(WORKFLOWS[Number(index)])} WORKFLOW</u>
                     </td>
                   </tr>
                   <tr style={{ height: '20px' }}>
                     <td className="font-weight-bold text-left analytics-mf-subheader">
-                      <u>INCOMING</u>{' '}
+                      <u>INCOMING</u>
                     </td>
                   </tr>
                   <tr className="analytics-zebra-bg">
@@ -68,7 +68,7 @@ class MonitoreeFlow extends React.Component {
                   </tr>
                   <tr style={{ height: '20px' }}>
                     <td className="font-weight-bold text-left analytics-mf-subheader">
-                      <u>OUTGOING</u>{' '}
+                      <u>OUTGOING</u>
                     </td>
                   </tr>
                   <tr className="analytics-zebra-bg">

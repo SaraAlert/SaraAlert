@@ -3,33 +3,30 @@ import { PropTypes } from 'prop-types';
 import { Form, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
 
-import reportError from '../util/ReportError';
+import reportError from '../../util/ReportError';
 
-class AddReportingNote extends React.Component {
+class AddAssessmentNote extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showAddReportingNoteModal: false,
+      showAddAssessmentNoteModal: false,
       comment: '',
       loading: false,
     };
-    this.toggleAddReportingNoteModal = this.toggleAddReportingNoteModal.bind(this);
-    this.addReportingNote = this.addReportingNote.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  toggleAddReportingNoteModal() {
-    let current = this.state.showAddReportingNoteModal;
+  toggleAddAssessmentNoteModal = () => {
+    let current = this.state.showAddAssessmentNoteModal;
     this.setState({
-      showAddReportingNoteModal: !current,
+      showAddAssessmentNoteModal: !current,
     });
-  }
+  };
 
-  handleChange(event) {
+  handleChange = event => {
     this.setState({ [event.target.id]: event.target.value });
-  }
+  };
 
-  addReportingNote() {
+  AddAssessmentNote = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -45,16 +42,16 @@ class AddReportingNote extends React.Component {
           reportError(error);
         });
     });
-  }
+  };
 
-  createModal(title, toggle, submit, id) {
+  createModal(toggle, submit) {
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>Add Note To Report</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Please enter your note about the assessment (ID: {id}) below.</p>
+          <p>Please enter your note about the report (ID: {this.props.assessment.id}) below.</p>
           <Form.Group>
             <Form.Control as="textarea" rows="2" id="comment" onChange={this.handleChange} aria-label="Enter Assessment Note Text Area" />
           </Form.Group>
@@ -79,20 +76,19 @@ class AddReportingNote extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button variant="link" onClick={this.toggleAddReportingNoteModal} className="dropdown-item">
+        <Button variant="link" onClick={this.toggleAddAssessmentNoteModal} className="dropdown-item">
           <i className="fas fa-comment-medical fa-fw"></i> Add Note
         </Button>
-        {this.state.showAddReportingNoteModal &&
-          this.createModal('Add Note To Report', this.toggleAddReportingNoteModal, this.addReportingNote, this.props.assessment.id)}
+        {this.state.showAddAssessmentNoteModal && this.createModal(this.toggleAddAssessmentNoteModal, this.AddAssessmentNote)}
       </React.Fragment>
     );
   }
 }
 
-AddReportingNote.propTypes = {
+AddAssessmentNote.propTypes = {
   authenticity_token: PropTypes.string,
   assessment: PropTypes.object,
   patient: PropTypes.object,
 };
 
-export default AddReportingNote;
+export default AddAssessmentNote;

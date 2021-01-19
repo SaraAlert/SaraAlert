@@ -11,21 +11,27 @@ import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
 import ExposureSummary from './widgets/ExposureSummary';
 import PreferredReportingMethod from './widgets/PreferredReportingMethod';
-import reportError from '../util/ReportError';
 import MonitoreesByEventDate from './widgets/MonitoreesByEventDate';
 import GeographicSummary from './widgets/GeographicSummary';
+import reportError from '../util/ReportError';
 
 class PublicHealthAnalytics extends React.Component {
   constructor(props) {
     super(props);
-    this.exportAsPNG = this.exportAsPNG.bind(this);
     this.state = {
+      loading: false,
       showEpidemiologicalGraphs: false,
       hasErrors: !this.props.stats || Object.entries(this.props.stats).length === 0,
     };
   }
 
-  exportAsPNG() {
+  handleClick = () => {
+    this.setState({ loading: true }, () => {
+      this.exportAsPNG();
+    });
+  };
+
+  exportAsPNG = () => {
     if (window.document.documentMode) {
       alert(
         'Analytics export is not availale using the Internet Explorer web browser. Please use an alternative browser or a local image capture application instead.'
@@ -44,12 +50,13 @@ class PublicHealthAnalytics extends React.Component {
           link.download = imageName;
           link.href = dataUrl;
           link.click();
+          this.setState({ loading: false });
         })
         .catch(error => {
           reportError(error);
         });
     }
-  }
+  };
 
   toggleEpidemiologicalGraphs = showEpidemiologicalGraphs => this.setState({ showEpidemiologicalGraphs });
 
@@ -89,8 +96,13 @@ class PublicHealthAnalytics extends React.Component {
               </div>
             </Col>
             <Col className="mx-2 px-0 text-right">
-              <Button variant="primary" className="btn-square export-png" onClick={this.exportAsPNG}>
-                <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG
+              <Button variant="primary" className="btn-square export-png" disabled={this.state.loading} onClick={this.handleClick}>
+                <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG&nbsp;&nbsp;
+                {this.state.loading && (
+                  <React.Fragment>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                  </React.Fragment>
+                )}
               </Button>
             </Col>
           </Row>
@@ -109,6 +121,7 @@ class PublicHealthAnalytics extends React.Component {
             <Col xs="4">
               <span className="float-right">
                 <Switch
+                  id="epidemiological-graph-switch"
                   className="ml-2 mt-4 custom-react-switch"
                   onChange={this.toggleEpidemiologicalGraphs}
                   onColor="#557385"
@@ -122,10 +135,12 @@ class PublicHealthAnalytics extends React.Component {
           </Row>
           <Row className="mb-4 mx-1 px-0">
             <Col xs="16">
-              <h5 className="text-secondary">Among Those Currently Under Active Monitoring</h5>
+              <label htmlFor="epidemiological-graph-switch" className="h5 text-secondary">
+                Among Those Currently Under Active Monitoring
+              </label>
             </Col>
             <Col xs="8">
-              <h5 className="float-right text-secondary">View Data as Graph</h5>
+              <span className="h5 float-right text-secondary">View Data as Graph</span>
             </Col>
           </Row>
           <Row className="mb-4 mx-1 px-0">
@@ -143,7 +158,7 @@ class PublicHealthAnalytics extends React.Component {
               <MonitoreesByEventDate stats={this.props.stats} />
             </Col>
           </Row>
-          <Row className="mb-5 pb-3 mx-1 px-0 pt-4">
+          <Row className="mb-2 pb-3 mx-1 px-0 pt-4">
             <GeographicSummary stats={this.props.stats} />
           </Row>
         </React.Fragment>

@@ -51,7 +51,8 @@ class DateInput extends React.Component {
                 : `date-input__clear-btn_${this.props.customClass?.includes('sm') ? 'sm' : this.props.customClass?.includes('md') ? 'md' : 'lg'}`
             }`}
             onClick={this.clearDate}
-            disabled={this.props.disabled}>
+            disabled={this.props.disabled}
+            aria-label="Clear Date Input">
             <i className="fas fa-times"></i>
           </button>
         )}
@@ -62,7 +63,6 @@ class DateInput extends React.Component {
           <div>
             <DatePicker
               id={this.props.id}
-              aria-label="Date Picker"
               selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}
               minDate={this.props.minDate && moment(this.props.minDate, 'YYYY-MM-DD').toDate()}
               maxDate={this.props.maxDate && moment(this.props.maxDate, 'YYYY-MM-DD').toDate()}
@@ -76,6 +76,7 @@ class DateInput extends React.Component {
                 <MaskedInput
                   mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
                   keepCharPositions
+                  aria-label={this.props.ariaLabel || 'Date Input'}
                   className={`${
                     this.props.customClass?.includes('sm')
                       ? 'date-input__input_sm'
@@ -116,6 +117,7 @@ DateInput.propTypes = {
   isInvalid: PropTypes.bool,
   isClearable: PropTypes.bool,
   customClass: PropTypes.string,
+  ariaLabel: PropTypes.string,
   disabled: PropTypes.bool,
   tooltipText: PropTypes.string,
   tooltipKey: PropTypes.string,

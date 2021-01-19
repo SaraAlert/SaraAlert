@@ -30,13 +30,14 @@
                         in_household_with_member_with_ce_in_exposure: @household_members_with_ce_in_exposure_excludes_patient.count > 1,
                         patient: @patient,
                         jurisdiction_paths: @possible_jurisdiction_paths,
-                        assigned_users: @patient.jurisdiction.assigned_users
+                        assigned_users: @patient.jurisdiction.assigned_users,
+                        monitoring_reasons: ValidationHelper::USER_SELECTABLE_MONITORING_REASONS
                       }) %>
 </div>
 <% end %>
 
 <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
-<%= react_component('patient/PatientReportsTable', {
+<%= react_component('assessment/AssessmentTable', {
                       patient: @patient,
                       is_household_member: @household_members.count > 1,
                       report_eligibility: @patient.report_eligibility,
@@ -146,7 +147,7 @@
 <% end %>
 
 <% if current_user.can_modify_subject_status? %>
-<%= react_component('history/HistoryComponent', { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token, history_types: @history_types }) %>
+<%= react_component('history/HistoryComponent', { patient_id: @patient.id, histories: @patient.histories.order(created_at: :desc), authenticity_token: form_authenticity_token, history_types: @history_types }) %>
 <% end %>
 
 <script>

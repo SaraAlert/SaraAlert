@@ -120,7 +120,6 @@ class Patient < ApplicationRecord
       .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       .where('last_assessment_reminder_sent <= ? OR last_assessment_reminder_sent IS NULL', 12.hours.ago)
       .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
-      .distinct
   }
 
   # All individuals currently being monitored
@@ -177,7 +176,6 @@ class Patient < ApplicationRecord
       .where(purged: false)
       .where(public_health_action: 'None')
       .where.not(symptom_onset: nil)
-      .distinct
   }
 
   # Individuals who have reported recently and are not symptomatic (includes patients in both exposure & isolation workflows)
@@ -194,7 +192,6 @@ class Patient < ApplicationRecord
         .where(symptom_onset: nil)
         .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
       )
-      .distinct
   }
 
   # Non reporting asymptomatic individuals (includes patients in both exposure & isolation workflows)
@@ -213,7 +210,6 @@ class Patient < ApplicationRecord
         .where('latest_assessment_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
       )
-      .distinct
   }
 
   # Any individual who is currently under investigation (exposure workflow only)
@@ -222,22 +218,21 @@ class Patient < ApplicationRecord
       .where(monitoring: true)
       .where(purged: false)
       .where.not(public_health_action: 'None')
-      .distinct
   }
 
   # Any individual who has any assessments still considered symptomatic (exposure workflow only)
   scope :exposure_symptomatic, lambda {
-    where(isolation: false).symptomatic.distinct
+    where(isolation: false).symptomatic
   }
 
   # Non reporting asymptomatic individuals (exposure workflow only)
   scope :exposure_non_reporting, lambda {
-    where(isolation: false).non_reporting.distinct
+    where(isolation: false).non_reporting
   }
 
   # Individuals who have reported recently and are not symptomatic (exposure workflow only)
   scope :exposure_asymptomatic, lambda {
-    where(isolation: false).asymptomatic.distinct
+    where(isolation: false).asymptomatic
   }
 
   # Individuals that meet the asymptomatic recovery definition (isolation workflow only)
@@ -249,7 +244,6 @@ class Patient < ApplicationRecord
       .where.not(latest_assessment_at: nil)
       .where('latest_positive_lab_at < ?', 10.days.ago)
       .where('extended_isolation IS NULL OR extended_isolation < ?', Date.today)
-      .distinct
   }
 
   # Individuals that meet the symptomatic non test based review requirement (isolation workflow only)
@@ -268,7 +262,6 @@ class Patient < ApplicationRecord
         .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
         .where('extended_isolation IS NULL OR extended_isolation < ?', Date.today)
       )
-      .distinct
   }
 
   # Individuals that meet the test based review requirement (isolation workflow only)
@@ -289,7 +282,6 @@ class Patient < ApplicationRecord
         .where('negative_lab_count >= ?', 2)
         .where('extended_isolation IS NULL OR extended_isolation < ?', Date.today)
       )
-      .distinct
   }
 
   # Individuals in the isolation workflow that require review (isolation workflow only)
@@ -301,7 +293,6 @@ class Patient < ApplicationRecord
       .or(
         isolation_test_based
       )
-      .distinct
   }
 
   # Individuals not meeting review but are reporting (isolation workflow only)
@@ -318,7 +309,6 @@ class Patient < ApplicationRecord
            .where(isolation: true)
            .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
          )
-         .distinct
   }
 
   # Individuals not meeting review and are not reporting (isolation workflow only)
@@ -337,7 +327,6 @@ class Patient < ApplicationRecord
            .where('latest_assessment_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
            .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
          )
-         .distinct
   }
 
   # Monitorees who have reported in the last hour that are considered symptomatic
@@ -346,7 +335,6 @@ class Patient < ApplicationRecord
       .where(purged: false)
       .where('latest_assessment_at >= ?', 60.minutes.ago)
       .where_assoc_exists(:assessments, &:symptomatic_last_hour)
-      .distinct
   }
 
   # All individuals currently being monitored if true, all individuals otherwise
@@ -514,17 +502,26 @@ class Patient < ApplicationRecord
 
   # Order individuals based on their public health assigned risk assessment
   def self.order_by_risk(asc: true)
-    order_by = ["WHEN exposure_risk_assessment='High' THEN 0",
-                "WHEN exposure_risk_assessment='Medium' THEN 1",
-                "WHEN exposure_risk_assessment='Low' THEN 2",
-                "WHEN exposure_risk_assessment='No Identified Risk' THEN 3",
-                'WHEN exposure_risk_assessment IS NULL THEN 4']
-    order_by_rev = ['WHEN exposure_risk_assessment IS NULL THEN 4',
-                    "WHEN exposure_risk_assessment='High' THEN 3",
-                    "WHEN exposure_risk_assessment='Medium' THEN 2",
-                    "WHEN exposure_risk_assessment='Low' THEN 1",
-                    "WHEN exposure_risk_assessment='No Identified Risk' THEN 0"]
-    order((['CASE'] + (asc ? order_by : order_by_rev) + ['END']).join(' '))
+    order_by = <<~SQL
+      CASE
+      WHEN exposure_risk_assessment='High' THEN 0
+      WHEN exposure_risk_assessment='Medium' THEN 1
+      WHEN exposure_risk_assessment='Low' THEN 2
+      WHEN exposure_risk_assessment='No Identified Risk' THEN 3
+      WHEN exposure_risk_assessment IS NULL THEN 4
+      END
+    SQL
+
+    order_by_rev = <<~SQL
+      CASE
+      WHEN exposure_risk_assessment IS NULL THEN 4
+      WHEN exposure_risk_assessment='High' THEN 3
+      WHEN exposure_risk_assessment='Medium' THEN 2
+      WHEN exposure_risk_assessment='Low' THEN 1
+      WHEN exposure_risk_assessment='No Identified Risk' THEN 0
+      END
+    SQL
+    order(Arel.sql(asc ? order_by : order_by_rev))
   end
 
   # Check for potential duplicate records. Duplicate criteria is as follows:
@@ -698,6 +695,10 @@ class Patient < ApplicationRecord
       end
     end
 
+    # Check last_assessment_reminder_sent before enqueueing to cover potential race condition of multiple reports
+    # being sent out for the same monitoree.
+    return unless last_assessment_reminder_sent_eligible? || send_now
+
     if preferred_contact_method&.downcase == 'sms text-message' && ADMIN_OPTIONS['enable_sms']
       PatientMailer.assessment_sms(self).deliver_later
     elsif preferred_contact_method&.downcase == 'sms texted weblink' && ADMIN_OPTIONS['enable_sms']
@@ -869,6 +870,12 @@ class Patient < ApplicationRecord
     else
       timezone_for_state('massachusetts')
     end
+  end
+
+  # Check last_assessment_reminder_sent for eligibility. This is chiefly intended to help cover potential race condition of
+  # multiple reports being sent out for the same monitoree.
+  def last_assessment_reminder_sent_eligible?
+    last_assessment_reminder_sent.nil? || last_assessment_reminder_sent <= 12.hours.ago
   end
 
   # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.

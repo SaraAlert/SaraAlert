@@ -1,21 +1,22 @@
 import React from 'react';
-import { Card, Button, Row, Col, Dropdown, InputGroup, OverlayTrigger, Form, Tooltip } from 'react-bootstrap';
+import _ from 'lodash';
 import { PropTypes } from 'prop-types';
-import CustomTable from '../layout/CustomTable';
-import reportError from '../util/ReportError';
-import LastDateExposure from '../subject/LastDateExposure';
-import CurrentStatus from '../subject/CurrentStatus';
-import ClearReports from '../subject/ClearReports';
-import PauseNotifications from '../subject/PauseNotifications';
-import ContactAttempt from '../subject/ContactAttempt';
-import AddReportNote from '../subject/AddReportNote';
-import ClearSingleReport from '../subject/ClearSingleReport';
 import axios from 'axios';
 import moment from 'moment-timezone';
-import _ from 'lodash';
-import ReportModal from './ReportModal';
+import { Card, Button, Row, Col, Dropdown, InputGroup, OverlayTrigger, Form, Tooltip } from 'react-bootstrap';
 
-class PatientReportsTable extends React.Component {
+import AddAssessmentNote from './steps/AddAssessmentNote';
+import ClearAssessments from './steps/ClearAssessments';
+import ClearSingleAssessment from './steps/ClearSingleAssessment';
+import ContactAttempt from '../subject/ContactAttempt';
+import CurrentStatus from '../subject/CurrentStatus';
+import CustomTable from '../layout/CustomTable';
+import LastDateExposure from '../subject/LastDateExposure';
+import PauseNotifications from '../subject/PauseNotifications';
+import reportError from '../util/ReportError';
+import AssessmentModal from './AssessmentModal';
+
+class AssessmentTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -42,7 +43,7 @@ class PatientReportsTable extends React.Component {
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
       editRow: null,
-      showReportModal: false,
+      showAssessmentModal: false,
     };
   }
 
@@ -128,7 +129,7 @@ class PatientReportsTable extends React.Component {
 
   /**
    * Generates column data for symptoms.
-   * NOTE: These are the aggregate symptoms from all assessments in the table, to ensure no
+   * NOTE: These are the aggregate symptoms from all reports in the table, to ensure no
    * data loss if patient has been transferred between jurisdictions with different symptom
    * configurations.
    */
@@ -234,16 +235,16 @@ class PatientReportsTable extends React.Component {
    */
   handleAddReportClick = () => {
     this.setState({
-      showAddReportModal: true,
+      showAddAssessmentModal: true,
     });
   };
 
   /**
    * Closes the add report modal by updating state.
    */
-  handleAddReportModalClose = () => {
+  handleAddAssessmentModalClose = () => {
     this.setState({
-      showAddReportModal: false,
+      showAddAssessmentModal: false,
     });
   };
 
@@ -253,7 +254,7 @@ class PatientReportsTable extends React.Component {
    */
   handleEditReportClick = row => {
     this.setState({
-      showEditReportModal: true,
+      showEditAssessmentModal: true,
       editRow: row,
     });
   };
@@ -261,9 +262,9 @@ class PatientReportsTable extends React.Component {
   /**
    * Closes the edit report modal by updating state.
    */
-  handleEditReportModalClose = () => {
+  handleEditAssessmentModalClose = () => {
     this.setState({
-      showEditReportModal: false,
+      showEditAssessmentModal: false,
       editRow: null,
     });
   };
@@ -291,7 +292,7 @@ class PatientReportsTable extends React.Component {
     const direction = this.state.table.rowData && this.state.table.rowData.length > 2 ? null : 'up';
     return (
       <Dropdown drop={direction}>
-        <Dropdown.Toggle id={`report-action-button-${rowData.id}`} size="sm" variant="primary">
+        <Dropdown.Toggle id={`report-action-button-${rowData.id}`} size="sm" variant="primary" aria-label="report-actions-dropdown">
           <i className="fas fa-cogs fw"></i>
         </Dropdown.Toggle>
         <Dropdown.Menu className="test-class" drop={'up'}>
@@ -299,9 +300,9 @@ class PatientReportsTable extends React.Component {
             <i className="fas fa-edit fa-fw"></i>
             <span className="ml-2">Edit</span>
           </Dropdown.Item>
-          <AddReportNote assessment={rowData} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+          <AddAssessmentNote assessment={rowData} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
           {!this.props.patient.isolation && (
-            <ClearSingleReport assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+            <ClearSingleAssessment assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
           )}
         </Dropdown.Menu>
       </Dropdown>
@@ -311,7 +312,7 @@ class PatientReportsTable extends React.Component {
   /**
    * Determines row classname. Row will be updated with a class that makes it red if the assessment
    * is considered symptomatic.
-   * @param {Object} rowData - Assessment data.
+   * @param {Object} rowData - Report data.
    */
   getRowClassName = rowData => {
     return rowData.symptomatic === 'Yes' ? 'table-danger' : '';
@@ -331,7 +332,7 @@ class PatientReportsTable extends React.Component {
                     <i className="fas fa-plus fa-fw"></i>
                     <span className="ml-2">Add New Report</span>
                   </Button>
-                  {!this.props.patient.isolation && <ClearReports authenticity_token={this.props.authenticity_token} patient={this.props.patient} />}
+                  {!this.props.patient.isolation && <ClearAssessments authenticity_token={this.props.authenticity_token} patient={this.props.patient} />}
                   <PauseNotifications authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
                   <ContactAttempt authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
                 </Col>
@@ -341,11 +342,13 @@ class PatientReportsTable extends React.Component {
                       <OverlayTrigger overlay={<Tooltip>Search by id or reporter.</Tooltip>}>
                         <InputGroup.Text className="rounded-0">
                           <i className="fas fa-search"></i>
-                          <span className="ml-1">Search</span>
+                          <label htmlFor="reports-search-input" className="ml-1 mb-0">
+                            Search
+                          </label>
                         </InputGroup.Text>
                       </OverlayTrigger>
                     </InputGroup.Prepend>
-                    <Form.Control id="reports-search-input" autoComplete="off" size="md" name="search" onChange={this.handleSearchChange} />
+                    <Form.Control id="reports-search-input" autoComplete="off" size="md" name="search" onChange={this.handleSearchChange} aria-label="Search" />
                   </InputGroup>
                 </Col>
               </Row>
@@ -374,10 +377,10 @@ class PatientReportsTable extends React.Component {
             />
           </Card.Body>
         </Card>
-        {this.state.showAddReportModal && (
-          <ReportModal
-            show={this.state.showAddReportModal}
-            onClose={this.handleAddReportModalClose}
+        {this.state.showAddAssessmentModal && (
+          <AssessmentModal
+            show={this.state.showAddAssessmentModal}
+            onClose={this.handleAddAssessmentModalClose}
             assessment={{}}
             current_user={this.props.current_user}
             threshold_condition_hash={this.props.threshold_condition_hash}
@@ -390,10 +393,10 @@ class PatientReportsTable extends React.Component {
             idPre={'new'}
           />
         )}
-        {this.state.showEditReportModal && (
-          <ReportModal
-            show={this.state.showEditReportModal}
-            onClose={this.handleEditReportModalClose}
+        {this.state.showEditAssessmentModal && (
+          <AssessmentModal
+            show={this.state.showEditAssessmentModal}
+            onClose={this.handleEditAssessmentModalClose}
             assessment={this.state.table.rowData[this.state.editRow]}
             current_user={this.props.current_user}
             threshold_condition_hash={this.state.table.rowData[this.state.editRow].threshold_condition_hash}
@@ -412,7 +415,7 @@ class PatientReportsTable extends React.Component {
   }
 }
 
-PatientReportsTable.propTypes = {
+AssessmentTable.propTypes = {
   patient: PropTypes.object,
   symptoms: PropTypes.array,
   threshold_condition_hash: PropTypes.string,
@@ -427,4 +430,4 @@ PatientReportsTable.propTypes = {
   authenticity_token: PropTypes.string,
 };
 
-export default PatientReportsTable;
+export default AssessmentTable;

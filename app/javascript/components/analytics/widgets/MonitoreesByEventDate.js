@@ -66,8 +66,8 @@ class MonitoreesByEventDate extends React.Component {
           <Card.Body className="mt-4">
             <Form.Row className="justify-content-md-center">
               <Form.Group as={Col} md="8" onChange={val => this.setTimeResolution(val.target.value)}>
-                <Form.Label>Time Resolution</Form.Label>
-                <Form.Control as="select" size="md">
+                <Form.Label htmlFor="time-resolution-select">Time Resolution</Form.Label>
+                <Form.Control id="time-resolution-select" as="select" size="md">
                   <option>Day</option>
                   <option>Week</option>
                   <option>Month</option>

@@ -216,7 +216,16 @@ The content for these files can be based off of the `.env-prod-assessment-exampl
 
 The `SECRET_KEY_BASE` and `MYSQL_PASSWORD` variables should be changed at the very least. These variables should also not be the same between both assessment and enrollment instances of the files. It is important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file.
 
-**Twilio/Authy Environment Variables**
+***Export Environment Variables***
+
+The following environment variables are used to adjust export configurations. They only need to be set on the enrollment instances as those are what handle the exports.
+If not set, these variables will default to 10,000 and 500 respectively.
+
+* `EXPORT_OUTER_BATCH_SIZE: number of Patient records to be considered before breaking data up into a separate file`
+* `EXPORT_INNER_BATCH_SIZE: number of Patient records to be considered at a given time when getting and writing data to files (for memory optimizations)`
+
+***Twilio/Authy Environment Variables***
+
 The following environment variables need to be set on the enrollment instances, which are the instances that will be dispatching the SMS/Voice assessments via Twilio and performing Two-Factor Authentication using Authy. These environment variables can be set in a `config/local_env.yml` file, or via a method provided by the deployment environment.
 * `TWILLIO_API_ACCOUNT: <Account number for Twilio Account>`
 * `TWILLIO_API_KEY: <API key for Twilio Account>`
@@ -262,7 +271,7 @@ The applications should be running on port 443 with Nginx proxying traffic betwe
 
 ## API
 
-See [API documentation](API.md) for more information.
+See [API documentation](https://saraalert.github.io/SaraAlert/api/) for more information.
 
 ## Testing
 
@@ -310,7 +319,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## License
 
-Copyright 2020 The MITRE Corporation
+Copyright 2020, 2021 The MITRE Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 

@@ -11,22 +11,17 @@ import MonitoringStatus from '../../../components/subject/monitoring_actions/Mon
 import PublicHealthAction from '../../../components/subject/monitoring_actions/PublicHealthAction';
 import { mockPatient1 } from '../../mocks/mockPatients'
 import { mockUser1 } from '../../mocks/mockUsers'
+import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction'
+import { mockMonitoringReasons } from '../../mocks/mockMonitoringReasons'
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const assigned_users = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
-const jurisdiction_paths = {
-  2: 'USA, State 1',
-  3: 'USA, State 1, County 1',
-  4: 'USA, State 1, County 2',
-  5: 'USA, State 2',
-  6: 'USA, State 2, County 3',
-  7: 'USA, State 2, County 4'
-};
 
 describe('MonitoringActions', () => {
   it('Properly renders all main components', () => {
-    const wrapper = shallow(<MonitoringActions patient={mockPatient1} has_dependents={false} in_household_with_member_with_ce_in_exposure={false} isolation={false} 
-      authenticity_token={authyToken} jurisdiction_paths={jurisdiction_paths} current_user={mockUser1} assigned_users={assigned_users} user_can_transfer={false} />);
+    const wrapper = shallow(<MonitoringActions patient={mockPatient1} has_dependents={false} in_household_with_member_with_ce_in_exposure={false} isolation={false}
+      authenticity_token={authyToken} jurisdiction_paths={mockJurisdictionPaths} current_user={mockUser1} assigned_users={assigned_users} user_can_transfer={false}
+      monitoring_reasons={mockMonitoringReasons}/>);
 
     expect(wrapper.find(Form).exists()).toBeTruthy();
     expect(wrapper.find(Form.Group).length).toEqual(7);

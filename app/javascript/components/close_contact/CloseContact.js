@@ -100,7 +100,7 @@ class CloseContact extends React.Component {
             <Row>
               <Form.Group as={Col} controlId="first_name">
                 <Form.Label className="nav-input-label">First Name</Form.Label>
-                <Form.Control size="lg" id="first_name" className="form-square" value={this.state.first_name || ''} onChange={this.handleChange} />
+                <Form.Control size="lg" className="form-square" value={this.state.first_name || ''} onChange={this.handleChange} />
                 <Form.Control.Feedback className="d-block" type="invalid">
                   {this.state.errors['first_name']}
                 </Form.Control.Feedback>
@@ -109,7 +109,7 @@ class CloseContact extends React.Component {
             <Row>
               <Form.Group as={Col} controlId="last_name">
                 <Form.Label className="nav-input-label">Last Name</Form.Label>
-                <Form.Control size="lg" id="last_name" className="form-square" value={this.state.last_name || ''} onChange={this.handleChange} />
+                <Form.Control size="lg" className="form-square" value={this.state.last_name || ''} onChange={this.handleChange} />
                 <Form.Control.Feedback className="d-block" type="invalid">
                   {this.state.errors['last_name']}
                 </Form.Control.Feedback>
@@ -133,20 +133,21 @@ class CloseContact extends React.Component {
             <Row>
               <Form.Group as={Col} controlId="email">
                 <Form.Label className="nav-input-label">Email</Form.Label>
-                <Form.Control size="lg" id="email" className="form-square" value={this.state.email || ''} onChange={this.handleChange} />
+                <Form.Control size="lg" className="form-square" value={this.state.email || ''} onChange={this.handleChange} />
                 <Form.Control.Feedback className="d-block" type="invalid">
                   {this.state.errors['email']}
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col} controlId="notes">
-                <Form.Label className="nav-input-label">Notes</Form.Label>
+              <Form.Group as={Col}>
+                <Form.Label htmlFor="notes" className="nav-input-label">
+                  Notes
+                </Form.Label>
                 <Form.Control
-                  as="textarea"
-                  aria-label="Notes Text Area"
-                  rows="5"
                   id="notes"
+                  as="textarea"
+                  rows="5"
                   className="form-square"
                   value={this.state.notes || ''}
                   placeholder={this.closeContactNotePlaceholder}

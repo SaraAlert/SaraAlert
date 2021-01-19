@@ -47,9 +47,14 @@ class TwilioSender
       return
     end
 
-    trigger_message = execution&.context&.[]('trigger')&.[]('message')
-    phone_number_from = trigger_message&.[]('From')
-    phone_number_to = trigger_message&.[]('To')
+    # Get a message out of the studio execution which we can get the To/From numbers out of
+    # The opt-in/out could come from an incoming message trigger OR an existing execution
+    # The message pulled from an existing execution will be the first inbound message found within the execution
+    message = execution&.context&.[]('trigger')&.[]('message') || execution&.context&.[]('widgets')&.values&.select do |x|
+                                                                    x&.[]('inbound')
+                                                                  end&.[](0)&.[]('inbound')
+    phone_number_from = message&.[]('From')
+    phone_number_to = message&.[]('To')
 
     return { monitoree_number: phone_number_from, sara_number: phone_number_to } if !phone_number_from.nil? && !phone_number_to.nil?
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import Assessment from '../assessment/Assessment';
+import Assessment from './Assessment';
 
-class ReportModal extends React.Component {
+class AssessmentModal extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -35,7 +35,7 @@ class ReportModal extends React.Component {
   }
 }
 
-ReportModal.propTypes = {
+AssessmentModal.propTypes = {
   show: PropTypes.bool,
   onClose: PropTypes.func,
   current_user: PropTypes.object,
@@ -51,4 +51,4 @@ ReportModal.propTypes = {
   authenticity_token: PropTypes.string,
 };
 
-export default ReportModal;
+export default AssessmentModal;

@@ -6,6 +6,9 @@ import { Navbar, Nav, Form } from 'react-bootstrap';
 class Header extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      activeKey: this.getActiveTabKey(),
+    };
   }
 
   /**
@@ -28,24 +31,32 @@ class Header extends React.Component {
           </Navbar.Brand>
           {this.props.current_user && (
             <React.Fragment>
-              <Nav className="mr-auto" activeKey={this.getActiveTabKey()}>
+              <Nav className="mr-auto" activeKey={this.state.activeKey}>
                 {this.props.current_user?.can_see_enroller_dashboard_tab && (
-                  <Nav.Link className="py-0 ml-3" href={`${window.BASE_PATH}/patients`}>
+                  <Nav.Link
+                    className={`${this.state.activeKey === '/patients' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3`}
+                    href={`${window.BASE_PATH}/patients`}>
                     <i className="fas fa-table fa-fw mr-2"></i>Enroller Dashboard
                   </Nav.Link>
                 )}
                 {this.props.current_user?.can_see_monitoring_dashboards_tab && (
-                  <Nav.Link className="py-0 ml-3" href={`${window.BASE_PATH}/public_health`}>
+                  <Nav.Link
+                    className={`${this.state.activeKey === '/public_health' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3`}
+                    href={`${window.BASE_PATH}/public_health`}>
                     <i className="fas fa-table fa-fw mr-2"></i>Monitoring Dashboards
                   </Nav.Link>
                 )}
                 {this.props.current_user?.can_see_admin_panel_tab && (
-                  <Nav.Link className="py-0 ml-3" href={`${window.BASE_PATH}/admin`}>
+                  <Nav.Link
+                    className={`${this.state.activeKey === '/admin' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3`}
+                    href={`${window.BASE_PATH}/admin`}>
                     <i className="fas fa-user-cog fa-fw mr-2"></i>Admin Panel
                   </Nav.Link>
                 )}
                 {this.props.current_user?.can_see_analytics_tab && (
-                  <Nav.Link className="py-0 ml-3" href={`${window.BASE_PATH}/analytics`}>
+                  <Nav.Link
+                    className={`${this.state.activeKey === '/analytics' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3`}
+                    href={`${window.BASE_PATH}/analytics`}>
                     <i className="fas fa-chart-pie fa-fw mr-2"></i>Analytics
                   </Nav.Link>
                 )}
@@ -89,6 +100,10 @@ class Header extends React.Component {
                   <React.Fragment>
                     <Nav.Link className="text-white py-0" href="/oauth/applications">
                       <i className="fas fa-share-alt fa-fw mr-2"></i>API
+                    </Nav.Link>
+                    <a className="white-border-right"></a>
+                    <Nav.Link className="text-white py-0" href="/sidekiq">
+                      <i className="fas fa-hourglass fa-fw mr-2"></i>Jobs
                     </Nav.Link>
                     <a className="white-border-right"></a>
                   </React.Fragment>

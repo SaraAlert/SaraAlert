@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes, { bool } from 'prop-types';
-import { Button, Modal, InputGroup, FormControl, Form } from 'react-bootstrap';
+import { Button, Modal, InputGroup, Form } from 'react-bootstrap';
 import Select from 'react-select';
 
 class UserModal extends React.Component {
@@ -54,7 +54,7 @@ class UserModal extends React.Component {
                     <i className="fas fa-envelope"></i>
                   </InputGroup.Text>
                 </InputGroup.Prepend>
-                <FormControl
+                <Form.Control
                   id="email-input"
                   name="email"
                   defaultValue={this.props.initialUserData.email ? this.props.initialUserData.email : ''}
@@ -66,9 +66,9 @@ class UserModal extends React.Component {
               </InputGroup>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Jurisdiction</Form.Label>
+              <Form.Label htmlFor="jurisdiction-select">Jurisdiction</Form.Label>
               <Select
-                id="jurisdiction-select"
+                inputId="jurisdiction-select"
                 name="jurisdiction"
                 defaultValue={
                   this.props.initialUserData.jurisdiction_path
@@ -87,9 +87,9 @@ class UserModal extends React.Component {
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Role</Form.Label>
+              <Form.Label htmlFor="role-select">Role</Form.Label>
               <Select
-                id="role-select"
+                inputId="role-select"
                 name="role"
                 defaultValue={
                   this.props.initialUserData.role_title

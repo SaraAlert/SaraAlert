@@ -105,6 +105,10 @@ select.form-control {
   border-radius: 0;
 }
 
+.select__placeholder {
+  color: #606060 !important;
+}
+
 .badge-larger-font {
   font-size: 90% !important;
 }
@@ -163,6 +167,10 @@ select.form-control {
   line-height: inherit !important;
   white-space: nowrap !important;
   font-weight: 250 !important;
+}
+
+.nav-link-inactive {
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .display-5 {

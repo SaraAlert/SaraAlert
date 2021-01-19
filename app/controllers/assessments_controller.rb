@@ -178,8 +178,8 @@ class AssessmentsController < ApplicationController
     patient = Patient.find_by(submission_token: submission_token)
     redirect_to(root_url) && return if patient.nil?
 
-    redirect_to root_url unless current_user&.can_edit_patient_assessments?
-    patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
+    redirect_to(root_url) && return unless current_user&.can_edit_patient_assessments?
+
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
     reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
 
@@ -188,10 +188,14 @@ class AssessmentsController < ApplicationController
     # Figure out the change
     delta = []
     typed_reported_symptoms.each do |symptom|
-      new_val = symptom.bool_value
-      old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
-      if new_val.present? && old_val.present? && new_val != old_val
-        delta << symptom.name + '=' + (new_val ? 'Yes' : 'No')
+      new_val = symptom.value
+      old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.value
+      case symptom.type
+      when 'BoolSymptom'
+        has_changed = old_val != new_val && !old_val.nil? && !new_val.nil?
+        delta << "#{symptom.label} (\"#{old_val ? 'Yes' : 'No'}\" to \"#{new_val ? 'Yes' : 'No'}\")" if has_changed
+      when 'FloatSymptom', 'IntegerSymptom'
+        delta << "#{symptom.label} (\"#{old_val}\" to \"#{new_val}\")" if new_val != old_val
       end
     end
 

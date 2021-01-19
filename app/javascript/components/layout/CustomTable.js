@@ -139,7 +139,7 @@ class CustomTable extends React.Component {
           </div>
         )}
         <div className={this.props.getCustomTableClassName ? `table-responsive ${this.props.getCustomTableClassName()}` : 'table-responsive'}>
-          <Table striped bordered hover size="sm">
+          <Table striped bordered hover size="sm" className="opaque-table">
             <thead>
               <tr>
                 {this.props.columnData.map(data => {
@@ -148,7 +148,7 @@ class CustomTable extends React.Component {
                 {this.props.isEditable && <th>Edit</th>}
                 {this.props.isSelectable && (
                   <th>
-                    <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll}></input>
+                    <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll} aria-label="Table Select All Rows"></input>
                   </th>
                 )}
               </tr>
@@ -176,7 +176,7 @@ class CustomTable extends React.Component {
                     })}
                     {this.props.isEditable && (
                       <td>
-                        <div className="float-left edit-button" onClick={() => this.handleEditClick(rowIndex)}>
+                        <div className="float-left edit-button" onClick={() => this.handleEditClick(rowIndex)} aria-label="Edit Row Button">
                           <i className="fas fa-edit"></i>
                         </div>
                       </td>
@@ -185,7 +185,9 @@ class CustomTable extends React.Component {
                       <td>
                         <input
                           type="checkbox"
-                          aria-label="Table Select Monitoree Row"
+                          aria-label={`Table Select${rowData.name ? ` Monitoree: ${rowData.name}` : ''}${
+                            this.props.currentUser ? ` User: ${this.props.currentUser}` : ''
+                          }`}
                           checked={this.props.selectAll || this.props.selectedRows.includes(rowIndex)}
                           onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
                       </td>
@@ -287,6 +289,7 @@ CustomTable.propTypes = {
   entryOptions: PropTypes.array,
   getRowClassName: PropTypes.func,
   getCustomTableClassName: PropTypes.func,
+  currentUser: PropTypes.string,
 };
 
 CustomTable.defaultProps = {

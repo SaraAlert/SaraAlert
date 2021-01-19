@@ -17,6 +17,7 @@ import {
   Tooltip,
   Row,
 } from 'react-bootstrap';
+import { ToastContainer } from 'react-toastify';
 
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -478,7 +479,9 @@ class PatientsTable extends React.Component {
                     <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
                       <InputGroup.Text className="rounded-0">
                         <i className="fas fa-search"></i>
-                        <span className="ml-1">Search</span>
+                        <label htmlFor="search" className="ml-1 mb-0">
+                          Search
+                        </label>
                       </InputGroup.Text>
                     </OverlayTrigger>
                   </InputGroup.Prepend>
@@ -486,6 +489,7 @@ class PatientsTable extends React.Component {
                     autoComplete="off"
                     size="sm"
                     id="search"
+                    aria-label="Search"
                     value={this.state.query.search || ''}
                     onChange={this.handleSearchChange}
                     onKeyPress={this.handleKeyPress}
@@ -554,6 +558,7 @@ class PatientsTable extends React.Component {
             <CloseRecords
               authenticity_token={this.props.authenticity_token}
               patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
+              monitoring_reasons={this.props.monitoring_reasons}
               close={() => this.setState({ action: undefined })}
             />
           )}
@@ -573,6 +578,7 @@ class PatientsTable extends React.Component {
             />
           )}
         </Modal>
+        <ToastContainer position="top-center" autoClose={2000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
       </div>
     );
   }
@@ -589,6 +595,7 @@ PatientsTable.propTypes = {
   tabs: PropTypes.object,
   setQuery: PropTypes.func,
   setFilteredMonitoreesCount: PropTypes.func,
+  monitoring_reasons: PropTypes.array,
 };
 
 export default PatientsTable;

@@ -56,6 +56,9 @@ class PatientMailer < ApplicationMailer
     end
     failed_dependents = []
 
+    # Cover potential race condition where multiple messages are sent for the same monitoree.
+    return unless patient.last_assessment_reminder_sent_eligible?
+
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |dependent|
       lang = dependent.select_language
@@ -65,8 +68,8 @@ class PatientMailer < ApplicationMailer
                                                                   dependent&.initials_age)
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
 
-      success = TwilioSender.send_sms(patient, contents)
-      if success
+      patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
+      if TwilioSender.send_sms(patient, contents)
         add_success_history(dependent, patient)
       else
         add_fail_history_sms(dependent)
@@ -80,7 +83,7 @@ class PatientMailer < ApplicationMailer
         add_fail_history_dependents(patient)
       end
     end
-    patient.update(last_assessment_reminder_sent: DateTime.now)
+    patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
   end
 
   def assessment_sms(patient)
@@ -92,6 +95,9 @@ class PatientMailer < ApplicationMailer
       add_fail_history_sms_blocked(patient)
       return
     end
+
+    # Cover potential race condition where multiple messages are sent for the same monitoree.
+    return unless patient.last_assessment_reminder_sent_eligible?
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
@@ -117,14 +123,13 @@ class PatientMailer < ApplicationMailer
                max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
 
+    patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
     if TwilioSender.start_studio_flow(patient, params)
       add_success_history(patient, patient)
     else
       add_fail_history_sms(patient)
+      patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
     end
-
-    # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_voice(patient)
@@ -132,6 +137,9 @@ class PatientMailer < ApplicationMailer
       add_fail_history_blank_field(patient, 'primary phone number')
       return
     end
+
+    # Cover potential race condition where multiple messages are sent for the same monitoree.
+    return unless patient.last_assessment_reminder_sent_eligible?
 
     lang = patient.select_language
     lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
@@ -163,13 +171,13 @@ class PatientMailer < ApplicationMailer
                max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
 
+    patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
     if TwilioSender.start_studio_flow(patient, params)
       add_success_history(patient, patient)
     else
       add_fail_history_voice(patient)
+      patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
     end
-    # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_email(patient)
@@ -178,18 +186,24 @@ class PatientMailer < ApplicationMailer
       return
     end
 
+    # Cover potential race condition where multiple messages are sent for the same monitoree.
+    return unless patient.last_assessment_reminder_sent_eligible?
+
     @lang = patient.select_language
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     @patients = patient.active_dependents.uniq.collect do |dependent|
       { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
     end
+
+    patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before SMTP call
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
     add_success_history(patient, patient)
-    # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
+  rescue StandardError => e
+    patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
+    raise "Failed to send email for patient id: #{patient.id}; #{e.message}"
   end
 
   def closed_email(patient)

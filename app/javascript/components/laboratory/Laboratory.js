@@ -84,7 +84,7 @@ class Laboratory extends React.Component {
             <Row>
               <Form.Group as={Col} controlId="lab_type">
                 <Form.Label className="nav-input-label">Lab Test Type</Form.Label>
-                <Form.Control as="select" className="form-control-lg" id="lab_type" onChange={this.handleChange} value={this.state.lab_type}>
+                <Form.Control as="select" className="form-control-lg" onChange={this.handleChange} value={this.state.lab_type}>
                   <option disabled></option>
                   <option>PCR</option>
                   <option>Antigen</option>
@@ -97,8 +97,10 @@ class Laboratory extends React.Component {
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col} controlId="specimen_collection">
-                <Form.Label className="nav-input-label">Specimen Collection Date</Form.Label>
+              <Form.Group as={Col}>
+                <Form.Label htmlFor="specimen_collection" className="nav-input-label">
+                  Specimen Collection Date
+                </Form.Label>
                 <DateInput
                   id="specimen_collection"
                   date={this.state.specimen_collection}
@@ -107,12 +109,15 @@ class Laboratory extends React.Component {
                   onChange={date => this.handleDateChange('specimen_collection', date)}
                   placement="bottom"
                   customClass="form-control-lg"
+                  ariaLabel="Specimen Collection Date Input"
                 />
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col} controlId="report">
-                <Form.Label className="nav-input-label">Report Date</Form.Label>
+              <Form.Group as={Col}>
+                <Form.Label htmlFor="report" className="nav-input-label">
+                  Report Date
+                </Form.Label>
                 <DateInput
                   id="report"
                   date={this.state.report}
@@ -122,6 +127,7 @@ class Laboratory extends React.Component {
                   placement="bottom"
                   isInvalid={this.state.reportInvalid}
                   customClass="form-control-lg"
+                  ariaLabel="Report Date Input"
                 />
                 <Form.Control.Feedback className="d-block" type="invalid">
                   {this.state.reportInvalid && <span>Report Date cannot be before Specimen Collection Date.</span>}
@@ -131,7 +137,7 @@ class Laboratory extends React.Component {
             <Row>
               <Form.Group as={Col} controlId="result">
                 <Form.Label className="nav-input-label">Result</Form.Label>
-                <Form.Control as="select" className="form-control-lg" id="result" onChange={this.handleChange} value={this.state.result}>
+                <Form.Control as="select" className="form-control-lg" onChange={this.handleChange} value={this.state.result}>
                   <option disabled></option>
                   <option>positive</option>
                   <option>negative</option>

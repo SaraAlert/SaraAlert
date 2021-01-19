@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card, Button, Form, Col } from 'react-bootstrap';
+import { Button, Card, Col, Form } from 'react-bootstrap';
 import * as yup from 'yup';
 import moment from 'moment-timezone';
 import Select from 'react-select';
@@ -204,16 +204,17 @@ class Identification extends React.Component {
           <Card.Body>
             <Form>
               <Form.Row>
-                <Form.Group as={Col} controlId="workflow">
-                  <Form.Label className="nav-input-label">WORKFLOW *</Form.Label>
+                <Form.Group as={Col}>
+                  <Form.Label htmlFor="workflow-select" className="nav-input-label">
+                    WORKFLOW *
+                  </Form.Label>
                   <Select
-                    name="workflow"
+                    inputId="workflow-select"
                     styles={cursorPointerStyle}
                     value={this.getWorkflowValue()}
                     options={WORKFLOW_OPTIONS}
                     onChange={e => this.handleWorkflowChange(e)}
                     placeholder=""
-                    aria-label="Workflow select"
                     theme={theme => ({
                       ...theme,
                       borderRadius: 0,
@@ -274,6 +275,7 @@ class Identification extends React.Component {
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_birth']}
                     customClass="form-control-lg"
+                    ariaLabel="Date of Birth Input"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_birth']}
@@ -408,19 +410,18 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row className="pb-3 ml-0">Languages that are not fully supported are indicated by a (*) in the below list.</Form.Row>
               <Form.Row>
-                <Form.Group as={Col} controlId="primary_language" id="primary_language_wrapper">
-                  <Form.Label className="nav-input-label">
+                <Form.Group as={Col} id="primary_language_wrapper">
+                  <Form.Label htmlFor="primary-language-select" className="nav-input-label">
                     PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="primaryLanguage" location="right"></InfoTooltip>
                   </Form.Label>
                   <Select
-                    name="primary_language"
+                    inputId="primary-language-select"
                     value={this.getLanguageValue(this.state.current.patient.primary_language)}
                     options={this.state.languageOptions}
                     onChange={e => this.handleLanguageChange('primary_language', e)}
                     placeholder=""
                     styles={cursorPointerStyle}
-                    aria-label="Primary Language Select"
                     theme={theme => ({
                       ...theme,
                       borderRadius: 0,
@@ -428,19 +429,18 @@ class Identification extends React.Component {
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
-                <Form.Group as={Col} controlId="secondary_language" id="secondary_language_wrapper">
-                  <Form.Label className="nav-input-label">
+                <Form.Group as={Col} id="secondary_language_wrapper">
+                  <Form.Label htmlFor="secondary-language-select" className="nav-input-label">
                     SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="secondaryLanguage" location="right"></InfoTooltip>
                   </Form.Label>
                   <Select
-                    name="secondary_language"
+                    inputId="secondary-language-select"
                     value={this.getLanguageValue(this.state.current.patient.secondary_language)}
                     options={this.state.languageOptions}
                     onChange={e => this.handleLanguageChange('secondary_language', e)}
                     placeholder=""
                     styles={cursorPointerStyle}
-                    aria-label="Secondary Language Select"
                     theme={theme => ({
                       ...theme,
                       borderRadius: 0,
