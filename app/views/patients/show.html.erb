@@ -20,7 +20,7 @@
                     }) %>
 
 <% if current_user.can_modify_subject_status? %>
-<div class="card mx-2 mt-4 mb-4 card-square">
+<div id="monitoring-actions" class="card mx-2 mt-4 mb-4 card-square">
   <div class="card-header h5">Monitoring Actions</div>
   <%= react_component('subject/monitoring_actions/MonitoringActions', {
                         current_user: current_user,
@@ -36,24 +36,26 @@
 </div>
 <% end %>
 
-<%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
-<%= react_component('assessment/AssessmentTable', {
-                      patient: @patient,
-                      is_household_member: @household_members.count > 1,
-                      report_eligibility: @patient.report_eligibility,
-                      patient_status: @patient.status,
-                      calculated_age: @patient.calc_current_age,
-                      patient_initials: @patient.initials,
-                      symptoms: reporting_condition.symptoms,
-                      threshold_condition_hash: reporting_condition.threshold_condition_hash,
-                      monitoring_period_days: ADMIN_OPTIONS['monitoring_period_days'].to_i,
-                      current_user: current_user,
-                      translations: Assessment.new.translations,
-                      authenticity_token: form_authenticity_token
-                    }) %>
+<% if current_user.can_view_patient_assessments? %>
+  <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
+  <%= react_component('assessment/AssessmentTable', {
+                        patient: @patient,
+                        is_household_member: @household_members.count > 1,
+                        report_eligibility: @patient.report_eligibility,
+                        patient_status: @patient.status,
+                        calculated_age: @patient.calc_current_age,
+                        patient_initials: @patient.initials,
+                        symptoms: reporting_condition.symptoms,
+                        threshold_condition_hash: reporting_condition.threshold_condition_hash,
+                        monitoring_period_days: ADMIN_OPTIONS['monitoring_period_days'].to_i,
+                        current_user: current_user,
+                        translations: Assessment.new.translations,
+                        authenticity_token: form_authenticity_token
+                      }) %>
+<% end %>
 
 <% if current_user.can_view_patient_laboratories? %>
-<div class="card mx-2 mt-3 mb-4 card-square">
+<div id="labs-table" class="card mx-2 mt-3 mb-4 card-square">
   <div class="card-header h5">
     Lab Results
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
@@ -100,7 +102,7 @@
 <% end %>
 
 <% if current_user.can_view_patient_close_contacts? %>
-<div class="card mx-2 mt-3 mb-4 card-square">
+<div id="close-contacts-table" class="card mx-2 mt-3 mb-4 card-square">
   <div class="card-header h5">
     Close Contacts
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'closeContacts', location: 'right' }, { style: 'display:inline' }) %>
