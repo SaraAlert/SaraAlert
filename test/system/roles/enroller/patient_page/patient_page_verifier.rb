@@ -48,4 +48,44 @@ class EnrollerPatientPageVerifier < ApplicationSystemTestCase
       end
     end
   end
+
+  # Verifies that only components the user has access to are rendered.
+  def verify_monitoree_displayed_data(user)
+    if user.can_download_monitoree_data?
+      assert_selector('#monitoree-excel-export', count: 1)
+      assert_selector('#monitoree-nbs-export', count: 1)
+    else
+      assert_no_selector('#monitoree-excel-export')
+      assert_no_selector('#monitoree-nbs-export')
+    end
+
+    # Everyone has access to patient details
+    assert_selector('#patient-page')
+
+    if user.can_view_patient_assessments?
+      assert_selector('#assessments-table', count: 1)
+    else
+      assert_no_selector('#assessments-table')
+    end
+
+    if user.can_view_patient_laboratories?
+      assert_selector('#labs-table', count: 1)
+    else
+      assert_no_selector('#labs-table')
+    end
+
+    if user.can_view_patient_close_contacts?
+      assert_selector('#close-contacts-table', count: 1)
+    else
+      assert_no_selector('#close-contacts-table')
+    end
+
+    if user.can_modify_subject_status?
+      assert_selector('#histories', count: 1)
+      assert_selector('#monitoring-actions', count: 1)
+    else
+      assert_no_selector('#monitoring-actions')
+      assert_no_selector('#histories')
+    end
+  end
 end

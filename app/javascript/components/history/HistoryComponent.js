@@ -116,7 +116,7 @@ class HistoryComponent extends React.Component {
     const historiesArray = this.state.pageOfHistories.map(history => <History key={history.id} history={history} />);
     return (
       <React.Fragment>
-        <Card className="mx-2 mt-3 mb-4 card-square">
+        <Card id="histories" className="mx-2 mt-3 mb-4 card-square">
           <Card.Header>
             <div className="d-flex flex-row align-items-center">
               <div className="float-left flex-grow-1 mb-0 h5">
