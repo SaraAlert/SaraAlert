@@ -49,7 +49,7 @@ describe('MonitoringPlan', () => {
     // sets state correctly
     expect(wrapper.state('showMonitoringPlanModal')).toBeTruthy();
     expect(wrapper.state('apply_to_household')).toBeFalsy();
-    expect(wrapper.state('monitoring_plan')).toEqual('None');;
+    expect(wrapper.state('monitoring_plan')).toEqual('None');
     expect(wrapper.state('reasoning')).toEqual('');
   });
 

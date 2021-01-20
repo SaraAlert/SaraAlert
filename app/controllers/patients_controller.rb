@@ -57,6 +57,8 @@ class PatientsController < ApplicationController
                            last_name: @close_contact.nil? ? '' : @close_contact.last_name,
                            primary_telephone: @close_contact.nil? ? '' : @close_contact.primary_telephone,
                            email: @close_contact.nil? ? '' : @close_contact.email,
+                           last_date_of_exposure: @close_contact.nil? ? '' : @close_contact.last_date_of_exposure,
+                           assigned_user: @close_contact.nil? ? '' : @close_contact.assigned_user,
                            contact_of_known_case: !@close_contact.nil?,
                            contact_of_known_case_id: @close_contact.nil? ? '' : @close_contact.patient_id,
                            exposure_notes: @close_contact.nil? ? '' : @close_contact.notes,

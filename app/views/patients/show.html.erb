@@ -115,8 +115,12 @@
           <th class="DataTable-table-header">Last Name</th>
           <th class="DataTable-table-header">Phone Number</th>
           <th class="DataTable-table-header">Email</th>
+          <th class="DataTable-table-header">Last Date of Exposure</th>
+          <th class="DataTable-table-header">Assigned User</th>
+          <th class="DataTable-table-header">Notes</th>
           <th class="DataTable-table-header">Contact Attempts</th>
-          <th class="DataTable-table-header">Actions</th>
+          <th class="DataTable-table-header">Enrolled</th>
+          <th class="DataTable-table-header" style="min-width: 140px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -126,10 +130,14 @@
           <td><%= cc.last_name %></td>
           <td><%= cc.primary_telephone.present? && cc.primary_telephone.length > 10 ? cc.primary_telephone&.gsub('+1', '')&.gsub(/\D/, '')&.insert(3, '-')&.insert(7, '-') : '' %></td>
           <td><%= cc.email %></td>
-          <td><%= cc.contact_attempts %></td>
+          <td class="text-center"><%= cc.last_date_of_exposure || 'Unknown' %></td>
+          <td class="text-center"><%= cc.assigned_user %></td>
+          <td><%= cc.notes %></td>
+          <td class="text-center"><%= cc.contact_attempts || 0 %></td>
+          <td class="text-center"> <%= cc.enrolled_id ? 'Yes' : 'No' %> </td>
           <td>
             <div class="btn-group btn-group-sm" role="group">
-              <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts? }) %>
+              <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
             </div>
           </td>
         </tr>
@@ -141,7 +149,7 @@
     <% end %>
     <div class="pb-1">
       <div class="btn-group" role="group">
-        <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts? }) %>
+        <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
       </div>
     </div>
   </div>
