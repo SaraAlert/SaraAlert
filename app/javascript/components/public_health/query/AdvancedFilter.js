@@ -715,6 +715,7 @@ class AdvancedFilter extends React.Component {
   renderFilterNameModal = () => {
     return (
       <Modal
+        id="filter-name-modal"
         show={this.state.showFilterNameModal}
         centered
         className="advanced-filter-modal-container"
@@ -726,6 +727,7 @@ class AdvancedFilter extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <Form.Control
+            id="filter-name-input"
             as="input"
             value={this.state.filterName || ''}
             className="py-0 my-0"
@@ -736,6 +738,7 @@ class AdvancedFilter extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button
+            id="filter-name-cancel"
             variant="secondary btn-square"
             onClick={() => {
               this.setState({ showFilterNameModal: false, show: true, filterName: null });
@@ -743,6 +746,7 @@ class AdvancedFilter extends React.Component {
             Cancel
           </Button>
           <Button
+            id="filter-name-save"
             variant="primary btn-square"
             disabled={!this.state.filterName}
             onClick={() => {
@@ -757,18 +761,109 @@ class AdvancedFilter extends React.Component {
     );
   };
 
+  renderAdvancedFilterModal = () => {
+    return (
+      <Modal
+        id="advanced-filter-modal"
+        show={this.state.show}
+        centered
+        dialogClassName="modal-af"
+        className="advanced-filter-modal-container"
+        onHide={this.cancel}>
+        <Modal.Header>
+          <Modal.Title>Advanced Filter: {this.state.activeFilter ? this.state.activeFilter.name : 'untitled'}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row className="pb-2 pt-1">
+            <Col>
+              {!this.state.activeFilter && (
+                <Button
+                  id="advanced-filter-save"
+                  variant="primary"
+                  onClick={() => {
+                    this.setState({ showFilterNameModal: true, show: false });
+                  }}
+                  className="mr-1">
+                  <i className="fas fa-save"></i>
+                  <span className="ml-1">Save</span>
+                </Button>
+              )}
+              {this.state.activeFilter && (
+                <Button id="advanced-filter-update" variant="primary" onClick={this.update} className="mr-1">
+                  <i className="fas fa-marker"></i>
+                  <span className="ml-1">Update</span>
+                </Button>
+              )}
+              {this.state.activeFilter && (
+                <Button id="advanced-filter-delete" variant="danger" onClick={this.delete} disabled={!this.state.activeFilter}>
+                  <i className="fas fa-trash"></i>
+                  <span className="ml-1">Delete</span>
+                </Button>
+              )}
+              <div className="float-right">
+                <Button id="advanced-filter-reset" variant="danger" onClick={this.reset}>
+                  Reset
+                </Button>
+                <Button id="advanced-filter-apply" variant="primary" className="ml-2" onClick={this.apply}>
+                  Apply
+                </Button>
+              </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="pb-3 pt-1">
+              <div className="g-border-bottom-2"></div>
+            </Col>
+          </Row>
+          {this.state.activeFilterOptions?.map((statement, index) => {
+            return this.renderStatement(
+              statement.filterOption,
+              statement.value,
+              index,
+              this.state.activeFilterOptions?.length,
+              statement.numberOption,
+              statement.dateOption,
+              statement.relativeOption,
+              statement.additionalFilterOption
+            );
+          })}
+          <Row className="pt-2 pb-1">
+            <Col>
+              <Button
+                id="add-filter-row"
+                variant="primary"
+                disabled={this.state.activeFilterOptions?.length > 4}
+                onClick={() => this.add()}
+                aria-label="Add Advanced Filter Option">
+                <i className="fas fa-plus"></i>
+              </Button>
+            </Col>
+          </Row>
+        </Modal.Body>
+        <Modal.Footer className="justify-unset">
+          <p className="lead mr-auto">
+            Filter will be applied to the line lists in the <u>{this.props.workflow}</u> workflow until reset.
+          </p>
+          <Button id="advanced-filter-cancel" variant="secondary btn-square" onClick={this.cancel}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+
   // Render a single line "statement"
   renderStatement = (filterOption, value, index, total, numberOption, dateOption, relativeOption, additionalFilterOption) => {
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
-          <Row key={'rowkey-filter-and' + index} className="pb-2 pt-2">
+          <Row key={'rowkey-filter-and' + index} className="and-row pb-2 pt-2">
             <Col className="py-0">
               <b>AND</b>
             </Col>
           </Row>
         )}
-        <Row key={'rowkey-filter' + index} className="pb-1 pt-1">
+        <Row key={'rowkey-filter' + index} className="advanced-filter-statement pb-1 pt-1">
           <Col className="py-0" md={9}>
             {this.renderOptions(filterOption?.name, index)}
           </Col>
@@ -975,7 +1070,7 @@ class AdvancedFilter extends React.Component {
               <span className="align-middle mx-3">{this.renderOptionTooltip(filterOption, value, index)}</span>
             )}
             <div className="float-right">
-              <Button variant="danger" onClick={() => this.remove(index)} aria-label="Remove Advanced Filter Option">
+              <Button className="remove-filter-row" variant="danger" onClick={() => this.remove(index)} aria-label="Remove Advanced Filter Option">
                 <i className="fas fa-minus"></i>
               </Button>
             </div>
@@ -985,92 +1080,11 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  onHide = () => {
-    this.setState({ show: false });
-  };
-
   render() {
     return (
       <React.Fragment>
-        <Modal show={this.state.show} centered dialogClassName="modal-af" className="advanced-filter-modal-container" onHide={this.onHide}>
-          <Modal.Header>
-            <Modal.Title>Advanced Filter: {this.state.activeFilter ? this.state.activeFilter.name : 'untitled'}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Row className="pb-2 pt-1">
-              <Col>
-                {!this.state.activeFilter && (
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      this.setState({ showFilterNameModal: true, show: false });
-                    }}
-                    className="mr-1">
-                    <i className="fas fa-save"></i>
-                    <span className="ml-1">Save</span>
-                  </Button>
-                )}
-                {this.state.activeFilter && (
-                  <Button variant="primary" onClick={this.update} className="mr-1">
-                    <i className="fas fa-marker"></i>
-                    <span className="ml-1">Update</span>
-                  </Button>
-                )}
-                {this.state.activeFilter && (
-                  <Button variant="danger" onClick={this.delete} disabled={!this.state.activeFilter}>
-                    <i className="fas fa-trash"></i>
-                    <span className="ml-1">Delete</span>
-                  </Button>
-                )}
-                <div className="float-right">
-                  <Button variant="danger" onClick={this.reset}>
-                    Reset
-                  </Button>
-                  <Button variant="primary" className="ml-2" onClick={this.apply}>
-                    Apply
-                  </Button>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="pb-3 pt-1">
-                <div className="g-border-bottom-2"></div>
-              </Col>
-            </Row>
-            {this.state.activeFilterOptions?.map((statement, index) => {
-              return this.renderStatement(
-                statement.filterOption,
-                statement.value,
-                index,
-                this.state.activeFilterOptions?.length,
-                statement.numberOption,
-                statement.dateOption,
-                statement.relativeOption,
-                statement.additionalFilterOption
-              );
-            })}
-            <Row className="pt-2 pb-1">
-              <Col>
-                <Button
-                  variant="primary"
-                  disabled={this.state.activeFilterOptions?.length > 4}
-                  onClick={() => this.add()}
-                  aria-label="Add Advanced Filter Option">
-                  <i className="fas fa-plus"></i>
-                </Button>
-              </Col>
-            </Row>
-          </Modal.Body>
-          <Modal.Footer className="justify-unset">
-            <p className="lead mr-auto">
-              Filter will be applied to the line lists in the <u>{this.props.workflow}</u> workflow until reset.
-            </p>
-            <Button variant="secondary btn-square" onClick={this.cancel}>
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        {this.renderFilterNameModal()}
+        {this.state.show && this.renderAdvancedFilterModal()}
+        {this.state.showFilterNameModal && this.renderFilterNameModal()}
         <OverlayTrigger overlay={<Tooltip>Find monitorees that meet specified parameters within current workflow</Tooltip>}>
           <Button
             size="sm"
