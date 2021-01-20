@@ -48,10 +48,17 @@ class Transfer < ApplicationRecord
     end
   }
 
-  def self.latest_transfers(patients)
-    tuples = patients.pluck(:id, :latest_transfer_at)
-    Transfer.where("(patient_id, created_at) IN (#{tuples.collect { '(?, ?)' }.join(', ')})", *tuples.flatten)
-  end
+  scope :latest_transfers, lambda { |patients|
+    where(
+      '(transfers.patient_id, transfers.created_at) IN ('\
+      '  SELECT transfers.patient_id, MAX(transfers.created_at)'\
+      '  FROM transfers'\
+      '  WHERE transfers.patient_id IN (?)'\
+      '  GROUP BY transfers.patient_id'\
+      ')',
+      patients.pluck(:id)
+    )
+  }
 
   def custom_details(fields, patient_identifiers, user_emails, jurisdiction_paths)
     transfer_details = {}
