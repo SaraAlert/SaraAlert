@@ -43,6 +43,16 @@ class TransferTest < ActiveSupport::TestCase
     patients.each(&:reload)
 
     assert_equal 3, Transfer.latest_transfers(patients).size
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[1].id
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[3].id
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[4].id
+
+    patient_without_transfer = build(:patient)
+
+    assert_equal 3, Transfer.latest_transfers(patients + [patient_without_transfer]).size
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[1].id
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[3].id
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[4].id
   end
 
   test 'create transfer' do
