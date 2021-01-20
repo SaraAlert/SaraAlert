@@ -5,7 +5,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   def validate_patients_query(unsanitized_query)
     # Only allow permitted params
     query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :tz_offset,
-                                     filter: [:value, :numberOption, :dateOption, :relativeOption, :optionalOption, { filterOption: {}, value: {} }])
+                                     filter: [:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption, { filterOption: {}, value: {} }])
 
     # Validate workflow
     workflow = query[:workflow]&.to_sym || :all
@@ -41,14 +41,14 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       raise InvalidQueryError.new(:tz_offset, tz_offset) unless tz_offset.to_i.to_s == tz_offset.to_s
 
       query[:filter] = unsanitized_query[:filter].collect do |filter|
-        permitted_filter_params = filter.permit(:value, :numberOption, :dateOption, :relativeOption, :optionalOption, filterOption: {}, value: {})
+        permitted_filter_params = filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption, filterOption: {}, value: {})
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
           value: permitted_filter_params[:value] || filter.require(:value) || false,
           numberOption: permitted_filter_params[:numberOption],
           dateOption: permitted_filter_params[:dateOption],
           relativeOption: permitted_filter_params[:relativeOption],
-          optionalOption: permitted_filter_params[:optionalOption]
+          additionalFilterOption: permitted_filter_params[:additionalFilterOption]
         }
       end
     end
@@ -351,7 +351,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         operator = :>= if filter[:numberOption] == 'less-than-equal'
         operator = :<= if filter[:numberOption] == 'greater-than-equal'
         operator = :< if filter[:numberOption] == 'greater-than'
-        case filter[:optionalOption]
+        case filter[:additionalFilterOption]
         when 'Successful'
           patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts, successful: true)
         when 'Unsuccessful'
@@ -362,9 +362,16 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'age'
         # specific case where value is a range not a single value
         if filter[:numberOption] == 'between'
-          low_age = filter[:value][:low].to_i
-          high_age = filter[:value][:high].to_i
-          patients = patients.where('date_of_birth > ?', DateTime.now - high_age.year).where('date_of_birth <= ?', DateTime.now - low_age.year)
+          low_bound = filter[:value][:low].to_i
+          high_bound = filter[:value][:high].to_i + 1
+          # find monitorees who have a DOB between the low and high bounds of the age range
+          # low bound DOB is calculated by finding the date of youngest possible person of low bound age (i.e. current date - low bound age )
+          # high bound DOB is calculated by finding the date of the oldest possible person of the high bound age (i.e. current date - high bound age + 1)
+          # EXAMPLE:
+          # if today is 1/19/21, the youngest possible 20 year old turns 20 today, so that birthday is 1/19/2001 and
+          # the oldest possible 30 year old will be turning 31 tomorrow, so their birthday is 1/20/1990.
+          patients = patients.where('date_of_birth > ?', DateTime.now - high_bound.year).where('date_of_birth <= ?', DateTime.now - low_bound.year)
+        # all other cases with a single value age passed in
         else
           age = filter[:value].to_i
           age_plus_1 = age + 1
