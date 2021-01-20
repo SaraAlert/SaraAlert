@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Button, Dropdown, Modal, OverlayTrigger } from 'react-bootstrap';
 import _ from 'lodash';
 import AdvancedFilter from '../../../components/public_health/query/AdvancedFilter.js'
-import { mockFilter1, mockSavedFilters } from '../../mocks/mockFilters'
+import { mockFilter1, mockFilterOptions1, mockFilterOptions2, mockSavedFilters } from '../../mocks/mockFilters'
 
 const advancedFilterUpdateMock = jest.fn();
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
@@ -254,7 +254,29 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('#filter-name-input').prop('value')).toEqual('');
   });
 
-  // CLICKING CANCEL ON FILTER NAME MODAL: maintains advanced filter modal
+  it('Opening Filter Name modal and clicking "Cancel" button maintains advanced filter modal state', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterOptions1.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterOptions1.value } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptions1 ]);
+    expect(wrapper.state('show')).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterOptions1.filterOption.name);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterOptions1.value);
+    wrapper.find('#advanced-filter-save').simulate('click');
+    expect(wrapper.state('show')).toBeFalsy();
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptions1 ]);
+    expect(wrapper.find('.advanced-filter-select').exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-search-input').exists()).toBeFalsy();
+    wrapper.find('#filter-name-cancel').simulate('click');
+    expect(wrapper.state('show')).toBeTruthy();
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptions1 ]);
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterOptions1.filterOption.name);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterOptions1.value);
+  });
 
   it('Clicking Filter Name modal "Save" button calls save method', () => {
     const wrapper = getWrapper();
@@ -318,16 +340,18 @@ describe('AdvancedFilter', () => {
     expect(advancedFilterUpdateMock).toHaveBeenCalled();
   });
 
-  // CHECK LAST APPLIED STATE HERE
   it('Clicking "Apply" button properly updates state', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('show')).toBeTruthy();
     expect(wrapper.state('applied')).toBeFalsy();
+    expect(wrapper.state('lastAppliedFilter')).toEqual(null);
     wrapper.setState({ activeFilterOptions: mockFilter1.contents });
     wrapper.find('#advanced-filter-apply').simulate('click');
     expect(wrapper.state('show')).toBeFalsy();
     expect(wrapper.state('applied')).toBeTruthy();
+    expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual(mockFilter1.contents);
   });
 
   it('Clicking "Clear current filter" dropdown option calls props.advancedFilterUpdate', () => {
@@ -337,28 +361,38 @@ describe('AdvancedFilter', () => {
     wrapper.setState({ activeFilterOptions: mockFilter1.contents });
     wrapper.find('#advanced-filter-apply').simulate('click');
     expect(advancedFilterUpdateMock).toHaveBeenCalledTimes(1);
-    console.log(wrapper.find(Dropdown.Item).at(1).debug())
     wrapper.find(Dropdown.Item).at(1).simulate('click');
     expect(advancedFilterUpdateMock).toHaveBeenCalledTimes(2);
   });
 
-  // CHECK UPDATING STATE HERE
   it('Clicking "Clear current filter" dropdown option properly updates state', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    expect(advancedFilterUpdateMock).toHaveBeenCalledTimes(0);
-    wrapper.setState({ activeFilterOptions: mockFilter1.contents });
+    expect(wrapper.state('show')).toBeTruthy();
+    expect(wrapper.state('applied')).toBeFalsy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { filterOption: null } ]);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter')).toEqual(null);
+    wrapper.setState({ activeFilter: mockFilter1, activeFilterOptions: mockFilter1.contents, savedFilters: mockSavedFilters });
     wrapper.find('#advanced-filter-apply').simulate('click');
-    expect(advancedFilterUpdateMock).toHaveBeenCalledTimes(1);
-    console.log(wrapper.find(Dropdown.Item).at(1).debug())
+    expect(wrapper.state('show')).toBeFalsy();
+    expect(wrapper.state('applied')).toBeTruthy();
+    expect(wrapper.state('activeFilterOptions')).toEqual(mockFilter1.contents);
+    expect(wrapper.state('activeFilter')).toEqual(mockFilter1);
+    expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(mockFilter1);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual(mockFilter1.contents);
     wrapper.find(Dropdown.Item).at(1).simulate('click');
-    expect(advancedFilterUpdateMock).toHaveBeenCalledTimes(2);
+    expect(wrapper.state('show')).toBeFalsy();
+    expect(wrapper.state('applied')).toBeFalsy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { filterOption: null } ]);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(mockFilter1);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual(mockFilter1.contents);
   });
 
   it('Clicking "Cancel" button calls cancel method and hides modal', () => {
     const wrapper = getWrapper();
     const cancelSpy = jest.spyOn(wrapper.instance(), 'cancel');
-    wrapper.setState({ activeFilter: mockFilter1, activeFilterOptions: mockFilter1.contents, savedFilters: mockSavedFilters });
     wrapper.find(Button).simulate('click');
     expect(wrapper.find(Modal).exists()).toBeTruthy();
     expect(cancelSpy).toHaveBeenCalledTimes(0);
@@ -367,34 +401,67 @@ describe('AdvancedFilter', () => {
     expect(cancelSpy).toHaveBeenCalled();
   });
 
-  // cancel clearing state - with saved, untitled, non-applied
-  // check last applied state stuff
-  // it('Clicking "Cancel" button hides modal and resets state', () => {
-  //   const wrapper = getWrapper();
-  //   wrapper.setState({ activeFilter: mockFilter1, activeFilterOptions: mockFilter1.contents, savedFilters: mockSavedFilters });
-  //   wrapper.find(Button).simulate('click');
-  //   expect(wrapper.state('show')).toBeTruthy();
-  //   expect(wrapper.state('applied')).toBeFalsy();
-  //   expect(wrapper.state('activeFilterOptions')).toEqual(mockFilter1.contents);
-  //   expect(wrapper.state('activeFilter')).toEqual(mockFilter1);
-  //   wrapper.find('#advanced-filter-cancel').simulate('click');
-  //   expect(wrapper.state('show')).toBeFalsy();
-  //   expect(wrapper.state('applied')).toBeFalsy();
-  //   expect(wrapper.state('activeFilterOptions')).toEqual([ { filterOption: null } ]);
-  //   expect(wrapper.state('activeFilter')).toEqual(null);
-  // });
+  it('Triggering advanced filter modal onHide prop calls cancel method and hides modal', () => {
+    const wrapper = getWrapper();
+    const cancelSpy = jest.spyOn(wrapper.instance(), 'cancel');
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.find(Modal).exists()).toBeTruthy();
+    expect(cancelSpy).toHaveBeenCalledTimes(0);
+    wrapper.find(Modal).prop('onHide')();
+    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    expect(cancelSpy).toHaveBeenCalled();
+  });
 
-  // it('Hitting the escape key button calls cancel method and hides modal', () => {
-  //   const wrapper = getWrapper();
-  //   const cancelSpy = jest.spyOn(wrapper.instance(), 'cancel');
-  //   wrapper.setState({ activeFilter: mockFilter1, activeFilterOptions: mockFilter1.contents, savedFilters: mockSavedFilters });
-  //   wrapper.find(Button).simulate('click');
-  //   expect(wrapper.find(Modal).exists()).toBeTruthy();
-  //   expect(cancelSpy).toHaveBeenCalledTimes(0);
-  //   wrapper.find('#advanced-filter-cancel').simulate('click');
-  //   expect(wrapper.find(Modal).exists()).toBeFalsy();
-  //   expect(cancelSpy).toHaveBeenCalled();
-  // });
+  it('Clicking "Cancel" button after making changes properly resets modal state to initial state if no filter was applied', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.state('show')).toBeTruthy();
+    expect(wrapper.state('applied')).toBeFalsy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { filterOption: null } ]);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter')).toEqual(null);
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterOptions1.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterOptions1.value } });
+    expect(wrapper.state('show')).toBeTruthy();
+    expect(wrapper.state('applied')).toBeFalsy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptions1 ]);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter')).toEqual(null);
+    wrapper.find('#advanced-filter-cancel').simulate('click');
+    expect(wrapper.state('show')).toBeFalsy();
+    expect(wrapper.state('applied')).toBeFalsy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { filterOption: null } ]);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter')).toEqual(null);
+  });
+
+  it('Clicking "Cancel" button after making changes properly resets modal state to the most recent filter applied', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.setState({ activeFilterOptions: mockFilter1.contents });
+    expect(wrapper.state('show')).toBeTruthy();
+    expect(wrapper.state('applied')).toBeFalsy();
+    expect(wrapper.state('activeFilterOptions')).toEqual(mockFilter1.contents);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter')).toEqual(null);
+    wrapper.find('#advanced-filter-apply').simulate('click');
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterOptions2.filterOption.name });
+    wrapper.find('.advanced-filter-boolean-false').simulate('change');
+    expect(wrapper.state('show')).toBeTruthy();
+    expect(wrapper.state('applied')).toBeTruthy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptions2 ]);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual(mockFilter1.contents);
+    wrapper.find('#advanced-filter-cancel').simulate('click');
+    expect(wrapper.state('show')).toBeFalsy();
+    expect(wrapper.state('applied')).toBeTruthy();
+    expect(wrapper.state('activeFilterOptions')).toEqual(mockFilter1.contents);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual(mockFilter1.contents);
+  });
 
   // can you test local storage?
   // MAKE SURE ALL STATE IS SET CORRECTLY
