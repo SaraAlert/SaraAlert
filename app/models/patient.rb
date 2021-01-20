@@ -949,6 +949,7 @@ class Patient < ApplicationRecord
     token
   end
 
+  # Handle side effect updates to fields that happen whenever certain fields are updated.
   def handle_update
     monitoring_change if monitoring_changed?
     isolation_change if isolation_changed?
@@ -957,6 +958,9 @@ class Patient < ApplicationRecord
     continuous_exposure_change if continuous_exposure_changed?
   end
 
+  # Handle side effects to monitoring being set to false.
+  # * closed_at is set to now, since the record is closed.
+  # * continuous_exposure is not allowed to be true if the Patient is not monitoring.
   def monitoring_change
     return if monitoring
 
@@ -964,32 +968,48 @@ class Patient < ApplicationRecord
     self.continuous_exposure = false
   end
 
+  # Handle side effects to isolation being set to false.
+  # * extended_isolation is set to nil, since the Patient is being moves to exposure workflow.
+  # * symptom_onset is set to a calculated value based on the assessments of the Patient, so they
+  #   may be placed in the proper linelist in exposure workflow.
+  # * user_defined_symptom_onset is set to false, since the calculated value is being used.
   def isolation_change
     return if isolation
 
     self.extended_isolation = nil
     # NOTE: The below will overwrite any new value they may set for symptom onset as they can not be set in the exposure workflow.
     self.user_defined_symptom_onset = false
-    self.symptom_onset = calculated_symptom_onset
+    self.symptom_onset = calculated_symptom_onset(self)
   end
 
+  # Handle side effects to a change in case status.
+  # * public_health_action is set to 'None' when case_status changes to 'Suspect', 'Unknown', or 'Not a Case' so
+  #   that the Patient will be on the appropriate linelist in the exposure workflow.
   def case_status_change
     return unless ['Suspect', 'Unknown', 'Not a Case'].include?(case_status) && public_health_action != 'None'
 
     self.public_health_action = 'None'
   end
 
+  # Handle side effects to symptom_onset being set to nil.
+  # * symptom_onset is set to a calculated value based on the assessments of the Patient.
+  # * user_defined_symptom_onset is set to false, since the calculated value is being used.
   def symptom_onset_change
     return unless symptom_onset.nil?
 
     self.user_defined_symptom_onset = false
-    self.symptom_onset = calculated_symptom_onset
+    self.symptom_onset = calculated_symptom_onset(self)
   end
 
+  # Handle side effects to continuous_exposure being set while not monitoring
+  # * continuous_exposure should alwasy remain false when not monitoring
   def continuous_exposure_change
     self.continuous_exposure = false if continuous_exposure && !monitoring
   end
 
+  # Create History items corresponding to updates to monitoring fields.
+  # The History items detail direct edits, and side effects of those direct edits that are made by the Sara Alert System.
+  # These side effects are handled in the handle_update function
   def monitoring_history_edit(history_data, diff_state)
     patient_before = history_data[:patient_before]
     history_data[:updates]&.keys&.each do |attribute|
@@ -1024,8 +1044,6 @@ class Patient < ApplicationRecord
         History.extended_isolation(history_data)
       when :continuous_exposure
         History.continuous_exposure(history_data)
-      when :isolation
-        update_patient_history_for_isolation(patient_before, updated_value)
       when :symptom_onset
         History.symptom_onset(history_data)
       when :case_status
@@ -1043,6 +1061,12 @@ class Patient < ApplicationRecord
         History.jurisdiction(history_data)
       end
     end
+
+    # NOTE: Changes in case_status may trigger changes in isolation, so add isolation history messages
+    # at the end, so that they will come after any case_status history messages
+    return unless !history_data[:updates][:isolation].nil? && self[:isolation] != patient_before[:isolation]
+
+    update_patient_history_for_isolation(patient_before, self[:isolation])
   end
 
   def update_patient_history_for_isolation(patient_before, new_isolation_value)

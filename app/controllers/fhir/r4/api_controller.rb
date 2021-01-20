@@ -148,6 +148,11 @@ class Fhir::R4::ApiController < ActionController::API
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
   end
 
+  # Create History items corresponding to Patient changes from an update.
+  #
+  # updates - A hash that contains attributes corresponding to the Patient.
+  # patient_before - The Patient before updates were applied.
+  # patient - The Patient after the updates have been applied.
   def update_all_patient_history(updates, patient_before, patient)
     created_by_label = "#{@m2m_workflow ? current_client_application&.name : current_resource_owner&.email} (API)"
 
@@ -538,6 +543,11 @@ class Fhir::R4::ApiController < ActionController::API
     false
   end
 
+  # Determine if a Patient's jurisdiction can be updated by the requesting application.
+  #
+  # patient - The Patient to check (patient.jurisdiction_id should be set to the updated value).
+  #
+  # Returns true if the jurisdiction is valid, otherwise false.
   def jurisdiction_valid_for_update?(patient)
     allowed_jurisdiction_ids = @current_actor.jurisdictions_for_transfer
     return true if !patient.jurisdiction_id.nil? && allowed_jurisdiction_ids.keys.include?(patient.jurisdiction_id)

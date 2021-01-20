@@ -160,7 +160,7 @@ class PatientsControllerTest < ActionController::TestCase
           case_status: 'Confirmed',
           assigned_user: 50
         }
-      }
+      }, as: :json
       assert_response :success
       patient.reload
       assert(patient.monitoring)
@@ -171,7 +171,7 @@ class PatientsControllerTest < ActionController::TestCase
 
       # Create a dependent patient created by the current user
       dependent = create(:patient, creator: user)
-      patient.update(dependents: [dependent])
+      patient.update(dependents: [patient, dependent])
       dependent.update(responder: patient)
 
       # Apply to group logic
@@ -187,7 +187,7 @@ class PatientsControllerTest < ActionController::TestCase
             case_status: 'Confirmed',
             assigned_user: 50
           }
-        }
+        }, as: :json
         assert_response :success
       end
 
@@ -203,7 +203,7 @@ class PatientsControllerTest < ActionController::TestCase
           case_status: 'Confirmed',
           assigned_user: 50
         }
-      }
+      }, as: :json
       assert_response :success
       dependent.reload
       assert(dependent.monitoring)
@@ -214,7 +214,7 @@ class PatientsControllerTest < ActionController::TestCase
 
       # Patient with dependent outside current user jurisdiction
       outside_dependent = create(:patient)
-      patient.update(dependents: [dependent, outside_dependent])
+      patient.update(dependents: [patient, dependent, outside_dependent])
       outside_dependent.update(responder: patient)
 
       post :bulk_update, params: {
@@ -228,7 +228,7 @@ class PatientsControllerTest < ActionController::TestCase
           case_status: 'Confirmed',
           assigned_user: 50
         }
-      }
+      }, as: :json
       assert_response 401
       body = JSON.parse(response.body)
       assert_includes(body['error'], 'spans jurisidictions which you do not have access to.')
@@ -347,5 +347,30 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal new_jurisdiction.id, t.to_jurisdiction_id
     assert_equal user.id, t.who_id
     assert_match(/blank to "Bar"/, History.find_by(patient: patient).comment)
+  end
+
+  test 'update resets symptom onset when isolation changes' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    patient = create(:patient, symptom_onset: DateTime.now - 1.day, creator: user)
+    created_at = DateTime.now.to_date - 2.day
+    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: created_at)
+
+    post :update, params: {
+      id: patient.id,
+      propagated_fields: {},
+      patient: {
+        isolation: false,
+        id: patient.id
+      }
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_equal created_at, patient.symptom_onset
+    assert_not patient.user_defined_symptom_onset
+
+    h = History.where(patient: patient)
+    assert_match(/changed Symptom Onset Date/, h.second.comment)
   end
 end
