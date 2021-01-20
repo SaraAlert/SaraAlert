@@ -35,17 +35,18 @@ class PublicHealthPatientPage < ApplicationSystemTestCase
     first_name = PATIENTS[target_hoh_label]['first_name']
     last_name = PATIENTS[target_hoh_label]['last_name']
     user_defined_id_statelocal = PATIENTS[target_hoh_label]['user_defined_id_statelocal']
+    displayed_name = "#{last_name}, #{first_name}"
 
     click_on 'Move To Household'
 
     # Searching by last name
     fill_in 'search', with: last_name
-    assert page.find('tbody').has_link?("#{last_name}, #{first_name}")
+    assert page.find('tbody').has_link?(displayed_name)
     assert page.find('tbody').has_button?('Select', count: 1)
 
     # Searching by last name
     fill_in 'search', with: first_name
-    assert page.find('tbody').has_link?("#{last_name}, #{first_name}")
+    assert page.find('tbody').has_link?(displayed_name)
     assert page.find('tbody').has_button?('Select', count: 1)
 
     # Searching by State/Local ID
