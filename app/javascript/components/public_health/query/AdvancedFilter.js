@@ -541,6 +541,7 @@ class AdvancedFilter extends React.Component {
         }}
         placeHolder="Select Field...."
         aria-label="Advanced Filter Options Dropdown"
+        className="advanced-filter-select"
         theme={theme => ({
           ...theme,
           borderRadius: 0,
@@ -876,6 +877,7 @@ class AdvancedFilter extends React.Component {
               <ButtonGroup toggle>
                 <ToggleButton
                   type="checkbox"
+                  className="advanced-filter-boolean-true"
                   aria-label="Advanced Filter Boolean True"
                   variant="outline-primary"
                   checked={value}
@@ -887,6 +889,7 @@ class AdvancedFilter extends React.Component {
                 </ToggleButton>
                 <ToggleButton
                   type="checkbox"
+                  className="advanced-filter-boolean-false"
                   aria-label="Advanced Filter Boolean False"
                   variant="outline-primary"
                   checked={!value}
@@ -1057,7 +1060,7 @@ class AdvancedFilter extends React.Component {
               <Form.Control
                 as="input"
                 value={value}
-                className="py-0 my-0"
+                className="advanced-filter-search-input py-0 my-0"
                 aria-label="Advanced Filter Search Text Input"
                 onChange={event => {
                   this.changeValue(index, event.target.value);

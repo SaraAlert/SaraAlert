@@ -1,4 +1,5 @@
 const mockFilterOptions1 = {
+  additionalFilterOption: null,
   dateOption: null,
   filterOption: {
     description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
@@ -6,11 +7,13 @@ const mockFilterOptions1 = {
     title: 'Address (outside USA) (Text)',
     type: 'search'
   },
+  numberOption: null,
   relativeOption: null,
   value: '42 Wallaby Way'
 }
 
 const mockFilterOptions2 = {
+  additionalFilterOption: null,
   dateOption: null,
   filterOption: {
     description: 'Monitorees who are currently under active monitoring',
@@ -18,11 +21,13 @@ const mockFilterOptions2 = {
     title: 'Active Monitoring (Boolean)',
     type: 'boolean'
   },
+  numberOption: null,
   relativeOption: null,
   value: false,
 }
 
 const mockFilterOptions3 = {
+  additionalFilterOption: null,
   dateOption: 'before',
   filterOption: {
     description: 'Monitorees enrolled in system during specified date range',
@@ -30,6 +35,7 @@ const mockFilterOptions3 = {
     title: 'Enrolled (Date)',
     type: 'date'
   },
+  numberOption: null,
   relativeOption: null,
   value: '2020-12-30',
 }
