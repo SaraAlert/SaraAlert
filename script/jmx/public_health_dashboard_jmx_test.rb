@@ -3,8 +3,13 @@
 require 'ruby-jmeter'
 
 test do
-  defaults domain: ENV['JMX_DOMAIN'] || 'localhost'
-  defaults port: ENV['JMX_PORT'].to_i || 3000
+  domain =  ENV['JMX_DOMAIN'] || 'localhost'
+  port = ENV['JMX_PORT'] || 'localhost'
+  username = ENV['JMX_USERNAME'] || 'epi_enroller_all@example.com'
+  password = ENV['JMX_PASSWORD'] || '1234567ab!'
+  
+  defaults domain: domain
+  defaults port: port
 
   cache clear_each_iteration: true
 
@@ -24,8 +29,8 @@ test do
       submit name: '02_SA_sign_in',
              url: '/users/sign_in',
              fill_in: {
-               'user[email]': 'epi_enroller_all@example.com',
-               'user[password]': '1234567ab!',
+               'user[email]': username,
+               'user[password]': password,
                authenticity_token: '${authenticity_token}'
              } do
         assert 'contains': 'epi_enroller_all@example.com (Public Health Enroller)'
