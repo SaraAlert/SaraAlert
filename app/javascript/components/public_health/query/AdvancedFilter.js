@@ -190,7 +190,7 @@ class AdvancedFilter extends React.Component {
           title: 'Age (Number)',
           description: 'Current Monitoree Age',
           type: 'number',
-          includeRange: true,
+          allowRange: true,
         },
         {
           name: 'ten-day-quarantine',
@@ -358,13 +358,13 @@ class AdvancedFilter extends React.Component {
       numberOption: filterOption.type === 'number' ? 'equal' : null,
       dateOption: filterOption.type === 'date' ? 'within' : null,
       relativeOption: filterOption.type === 'relative' ? 'today' : null,
-      optionalOption: filterOption.options ? filterOption.options[0] : null,
+      additionalFilterOption: filterOption.options ? filterOption.options[0] : null,
     };
     this.setState({ activeFilterOptions });
   };
 
   // Change an index filter option for type number
-  changeFilterNumberOption = (index, prevNumberOption, newNumberOption, value, optionalOption) => {
+  changeFilterNumberOption = (index, prevNumberOption, newNumberOption, value, additionalFilterOption) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     let newValue = value;
     if (prevNumberOption === 'between' && newNumberOption !== 'between') {
@@ -376,7 +376,7 @@ class AdvancedFilter extends React.Component {
       filterOption: activeFilterOptions[parseInt(index)].filterOption,
       value: newValue,
       numberOption: newNumberOption,
-      optionalOption,
+      additionalFilterOption,
     };
     this.setState({ activeFilterOptions });
   };
@@ -406,14 +406,14 @@ class AdvancedFilter extends React.Component {
     this.setState({ activeFilterOptions });
   };
 
-  // Change the optional option supported for different types if provided
-  changeFilterOptionalOption = (index, optionalOption, value, numberOption, dateOption, relativeOption) => {
+  // Change the additional filter option supported for different types if provided
+  changeFilterAdditionalFilterOption = (index, additionalFilterOption, value, numberOption, dateOption, relativeOption) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     // add all other options here
     activeFilterOptions[parseInt(index)] = {
       filterOption: activeFilterOptions[parseInt(index)].filterOption,
       value,
-      optionalOption,
+      additionalFilterOption,
       numberOption,
       dateOption,
       relativeOption,
@@ -550,14 +550,14 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render number specific options
-  renderNumberOptions = (current, index, value, optionalOption, includeBetween) => {
+  renderNumberOptions = (current, index, value, additionalFilterOption, includeBetween) => {
     return (
       <Form.Control
         as="select"
         value={current}
         className="advanced-filter-number-options mr-4"
         aria-label="Advanced Filter Number Select Options"
-        onChange={event => this.changeFilterNumberOption(index, current, event.target.value, value, optionalOption)}>
+        onChange={event => this.changeFilterNumberOption(index, current, event.target.value, value, additionalFilterOption)}>
         <option value="less-than">less than</option>
         <option value="less-than-equal">less than or equal to</option>
         <option value="equal">equal to</option>
@@ -605,15 +605,15 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // Render optional options dropdown that is used in conjunction with other types
-  renderOptionalOptions = (current, index, options, value, numberOption, dateOption, relativeOption) => {
+  // Render additional filter option dropdown that is used in conjunction with other types
+  renderAdditionalFilterOptions = (current, index, options, value, numberOption, dateOption, relativeOption) => {
     return (
       <Form.Control
         as="select"
         value={current}
         className="py-0 my-0 mr-3"
         aria-label="Advanced Filter Number Additional Options Input"
-        onChange={event => this.changeFilterOptionalOption(index, event.target.value, value, numberOption, dateOption, relativeOption)}>
+        onChange={event => this.changeFilterAdditionalFilterOption(index, event.target.value, value, numberOption, dateOption, relativeOption)}>
         {options.map((option, op_index) => {
           return (
             <option key={index + 'opkeyop-f' + op_index} value={option}>
@@ -690,7 +690,7 @@ class AdvancedFilter extends React.Component {
     if (filter.type === 'relative') {
       statement = this.getRelativeTooltipString(filter, value);
     } else if (filter.type === 'number') {
-      statement = '"Between" range is inclusive of numbers selected.';
+      statement = 'Between operator filters for values within the inputted range, including the numbers entered.';
     } else {
       // Otherwise base it on specific filter option
       statement = filter.tooltip;
@@ -758,7 +758,7 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render a single line "statement"
-  renderStatement = (filterOption, value, index, total, numberOption, dateOption, relativeOption, optionalOption) => {
+  renderStatement = (filterOption, value, index, total, numberOption, dateOption, relativeOption, additionalFilterOption) => {
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
@@ -774,7 +774,7 @@ class AdvancedFilter extends React.Component {
           </Col>
           {/* specific dropdown for filters with a type that requires additional options (not type option) */}
           {filterOption?.type !== 'option' && filterOption?.options && (
-            <Col md={4}>{this.renderOptionalOptions(optionalOption, index, filterOption.options, value)}</Col>
+            <Col md={4}>{this.renderAdditionalFilterOptions(additionalFilterOption, index, filterOption.options, value)}</Col>
           )}
           <Col className="py-0">
             {filterOption?.type === 'boolean' && (
@@ -823,7 +823,7 @@ class AdvancedFilter extends React.Component {
             )}
             {filterOption?.type === 'number' && (
               <Form.Group className="form-group-inline py-0 my-0">
-                {this.renderNumberOptions(numberOption, index, value, optionalOption, filterOption.includeRange)}
+                {this.renderNumberOptions(numberOption, index, value, additionalFilterOption, filterOption.allowRange)}
                 {numberOption !== 'between' && (
                   <Form.Control
                     className="advanced-filter-number-input"
@@ -1046,7 +1046,7 @@ class AdvancedFilter extends React.Component {
                 statement.numberOption,
                 statement.dateOption,
                 statement.relativeOption,
-                statement.optionalOption
+                statement.additionalFilterOption
               );
             })}
             <Row className="pt-2 pb-1">
