@@ -11,6 +11,8 @@ class CloseContactsController < ApplicationController
                           last_name: params.permit(:last_name)[:last_name],
                           primary_telephone: params.permit(:primary_telephone)[:primary_telephone],
                           email: params.permit(:email)[:email],
+                          last_date_of_exposure: params.permit(:last_date_of_exposure)[:last_date_of_exposure],
+                          assigned_user: params.permit(:assigned_user)[:assigned_user],
                           notes: params.permit(:notes)[:notes],
                           enrolled_id: nil,
                           contact_attempts: 0)
@@ -29,6 +31,8 @@ class CloseContactsController < ApplicationController
               last_name: params.permit(:last_name)[:last_name],
               primary_telephone: params.permit(:primary_telephone)[:primary_telephone],
               email: params.permit(:email)[:email],
+              last_date_of_exposure: params.permit(:last_date_of_exposure)[:last_date_of_exposure],
+              assigned_user: params.permit(:assigned_user)[:assigned_user],
               notes: params.permit(:notes)[:notes],
               contact_attempts: params.permit(:contact_attempts)[:contact_attempts])
     cc.save

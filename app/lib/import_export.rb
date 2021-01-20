@@ -323,6 +323,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     primary_telephone: 'Primary Telephone',
     email: 'Email',
     contact_attempts: 'Contact Attempts',
+    last_date_of_exposure: 'Last Date of Exposure',
+    assigned_user: 'Assigned User',
     notes: 'Notes',
     enrolled_id: 'Enrolled ID',
     created_at: 'Close Contact Created Date',
@@ -476,7 +478,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   CLOSE_CONTACTS_EXPORT_OPTIONS = {
     label: 'Close Contacts',
     nodes: [rct_node(:close_contacts, 'Close Contacts', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id first_name
-                                                           last_name primary_telephone email contact_attempts notes enrolled_id created_at updated_at])]
+                                                           last_name primary_telephone email contact_attempts last_date_of_exposure assigned_user notes
+                                                           enrolled_id created_at updated_at])]
   }.freeze
 
   TRANSFERS_EXPORT_OPTIONS = {

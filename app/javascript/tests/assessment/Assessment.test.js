@@ -22,7 +22,7 @@ function getWrapper() {
   return shallow(<Assessment report={mockAssessment1} symptoms={mockAssessment1.symptoms} current_user={mockUser1} patient={mockPatient1} patient_initials={'AA'}
   patient_age={39} lang={'en'} contact_info={contactInfo} translations={mockTranslations} reload={false} updateId={789} idPre={'789'}
   authenticity_token={authyToken} threshold_hash={thresholdHash} patient_submission_token={patientSubmissionToken} />);
-};
+}
 
 describe('Report', () => {
   it('Properly renders all main components', () => {

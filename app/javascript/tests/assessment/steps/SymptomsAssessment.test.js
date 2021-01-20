@@ -11,7 +11,7 @@ const submitMock = jest.fn();
 function getWrapper(assessment, symptoms, idPre) {
   return shallow(<SymptomsAssessment assessment={assessment} symptoms={symptoms} patient_initials={'AA'} patient_age={39} lang={'en'}
     translations={mockTranslations} submit={submitMock} idPre={idPre} />);
-};
+}
 
 afterEach(() => {
   jest.clearAllMocks();
