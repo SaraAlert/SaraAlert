@@ -114,4 +114,8 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
   test 'add comment' do
     @@public_health_test_helper.add_comment('locals2c3_epi', 'patient_11', 'pui', 'comment')
   end
+
+  test 'move to household' do
+    @@public_health_test_helper.move_to_household('state1_epi', 'patient_2', 'patient_4')
+  end
 end

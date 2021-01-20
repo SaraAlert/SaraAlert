@@ -215,4 +215,11 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@public_health_dashboard.download_sara_alert_format_guidance(workflow)
     @@system_test_utils.logout
   end
+
+  def move_to_household(user_label, patient_label, target_hoh_label)
+    @@system_test_utils.login(user_label)
+    @@public_health_dashboard.search_for_and_view_patient('all', patient_label)
+    @@public_health_patient_page.move_to_household(user_label, patient_label, target_hoh_label)
+    @@system_test_utils.logout
+  end
 end
