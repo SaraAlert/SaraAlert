@@ -65,5 +65,5 @@ test do
   transactions_per_second name: 'Transactions per Second'
 
   # end.run(path: '/usr/local/bin/', gui: false)
-  # end.jmx(file: 'tmp/public_health_controller_test.jmx')
+  # end.jmx(file: 'tmp/public_health_dashboard_jmx_test.jmx')
 end.run(path: '/usr/local/bin/', gui: true)
