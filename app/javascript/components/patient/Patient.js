@@ -777,7 +777,7 @@ class Patient extends React.Component {
                   );
                 })}
                 <Row>
-                  <MoveToHousehold patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
+                  <MoveToHousehold patient={this.props?.details} authenticity_token={this.props.authenticity_token} />
                 </Row>
               </Col>
             </Row>

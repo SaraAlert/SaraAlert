@@ -46,4 +46,8 @@ class EnrollerDashboardTest < ApplicationSystemTestCase
     @@enroller_test_helper.verify_patient_page_permissions('state1_enroller')
     @@enroller_test_helper.verify_patient_page_permissions('state1_epi_enroller')
   end
+
+  test 'move to household' do
+    @@enroller_test_helper.move_to_household('state1_enroller', 'patient_1', 'patient_46')
+  end
 end

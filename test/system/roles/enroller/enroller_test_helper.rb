@@ -19,6 +19,7 @@ class EnrollerTestHelper < ApplicationSystemTestCase
 
   MONITOREES = @@system_test_utils.monitorees
   USERS = @@system_test_utils.users
+  PATIENTS = @@system_test_utils.patients
 
   def view_enrolled_monitorees(user_label)
     @@system_test_utils.login(user_label)
@@ -137,6 +138,18 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     @@system_test_utils.login(user_label)
     click_on 'Analytics'
     @@enroller_dashboard_verifier.verify_enrollment_analytics
+    @@system_test_utils.logout
+  end
+
+  def move_to_household(user_label, patient_label, target_hoh_label)
+    first_name = PATIENTS[patient_label]['first_name']
+    last_name = PATIENTS[patient_label]['last_name']
+    displayed_name = "#{last_name}, #{first_name}"
+
+    @@system_test_utils.login(user_label)
+    fill_in 'Search', with: displayed_name
+    click_on displayed_name
+    @@enroller_patient_page_verifier.move_to_household(user_label, patient_label, target_hoh_label)
     @@system_test_utils.logout
   end
 end
