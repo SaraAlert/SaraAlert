@@ -35,7 +35,7 @@ class UpdateCaseStatus extends React.Component {
         const distinctIsolation = [...new Set(response.data.isolation)];
         const distinctMonitoring = [...new Set(response.data.monitoring)];
 
-        var state_updates = {};
+        const state_updates = {};
         if (distinctCaseStatus.length === 1 && distinctCaseStatus[0] !== null) {
           state_updates.initialCaseStatus = distinctCaseStatus[0];
           state_updates.case_status = distinctCaseStatus[0];
