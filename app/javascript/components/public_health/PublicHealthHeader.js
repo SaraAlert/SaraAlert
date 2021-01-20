@@ -16,7 +16,6 @@ class PublicHealthHeader extends React.Component {
       showImportModal: false,
       uploading: false,
     };
-    this.uploadFile = this.uploadFile.bind(this);
   }
 
   componentDidMount() {
@@ -31,7 +30,7 @@ class PublicHealthHeader extends React.Component {
     this.setState({ file: event.target.files[0], fileType: type });
   }
 
-  uploadFile() {
+  uploadFile = () => {
     if (this.state.file && this.state.fileType) {
       this.setState({ uploading: true }, () => {
         axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -49,7 +48,7 @@ class PublicHealthHeader extends React.Component {
         });
       });
     }
-  }
+  };
 
   renderImportModal() {
     return (

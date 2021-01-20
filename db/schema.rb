@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_13_134912) do
+ActiveRecord::Schema.define(version: 2021_01_20_170347) do
 
   create_table "analytics", charset: "utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -75,6 +75,8 @@ ActiveRecord::Schema.define(version: 2021_01_13_134912) do
     t.integer "contact_attempts"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.date "last_date_of_exposure"
+    t.integer "assigned_user"
     t.index ["patient_id"], name: "index_close_contacts_on_patient_id"
   end
 

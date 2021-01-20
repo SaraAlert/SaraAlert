@@ -24,15 +24,9 @@ class LastDateExposure extends React.Component {
       showContinuousExposureModal: false,
     };
     this.origState = Object.assign({}, this.state);
-    this.handleChange = this.handleChange.bind(this);
-    this.submit = this.submit.bind(this);
-    this.openContinuousExposureModal = this.openContinuousExposureModal.bind(this);
-    this.openLastDateOfExposureModal = this.openLastDateOfExposureModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
-    this.createModal = this.createModal.bind(this);
   }
 
-  handleChange(event) {
+  handleChange = event => {
     event.persist();
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     this.setState({ [event.target.id]: value }, () => {
@@ -44,9 +38,9 @@ class LastDateExposure extends React.Component {
         this.setState({ apply_to_household_cm_only: true, apply_to_household: false });
       }
     });
-  }
+  };
 
-  submit() {
+  submit = () => {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     diffState.push('continuous_exposure'); // Since exposure date updates change CE, always make sure this gets changed
     this.setState({ loading: true }, () => {
@@ -66,9 +60,9 @@ class LastDateExposure extends React.Component {
           reportError(error);
         });
     });
-  }
+  };
 
-  openContinuousExposureModal() {
+  openContinuousExposureModal = () => {
     this.setState({
       showContinuousExposureModal: true,
       last_date_of_exposure: null,
@@ -76,9 +70,9 @@ class LastDateExposure extends React.Component {
       apply_to_household: false,
       apply_to_household_cm_only: false,
     });
-  }
+  };
 
-  openLastDateOfExposureModal(date) {
+  openLastDateOfExposureModal = date => {
     if (date !== this.props.patient.last_date_of_exposure) {
       this.setState({
         showLastDateOfExposureModal: true,
@@ -88,9 +82,9 @@ class LastDateExposure extends React.Component {
         apply_to_household_cm_only: false,
       });
     }
-  }
+  };
 
-  closeModal() {
+  closeModal = () => {
     this.setState({
       last_date_of_exposure: this.props.patient.last_date_of_exposure,
       continuous_exposure: !!this.props.patient.continuous_exposure,
@@ -99,7 +93,7 @@ class LastDateExposure extends React.Component {
       apply_to_household: false,
       apply_to_household_cm_only: false,
     });
-  }
+  };
 
   endOfMonitoringTooltipText = () => {
     return (
@@ -112,7 +106,7 @@ class LastDateExposure extends React.Component {
     );
   };
 
-  createModal(title, message, close, submit) {
+  createModal = (title, message, close, submit) => {
     const update_continuous_exposure = title === 'Continuous Exposure';
     return (
       <Modal size="lg" show centered onHide={close}>
@@ -191,7 +185,7 @@ class LastDateExposure extends React.Component {
         </Modal.Footer>
       </Modal>
     );
-  }
+  };
 
   render() {
     return (
