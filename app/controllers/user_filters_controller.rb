@@ -13,10 +13,12 @@ class UserFiltersController < ApplicationController
     redirect_to root_url unless current_user.user_filters.count < 100 # Enforce upper limit per user
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
-        filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
+        filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :allowRange, options: []),
         value: filter.permit(:value)[:value] || filter.require(:value) || false,
+        numberOption: filter.permit(:numberOption)[:numberOption],
         dateOption: filter.permit(:dateOption)[:dateOption],
-        relativeOption: filter.permit(:relativeOption)[:relativeOption]
+        relativeOption: filter.permit(:relativeOption)[:relativeOption],
+        additionalFilterOption: filter.permit(:additionalFilterOption)[:additionalFilterOption]
       }
     end
     name = params.require(:name)
@@ -26,10 +28,12 @@ class UserFiltersController < ApplicationController
   def update
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
-        filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
+        filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :allowRange, options: []),
         value: filter.permit(:value)[:value] || filter.require(:value) || false,
+        numberOption: filter.permit(:numberOption)[:numberOption],
         dateOption: filter.permit(:dateOption)[:dateOption],
-        relativeOption: filter.permit(:relativeOption)[:relativeOption]
+        relativeOption: filter.permit(:relativeOption)[:relativeOption],
+        additionalFilterOption: filter.permit(:additionalFilterOption)[:additionalFilterOption]
       }
     end
     user_filter = current_user.user_filters.find_by(id: params.permit(:id)[:id])
