@@ -50,4 +50,5 @@ tls/
 # JMeter
 *.jmx
 *.jtl
+*.hprof
 jmeter.log
