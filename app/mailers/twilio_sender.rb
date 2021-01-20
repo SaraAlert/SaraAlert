@@ -3,16 +3,55 @@
 # TwilioSender: Methods to interact with Twilio REST API
 class TwilioSender
   @client = Twilio::REST::Client.new(ENV['TWILLIO_API_ACCOUNT'], ENV['TWILLIO_API_KEY'])
+  def self.handle_twilio_error_codes(patient, _error_code)
+    # Invalid To Number https://www.twilio.com/docs/api/errors/21211
+    case message['error_code']
+    when '21211'
+      History.errored_contact_attempt_hoh_and_dependents(patient, error_message: 'Invalid recipient phone number.')
+    # Blocked Number Error https://www.twilio.com/docs/api/errors/21610
+    when '21610'
+      PatientMailer.add_fail_history_sms_blocked(patient)
+    # Invalid Mobile Number Error https://www.twilio.com/docs/api/errors/21614
+    when '21614'
+      History.errored_contact_attempt_hoh_and_dependents(patient, error_message: 'Invalid recipient phone number.')
+    # Unsupported Region Error https://www.twilio.com/docs/api/errors/21408
+    when '21408'
+      History.errored_contact_attempt_hoh_and_dependents(patient, error_message: 'Recipient phone number is in an unsupported region.')
+    # Unreachable Destination Handset Error https://www.twilio.com/docs/api/errors/30003
+    when '30003'
+      History.errored_contact_attempt_hoh_and_dependents(patient, error_message: 'Recipient phone is off or otherwise unavailable.')
+    # Message Blocked Error https://www.twilio.com/docs/api/errors/30004
+    when '30004'
+      error_message = 'Recipient may have blocked communications with SaraAlert,recipient phone may be unavilable or inelligible to recieve SMS text messages.'
+      History.errored_contact_attempt_hoh_and_dependents(patient, error_message: error_message)
+    # Unknown Destination Handset Error https://www.twilio.com/docs/api/errors/30005
+    when '30005'
+      error_message = 'Recipient phone number may not exist, the phone may be off or the phone is not eligible to receive SMS text messages.'
+      History.errored_contact_attempt_hoh_and_dependents(patient, error_message: error_message)
+    # Landline or Unreachable Carrier Error https://www.twilio.com/docs/api/errors/30006
+    when '30006'
+      error_message = 'Recipient phone number may not eligible to receive SMS text messages, or carrier network may be unreachable.'
+      History.errored_contact_attempt_hoh_and_dependents(patient, error_message: error_message)
+    # Message Filtered By Carrier Error https://www.twilio.com/docs/api/errors/30007
+    when '30007'
+      History.errored_contact_attempt_hoh_and_dependents(patient, error_message: 'Message has been filtered by carrier network.')
+    # Unknown Error https://www.twilio.com/docs/api/errors/30008
+    when '30008'
+      History.errored_contact_attempt_hoh_and_dependents(patient, error_message: 'An unknown error has been encountered by the messaging system.')
+    else
+      History.errored_contact_attempt_hoh_and_dependents(patient, error_message: 'An unknown error has been encountered by the messaging system.')
+    end
+  end
+
   def self.send_sms(patient, contents)
     from = ENV['TWILLIO_MESSAGING_SERVICE_SID'] || ENV['TWILLIO_SENDING_NUMBER']
     begin
-      @client.messages.create(
-        to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
-        body: contents,
-        from: from
-      )
+      @client.messages.create(to: Phonelib.parse(patient.primary_telephone, 'US').full_e164, body: contents, from: from)
     rescue Twilio::REST::RestError => e
       Rails.logger.warn e.error_message
+      # The error codes will be caught here in cases where a messaging service is not used
+      error_code = e&.code&.to_s
+      handle_twilio_error_codes(patient, error_code)
       return false
     end
     true
@@ -34,6 +73,9 @@ class TwilioSender
       )
     rescue Twilio::REST::RestError => e
       Rails.logger.warn e.error_message
+      # The error codes will be caught here in cases where a messaging service is not used
+      error_code = e&.code&.to_s
+      handle_twilio_error_codes(patient, error_code)
       return false
     end
     true
@@ -44,6 +86,9 @@ class TwilioSender
       execution = @client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions(execution_id).execution_context.fetch
     rescue Twilio::REST::RestError => e
       Rails.logger.warn e.error_message
+      # The error codes will be caught here in cases where a messaging service is not used
+      error_code = e&.code&.to_s
+      handle_twilio_error_codes(patient, error_code)
       return
     end
 

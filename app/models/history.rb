@@ -55,6 +55,29 @@ class History < ApplicationRecord
     end
   }
 
+  def self.errored_contact_attempt_hoh_and_dependents(patient: nil, created_by: 'Sara Alert System', comment: 'Failed Contact Attempt', error_message: nil)
+    patient&.active_dependents&.each do |dependent|
+      if dependent.responder == dependent
+        recipient = 'this monitoree'
+        responder = dependent
+      else
+        recipient = "this monitoree's head of household"
+        responder = dependent.responder
+      end
+      details = if !error_message.nil?
+                  ' Error details: ' + error_message
+                else
+                  ''
+                end
+      comment = if responder.preferred_contact_method.include?('SMS')
+                  "Sara Alert attempted to send an SMS to #{recipient} at #{responder.primary_telephone}, but the message could not be delivered.#{details}"
+                else
+                  "Sara Alert attempted to call #{recipient} at #{responder.primary_telephone}, but the call could not be completed.#{details}"
+                end
+      create_history(dependent, created_by, HISTORY_TYPES[:contact_attempt], comment)
+    end
+  end
+
   def self.record_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a record.')
     create_history(patient, created_by, HISTORY_TYPES[:record_edit], comment)
   end
