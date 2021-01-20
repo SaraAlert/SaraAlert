@@ -3,8 +3,8 @@
 require 'ruby-jmeter'
 
 test do
-  defaults domain: 'localhost'
-  defaults port: 3000
+  defaults domain: ENV['JMX_DOMAIN'] || 'localhost'
+  defaults port: ENV['JMX_PORT'].to_i || 3000
 
   cache clear_each_iteration: true
 
