@@ -107,8 +107,8 @@ gem 'audited'
 gem 'order_as_specified'
 
 group :development, :test do
-  gem 'brakeman'
   gem 'benchmark-ips'
+  gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'erb_lint'
   gem 'factory_bot_rails'
