@@ -3,6 +3,7 @@
 # Assessment: assessment model
 class Assessment < ApplicationRecord
   extend OrderAsSpecified
+  include PatientHelper
 
   columns.each do |column|
     case column.type
@@ -204,7 +205,7 @@ class Assessment < ApplicationRecord
                                                  .maximum(:created_at)
       )
     else
-      new_symptom_onset = patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at)
+      new_symptom_onset = calculated_symptom_onset(patient)
       unless new_symptom_onset == patient[:symptom_onset] || !new_symptom_onset.nil?
         comment = "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank because a symptomatic report was removed."
         History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
