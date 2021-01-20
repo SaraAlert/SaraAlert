@@ -199,8 +199,8 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   end
 
   # Calculated symptom onset date is based on latest symptomatic assessment.
-  def calculated_symptom_onset
-    assessments.where(symptomatic: true).minimum(:created_at)&.to_date
+  def calculated_symptom_onset(patient)
+    patient.assessments.where(symptomatic: true).minimum(:created_at)&.to_date
   end
 
   def self.monitoring_fields

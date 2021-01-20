@@ -191,7 +191,7 @@ class PatientsController < ApplicationController
       if current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id].to_i)
         old_jurisdiction = patient.jurisdiction[:path]
         new_jurisdiction = Jurisdiction.find(content[:jurisdiction_id])[:path]
-        transfer = Transfer.create(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction_id: content[:jurisdiction_id], who: current_user)
+        transfer = Transfer.create!(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction_id: content[:jurisdiction_id], who: current_user)
         comment = "User changed Jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
         history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
         if propagated_fields.include?('jurisdiction_id')
@@ -358,20 +358,29 @@ class PatientsController < ApplicationController
     end
   end
 
+  # Make updates to "monitoring fields" and create corresponding History items.
+  # "Monitoring fields" are defined in PatientHelper.monitoring_fields
+  #
+  # patient - The Patient to update.
+  # params - The request params.
+  # household - Indicates if the Patient was updated directly (household = :patient) or updated because their head of household was (household = :dependent)
+  # propogation - Indicates why the updates are being propogated to the Patient.
   def update_monitoring_fields(patient, params, household, propagation)
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
     permitted_params = if diff_state.nil?
                          PatientHelper.monitoring_fields
                        else
-                         PatientHelper.monitoring_fields & diff_state # Set intersection between what the front end is saying changed, and status fields
+                         # Set intersection between what the front end is saying changed, and status fields
+                         PatientHelper.monitoring_fields & diff_state
                        end
+    # Transforming into hash with symbol keys for consistent parsing later on
     updates = params.require(:patient).permit(permitted_params).to_h.deep_symbolize_keys
 
     patient_before = patient.dup
 
     # Apply and save updates to the db
-    patient.update(updates)
+    patient.update!(updates)
 
     # If the jurisdiction was changed, create a Transfer
     if updates&.keys&.include?(:jurisdiction_id) && !updates[:jurisdiction_id].nil?

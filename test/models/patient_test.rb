@@ -2187,6 +2187,10 @@ class PatientTest < ActiveSupport::TestCase
     patient.update({ continuous_exposure: true })
     # This update is not allowed when monitoring is false
     assert_not patient.continuous_exposure
+
+    # But when monitoring is set to true, the update is allowed
+    patient.update({ monitoring: true, continuous_exposure: true })
+    assert patient.continuous_exposure
   end
 
   # monitoring_history_edit tests
@@ -2323,6 +2327,21 @@ class PatientTest < ActiveSupport::TestCase
     h = History.where(patient: patient)
     assert_match(/Case Status.*"Confirmed".*"Unknown"/, h.first.comment)
     assert_match(/Latest Public Health Action.*"Recommended laboratory testing".*"None"/, h.second.comment)
+  end
+
+  test 'monitoring_history_edit handles case_status change with isolation change' do
+    patient = create(:patient, case_status: 'Unknown', public_health_action: 'None', isolation: false)
+    history_data = {
+      patient_before: { case_status: 'Confirmed', isolation: true, public_health_action: 'Recommended laboratory testing' },
+      updates: { case_status: 'Unknown', isolation: false },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient)
+    assert_match(/Case Status.*"Confirmed".*"Unknown"/, h.first.comment)
+    assert_match(/Latest Public Health Action.*"Recommended laboratory testing".*"None"/, h.second.comment)
+    # Symptom onset message must come after case status message
+    assert_match(/Symptom Onset Date/, h.third.comment)
   end
 
   test 'monitoring_history_edit handles jurisdiction_id change' do
