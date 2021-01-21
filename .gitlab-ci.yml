@@ -2,6 +2,7 @@
 stages:
   - create-image-1
   - create-image-2
+  - jmeter-benchmark
 
 build-push-development-test-image:
   stage: create-image-1
@@ -44,3 +45,23 @@ build-push-staging-nginx-image:
     - docker build -f Nginx.Dockerfile --tag $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_3:latest --build-arg sara_alert_image="$ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:latest" .
     - docker push $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_3:latest
   allow_failure: false
+
+
+# jmeter-benchmark:
+#   stage: jmeter-benchmark
+#   tags:
+#     - sara-benchmark-shell
+#   only:
+#     refs:
+#       - performanceTest
+#   except:
+#     - schedules
+#   script:
+#     - mysql --user=disease_trakker -e 'CREATE DATABASE IF NOT EXISTS 1m_disease_trakker_development;'
+#     # Expect around 25 minutes to populate
+#     - mysql --user=disease_trakker 1m_disease_trakker_development < sara_database_1607023723.sql
+#     - bundle install
+#     - yarn install
+#     - rails db:migrate
+#     - ./script/run_jmeter_tests.sh
+
