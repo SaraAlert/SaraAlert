@@ -79,7 +79,7 @@ class MoveToHousehold extends React.Component {
    */
   createSelectButton(_, patientId) {
     return (
-      <Button id={patientId} variant="primary" size="lg">
+      <Button id={`select-button-${patientId}`} variant="primary" size="lg">
         Select
       </Button>
     );
@@ -259,7 +259,7 @@ class MoveToHousehold extends React.Component {
                   Please select the new monitoree that will respond for <b>{this.getPatientName()}</b>.
                 </Form.Label>
                 <p>
-                  You may select from the provided existing Head of Households and monitorees who are self reporting. &nbsp;
+                  You may select from the provided existing Head of Households and monitorees who are self reporting.
                   {this.getPatientName()} will be immediately moved into the selected monitoree&apos;s household.
                 </p>
                 <InputGroup size="md">
@@ -300,7 +300,7 @@ class MoveToHousehold extends React.Component {
           />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
+          <Button id="move-to-household-cancel-button" variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
         </Modal.Footer>
