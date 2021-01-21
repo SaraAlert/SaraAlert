@@ -150,32 +150,6 @@ class TransferTest < ActiveSupport::TestCase
     assert_equal(transfer.to_path, to_jurisdiction.jurisdiction_path_string)
   end
 
-  test 'with incoming jurisdiction id' do
-    to_jurisdiction = create(:jurisdiction)
-
-    assert_difference("Transfer.with_incoming_jurisdiction_id(#{to_jurisdiction.id}).size", 1) do
-      create(:transfer, to_jurisdiction: to_jurisdiction)
-    end
-
-    assert_no_difference("Transfer.with_incoming_jurisdiction_id(#{to_jurisdiction.id}).size") do
-      create(:transfer)
-    end
-  end
-
-  test 'with outgoing jurisdiction id' do
-    from_jurisdiction = create(:jurisdiction)
-
-    assert_difference("Transfer.with_outgoing_jurisdiction_id(#{from_jurisdiction.id}).size", 1) do
-      transfer = build(:transfer)
-      transfer.from_jurisdiction = from_jurisdiction
-      transfer.save!
-    end
-
-    assert_no_difference("Transfer.with_outgoing_jurisdiction_id(#{from_jurisdiction.id}).size") do
-      create(:transfer)
-    end
-  end
-
   test 'transfer in time frame' do
     assert_no_difference("Transfer.in_time_frame('Invalid').size") do
       create(:transfer)

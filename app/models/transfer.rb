@@ -22,16 +22,6 @@ class Transfer < ApplicationRecord
     to_jurisdiction[:path] || to_jurisdiction.jurisdiction_path_string
   end
 
-  # All incoming transfers with the given jurisdiction id
-  scope :with_incoming_jurisdiction_id, lambda { |jurisdiction_id|
-    where('to_jurisdiction_id = ?', jurisdiction_id)
-  }
-
-  # All outgoing transfers with the given jurisdiction id
-  scope :with_outgoing_jurisdiction_id, lambda { |jurisdiction_id|
-    where('from_jurisdiction_id = ?', jurisdiction_id)
-  }
-
   # All transfers within the given time frame
   scope :in_time_frame, lambda { |time_frame|
     case time_frame
