@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
+import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import BadgeHOH from '../util/BadgeHOH';
@@ -55,6 +56,15 @@ class MoveToHousehold extends React.Component {
   }
 
   /**
+   * Formats a date value into consistent format.
+   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
+   */
+  formatDate(data) {
+    const date = data.value;
+    return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
+  }
+
+  /**
    * Creates a link and renders HoH badge for monitoree name in table.
    * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
    */
@@ -79,7 +89,7 @@ class MoveToHousehold extends React.Component {
    */
   createSelectButton(_, patientId) {
     return (
-      <Button id={`select-button-${patientId}`} variant="primary" size="lg">
+      <Button id={`select-button-${patientId}`} variant="primary" size="md">
         Select
       </Button>
     );
