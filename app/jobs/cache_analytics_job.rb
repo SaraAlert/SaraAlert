@@ -381,6 +381,7 @@ class CacheAnalyticsJob < ApplicationJob
                                                    .enrolled_in_time_frame(time_frame)
                                                    .size,
                         transferred_in: Transfer.where(to_jurisdiction_id: subjur_ids)
+                                                .where.not(from_jurisdiction_id: subjur_ids)
                                                 .where_assoc_exists(:patient, isolation: workflow == 'Isolation')
                                                 .in_time_frame(time_frame)
                                                 .size,
@@ -389,6 +390,7 @@ class CacheAnalyticsJob < ApplicationJob
                                           .closed_in_time_frame(time_frame)
                                           .size,
                         transferred_out: Transfer.where(from_jurisdiction_id: subjur_ids)
+                                                 .where.not(to_jurisdiction_id: subjur_ids)
                                                  .where_assoc_exists(:patient, isolation: workflow == 'Isolation')
                                                  .in_time_frame(time_frame)
                                                  .size,
