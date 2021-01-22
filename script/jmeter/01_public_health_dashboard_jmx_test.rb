@@ -18,14 +18,14 @@ test do
   threads count: 10, loops: 1 do
     think_time 500, 3000
 
-    visit name: '01_SA_visit_sign_in', url: '/users/sign_in' do
+    visit name: '01_01_SA_visit_sign_in', url: '/users/sign_in' do
       # <input type="hidden" name="authenticity_token" value="[FILTERED]">
       extract regex: 'input type="hidden" name="authenticity_token" value="(.+?)"', name: 'authenticity_token', match_number: 1
     end
 
     exists 'authenticity_token' do
       #  {"authenticity_token"=>"[FILTERED]", "user"=>{"email"=>"[FILTERED]", "password"=>"[FILTERED]"}}
-      submit name: '02_SA_sign_in',
+      submit name: '01_02_SA_sign_in',
              url: '/users/sign_in',
              fill_in: {
                'user[email]': username,
@@ -37,7 +37,7 @@ test do
     end
 
     loops count: 20 do
-      visit name: '03_SA_dashboard', url: '/public_health' do
+      visit name: '01_03_SA_dashboard', url: '/public_health' do
         think_time 500, 1000
         # <meta name="csrf-token" content="[FILTERED]">
         extract regex: 'meta name="csrf-token" content="(.+?)"', name: 'csrf_token', match_number: 1
@@ -45,7 +45,7 @@ test do
 
       exists 'csrf_token' do
         # {"query"=>{"jurisdiction"=>1, "scope"=>"all", "workflow"=>"exposure", "tab"=>"all"}, "jurisdiction"=>{}}
-        submit name: '04_SA_assigned_users',
+        submit name: '01_04_SA_assigned_users',
                url: '/jurisdictions/assigned_users',
                fill_in: {
                  'query[jurisdiction]': 1,

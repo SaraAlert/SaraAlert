@@ -4,7 +4,7 @@ require 'csv'
 
 config = [
   {
-    label: '01_SA_visit_sign_in',
+    label: '01_01_SA_visit_sign_in',
     failure_thresholds: {
       avg_latency: 1000,
       max_latency: 10,
@@ -14,7 +14,7 @@ config = [
     }
   },
   {
-    label: '02_SA_sign_in',
+    label: '01_02_SA_sign_in',
     failure_thresholds: {
       avg_latency: 1000,
       max_latency: 1000,
@@ -24,7 +24,7 @@ config = [
     }
   },
   {
-    label: '03_SA_dashboard',
+    label: '01_03_SA_dashboard',
     failure_thresholds: {
       avg_latency: 1000,
       max_latency: 1000,
@@ -34,7 +34,7 @@ config = [
     }
   },
   {
-    label: '04_SA_assigned_users',
+    label: '01_04_SA_assigned_users',
     failure_thresholds: {
       avg_latency: 1000,
       max_latency: 1000,
