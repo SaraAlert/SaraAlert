@@ -71,4 +71,4 @@ test do
 
   # end.run(path: '/usr/local/bin/', gui: false)
   # end.jmx(file: 'tmp/public_health_dashboard_jmx_test.jmx')
-end.run(path: '/usr/local/bin/', gui: false)
+end.run(gui: false)
