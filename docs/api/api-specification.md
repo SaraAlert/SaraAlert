@@ -814,9 +814,9 @@ The API supports creating new monitorees.
 
 <a name="create-ext"/>
 
-Along with supporting the US Core extensions for [race](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-race.html), [ethnicity](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-ethnicity.html), and [birthsex](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-birthsex.html), Sara Alert includes four additional extensions for things specific to the Sara Alert workflows.
+Along with supporting the US Core extensions for [race](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-race.html), [ethnicity](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-ethnicity.html), and [birthsex](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-birthsex.html), Sara Alert includes additional extensions for attributes specific to the Sara Alert workflows.
 
-Use `http://saraalert.org/StructureDefinition/preferred-contact-method` for specifying the monitorees Sara Alert preferred contact method (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, `SMS Text-message`, `Opt-out`, and `Unknown`).
+Use `http://saraalert.org/StructureDefinition/preferred-contact-method` to specify the monitoree's Sara Alert preferred contact method (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, `SMS Text-message`, `Opt-out`, and `Unknown`).
 
 ```json
 {
@@ -825,7 +825,7 @@ Use `http://saraalert.org/StructureDefinition/preferred-contact-method` for spec
 }
 ```
 
-Use `http://saraalert.org/StructureDefinition/preferred-contact-time` for specifying the monitorees Sara Alert preferred contact time (options are: `Morning`, `Afternoon`, and `Evening`).
+Use `http://saraalert.org/StructureDefinition/preferred-contact-time` to specify the monitoree's Sara Alert preferred contact time (options are: `Morning`, `Afternoon`, and `Evening`).
 
 ```json
 {
@@ -862,6 +862,118 @@ Use `http://saraalert.org/StructureDefinition/isolation` to specify if the monit
 }
 ```
 
+Use `http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path` to specify the monitoree's assigned jurisdiction.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+  "valueString": "USA, State 1"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/monitoring-plan` to specify the monitoree's Sara Alert monitoring plan (options are: `None`, `Daily active monitoring`, `Self-monitoring with public health supervision`, `Self-monitoring with delegated supervision`, and `Self-observation`).
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+  "valueString": "Daily active monitoring"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/assigned-user` to specify the monitoree's assigned user.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/assigned-user",
+  "valuePositiveInt": 123
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/additional-planned-travel-start-date` to specify when the monitoree is planning to begin their travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+  "valueDate": "2020-06-15"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/port-of-origin` to specify the port that the monitoree traveled from.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+  "valueString": "MSP Airport"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/date-of-departure` to specify when the monitoree departed from the port of origin.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+  "valueDate": "2020-05-25"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/flight-or-vessel-number` to specify the plane, train, ship, or other vessel that the monitoree used to travel to their destination.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-number",
+  "valueString": "QQ1234"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/flight-or-vessel-carrier` to specify the carrier, operating company, or provider of the flight or vessel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-carrier",
+  "valueString": "QQ Airways"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/date-of-arrival` to specify when the monitoree
+entered the United States after travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+  "valueDate": "2020-05-28"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/exposure-notes` to specify additional notes about the monitoree's exposure history or case information history.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+  "valueString": "Sample exposure notes."
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/travel-related-notes` to specify additional notes
+about the monitoree’s travel history.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+  "valueString": "Sample travel notes."
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/additional-planned-travel-notes` to specify additional notes about the monitoree's planned travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+  "valueString": "Sample planned travel notes."
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/phone-type` to specify the type of phone attached to the primary or secondary phone number (options are: `Smartphone`, `Plain Cell`, and `Landline`). Note that this extension should be placed on the first element in the `Patient.telecom` array to specify the monitoree's primary phone type, and the second element in the `Patient.telecom` array to specify the monitoree's secondary phone type.
+```json
+"telecom": [
+  {
+    "system": "phone",
+    "value": "(333) 333-3333",
+    "rank": 1,
+    "extension": {
+      "url": "http://saraalert.org/StructureDefinition/phone-type",
+      "valueString": "Smartphone"
+    }
+  }
+]
+```
 ### POST `[base]/Patient`
 
 <a name="create-post-pat"/>
