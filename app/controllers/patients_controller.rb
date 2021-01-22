@@ -250,14 +250,16 @@ class PatientsController < ApplicationController
   end
 
   def update_hoh
-    new_hoh_id = params.permit(:new_hoh_id)[:new_hoh_id]
+    new_hoh_id = params.permit(:new_hoh_id)[:new_hoh_id]&.to_i
     current_patient_id = params.permit(:id)[:id]
     household_ids = params[:household_ids] || []
     current_patient = current_user.get_patient(current_patient_id)
     old_hoh = current_user.get_patient(current_patient.responder_id)
     new_hoh = current_user.get_patient(new_hoh_id)
 
-    # Determine if the user was removed from a household, added to a household, or a new HoH was selected
+    # Don't do anything if there hasn't been a change to the responder at all
+    redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
+
     if new_hoh_id == current_patient.id
       comment = "User removed #{current_patient.first_name} #{current_patient.last_name} from the household. #{old_hoh.first_name} #{old_hoh.last_name}"\
                 ' will no longer be responsible for handling their reporting.'
