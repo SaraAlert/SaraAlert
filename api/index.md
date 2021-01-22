@@ -27,7 +27,7 @@ As indicated in the previous section, the API follows SMART on FHIR API standard
 
 # What can the Sara Alert™ API do?
 
-At base, the API exists to allow other software systems to **read** and **write** Sara Alert data. Reading can mean either requesting specific data, e.g. "give me Monitoree X's information", or it can mean searching data, e.g. "give me the Monitoree with the e-mail address jane@example<span></span>.com". Writing data can mean putting new data into the system, e.g. "enroll this person as a new Monitoree", or it can mean updating existing data, e.g. "change this Monitoree's preferred reporting method to Opt-Out".
+The API exists to allow other software systems to **read** and **write** Sara Alert data. Reading can mean either requesting specific data, e.g. "give me Monitoree X's information", or it can mean searching data, e.g. "give me the Monitoree with the e-mail address jane@example<span></span>.com". Writing data can mean putting new data into the system, e.g. "enroll this person as a new Monitoree", or it can mean updating existing data, e.g. "change this Monitoree's preferred reporting method to Opt-Out".
 
 The examples above are in terms of Monitorees, but the API also supports Symptom Reports and Lab Results. However, these entities are currently only supported for reading data.
 
