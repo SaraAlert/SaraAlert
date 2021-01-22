@@ -22,8 +22,6 @@ class MoveToHousehold extends React.Component {
         ],
         rowData: [],
         totalRows: 0,
-        selectedRows: [],
-        selectAll: false,
       },
       query: {
         page: 0,
@@ -49,7 +47,6 @@ class MoveToHousehold extends React.Component {
       },
       entryOptions: [5, 10],
       isLoading: false,
-      updateDisabled: true,
       showModal: false,
       cancelToken: axios.CancelToken.source(),
     };
@@ -102,14 +99,28 @@ class MoveToHousehold extends React.Component {
     let current = this.state.showModal;
     this.setState(
       {
-        updateDisabled: true,
         showModal: !current,
         isLoading: !current,
       },
       () => {
-        // Make initial call for table data when modal is shown.
         if (this.state.showModal) {
+          // Make initial call for table data when modal is shown.
           this.updateTable(this.state.query);
+        } else {
+          // Reset modal when modal is hidden
+          const resetQuery = {
+            ...this.state.query,
+            page: 0,
+            search: '',
+            entries: 5,
+          };
+
+          const resetTable = {
+            ...this.state.table,
+            rowData: [],
+            totalRows: 0,
+          };
+          this.setState({ query: resetQuery, table: resetTable });
         }
       }
     );
@@ -228,7 +239,7 @@ class MoveToHousehold extends React.Component {
           new_hoh_id: new_hoh_id,
         })
         .then(() => {
-          this.setState({ updateDisabled: false });
+          // Reload the page to see updated HoH
           location.reload(true);
         })
         .catch(error => {
@@ -241,7 +252,7 @@ class MoveToHousehold extends React.Component {
    * Grabs a formatted string with the name of the patient who is being moved to a household.
    */
   getPatientName = () => {
-    return `${this.props.patient?.first_name || ''} ${this.props.patient?.middle_name || ''} ${this.props.patient?.last_name || ''}`;
+    return `${this.props.patient?.last_name || ''}, ${this.props.patient?.first_name || ''} ${this.props.patient?.middle_name || ''}`;
   };
 
   /**
@@ -255,11 +266,11 @@ class MoveToHousehold extends React.Component {
     }
   }
 
-  createModal(title, toggle) {
+  createModal() {
     return (
-      <Modal dialogClassName="modal-move-household" show centered onHide={toggle}>
+      <Modal dialogClassName="modal-move-household" show centered onHide={this.toggleModal}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>Move To Household</Modal.Title>
         </Modal.Header>
         <Modal.Body className="modal-move-household-body">
           <Form>
@@ -274,7 +285,7 @@ class MoveToHousehold extends React.Component {
                 </p>
                 <InputGroup size="md">
                   <InputGroup.Prepend>
-                    <OverlayTrigger overlay={<Tooltip>Search by name or state/local ID.</Tooltip>}>
+                    <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
                       <InputGroup.Text className="rounded-0 p-1">
                         <i className="fas fa-search"></i>
                         <span className="ml-1">Search</span>
@@ -310,7 +321,7 @@ class MoveToHousehold extends React.Component {
           />
         </Modal.Body>
         <Modal.Footer>
-          <Button id="move-to-household-cancel-button" variant="secondary btn-square" onClick={toggle}>
+          <Button id="move-to-household-cancel-button" variant="secondary btn-square" onClick={this.toggleModal}>
             Cancel
           </Button>
         </Modal.Footer>
@@ -324,7 +335,7 @@ class MoveToHousehold extends React.Component {
         <Button size="sm" className="my-2" onClick={this.toggleModal}>
           <i className="fas fa-house-user"></i> Move To Household
         </Button>
-        {this.state.showModal && this.createModal('Move To Household', this.toggleModal)}
+        {this.state.showModal && this.createModal()}
       </React.Fragment>
     );
   }

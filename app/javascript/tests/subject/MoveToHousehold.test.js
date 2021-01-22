@@ -4,15 +4,12 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 import MoveToHousehold from '../../components/subject/MoveToHousehold.js'
 import { mockPatient1 } from '../mocks/mockPatients'
+import { nameFormatterAlt } from '../util.js'
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 
 function getWrapper(patient) {
     return shallow(<MoveToHousehold patient={patient} authenticity_token={authyToken} />);
-}
-
-function getPatientName(patient) {
-  return `${patient.first_name} ${patient.middle_name} ${patient.last_name}`;
 }
 
 describe('MoveToHousehold', () => {
@@ -44,13 +41,13 @@ describe('MoveToHousehold', () => {
       expect(wrapper.state('showModal')).toBe(true);
       expect(wrapper.find(Modal).exists()).toBe(true);
       expect(wrapper.find(Modal).find(Form.Label).text()).toEqual(
-        `Please select the new monitoree that will respond for ${getPatientName(mockPatient1)}.`
+        `Please select the new monitoree that will respond for ${nameFormatterAlt(mockPatient1)}.`
       )
-      expect(wrapper.find(Modal).find(Form.Label).find('b').text()).toEqual(getPatientName(mockPatient1));
+      expect(wrapper.find(Modal).find(Form.Label).find('b').text()).toEqual(nameFormatterAlt(mockPatient1));
       expect(wrapper.find(Modal).find('p').text())
       .toEqual(
         'You may select from the provided existing Head of Households and monitorees who are self reporting.' + 
-        `${getPatientName(mockPatient1)} will be immediately moved into the selected monitoree's household.`
+        `${nameFormatterAlt(mockPatient1)} will be immediately moved into the selected monitoree's household.`
       );
     });
 
