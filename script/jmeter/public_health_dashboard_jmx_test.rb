@@ -60,12 +60,14 @@ test do
     end
   end
 
-  latencies_over_time name: 'Response Latencies Over Time'
-  response_codes_per_second name: 'Response Codes per Second'
-  response_times_distribution name: 'Response Times Distribution'
-  response_times_over_time name: 'Response Times Over Time'
-  response_times_percentiles name: 'Response Times Percentiles'
-  transactions_per_second name: 'Transactions per Second'
+  if ENV['JMX_GRAPH']
+    latencies_over_time name: 'Response Latencies Over Time'
+    response_codes_per_second name: 'Response Codes per Second'
+    response_times_distribution name: 'Response Times Distribution'
+    response_times_over_time name: 'Response Times Over Time'
+    response_times_percentiles name: 'Response Times Percentiles'
+    transactions_per_second name: 'Transactions per Second'
+  end
 
   # end.run(path: '/usr/local/bin/', gui: false)
   # end.jmx(file: 'tmp/public_health_dashboard_jmx_test.jmx')
