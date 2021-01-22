@@ -629,8 +629,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
     patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
     patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
-    patient_details[:expected_purge_date] = patient.expected_purge_date || '' if fields.include?(:expected_purge_date)
-    patient_details[:expected_purge_ts] = patient.expected_purge_ts || '' if fields.include?(:expected_purge_ts)
+    patient_details[:expected_purge_date] = patient.expected_purge_date_exp || '' if fields.include?(:expected_purge_date)
+    patient_details[:expected_purge_ts] = patient.expected_purge_date_exp || '' if fields.include?(:expected_purge_ts)
     patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase || '' if fields.include?(:full_status)
     patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '' if fields.include?(:status)
 
