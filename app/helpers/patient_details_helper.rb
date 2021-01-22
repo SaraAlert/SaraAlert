@@ -49,7 +49,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       closed_at: closed_at || '',
       transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || '',
-      expected_purge_date: expected_purge_date,
+      expected_purge_date: expected_purge_date_exp || '',
       symptom_onset: symptom_onset&.strftime('%F') || '',
       extended_isolation: extended_isolation || ''
     }
@@ -176,7 +176,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       responder_id: responder_id || '',
       head_of_household: head_of_household || false,
       pause_notifications: pause_notifications || false,
-      expected_purge_ts: expected_purge_ts || '',
+      expected_purge_ts: expected_purge_date_exp || '',
       monitoring_reason: monitoring_reason || '',
       closed_at: closed_at || '',
       created_at: created_at || '',
