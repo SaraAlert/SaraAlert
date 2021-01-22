@@ -51,10 +51,6 @@ jmeter-benchmark:
   stage: jmeter-benchmark
   tags:
     - sara-perf-shell
-  # only:
-  #   - master
-  #   - /^[0-9]{1,2}(\.[0-9]{1,3})+$/
-  #   - performanceTest
   except:
     - schedules
   script:
