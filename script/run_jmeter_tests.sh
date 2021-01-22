@@ -17,4 +17,4 @@ if [ -f "tmp/pids/server.pid" ]; then
     kill -9 $(cat tmp/pids/server.pid)
 fi
 
-ruby script/jmx_assertion.rb
+ruby script/assert_jmeter_results.rb
