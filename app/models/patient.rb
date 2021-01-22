@@ -613,15 +613,19 @@ class Patient < ApplicationRecord
     return (created_at.to_date + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
   end
 
-  # Date when patient is expected to be purged (with timezone displayed as 'UTC')
+  # Date when patient is expected to be purged (without any formatting)
   def expected_purge_ts
-    monitoring ? '' : (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes) || ''
+    monitoring ? nil : (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)
   end
 
   # Date when patient is expected to be purged (with timezone displayed as '+00:00')
   def expected_purge_date
-    exp_purge_ts = expected_purge_ts # avoid calling expected_purge_ts twice
-    exp_purge_ts.blank? ? '' : exp_purge_ts.rfc2822
+    expected_purge_ts&.rfc2822 || ''
+  end
+
+  # Date when patient is expected to be purged (with timezone displayed as 'UTC' for export)
+  def expected_purge_date_exp
+    expected_purge_ts&.strftime('%F %T %Z') || ''
   end
 
   # Determine if this patient's phone number has blocked communication with SaraAlert
