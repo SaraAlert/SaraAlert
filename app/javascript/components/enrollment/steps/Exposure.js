@@ -83,15 +83,10 @@ class Exposure extends React.Component {
       }
       this.updateLDEandCEValidations({ ...current.patient, [event.target.id]: value });
     }
-    this.setState(
-      {
-        current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
-        modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
-      },
-      () => {
-        this.props.setEnrollmentState({ ...this.state.modified });
-      }
-    );
+    this.setState({
+      current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
+      modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+    });
   }
 
   handleDateChange(field, date) {
@@ -233,16 +228,16 @@ class Exposure extends React.Component {
               return;
             }
             const originalJurisdictionPath = self.props.jurisdiction_paths[self.state.originalJurisdictionId];
-            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdiction_path}. Only users in ${self.state.jurisdiction_path} and its parent jurisdictions will be able to access this record. \n\nAre you sure you want to do this? \n\nThis will NOT be saved until the record is saved.`;
+            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdiction_path}. Are you sure you want to do this?`;
             const options = { title: 'Confirm Jurisdiction Change' };
 
             if (self.state.current.patient.assigned_user && self.state.current.patient.assigned_user === self.state.originalAssignedUser) {
-              options.additionalNote =
-                'Please also consider removing or updating the assigned user before completing the transfer if the new jurisdiction uses different Assigned User codes.';
+              options.additionalNote = 'Please also consider removing or updating the assigned user if it is no longer applicable.';
             }
 
             if (await confirmDialog(message, options)) {
               self.setState({ selected_jurisdiction: self.state.current.patient.jurisdiction_id });
+              self.props.setEnrollmentState({ ...self.state.modified });
               callback();
             }
           } else {
