@@ -47,7 +47,7 @@ describe('MoveToHousehold', () => {
       expect(wrapper.find(Modal).find('p').text())
       .toEqual(
         'You may select from the provided existing Head of Households and monitorees who are self reporting.' + 
-        `${nameFormatterAlt(mockPatient1)} will be immediately moved into the selected monitoree's household.`
+        ` ${nameFormatterAlt(mockPatient1)} will be immediately moved into the selected monitoree's household.`
       );
     });
 
