@@ -91,53 +91,60 @@ class PatientsTable extends React.Component {
   }
 
   componentDidMount() {
-    // load saved tab from local storage if present
+    // load local storage variables when present
+    const query = {};
+
+    // Set tab from local storage if it exists and is a valid tab
     let tab = localStorage.getItem(`${this.props.workflow}Tab`);
-    if (tab === null || !(tab in this.props.tabs)) {
-      tab = this.state.query.tab;
-      localStorage.setItem(`${this.props.workflow}Tab`, tab);
+    if (tab === null || !Object.keys(this.props.tabs).includes(tab)) {
+      query.tab = this.state.query.tab;
+      localStorage.setItem(`${this.props.workflow}Tab`, query.tab);
+    } else {
+      query.tab = tab;
     }
-
-    // select tab and fetch patients
-    this.handleTabSelect(tab);
-
     // Set jurisdiction if it exists in local storage
     let jurisdiction = localStorage.getItem('SaraJurisdiction');
     if (jurisdiction) {
-      this.handleJurisdictionChange(parseInt(jurisdiction));
+      query.jurisdiction = parseInt(jurisdiction);
     }
-
+    // Set scope if it exists in local storage
+    let scope = localStorage.getItem('SaraScope');
+    if (scope) {
+      query.scope = scope;
+    }
     // Set assigned user if it exists in local storage
     let assigned_user = localStorage.getItem('SaraAssignedUser');
     if (assigned_user) {
-      this.handleAssignedUserChange(assigned_user);
+      query.user = assigned_user;
     }
-
     // Set search if it exists in local storage
     let search = localStorage.getItem(`SaraSearch`);
     if (search) {
-      this.setState(
-        state => {
-          return {
-            query: { ...state.query, search: search },
-          };
-        },
-        () => {
-          this.updateTable(this.state.query);
-        }
-      );
+      query.search = search;
     }
-
-    // Select page if it exists in local storage
+    // Set page if it exists in local storage
     let page = localStorage.getItem(`SaraPage`);
-    if (page) {
-      this.handlePageUpdate(JSON.parse(page));
+    if (query !== {}) {
+      localStorage.removeItem(`SaraPage`);
+      query.page = 0;
+    } else if (page && !('page' in query)) {
+      query.page = JSON.parse(page);
     }
-
     // Set entries if it exists in local storage
     let entries = localStorage.getItem(`SaraEntries`);
     if (parseInt(entries)) {
-      this.handleEntriesChange(parseInt(entries));
+      query.entries = parseInt(entries);
+    }
+
+    // Update Table a single time if an update is needed
+    if (query !== {}) {
+      this.updateTable({ ...this.state.query, ...query });
+
+      jurisdiction = jurisdiction ? jurisdiction : this.state.query.jurisdiction;
+      scope = scope ? scope : this.state.query.scope;
+      tab = tab ? tab : this.state.query.tab;
+
+      this.updateAssignedUsers(jurisdiction, scope, this.props.workflow, tab);
     }
 
     // fetch workflow and tab counts
