@@ -4,7 +4,7 @@ require 'ruby-jmeter'
 
 test do
   domain = ENV['JMX_DOMAIN'] || 'localhost'
-  port = ENV['JMX_PORT'] || 'localhost'
+  port = ENV['JMX_PORT'] || '3000'
   username = ENV['JMX_USERNAME'] || 'epi_enroller_all@example.com'
   password = ENV['JMX_PASSWORD'] || '1234567ab!'
 

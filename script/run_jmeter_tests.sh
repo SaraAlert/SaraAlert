@@ -1,5 +1,4 @@
 
-DISEASE_TRAKKER_DATABASE_NAME='1m_disease_trakker_development' \
 bundle exec rails s &
 
 sleep 15
