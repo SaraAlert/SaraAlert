@@ -108,7 +108,7 @@ def compare(rows, cfg)
       "#{actual[:max_latency].to_s.rjust(8, ' ')} ms",
       "#{actual[:avg_elapsed].to_s.rjust(8, ' ')} ms",
       "#{actual[:max_elapsed].to_s.rjust(8, ' ')} ms",
-      "#{actual[:failure_percent].to_s.rjust(8, ' ')} ms"
+      "#{actual[:failure_percent].to_s.rjust(9, ' ')} %"
     ],
     [
       'Threshold',
@@ -116,7 +116,7 @@ def compare(rows, cfg)
       "#{thresholds[:max_latency].to_s.rjust(8, ' ') || '-'} ms",
       "#{thresholds[:avg_elapsed].to_s.rjust(8, ' ') || '-'} ms",
       "#{thresholds[:max_elapsed].to_s.rjust(8, ' ') || '-'} ms",
-      "#{thresholds[:failure_percent].to_s.rjust(8, ' ') || '-'} ms"
+      "#{thresholds[:failure_percent].to_s.rjust(9, ' ') || '-'} %"
     ]
   ].to_table
 
@@ -143,7 +143,7 @@ all_rows_stats = rows_stats(jtl_rows)
     "#{all_rows_stats[:max_latency].to_s.rjust(8, ' ')} ms",
     "#{all_rows_stats[:avg_elapsed].to_s.rjust(8, ' ')} ms",
     "#{all_rows_stats[:max_elapsed].to_s.rjust(8, ' ')} ms",
-    "#{all_rows_stats[:failure_percent].to_s.rjust(8, ' ')} ms"
+    "#{all_rows_stats[:failure_percent].to_s.rjust(9, ' ')} %"
   ]
 ].to_table
 
