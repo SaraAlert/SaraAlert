@@ -6,40 +6,40 @@ config = [
   {
     label: '01_01_SA_visit_sign_in',
     failure_thresholds: {
-      avg_latency: 1000,
-      max_latency: 2000,
-      avg_elapsed: 1000,
-      max_elapsed: 3000,
+      avg_latency: 1_000,
+      max_latency: 2_000,
+      avg_elapsed: 1_000,
+      max_elapsed: 3_000,
       failure_percent: 0
     }
   },
   {
     label: '01_02_SA_sign_in',
     failure_thresholds: {
-      avg_latency: 1000,
-      max_latency: 2000,
-      avg_elapsed: 2000,
-      max_elapsed: 4000,
+      avg_latency: 1_000,
+      max_latency: 2_000,
+      avg_elapsed: 2_000,
+      max_elapsed: 4_000,
       failure_percent: 0
     }
   },
   {
     label: '01_03_SA_dashboard',
     failure_thresholds: {
-      avg_latency: 1000,
-      max_latency: 3000,
-      avg_elapsed: 1500,
-      max_elapsed: 6000,
+      avg_latency: 1_000,
+      max_latency: 3_000,
+      avg_elapsed: 1_500,
+      max_elapsed: 6_000,
       failure_percent: 0
     }
   },
   {
     label: '01_04_SA_assigned_users',
     failure_thresholds: {
-      avg_latency: 15000,
-      max_latency: 20000,
-      avg_elapsed: 15000,
-      max_elapsed: 20000,
+      avg_latency: 15_000,
+      max_latency: 20_000,
+      avg_elapsed: 15_000,
+      max_elapsed: 20_000,
       failure_percent: 0
     }
   }
