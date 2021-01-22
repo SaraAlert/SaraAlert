@@ -281,7 +281,7 @@ class MoveToHousehold extends React.Component {
                 </Form.Label>
                 <p>
                   You may select from the provided existing Head of Households and monitorees who are self reporting.
-                  {this.getPatientName()} will be immediately moved into the selected monitoree&apos;s household.
+                  {` ${this.getPatientName()}`} will be immediately moved into the selected monitoree&apos;s household.
                 </p>
                 <InputGroup size="md">
                   <InputGroup.Prepend>
