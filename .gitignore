@@ -52,3 +52,9 @@ sara_database_*
 
 # Ignore temporary excel files
 ~$*
+
+# JMeter
+*.jmx
+*.jtl
+*.hprof
+jmeter.log
