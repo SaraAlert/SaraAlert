@@ -82,11 +82,14 @@ class MoveToHousehold extends React.Component {
 
   /**
    * Creates a "Select" button for each row of the table.
-   * @param {string} patientId
+   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
    */
-  createSelectButton(_, patientId) {
+  createSelectButton(data) {
+    const rowData = data?.rowData;
+    const patientId = rowData?.id;
+    const ariaLabel = `Select button for monitoree ${rowData?.name}  with ID ${patientId}.`;
     return (
-      <Button id={`select-button-${patientId}`} variant="primary" size="md">
+      <Button id={`select-button-${patientId}`} variant="primary" size="md" aria-label={ariaLabel}>
         Select
       </Button>
     );
@@ -286,9 +289,11 @@ class MoveToHousehold extends React.Component {
                 <InputGroup size="md">
                   <InputGroup.Prepend>
                     <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
-                      <InputGroup.Text className="rounded-0 p-1">
+                      <InputGroup.Text className="rounded-0">
                         <i className="fas fa-search"></i>
-                        <span className="ml-1">Search</span>
+                        <label htmlFor="search" className="ml-1 mb-0">
+                          Search
+                        </label>
                       </InputGroup.Text>
                     </OverlayTrigger>
                   </InputGroup.Prepend>
@@ -297,6 +302,7 @@ class MoveToHousehold extends React.Component {
                     autoComplete="off"
                     size="md"
                     name="search"
+                    aria-label="Search"
                     value={this.state.query.search}
                     onChange={this.handleSearchChange}
                     onKeyPress={this.handleKeyPress}
@@ -321,7 +327,11 @@ class MoveToHousehold extends React.Component {
           />
         </Modal.Body>
         <Modal.Footer>
-          <Button id="move-to-household-cancel-button" variant="secondary btn-square" onClick={this.toggleModal}>
+          <Button
+            id="move-to-household-cancel-button"
+            variant="secondary btn-square"
+            aria-label="Cancel button for Move To Household modal"
+            onClick={this.toggleModal}>
             Cancel
           </Button>
         </Modal.Footer>
@@ -332,7 +342,7 @@ class MoveToHousehold extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button size="sm" className="my-2" onClick={this.toggleModal}>
+        <Button size="sm" className="my-2" aria-label="Move To Household button" onClick={this.toggleModal}>
           <i className="fas fa-house-user"></i> Move To Household
         </Button>
         {this.state.showModal && this.createModal()}
