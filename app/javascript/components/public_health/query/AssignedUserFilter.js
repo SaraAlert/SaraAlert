@@ -43,7 +43,7 @@ class AssignedUserFilter extends React.Component {
           type="text"
           autoComplete="off"
           list="assigned_users"
-          value={this.state.assigned_user || ''}
+          defaultValue={this.props.assigned_user !== 'none' ? this.props.assigned_user : ''}
           onChange={event => this.handleAssignedUserChange(event?.target?.value)}
         />
         <datalist id="assigned_users">
