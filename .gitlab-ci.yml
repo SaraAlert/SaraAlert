@@ -62,6 +62,6 @@ jmeter-benchmark:
     - yarn install
     - bundle exec rails assets:precompile
     # Expect around 25 minutes to populate
-    - rails db:migrate || (mysql --user=disease_trakker -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_development;'; bundle exec rails db:drop; bundle exec rails db:create; mysql --user=disease_trakker disease_trakker_development < /home/gitlab-runner/sara_database_1607023723.sql)
+    - rails db:migrate || (mysql --user=disease_trakker -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_development;'; bundle exec rails db:drop; bundle exec rails db:create; mysql --user=disease_trakker disease_trakker_development < /home/gitlab-runner/sara_database_1607023723.sql; bundle exec rails db:migrate)
     - ./script/run_jmeter_tests.sh
 
