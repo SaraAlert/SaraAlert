@@ -102,26 +102,31 @@ class PatientsTable extends React.Component {
     } else {
       query.tab = tab;
     }
+
     // Set jurisdiction if it exists in local storage
     let jurisdiction = localStorage.getItem('SaraJurisdiction');
     if (jurisdiction) {
       query.jurisdiction = parseInt(jurisdiction);
     }
+
     // Set scope if it exists in local storage
     let scope = localStorage.getItem('SaraScope');
     if (scope) {
       query.scope = scope;
     }
+
     // Set assigned user if it exists in local storage
     let assigned_user = localStorage.getItem('SaraAssignedUser');
     if (assigned_user) {
       query.user = assigned_user;
     }
+
     // Set search if it exists in local storage
     let search = localStorage.getItem(`SaraSearch`);
     if (search) {
       query.search = search;
     }
+
     // Set page if it exists in local storage & user is in the same workflow as before
     let priorWorkflow = localStorage.getItem(`Workflow`);
     let page = localStorage.getItem(`SaraPage`);
@@ -131,21 +136,17 @@ class PatientsTable extends React.Component {
       localStorage.removeItem(`SaraPage`);
       query.page = 0;
     }
-    // Update workflow local storage to be current
+    // Update workflow local storage to be the current workflow
     localStorage.setItem(`Workflow`, this.props.workflow);
+
     // Set entries if it exists in local storage
     let entries = localStorage.getItem(`SaraEntries`);
     if (parseInt(entries)) {
       query.entries = parseInt(entries);
     }
 
-    // Update the table a single time
-    this.updateTable({ ...this.state.query, ...query });
-
-    jurisdiction = jurisdiction ? jurisdiction : this.state.query.jurisdiction;
-    scope = scope ? scope : this.state.query.scope;
-    tab = tab ? tab : this.state.query.tab;
-    this.updateAssignedUsers(jurisdiction, scope, this.props.workflow, tab);
+    // Update the assigned users drop down & patients table a single time
+    this.updateAssignedUsers({ ...this.state.query, ...query });
 
     // fetch workflow and tab counts
     Object.keys(this.props.tabs).forEach(tab => {
@@ -182,8 +183,7 @@ class PatientsTable extends React.Component {
         return { query: { ...state.query, tab, page: 0 } };
       },
       () => {
-        this.updateTable(this.state.query);
-        this.updateAssignedUsers(this.props.jurisdiction.id, this.state.query.scope, this.props.workflow, tab);
+        this.updateAssignedUsers(this.state.query);
         localStorage.setItem(`${this.props.workflow}Tab`, tab);
       }
     );
@@ -232,8 +232,7 @@ class PatientsTable extends React.Component {
 
   handleJurisdictionChange = jurisdiction => {
     if (jurisdiction !== this.state.query.jurisdiction) {
-      this.updateTable({ ...this.state.query, jurisdiction, page: 0 });
-      this.updateAssignedUsers(jurisdiction, this.state.query.scope, this.props.workflow, this.state.query.tab);
+      this.updateAssignedUsers({ ...this.state.query, jurisdiction, page: 0 });
       localStorage.removeItem(`SaraPage`);
       localStorage.setItem(`SaraJurisdiction`, jurisdiction);
     }
@@ -241,8 +240,7 @@ class PatientsTable extends React.Component {
 
   handleScopeChange = scope => {
     if (scope !== this.state.query.scope) {
-      this.updateTable({ ...this.state.query, scope, page: 0 });
-      this.updateAssignedUsers(this.state.query.jurisdiction, scope, this.props.workflow, this.state.query.tab);
+      this.updateAssignedUsers({ ...this.state.query, scope, page: 0 });
       localStorage.removeItem(`SaraPage`);
       localStorage.setItem(`SaraScope`, scope);
     }
@@ -300,9 +298,14 @@ class PatientsTable extends React.Component {
       query.user = null;
     }
 
-    this.setState({ query, cancelToken, loading: true }, () => {
-      this.queryServer(query);
-    });
+    this.setState(
+      state => {
+        return { query: { ...state.query, ...query }, cancelToken, loading: true };
+      },
+      () => {
+        this.queryServer(this.state.query);
+      }
+    );
 
     // set query
     this.props.setQuery(query);
@@ -365,17 +368,24 @@ class PatientsTable extends React.Component {
     );
   };
 
-  updateAssignedUsers(jurisdiction_id, scope, workflow, tab) {
-    if (tab !== 'transferred_out') {
+  /**
+   * Method to update the datalist of assigned users & the Patients Table
+   * @param {Object} query - updated query fo patients table
+   */
+  updateAssignedUsers = query => {
+    if (query.tab !== 'transferred_out') {
       axios
         .post('/jurisdictions/assigned_users', {
-          query: { jurisdiction: jurisdiction_id, scope, workflow, tab },
+          query: { jurisdiction: query.jurisdiction, scope: query.scope, workflow: query.workflow, tab: query.tab },
         })
         .then(response => {
           this.setState({ assigned_users: response.data.assigned_users });
+          this.updateTable({ ...this.state.query, ...query });
         });
+    } else {
+      this.updateTable({ ...this.state.query, ...query });
     }
-  }
+  };
 
   linkPatient = data => {
     const name = data.value;
