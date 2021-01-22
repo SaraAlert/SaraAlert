@@ -122,30 +122,30 @@ class PatientsTable extends React.Component {
     if (search) {
       query.search = search;
     }
-    // Set page if it exists in local storage
+    // Set page if it exists in local storage & user is in the same workflow as before
+    let priorWorkflow = localStorage.getItem(`Workflow`);
     let page = localStorage.getItem(`SaraPage`);
-    if (query !== {}) {
+    if (page && priorWorkflow && this.props.workflow === priorWorkflow) {
+      query.page = parseInt(page);
+    } else {
       localStorage.removeItem(`SaraPage`);
       query.page = 0;
-    } else if (page && !('page' in query)) {
-      query.page = JSON.parse(page);
     }
+    // Update workflow local storage to be current
+    localStorage.setItem(`Workflow`, this.props.workflow);
     // Set entries if it exists in local storage
     let entries = localStorage.getItem(`SaraEntries`);
     if (parseInt(entries)) {
       query.entries = parseInt(entries);
     }
 
-    // Update Table a single time if an update is needed
-    if (query !== {}) {
-      this.updateTable({ ...this.state.query, ...query });
+    // Update the table a single time
+    this.updateTable({ ...this.state.query, ...query });
 
-      jurisdiction = jurisdiction ? jurisdiction : this.state.query.jurisdiction;
-      scope = scope ? scope : this.state.query.scope;
-      tab = tab ? tab : this.state.query.tab;
-
-      this.updateAssignedUsers(jurisdiction, scope, this.props.workflow, tab);
-    }
+    jurisdiction = jurisdiction ? jurisdiction : this.state.query.jurisdiction;
+    scope = scope ? scope : this.state.query.scope;
+    tab = tab ? tab : this.state.query.tab;
+    this.updateAssignedUsers(jurisdiction, scope, this.props.workflow, tab);
 
     // fetch workflow and tab counts
     Object.keys(this.props.tabs).forEach(tab => {
@@ -204,7 +204,7 @@ class PatientsTable extends React.Component {
       },
       () => {
         this.updateTable(this.state.query);
-        localStorage.setItem(`SaraPage`, JSON.stringify(page));
+        localStorage.setItem(`SaraPage`, page.selected);
       }
     );
   };
