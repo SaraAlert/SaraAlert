@@ -22,6 +22,7 @@ class Exposure extends React.Component {
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
       assigned_users: this.props.assigned_users,
+      selected_jurisdiction: this.props.selected_jurisdiction,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
@@ -82,15 +83,10 @@ class Exposure extends React.Component {
       }
       this.updateLDEandCEValidations({ ...current.patient, [event.target.id]: value });
     }
-    this.setState(
-      {
-        current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
-        modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
-      },
-      () => {
-        this.props.setEnrollmentState({ ...this.state.modified });
-      }
-    );
+    this.setState({
+      current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
+      modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+    });
   }
 
   handleDateChange(field, date) {
@@ -225,7 +221,12 @@ class Exposure extends React.Component {
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, async () => {
-          if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
+          if (parseInt(self.state.current.patient.jurisdiction_id) !== self.state.originalJurisdictionId) {
+            // If we set it back to the last saved value no need to confirm.
+            if (self.state.current.patient.jurisdiction_id === self.state.selected_jurisdiction) {
+              callback();
+              return;
+            }
             const originalJurisdictionPath = self.props.jurisdiction_paths[self.state.originalJurisdictionId];
             const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdiction_path}. Are you sure you want to do this?`;
             const options = { title: 'Confirm Jurisdiction Change' };
@@ -235,6 +236,8 @@ class Exposure extends React.Component {
             }
 
             if (await confirmDialog(message, options)) {
+              self.setState({ selected_jurisdiction: self.state.current.patient.jurisdiction_id });
+              self.props.setEnrollmentState({ ...self.state.modified });
               callback();
             }
           } else {
@@ -811,6 +814,7 @@ Exposure.propTypes = {
   has_dependents: PropTypes.bool,
   jurisdiction_paths: PropTypes.object,
   assigned_users: PropTypes.array,
+  selected_jurisdiction: PropTypes.object,
   authenticity_token: PropTypes.string,
 };
 
