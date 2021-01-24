@@ -132,8 +132,11 @@ class PatientsTable extends React.Component {
     let page = localStorage.getItem(`SaraPage`);
     if (page && priorWorkflow && this.props.workflow === priorWorkflow) {
       query.page = parseInt(page);
+      // Set a flag to be leveraged when a sticky advanced filter is applied, so the page is not auto set back to 0
+      localStorage.setItem('KeepSaraPage', true);
     } else {
       localStorage.removeItem(`SaraPage`);
+      localStorage.setItem('KeepSaraPage', false);
       query.page = 0;
     }
     // Update workflow local storage to be the current workflow
@@ -354,12 +357,21 @@ class PatientsTable extends React.Component {
   }, 500);
 
   advancedFilterUpdate = filter => {
-    localStorage.removeItem(`SaraPage`);
+    // When available in local storage, set the pagination number when the page is reloaded with a sticky advanced filter
+    const keepPage = localStorage.getItem('KeepSaraPage') == 'true';
+    const localStoragePage = localStorage.getItem('SaraPage');
+    let page = 0;
+    if (keepPage && localStoragePage) {
+      page = parseInt(localStoragePage);
+      localStorage.removeItem(`KeepSaraPage`);
+    } else {
+      localStorage.removeItem(`SaraPage`);
+    }
     this.setState(
       state => {
         const query = state.query;
         query.filter = filter?.filter(field => field?.filterOption != null);
-        query.page = 0;
+        query.page = page;
         return { query };
       },
       () => {
