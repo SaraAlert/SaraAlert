@@ -1,12 +1,42 @@
 import React from 'react'
 import { shallow } from 'enzyme';
-import { Button, Dropdown, Modal, OverlayTrigger } from 'react-bootstrap';
 import _ from 'lodash';
+import moment from 'moment';
+import ReactTooltip from 'react-tooltip';
+import { Button, ButtonGroup, Dropdown, Form, Modal, OverlayTrigger, ToggleButton } from 'react-bootstrap';
 import AdvancedFilter from '../../../components/public_health/query/AdvancedFilter.js'
-import { mockFilter1, mockFilterOptions1, mockFilterOptions2, mockSavedFilters } from '../../mocks/mockFilters'
+import DateInput from '../../../components/util/DateInput.js'
+import {
+  mockFilter1,
+  mockFilter2,
+  mockFilterDefaultSearchOption,
+  mockFilterSearchOption,
+  mockFilterDefaultBoolOption,
+  mockFilterBoolOption,
+  mockFilterOptionsOption,
+  mockFilterDefaultNumberOption,
+  mockFilterNumberOption,
+  mockFilterDefaultDateOption,
+  mockFilterDateOption,
+  mockFilterDefaultRelativeOption,
+  mockFilterRelativeOption,
+  mockFilterDefaultCustomRelativeOption,
+  mockFilterCustomRelativeOption,
+  mockFilterDefaultAdditionalOption,
+  mockFilterAdditionalOption,
+  mockFilterIncludesTooltip,
+  mockSavedFilters
+} from '../../mocks/mockFilters'
 
 const advancedFilterUpdateMock = jest.fn();
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+const numberOptionValues = [ 'less-than', 'less-than-equal', 'equal', 'greater-than-equal', 'greater-than', 'between' ];
+const numberOptionValuesText = [ 'less than', 'less than or equal to', 'equal to', 'greater than or equal to', 'greater than', 'between' ];
+const dateOptionValues = [ 'within', 'before', 'after' ];
+const relativeOptionValues = [ 'today', 'tomorrow', 'yesterday', 'custom' ];
+const relativeOptionValuesText = [ 'today', 'tomorrow', 'yesterday', 'more...' ];
+const relativeOptionWhenValues = [ 'past', 'next' ];
+const relativeOptionUnitValues = [ 'day(s)', 'week(s)', 'month(s)' ];
 
 function getWrapper() {
   return shallow(<AdvancedFilter workflow={'exposure'} advancedFilterUpdate={advancedFilterUpdateMock} updateStickySettings={true}
@@ -68,6 +98,14 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(Modal).exists()).toBeTruthy();
   });
 
+  it('Clicking a saved filter in dropdown opens modal', () => {
+    const wrapper = getWrapper();
+    wrapper.setState({ savedFilters: mockSavedFilters });
+    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    wrapper.find(Dropdown.Item).at(1).simulate('click');
+    expect(wrapper.find(Modal).exists()).toBeTruthy();
+  });
+
   it('Renders all main modal components with no active filter set', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
@@ -95,8 +133,18 @@ describe('AdvancedFilter', () => {
   });
 
   // renders option dropdown
+  // test value here
+  // it('Properly renders option dropdown', () => {
+  //   const wrapper = getMountedWrapper();
+  //   wrapper.find(Button).at(0).simulate('click');
+  //   wrapper.find('.advanced-filter-select').simulate('click');
+  //   console.log(wrapper.debug())
+  //   // expect(wrapper.find(Select).exists()).toBeTruthy();
+  //   // console.log(wrapper.find(Select).debug())
 
-  it('Renders all main modal components with active filter set', () => {
+  // });
+
+  it('Renders all main modal components when an active filter is set', () => {
     const wrapper = getWrapper();
     wrapper.setState({ activeFilter: mockFilter1, activeFilterOptions: mockFilter1.contents, savedFilters: mockSavedFilters });
     wrapper.find(Button).simulate('click');
@@ -125,13 +173,27 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(Modal.Footer).find(Button).text()).toEqual('Cancel');
   });
 
-  // properly renders statements when active filter is set - click saved filter option
-  // it('Renders all main modal components with no active filter set', () => {
-  //   const wrapper = getWrapper();
-  //   wrapper.setState({ activeFilter: mockFilter1, activeFilterOptions: mockFilter1.contents, savedFilters: mockSavedFilters });
-  //   wrapper.find(Button).simulate('click');
-  //   console.log(wrapper.debug())
-  // });
+  it('Renders advanced filter statements properly when an active filter is set', () => {
+    const wrapper = getWrapper();
+    wrapper.setState({ activeFilter: mockFilter1, activeFilterOptions: mockFilter1.contents });
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.find('.advanced-filter-statement').length).toEqual(1);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilter1.contents[0].value);
+  });
+
+  it('Renders advanced filter statements properly when loading a saved filter', () => {
+    const wrapper = getWrapper();
+    wrapper.setState({ savedFilters: mockSavedFilters });
+    wrapper.find(Dropdown.Item).at(2).simulate('click');
+    expect(wrapper.find('.advanced-filter-statement').length).toEqual(2);
+    expect(wrapper.find('.advanced-filter-select').at(0).prop('value').value).toEqual(mockFilter2.contents[0].filterOption.name);
+    expect(wrapper.find(ToggleButton).at(0).prop('checked')).toEqual(mockFilter2.contents[0].value);
+    expect(wrapper.find(ToggleButton).at(1).prop('checked')).toEqual(!mockFilter2.contents[0].value);
+    expect(wrapper.find('.advanced-filter-select').at(1).prop('value').value).toEqual(mockFilter2.contents[1].filterOption.name);
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(mockFilter2.contents[1].dateOption);
+    expect(wrapper.find(DateInput).length).toEqual(1);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilter2.contents[1].value);
+  });
 
   it('Clicking "+" button adds another filter statement row', () => {
     const wrapper = getWrapper();
@@ -182,9 +244,476 @@ describe('AdvancedFilter', () => {
     });
   });
 
-  // renders each type of advanced filter
-  // changing different dropdowns of each filter
-  // updating state
+  it('Properly renders advanced filter boolean type statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterBoolOption.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterBoolOption.filterOption.name);
+    expect(wrapper.find(ButtonGroup).exists()).toBeTruthy();
+    expect(wrapper.find(ToggleButton).length).toEqual(2);
+    expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBeTruthy();
+    expect(wrapper.find(ToggleButton).at(1).prop('checked')).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+  });
+
+  it('Properly renders advanced filter option type statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterOptionsOption.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterOptionsOption.filterOption.name);
+    expect(wrapper.find(Form.Control).length).toEqual(1);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterOptionsOption.filterOption.options[0]);
+    expect(wrapper.find(Form.Control).find('option').length).toEqual(mockFilterOptionsOption.filterOption.options.length);
+    mockFilterOptionsOption.filterOption.options.forEach(function(option, index) {
+      expect(wrapper.find(Form.Control).find('option').at(index).text()).toEqual(option);
+      expect(wrapper.find(Form.Control).find('option').at(index).prop('value')).toEqual(option);
+    });
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+  });
+
+  it('Properly renders advanced filter number type statement with single number', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterNumberOption.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterNumberOption.filterOption.name);
+    expect(wrapper.find(Form.Control).length).toEqual(2);
+    expect(wrapper.find(Form.Control).at(0).prop('value')).toEqual('equal');
+    expect(wrapper.find(Form.Control).find('option').length).toEqual(numberOptionValues.length);
+    numberOptionValues.forEach(function(value, index) {
+      expect(wrapper.find(Form.Control).at(0).find('option').at(index).text()).toEqual(numberOptionValuesText[index]);
+      expect(wrapper.find(Form.Control).at(0).find('option').at(index).prop('value')).toEqual(value);
+    });
+    expect(wrapper.find(Form.Control).at(1).prop('value')).toEqual(0);
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+  });
+
+  it('Properly renders advanced filter number type statement with number range', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterNumberOption.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterNumberOption.filterOption.name);
+    wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: 'between' } });
+    expect(wrapper.find(Form.Control).length).toEqual(3);
+    expect(wrapper.find(Form.Control).at(0).prop('value')).toEqual('between');
+    expect(wrapper.find(Form.Control).find('option').length).toEqual(numberOptionValues.length);
+    numberOptionValues.forEach(function(value, index) {
+      expect(wrapper.find(Form.Control).at(0).find('option').at(index).text()).toEqual(numberOptionValuesText[index]);
+      expect(wrapper.find(Form.Control).at(0).find('option').at(index).prop('value')).toEqual(value);
+    });
+    expect(wrapper.find(Form.Control).at(1).prop('value')).toEqual(0);
+    expect(wrapper.find('.text-center').find('b').text()).toEqual('AND');
+    expect(wrapper.find(Form.Control).at(2).prop('value')).toEqual(0);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`"Between" is inclusive and will filter for values within the user-entered range, including the start and end values.`);
+  });
+
+  it('Properly renders advanced filter date type statement with single date', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDateOption.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterDateOption.filterOption.name);
+    wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: 'before' } });
+    expect(wrapper.find(Form.Control).length).toEqual(1);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual('before');
+    expect(wrapper.find(Form.Control).find('option').length).toEqual(dateOptionValues.length);
+    dateOptionValues.forEach(function(value, index) {
+      expect(wrapper.find(Form.Control).find('option').at(index).text()).toEqual(value);
+      expect(wrapper.find(Form.Control).find('option').at(index).prop('value')).toEqual(value);
+    });
+    expect(wrapper.find(DateInput).length).toEqual(1);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(moment(new Date()).format('YYYY-MM-DD'));
+    expect(wrapper.find('.text-center').exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+  });
+
+  it('Properly renders advanced filter date type statement with date range', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDateOption.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterDateOption.filterOption.name);
+    expect(wrapper.find(Form.Control).length).toEqual(1);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual('within');
+    expect(wrapper.find(Form.Control).find('option').length).toEqual(dateOptionValues.length);
+    dateOptionValues.forEach(function(value, index) {
+      expect(wrapper.find(Form.Control).find('option').at(index).text()).toEqual(value);
+      expect(wrapper.find(Form.Control).find('option').at(index).prop('value')).toEqual(value);
+    });
+    expect(wrapper.find(DateInput).length).toEqual(2);
+    expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(moment(new Date()).subtract(3,'d').format('YYYY-MM-DD'));
+    expect(wrapper.find('.text-center').find('b').text()).toEqual('TO');
+    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(moment(new Date()).format('YYYY-MM-DD'));
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+  });
+
+  it('Properly renders advanced filter relative type statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultCustomRelativeOption.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterDefaultCustomRelativeOption.filterOption.name);
+    expect(wrapper.find(Form.Control).length).toEqual(1);
+    expect(wrapper.find('.advanced-filter-relative-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual('today');
+    expect(wrapper.find('.advanced-filter-relative-options').find('option').length).toEqual(relativeOptionValues.length);
+    relativeOptionValues.forEach(function(value, index) {
+      expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).text()).toEqual(relativeOptionValuesText[index]);
+      expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).prop('value')).toEqual(value);
+    });
+    expect(wrapper.find('.advanced-filter-when-input').exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-number-input').exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-unit-input').exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+  });
+
+  it('Properly renders advanced filter relative type custom statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultCustomRelativeOption.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterDefaultCustomRelativeOption.filterOption.name);
+    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: 'custom' } });
+    expect(wrapper.find(Form.Control).length).toEqual(4);
+    expect(wrapper.find('.advanced-filter-relative-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual('custom');
+    expect(wrapper.find('.advanced-filter-relative-options').find('option').length).toEqual(relativeOptionValues.length);
+    relativeOptionValues.forEach(function(value, index) {
+      expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).text()).toEqual(relativeOptionValuesText[index]);
+      expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).prop('value')).toEqual(value);
+    });
+    expect(wrapper.find('.advanced-filter-when-input').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual('past');
+    expect(wrapper.find('.advanced-filter-when-input').find('option').length).toEqual(relativeOptionWhenValues.length);
+    relativeOptionWhenValues.forEach(function(value, index) {
+      expect(wrapper.find('.advanced-filter-when-input').find('option').at(index).text()).toEqual(`in the ${value}`);
+      expect(wrapper.find('.advanced-filter-when-input').find('option').at(index).prop('value')).toEqual(value);
+    });
+    expect(wrapper.find('.advanced-filter-number-input').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(1);
+    expect(wrapper.find('.advanced-filter-unit-input').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual('days');
+    expect(wrapper.find('.advanced-filter-unit-input').find('option').length).toEqual(relativeOptionUnitValues.length);
+    relativeOptionUnitValues.forEach(function(value, index) {
+      expect(wrapper.find('.advanced-filter-unit-input').find('option').at(index).text()).toEqual(value);
+      expect(wrapper.find('.advanced-filter-unit-input').find('option').at(index).prop('value')).toEqual(value.replace('(', '').replace(')', ''));
+    });
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “past” relative date periods include records dated through today’s date. The current setting of "past 1 days" will return records with Latest Report date from ${moment(new Date()).subtract(1,'d').format('MM/DD/YY')} through now.`);
+  });
+
+  it('Properly renders advanced filter search type statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterSearchOption.filterOption.name);
+    expect(wrapper.find(Form.Control).length).toEqual(1);
+    expect(wrapper.find(Form.Control).hasClass('advanced-filter-search-input')).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual('');
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+  });
+
+  it('Properly renders advanced filter type with additional dropdown options statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterAdditionalOption.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterAdditionalOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterAdditionalOption.filterOption.options[0]);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').find('option').length).toEqual(mockFilterAdditionalOption.filterOption.options.length);
+    mockFilterAdditionalOption.filterOption.options.forEach(function(option, index) {
+      expect(wrapper.find('.advanced-filter-additional-filter-options').find('option').at(index).text()).toEqual(option);
+      expect(wrapper.find('.advanced-filter-additional-filter-options').find('option').at(index).prop('value')).toEqual(option);
+    });
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+  });
+ 
+  it('Properly renders tooltip when defined with advanced filter option', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterIncludesTooltip.filterOption.name });
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterIncludesTooltip.filterOption.name);
+    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterIncludesTooltip.filterOption.tooltip);
+  });
+
+  it('Toggling boolean buttons properly updates state and value', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterBoolOption.filterOption.name });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.find('.advanced-filter-boolean-true').prop('checked')).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-boolean-false').prop('checked')).toBeFalsy();
+    wrapper.find('.advanced-filter-boolean-false').simulate('change');
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterBoolOption ]);
+    expect(wrapper.find('.advanced-filter-boolean-true').prop('checked')).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-boolean-false').prop('checked')).toBeTruthy();
+    wrapper.find('.advanced-filter-boolean-true').simulate('change');
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.find('.advanced-filter-boolean-true').prop('checked')).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-boolean-false').prop('checked')).toBeFalsy();
+  });
+
+  it('Changing advanced filter option dropdown properly updates state and value', () => {
+    const wrapper = getWrapper();
+    const randomNumber = _.random(0, mockFilterOptionsOption.filterOption.options.length - 1);
+    let newMockFilterOptionsOption = _.clone(mockFilterOptionsOption);
+    newMockFilterOptionsOption.value = mockFilterOptionsOption.filterOption.options[randomNumber];
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterOptionsOption.filterOption.name });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptionsOption ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterOptionsOption.filterOption.options[0]);
+    wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterOptionsOption.filterOption.options[randomNumber] } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ newMockFilterOptionsOption ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterOptionsOption.filterOption.options[randomNumber]);
+    wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterOptionsOption.filterOption.options[0] } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptionsOption ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterOptionsOption.filterOption.options[0]);
+  });
+
+  it('Changing advanced filter numberOption and value for number type advanced filters properly updates state and value', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterNumberOption.filterOption.name });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultNumberOption ]);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultNumberOption.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultNumberOption.value);
+    wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 12 } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterDefaultNumberOption.numberOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(12);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultNumberOption.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(12);
+    wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: 'less-than' } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual('less-than');
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(12);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual('less-than');
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(12);
+    wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: 'between' } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual('between');
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ low: 0, high: 0 });
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual('between');
+    expect(wrapper.find('.advanced-filter-number-input').at(0).prop('value')).toEqual(0);
+    expect(wrapper.find('.advanced-filter-number-input').at(1).prop('value')).toEqual(0);
+    wrapper.find('.advanced-filter-number-input').at(1).simulate('change', { target: { value: mockFilterNumberOption.value.high } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual('between');
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ low: 0, high: mockFilterNumberOption.value.high });
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual('between');
+    expect(wrapper.find('.advanced-filter-number-input').at(0).prop('value')).toEqual(0);
+    expect(wrapper.find('.advanced-filter-number-input').at(1).prop('value')).toEqual(mockFilterNumberOption.value.high);
+    wrapper.find('.advanced-filter-number-input').at(0).simulate('change', { target: { value: 20 } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterNumberOption ]);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual('between');
+    expect(wrapper.find('.advanced-filter-number-input').at(0).prop('value')).toEqual(mockFilterNumberOption.value.low);
+    expect(wrapper.find('.advanced-filter-number-input').at(1).prop('value')).toEqual(mockFilterNumberOption.value.high);
+    wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: 'equal' } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultNumberOption ]);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultNumberOption.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultNumberOption.value);
+  });
+
+  it('Changing advanced filter dateOption and values for date type advanced filters properly updates state and value', () => {
+    const wrapper = getWrapper();
+    const newDate = moment(new Date()).subtract(14,'d').format('YYYY-MM-DD');
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDateOption.filterOption.name });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultDateOption ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterDefaultDateOption.dateOption);
+    expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(mockFilterDefaultDateOption.value.start);
+    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterDefaultDateOption.value.end);
+    wrapper.find(DateInput).at(0).simulate('change', newDate);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterDefaultDateOption.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ start: newDate, end: mockFilterDefaultDateOption.value.end });
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterDefaultDateOption.dateOption);
+    expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(newDate);
+    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterDefaultDateOption.value.end);
+    wrapper.find(DateInput).at(1).simulate('change', mockFilterDefaultDateOption.value.start);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterDefaultDateOption.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ start: newDate, end: mockFilterDefaultDateOption.value.start });
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterDefaultDateOption.dateOption);
+    expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(newDate);
+    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterDefaultDateOption.value.start);
+    wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterDateOption.dateOption } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterDateOption.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterDefaultDateOption.value.end);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterDateOption.dateOption);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilterDefaultDateOption.value.end);
+    wrapper.find(DateInput).simulate('change', mockFilterDateOption.value);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterDateOption.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterDateOption.value);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterDateOption.dateOption);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilterDateOption.value);
+  });
+
+  it('Changing advanced filter relativeOption and values for relative type advanced filters properly updates state and value', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultRelativeOption.filterOption.name });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultRelativeOption ]);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterDefaultRelativeOption.relativeOption);
+    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: mockFilterRelativeOption.relativeOption } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterRelativeOption ]);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterRelativeOption.relativeOption);
+    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: mockFilterDefaultCustomRelativeOption.relativeOption } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultCustomRelativeOption ]);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.relativeOption);
+    wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.when } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterCustomRelativeOption.relativeOption);
+    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterCustomRelativeOption.value.when);
+    expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterDefaultCustomRelativeOption.value.number);
+    expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterDefaultCustomRelativeOption.value.unit);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.when);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.number);
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.unit);
+    wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.number } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterCustomRelativeOption.relativeOption);
+    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterCustomRelativeOption.value.when);
+    expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterCustomRelativeOption.value.number);
+    expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterDefaultCustomRelativeOption.value.unit);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.when);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.number);
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.unit);
+    wrapper.find('.advanced-filter-unit-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.unit } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterCustomRelativeOption ]);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.when);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.number);
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.unit);
+    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: mockFilterDefaultRelativeOption.relativeOption } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultRelativeOption ]);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterDefaultRelativeOption.relativeOption);
+  });
+
+  it('Changing input text for search type advanced filter properly updates state and value', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultSearchOption ]);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual('');
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterSearchOption.value } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterSearchOption.value);
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: '' } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultSearchOption ]);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual('');
+  });
+
+  it('Changing additional options dropdown properly updates state and value', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterAdditionalOption.filterOption.name });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultAdditionalOption ]);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterAdditionalOption.filterOption.options[0]);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultAdditionalOption.value);
+    wrapper.find('.advanced-filter-additional-filter-options').simulate('change', { target: { value: mockFilterAdditionalOption.additionalFilterOption } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].additionalFilterOption).toEqual(mockFilterAdditionalOption.additionalFilterOption);
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterDefaultAdditionalOption.value);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterAdditionalOption.additionalFilterOption);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultAdditionalOption.value);
+    wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 2 } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].additionalFilterOption).toEqual(mockFilterAdditionalOption.additionalFilterOption);
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(2);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterAdditionalOption.additionalFilterOption);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(2);
+    wrapper.find('.advanced-filter-additional-filter-options').simulate('change', { target: { value: 'Unsuccessful' } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].additionalFilterOption).toEqual('Unsuccessful');
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(2);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual('Unsuccessful');
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(2);
+    wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: 'less-than' } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].additionalFilterOption).toEqual('Unsuccessful');
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual('less-than');
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(2);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual('Unsuccessful');
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual('less-than');
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(2);
+    wrapper.find('.advanced-filter-additional-filter-options').simulate('change', { target: { value: mockFilterAdditionalOption.additionalFilterOption } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAdditionalOption ]);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterAdditionalOption.additionalFilterOption);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterAdditionalOption.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterAdditionalOption.value);
+  });
+
+  it('Relative date custom tooltip dynamically updates as options change', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultCustomRelativeOption.filterOption.name });
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: 'custom' } });
+    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “past” relative date periods include records dated through today’s date. The current setting of "past 1 days" will return records with Latest Report date from ${moment(new Date()).subtract(1,'d').format('MM/DD/YY')} through now.`);
+    wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 3 } });
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “past” relative date periods include records dated through today’s date. The current setting of "past 3 days" will return records with Latest Report date from ${moment(new Date()).subtract(3,'d').format('MM/DD/YY')} through now.`);
+    wrapper.find('.advanced-filter-unit-input').simulate('change', { target: { value: 'weeks' } });
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “past” relative date periods include records dated through today’s date. The current setting of "past 3 weeks" will return records with Latest Report date from ${moment(new Date()).subtract(3,'weeks').format('MM/DD/YY')} through now.`);
+    wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: 'next' } });
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “next” relative date periods include records with today’s date as of the current time. The current setting of "next 3 weeks" will return records with Latest Report date from now through ${moment(new Date()).add(3,'weeks').format('MM/DD/YY')}.`);
+    wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 1 } });
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “next” relative date periods include records with today’s date as of the current time. The current setting of "next 1 weeks" will return records with Latest Report date from now through ${moment(new Date()).add(1,'weeks').format('MM/DD/YY')}.`);
+  });
+
+  // TO DO: between option bound prevention
 
   it('Clicking "Save" button opens Filter Name modal', () => {
     const wrapper = getWrapper();
@@ -257,25 +786,25 @@ describe('AdvancedFilter', () => {
   it('Opening Filter Name modal and clicking "Cancel" button maintains advanced filter modal state', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterOptions1.filterOption.name });
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterOptions1.value } });
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterSearchOption.value } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptions1 ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
     expect(wrapper.state('show')).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterOptions1.filterOption.name);
-    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterOptions1.value);
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterSearchOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterSearchOption.value);
     wrapper.find('#advanced-filter-save').simulate('click');
     expect(wrapper.state('show')).toBeFalsy();
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptions1 ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
     expect(wrapper.find('.advanced-filter-select').exists()).toBeFalsy();
     expect(wrapper.find('.advanced-filter-search-input').exists()).toBeFalsy();
     wrapper.find('#filter-name-cancel').simulate('click');
     expect(wrapper.state('show')).toBeTruthy();
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptions1 ]);
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterOptions1.filterOption.name);
-    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterOptions1.value);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterSearchOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterSearchOption.value);
   });
 
   it('Clicking Filter Name modal "Save" button calls save method', () => {
@@ -420,11 +949,11 @@ describe('AdvancedFilter', () => {
     expect(wrapper.state('activeFilterOptions')).toEqual([ { filterOption: null } ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterOptions1.filterOption.name });
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterOptions1.value } });
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterSearchOption.value } });
     expect(wrapper.state('show')).toBeTruthy();
     expect(wrapper.state('applied')).toBeFalsy();
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptions1 ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
     wrapper.find('#advanced-filter-cancel').simulate('click');
@@ -434,6 +963,8 @@ describe('AdvancedFilter', () => {
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
   });
+
+  // cancel check values
 
   it('Clicking "Cancel" button after making changes properly resets modal state to the most recent filter applied', () => {
     const wrapper = getWrapper();
@@ -446,11 +977,11 @@ describe('AdvancedFilter', () => {
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
     wrapper.find('#advanced-filter-apply').simulate('click');
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterOptions2.filterOption.name });
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterBoolOption.filterOption.name });
     wrapper.find('.advanced-filter-boolean-false').simulate('change');
     expect(wrapper.state('show')).toBeTruthy();
     expect(wrapper.state('applied')).toBeTruthy();
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptions2 ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterBoolOption ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual(mockFilter1.contents);
@@ -462,6 +993,8 @@ describe('AdvancedFilter', () => {
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual(mockFilter1.contents);
   });
+
+  // cancel check values
 
   // can you test local storage?
   // MAKE SURE ALL STATE IS SET CORRECTLY

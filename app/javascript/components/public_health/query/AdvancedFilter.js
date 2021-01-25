@@ -346,8 +346,6 @@ class AdvancedFilter extends React.Component {
           .format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
       };
-    } else if (filterOption.type === 'relative') {
-      value = { number: 1, unit: 'days', when: 'past' };
     } else if (filterOption.type === 'search') {
       value = '';
     }
@@ -358,7 +356,7 @@ class AdvancedFilter extends React.Component {
       numberOption: filterOption.type === 'number' ? 'equal' : null,
       dateOption: filterOption.type === 'date' ? 'within' : null,
       relativeOption: filterOption.type === 'relative' ? 'today' : null,
-      additionalFilterOption: filterOption.options ? filterOption.options[0] : null,
+      additionalFilterOption: filterOption.type !== 'option' && filterOption.options ? filterOption.options[0] : null,
     };
     this.setState({ activeFilterOptions });
   };
@@ -377,6 +375,8 @@ class AdvancedFilter extends React.Component {
       value: newValue,
       numberOption: newNumberOption,
       additionalFilterOption,
+      dateOption: null,
+      relativeOption: null,
     };
     this.setState({ activeFilterOptions });
   };
@@ -395,14 +395,29 @@ class AdvancedFilter extends React.Component {
     } else {
       defaultValue = moment().format('YYYY-MM-DD');
     }
-    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: defaultValue, dateOption: value };
+    activeFilterOptions[parseInt(index)] = {
+      filterOption: activeFilterOptions[parseInt(index)].filterOption,
+      value: defaultValue,
+      dateOption: value,
+      numberOption: null,
+      relativeOption: null,
+      additionalFilterOption: null,
+    };
     this.setState({ activeFilterOptions });
   };
 
   // Change the relative filter option for type relative date
   changeFilterRelativeOption = (index, value, relativeOption) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
-    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: value, relativeOption: relativeOption };
+    let defaultValue = relativeOption === 'custom' ? { number: 1, unit: 'days', when: 'past' } : null;
+    activeFilterOptions[parseInt(index)] = {
+      filterOption: activeFilterOptions[parseInt(index)].filterOption,
+      value: defaultValue,
+      relativeOption,
+      dateOption: null,
+      numberOption: null,
+      additionalFilterOption: null,
+    };
     this.setState({ activeFilterOptions });
   };
 
@@ -612,7 +627,7 @@ class AdvancedFilter extends React.Component {
       <Form.Control
         as="select"
         value={current}
-        className="py-0 my-0 mr-3"
+        className="advanced-filter-additional-filter-options py-0 my-0 mr-3"
         aria-label="Advanced Filter Number Additional Options Input"
         onChange={event => this.changeFilterAdditionalFilterOption(index, event.target.value, value, numberOption, dateOption, relativeOption)}>
         {options.map((option, op_index) => {
@@ -669,8 +684,7 @@ class AdvancedFilter extends React.Component {
       }
     }
 
-    statement = `${filterName} “${value.when}” relative date periods include records ${rangeString}.
-                 The current setting of "${value.when}  ${value.number} ${value.unit}" will return records with ${filterName} date from ${start} through ${end}.`;
+    statement = `${filterName} “${value.when}” relative date periods include records ${rangeString}. The current setting of "${value.when} ${value.number} ${value.unit}" will return records with ${filterName} date from ${start} through ${end}.`;
     return statement;
   }
 
@@ -870,7 +884,9 @@ class AdvancedFilter extends React.Component {
           </Col>
           {/* specific dropdown for filters with a type that requires additional options (not type option) */}
           {filterOption?.type !== 'option' && filterOption?.options && (
-            <Col md={4}>{this.renderAdditionalFilterOptions(additionalFilterOption, index, filterOption.options, value)}</Col>
+            <Col md={4}>
+              {this.renderAdditionalFilterOptions(additionalFilterOption, index, filterOption.options, value, numberOption, dateOption, relativeOption)}
+            </Col>
           )}
           <Col className="py-0">
             {filterOption?.type === 'boolean' && (
