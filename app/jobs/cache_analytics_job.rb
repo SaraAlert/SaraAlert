@@ -380,6 +380,7 @@ class CacheAnalyticsJob < ApplicationJob
                         new_enrollments: monitorees.where(isolation: workflow == 'Isolation')
                                                    .enrolled_in_time_frame(time_frame)
                                                    .size,
+                        # only transfers from outside this jurisdiction's hierarchy to a jurisdiction within this jurisdiction's hierarchy are included
                         transferred_in: Transfer.where(to_jurisdiction_id: subjur_ids)
                                                 .where.not(from_jurisdiction_id: subjur_ids)
                                                 .where_assoc_exists(:patient, isolation: workflow == 'Isolation')
@@ -389,6 +390,7 @@ class CacheAnalyticsJob < ApplicationJob
                                           .monitoring_closed
                                           .closed_in_time_frame(time_frame)
                                           .size,
+                        # only transfers from within this jurisdiction's hierarchy to a jurisdiction outside this jurisdiction's hierarchy are included
                         transferred_out: Transfer.where(from_jurisdiction_id: subjur_ids)
                                                  .where.not(to_jurisdiction_id: subjur_ids)
                                                  .where_assoc_exists(:patient, isolation: workflow == 'Isolation')
