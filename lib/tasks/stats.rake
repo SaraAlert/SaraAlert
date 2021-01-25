@@ -201,7 +201,7 @@ namespace :stats do
         phone_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'Telephone call'
         sms_text_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Text-message'
         overall_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f
-        enrollment_to_lde_exp << (patient.created_at.to_date - patient.last_date_of_exposure.to_date).to_i
+        enrollment_to_lde_exp << (patient.created_at.to_date - patient.last_date_of_exposure.to_date).to_i unless patient.last_date_of_exposure.nil?
         enrollment_to_first_rep_exp << (times_recv_self_and_user.first - patient.created_at.to_date).to_i
       end
       responded_to_all_reminders_self_iso = 0
