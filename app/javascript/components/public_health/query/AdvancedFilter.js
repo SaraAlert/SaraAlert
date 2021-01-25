@@ -690,7 +690,7 @@ class AdvancedFilter extends React.Component {
     if (filter.type === 'relative') {
       statement = this.getRelativeTooltipString(filter, value);
     } else if (filter.type === 'number') {
-      statement = 'Between operator filters for values within the inputted range, including the numbers entered.';
+      statement = '"Between" is inclusive and will filter for values within the user-entered range, including the start and end values.';
     } else {
       // Otherwise base it on specific filter option
       statement = filter.tooltip;
