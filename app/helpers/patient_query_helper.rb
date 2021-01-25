@@ -203,7 +203,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     when 'risk_level'
       patients = patients.order_by_risk(asc: dir == 'asc')
     when 'monitoring_plan'
-      patients = patients.order(Arel.sql('monitoring_plan IS NULL, collection_id ' + dir))
+      patients = patients.order(Arel.sql('monitoring_plan IS NULL, monitoring_plan ' + dir))
     when 'public_health_action'
       patients = patients.order(Arel.sql('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + dir))
     when 'expected_purge_date'

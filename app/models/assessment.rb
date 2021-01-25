@@ -24,6 +24,16 @@ class Assessment < ApplicationRecord
       .where(symptomatic: true)
   }
 
+  # Assessments created since the given time
+  scope :created_since, lambda { |since|
+    where('created_at >= ?', since)
+  }
+
+  # Assessments created by monitorees
+  scope :created_by_monitoree, lambda {
+    where(who_reported: %w[Monitoree Proxy])
+  }
+
   def symptomatic?
     symptom_groups = []
     reported_condition.symptoms.each do |reported_symptom|
