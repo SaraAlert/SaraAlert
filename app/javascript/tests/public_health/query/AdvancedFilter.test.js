@@ -311,7 +311,7 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(Form.Control).at(2).prop('value')).toEqual(0);
     expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    // expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`"Between" is inclusive and will filter for values within the user-entered range, including the start and end values.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`"Between" is inclusive and will filter for values within the user-entered range, including the start and end values.`);
   });
 
   it('Properly renders advanced filter date type statement with single date', () => {
@@ -944,61 +944,97 @@ describe('AdvancedFilter', () => {
     expect(cancelSpy).toHaveBeenCalled();
   });
 
-  it('Clicking "Cancel" button after making changes properly resets modal state to initial state if no filter was applied', () => {
+  it('Clicking "Cancel" button after making changes properly resets modal to initial state if no filter was applied', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    expect(wrapper.state('show')).toBeTruthy();
     expect(wrapper.state('applied')).toBeFalsy();
     expect(wrapper.state('activeFilterOptions')).toEqual([ { filterOption: null } ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
+    expect(wrapper.find(Form.Control).exists()).toBeFalsy();
     wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
     wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterSearchOption.value } });
-    expect(wrapper.state('show')).toBeTruthy();
     expect(wrapper.state('applied')).toBeFalsy();
     expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
+    expect(wrapper.find(Form.Control).exists()).toBeTruthy();
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSearchOption.value);
     wrapper.find('#advanced-filter-cancel').simulate('click');
-    expect(wrapper.state('show')).toBeFalsy();
+    wrapper.find(Button).simulate('click');
     expect(wrapper.state('applied')).toBeFalsy();
     expect(wrapper.state('activeFilterOptions')).toEqual([ { filterOption: null } ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
+    expect(wrapper.find(Form.Control).exists()).toBeFalsy();
   });
 
-  // cancel check values
-
-  it('Clicking "Cancel" button after making changes properly resets modal state to the most recent filter applied', () => {
+  it('Clicking "Cancel" button after making changes properly resets modal to the most recent filter applied', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.setState({ activeFilterOptions: mockFilter1.contents });
-    expect(wrapper.state('show')).toBeTruthy();
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultBoolOption.filterOption.name });
     expect(wrapper.state('applied')).toBeFalsy();
-    expect(wrapper.state('activeFilterOptions')).toEqual(mockFilter1.contents);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
+    expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBeTruthy();
+    expect(wrapper.find(ToggleButton).at(1).prop('checked')).toBeFalsy();
     wrapper.find('#advanced-filter-apply').simulate('click');
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterBoolOption.filterOption.name });
+    expect(wrapper.state('applied')).toBeTruthy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBeTruthy();
+    expect(wrapper.find(ToggleButton).at(1).prop('checked')).toBeFalsy();
     wrapper.find('.advanced-filter-boolean-false').simulate('change');
-    expect(wrapper.state('show')).toBeTruthy();
     expect(wrapper.state('applied')).toBeTruthy();
     expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterBoolOption ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual(mockFilter1.contents);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBeFalsy();
+    expect(wrapper.find(ToggleButton).at(1).prop('checked')).toBeTruthy();
     wrapper.find('#advanced-filter-cancel').simulate('click');
-    expect(wrapper.state('show')).toBeFalsy();
+    wrapper.find(Button).simulate('click');
     expect(wrapper.state('applied')).toBeTruthy();
-    expect(wrapper.state('activeFilterOptions')).toEqual(mockFilter1.contents);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual(mockFilter1.contents);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBeTruthy();
+    expect(wrapper.find(ToggleButton).at(1).prop('checked')).toBeFalsy();
+    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterSearchOption.value } });
+    expect(wrapper.state('applied')).toBeTruthy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSearchOption.value);
+    wrapper.find('#advanced-filter-apply').simulate('click');
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.state('applied')).toBeTruthy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSearchOption.value);
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: `${mockFilterSearchOption.value}!!!` } });
+    expect(wrapper.state('applied')).toBeTruthy();
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(`${mockFilterSearchOption.value}!!!`);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(`${mockFilterSearchOption.value}!!!`);
+    wrapper.find('#advanced-filter-cancel').simulate('click');
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.state('applied')).toBeTruthy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSearchOption.value);
   });
-
-  // cancel check values
-
-  // can you test local storage?
-  // MAKE SURE ALL STATE IS SET CORRECTLY
 });
