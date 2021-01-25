@@ -17,6 +17,7 @@ namespace :stats do
     jurisdictions.each do |jur|
       results = {}
 
+      puts 'Step 1 of 6: linelists'
       title = 'LINELISTS: Daily snapshots'
       results[title] = {}
       results[title]['Total'] = {
@@ -84,6 +85,7 @@ namespace :stats do
         isolation: jur.all_patients.where(isolation: true).where_assoc_exists(:histories, &:exposure_to_isolation).count
       }
 
+      puts 'Step 2 of 6: monitoring activity'
       title = "MONITORING ACTIVITY: Cohort of monitorees existing or added during 14 day period\nINCLUDING Opt-out or Unknown reporting methods"
       results[title] = {}
       results[title]['Total'] = {
@@ -127,6 +129,7 @@ namespace :stats do
         isolation: jur.all_patients.where(isolation: true, monitoring: false).where_assoc_exists(:histories, &:user_closed_last_24h).count
       }
 
+      puts 'Step 3 of 6: reporting rates'
       title = "REPORTING: Cohort of monitorees existing or added during 14 day period\nEXCLUDING Opt-out or Unknown reporting methods"
       results[title] = {}
       active_exp = jur.all_patients.where(monitoring: true, isolation: false).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
@@ -196,11 +199,12 @@ namespace :stats do
           all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
           cons_days_no_response_self_and_user_exp << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
         end
-        emailed_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'E-mailed Web Link'
-        sms_weblink_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Texted Weblink'
-        phone_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'Telephone call'
-        sms_text_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Text-message'
-        overall_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f
+        puts "times_recv_self_and_user.count: #{times_recv_self_and_user.count}   times_sent.count.to_f: #{times_sent.count.to_f}"
+        emailed_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'E-mailed Web Link' && !times_sent.empty?
+        sms_weblink_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Texted Weblink' && !times_sent.empty?
+        phone_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'Telephone call' && !times_sent.empty?
+        sms_text_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
+        overall_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if !times_sent.empty?
         enrollment_to_lde_exp << (patient.created_at.to_date - patient.last_date_of_exposure.to_date).to_i unless patient.last_date_of_exposure.nil?
         enrollment_to_first_rep_exp << (times_recv_self_and_user.first - patient.created_at.to_date).to_i unless times_recv_self_and_user.empty?
       end
@@ -244,11 +248,11 @@ namespace :stats do
           all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
           cons_days_no_response_self_and_user_iso << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
         end
-        emailed_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'E-mailed Web Link'
-        sms_weblink_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Texted Weblink'
-        phone_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'Telephone call'
-        sms_text_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Text-message'
-        overall_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f
+        emailed_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'E-mailed Web Link' && !times_sent.empty?
+        sms_weblink_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Texted Weblink' && !times_sent.empty?
+        phone_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'Telephone call' && !times_sent.empty?
+        sms_text_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
+        overall_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if !times_sent.empty?
         enrollment_to_first_rep_iso << (times_recv_self_and_user.first - patient.created_at.to_date).to_i unless times_recv_self_and_user.empty?
       end
       results[title]['Number of monitorees responding to ALL automated messages (monitoree or proxy response only)'] = {
@@ -324,6 +328,7 @@ namespace :stats do
         isolation: active_iso.where.not(public_health_action: 'None').count
       }
 
+      puts 'Step 4 of 6: demographics'
       title = "DEMOGRAPHICS: Cohort of monitorees existing or added during 14 day period\nEXCLUDING Opt-out or Unknown reporting methods"
       results[title] = {}
       active_exp = jur.all_patients.where(monitoring: true, isolation: false).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
@@ -487,6 +492,7 @@ namespace :stats do
         isolation: active_iso.where(primary_language: ['', nil]).count
       }
 
+      puts 'Step 5 of 6: user snapshots'
       title = 'USERS: Daily snapshots'
       results[title] = {}
       results[title]['Total'] = { exposure: jur.all_users.where.not(role: [nil, '', 'none']).count, isolation: nil }
@@ -499,9 +505,12 @@ namespace :stats do
       results[title]['Analyst'] = { exposure: jur.all_users.where(role: 'analyst').count, isolation: nil }
       results[title]['Admins'] = { exposure: jur.all_users.where(role: 'admin').count, isolation: nil }
 
+      puts 'Step 6 of 6: finish'
       json = {}
       json[today] = results
+      puts JSON.pretty_generate(json)
       Stat.create!(contents: json.to_json, jurisdiction_id: jur.id, tag: 'eval_queries')
+      UserMailer.stats_eval_email(ids).deliver_now
     end
   end
 end

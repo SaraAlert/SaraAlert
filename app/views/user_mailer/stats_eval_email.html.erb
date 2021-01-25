@@ -1,0 +1,8 @@
+<h1>
+  Sara Alert Stats Evaluation Results (<%= ActionMailer::Base.default_url_options[:host] %>)
+</h1>
+<h2>
+  <%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %>
+</h2>
+<br />
+Performed evals for: <%= @ids.join(', ') %>

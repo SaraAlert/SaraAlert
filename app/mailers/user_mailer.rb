@@ -47,6 +47,11 @@ class UserMailer < ApplicationMailer
     mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Close Job Results (#{ActionMailer::Base.default_url_options[:host]})")
   end
 
+  def stats_eval_email(ids)
+    @ids = ids
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Stats Evaluation Results (#{ActionMailer::Base.default_url_options[:host]})")
+  end
+
   def cache_analytics_job_email(cached, not_cached, eligible)
     return unless ADMIN_OPTIONS['job_run_email'].present?
 
