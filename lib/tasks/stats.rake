@@ -199,7 +199,6 @@ namespace :stats do
           all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
           cons_days_no_response_self_and_user_exp << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
         end
-        puts "times_recv_self_and_user.count: #{times_recv_self_and_user.count}   times_sent.count.to_f: #{times_sent.count.to_f}"
         emailed_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'E-mailed Web Link' && !times_sent.empty?
         sms_weblink_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Texted Weblink' && !times_sent.empty?
         phone_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'Telephone call' && !times_sent.empty?
