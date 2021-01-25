@@ -23,63 +23,63 @@ namespace :stats do
         exposure: jur.all_patients.where(isolation: false).count,
         isolation: jur.all_patients.where(isolation: true).count
       }
-      results[title]['Symptomatic'] = {
+      results[title]['Exposure Symptomatic'] = {
         exposure: jur.all_patients.exposure_symptomatic.count,
         isolation: 'N/A'
       }
-      results[title]['Non Reporting'] = {
+      results[title]['Exposure Non-Reporting'] = {
         exposure: jur.all_patients.exposure_non_reporting.count,
         isolation: 'N/A'
       }
-      results[title]['Asymptomatic'] = {
+      results[title]['Exposure Asymptomatic'] = {
         exposure: jur.all_patients.exposure_asymptomatic.count,
         isolation: 'N/A'
       }
-      results[title]['Under Investigation (PUI)'] = {
+      results[title]['Exposure Under Investigation (PUI)'] = {
         exposure: jur.all_patients.exposure_under_investigation.count,
         isolation: 'N/A'
       }
-      results[title]['Closed'] = {
+      results[title]['Exposure Closed'] = {
         exposure: jur.all_patients.monitoring_closed_without_purged.where(isolation: false).count,
         isolation: 'N/A'
       }
-      results[title]['Transferred In'] = {
+      results[title]['Exposure Transferred In'] = {
         exposure: jur.transferred_in_patients.where(isolation: false).count,
         isolation: 'N/A'
       }
-      results[title]['Transferred Out'] = {
+      results[title]['Exposure Transferred Out'] = {
         exposure: jur.transferred_out_patients.where(isolation: false).count,
         isolation: 'N/A'
       }
-      results[title]['Continuous Monitoring'] = {
+      results[title]['Exposure Continuous Monitoring'] = {
         exposure: jur.all_patients.where(isolation: false, continuous_exposure: true).count,
         isolation: 'N/A'
       }
-      results[title]['Requiring Review'] = {
+      results[title]['Isolation Requires Review'] = {
         exposure: 'N/A',
         isolation: jur.all_patients.isolation_requiring_review.count
       }
-      results[title]['Reporting'] = {
+      results[title]['Isolation Reporting'] = {
         exposure: 'N/A',
         isolation: jur.all_patients.isolation_reporting.count
       }
-      results[title]['Non Reporting'] = {
+      results[title]['Isolation Non-Reporting'] = {
         exposure: 'N/A',
         isolation: jur.all_patients.isolation_non_reporting.count
       }
-      results[title]['Closed'] = {
+      results[title]['Isolation Closed'] = {
         exposure: 'N/A',
         isolation: jur.all_patients.monitoring_closed_without_purged.where(isolation: true).count
       }
-      results[title]['Transferred In'] = {
+      results[title]['Isolation Transferred In'] = {
         exposure: 'N/A',
         isolation: jur.transferred_in_patients.where(isolation: true).count
       }
-      results[title]['Transferred Out'] = {
+      results[title]['Isolation Transferred Out'] = {
         exposure: 'N/A',
         isolation: jur.transferred_out_patients.where(isolation: true).count
       }
-      results[title]['Previously in Exposure'] = {
+      results[title]['Isolation Previously in Exposure'] = {
         exposure: 'N/A',
         isolation: jur.all_patients.where(isolation: true).where_assoc_exists(:histories, &:exposure_to_isolation).count
       }
@@ -202,7 +202,7 @@ namespace :stats do
         sms_text_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Text-message'
         overall_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f
         enrollment_to_lde_exp << (patient.created_at.to_date - patient.last_date_of_exposure.to_date).to_i unless patient.last_date_of_exposure.nil?
-        enrollment_to_first_rep_exp << (times_recv_self_and_user.first - patient.created_at.to_date).to_i
+        enrollment_to_first_rep_exp << (times_recv_self_and_user.first - patient.created_at.to_date).to_i unless times_recv_self_and_user.empty?
       end
       responded_to_all_reminders_self_iso = 0
       responded_to_all_reminders_self_and_user_iso = 0
@@ -249,7 +249,7 @@ namespace :stats do
         phone_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'Telephone call'
         sms_text_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Text-message'
         overall_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f
-        enrollment_to_first_rep_iso << (times_recv_self_and_user.first - patient.created_at.to_date).to_i
+        enrollment_to_first_rep_iso << (times_recv_self_and_user.first - patient.created_at.to_date).to_i unless times_recv_self_and_user.empty?
       end
       results[title]['Number of monitorees responding to ALL automated messages (monitoree or proxy response only)'] = {
         exposure: responded_to_all_reminders_self_exp,
