@@ -253,6 +253,9 @@ class PatientsController < ApplicationController
     # Don't do anything if there hasn't been a change to the responder at all
     redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
 
+    # Don't allow the user to set this record as a new HoH if they are a dependent already
+    render(json: { error: 'Selected Head of Household is no longer valid as they are a dependent in an existing household.' }, status: 406) && return if new_hoh.responder_id != new_hoh_id.id
+
     if new_hoh_id == current_patient.id
       comment = "User removed #{current_patient.first_name} #{current_patient.last_name} from the household. #{old_hoh.first_name} #{old_hoh.last_name}"\
                 ' will no longer be responsible for handling their reporting.'

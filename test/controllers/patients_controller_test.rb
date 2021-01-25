@@ -108,6 +108,14 @@ class PatientsControllerTest < ActionController::TestCase
     assert_not dependent.reload.head_of_household
   end
 
+  test 'update_hoh redirects when there is no change' do
+    # TODO
+  end
+
+  test 'update_hoh send error message when new head of household is a dependent' do
+    # TODO
+  end
+
   test 'bulk update status' do
     %i[admin_user analyst_user].each do |role|
       user = create(role)
