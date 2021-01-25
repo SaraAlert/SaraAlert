@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_10_084736) do
+ActiveRecord::Schema.define(version: 2021_01_13_134912) do
 
   create_table "analytics", charset: "utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -429,6 +429,14 @@ ActiveRecord::Schema.define(version: 2020_12_10_084736) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
+  end
+
+  create_table "stats", charset: "utf8", force: :cascade do |t|
+    t.integer "jurisdiction_id", null: false
+    t.json "contents", null: false
+    t.string "tag", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "symptoms", charset: "utf8", force: :cascade do |t|

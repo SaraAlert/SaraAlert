@@ -13,9 +13,16 @@ class Jurisdiction < ApplicationRecord
 
   has_many :analytics, class_name: 'Analytic'
 
+  has_many :stats, class_name: 'Stat'
+
   # All patients are all those in this or descendent jurisdictions
   def all_patients
     Patient.includes([:jurisdiction]).where(purged: false, jurisdiction_id: subtree_ids)
+  end
+
+  # All users that are in this or descendent jurisdictions
+  def all_users
+    User.includes([:jurisdiction]).where(jurisdiction_id: subtree_ids)
   end
 
   # Join this and parent jurisdictions names as a string

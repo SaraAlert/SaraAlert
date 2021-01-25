@@ -55,6 +55,54 @@ class History < ApplicationRecord
     end
   }
 
+  # Histories created since the given time that are user driven (not system, or enrollment)
+  scope :user_generated_since, lambda { |since|
+    where('created_at >= ?', since)
+      .where.not(created_by: 'Sara Alert System')
+      .where.not(history_type: 'Enrollment')
+  }
+
+  # Histories created in the last 24 hours that show the system closing a record
+  scope :system_closed_last_24h, lambda {
+    where('created_at >= ?', 24.hours.ago)
+      .where(history_type: HISTORY_TYPES[:record_automatically_closed])
+  }
+
+  # Histories created in the last 24 hours that show a user closing a record
+  scope :user_closed_last_24h, lambda {
+    where('created_at >= ?', 24.hours.ago)
+      .where('comment like ?', 'User changed Monitoring Status from "Monitoring" to "Not Monitoring"%')
+  }
+
+  # Histories that indicate a record was moved from exposure to isolation
+  scope :exposure_to_isolation, lambda {
+    where('comment like ?', '%Continue Monitoring in Isolation Workflow%')
+  }
+
+  # Histories created in the last 24 hours that show a user enrolling a record
+  scope :user_enrolled_last_24h, lambda {
+    where('created_at >= ?', 24.hours.ago)
+      .where(comment: 'User enrolled monitoree.')
+  }
+
+  # Histories created in the last 24 hours that show the API enrolling a record
+  scope :api_enrolled_last_24h, lambda {
+    where('created_at >= ?', 24.hours.ago)
+      .where(comment: 'Monitoree enrolled via API.')
+  }
+
+  # Histories created since the given date that indicate the system sent a reminder to the monitoree
+  scope :reminder_sent_since, lambda { |since|
+    where('created_at >= ?', since)
+      .where('comment like ?', 'Sara Alert sent a report reminder%')
+  }
+
+  # Histories created since the given date that indicate a user reviewed reports
+  scope :reports_reviewed_since, lambda { |since|
+    where('created_at >= ?', since)
+      .where(history_type: [HISTORY_TYPES[:reports_reviewed], HISTORY_TYPES[:report_reviewed]])
+  }
+
   def self.record_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a record.')
     create_history(patient, created_by, HISTORY_TYPES[:record_edit], comment)
   end
