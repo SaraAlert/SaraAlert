@@ -7,6 +7,7 @@ import ReactTooltip from 'react-tooltip';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import moment from 'moment-timezone';
+import _ from 'lodash';
 
 import DateInput from '../../util/DateInput';
 import confirmDialog from '../../util/ConfirmDialog';
@@ -271,7 +272,7 @@ class AdvancedFilter extends React.Component {
   apply = () => {
     const appliedFilter = {
       activeFilter: this.state.activeFilter,
-      activeFilterOptions: this.state.activeFilterOptions,
+      activeFilterOptions: _.cloneDeep(this.state.activeFilterOptions),
     };
     this.setState({ show: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilterOptions);
