@@ -78,7 +78,7 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
     @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reason', valid_assigned_user: false, changed: false)
     @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', '', valid_assigned_user: false, changed: false)
     @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '0', 'reason', valid_assigned_user: false, changed: true)
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '10000', '', valid_assigned_user: false, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1000000', '', valid_assigned_user: false, changed: true)
     @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_4', 'all', '-8', 'reason', valid_assigned_user: false, changed: true)
     @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', '1.5', '', valid_assigned_user: false, changed: true)
     @@public_health_test_helper.update_assigned_user('state1_epi_enroller',

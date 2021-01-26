@@ -47,7 +47,7 @@
     },
     {
       "url": "http://saraalert.org/StructureDefinition/assigned-user",
-      "valuePositiveInt": 10000
+      "valuePositiveInt": 1000000
     },
     {
       "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",

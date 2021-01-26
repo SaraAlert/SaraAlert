@@ -72,7 +72,7 @@ class PublicHealthControllerTest < ActionController::TestCase
     post :patients, params: { query: { workflow: 'exposure', tab: 'symptomatic', user: '0' } }, as: :json
     assert_response :bad_request
 
-    post :patients, params: { query: { workflow: 'exposure', tab: 'symptomatic', user: '10000' } }, as: :json
+    post :patients, params: { query: { workflow: 'exposure', tab: 'symptomatic', user: '1000000' } }, as: :json
     assert_response :bad_request
 
     post :patients, params: { query: { workflow: 'exposure', tab: 'symptomatic', entries: '-1' } }, as: :json
