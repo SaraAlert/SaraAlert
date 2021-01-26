@@ -254,7 +254,24 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
 
     # Don't allow the user to set this record as a new HoH if they are a dependent already
-    render(json: { error: 'Selected Head of Household is no longer valid as they are a dependent in an existing household.' }, status: 406) && return if new_hoh.responder_id != new_hoh_id.id
+    # NOTE: Must check this the new hoh is not the patient themselves, in which case this is a remove from household operation
+    # and should be allowed. Must also check this isn't a Change HoH operation.
+    if new_hoh_id != current_patient.id && new_hoh.responder_id != new_hoh_id && new_hoh.responder_id != current_patient.id
+      render(json: {
+               error: 'Move to household action failed: Selected Head of Household is no longer valid as they are a dependent in an existing household.'
+             },
+             status: 406) && return
+    end
+
+    # Don't allow a HoH to be given a HoH unless their dependent IDs have been provided for updating.
+    # NOTE: current_patient.id != new_hoh_id is checked because if these are equal we should allow the record to be removed from the household.
+    if current_patient.head_of_household && household_ids.empty? && current_patient.id != new_hoh_id
+      render(json: {
+               error: 'Move to household action failed: Monitoree is a head of household and therefore cannot be moved to a household '\
+                      'through the Move to Household action.'
+             },
+             status: 406) && return
+    end
 
     if new_hoh_id == current_patient.id
       comment = "User removed #{current_patient.first_name} #{current_patient.last_name} from the household. #{old_hoh.first_name} #{old_hoh.last_name}"\
@@ -277,7 +294,7 @@ class PatientsController < ApplicationController
 
     current_user_patients = current_user.patients
 
-    # update_all below does not invoke ActiveRecord callbacks and will not automatically check if this incomming
+    # update_all below does not invoke ActiveRecord callbacks and will not automatically check if this incoming
     # id exists. Patient.exists?(nil) => false
     redirect_to(root_url) && return unless Patient.where(purged: false).exists?(new_hoh_id.to_i)
 
