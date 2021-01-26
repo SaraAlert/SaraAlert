@@ -127,16 +127,26 @@ class PatientsTable extends React.Component {
       query.search = search;
     }
 
-    // Set page if it exists in local storage & user is in the same workflow as before
+    // Set page & sort settings if they exist in local storage & user is in the same workflow as before
     let priorWorkflow = localStorage.getItem(`Workflow`);
     let page = localStorage.getItem(`SaraPage`);
-    if (page && priorWorkflow && this.props.workflow === priorWorkflow) {
-      query.page = parseInt(page);
-      // Set a flag to be leveraged when a sticky advanced filter is applied, so the page is not auto set back to 0
-      localStorage.setItem('KeepSaraPage', true);
+    let sortField = localStorage.getItem(`SaraSortField`);
+    let sortDirection = localStorage.getItem(`SaraSortDirection`);
+    if (priorWorkflow && this.props.workflow === priorWorkflow) {
+      if (page) {
+        query.page = parseInt(page);
+      }
+      if (sortField && sortDirection) {
+        query.order = sortField;
+        query.direction = sortDirection;
+      }
+      // Set a flag so any sticky advanced filter does not reset page & sort settings
+      localStorage.setItem('KeepCurrentSettings', true);
     } else {
       localStorage.removeItem(`SaraPage`);
-      localStorage.setItem('KeepSaraPage', false);
+      localStorage.removeItem(`SaraSortField`);
+      localStorage.removeItem(`SaraSortDirection`);
+      localStorage.setItem('KeepCurrentSettings', false);
       query.page = 0;
     }
     // Update workflow local storage to be the current workflow
@@ -165,6 +175,8 @@ class PatientsTable extends React.Component {
     if (await confirmDialog('Are you sure you want to clear all filters? All active filters and searches will be cleared.')) {
       localStorage.removeItem(`SaraFilter`);
       localStorage.removeItem(`SaraPage`);
+      localStorage.removeItem(`SaraSortField`);
+      localStorage.removeItem(`SaraSortDirection`);
       localStorage.removeItem(`SaraEntries`);
       localStorage.removeItem(`SaraSearch`);
       localStorage.removeItem(`SaraJurisdiction`);
@@ -181,6 +193,8 @@ class PatientsTable extends React.Component {
 
   handleTabSelect = tab => {
     localStorage.removeItem(`SaraPage`);
+    localStorage.removeItem(`SaraSortField`);
+    localStorage.removeItem(`SaraSortDirection`);
     this.setState(
       state => {
         return { query: { ...state.query, tab, page: 0 } };
@@ -219,6 +233,8 @@ class PatientsTable extends React.Component {
    */
   handleEntriesChange = event => {
     localStorage.removeItem(`SaraPage`);
+    localStorage.removeItem(`SaraSortField`);
+    localStorage.removeItem(`SaraSortDirection`);
     const value = event?.target?.value || event;
     this.setState(
       state => {
@@ -237,6 +253,8 @@ class PatientsTable extends React.Component {
     if (jurisdiction !== this.state.query.jurisdiction) {
       this.updateAssignedUsers({ ...this.state.query, jurisdiction, page: 0 });
       localStorage.removeItem(`SaraPage`);
+      localStorage.removeItem(`SaraSortField`);
+      localStorage.removeItem(`SaraSortDirection`);
       localStorage.setItem(`SaraJurisdiction`, jurisdiction);
     }
   };
@@ -245,6 +263,8 @@ class PatientsTable extends React.Component {
     if (scope !== this.state.query.scope) {
       this.updateAssignedUsers({ ...this.state.query, scope, page: 0 });
       localStorage.removeItem(`SaraPage`);
+      localStorage.removeItem(`SaraSortField`);
+      localStorage.removeItem(`SaraSortDirection`);
       localStorage.setItem(`SaraScope`, scope);
     }
   };
@@ -253,6 +273,8 @@ class PatientsTable extends React.Component {
     if (user !== this.state.query.user) {
       this.updateTable({ ...this.state.query, user, page: 0 });
       localStorage.removeItem(`SaraPage`);
+      localStorage.removeItem(`SaraSortField`);
+      localStorage.removeItem(`SaraSortDirection`);
       if (user) {
         localStorage.setItem(`SaraAssignedUser`, user);
       } else {
@@ -264,6 +286,8 @@ class PatientsTable extends React.Component {
   handleSearchChange = event => {
     this.updateTable({ ...this.state.query, search: event.target?.value, page: 0 });
     localStorage.removeItem(`SaraPage`);
+    localStorage.removeItem(`SaraSortField`);
+    localStorage.removeItem(`SaraSortDirection`);
     localStorage.setItem(`SaraSearch`, event.target.value);
   };
 
@@ -299,6 +323,12 @@ class PatientsTable extends React.Component {
       query.jurisdiction = this.props.jurisdiction.id;
       query.scope = 'all';
       query.user = null;
+    }
+
+    // capture sticky setting for sorting when present
+    if (query.order && query.direction) {
+      localStorage.setItem(`SaraSortField`, query.order);
+      localStorage.setItem(`SaraSortDirection`, query.direction);
     }
 
     this.setState(
@@ -357,21 +387,36 @@ class PatientsTable extends React.Component {
   }, 500);
 
   advancedFilterUpdate = filter => {
-    // When available in local storage, set the pagination number when the page is reloaded with a sticky advanced filter
-    const keepPage = localStorage.getItem('KeepSaraPage') == 'true';
+    // When applicable, set the pagination & sort settings when the page is reloaded with a sticky advanced filter
+    const keepCurrentSettings = localStorage.getItem('KeepCurrentSettings') == 'true';
     const localStoragePage = localStorage.getItem('SaraPage');
+    const sortField = localStorage.getItem('SaraSortField');
+    const sortDirection = localStorage.getItem('SaraSortDirection');
     let page = 0;
-    if (keepPage && localStoragePage) {
-      page = parseInt(localStoragePage);
-      localStorage.removeItem(`KeepSaraPage`);
+    let sort = false;
+    if (keepCurrentSettings) {
+      if (localStoragePage) {
+        page = parseInt(localStoragePage);
+      }
+      if (sortField && sortDirection) {
+        sort = true;
+      }
+      localStorage.removeItem(`KeepCurrentSettings`);
     } else {
       localStorage.removeItem(`SaraPage`);
+      localStorage.removeItem(`SaraSortField`);
+      localStorage.removeItem(`SaraSortDirection`);
     }
+
     this.setState(
       state => {
         const query = state.query;
         query.filter = filter?.filter(field => field?.filterOption != null);
         query.page = page;
+        if (sort) {
+          query.order = sortField;
+          query.direction = sortDirection;
+        }
         return { query };
       },
       () => {
@@ -575,6 +620,8 @@ class PatientsTable extends React.Component {
                 selectAll={this.state.selectAll}
                 entryOptions={this.state.entryOptions}
                 entries={parseInt(this.state.query.entries)}
+                orderBy={this.state.query.order !== undefined ? this.state.query.order : ''}
+                sortDirection={this.state.query.direction !== undefined ? this.state.query.direction : ''}
               />
             </Card.Body>
           </Card>

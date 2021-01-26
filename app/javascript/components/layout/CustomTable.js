@@ -9,10 +9,21 @@ class CustomTable extends React.Component {
     super(props);
     this.state = {
       tableQuery: {
-        orderBy: '',
-        sortDirection: '',
+        orderBy: props.orderBy,
+        sortDirection: props.sortDirection,
       },
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.sortDirection !== prevProps.sortDirection || this.props.orderBy !== prevProps.orderBy) {
+      this.setState(state => {
+        const sortDirection = this.props.sortDirection;
+        const orderBy = this.props.orderBy;
+        const tableQuery = { ...state.tableQuery, sortDirection, orderBy };
+        return { tableQuery };
+      });
+    }
   }
 
   /**
@@ -293,12 +304,16 @@ CustomTable.propTypes = {
   getRowClassName: PropTypes.func,
   getCustomTableClassName: PropTypes.func,
   currentUser: PropTypes.string,
+  orderBy: PropTypes.string,
+  sortDirection: PropTypes.string,
 };
 
 CustomTable.defaultProps = {
   handleEdit: () => {},
   handleTableUpdate: () => {},
   handleSelect: () => {},
+  orderBy: '',
+  sortDirection: '',
 };
 
 export default CustomTable;
