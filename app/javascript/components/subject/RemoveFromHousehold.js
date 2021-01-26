@@ -32,9 +32,7 @@ class RemoveFromHousehold extends React.Component {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/update_hoh', {
-          new_hoh_id: this.props.patient.id,
-        })
+        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/remove_from_household')
         .then(() => {
           location.reload(true);
         })
