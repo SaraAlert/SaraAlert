@@ -135,7 +135,9 @@ group :test do
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'simplecov-lcov'
+  gem 'vcr'
   gem 'webdrivers'
+  gem 'webmock'
 end
 
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
