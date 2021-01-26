@@ -91,23 +91,280 @@ class PatientsControllerTest < ActionController::TestCase
     assert head_of_household.reload.head_of_household
   end
 
-  test 'update_hoh successfully removes record from a household' do
+  # ------- Household Updates -----
+
+  test 'move_to_household successfully moves to household' do
+    user = create(:public_health_enroller_user)
+    desired_hoh = create(:patient, creator: user)
+    dependent = create(:patient, creator: user)
+
+    sign_in user
+
+    post :move_to_household, params: {
+      id: dependent.id,
+      new_hoh_id: desired_hoh.id
+    }
+
+    assert_response :success
+    assert desired_hoh.reload.head_of_household
+    assert_not dependent.reload.head_of_household
+    assert_equal(desired_hoh.id, desired_hoh.responder_id)
+    assert_equal(desired_hoh.id, dependent.responder_id)
+
+    # Verify history item was created for new HoH
+    comment = "User added monitoree with ID #{dependent.id} to a household. #{desired_hoh.first_name} #{desired_hoh.last_name}"\
+              ' will now be responsible for handling the reporting on their behalf.'
+    assert_equal(1, desired_hoh.histories.count)
+    assert_equal(comment, desired_hoh.histories.last.comment)
+
+    # Verify history item for was created for current patient being moved to a household
+    comment = "User added monitoree to a household. Monitoree with ID #{desired_hoh.id} will now be responsible"\
+              ' for handling the reporting on their behalf.'
+    assert_equal(1, dependent.histories.count)
+    assert_equal(comment, dependent.histories.last.comment)
+
+    sign_out user
+  end
+
+  test 'move_to_household sends error message when new HoH does not exist' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+
+    sign_in user
+
+    post :move_to_household, params: {
+      id: patient.id,
+      new_hoh_id: -9999
+    }
+
+    assert_response(:forbidden)
+    assert_equal('Move to household action failed: Selected Head of Household with ID -9999 does not exist.',
+                 JSON.parse(response.body)['error'])
+    assert_not patient.reload.head_of_household
+    assert_equal(patient.id, patient.responder_id)
+
+    sign_out user
+  end
+
+  test 'move_to_household sends error message when user does not have access to current record' do
+    public_health_enroller_user = create(:public_health_enroller_user)
+    enroller_user = create(:enroller_user)
+
+    # Patient is not viewable by enroller user
+    patient = create(:patient, creator: public_health_enroller_user)
+    desired_hoh = create(:patient, creator: public_health_enroller_user)
+
+    sign_in enroller_user
+
+    post :move_to_household, params: {
+      id: patient.id,
+      new_hoh_id: desired_hoh.id
+    }
+
+    assert_response(:forbidden)
+    assert_equal('Move to household action failed: User does not have permissions to update current monitoree.',
+                 JSON.parse(response.body)['error'])
+    assert_not patient.reload.head_of_household
+    assert_equal(patient.id, patient.responder_id)
+
+    sign_out enroller_user
+  end
+
+  test 'move_to_household redirects when there is no change' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    sign_in user
+
+    post :move_to_household, params: {
+      id: patient.id,
+      new_hoh_id: patient.id
+    }
+
+    assert_redirected_to(@controller.root_url)
+    assert_not patient.reload.head_of_household
+    assert_equal(patient.id, patient.responder_id)
+    sign_out user
+  end
+
+  test 'move_to_household sends error message when new head of household is a dependent' do
+    user = create(:public_health_enroller_user)
+    actual_hoh = create(:patient, creator: user)
+    # Make desired Head of Household actually be a dependent
+    desired_hoh = create(:patient, creator: user, responder_id: actual_hoh.id)
+    patient = create(:patient, creator: user)
+
+    sign_in user
+
+    post :move_to_household, params: {
+      id: patient.id,
+      new_hoh_id: desired_hoh.id
+    }
+
+    assert_response(406)
+    assert_equal('Move to household action failed: Selected Head of Household is not valid as they are a dependent in an existing household.',
+                 JSON.parse(response.body)['error'])
+    assert_not patient.reload.head_of_household
+    assert_not desired_hoh.reload.head_of_household
+    assert actual_hoh.reload.head_of_household
+    assert_equal(patient.id, patient.responder_id)
+    assert_equal(actual_hoh.id, desired_hoh.responder_id)
+    assert_equal(actual_hoh.id, actual_hoh.responder_id)
+
+    sign_out user
+  end
+
+  test 'move_to_household sends error message when record is already a HoH and is trying to assign a HoH' do
+    user = create(:public_health_enroller_user)
+    desired_hoh = create(:patient, creator: user)
+    patient = create(:patient, creator: user)
+    dependent = create(:patient, creator: user, responder_id: patient.id)
+
+    sign_in user
+
+    post :move_to_household, params: {
+      id: patient.id,
+      new_hoh_id: desired_hoh.id
+    }
+
+    assert_response(406)
+    assert_equal(
+      'Move to household action failed: Monitoree is a head of household and therefore cannot be moved to a household through the Move to Household action.',
+      JSON.parse(response.body)['error']
+    )
+    assert patient.reload.head_of_household
+    assert_not dependent.reload.head_of_household
+    assert_not desired_hoh.reload.head_of_household
+    assert_equal(patient.id, dependent.responder_id)
+    assert_equal(patient.id, patient.responder_id)
+
+    sign_out user
+  end
+
+  test 'remove_from_household successfully removes record from a household' do
     user = create(:public_health_enroller_user)
     hoh = create(:patient, creator: user)
     dependent = create(:patient, creator: user, responder_id: hoh.id)
 
     sign_in user
 
-    post :update_hoh, params: {
+    post :remove_from_household, params: {
       id: dependent.id,
-      new_hoh_id: dependent.id
     }
+
     assert_response :success
     assert_not hoh.reload.head_of_household
     assert_not dependent.reload.head_of_household
     assert_equal(dependent.id, dependent.responder_id)
 
+    # Verify history item was created for old HoH
+    comment = "User removed dependent monitoree with ID #{dependent.id} from the household. #{hoh.first_name} #{hoh.last_name}"\
+              ' will no longer be responsible for handling their reporting.'
+    assert_equal(1, hoh.histories.count)
+    assert_equal(comment, hoh.histories.last.comment)
+
+    # Verify history item was created on current patient
+    comment = "User removed monitoree from a household. Monitoree with ID #{hoh.id} will no longer be responsible for handling their reporting."
+    assert_equal(1, dependent.histories.count)
+    assert_equal(comment, dependent.histories.last.comment)
+
     sign_out user
+  end
+
+  test 'remove_from_household sends error message when user does not have access to current record' do
+    public_health_enroller_user = create(:public_health_enroller_user)
+    enroller_user = create(:enroller_user)
+
+    # Patient is not viewable by enroller user
+    patient = create(:patient, creator: public_health_enroller_user)
+
+    sign_in enroller_user
+
+    post :remove_from_household, params: {
+      id: patient.id,
+    }
+
+    assert_response(:forbidden)
+    assert_equal('Remove from household action failed: User does not have permissions to update current monitoree.',
+                 JSON.parse(response.body)['error'])
+    assert_not patient.reload.head_of_household
+    assert_equal(patient.id, patient.responder_id)
+
+    sign_out enroller_user
+  end
+
+  test 'update_hoh sends error message when new HoH does not exist' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+
+    sign_in user
+
+    post :update_hoh, params: {
+      id: patient.id,
+      new_hoh_id: -9999,
+      household_ids: []
+    }
+
+    assert_response(:forbidden)
+    assert_equal('Change head of household action failed: Selected Head of Household with ID -9999 does not exist.',
+                 JSON.parse(response.body)['error'])
+    assert_not patient.reload.head_of_household
+    assert_equal(patient.id, patient.responder_id)
+
+    sign_out user
+  end
+
+  test 'update_hoh sends error message when user does not have access to current record' do
+    public_health_enroller_user = create(:public_health_enroller_user)
+    enroller_user = create(:enroller_user)
+
+    # Patient is not viewable by enroller user
+    hoh = create(:patient, creator: public_health_enroller_user)
+    dependent_1 = create(:patient, creator: enroller_user, responder_id: hoh.id)
+    dependent_2 = create(:patient, creator: enroller_user, responder_id: hoh.id)
+
+    sign_in enroller_user
+
+    post :update_hoh, params: {
+      id: hoh.id,
+      new_hoh_id: dependent_2.id,
+      household_ids: [dependent_1.id, dependent_2.id]
+    }
+
+    assert_response(:forbidden)
+    assert_equal('Change head of household action failed: User does not have permissions to update current monitoree or one or more of their dependents.',
+                 JSON.parse(response.body)['error'])
+    assert_not dependent_1.reload.head_of_household
+    assert_not dependent_2.reload.head_of_household
+    assert_equal(hoh.id, hoh.responder_id)
+
+    sign_out enroller_user
+  end
+
+  test 'update_hoh sends error message when user does not have access to dependent record' do
+    public_health_enroller_user = create(:public_health_enroller_user)
+    enroller_user = create(:enroller_user)
+
+    # Patient is not viewable by enroller user
+    hoh = create(:patient, creator: enroller_user)
+    dependent_1 = create(:patient, creator: enroller_user, responder_id: hoh.id)
+    dependent_2 = create(:patient, creator: public_health_enroller_user, responder_id: hoh.id)
+
+    sign_in enroller_user
+
+    post :update_hoh, params: {
+      id: hoh.id,
+      new_hoh_id: dependent_2.id,
+      household_ids: [dependent_1.id, dependent_2.id]
+    }
+
+    assert_response(:forbidden)
+    assert_equal('Change head of household action failed: User does not have permissions to update current monitoree or one or more of their dependents.',
+                 JSON.parse(response.body)['error'])
+    assert_not dependent_1.reload.head_of_household
+    assert_not dependent_2.reload.head_of_household
+    assert_equal(hoh.id, hoh.responder_id)
+
+    sign_out enroller_user
   end
 
   test 'update_hoh successfully changes head of household with single dependent' do
@@ -128,6 +385,17 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal(dependent.id, dependent.responder_id)
     assert_equal(dependent.id, hoh.responder_id)
 
+    history_comment = "User changed head of household from monitoree with ID #{hoh.id} to monitoree with ID #{dependent.id}."\
+                      " Monitoree with ID #{dependent.id} will now be responsible for handling the reporting for the household."
+
+    # Verify history item was created for old HoH
+    assert_equal(1, hoh.histories.count)
+    assert_equal(history_comment, hoh.histories.last.comment)
+
+    # Verify history item was created on new HoH
+    assert_equal(1, dependent.histories.count)
+    assert_equal(history_comment, dependent.histories.last.comment)
+
     sign_out user
   end
 
@@ -144,6 +412,7 @@ class PatientsControllerTest < ActionController::TestCase
       new_hoh_id: dependent_2.id,
       household_ids: [dependent_1.id, dependent_2.id]
     }
+
     assert_response :success
     assert_not hoh.reload.head_of_household
     assert_not dependent_1.reload.head_of_household
@@ -153,98 +422,24 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal(dependent_2.id, hoh.responder_id)
     assert_equal(dependent_2.id, dependent_2.responder_id)
 
-    sign_out user
-  end
+    history_comment = "User changed head of household from monitoree with ID #{hoh.id} to monitoree with ID #{dependent_2.id}."\
+                      " Monitoree with ID #{dependent_2.id} will now be responsible for handling the reporting for the household."
 
-  test 'update_hoh successfully moves to household' do
-    user = create(:public_health_enroller_user)
-    desired_hoh = create(:patient, creator: user)
-    dependent = create(:patient, creator: user)
+    # Verify history item was created for old HoH
+    assert_equal(1, hoh.histories.count)
+    assert_equal(history_comment, hoh.histories.last.comment)
 
-    sign_in user
+    # Verify history item was created on new HoH
+    assert_equal(1, dependent_2.histories.count)
+    assert_equal(history_comment, dependent_2.histories.last.comment)
 
-    post :update_hoh, params: {
-      id: dependent.id,
-      new_hoh_id: desired_hoh.id
-    }
-    assert_response :success
-    assert desired_hoh.reload.head_of_household
-    assert_not dependent.reload.head_of_household
-    assert_equal(desired_hoh.id, desired_hoh.responder_id)
-    assert_equal(desired_hoh.id, dependent.responder_id)
+    # Verify no history items for other dependents
+    assert_equal(0, dependent_1.histories.count)
 
     sign_out user
   end
 
-  test 'update_hoh redirects when there is no change' do
-    user = create(:public_health_enroller_user)
-    patient = create(:patient, creator: user)
-    sign_in user
-
-    post :update_hoh, params: {
-      id: patient.id,
-      new_hoh_id: patient.id
-    }
-
-    assert_redirected_to(@controller.root_url)
-    assert_not patient.reload.head_of_household
-    assert_equal(patient.id, patient.responder_id)
-    sign_out user
-  end
-
-  test 'update_hoh sends error message when new head of household is a dependent' do
-    user = create(:public_health_enroller_user)
-    desired_hoh = create(:patient, creator: user)
-    actual_hoh = create(:patient, creator: user)
-    dependent = create(:patient, creator: user)
-
-    # Make desired Head of Household actually be a dependent
-    desired_hoh.update!(responder_id: actual_hoh.id)
-
-    sign_in user
-
-    post :update_hoh, params: {
-      id: dependent.id,
-      new_hoh_id: desired_hoh.id
-    }
-
-    assert_response(406)
-    assert_equal('Move to household action failed: Selected Head of Household is no longer valid as they are a dependent in an existing household.',
-                 JSON.parse(response.body)['error'])
-    assert_not dependent.reload.head_of_household
-    assert_not desired_hoh.reload.head_of_household
-    assert actual_hoh.reload.head_of_household
-    assert_equal(dependent.id, dependent.responder_id)
-
-    sign_out user
-  end
-
-  test 'update_hoh sends error message when record is already a HoH and is trying to assign a HoH' do
-    user = create(:public_health_enroller_user)
-    desired_hoh = create(:patient, creator: user)
-    patient = create(:patient, creator: user)
-    dependent = create(:patient, creator: user, responder_id: patient.id)
-
-    sign_in user
-
-    post :update_hoh, params: {
-      id: patient.id,
-      new_hoh_id: desired_hoh.id
-    }
-
-    assert_response(406)
-    assert_equal(
-      'Move to household action failed: Monitoree is a head of household and therefore cannot be moved to a household through the Move to Household action.',
-      JSON.parse(response.body)['error']
-    )
-    assert patient.reload.head_of_household
-    assert_not dependent.reload.head_of_household
-    assert_not desired_hoh.reload.head_of_household
-    assert_equal(dependent.responder_id, patient.id)
-    assert_equal(patient.id, patient.responder_id)
-
-    sign_out user
-  end
+  # ------- End Household Updates -----
 
   test 'bulk update status' do
     %i[admin_user analyst_user].each do |role|

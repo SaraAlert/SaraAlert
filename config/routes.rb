@@ -93,6 +93,8 @@ Rails.application.routes.draw do
   post '/patients/:id/status/clear', to: 'patients#clear_assessments'
   post '/patients/:id/status/clear/:assessment_id', to: 'patients#clear_assessment'
   post '/patients/:id/update_hoh', to: 'patients#update_hoh'
+  post '/patients/:id/move_to_household', to: 'patients#move_to_household'
+  post '/patients/:id/remove_from_household', to: 'patients#remove_from_household'
   post '/patients/current_case_status', to: 'patients#current_case_status'
 
   resources :patients, param: :submission_token do
