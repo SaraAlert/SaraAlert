@@ -2333,7 +2333,7 @@ class PatientTest < ActiveSupport::TestCase
     patient = create(:patient, case_status: 'Unknown', public_health_action: 'None', isolation: false)
     history_data = {
       patient_before: { case_status: 'Confirmed', isolation: true, public_health_action: 'Recommended laboratory testing' },
-      updates: { case_status: 'Unknown', isolation: false },
+      updates: { isolation: false, case_status: 'Unknown' },
       patient: patient
     }
     patient.monitoring_history_edit(history_data, nil)
