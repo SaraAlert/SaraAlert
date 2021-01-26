@@ -3,10 +3,12 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment-timezone';
+import { toast } from 'react-toastify';
 import _ from 'lodash';
 
 import BadgeHOH from '../util/BadgeHOH';
 import CustomTable from '../layout/CustomTable';
+import reportError from '../util/ReportError';
 
 class MoveToHousehold extends React.Component {
   constructor(props) {
@@ -100,33 +102,45 @@ class MoveToHousehold extends React.Component {
    */
   toggleModal = () => {
     let current = this.state.showModal;
-    this.setState(
-      {
-        showModal: !current,
-        isLoading: !current,
-      },
-      () => {
-        if (this.state.showModal) {
+
+    // If toggling off
+    if (current) {
+      // Reset modal when modal is hidden
+      this.resetState();
+    } else {
+      this.setState(
+        {
+          showModal: true,
+          isLoading: true,
+        },
+        () => {
           // Make initial call for table data when modal is shown.
           this.updateTable(this.state.query);
-        } else {
-          // Reset modal when modal is hidden
-          const resetQuery = {
-            ...this.state.query,
-            page: 0,
-            search: '',
-            entries: 5,
-          };
-
-          const resetTable = {
-            ...this.state.table,
-            rowData: [],
-            totalRows: 0,
-          };
-          this.setState({ query: resetQuery, table: resetTable });
         }
-      }
-    );
+      );
+    }
+  };
+
+  resetState = () => {
+    const resetQuery = {
+      ...this.state.query,
+      page: 0,
+      search: '',
+      entries: 5,
+    };
+
+    const resetTable = {
+      ...this.state.table,
+      rowData: [],
+      totalRows: 0,
+    };
+
+    this.setState({
+      showModal: false,
+      isLoading: false,
+      query: resetQuery,
+      table: resetTable,
+    });
   };
 
   /**
@@ -243,10 +257,12 @@ class MoveToHousehold extends React.Component {
         })
         .then(() => {
           // Reload the page to see updated HoH
-          location.reload(true);
+          location.reload();
+          toast.success('Head of Household successfully updated.');
         })
-        .catch(error => {
-          console.error(error);
+        .catch(err => {
+          location.reload();
+          reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
   };
