@@ -1012,7 +1012,10 @@ class Patient < ApplicationRecord
   # These side effects are handled in the handle_update function
   def monitoring_history_edit(history_data, diff_state)
     patient_before = history_data[:patient_before]
-    history_data[:updates]&.keys&.each do |attribute|
+    # NOTE: Attributes are sorted so that case_status always comes before isolation, since a case_status change may trigger
+    # an isolation change from the front end, and the case_status message should come first
+    attribute_order = %i[case_status isolation]
+    history_data[:updates].keys.sort_by { |key| attribute_order.index(key) || Float::INFINITY }&.each do |attribute|
       updated_value = self[attribute]
       next if patient_before[attribute] == updated_value
 
@@ -1044,6 +1047,8 @@ class Patient < ApplicationRecord
         History.extended_isolation(history_data)
       when :continuous_exposure
         History.continuous_exposure(history_data)
+      when :isolation
+        update_patient_history_for_isolation(patient_before, updated_value)
       when :symptom_onset
         History.symptom_onset(history_data)
       when :case_status
@@ -1061,12 +1066,6 @@ class Patient < ApplicationRecord
         History.jurisdiction(history_data)
       end
     end
-
-    # NOTE: Changes in case_status may trigger changes in isolation, so add isolation history messages
-    # at the end, so that they will come after any case_status history messages
-    return unless !history_data[:updates][:isolation].nil? && self[:isolation] != patient_before[:isolation]
-
-    update_patient_history_for_isolation(patient_before, self[:isolation])
   end
 
   def update_patient_history_for_isolation(patient_before, new_isolation_value)
