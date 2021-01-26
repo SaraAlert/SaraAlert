@@ -104,8 +104,8 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     fill_in 'jurisdiction_id', with: 'USA, State 1, County 1'
     fill_in 'assigned_user', with: '-8.5'
     assert_not_equal('-8.5', page.find_field('assigned_user').value)
-    fill_in 'assigned_user', with: '10000'
-    assert_not_equal('10000', page.find_field('assigned_user').value)
+    fill_in 'assigned_user', with: '1000000'
+    assert_not_equal('1000000', page.find_field('assigned_user').value)
     fill_in 'assigned_user', with: 'asdf'
     assert_not_equal('asdf', page.find_field('assigned_user').value)
     fill_in 'assigned_user', with: 'W(#*&R#(W&'
