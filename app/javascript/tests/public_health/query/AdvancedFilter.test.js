@@ -48,7 +48,7 @@ afterEach(() => {
 });
 
 describe('AdvancedFilter', () => {
-  it('Properly renders all Advanced Filter dropdown and button without saved filters', () => {
+  it('Properly renders all Advanced Filter dropdown and button without any saved filters', () => {
     const wrapper = getWrapper();
     expect(wrapper.find(OverlayTrigger).exists()).toBeTruthy();
     expect(wrapper.find(Button).exists()).toBeTruthy();
@@ -64,7 +64,7 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(Modal).exists()).toBeFalsy();
   });
 
-  it('Properly renders all Advanced Filter dropdown and button without saved filters', () => {
+  it('Properly renders all Advanced Filter dropdown and button with saved filters', () => {
     const wrapper = getWrapper();
     wrapper.setState({ activeFilter: mockFilter1, activeFilterOptions: mockFilter1.contents, savedFilters: mockSavedFilters });
     expect(wrapper.find(OverlayTrigger).exists()).toBeTruthy();
