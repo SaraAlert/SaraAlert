@@ -83,10 +83,15 @@ class Exposure extends React.Component {
       }
       this.updateLDEandCEValidations({ ...current.patient, [event.target.id]: value });
     }
-    this.setState({
-      current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
-      modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
-    });
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
   }
 
   handleDateChange(field, date) {
@@ -237,7 +242,6 @@ class Exposure extends React.Component {
 
             if (await confirmDialog(message, options)) {
               self.setState({ selected_jurisdiction: self.state.current.patient.jurisdiction_id });
-              self.props.setEnrollmentState({ ...self.state.modified });
               callback();
             }
           } else {
