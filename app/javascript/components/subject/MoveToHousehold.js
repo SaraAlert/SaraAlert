@@ -252,7 +252,7 @@ class MoveToHousehold extends React.Component {
     this.setState({ isLoading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/update_hoh', {
+        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/move_to_household', {
           new_hoh_id: new_hoh_id,
         })
         .then(() => {

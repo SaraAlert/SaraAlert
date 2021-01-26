@@ -242,73 +242,157 @@ class PatientsController < ApplicationController
     render json: patient
   end
 
+  # Moves a record into a household
+  def move_to_household
+    new_hoh_id = params.permit(:new_hoh_id)[:new_hoh_id]&.to_i
+    current_patient_id = params.permit(:id)[:id]&.to_i
+
+    current_patient = current_user.get_patient(current_patient_id)
+    new_hoh = current_user.get_patient(new_hoh_id)
+    current_user_patients = current_user.patients
+
+    # ----- Error Checking -----
+
+    # Check to make sure selected HoH record exists.
+    unless Patient.where(purged: false).exists?(new_hoh_id)
+      error_message = "Move to household action failed: Selected Head of Household with ID #{new_hoh_id} does not exist."
+      render(json: { error: error_message }, status: :forbidden) && return
+    end
+
+    # Check to make sure user has access to update this record.
+    unless current_user_patients.exists?(current_patient_id)
+      error_message = 'Move to household action failed: User does not have permissions to update current monitoree.'
+      render(json: { error: error_message }, status: :forbidden) && return
+    end
+
+    # Do not do anything if there hasn't been a change to the responder at all.
+    redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
+
+    # Do not allow the user to set this record as a new HoH if they are a dependent already.
+    if new_hoh.responder_id != new_hoh_id
+      error_message = 'Move to household action failed: Selected Head of Household is not valid as they are a dependent in an existing household.'
+      render(json: { error: error_message }, status: 406) && return
+    end
+
+    # Don't allow a HoH to be moved to a household.
+    if current_patient.head_of_household
+      error_message = 'Move to household action failed: Monitoree is a head of household and therefore cannot be moved to a household '\
+                      'through the Move to Household action.'
+      render(json: { error: error_message }, status: 406) && return
+    end
+
+    # ----- Record Updates -----
+
+    # Update the record
+    updated = current_patient.update(responder_id: new_hoh_id)
+
+    if !updated
+      error_message = 'Move to household action failed: Monitoree was unable to be be updated.'
+      render(json: { error: error_message, status: 403 }) && return
+    else
+      # Create history item for new HoH
+      comment = "User added monitoree with ID #{current_patient.id} to a household. #{new_hoh.first_name} #{new_hoh.last_name}"\
+                ' will now be responsible for handling the reporting on their behalf.'
+      History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
+
+      # Create history item for current patient being moved to a household
+      comment = "User added monitoree to a household. Monitoree with ID #{new_hoh_id} will now be responsible"\
+                ' for handling the reporting on their behalf.'
+      History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
+    end
+  end
+
+  # Removes a record from a household
+  def remove_from_household
+    current_patient_id = params.permit(:id)[:id]&.to_i
+
+    current_patient = current_user.get_patient(current_patient_id)
+    current_user_patients = current_user.patients
+
+    # ----- Error Checking -----
+
+    # Check to make sure user has access to update this record.
+    unless current_user_patients.exists?(current_patient_id)
+      error_message = 'Remove from household action failed: User does not have permissions to update current monitoree.'
+      render(json: { error: error_message }, status: :forbidden) && return
+    end
+
+    # ----- Record Updates -----
+    old_hoh = current_user.get_patient(current_patient.responder_id)
+
+    # Update the record
+    updated = current_patient.update(responder_id: current_patient.id)
+
+    if !updated
+      error_message = 'Remove from household action failed: Monitoree was unable to be be updated.'
+      render(json: { error: error_message, status: 403 }) && return
+    else
+      # Create history item for old HoH
+      comment = "User removed dependent monitoree with ID #{current_patient.id} from the household. #{old_hoh.first_name} #{old_hoh.last_name}"\
+                ' will no longer be responsible for handling their reporting.'
+      History.monitoring_change(patient: old_hoh, created_by: current_user.email, comment: comment)
+
+      # Create history item on current patient
+      comment = "User removed monitoree from a household. Monitoree with ID #{old_hoh.id} will"\
+                ' no longer be responsible for handling their reporting.'
+      History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
+    end
+  end
+
+  # Changes the HoH of a household
   def update_hoh
     new_hoh_id = params.permit(:new_hoh_id)[:new_hoh_id]&.to_i
     current_patient_id = params.permit(:id)[:id]
     household_ids = params[:household_ids] || []
+
     current_patient = current_user.get_patient(current_patient_id)
-    old_hoh = current_user.get_patient(current_patient.responder_id)
     new_hoh = current_user.get_patient(new_hoh_id)
-
-    # Don't do anything if there hasn't been a change to the responder at all
-    redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
-
-    # Don't allow the user to set this record as a new HoH if they are a dependent already
-    # NOTE: Must check this the new hoh is not the patient themselves, in which case this is a remove from household operation
-    # and should be allowed. Must also check this isn't a Change HoH operation.
-    if new_hoh_id != current_patient.id && new_hoh.responder_id != new_hoh_id && new_hoh.responder_id != current_patient.id
-      render(json: {
-               error: 'Move to household action failed: Selected Head of Household is no longer valid as they are a dependent in an existing household.'
-             },
-             status: 406) && return
-    end
-
-    # Don't allow a HoH to be given a HoH unless their dependent IDs have been provided for updating.
-    # NOTE: current_patient.id != new_hoh_id is checked because if these are equal we should allow the record to be removed from the household.
-    if current_patient.head_of_household && household_ids.empty? && current_patient.id != new_hoh_id
-      render(json: {
-               error: 'Move to household action failed: Monitoree is a head of household and therefore cannot be moved to a household '\
-                      'through the Move to Household action.'
-             },
-             status: 406) && return
-    end
-
-    if new_hoh_id == current_patient.id
-      comment = "User removed #{current_patient.first_name} #{current_patient.last_name} from the household. #{old_hoh.first_name} #{old_hoh.last_name}"\
-                ' will no longer be responsible for handling their reporting.'
-      History.monitoring_change(patient: old_hoh, created_by: current_user.email, comment: comment)
-      comment = "User removed monitoree from a household. #{old_hoh.first_name} #{old_hoh.last_name} will"\
-                ' no longer be responsible for handling their reporting.'
-    elsif household_ids != []
-      comment = "User changed head of household from #{old_hoh.first_name} #{old_hoh.last_name} to #{new_hoh.first_name}"\
-                " #{new_hoh.last_name}. #{new_hoh.first_name} #{new_hoh.last_name} will now be responsible for handling the reporting for the household."
-      History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
-    else
-      comment = "User added #{current_patient.first_name} #{current_patient.last_name} to the household. #{new_hoh.first_name} #{new_hoh.last_name}"\
-                ' will now be responsible for handling the reporting on their behalf.'
-      History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
-      comment = "User added monitoree to a household. #{new_hoh.first_name} #{new_hoh.last_name} will now be responsible"\
-                ' for handling the reporting on their behalf.'
-    end
-    History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
-
     current_user_patients = current_user.patients
 
-    # update_all below does not invoke ActiveRecord callbacks and will not automatically check if this incoming
-    # id exists. Patient.exists?(nil) => false
-    redirect_to(root_url) && return unless Patient.where(purged: false).exists?(new_hoh_id.to_i)
+    # NOTE: This includes the new HoH
+    patient_ids_to_update = household_ids + [current_patient_id]
 
-    patients_to_update = household_ids + [current_patient_id]
+    # ----- Error Checking -----
 
-    # Make sure all household ids are within jurisdiction
-    redirect_to(root_url) && return if patients_to_update.any? do |patient_id|
-      !current_user_patients.exists?(patient_id)
+    # Check to make sure selected HoH record exists.
+    unless Patient.where(purged: false).exists?(new_hoh_id)
+      error_message = "Change head of household action failed: Selected Head of Household with ID #{new_hoh_id} does not exist."
+      render(json: { error: error_message }, status: 403) && return
     end
 
-    # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
-    current_user_patients.where(id: patients_to_update).each do |patient|
-      patient.update!(responder_id: new_hoh_id)
+    # Check to make sure user has access to update all of these records.
+    unless current_user_patients.where(id: patient_ids_to_update).count == patient_ids_to_update.length
+      error_message = 'Change head of household action failed: User does not have permissions to update current monitoree or one or more of their dependents.'
+      render(json: { error: error_message }, status: 403) && return
     end
+
+    # Do not do anything if there hasn't been a change to the responder at all.
+    redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
+
+    # ----- Record Updates -----
+    old_hoh = current_user.get_patient(current_patient.responder_id)
+
+    begin
+      Patient.transaction do
+        # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
+        current_user_patients.where(id: patient_ids_to_update).each do |patient|
+          patient.update(responder_id: new_hoh_id)
+        end
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      error_message = 'Change head of household action failed: Monitoree(s) were unable to be be updated.'
+      Rails.logger.info("#{error_message} Error: #{e}")
+      render(json: { error: error_message, status: :bad_request }) && return
+    end
+
+    comment = "User changed head of household from monitoree with ID #{old_hoh.id} to monitoree with ID #{new_hoh_id}."\
+              " Monitoree with ID #{new_hoh_id} will now be responsible for handling the reporting for the household."
+
+    # Create history item for old HoH
+    History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
+
+    # Create history item for new HoH
+    History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
   end
 
   def bulk_update
