@@ -84,10 +84,15 @@ class Enrollment extends React.Component {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
 
+    // this.state.enrollmentState.patient.jurisdiction_id is a string while this.props.patient.jurisdiction_id is a number so it was always triggering
+    this.props.patient.jurisdiction_id = this.props.patient.jurisdiction_id.toString();
+
     // If enrolling, include ALL fields in diff keys. If editing, only include the ones that have changed
     let diffKeys = this.props.editMode
       ? Object.keys(this.state.enrollmentState.patient).filter(k => _.get(this.state.enrollmentState.patient, k) !== _.get(this.props.patient, k) || k === 'id')
       : Object.keys(this.state.enrollmentState.patient);
+
+    console.log(diffKeys);
 
     let data = new Object({
       patient: this.props.parent_id ? this.state.enrollmentState.patient : _.pick(this.state.enrollmentState.patient, diffKeys),
