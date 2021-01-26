@@ -64,7 +64,16 @@ class CloseContact extends React.Component {
   handleDateChange = event => this.setState({ last_date_of_exposure: event });
 
   handleChange = event => {
-    this.setState({ [event.target.id]: event.target.id === 'primary_telephone' ? event.target.value.replace(/-/g, '') : event.target.value });
+    let value;
+    if (event?.target?.id && event.target.id === 'assigned_user') {
+      if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
+      value = event.target.value.trim() === '' ? null : parseInt(event.target.value);
+    } else if (event?.target?.id && event.target.id === 'primary_telephone') {
+      value = event.target.value.replace(/-/g, '');
+    } else {
+      value = event.target.value;
+    }
+    this.setState({ [event.target.id]: value });
   };
 
   contactAttempt = async () => {
