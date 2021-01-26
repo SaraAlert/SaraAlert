@@ -422,13 +422,21 @@ class Identification extends React.Component {
               <Form.Row className="pt-1">
                 <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
-                  <Form.Check type="checkbox" id="white" label="WHITE" checked={!!this.state.current.patient.white} onChange={this.handleRaceChange} />
+                  <Form.Check
+                    type="checkbox"
+                    id="white"
+                    label="WHITE"
+                    checked={!!this.state.current.patient.white}
+                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
+                    onChange={this.handleRaceChange}
+                  />
                   <Form.Check
                     className="pt-2"
                     type="checkbox"
                     id="black_or_african_american"
                     label="BLACK OR AFRICAN AMERICAN"
                     checked={!!this.state.current.patient.black_or_african_american}
+                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
@@ -437,6 +445,7 @@ class Identification extends React.Component {
                     id="american_indian_or_alaska_native"
                     label="AMERICAN INDIAN OR ALASKA NATIVE"
                     checked={!!this.state.current.patient.american_indian_or_alaska_native}
+                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
@@ -445,6 +454,7 @@ class Identification extends React.Component {
                     id="asian"
                     label="ASIAN"
                     checked={!!this.state.current.patient.asian}
+                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
@@ -453,6 +463,7 @@ class Identification extends React.Component {
                     id="native_hawaiian_or_other_pacific_islander"
                     label="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER"
                     checked={!!this.state.current.patient.native_hawaiian_or_other_pacific_islander}
+                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
@@ -461,6 +472,7 @@ class Identification extends React.Component {
                     id="race_other"
                     label="OTHER"
                     checked={!!this.state.current.patient.race_other}
+                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
