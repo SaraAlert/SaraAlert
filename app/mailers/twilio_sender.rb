@@ -95,20 +95,26 @@ class TwilioSender
       execution = @client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions(execution_id).execution_context.fetch
     rescue Twilio::REST::RestError => e
       Rails.logger.warn e.error_message
-      # The error codes will be caught here in cases where a messaging service is not used
-      error_code = e&.code&.to_s
-      handle_twilio_error_codes(patient, error_code)
       return
     end
-
     # Get a message out of the studio execution which we can get the To/From numbers out of
     # The opt-in/out could come from an incoming message trigger OR an existing execution
     # The message pulled from an existing execution will be the first inbound message found within the execution
     message = execution&.context&.[]('trigger')&.[]('message') || execution&.context&.[]('widgets')&.values&.select do |x|
                                                                     x&.[]('inbound')
                                                                   end&.[](0)&.[]('inbound')
-    phone_number_from = message&.[]('From')
-    phone_number_to = message&.[]('To')
+    # Alternatively, the execution could be of type SINGLE_SMS where we sent a single outbound message
+    message = execution&.context&.[]('widgets')&.values&.select { |x| x&.[]('To') }&.[](0) if message.nil?
+
+    return nil if message.nil?
+
+    if !message&.[]('outbound').nil? || (message&.[]('Direction')&.include? 'outbound')
+      phone_number_from = message&.[]('To')
+      phone_number_to = message&.[]('From')
+    else
+      phone_number_from = message&.[]('From')
+      phone_number_to = message&.[]('To')
+    end
 
     return { monitoree_number: phone_number_from, sara_number: phone_number_to } if !phone_number_from.nil? && !phone_number_to.nil?
 
