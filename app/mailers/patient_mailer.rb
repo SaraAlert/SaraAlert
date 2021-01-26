@@ -35,8 +35,10 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
-
-    success = TwilioSender.send_sms(patient, contents)
+    threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
+    params = { prompt: contents, patient_submission_token: patient.submission_token,
+               threshold_hash: threshold_hash, medium: 'SINGLE_SMS' }
+    success = TwilioSender.send_sms(patient, params)
     add_success_history(patient, patient) if success
     add_fail_history_sms(patient) unless success
 
@@ -61,14 +63,14 @@ class PatientMailer < ApplicationMailer
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |dependent|
       lang = dependent.select_language
-      url = new_patient_assessment_jurisdiction_lang_initials_url(dependent.submission_token,
-                                                                  dependent.jurisdiction.unique_identifier,
-                                                                  lang&.to_s || 'en',
+      url = new_patient_assessment_jurisdiction_lang_initials_url(dependent.submission_token, dependent.jurisdiction.unique_identifier, lang&.to_s || 'en',
                                                                   dependent&.initials_age)
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
-
+      threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
+      params = { prompt: contents, patient_submission_token: patient.submission_token,
+                 threshold_hash: threshold_hash, medium: 'SINGLE_SMS' }
       patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
-      if TwilioSender.send_sms(patient, contents)
+      if TwilioSender.send_sms(patient, params)
         add_success_history(dependent, patient)
       else
         add_fail_history_sms(dependent)
@@ -107,7 +109,7 @@ class PatientMailer < ApplicationMailer
     contents += I18n.t('assessments.sms.prompt.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '.'
     contents += I18n.t('assessments.sms.prompt.daily4', locale: lang)
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
-    # The medium parameter will either be SMS or VOICE
+    # The medium parameter will either be SMS, VOICE or SINGLE_SMS
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.split('-').first.upcase,
                try_again: I18n.t('assessments.sms.prompt.try-again', locale: lang),
@@ -115,7 +117,7 @@ class PatientMailer < ApplicationMailer
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
-    if TwilioSender.start_studio_flow(patient, params)
+    if TwilioSender.start_studio_flow_assessment(patient, params)
       add_success_history(patient, patient)
     else
       add_fail_history_sms(patient)
@@ -154,7 +156,7 @@ class PatientMailer < ApplicationMailer
     contents += I18n.t('assessments.phone.daily4', locale: lang)
 
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
-    # The medium parameter will either be SMS or VOICE
+    # The medium parameter will either be SMS, VOICE or SINGLE_SMS
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'VOICE', language: lang.to_s.split('-').first.upcase,
                intro: I18n.t('assessments.phone.intro', locale: lang),
@@ -163,7 +165,7 @@ class PatientMailer < ApplicationMailer
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
-    if TwilioSender.start_studio_flow(patient, params)
+    if TwilioSender.start_studio_flow_assessment(patient, params)
       add_success_history(patient, patient)
     else
       add_fail_history_voice(patient)

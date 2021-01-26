@@ -3,9 +3,13 @@
 # TwilioSender: Methods to interact with Twilio REST API
 class TwilioSender
   @client = Twilio::REST::Client.new(ENV['TWILLIO_API_ACCOUNT'], ENV['TWILLIO_API_KEY'])
-  def self.handle_twilio_error_codes(patient, _error_code)
+  def self.handle_twilio_error_codes(patient, error_code)
+    case error_code
+    # SaraAlert code for unsupported voice language
+    when 'SA1'
+      History.errored_contact_attempt_hoh_and_dependents(patient,
+                                                         error_message: 'Sara Alert does not support voice assessments in the monitorees primary language.')
     # Invalid To Number https://www.twilio.com/docs/api/errors/21211
-    case message['error_code']
     when '21211'
       History.errored_contact_attempt_hoh_and_dependents(patient, error_message: 'Invalid recipient phone number.')
     # Blocked Number Error https://www.twilio.com/docs/api/errors/21610
@@ -43,10 +47,15 @@ class TwilioSender
     end
   end
 
-  def self.send_sms(patient, contents)
+  def self.send_sms(patient, params)
     from = ENV['TWILLIO_MESSAGING_SERVICE_SID'] || ENV['TWILLIO_SENDING_NUMBER']
+
     begin
-      @client.messages.create(to: Phonelib.parse(patient.primary_telephone, 'US').full_e164, body: contents, from: from)
+      @client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
+        to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
+        parameters: params,
+        from: from
+      )
     rescue Twilio::REST::RestError => e
       Rails.logger.warn e.error_message
       # The error codes will be caught here in cases where a messaging service is not used
@@ -57,7 +66,7 @@ class TwilioSender
     true
   end
 
-  def self.start_studio_flow(patient, params)
+  def self.start_studio_flow_assessment(patient, params)
     # Studio API trigger does not support use of messaging service SID for calls
     from = if params[:medium] == 'VOICE'
              ENV['TWILLIO_SENDING_NUMBER']

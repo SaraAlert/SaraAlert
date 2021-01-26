@@ -13,7 +13,8 @@ class ConsumeAssessmentsJob < ApplicationJob
     while (msg = queue.pop)
       begin
         message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array',
-                                         'patient_submission_token', 'experiencing_symptoms', 'response_status')
+                                         'patient_submission_token', 'experiencing_symptoms',
+                                         'response_status', 'error_code')
         # Invalid message
         if message.nil?
           Rails.logger.info 'ConsumeAssessmentsJob: skipping nil message...'
@@ -42,7 +43,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         end
 
         # Error occured in twilio studio flow
-        if message['error_code'].blank?
+        unless message['error_code'].blank?
           handle_twilio_error_codes(patient, message['error_code'])
           queue.commit
           next
