@@ -13,7 +13,7 @@ class AssignedUserFilter extends React.Component {
   }
 
   handleAssignedUserChange = assigned_user => {
-    if (!isNaN(assigned_user) && parseInt(assigned_user) > 0 && parseInt(assigned_user) <= 9999) {
+    if (!isNaN(assigned_user) && parseInt(assigned_user) > 0 && parseInt(assigned_user) <= 999999) {
       this.setState({ assigned_user }, () => {
         this.props.onAssignedUserChange(assigned_user);
       });

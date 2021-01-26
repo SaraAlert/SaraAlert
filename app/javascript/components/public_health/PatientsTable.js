@@ -454,7 +454,7 @@ class PatientsTable extends React.Component {
                 <Form.Row className="align-items-center">
                   {this.state.query.tab !== 'transferred_out' && (
                     <React.Fragment>
-                      <Col lg={17} md={15} className="my-1">
+                      <Col lg={16} md={14} className="my-1">
                         <JurisdictionFilter
                           jurisdiction_paths={this.props.jurisdiction_paths}
                           jurisdiction={this.state.query.jurisdiction}
@@ -463,7 +463,7 @@ class PatientsTable extends React.Component {
                           onScopeChange={this.handleScopeChange}
                         />
                       </Col>
-                      <Col lg={7} md={9} className="my-1">
+                      <Col lg={8} md={10} className="my-1">
                         <AssignedUserFilter
                           workflow={this.props.workflow}
                           assigned_users={this.state.assigned_users}

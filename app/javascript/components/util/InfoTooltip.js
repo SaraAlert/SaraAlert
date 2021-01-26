@@ -121,7 +121,7 @@ const TOOLTIP_TEXT = {
   ),
 
   assignedUser: (
-    <div> Used to identify the user or group within a jurisdiction responsible for monitoring a monitoree (Values: 1-9999 for each jurisdiction). </div>
+    <div> Used to identify the user or group within a jurisdiction responsible for monitoring a monitoree (Values: 1-999999 for each jurisdiction). </div>
   ),
 
   assignedJurisdictionCanTransfer: (
