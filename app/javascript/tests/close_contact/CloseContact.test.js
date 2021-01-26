@@ -27,7 +27,7 @@ function getShallowWrapper(closeContact) {
                                can_enroll_patient_close_contacts={true} assigned_users={ASSIGNED_USERS}  />);
 }
 
-describe('Report', () => {
+describe('CloseContact', () => {
   it('Properly renders all main components for empty close contact', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact0);
     expect(emptyCCWrapper.find('div').at(0).text()).toContain('Add New Close Contact');
