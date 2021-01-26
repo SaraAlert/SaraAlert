@@ -927,6 +927,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Afternoon', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
     assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-date-of-exposure' }.first['valueDate']
     assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
+    assert p.user_defined_symptom_onset
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
     assert_equal 'USA, State 1, County 1',
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
