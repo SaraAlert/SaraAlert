@@ -271,9 +271,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         end
       end
     elsif field == :assigned_user
-      return unless value && !value.blank? && !value.to_i.between?(1, 9999)
+      return unless value && !value.blank? && !value.to_i.between?(1, 999_999)
 
-      msg = "'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999"
+      msg = "'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-999999"
       assert page.has_content?(msg), "Error message for #{field} missing"
     end
   end

@@ -122,7 +122,7 @@ namespace :demo do
     cache_analytics = (ENV['SKIP_ANALYTICS'] != 'true')
 
     jurisdictions = Jurisdiction.all
-    assigned_users = Hash[jurisdictions.pluck(:id).map {|id| [id, (1..9999).to_a.sample(10)]}]
+    assigned_users = Hash[jurisdictions.pluck(:id).map {|id| [id, (1..999_999).to_a.sample(10)]}]
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
 

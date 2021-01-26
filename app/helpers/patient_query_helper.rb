@@ -60,7 +60,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     # Validate assigned user
     user = query[:user]
-    raise InvalidQueryError.new(:user, user) unless user.nil? || %w[none].include?(user) || user.to_i.between?(1, 9999)
+    raise InvalidQueryError.new(:user, user) unless user.nil? || %w[none].include?(user) || user.to_i.between?(1, 999_999)
 
     # Validate advanced filter (also transform from rails params to array of hashes)
     if unsanitized_query[:filter]

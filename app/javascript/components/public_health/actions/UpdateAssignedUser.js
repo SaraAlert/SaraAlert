@@ -37,7 +37,7 @@ class UpdateAssignedUser extends React.Component {
     if (
       event.target.id === 'assigned_user_input' &&
       (event.target.value === '' ||
-        (event.target.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999))
+        (event.target.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 999999))
     ) {
       this.setState({ assigned_user: event.target.value ? parseInt(event.target.value) : '' });
     } else if (event.target.id === 'apply_to_household') {

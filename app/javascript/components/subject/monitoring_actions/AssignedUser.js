@@ -24,7 +24,7 @@ class AssignedUser extends React.Component {
   handleAssignedUserChange = event => {
     if (
       event?.target?.value === '' ||
-      (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999)
+      (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 999999)
     ) {
       this.setState({ assigned_user: event?.target?.value ? parseInt(event.target.value) : '' });
     }
