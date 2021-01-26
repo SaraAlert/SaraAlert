@@ -147,6 +147,50 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   #     verify_snapshot(snapshots, 7, 'Total', 13, 0, 0, 0)
   #   end
 
+  test 'monitoree snapshots transfer from jurisdiction to subjurisdiction' do
+    Transfer.destroy_all
+    Patient.destroy_all
+    usa_jur = Jurisdiction.first
+    state_1_jur = usa_jur.children.first
+    county_1_jur = state_1_jur.children.first
+    patient = create(:patient, jurisdiction_id: county_1_jur.id)
+    Transfer.create(who_id: 1, patient_id: patient.id, from_jurisdiction_id: state_1_jur.id, to_jurisdiction_id: county_1_jur.id)
+
+    usa_jur_snapshot = CacheAnalyticsJob.all_monitoree_snapshots(usa_jur.id, @@monitorees, usa_jur.subtree_ids).first
+    assert_equal(0, usa_jur_snapshot[:transferred_in])
+    assert_equal(0, usa_jur_snapshot[:transferred_out])
+
+    state_1_jur_snapshot = CacheAnalyticsJob.all_monitoree_snapshots(state_1_jur.id, @@monitorees, state_1_jur.subtree_ids).first
+    assert_equal(0, state_1_jur_snapshot[:transferred_in])
+    assert_equal(0, state_1_jur_snapshot[:transferred_out])
+
+    county_1_jur_snapshot = CacheAnalyticsJob.all_monitoree_snapshots(county_1_jur.id, @@monitorees, county_1_jur.subtree_ids).first
+    assert_equal(1, county_1_jur_snapshot[:transferred_in])
+    assert_equal(0, county_1_jur_snapshot[:transferred_out])
+  end
+
+  test 'monitoree snapshots transfer from jurisdiction to jurisdiction outside of hierarchy' do
+    Transfer.destroy_all
+    Patient.destroy_all
+    usa_jur = Jurisdiction.first
+    state_1_jur = usa_jur.children.first
+    state_2_jur = usa_jur.children.second
+    patient = create(:patient, jurisdiction_id: state_2_jur.id)
+    Transfer.create(who_id: 1, patient_id: patient.id, from_jurisdiction_id: state_1_jur.id, to_jurisdiction_id: state_2_jur.id)
+
+    usa_jur_snapshot = CacheAnalyticsJob.all_monitoree_snapshots(usa_jur.id, @@monitorees, usa_jur.subtree_ids).first
+    assert_equal(0, usa_jur_snapshot[:transferred_in])
+    assert_equal(0, usa_jur_snapshot[:transferred_out])
+
+    state_1_jur_snapshot = CacheAnalyticsJob.all_monitoree_snapshots(state_1_jur.id, @@monitorees, state_1_jur.subtree_ids).first
+    assert_equal(0, state_1_jur_snapshot[:transferred_in])
+    assert_equal(1, state_1_jur_snapshot[:transferred_out])
+
+    state_2_jur_snapshot = CacheAnalyticsJob.all_monitoree_snapshots(state_2_jur.id, @@monitorees, state_2_jur.subtree_ids).first
+    assert_equal(1, state_2_jur_snapshot[:transferred_in])
+    assert_equal(0, state_2_jur_snapshot[:transferred_out])
+  end
+
   test 'state level maps' do
     maps = CacheAnalyticsJob.state_level_maps(1, @@monitorees)
     verify_map(maps, 0, 'State', 'Exposure', nil, nil, 2)
