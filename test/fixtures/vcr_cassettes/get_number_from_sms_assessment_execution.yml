@@ -1,0 +1,128 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://studio.twilio.com/v1/Flows/<TWILLIO_STUDIO_FLOW>/Executions/FN304b09128a4f089b8c57a7e3f7cb2221/Context
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - twilio-ruby/5.45.1 (ruby/x86_64-darwin19 2.6.6-p146)
+      Accept-Charset:
+      - utf-8
+      Accept:
+      - application/json
+      Authorization:
+      - Basic QUM1ZGE3NDRhODdmNTM0MTgyZWNlZGJjMTljNDcyYTA2YjpmYTBmMTVlZjY1ZDA2YjliZTQzYzBkOTkyZTNkY2RkMw==
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 26 Jan 2021 22:48:11 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '5688'
+      Connection:
+      - keep-alive
+      Twilio-Concurrent-Requests:
+      - '1'
+      Twilio-Request-Id:
+      - RQ440971f112e744e0a4c4e4a142343e7c
+      Twilio-Request-Duration:
+      - '0.030'
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match,
+        If-Unmodified-Since
+      Access-Control-Allow-Methods:
+      - GET, POST, DELETE, OPTIONS
+      Access-Control-Expose-Headers:
+      - ETag
+      Access-Control-Allow-Credentials:
+      - 'true'
+      X-Powered-By:
+      - AT-5000
+      X-Shenanigans:
+      - none
+      X-Home-Region:
+      - us1
+      X-Api-Domain:
+      - studio.twilio.com
+      Strict-Transport-Security:
+      - max-age=31536000
+    body:
+      encoding: UTF-8
+      string: '{"url": "https://studio.twilio.com/v1/Flows/<TWILLIO_STUDIO_FLOW>/Executions/FN304b09128a4f089b8c57a7e3f7cb2221/Context",
+        "execution_sid": "FN304b09128a4f089b8c57a7e3f7cb2221", "flow_sid": "<TWILLIO_STUDIO_FLOW>",
+        "context": {"widgets": {"send_message_1": {"outbound": {"Status": "accepted",
+        "ErrorCode": null, "Direction": "outbound-api", "ErrorMessage": null, "From":
+        null, "DateSent": null, "PriceUnit": null, "Price": null, "Sid": "SM0504ca8539b04a23b9fbd4d9c01849e0",
+        "MessagingServiceSid": "<TWILLIO_MESSAGING_SERVICE_SID>", "Body": "Merci d''avoir
+        rempli votre rapport quotidien!", "ApiVersion": "2010-04-01", "DateCreated":
+        "2021-01-26T22:40:56Z", "SubresourceUris": {"media": "/2010-04-01/Accounts/<TWILLIO_API_ACCOUNT>/Messages/SM0504ca8539b04a23b9fbd4d9c01849e0/Media.json"},
+        "To": "+16035555555", "NumMedia": "0", "AccountSid": "<TWILLIO_API_ACCOUNT>",
+        "NumSegments": "0", "DateUpdated": "2021-01-26T22:40:56Z"}}, "send_assessment_data_no":
+        {"body": "", "status_code": 200, "content_type": "text/plain"}, "sms_or_voice":
+        {}, "sms_assessment_prompt": {"inbound": {"Body": "Non", "MessageSid": "SMb8b960f3109f60246dc8332014602b01",
+        "FromZip": "03301", "SmsStatus": "received", "SmsMessageSid": "SMb8b960f3109f60246dc8332014602b01",
+        "AccountSid": "<TWILLIO_API_ACCOUNT>", "MessagingServiceSid": "<TWILLIO_MESSAGING_SERVICE_SID>",
+        "FromCity": "CONCORD", "ApiVersion": "2010-04-01", "To": "<TWILLIO_SENDING_NUMBER>",
+        "From": "+16035555555", "NumMedia": "0", "ToZip": "38646", "ToCountry": "US",
+        "ToState": "MS", "NumSegments": "1", "SmsSid": "SMb8b960f3109f60246dc8332014602b01",
+        "ToCity": "MARKS", "FromState": "NH", "FromCountry": "US"}, "outbound": {"Status":
+        "accepted", "ErrorCode": null, "Direction": "outbound-api", "ErrorMessage":
+        null, "From": null, "DateSent": null, "PriceUnit": null, "Price": null, "Sid":
+        "SM515ea5ac5b7e4a3e93aeca0a3dfd45ff", "MessagingServiceSid": "<TWILLIO_MESSAGING_SERVICE_SID>",
+        "Body": "Il s\u2019agit d\u2019un rapport d\u2019alerte Sara quotidien destin\u00e9
+        aux: MG-66. Cette personne est-elle  y en a-t-il qui pr\u00e9sentent un des
+        sympt\u00f4mes suivants: Toux, Difficult\u00e9s respiratoires, Nouvelle perte
+        de l\u2019odorat, Nouvelle perte de go\u00fbt, Essoufflement, Fi\u00e8vre,
+        Frissons, Tremblements r\u00e9p\u00e9t\u00e9s accompagn\u00e9s de frissons,
+        Douleurs musculaires, Maux de t\u00eate, Maux de gorge, Naus\u00e9es ou vomissements,
+        Diarrh\u00e9e, Fatigue, Congestion nasale ou nez qui coule. Veuillez r\u00e9pondre
+        par \"Oui\" ou par \"Non\"", "ApiVersion": "2010-04-01", "DateCreated": "2021-01-26T22:40:28Z",
+        "SubresourceUris": {"media": "/2010-04-01/Accounts/<TWILLIO_API_ACCOUNT>/Messages/SM515ea5ac5b7e4a3e93aeca0a3dfd45ff/Media.json"},
+        "To": "+16035555555", "NumMedia": "0", "AccountSid": "<TWILLIO_API_ACCOUNT>",
+        "NumSegments": "0", "DateUpdated": "2021-01-26T22:40:28Z"}}, "OptOutTypeNotBlankReply":
+        {}, "check_yes_no": {}, "initialize_retry_count": {"retry_count": "0"}}, "trigger":
+        {"request": {"to": "+16035555555", "from": "<TWILLIO_MESSAGING_SERVICE_SID>",
+        "parameters": {"medium": "SMS", "prompt": "Il s\u2019agit d\u2019un rapport
+        d\u2019alerte Sara quotidien destin\u00e9 aux: MG-66. Cette personne est-elle  y
+        en a-t-il qui pr\u00e9sentent un des sympt\u00f4mes suivants: Toux, Difficult\u00e9s
+        respiratoires, Nouvelle perte de l\u2019odorat, Nouvelle perte de go\u00fbt,
+        Essoufflement, Fi\u00e8vre, Frissons, Tremblements r\u00e9p\u00e9t\u00e9s
+        accompagn\u00e9s de frissons, Douleurs musculaires, Maux de t\u00eate, Maux
+        de gorge, Naus\u00e9es ou vomissements, Diarrh\u00e9e, Fatigue, Congestion
+        nasale ou nez qui coule. Veuillez r\u00e9pondre par \"Oui\" ou par \"Non\"",
+        "language": "FR", "patient_submission_token": "dmHCpUHC-Q", "try_again": "Je
+        suis d\u00e9sol\u00e9, je n''ai pas compris. Veuillez r\u00e9pondre par \"Oui\"
+        ou par \"Non\"", "threshold_hash": "cd03cdd081fa6266ed4f55cada179ff2d67b90a239ec63b661f4e8c129f361f4",
+        "thanks": "Merci d''avoir rempli votre rapport quotidien!", "max_retries_message":
+        "Je suis d\u00e9sol\u00e9, vous avez atteint le nombre maximum de tentatives
+        de r\u00e9ponse. Si vous rencontrez une urgence m\u00e9dicale, veuillez appeler
+        le 911."}}}, "contact": {"channel": {"address": "+16035555555"}}, "flow":
+        {"variables": {"retry_count": "0"}, "data": {"medium": "SMS", "prompt": "Il
+        s\u2019agit d\u2019un rapport d\u2019alerte Sara quotidien destin\u00e9 aux:
+        MG-66. Cette personne est-elle  y en a-t-il qui pr\u00e9sentent un des sympt\u00f4mes
+        suivants: Toux, Difficult\u00e9s respiratoires, Nouvelle perte de l\u2019odorat,
+        Nouvelle perte de go\u00fbt, Essoufflement, Fi\u00e8vre, Frissons, Tremblements
+        r\u00e9p\u00e9t\u00e9s accompagn\u00e9s de frissons, Douleurs musculaires,
+        Maux de t\u00eate, Maux de gorge, Naus\u00e9es ou vomissements, Diarrh\u00e9e,
+        Fatigue, Congestion nasale ou nez qui coule. Veuillez r\u00e9pondre par \"Oui\"
+        ou par \"Non\"", "language": "FR", "patient_submission_token": "dmHCpUHC-Q",
+        "try_again": "Je suis d\u00e9sol\u00e9, je n''ai pas compris. Veuillez r\u00e9pondre
+        par \"Oui\" ou par \"Non\"", "threshold_hash": "cd03cdd081fa6266ed4f55cada179ff2d67b90a239ec63b661f4e8c129f361f4",
+        "thanks": "Merci d''avoir rempli votre rapport quotidien!", "max_retries_message":
+        "Je suis d\u00e9sol\u00e9, vous avez atteint le nombre maximum de tentatives
+        de r\u00e9ponse. Si vous rencontrez une urgence m\u00e9dicale, veuillez appeler
+        le 911."}, "flow_sid": "<TWILLIO_STUDIO_FLOW>", "channel": {"address": "<TWILLIO_MESSAGING_SERVICE_SID>"},
+        "sid": "FN304b09128a4f089b8c57a7e3f7cb2221"}}, "account_sid": "<TWILLIO_API_ACCOUNT>"}'
+  recorded_at: Tue, 26 Jan 2021 22:48:11 GMT
+recorded_with: VCR 6.0.0
