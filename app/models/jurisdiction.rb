@@ -17,7 +17,7 @@ class Jurisdiction < ApplicationRecord
 
   # All patients are all those in this or descendent jurisdictions
   def all_patients
-    Patient.includes([:jurisdiction]).where(purged: false, jurisdiction_id: subtree_ids)
+    Patient.includes([:jurisdiction]).where(jurisdiction_id: subtree_ids)
   end
 
   # All users that are in this or descendent jurisdictions

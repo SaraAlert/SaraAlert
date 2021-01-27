@@ -545,7 +545,7 @@ class Fhir::R4::ApiController < ActionController::API
       jurisdiction_id = current_client_application[:jurisdiction_id]
       return unless Jurisdiction.exists?(jurisdiction_id)
 
-      Jurisdiction.find_by(id: jurisdiction_id).all_patients
+      Jurisdiction.find_by(id: jurisdiction_id).all_patients.where(purged: false)
     end
   end
 

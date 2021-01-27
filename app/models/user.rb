@@ -41,7 +41,7 @@ class User < ApplicationRecord
 
   # Patients this user can view through their jurisdiction access
   def viewable_patients
-    jurisdiction.all_patients
+    jurisdiction.all_patients.where(purged: false)
   end
 
   # Patients this user has enrolled
