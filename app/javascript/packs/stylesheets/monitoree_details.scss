@@ -1,0 +1,50 @@
+$jurisdiction-box: #e9ecef;
+$section-border: #ddd;
+
+.jurisdiction-user-box {
+  background-color: $jurisdiction-box;
+  padding: 10px;
+  float: right;
+}
+
+.section-header {
+  border-bottom: 1px solid $section-border;
+}
+
+.section-title {
+  display: inline;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.subsection-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.edit-link {
+  float: right;
+  font-size: 0.9rem;
+}
+
+.details-expander {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.details-expander a {
+  text-decoration: none;
+  // margin-right: 10px;
+}
+
+// .details-expander a.arrow-link {padding-bottom:3px} /* tweak to position to make arrow icon appear more vertically centered with the rest of the line */
+.details-expander .line {
+  margin-left: 5px;
+  border-bottom: 1px dashed #bbb;
+  padding-top: 3px;
+  flex-grow: 1;
+}
