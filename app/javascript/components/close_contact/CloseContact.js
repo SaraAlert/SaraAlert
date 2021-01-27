@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import * as yup from 'yup';
+import _ from 'lodash';
 import libphonenumber from 'google-libphonenumber';
 import DateInput from '../util/DateInput';
 import moment from 'moment';
@@ -67,7 +68,8 @@ class CloseContact extends React.Component {
     let value;
     if (event?.target?.id && event.target.id === 'assigned_user') {
       if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
-      value = event.target.value.trim() === '' ? null : parseInt(event.target.value);
+      // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
+      value = _.trim(event.target.value) === '' ? null : parseInt(event.target.value);
     } else if (event?.target?.id && event.target.id === 'primary_telephone') {
       value = event.target.value.replace(/-/g, '');
     } else {
@@ -251,12 +253,7 @@ class CloseContact extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button
-            variant="primary btn-square"
-            onClick={submit}
-            disabled={
-              !(this.state.first_name || this.state.last_name || this.state.email || this.state.primary_telephone || this.state.notes) || this.state.loading
-            }>
+          <Button variant="primary btn-square" onClick={submit} disabled={!(this.state.first_name && this.state.last_name) || this.state.loading}>
             {this.props.close_contact.id ? 'Update' : 'Create'}
           </Button>
         </Modal.Footer>

@@ -1,4 +1,4 @@
-const mockCloseContact0 = {
+const mockCloseContact1 = {
   id: 0,
   patient_id: 4,
   first_name: null,
@@ -17,7 +17,7 @@ const mockCloseContact0 = {
   user_defined_id_nndss: null
 }
 
-const mockCloseContact1 = {
+const mockCloseContact2 = {
   id: 1,
   patient_id: 4,
   first_name: "Captain",
@@ -38,6 +38,6 @@ const mockCloseContact1 = {
 
 
 export {
-  mockCloseContact0,
   mockCloseContact1,
+  mockCloseContact2,
 };
