@@ -106,7 +106,7 @@ describe('CloseContact', () => {
         expect(handleChangeSpy).toHaveBeenCalled();
       }
       expect(emptyCCWrapper.state(iv.field)).toEqual(iv.value);
-    })
+    });
   });
 
   it('Properly creates the correct assigned user dropdown options', () => {
@@ -117,7 +117,7 @@ describe('CloseContact', () => {
     })
   });
 
-  it('Properly clears any values in the modal on close (for empty close contact)', () => {
+  it('Properly clears any values in the modal on close (when adding a new close contact)', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
     expect(emptyCCWrapper.state('showModal')).toBeFalsy();
     emptyCCWrapper.find(Button).simulate('click');
@@ -130,7 +130,7 @@ describe('CloseContact', () => {
       } else {
         emptyCCWrapper.find(Modal.Body).find('Row').at(index).find(iv.inputType).simulate('change', { target: { id: iv.field, value: iv.value } })
       }
-    })
+    });
 
     emptyCCWrapper.find(Button).at(1).simulate('click');
     // Once the modal is closed, the values should default back to their nulled out original values
@@ -144,7 +144,7 @@ describe('CloseContact', () => {
     expect(emptyCCWrapper.state('notes')).toEqual(mockCloseContact1.notes || '')
   });
 
-  it('Properly resets any values in the modal to the default (for existing close contact)', () => {
+  it('Properly resets any values in the modal to the default (when editing an existing close contact)', () => {
     const existingCCWrapper = getShallowWrapper(mockCloseContact2);
     expect(existingCCWrapper.state('showModal')).toBeFalsy();
     existingCCWrapper.find(Button).at(0).simulate('click');
@@ -157,7 +157,7 @@ describe('CloseContact', () => {
       } else {
         existingCCWrapper.find(Modal.Body).find('Row').at(index).find(iv.inputType).simulate('change', { target: { id: iv.field, value: iv.value } })
       }
-    })
+    });
 
     existingCCWrapper.find(Button).at(3).simulate('click');
     // Once the modal is closed, the values should default back to their nulled out original values
@@ -214,6 +214,6 @@ describe('CloseContact', () => {
     expect(emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormLabel').at(1).text()).toContain('2000 characters remaining');
     emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormControl').simulate('change', { target: { id: 'notes', value: testNoteString } })
     expect(emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormLabel').at(1).text()).toContain(`${2000-testNoteString.length} characters remaining`);
-  })
+  });
 
 });
