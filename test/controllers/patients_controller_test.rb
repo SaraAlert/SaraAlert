@@ -201,7 +201,7 @@ class PatientsControllerTest < ActionController::TestCase
     }
 
     assert_response(406)
-    assert_equal('Move to household action failed: Selected Head of Household is not valid as they are a dependent in an existing household.',
+    assert_equal('Move to household action failed: Selected Head of Household is not valid as they are a dependent in an existing household. Please refresh.',
                  JSON.parse(response.body)['error'])
     assert_not patient.reload.head_of_household
     assert_not desired_hoh.reload.head_of_household
@@ -228,7 +228,8 @@ class PatientsControllerTest < ActionController::TestCase
 
     assert_response(406)
     assert_equal(
-      'Move to household action failed: Monitoree is a head of household and therefore cannot be moved to a household through the Move to Household action.',
+      'Move to household action failed: Monitoree is a head of household and therefore cannot be moved to a household through the Move to Household action. '\
+      'Please refresh.',
       JSON.parse(response.body)['error']
     )
     assert patient.reload.head_of_household
