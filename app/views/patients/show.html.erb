@@ -130,7 +130,7 @@
           <td><%= cc.last_name %></td>
           <td><%= cc.primary_telephone.present? && cc.primary_telephone.length > 10 ? cc.primary_telephone&.gsub('+1', '')&.gsub(/\D/, '')&.insert(3, '-')&.insert(7, '-') : '' %></td>
           <td><%= cc.email %></td>
-          <td class="text-center"><%= cc.last_date_of_exposure || 'Unknown' %></td>
+          <td class="text-center"><%= cc.last_date_of_exposure ? cc.last_date_of_exposure.to_date.strftime('%m/%d/%Y') : 'Unknown' %></td>
           <td class="text-center"><%= cc.assigned_user %></td>
           <td><%= cc.notes %></td>
           <td class="text-center"><%= cc.contact_attempts || 0 %></td>
