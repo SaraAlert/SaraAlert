@@ -249,7 +249,7 @@ class PatientsControllerTest < ActionController::TestCase
     sign_in user
 
     post :remove_from_household, params: {
-      id: dependent.id,
+      id: dependent.id
     }
 
     assert_response :success
@@ -281,7 +281,7 @@ class PatientsControllerTest < ActionController::TestCase
     sign_in enroller_user
 
     post :remove_from_household, params: {
-      id: patient.id,
+      id: patient.id
     }
 
     assert_response(:forbidden)
