@@ -39,7 +39,7 @@ class PatientMailer < ApplicationMailer
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'SINGLE_SMS' }
     success = TwilioSender.send_sms(patient, params)
-    add_success_history(patient, patient) if success
+    add_success_history(patient) if success
     add_fail_history_sms(patient) unless success
 
     # Always update the last contact time so the system does not try and send sms again.
@@ -71,7 +71,7 @@ class PatientMailer < ApplicationMailer
                  threshold_hash: threshold_hash, medium: 'SINGLE_SMS' }
       patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
       if TwilioSender.send_sms(patient, params)
-        add_success_history(dependent, patient)
+        add_success_history(dependent)
       else
         add_fail_history_sms(dependent)
         patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
@@ -118,7 +118,7 @@ class PatientMailer < ApplicationMailer
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
     if TwilioSender.start_studio_flow_assessment(patient, params)
-      add_success_history(patient, patient)
+      add_success_history(patient)
     else
       add_fail_history_sms(patient)
       patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
@@ -166,7 +166,7 @@ class PatientMailer < ApplicationMailer
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
     if TwilioSender.start_studio_flow_assessment(patient, params)
-      add_success_history(patient, patient)
+      add_success_history(patient)
     else
       add_fail_history_voice(patient)
       patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
@@ -193,7 +193,7 @@ class PatientMailer < ApplicationMailer
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
-    add_success_history(patient, patient)
+    add_success_history(patient)
   rescue StandardError => e
     patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
     raise "Failed to send email for patient id: #{patient.id}; #{e.message}"
@@ -211,8 +211,8 @@ class PatientMailer < ApplicationMailer
 
   private
 
-  def add_success_history(patient, parent)
-    comment = if patient == parent
+  def add_success_history(patient)
+    comment = if patient == patient.responder
                 "Sara Alert sent a report reminder to this monitoree via #{parent.preferred_contact_method}."
               else
                 "Sara Alert sent a report reminder to this monitoree's HoH via #{parent.preferred_contact_method}."
