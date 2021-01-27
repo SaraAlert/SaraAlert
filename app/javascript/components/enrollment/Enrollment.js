@@ -43,6 +43,8 @@ class Enrollment extends React.Component {
   }
 
   setEnrollmentState = debounce(enrollmentState => {
+    // save jurisdiction_id as a number
+    enrollmentState.patient.jurisdiction_id = parseInt(enrollmentState.patient.jurisdiction_id);
     let currentEnrollmentState = this.state.enrollmentState;
     this.setState({
       enrollmentState: {
@@ -83,9 +85,6 @@ class Enrollment extends React.Component {
   submit = (_event, groupMember, reenableSubmit) => {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-
-    // this.state.enrollmentState.patient.jurisdiction_id is a string while this.props.patient.jurisdiction_id is a number so it was always triggering
-    this.props.patient.jurisdiction_id = this.props.patient.jurisdiction_id.toString();
 
     // If enrolling, include ALL fields in diff keys. If editing, only include the ones that have changed
     let diffKeys = this.props.editMode
