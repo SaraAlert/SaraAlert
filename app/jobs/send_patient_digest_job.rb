@@ -11,7 +11,7 @@ class SendPatientDigestJob < ApplicationJob
     # Loop over jurisdictions
     jurisdictions.each do |jur|
       # Grab patients who reported symtomatic in the last hour
-      patients = jur.all_patients.recently_symptomatic
+      patients = jur.all_patients_excluding_purged.recently_symptomatic
 
       # Execute query, figure out how many meet requirements (if none skip email)
       next unless patients.size.positive?

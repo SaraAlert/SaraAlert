@@ -17,31 +17,33 @@ namespace :stats do
     jurisdictions.each do |jur|
       results = {}
 
+      jur_patients = jur.all_patients_excluding_purged
+
       puts 'Step 1 of 6: linelists'
       title = 'LINELISTS: Daily snapshots'
       results[title] = {}
       results[title]['Total'] = {
-        exposure: jur.all_patients.where(isolation: false).count,
-        isolation: jur.all_patients.where(isolation: true).count
+        exposure: jur_patients.where(isolation: false).count,
+        isolation: jur_patients.where(isolation: true).count
       }
       results[title]['Exposure Symptomatic'] = {
-        exposure: jur.all_patients.exposure_symptomatic.count,
+        exposure: jur_patients.exposure_symptomatic.count,
         isolation: 'N/A'
       }
       results[title]['Exposure Non-Reporting'] = {
-        exposure: jur.all_patients.exposure_non_reporting.count,
+        exposure: jur_patients.exposure_non_reporting.count,
         isolation: 'N/A'
       }
       results[title]['Exposure Asymptomatic'] = {
-        exposure: jur.all_patients.exposure_asymptomatic.count,
+        exposure: jur_patients.exposure_asymptomatic.count,
         isolation: 'N/A'
       }
       results[title]['Exposure Under Investigation (PUI)'] = {
-        exposure: jur.all_patients.exposure_under_investigation.count,
+        exposure: jur_patients.exposure_under_investigation.count,
         isolation: 'N/A'
       }
       results[title]['Exposure Closed'] = {
-        exposure: jur.all_patients.monitoring_closed_without_purged.where(isolation: false).count,
+        exposure: jur_patients.monitoring_closed_without_purged.where(isolation: false).count,
         isolation: 'N/A'
       }
       results[title]['Exposure Transferred In'] = {
@@ -53,24 +55,24 @@ namespace :stats do
         isolation: 'N/A'
       }
       results[title]['Exposure Continuous Monitoring'] = {
-        exposure: jur.all_patients.where(isolation: false, continuous_exposure: true).count,
+        exposure: jur_patients.where(isolation: false, continuous_exposure: true).count,
         isolation: 'N/A'
       }
       results[title]['Isolation Requires Review'] = {
         exposure: 'N/A',
-        isolation: jur.all_patients.isolation_requiring_review.count
+        isolation: jur_patients.isolation_requiring_review.count
       }
       results[title]['Isolation Reporting'] = {
         exposure: 'N/A',
-        isolation: jur.all_patients.isolation_reporting.count
+        isolation: jur_patients.isolation_reporting.count
       }
       results[title]['Isolation Non-Reporting'] = {
         exposure: 'N/A',
-        isolation: jur.all_patients.isolation_non_reporting.count
+        isolation: jur_patients.isolation_non_reporting.count
       }
       results[title]['Isolation Closed'] = {
         exposure: 'N/A',
-        isolation: jur.all_patients.monitoring_closed_without_purged.where(isolation: true).count
+        isolation: jur_patients.monitoring_closed_without_purged.where(isolation: true).count
       }
       results[title]['Isolation Transferred In'] = {
         exposure: 'N/A',
@@ -82,58 +84,58 @@ namespace :stats do
       }
       results[title]['Isolation Previously in Exposure'] = {
         exposure: 'N/A',
-        isolation: jur.all_patients.where(isolation: true).where_assoc_exists(:histories, &:exposure_to_isolation).count
+        isolation: jur_patients.where(isolation: true).where_assoc_exists(:histories, &:exposure_to_isolation).count
       }
 
       puts 'Step 2 of 6: monitoring activity'
       title = "MONITORING ACTIVITY: Cohort of monitorees existing or added during 14 day period\nINCLUDING Opt-out or Unknown reporting methods"
       results[title] = {}
       results[title]['Total'] = {
-        exposure: jur.all_patients.where(isolation: false).count,
-        isolation: jur.all_patients.where(isolation: true).count
+        exposure: jur_patients.where(isolation: false).count,
+        isolation: jur_patients.where(isolation: true).count
       }
       results[title]['New today'] = {
-        exposure: jur.all_patients.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).count,
-        isolation: jur.all_patients.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).count
+        exposure: jur_patients.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).count,
+        isolation: jur_patients.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).count
       }
       results[title]['New today enrolled by user'] = {
-        exposure: jur.all_patients.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:user_enrolled_last_24h).count,
-        isolation: jur.all_patients.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:user_enrolled_last_24h).count
+        exposure: jur_patients.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:user_enrolled_last_24h).count,
+        isolation: jur_patients.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:user_enrolled_last_24h).count
       }
       results[title]['New today enrolled by API'] = {
-        exposure: jur.all_patients.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:api_enrolled_last_24h).count,
-        isolation: jur.all_patients.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:api_enrolled_last_24h).count
+        exposure: jur_patients.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:api_enrolled_last_24h).count,
+        isolation: jur_patients.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:api_enrolled_last_24h).count
       }
       results[title]['Total with activity today'] = {
-        exposure: jur.all_patients.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.count,
-        isolation: jur.all_patients.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.count
+        exposure: jur_patients.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.count,
+        isolation: jur_patients.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.count
       }
       results[title]['Total with activity since start of evaluation'] = {
-        exposure: jur.all_patients.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(start) }.count,
-        isolation: jur.all_patients.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(start) }.count
+        exposure: jur_patients.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(start) }.count,
+        isolation: jur_patients.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(start) }.count
       }
       results[title]['Closed today - Enrolled more than 14 days after last date of exposure (system)'] = {
-        exposure: jur.all_patients.where(monitoring: false, monitoring_reason: 'Enrolled more than 14 days after last date of exposure (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
+        exposure: jur_patients.where(monitoring: false, monitoring_reason: 'Enrolled more than 14 days after last date of exposure (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
         isolation: 'N/A'
       }
       results[title]['Closed today - Enrolled on last day of monitoring period (system)'] = {
-        exposure: jur.all_patients.where(monitoring: false, monitoring_reason: 'Enrolled on last day of monitoring period (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
+        exposure: jur_patients.where(monitoring: false, monitoring_reason: 'Enrolled on last day of monitoring period (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
         isolation: 'N/A'
       }
       results[title]['Closed today - Completed Monitoring (system)'] = {
-        exposure: jur.all_patients.where(monitoring: false, monitoring_reason: 'Completed Monitoring (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
+        exposure: jur_patients.where(monitoring: false, monitoring_reason: 'Completed Monitoring (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
         isolation: 'N/A'
       }
       results[title]['Closed today - manually'] = {
-        exposure: jur.all_patients.where(isolation: false, monitoring: false).where_assoc_exists(:histories, &:user_closed_last_24h).count,
-        isolation: jur.all_patients.where(isolation: true, monitoring: false).where_assoc_exists(:histories, &:user_closed_last_24h).count
+        exposure: jur_patients.where(isolation: false, monitoring: false).where_assoc_exists(:histories, &:user_closed_last_24h).count,
+        isolation: jur_patients.where(isolation: true, monitoring: false).where_assoc_exists(:histories, &:user_closed_last_24h).count
       }
 
       puts 'Step 3 of 6: reporting rates'
       title = "REPORTING: Cohort of monitorees existing or added during 14 day period\nEXCLUDING Opt-out or Unknown reporting methods"
       results[title] = {}
-      active_exp = jur.all_patients.where(monitoring: true, isolation: false).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
-      active_iso = jur.all_patients.where(monitoring: true, isolation: true).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
+      active_exp = jur_patients.where(monitoring: true, isolation: false).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
+      active_iso = jur_patients.where(monitoring: true, isolation: true).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       results[title]['Total'] = {
         exposure: active_exp.count,
         isolation: active_iso.count
@@ -330,8 +332,8 @@ namespace :stats do
       puts 'Step 4 of 6: demographics'
       title = "DEMOGRAPHICS: Cohort of monitorees existing or added during 14 day period\nEXCLUDING Opt-out or Unknown reporting methods"
       results[title] = {}
-      active_exp = jur.all_patients.where(monitoring: true, isolation: false).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
-      active_iso = jur.all_patients.where(monitoring: true, isolation: true).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
+      active_exp = jur_patients.where(monitoring: true, isolation: false).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
+      active_iso = jur_patients.where(monitoring: true, isolation: true).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       results[title]['Total'] = {
         exposure: active_exp.count,
         isolation: active_iso.count

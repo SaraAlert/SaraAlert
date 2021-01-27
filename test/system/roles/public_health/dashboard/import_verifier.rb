@@ -71,7 +71,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Date of Departure', row[36], index)
       verify_existence(card, 'Close Contact w/ Known Case', !row[41].blank?.to_s, index)
       verify_existence(card, 'Was in HC Fac. w/ Known Cases', !row[42].blank?.to_s, index)
-      if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[11], last_name: row[10]).length > 1
+      if Jurisdiction.find(jurisdiction_id).all_patients_excluding_purged.where(first_name: row[11], last_name: row[10]).length > 1
         assert card.has_content?("Warning: This #{workflow == :exposure ? 'monitoree' : 'case'} already appears to exist in the system!")
       end
     end
@@ -103,7 +103,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Date of Departure', row[51], index)
       verify_existence(card, 'Close Contact w/ Known Case', row[69] ? row[69].to_s.downcase : nil, index)
       verify_existence(card, 'Was in HC Fac. w/ Known Cases', row[72] ? row[72].to_s.downcase : nil, index)
-      if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
+      if Jurisdiction.find(jurisdiction_id).all_patients_excluding_purged.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
         assert card.has_content?("Warning: This #{workflow == :exposure ? 'monitoree' : 'case'} already appears to exist in the system!")
       end
       assert card.has_content?("This #{workflow == :exposure ? 'monitoree' : 'case'} will be imported into '#{row[95]}'") if row[95]
@@ -117,7 +117,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
-      patients = Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[11], last_name: row[10], date_of_birth: row[12])
+      patients = Jurisdiction.find(jurisdiction_id).all_patients_excluding_purged.where(first_name: row[11], last_name: row[10], date_of_birth: row[12])
       patient = patients.where('created_at > ?', 1.minute.ago)[0]
       duplicate = patients.where('created_at < ?', 1.minute.ago).exists?
       if rejects.include?(row_num - 2) || (duplicate && !accept_duplicates)
@@ -155,7 +155,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       user_jurisdiction = Jurisdiction.find(jurisdiction_id)
-      patients = user_jurisdiction.all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2], date_of_birth: row[3])
+      patients = user_jurisdiction.all_patients_excluding_purged.where(first_name: row[0], middle_name: row[1], last_name: row[2], date_of_birth: row[3])
       patient = patients.where('created_at > ?', 1.minute.ago)[0]
       duplicate = patients.where('created_at < ?', 1.minute.ago).exists?
       if rejects.include?(row_num - 2) || (duplicate && !accept_duplicates)
