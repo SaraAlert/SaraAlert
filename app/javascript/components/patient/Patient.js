@@ -1,8 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Col, Form, Row, Table } from 'react-bootstrap';
-// import { Col, Row Button, Collapse, Card, Table, Form } from 'react-bootstrap';
+import { Button, Col, Collapse, Form, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 import BadgeHOH from '../util/BadgeHOH';
 import ChangeHOH from '../subject/ChangeHOH';
@@ -14,6 +15,7 @@ class Patient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      expanded: !props.hideBody,
       expandNotes: false,
     };
   }
@@ -139,11 +141,13 @@ class Patient extends React.Component {
                 </div>
                 <div>
                   <b>Race:</b>{' '}
-                  <span>{`${this.props.details.white ? 'White' : ''}${this.props.details.black_or_african_american ? ' Black or African American' : ''}${
-                    this.props.details.asian ? ' Asian' : ''
-                  }${this.props.details.american_indian_or_alaska_native ? ' American Indian or Alaska Native' : ''}${
-                    this.props.details.native_hawaiian_or_other_pacific_islander ? ' Native Hawaiian or Other Pacific Islander' : ''
-                  }`}</span>
+                  <span>
+                    {`${this.props.details.white ? 'White' : ''}
+                    ${this.props.details.black_or_african_american ? ' Black or African American' : ''}
+                    ${this.props.details.asian ? ' Asian' : ''}
+                    ${this.props.details.american_indian_or_alaska_native ? ' American Indian or Alaska Native' : ''}
+                    ${this.props.details.native_hawaiian_or_other_pacific_islander ? ' Native Hawaiian or Other Pacific Islander' : ''}`}
+                  </span>
                 </div>
                 <div>
                   <b>Ethnicity:</b> <span>{this.props.details.ethnicity || '--'}</span>
@@ -200,6 +204,22 @@ class Patient extends React.Component {
             </div>
           </Col>
         </Row>
+        <div className="details-expander py-3">
+          <a
+            href="#"
+            onClick={() => {
+              this.setState({ expanded: !this.state.expanded });
+            }}>
+            {this.state.expanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
+            <span className="pl-2">{this.state.expanded ? 'Hide' : 'Show'} address, travel, exposure, and case information</span>
+          </a>
+          <span className="line"></span>
+        </div>
+
+        {/* TO DO: FINISH ME */}
+        <Collapse in={this.state.expanded}>
+          <div>Add stuff here</div>
+        </Collapse>
 
         {/* TO DO: FIX THIS STYLING */}
         {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
