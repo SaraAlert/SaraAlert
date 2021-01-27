@@ -4,7 +4,7 @@
 class CloseContact < ApplicationRecord
   include Utils
 
-  belongs_to :patient
+  belongs_to :patient, touch: true
 
   def custom_details(fields, patient_identifiers)
     close_contact_details = {}

@@ -2,7 +2,7 @@
 
 # Laboratory: represents a lab result
 class Laboratory < ApplicationRecord
-  belongs_to :patient
+  belongs_to :patient, touch: true
 
   validates :result, inclusion: { in: ['positive', 'negative', 'indeterminate', 'other', nil, ''] }
 

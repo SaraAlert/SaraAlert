@@ -49,6 +49,28 @@ class LaboratoryTest < ActiveSupport::TestCase
   #   assert_not laboratory.valid?
   # end
 
+  test 'update patient updated_at upon laboratory create, update, and delete' do
+    patient = create(:patient)
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    laboratory = create(:laboratory, patient: patient)
+    assert_in_delta patient.updated_at, DateTime.now, 1
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    laboratory.update(result: 'negative')
+    assert_in_delta patient.updated_at, DateTime.now, 1
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    laboratory.destroy
+    assert_in_delta patient.updated_at, DateTime.now, 1
+  end
+
   test 'update patient linelist' do
     patient = create(:patient)
 
