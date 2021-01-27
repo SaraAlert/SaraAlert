@@ -8,6 +8,28 @@ class AssessmentTest < ActiveSupport::TestCase
 
   def teardown; end
 
+  test 'update patient updated_at upon assessment create, update, and delete' do
+    patient = create(:patient)
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    assessment = create(:assessment, patient: patient)
+    assert_in_delta patient.updated_at, DateTime.now, 1
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    assessment.update(symptomatic: true)
+    assert_in_delta patient.updated_at, DateTime.now, 1
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    assessment.destroy
+    assert_in_delta patient.updated_at, DateTime.now, 1
+  end
+
   test 'update patient linelist' do
     patient = create(:patient)
 
