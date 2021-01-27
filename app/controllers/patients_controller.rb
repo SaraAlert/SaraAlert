@@ -272,14 +272,14 @@ class PatientsController < ApplicationController
     if new_hoh.responder_id != new_hoh_id
       error_message = 'Move to household action failed: Selected Head of Household is not valid as they are a dependent in an existing household. '\
                       'Please refresh.'
-      render(json: { error: error_message }, status: 406) && return
+      render(json: { error: error_message }, status: :bad_request) && return
     end
 
     # Don't allow a HoH to be moved to a household.
     if current_patient.head_of_household
       error_message = 'Move to household action failed: Monitoree is a head of household and therefore cannot be moved to a household '\
                       'through the Move to Household action. Please refresh.'
-      render(json: { error: error_message }, status: 406) && return
+      render(json: { error: error_message }, status: :bad_request) && return
     end
 
     # ----- Record Updates -----
@@ -289,7 +289,7 @@ class PatientsController < ApplicationController
 
     if !updated
       error_message = 'Move to household action failed: Monitoree was unable to be be updated.'
-      render(json: { error: error_message, status: 403 }) && return
+      render(json: { error: error_message, status: :forbidden }) && return
     else
       # Create history item for new HoH
       comment = "User added monitoree with ID #{current_patient.id} to a household. #{new_hoh.first_name} #{new_hoh.last_name}"\
@@ -321,7 +321,7 @@ class PatientsController < ApplicationController
     # If the current patients is a HoH, they can't be removed.
     if current_patient.head_of_household
       error_message = 'Remove from household  action failed: Monitoree is a head of household. Please refresh.'
-      render(json: { error: error_message }, status: 406) && return
+      render(json: { error: error_message }, status: :bad_request) && return
     end
 
     # ----- Record Updates -----
@@ -332,7 +332,7 @@ class PatientsController < ApplicationController
 
     if !updated
       error_message = 'Remove from household action failed: Monitoree was unable to be be updated.'
-      render(json: { error: error_message, status: 403 }) && return
+      render(json: { error: error_message, status: :forbidden }) && return
     else
       # Create history item for old HoH
       comment = "User removed dependent monitoree with ID #{current_patient.id} from the household. #{old_hoh.first_name} #{old_hoh.last_name}"\
@@ -364,13 +364,13 @@ class PatientsController < ApplicationController
     # Check to make sure selected HoH record exists.
     unless Patient.where(purged: false).exists?(new_hoh_id)
       error_message = "Change head of household action failed: Selected Head of Household with ID #{new_hoh_id} does not exist."
-      render(json: { error: error_message }, status: 403) && return
+      render(json: { error: error_message }, status: :forbidden) && return
     end
 
     # Check to make sure user has access to update all of these records.
     unless current_user_patients.where(id: patient_ids_to_update).count == patient_ids_to_update.length
       error_message = 'Change head of household action failed: User does not have permissions to update current monitoree or one or more of their dependents.'
-      render(json: { error: error_message }, status: 403) && return
+      render(json: { error: error_message }, status: :forbidden) && return
     end
 
     # Do not do anything if there hasn't been a change to the responder at all.
@@ -379,7 +379,7 @@ class PatientsController < ApplicationController
     # If the new head of household was removed from the household, don't allow the change
     unless current_patient.dependents.pluck(:id).include?(new_hoh_id)
       error_message = 'Change head of household action failed: Selected Head of Household is no longer in household. Please refresh.'
-      render(json: { error: error_message }, status: 406) && return
+      render(json: { error: error_message }, status: :bad_request) && return
     end
 
     # ----- Record Updates -----
