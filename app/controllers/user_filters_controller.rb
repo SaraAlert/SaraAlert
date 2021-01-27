@@ -5,17 +5,15 @@ class UserFiltersController < ApplicationController
   before_action :authenticate_user!
   before_action :check_role
 
-  # Maximum number of allowed user filters for the Advanced Filter.
-  MAX_SAVED_FILTERS = 100
-
   def index
     render json: current_user.user_filters.collect { |filter| { contents: JSON.parse(filter.contents), name: filter.name, id: filter.id } }
   end
 
   def create
     # Enforce upper limit per user
-    if current_user.user_filters.count >= MAX_SAVED_FILTERS
-      error_message = 'Reached maximum allowed user saved filters. Please delete filters to be able to save more.'
+    if current_user.user_filters.count >= ADMIN_OPTIONS['max_user_filters']
+      error_message = 'You have reached the maximum allowed number of saved filters for your account. '\
+                      'Please delete an existing filter before attempting to add another.'
       render(json: { error: error_message }, status: :bad_request) && return
     end
 

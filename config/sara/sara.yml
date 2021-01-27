@@ -42,3 +42,6 @@ sentry_url: <%= ENV["SENTRY_URL"] || '' %>
 
 # Address to send job run results
 job_run_email: <%= ENV["JOB_RUN_EMAIL"] || '' %>
+
+# Maximum number of allowed user saved filters
+max_user_filters: <%= ENV["MAX_USER_FILTERS"] || 150 %>
