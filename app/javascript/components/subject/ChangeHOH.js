@@ -1,7 +1,9 @@
-import React from 'react';
+import axios from 'axios';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
-import axios from 'axios';
+import React from 'react';
+
+import reportError from '../util/ReportError';
 
 class ChangeHOH extends React.Component {
   constructor(props) {
@@ -39,11 +41,12 @@ class ChangeHOH extends React.Component {
           }),
         })
         .then(() => {
-          this.setState({ updateDisabled: false });
-          location.reload(true);
+          this.setState({ updateDisabled: false }, () => {
+            location.reload();
+          });
         })
-        .catch(error => {
-          console.error(error);
+        .catch(err => {
+          reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
   }
