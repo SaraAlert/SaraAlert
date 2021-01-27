@@ -270,14 +270,14 @@ class PatientsController < ApplicationController
 
     # Do not allow the user to set this record as a new HoH if they are a dependent already.
     if new_hoh.responder_id != new_hoh_id
-      error_message = 'Move to household action failed: Selected Head of Household is not valid as they are a dependent in an existing household.'
+      error_message = 'Move to household action failed: Selected Head of Household is not valid as they are a dependent in an existing household. Please refresh.'
       render(json: { error: error_message }, status: 406) && return
     end
 
     # Don't allow a HoH to be moved to a household.
     if current_patient.head_of_household
       error_message = 'Move to household action failed: Monitoree is a head of household and therefore cannot be moved to a household '\
-                      'through the Move to Household action.'
+                      'through the Move to Household action. Please refresh.'
       render(json: { error: error_message }, status: 406) && return
     end
 

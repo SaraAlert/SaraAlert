@@ -3,7 +3,6 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment-timezone';
-import { toast } from 'react-toastify';
 import _ from 'lodash';
 
 import BadgeHOH from '../util/BadgeHOH';
@@ -258,10 +257,8 @@ class MoveToHousehold extends React.Component {
         .then(() => {
           // Reload the page to see updated HoH
           location.reload();
-          toast.success('Head of Household successfully updated.');
         })
-        .catch(err => {
-          location.reload();
+        .catch(async err => {
           reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
