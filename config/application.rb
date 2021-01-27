@@ -22,6 +22,6 @@ module SARAAlert
     config.exceptions_app = self.routes
 
     # Set default mailer queue
-    config.action_mailer.deliver_later_queue_name = 'mailers'
+    config.action_mailer.deliver_later_queue_name = :mailers
   end
 end
