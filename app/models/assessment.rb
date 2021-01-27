@@ -14,7 +14,7 @@ class Assessment < ApplicationRecord
     end
   end
   has_one :reported_condition, class_name: 'ReportedCondition'
-  belongs_to :patient
+  belongs_to :patient, touch: true
 
   after_save :update_patient_linelist_after_save
   after_destroy :update_patient_linelist_after_destroy

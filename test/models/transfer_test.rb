@@ -87,6 +87,28 @@ class TransferTest < ActiveSupport::TestCase
     assert_includes(exception.message, 'Who')
   end
 
+  test 'update patient updated_at upon transfer create, update, and delete' do
+    patient = create(:patient)
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    transfer = create(:transfer, patient: patient)
+    assert_in_delta patient.updated_at, DateTime.now, 1
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    transfer.update(who_id: 2)
+    assert_in_delta patient.updated_at, DateTime.now, 1
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    transfer.destroy
+    assert_in_delta patient.updated_at, DateTime.now, 1
+  end
+
   test 'update patient linelist' do
     jur_1 = create(:jurisdiction)
     patient = create(:patient, jurisdiction: jur_1)
