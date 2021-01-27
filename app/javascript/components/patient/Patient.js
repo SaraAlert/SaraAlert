@@ -1,14 +1,14 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Col, Row, Table } from 'react-bootstrap';
+import { Button, Col, Form, Row, Table } from 'react-bootstrap';
 // import { Col, Row Button, Collapse, Card, Table, Form } from 'react-bootstrap';
-// import moment from 'moment';
+import moment from 'moment';
 
 import BadgeHOH from '../util/BadgeHOH';
 import ChangeHOH from '../subject/ChangeHOH';
 import MoveToHousehold from '../subject/MoveToHousehold';
 import RemoveFromHousehold from '../subject/RemoveFromHousehold';
-// import InfoTooltip from '../util/InfoTooltip';
+import InfoTooltip from '../util/InfoTooltip';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -93,6 +93,115 @@ class Patient extends React.Component {
             </div>
           </Col>
         </Row>
+        <Row>
+          {/* TO DO: ADD XXL CLASES HERE (with large)*/}
+          <Col lg={14}>
+            <div className="section-header my-3">
+              <h4 className="section-title">Identification</h4>
+              <div className="edit-link">
+                {this.props.goto && (
+                  <Button variant="link" className="py-0" onClick={() => this.props.goto(0)} aria-label="Edit Identification">
+                    Edit
+                  </Button>
+                )}
+              </div>
+            </div>
+            <Row>
+              <Col sm={10}>
+                <div>
+                  <b>DOB:</b> <span>{this.props.details.date_of_birth && moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
+                </div>
+                <div>
+                  <b>Age:</b> <span>{this.props.details.age || '--'}</span>
+                </div>
+                <div>
+                  <b>Language:</b> <span>{this.props.details.primary_language || '--'}</span>
+                </div>
+                <div>
+                  <b>State/Local ID:</b> <span>{this.props.details.user_defined_id_statelocal || '--'}</span>
+                </div>
+                <div>
+                  <b>CDC ID:</b> <span>{this.props.details.user_defined_id_cdc || '--'}</span>
+                </div>
+                <div>
+                  <b>NNDSS ID:</b> <span>{this.props.details.user_defined_id_nndss || '--'}</span>
+                </div>
+              </Col>
+              <Col sm={14}>
+                <div>
+                  <b>Birth:</b> <span>{this.props.details.sex || '--'}</span>
+                </div>
+                <div>
+                  <b>Gender:</b> <span>{this.props.details.gender_identity || '--'}</span>
+                </div>
+                <div>
+                  <b>Sex:</b> <span>{this.props.details.sexual_orientation || '--'}</span>
+                </div>
+                <div>
+                  <b>Race:</b>{' '}
+                  <span>{`${this.props.details.white ? 'White' : ''}${this.props.details.black_or_african_american ? ' Black or African American' : ''}${
+                    this.props.details.asian ? ' Asian' : ''
+                  }${this.props.details.american_indian_or_alaska_native ? ' American Indian or Alaska Native' : ''}${
+                    this.props.details.native_hawaiian_or_other_pacific_islander ? ' Native Hawaiian or Other Pacific Islander' : ''
+                  }`}</span>
+                </div>
+                <div>
+                  <b>Ethnicity:</b> <span>{this.props.details.ethnicity || '--'}</span>
+                </div>
+                <div>
+                  <b>Nationality:</b> <span>{this.props.details.nationality || '--'}</span>
+                </div>
+              </Col>
+            </Row>
+          </Col>
+          <Col lg={10}>
+            <div className="section-header my-3">
+              <h4 className="section-title">Contact Information</h4>
+              <div className="edit-link">
+                {this.props.goto && (
+                  <Button variant="link" className="py-0" onClick={() => this.props.goto(2)} aria-label="Edit Contact Information">
+                    Edit
+                  </Button>
+                )}
+              </div>
+            </div>
+            <div>
+              <div>
+                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${this.formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
+                {this.props.details.blocked_sms && (
+                  <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
+                    &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
+                  </Form.Label>
+                )}
+              </div>
+              <div>
+                <b>Preferred Contact Time:</b> <span>{this.props.details.preferred_contact_time || '--'}</span>
+              </div>
+              <div>
+                <b>Type:</b> <span>{this.props.details.primary_telephone_type || '--'}</span>
+              </div>
+              <div>
+                <b>Email:</b> <span>{this.props.details.email || '--'}</span>
+              </div>
+              <div>
+                <b>Preferred Reporting Method:</b>{' '}
+                {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method?.includes('SMS')) && (
+                  <span>{this.props.details.preferred_contact_method || '--'}</span>
+                )}
+                {this.props.details.blocked_sms && this.props.details.preferred_contact_method?.includes('SMS') && (
+                  <span className="font-weight-bold text-danger">
+                    {this.props.details.preferred_contact_method || '--'}
+                    <Form.Label className="tooltip-whitespace">
+                      <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
+                    </Form.Label>
+                  </span>
+                )}
+              </div>
+            </div>
+          </Col>
+        </Row>
+
+        {/* TO DO: FIX THIS STYLING */}
         {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
           <div id="household-member-not-hoh" className="pt-2">
             <Row className="mx-3">

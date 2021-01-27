@@ -52,6 +52,29 @@ body {
   border-radius: 0 !important;
 }
 
+.section-header {
+  border-bottom: 1px solid #ddd;
+}
+
+.section-title {
+  display: inline;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.subsection-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.edit-link {
+  float: right;
+  font-size: 0.9rem;
+}
+
 .table-smaller-font {
   font-size: 0.9em;
 }
