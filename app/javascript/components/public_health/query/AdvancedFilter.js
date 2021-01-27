@@ -11,7 +11,6 @@ import moment from 'moment-timezone';
 import DateInput from '../../util/DateInput';
 import confirmDialog from '../../util/ConfirmDialog';
 import supportedLanguages from '../../../data/supportedLanguages.json';
-import reportError from '../../util/ReportError';
 
 class AdvancedFilter extends React.Component {
   constructor(props) {
@@ -436,7 +435,7 @@ class AdvancedFilter extends React.Component {
     axios
       .post(window.BASE_PATH + '/user_filters', { activeFilterOptions: this.state.activeFilterOptions, name: this.state.filterName })
       .catch(err => {
-        reportError(err?.response?.data?.error ? err.response.data.error : err, false);
+        toast.error(err?.response?.data?.error ? err.response.data.error : 'Failed to update filter.');
       })
       .then(response => {
         if (response?.data) {
