@@ -37,7 +37,7 @@ class History < ApplicationRecord
 
   validates :history_type, inclusion: { in: HISTORY_TYPES.values }
 
-  belongs_to :patient
+  belongs_to :patient, touch: true
 
   # All histories within the given time frame
   scope :in_time_frame, lambda { |time_frame|

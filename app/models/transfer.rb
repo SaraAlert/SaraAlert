@@ -5,7 +5,7 @@ class Transfer < ApplicationRecord
   belongs_to :to_jurisdiction, class_name: 'Jurisdiction'
   belongs_to :from_jurisdiction, class_name: 'Jurisdiction'
   belongs_to :who, class_name: 'User'
-  belongs_to :patient
+  belongs_to :patient, touch: true
 
   after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
