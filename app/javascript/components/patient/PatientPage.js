@@ -1,8 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 import Patient from './Patient';
 
@@ -21,17 +19,9 @@ class PatientPage extends React.Component {
     return (
       <React.Fragment>
         <Card id="patient-page" className="mx-2 card-square">
-          <Card.Header
-            className="h5"
-            id="patient-info-header"
-            onClick={() => {
-              this.setState({ hideBody: !this.state.hideBody });
-            }}>
+          <Card.Header className="h5" id="patient-info-header">
             Monitoree Details {this.props.patient.user_defined_id ? `(ID: ${this.props.patient.user_defined_id})` : ''}{' '}
             {this.props.patient.id && <a href={window.BASE_PATH + '/patients/' + this.props.patient.id + '/edit'}>(edit details)</a>}
-            <span className="float-right collapse-hover">
-              {this.state.hideBody ? <FontAwesomeIcon icon={faChevronDown} /> : <FontAwesomeIcon icon={faChevronUp} />}
-            </span>
           </Card.Header>
           <Card.Body>
             <Patient
