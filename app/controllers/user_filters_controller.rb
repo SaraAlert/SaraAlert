@@ -5,12 +5,20 @@ class UserFiltersController < ApplicationController
   before_action :authenticate_user!
   before_action :check_role
 
+  # Maximum number of allowed user filters for the Advanced Filter.
+  MAX_SAVED_FILTERS = 100
+
   def index
     render json: current_user.user_filters.collect { |filter| { contents: JSON.parse(filter.contents), name: filter.name, id: filter.id } }
   end
 
   def create
-    redirect_to root_url unless current_user.user_filters.count < 100 # Enforce upper limit per user
+    # Enforce upper limit per user
+    if current_user.user_filters.count >= MAX_SAVED_FILTERS
+      error_message = 'Reached maximum allowed user saved filters. Please delete filters to be able to save more.'
+      render(json: { error: error_message }, status: :bad_request) && return
+    end
+
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
         filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :allowRange, options: []),
@@ -44,7 +52,7 @@ class UserFiltersController < ApplicationController
   end
 
   def destroy
-    current_user.user_filters.find_by(id: params.permit(:id)[:id]).destroy!
+    current_user.user_filters.find_by(id: params.permit(:id)[:id])&.destroy!
   end
 
   private
