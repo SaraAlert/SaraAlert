@@ -555,7 +555,7 @@ class AdvancedFilter extends React.Component {
         onChange={event => {
           this.changeFilterOption(index, event?.value);
         }}
-        placeHolder="Select Field...."
+        placeholder="Select Field...."
         aria-label="Advanced Filter Options Dropdown"
         className="advanced-filter-select"
         theme={theme => ({
