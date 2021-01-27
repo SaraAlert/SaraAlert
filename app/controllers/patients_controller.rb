@@ -318,6 +318,12 @@ class PatientsController < ApplicationController
       render(json: { error: error_message }, status: :forbidden) && return
     end
 
+    # If the current patients is a HoH, they can't be removed.
+    if current_patient.head_of_household
+      error_message = 'Remove from household  action failed: Monitoree is a head of household. Please refresh.'
+      render(json: { error: error_message }, status: 406) && return
+    end
+
     # ----- Record Updates -----
     old_hoh = current_user.get_patient(current_patient.responder_id)
 
@@ -369,6 +375,12 @@ class PatientsController < ApplicationController
 
     # Do not do anything if there hasn't been a change to the responder at all.
     redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
+
+    # If the new head of household was removed from the household, don't allow the change
+    unless current_patient.dependents.pluck(:id).include?(new_hoh_id)
+      error_message = 'Change head of household action failed: Selected Head of Household is no longer in household. Please refresh.'
+      render(json: { error: error_message }, status: 406) && return
+    end
 
     # ----- Record Updates -----
     old_hoh = current_user.get_patient(current_patient.responder_id)

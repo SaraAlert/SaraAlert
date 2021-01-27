@@ -258,7 +258,7 @@ class MoveToHousehold extends React.Component {
           // Reload the page to see updated HoH
           location.reload();
         })
-        .catch(async err => {
+        .catch(err => {
           reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });

@@ -293,6 +293,30 @@ class PatientsControllerTest < ActionController::TestCase
     sign_out enroller_user
   end
 
+  test 'remove_from_household sends error message when patient is a HoH' do
+    user = create(:public_health_enroller_user)
+
+    # Patient is not viewable by enroller user
+    patient = create(:patient, creator: user)
+    dependent = create(:patient, creator: user, responder_id: patient.id)
+
+    sign_in user
+
+    post :remove_from_household, params: {
+      id: patient.id
+    }
+
+    assert_response(406)
+    assert_equal('Remove from household  action failed: Monitoree is a head of household. Please refresh.',
+                 JSON.parse(response.body)['error'])
+    assert patient.reload.head_of_household
+    assert_not dependent.reload.head_of_household
+    assert_equal(patient.id, patient.responder_id)
+    assert_equal(patient.id, dependent.responder_id)
+
+    sign_out user
+  end
+
   test 'update_hoh sends error message when new HoH does not exist' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
@@ -366,6 +390,33 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal(hoh.id, hoh.responder_id)
 
     sign_out enroller_user
+  end
+
+  test 'update_hoh sends error message new HoH is not in household' do
+    user = create(:public_health_enroller_user)
+    hoh = create(:patient, creator: user)
+    old_dependent = create(:patient, creator: user)
+    dependent = create(:patient, creator: user, responder_id: hoh.id)
+
+    sign_in user
+
+    post :update_hoh, params: {
+      id: hoh.id,
+      new_hoh_id: old_dependent.id,
+      household_ids: [old_dependent.id, dependent.id]
+    }
+
+    assert_response(406)
+    assert_equal('Change head of household action failed: Selected Head of Household is no longer in household. Please refresh.',
+                 JSON.parse(response.body)['error'])
+    assert hoh.reload.head_of_household
+    assert_not old_dependent.reload.head_of_household
+    assert_not dependent.reload.head_of_household
+    assert_equal(hoh.id, hoh.responder_id)
+    assert_equal(hoh.id, dependent.responder_id)
+    assert_equal(old_dependent.id, old_dependent.responder_id)
+
+    sign_out user
   end
 
   test 'update_hoh successfully changes head of household with single dependent' do

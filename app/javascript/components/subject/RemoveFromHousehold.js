@@ -3,6 +3,8 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
 
+import reportError from '../util/ReportError';
+
 class RemoveFromHousehold extends React.Component {
   constructor(props) {
     super(props);
@@ -34,10 +36,10 @@ class RemoveFromHousehold extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/remove_from_household')
         .then(() => {
-          location.reload(true);
+          location.reload();
         })
-        .catch(error => {
-          console.error(error);
+        .catch(err => {
+          reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
   }
