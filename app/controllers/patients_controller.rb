@@ -270,7 +270,8 @@ class PatientsController < ApplicationController
 
     # Do not allow the user to set this record as a new HoH if they are a dependent already.
     if new_hoh.responder_id != new_hoh_id
-      error_message = 'Move to household action failed: Selected Head of Household is not valid as they are a dependent in an existing household. Please refresh.'
+      error_message = 'Move to household action failed: Selected Head of Household is not valid as they are a dependent in an existing household. '\
+                      'Please refresh.'
       render(json: { error: error_message }, status: 406) && return
     end
 
