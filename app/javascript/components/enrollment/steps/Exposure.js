@@ -298,12 +298,9 @@ class Exposure extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Row>
-          <Form.Group as={Col} md="24" className="mb-2">
-            <Form.Label htmlFor="isolation_notes" className="nav-input-label ml-1">
-              NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
-            </Form.Label>
+          <Form.Group as={Col} md="24" controlId="exposure_notes" className="mb-2">
+            <Form.Label className="nav-input-label ml-1">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
-              id="isolation_notes"
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
               rows="4"
@@ -553,12 +550,9 @@ class Exposure extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Row>
-          <Form.Group as={Col} md="24" className="pt-3 mb-2">
-            <Form.Label htmlFor="exposure_notes" className="nav-input-label">
-              NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
-            </Form.Label>
+          <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-3 mb-2">
+            <Form.Label className="nav-input-label">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
-              id="exposure_notes"
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
               rows="4"
