@@ -38,7 +38,6 @@ function getInstance() {
 
 afterEach(() => {
   jest.clearAllMocks();
-  document.getElementsByTagName('html')[0].innerHTML = '';
 });
 
 describe('PatientsTable', () => {
@@ -89,25 +88,6 @@ describe('PatientsTable', () => {
     });
   });
 
-  // it('Clicking the clear filters button calls clear all filters function', () => {
-  //   // TODO: need to determine how to test with local storage values that have been set
-  //   const wrapper = getExposureWrapper();
-  //   const clearAllFiltersSpy = jest.spyOn(wrapper.instance(), 'clearAllFilters');
-  //   expect(clearAllFiltersSpy).toHaveBeenCalledTimes(0);
-  //   wrapper.find('#clear-all-filters').simulate('click');
-  //   expect(clearAllFiltersSpy).toHaveBeenCalledTimes(1);
-  // });
-
-  // it('Jurisdiction and assigned user filters hidden in Transferred Out line list', () => {
-  //   // TODO: need new wrapper created to ensure other tests are not impacted by testing tab selection
-  //   const wrapper = getExposureWrapper();
-  //   expect(wrapper.find('#transferred_out_tab').exists()).toBeTruthy();
-  //   wrapper.instance().handleTabSelect('transferred_out');
-  //   expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBeFalsy();
-  //   expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBeFalsy();
-  //   expect(wrapper.containsMatchingElement(DropdownButton)).toBeFalsy();
-  // });
-
   it('Inputting text into search bar calls update table function', () => {
     const wrapper = getExposureWrapper();
     const handleSearchChangeSpy = jest.spyOn(wrapper.instance(), 'updateTable');
@@ -150,43 +130,12 @@ describe('PatientsTable', () => {
     expect(updateAssignedUsersSpy).toHaveBeenCalledTimes(1);
   });
 
-  // it('Close records bulk action hidden in the Closed line list', () => {
-  //   // TODO: need new wrapper created to ensure other tests are not impacted by testing tab selection
-  //   const wrapper = getExposureWrapper();
-  //   expect(wrapper.find(Dropdown.Item).length).toEqual(3);
-  //   expect(wrapper.find('#closed_tab').exists()).toBeTruthy();
-  //   wrapper.instance().handleTabSelect('closed');
-  //   expect(wrapper.find(Dropdown.Item).length).toEqual(2);
-  //   dropdownOptions.forEach(function(option) {
-  //     if (option === 'Close Records') {
-  //       expect(wrapper.find(Dropdown.Item).someWhere((item) => item.text() === option)).toBeFalsy();
-  //     } else {
-  //       expect(wrapper.find(Dropdown.Item).someWhere((item) => item.text() === option)).toBeTruthy();
-  //     }
-  //   });
-  // });
-
   describe('ExposureDashboard', () => {
     it('Properly renders all tabs', () => {
       const wrapper = getExposureWrapper();
       for (var key of Object.keys(mockExposureTabs)) {
         expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
         expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockExposureTabs[key]['label']);
-      }
-    });
-
-    it('Sets the tab description properly for each tab', () => {
-      const wrapper = getExposureWrapper();
-      expect(wrapper.state('query').tab).toEqual(Object.keys(mockExposureTabs)[0]);
-      for (var key of Object.keys(mockExposureTabs)) {
-        wrapper.instance().handleTabSelect(key);
-        expect(wrapper.state('query').tab).toEqual(key);
-        expect(wrapper.find('#tab-description').text())
-            .toContain(mockExposureTabs[key]['description'] + ' You are currently in the exposure workflow.');
-        if (mockExposureTabs[key]['tooltip']) {
-          expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
-          expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual(mockExposureTabs[key]['tooltip'])
-        }
       }
     });
   });
@@ -197,21 +146,6 @@ describe('PatientsTable', () => {
       for (var key of Object.keys(mockIsolationTabs)) {
         expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
         expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockIsolationTabs[key]['label']);
-      }
-    });
-
-    it('Sets the tab description properly for each tab', () => {
-      const wrapper = getIsolationWrapper();
-      expect(wrapper.state('query').tab).toEqual(Object.keys(mockIsolationTabs)[0]);
-      for (var key of Object.keys(mockIsolationTabs)) {
-        wrapper.instance().handleTabSelect(key);
-        expect(wrapper.state('query').tab).toEqual(key);
-        expect(wrapper.find('#tab-description').text())
-            .toContain(mockIsolationTabs[key]['description'] + ' You are currently in the isolation workflow.');
-        if (mockIsolationTabs[key]['tooltip']) {
-          expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
-          expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual(mockIsolationTabs[key]['tooltip'])
-        }
       }
     });
   });
