@@ -17,6 +17,8 @@ class Patient extends React.Component {
     this.state = {
       expanded: !props.hideBody,
       expandNotes: false,
+      expandArrivalNotes: false,
+      expandPlannedTravelNotes: false,
     };
   }
 
@@ -33,32 +35,48 @@ class Patient extends React.Component {
       return <React.Fragment>No monitoree details to show.</React.Fragment>;
     }
 
-    // const showDomesticAddress =
-    //   this.props.details.address_line_1 ||
-    //   this.props.details.address_line_2 ||
-    //   this.props.details.address_city ||
-    //   this.props.details.address_state ||
-    //   this.props.details.address_zip;
-    // const showForeignAddress =
-    //   this.props.details.foreign_address_line_1 ||
-    //   this.props.details.foreign_address_line_2 ||
-    //   this.props.details.foreign_address_city ||
-    //   this.props.details.foreign_address_zip ||
-    //   this.props.details.foreign_address_country;
-    // const showArrivalSection =
-    //   this.props.details.port_of_origin ||
-    //   this.props.details.date_of_departure ||
-    //   this.props.details.port_of_entry_into_usa ||
-    //   this.props.details.date_of_arrival ||
-    //   this.props.details.flight_or_vessel_carrier ||
-    //   this.props.details.flight_or_vessel_number;
-    // const showPlannedTravel =
-    //   this.props.details.additional_planned_travel_type ||
-    //   this.props.details.additional_planned_travel_destination_country ||
-    //   this.props.details.additional_planned_travel_destination_state ||
-    //   this.props.details.additional_planned_travel_port_of_departure ||
-    //   this.props.details.additional_planned_travel_start_date ||
-    //   this.props.details.additional_planned_travel_end_date;
+    const showDomesticAddress =
+      this.props.details.address_line_1 ||
+      this.props.details.address_line_2 ||
+      this.props.details.address_city ||
+      this.props.details.address_state ||
+      this.props.details.address_zip ||
+      this.props.details.address_county;
+    const showMonitoredAddress =
+      this.props.details.monitored_address_line_1 ||
+      this.props.details.monitored_address_line_2 ||
+      this.props.details.monitored_address_city ||
+      this.props.details.monitored_address_state ||
+      this.props.details.monitored_address_zip ||
+      this.props.details.monitored_address_county;
+    const showForeignAddress =
+      this.props.details.foreign_address_line_1 ||
+      this.props.details.foreign_address_line_2 ||
+      this.props.details.foreign_address_line_3 ||
+      this.props.details.foreign_address_city ||
+      this.props.details.foreign_address_zip ||
+      this.props.details.foreign_address_country;
+    const showForeignMonitoringAddress =
+      this.props.details.foreign_monitored_address_line_1 ||
+      this.props.details.foreign_monitored_address_line_2 ||
+      this.props.details.foreign_monitored_address_city ||
+      this.props.details.foreign_monitored_address_zip ||
+      this.props.details.foreign_monitored_address_country;
+    const showArrivalSection =
+      this.props.details.port_of_origin ||
+      this.props.details.date_of_departure ||
+      this.props.details.flight_or_vessel_carrier ||
+      this.props.details.flight_or_vessel_number ||
+      this.props.details.port_of_entry_into_usa ||
+      this.props.details.date_of_arrival ||
+      this.props.details.source_of_report;
+    const showPlannedTravel =
+      this.props.details.additional_planned_travel_type ||
+      this.props.details.additional_planned_travel_destination_country ||
+      this.props.details.additional_planned_travel_destination_state ||
+      this.props.details.additional_planned_travel_port_of_departure ||
+      this.props.details.additional_planned_travel_start_date ||
+      this.props.details.additional_planned_travel_end_date;
     // const showRiskFactors =
     //   this.props.details.contact_of_known_case ||
     //   this.props.details.member_of_a_common_exposure_cohort ||
@@ -109,7 +127,7 @@ class Patient extends React.Component {
               </div>
             </div>
             <Row>
-              <Col sm={10}>
+              <Col sm={10} className="item-group">
                 <div>
                   <b>DOB:</b> <span>{this.props.details.date_of_birth && moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
                 </div>
@@ -129,7 +147,7 @@ class Patient extends React.Component {
                   <b>NNDSS ID:</b> <span>{this.props.details.user_defined_id_nndss || '--'}</span>
                 </div>
               </Col>
-              <Col sm={14}>
+              <Col sm={14} className="item-group">
                 <div>
                   <b>Birth:</b> <span>{this.props.details.sex || '--'}</span>
                 </div>
@@ -169,7 +187,7 @@ class Patient extends React.Component {
                 )}
               </div>
             </div>
-            <div>
+            <div className="item-group">
               <div>
                 <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${this.formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 {this.props.details.blocked_sms && (
@@ -204,7 +222,7 @@ class Patient extends React.Component {
             </div>
           </Col>
         </Row>
-        <div className="details-expander py-3">
+        <div className="details-expander">
           <a
             href="#"
             onClick={() => {
@@ -218,7 +236,269 @@ class Patient extends React.Component {
 
         {/* TO DO: FINISH ME */}
         <Collapse in={this.state.expanded}>
-          <div>Add stuff here</div>
+          <Row>
+            <Col lg={14} xl={10}>
+              <div className="section-header my-3">
+                <h4 className="section-title">Address</h4>
+                <div className="edit-link">
+                  {this.props.goto && (
+                    <Button variant="link" className="py-0" onClick={() => this.props.goto(1)} aria-label="Edit Address">
+                      Edit
+                    </Button>
+                  )}
+                </div>
+              </div>
+              {(showDomesticAddress || showMonitoredAddress) && (
+                <Row>
+                  {showDomesticAddress && (
+                    <Col sm={showDomesticAddress && showMonitoredAddress ? 12 : 24} className="item-group">
+                      <p className="subsection-title">Home Address</p>
+                      <div>
+                        <b>Address 1:</b> <span>{this.props.details.address_line_1 || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Address 2:</b> <span>{this.props.details.address_line_2 || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Town/City:</b> <span>{this.props.details.address_city || '--'}</span>
+                      </div>
+                      <div>
+                        <b>State:</b> <span>{this.props.details.address_state || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Zip:</b> <span>{this.props.details.address_zip || '--'}</span>
+                      </div>
+                      <div>
+                        <b>County:</b> <span>{this.props.details.address_county || '--'}</span>
+                      </div>
+                    </Col>
+                  )}
+                  {showMonitoredAddress && (
+                    <Col sm={showDomesticAddress && showMonitoredAddress ? 12 : 24} className="item-group">
+                      <p className="subsection-title">Monitoring Address</p>
+                      <div>
+                        <b>Address 1:</b> <span>{this.props.details.monitored_address_line_1 || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Address 2:</b> <span>{this.props.details.monitored_address_line_2 || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Town/City:</b> <span>{this.props.details.monitored_address_city || '--'}</span>
+                      </div>
+                      <div>
+                        <b>State:</b> <span>{this.props.details.monitored_address_state || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Zip:</b> <span>{this.props.details.monitored_address_zip || '--'}</span>
+                      </div>
+                      <div>
+                        <b>County:</b> <span>{this.props.details.monitored_address_county || '--'}</span>
+                      </div>
+                    </Col>
+                  )}
+                </Row>
+              )}
+              {(showForeignAddress || showForeignMonitoringAddress) && (
+                <Row>
+                  {showForeignAddress && (
+                    <Col sm={showForeignAddress && showForeignMonitoringAddress ? 12 : 24} className="item-group">
+                      <p className="subsection-title">Home Address</p>
+                      <div>
+                        <b>Address 1:</b> <span>{this.props.details.foreign_address_line_1 || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Address 2:</b> <span>{this.props.details.foreign_address_line_2 || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Address 3:</b> <span>{this.props.details.foreign_address_line_3 || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Town/City:</b> <span>{this.props.details.foreign_address_city || '--'}</span>
+                      </div>
+                      <div>
+                        <b>State:</b> <span>{this.props.details.foreign_address_state || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Zip:</b> <span>{this.props.details.foreign_address_zip || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Country:</b> <span>{this.props.details.foreign_address_country || '--'}</span>
+                      </div>
+                    </Col>
+                  )}
+                  {showForeignMonitoringAddress && (
+                    <Col sm={showForeignAddress && showForeignMonitoringAddress ? 12 : 24} className="item-group">
+                      <p className="subsection-title">Monitoring Address</p>
+                      <div>
+                        <b>Address 1:</b> <span>{this.props.details.foreign_monitored_address_line_1 || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Address 2:</b> <span>{this.props.details.foreign_monitored_address_line_2 || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Town/City:</b> <span>{this.props.details.foreign_monitored_address_city || '--'}</span>
+                      </div>
+                      <div>
+                        <b>State:</b> <span>{this.props.details.foreign_monitored_address_state || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Zip:</b> <span>{this.props.details.foreign_monitored_address_zip || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Country:</b> <span>{this.props.details.foreign_monitored_address_country || '--'}</span>
+                      </div>
+                    </Col>
+                  )}
+                </Row>
+              )}
+            </Col>
+            <Col lg={10} xl={14}>
+              <Row>
+                <Col xl={12}>
+                  <div className="section-header my-3">
+                    <h4 className="section-title">Arrival Information</h4>
+                    <div className="edit-link">
+                      {this.props.goto && (
+                        <Button variant="link" className="py-0" onClick={() => this.props.goto(3)} aria-label="Edit Arrival Information">
+                          Edit
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  {!(showArrivalSection || this.props.details.travel_related_notes) && <span className="none-text">None</span>}
+                  {showArrivalSection && (
+                    <Row>
+                      <Col md={12} lg={24} xl={12} className="item-group">
+                        <p className="subsection-title">Departed</p>
+                        <div>
+                          <b>Port of Origin:</b> <span>{this.props.details.port_of_origin || '--'}</span>
+                        </div>
+                        <div>
+                          <b>Date of Departure:</b>{' '}
+                          <span>
+                            {this.props.details.date_of_departure ? moment(this.props.details.date_of_departure, 'YYYY-MM-DD').format('MM/DD/YYYY') : '--'}
+                          </span>
+                        </div>
+                        <div>
+                          <b>Carrier:</b> <span>{this.props.details.flight_or_vessel_carrier || '--'}</span>
+                        </div>
+                        <div>
+                          <b>Flight or Vessel #:</b> <span>{this.props.details.flight_or_vessel_number || '--'}</span>
+                        </div>
+                      </Col>
+                      <Col md={12} lg={24} xl={12} className="item-group">
+                        <p className="subsection-title">Arrival</p>
+                        <div>
+                          <b>Port of Entry:</b> <span>{this.props.details.port_of_entry_into_usa || '--'}</span>
+                        </div>
+                        <div>
+                          <b>Date of Arrival:</b>{' '}
+                          <span>
+                            {this.props.details.date_of_arrival ? moment(this.props.details.date_of_arrival, 'YYYY-MM-DD').format('MM/DD/YYYY') : '--'}
+                          </span>
+                        </div>
+                        <div>
+                          <b>Source of Report:</b> <span>{this.props.details.source_of_report || '--'}</span>
+                        </div>
+                      </Col>
+                    </Row>
+                  )}
+                  {this.props.details.travel_related_notes && (
+                    <div>
+                      <p className="subsection-title">Notes</p>
+                      {this.props.details.travel_related_notes.length < 400 && <p>{this.props.details.travel_related_notes}</p>}
+                      {this.props.details.travel_related_notes.length >= 400 && (
+                        <React.Fragment>
+                          <div>
+                            {this.state.expandArrivalNotes
+                              ? this.props.details.travel_related_notes
+                              : this.props.details.travel_related_notes.slice(0, 400) + ' ...'}
+                          </div>
+                          <Button variant="link" className="p-0" onClick={() => this.setState({ expandArrivalNotes: !this.state.expandArrivalNotes })}>
+                            {this.state.expandArrivalNotes ? '(Collapse)' : '(View all)'}
+                          </Button>
+                        </React.Fragment>
+                      )}
+                    </div>
+                  )}
+                </Col>
+                <Col xl={12}>
+                  <div className="section-header my-3">
+                    <h4 className="section-title">
+                      <span className="d-none d-lg-inline d-xl-none d-xxl-inline">Additional</span> Planned Travel
+                    </h4>
+                    <div className="edit-link">
+                      {this.props.goto && (
+                        <Button variant="link" className="py-0" onClick={() => this.props.goto(4)} aria-label="Edit Additional Planned Travel">
+                          Edit
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  {!(showPlannedTravel || this.props.details.additional_planned_travel_related_notes) && <span className="none-text">None</span>}
+                  {showPlannedTravel && (
+                    <div className="item-group">
+                      <div>
+                        <b>Type:</b> <span>{this.props.details.additional_planned_travel_type || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Place:</b>{' '}
+                        <span>
+                          {this.props.details.additional_planned_travel_destination_country}
+                          {this.props.details.additional_planned_travel_destination_state}
+                          {!this.props.details.additional_planned_travel_destination_country &&
+                            !this.props.details.additional_planned_travel_destination_state &&
+                            '--'}
+                        </span>
+                      </div>
+                      <div>
+                        <b>Port of Departure:</b> <span>{this.props.details.additional_planned_travel_port_of_departure || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Start Date:</b>{' '}
+                        <span>
+                          {this.props.details.additional_planned_travel_start_date
+                            ? moment(this.props.details.additional_planned_travel_start_date, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                            : '--'}
+                        </span>
+                      </div>
+                      <div>
+                        <b>End Date:</b>{' '}
+                        <span>
+                          {this.props.details.additional_planned_travel_end_date
+                            ? moment(this.props.details.additional_planned_travel_end_date, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                            : '--'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {this.props.details.additional_planned_travel_related_notes && (
+                    <div>
+                      <p className="subsection-title">Notes</p>
+                      {this.props.details.additional_planned_travel_related_notes.length < 400 && (
+                        <p>{this.props.details.additional_planned_travel_related_notes}</p>
+                      )}
+                      {this.props.details.additional_planned_travel_related_notes.length >= 400 && (
+                        <React.Fragment>
+                          <div>
+                            {this.state.expandPlannedTravelNotes
+                              ? this.props.details.additional_planned_travel_related_notes
+                              : this.props.details.additional_planned_travel_related_notes.slice(0, 400) + ' ...'}
+                          </div>
+                          <Button
+                            variant="link"
+                            className="p-0"
+                            onClick={() => this.setState({ expandPlannedTravelNotes: !this.state.expandPlannedTravelNotes })}>
+                            {this.state.expandPlannedTravelNotes ? '(Collapse)' : '(View all)'}
+                          </Button>
+                        </React.Fragment>
+                      )}
+                    </div>
+                  )}
+                </Col>
+              </Row>
+            </Col>
+          </Row>
         </Collapse>
 
         {/* TO DO: FIX THIS STYLING */}
