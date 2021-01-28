@@ -112,7 +112,7 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal(desired_hoh.id, dependent.responder_id)
 
     # Verify history item was created for new HoH
-    comment = "User added monitoree with ID #{dependent.id} to a household. #{desired_hoh.first_name} #{desired_hoh.last_name}"\
+    comment = "User added monitoree with ID #{dependent.id} to a household. This monitoree"\
               ' will now be responsible for handling the reporting on their behalf.'
     assert_equal(1, desired_hoh.histories.count)
     assert_equal(comment, desired_hoh.histories.last.comment)
@@ -138,7 +138,7 @@ class PatientsControllerTest < ActionController::TestCase
     }
 
     assert_response(:forbidden)
-    assert_equal('Move to household action failed: Selected Head of Household with ID -9999 does not exist.',
+    assert_equal('Move to household action failed: selected Head of Household with ID -9999 does not exist.',
                  JSON.parse(response.body)['error'])
     assert_not patient.reload.head_of_household
     assert_equal(patient.id, patient.responder_id)
@@ -162,7 +162,7 @@ class PatientsControllerTest < ActionController::TestCase
     }
 
     assert_response(:forbidden)
-    assert_equal('Move to household action failed: User does not have permissions to update current monitoree.',
+    assert_equal('Move to household action failed: user does not have permissions to update current monitoree.',
                  JSON.parse(response.body)['error'])
     assert_not patient.reload.head_of_household
     assert_equal(patient.id, patient.responder_id)
@@ -201,7 +201,7 @@ class PatientsControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal('Move to household action failed: Selected Head of Household is not valid as they are a dependent in an existing household. Please refresh.',
+    assert_equal('Move to household action failed: selected Head of Household is not valid as they are a dependent in an existing household. Please refresh.',
                  JSON.parse(response.body)['error'])
     assert_not patient.reload.head_of_household
     assert_not desired_hoh.reload.head_of_household
@@ -228,7 +228,7 @@ class PatientsControllerTest < ActionController::TestCase
 
     assert_response(:bad_request)
     assert_equal(
-      'Move to household action failed: Monitoree is a head of household and therefore cannot be moved to a household through the Move to Household action. '\
+      'Move to household action failed: monitoree is a head of household and therefore cannot be moved to a household through the Move to Household action. '\
       'Please refresh.',
       JSON.parse(response.body)['error']
     )
@@ -287,7 +287,7 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal(dependent.id, dependent.responder_id)
 
     # Verify history item was created for old HoH
-    comment = "User removed dependent monitoree with ID #{dependent.id} from the household. #{hoh.first_name} #{hoh.last_name}"\
+    comment = "User removed dependent monitoree with ID #{dependent.id} from the household. This monitoree"\
               ' will no longer be responsible for handling their reporting.'
     assert_equal(1, hoh.histories.count)
     assert_equal(comment, hoh.histories.last.comment)
@@ -314,7 +314,7 @@ class PatientsControllerTest < ActionController::TestCase
     }
 
     assert_response(:forbidden)
-    assert_equal('Remove from household action failed: User does not have permissions to update current monitoree.',
+    assert_equal('Remove from household action failed: user does not have permissions to update current monitoree.',
                  JSON.parse(response.body)['error'])
     assert_not patient.reload.head_of_household
     assert_equal(patient.id, patient.responder_id)
@@ -336,7 +336,7 @@ class PatientsControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal('Remove from household  action failed: Monitoree is a head of household. Please refresh.',
+    assert_equal('Remove from household action failed: monitoree is a head of household. Please refresh.',
                  JSON.parse(response.body)['error'])
     assert patient.reload.head_of_household
     assert_not dependent.reload.head_of_household
@@ -358,7 +358,7 @@ class PatientsControllerTest < ActionController::TestCase
     sign_in user
 
     post :remove_from_household, params: {
-      id: dependent.id,
+      id: dependent.id
     }
 
     assert_response(:bad_request)
@@ -382,12 +382,11 @@ class PatientsControllerTest < ActionController::TestCase
 
     post :update_hoh, params: {
       id: patient.id,
-      new_hoh_id: -9999,
-      household_ids: []
+      new_hoh_id: -9999
     }
 
     assert_response(:forbidden)
-    assert_equal('Change head of household action failed: Selected Head of Household with ID -9999 does not exist.',
+    assert_equal('Change head of household action failed: selected Head of Household with ID -9999 does not exist.',
                  JSON.parse(response.body)['error'])
     assert_not patient.reload.head_of_household
     assert_equal(patient.id, patient.responder_id)
@@ -408,12 +407,11 @@ class PatientsControllerTest < ActionController::TestCase
 
     post :update_hoh, params: {
       id: hoh.id,
-      new_hoh_id: dependent_2.id,
-      household_ids: [dependent_1.id, dependent_2.id]
+      new_hoh_id: dependent_2.id
     }
 
     assert_response(:forbidden)
-    assert_equal('Change head of household action failed: User does not have permissions to update current monitoree or one or more of their dependents.',
+    assert_equal('Change head of household action failed: user does not have permissions to update current monitoree or one or more of their dependents.',
                  JSON.parse(response.body)['error'])
     assert_not dependent_1.reload.head_of_household
     assert_not dependent_2.reload.head_of_household
@@ -440,7 +438,7 @@ class PatientsControllerTest < ActionController::TestCase
     }
 
     assert_response(:forbidden)
-    assert_equal('Change head of household action failed: User does not have permissions to update current monitoree or one or more of their dependents.',
+    assert_equal('Change head of household action failed: user does not have permissions to update current monitoree or one or more of their dependents.',
                  JSON.parse(response.body)['error'])
     assert_not dependent_1.reload.head_of_household
     assert_not dependent_2.reload.head_of_household
@@ -459,12 +457,11 @@ class PatientsControllerTest < ActionController::TestCase
 
     post :update_hoh, params: {
       id: hoh.id,
-      new_hoh_id: old_dependent.id,
-      household_ids: [old_dependent.id, dependent.id]
+      new_hoh_id: old_dependent.id
     }
 
     assert_response(:bad_request)
-    assert_equal('Change head of household action failed: Selected Head of Household is no longer in household. Please refresh.',
+    assert_equal('Change head of household action failed: selected Head of Household is no longer in household. Please refresh.',
                  JSON.parse(response.body)['error'])
     assert hoh.reload.head_of_household
     assert_not old_dependent.reload.head_of_household
@@ -485,8 +482,7 @@ class PatientsControllerTest < ActionController::TestCase
 
     post :update_hoh, params: {
       id: hoh.id,
-      new_hoh_id: dependent.id,
-      household_ids: [dependent.id]
+      new_hoh_id: dependent.id
     }
     assert_response :success
     assert_not hoh.reload.head_of_household
@@ -518,8 +514,7 @@ class PatientsControllerTest < ActionController::TestCase
 
     post :update_hoh, params: {
       id: hoh.id,
-      new_hoh_id: dependent_2.id,
-      household_ids: [dependent_1.id, dependent_2.id]
+      new_hoh_id: dependent_2.id
     }
 
     assert_response :success
@@ -561,8 +556,7 @@ class PatientsControllerTest < ActionController::TestCase
 
     post :update_hoh, params: {
       id: hoh.id,
-      new_hoh_id: dependent.id,
-      household_ids: [dependent.id]
+      new_hoh_id: dependent.id
     }
 
     assert_response(:bad_request)
