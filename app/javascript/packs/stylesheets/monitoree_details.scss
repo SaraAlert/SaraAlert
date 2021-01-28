@@ -52,3 +52,19 @@ $section-border: #ddd;
 .none-text {
   color: dimgray;
 }
+
+.risk-factors li {
+  margin-bottom: 0.5em;
+  list-style-type: square;
+  color: red;
+}
+
+.risk-factor {
+  display: block;
+  font-weight: bold;
+  color: black;
+}
+
+.risk-val {
+  color: black;
+}
