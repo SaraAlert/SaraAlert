@@ -36,9 +36,6 @@ class ChangeHOH extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/update_hoh', {
           new_hoh_id: this.state.hoh_selection,
-          household_ids: this.props?.dependents?.map(member => {
-            return member.id;
-          }),
         })
         .then(() => {
           this.setState({ updateDisabled: false }, () => {
