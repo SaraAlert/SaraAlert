@@ -222,17 +222,19 @@ class Patient extends React.Component {
             </div>
           </Col>
         </Row>
-        <div className="details-expander">
-          <a
-            href="#"
-            onClick={() => {
-              this.setState({ expanded: !this.state.expanded });
-            }}>
-            {this.state.expanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
-            <span className="pl-2">{this.state.expanded ? 'Hide' : 'Show'} address, travel, exposure, and case information</span>
-          </a>
-          <span className="line"></span>
-        </div>
+        {!this.props.editMode && (
+          <div className="details-expander">
+            <a
+              href="#"
+              onClick={() => {
+                this.setState({ expanded: !this.state.expanded });
+              }}>
+              {this.state.expanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
+              <span className="pl-2">{this.state.expanded ? 'Hide' : 'Show'} address, travel, exposure, and case information</span>
+            </a>
+            <span className="line"></span>
+          </div>
+        )}
 
         {/* TO DO: FINISH ME */}
         <Collapse in={this.state.expanded}>
@@ -583,6 +585,7 @@ Patient.propTypes = {
   details: PropTypes.object,
   jurisdiction_path: PropTypes.string,
   goto: PropTypes.func,
+  editMode: PropTypes.bool,
   hideBody: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };
