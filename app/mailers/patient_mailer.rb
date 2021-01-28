@@ -40,7 +40,6 @@ class PatientMailer < ApplicationMailer
                threshold_hash: threshold_hash, medium: 'SINGLE_SMS' }
     success = TwilioSender.send_sms(patient, params)
     add_success_history(patient) if success
-    add_fail_history_sms(patient) unless success
 
     # Always update the last contact time so the system does not try and send sms again.
     patient.update(last_assessment_reminder_sent: DateTime.now)
