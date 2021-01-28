@@ -1,6 +1,10 @@
 $jurisdiction-box: #e9ecef;
 $section-border: #ddd;
 
+#monitoree-details-header {
+  margin-bottom: 15px;
+}
+
 .jurisdiction-user-box {
   background-color: $jurisdiction-box;
   padding: 10px;
@@ -8,6 +12,7 @@ $section-border: #ddd;
 }
 
 .section-header {
+  margin-bottom: 12px;
   border-bottom: 1px solid $section-border;
 }
 
@@ -33,6 +38,7 @@ $section-border: #ddd;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 15px
 }
 
 .details-expander a {
@@ -45,12 +51,13 @@ $section-border: #ddd;
   flex-grow: 1;
 }
 
-.item-group {
+.item-group, .notes-text {
   margin-bottom: 1rem;
 }
 
 .none-text {
   color: dimgray;
+  margin-bottom: 1rem;
 }
 
 .risk-factors li {
@@ -67,4 +74,8 @@ $section-border: #ddd;
 
 .risk-val {
   color: black;
+}
+
+.household-info {
+  padding: 5px 15px 0px;
 }
