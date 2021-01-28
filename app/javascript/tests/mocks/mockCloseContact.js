@@ -1,5 +1,5 @@
 const mockCloseContact1 = {
-  id: 0,
+  id: null,
   patient_id: 4,
   first_name: null,
   last_name: null,

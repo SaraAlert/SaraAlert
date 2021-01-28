@@ -183,7 +183,9 @@ class CloseContact extends React.Component {
                   id="last_date_of_exposure"
                   date={this.state.last_date_of_exposure}
                   minDate={'2020-01-01'}
-                  maxDate={moment().format('YYYY-MM-DD')}
+                  maxDate={moment()
+                    .add(30, 'days')
+                    .format('YYYY-MM-DD')}
                   onChange={this.handleDateChange}
                   placement="top"
                   isInvalid={!!this.state.errors['last_date_of_exposure']}

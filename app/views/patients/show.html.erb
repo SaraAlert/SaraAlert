@@ -119,7 +119,7 @@
           <th class="DataTable-table-header">Assigned User</th>
           <th class="DataTable-table-header">Notes</th>
           <th class="DataTable-table-header">Contact Attempts</th>
-          <th class="DataTable-table-header">Enrolled</th>
+          <th class="DataTable-table-header">Enrolled?</th>
           <th class="DataTable-table-header" style="min-width: 140px;">Actions</th>
         </tr>
       </thead>
@@ -130,9 +130,9 @@
           <td><%= cc.last_name %></td>
           <td><%= cc.primary_telephone.present? && cc.primary_telephone.length > 10 ? cc.primary_telephone&.gsub('+1', '')&.gsub(/\D/, '')&.insert(3, '-')&.insert(7, '-') : '' %></td>
           <td><%= cc.email %></td>
-          <td class="text-center"><%= cc.last_date_of_exposure&.to_date&.strftime('%m/%d/%Y') || 'Unknown' %></td>
+          <td class="text-center"><%= cc.last_date_of_exposure&.to_date&.strftime('%m/%d/%Y') %></td>
           <td class="text-center"><%= cc.assigned_user %></td>
-          <td><%= cc.notes %></td>
+          <td><%= cc.notes && cc.notes.length > 500 + 3 ? (cc.notes[0..500] + '...') : cc.notes %></td>
           <td class="text-center"><%= cc.contact_attempts || 0 %></td>
           <td class="text-center"> <%= cc.enrolled_id ? 'Yes' : 'No' %> </td>
           <td>
