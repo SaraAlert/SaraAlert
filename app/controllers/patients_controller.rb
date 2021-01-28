@@ -368,7 +368,7 @@ class PatientsController < ApplicationController
     end
 
     # Check to make sure user has access to update all of these records.
-    unless current_user_patients.where(id: household_ids).count == household_ids.length
+    unless current_user_patients.where(id: household_ids).size == household_ids.length
       error_message = 'Change head of household action failed: user does not have permissions to update current monitoree or one or more of their dependents.'
       render(json: { error: error_message }, status: :forbidden) && return
     end
