@@ -115,8 +115,7 @@ class Patient extends React.Component {
           </Col>
         </Row>
         <Row>
-          {/* TO DO: ADD XXL CLASES HERE (with large)*/}
-          <Col lg={14}>
+          <Col lg={14} className="col-xxl-12">
             <div className="section-header">
               <h4 className="section-title">Identification</h4>
               <div className="edit-link">
@@ -177,7 +176,7 @@ class Patient extends React.Component {
               </Col>
             </Row>
           </Col>
-          <Col lg={10}>
+          <Col lg={10} className="col-xxl-12">
             <div className="section-header">
               <h4 className="section-title">Contact Information</h4>
               <div className="edit-link">
@@ -239,7 +238,7 @@ class Patient extends React.Component {
         <Collapse in={this.state.expanded}>
           <div>
             <Row>
-              <Col lg={14} xl={10}>
+              <Col lg={14} xl={10} className="col-xxxl-12">
                 <div className="section-header">
                   <h4 className="section-title">Address</h4>
                   <div className="edit-link">
@@ -354,7 +353,7 @@ class Patient extends React.Component {
                   </Row>
                 )}
               </Col>
-              <Col lg={10} xl={14}>
+              <Col lg={10} xl={14} className="col-xxxl-12">
                 <Row>
                   <Col xl={12}>
                     <div className="section-header">
@@ -502,7 +501,7 @@ class Patient extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col md={12} xl={12} xxl={8}>
+              <Col md={12} xl={12} className="col-xxl-8">
                 <div className="section-header">
                   <h4 className="section-title">
                     Potential Exposure <span className="d-none d-lg-inline">Information</span>
@@ -601,7 +600,7 @@ class Patient extends React.Component {
                 )}
               </Col>
               {this.props.details.isolation && (
-                <Col md={12} xl={12} xxl={8}>
+                <Col md={12} xl={12} className="col-xxl-8">
                   <div className="section-header">
                     <h4 className="section-title">Case Information</h4>
                     <div className="edit-link">
@@ -622,8 +621,8 @@ class Patient extends React.Component {
                   </div>
                 </Col>
               )}
-              {this.props.details.exposure_notes && (showPotentialExposureInfo || showRiskFactors) && (
-                <Col md={12} xl={8} xxl={8}>
+              {(showPotentialExposureInfo || showRiskFactors) && (
+                <Col md={12} xl={8} className="col-xxl-8">
                   <div className="section-header">
                     <h4 className="section-title">Notes</h4>
                     <div className="edit-link">
@@ -634,8 +633,11 @@ class Patient extends React.Component {
                       )}
                     </div>
                   </div>
-                  {this.props.details.exposure_notes.length < 400 && <div className="notes-text">{this.props.details.exposure_notes}</div>}
-                  {this.props.details.exposure_notes.length >= 400 && (
+                  {!this.props.details.exposure_notes && <div className="none-text">None</div>}
+                  {this.props.details.exposure_notes && this.props.details.exposure_notes.length < 400 && (
+                    <div className="notes-text">{this.props.details.exposure_notes}</div>
+                  )}
+                  {this.props.details.exposure_notes && this.props.details.exposure_notes.length >= 400 && (
                     <div className="notes-text">
                       <div>{this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 400) + ' ...'}</div>
                       <Button variant="link" className="p-0" onClick={() => this.setState({ expandNotes: !this.state.expandNotes })}>
