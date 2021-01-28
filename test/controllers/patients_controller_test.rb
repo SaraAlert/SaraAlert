@@ -126,7 +126,7 @@ class PatientsControllerTest < ActionController::TestCase
     sign_out user
   end
 
-  test 'move_to_household sends error message when new HoH does not exist' do
+  test 'move_to_household sends error message when new HoH is not accessible' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
 
@@ -138,7 +138,7 @@ class PatientsControllerTest < ActionController::TestCase
     }
 
     assert_response(:forbidden)
-    assert_equal('Move to household action failed: selected Head of Household with ID -9999 does not exist.',
+    assert_equal('Move to household action failed: selected Head of Household with ID -9999 is not accessible.',
                  JSON.parse(response.body)['error'])
     assert_not patient.reload.head_of_household
     assert_equal(patient.id, patient.responder_id)
@@ -162,7 +162,7 @@ class PatientsControllerTest < ActionController::TestCase
     }
 
     assert_response(:forbidden)
-    assert_equal('Move to household action failed: user does not have permissions to update current monitoree.',
+    assert_equal("Move to household action failed: selected Head of Household with ID #{desired_hoh.id} is not accessible.",
                  JSON.parse(response.body)['error'])
     assert_not patient.reload.head_of_household
     assert_equal(patient.id, patient.responder_id)
@@ -374,7 +374,7 @@ class PatientsControllerTest < ActionController::TestCase
     sign_out user
   end
 
-  test 'update_hoh sends error message when new HoH does not exist' do
+  test 'update_hoh sends error message when new HoH is not accessible' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
 
@@ -386,7 +386,7 @@ class PatientsControllerTest < ActionController::TestCase
     }
 
     assert_response(:forbidden)
-    assert_equal('Change head of household action failed: selected Head of Household with ID -9999 does not exist.',
+    assert_equal('Change head of household action failed: selected Head of Household with ID -9999 is not accessible.',
                  JSON.parse(response.body)['error'])
     assert_not patient.reload.head_of_household
     assert_equal(patient.id, patient.responder_id)
@@ -426,8 +426,8 @@ class PatientsControllerTest < ActionController::TestCase
 
     # Patient is not viewable by enroller user
     hoh = create(:patient, creator: enroller_user)
-    dependent_1 = create(:patient, creator: enroller_user, responder_id: hoh.id)
-    dependent_2 = create(:patient, creator: public_health_enroller_user, responder_id: hoh.id)
+    dependent_1 = create(:patient, creator: public_health_enroller_user, responder_id: hoh.id)
+    dependent_2 = create(:patient, creator: enroller_user, responder_id: hoh.id)
 
     sign_in enroller_user
 

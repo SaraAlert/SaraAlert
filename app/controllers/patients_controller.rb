@@ -254,8 +254,8 @@ class PatientsController < ApplicationController
     # ----- Error Checking -----
 
     # Check to make sure selected HoH record exists.
-    unless Patient.where(purged: false).exists?(new_hoh_id)
-      error_message = "Move to household action failed: selected Head of Household with ID #{new_hoh_id} does not exist."
+    unless current_user_patients.exists?(new_hoh_id)
+      error_message = "Move to household action failed: selected Head of Household with ID #{new_hoh_id} is not accessible."
       render(json: { error: error_message }, status: :forbidden) && return
     end
 
@@ -362,8 +362,8 @@ class PatientsController < ApplicationController
     # ----- Error Checking -----
 
     # Check to make sure selected HoH record exists.
-    unless Patient.where(purged: false).exists?(new_hoh_id)
-      error_message = "Change head of household action failed: selected Head of Household with ID #{new_hoh_id} does not exist."
+    unless current_user_patients.exists?(new_hoh_id)
+      error_message = "Change head of household action failed: selected Head of Household with ID #{new_hoh_id} is not accessible."
       render(json: { error: error_message }, status: :forbidden) && return
     end
 
