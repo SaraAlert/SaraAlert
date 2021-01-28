@@ -30,7 +30,8 @@ afterEach(() => {
 describe('CloseContact', () => {
   it('Properly renders all main components for empty close contact', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
-    expect(emptyCCWrapper.find('div').at(0).text()).toContain('Add New Close Contact');
+    expect(emptyCCWrapper.find('Button').length).toEqual(1)
+    expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
 
     expect(emptyCCWrapper.state('showModal')).toBeFalsy();
     expect(emptyCCWrapper.state('first_name')).toEqual('')
@@ -46,8 +47,10 @@ describe('CloseContact', () => {
 
   it('Properly renders all main components for already existing close contact', () => {
     const alreadyExistingCCWrapper = getShallowWrapper(mockCloseContact2);
-    expect(alreadyExistingCCWrapper.find('div').at(0).text()).toContain('Edit Contact Attempt');
-    expect(alreadyExistingCCWrapper.find('div').at(2).text()).toContain('View Record');
+    expect(alreadyExistingCCWrapper.find('Button').length).toEqual(3)
+    expect(alreadyExistingCCWrapper.find('Button').at(0).text()).toContain('Edit');
+    expect(alreadyExistingCCWrapper.find('Button').at(1).text()).toContain('Contact Attempt');
+    expect(alreadyExistingCCWrapper.find('Button').at(2).text()).toContain('View Record');
 
     expect(alreadyExistingCCWrapper.state('showModal')).toBeFalsy();
     expect(alreadyExistingCCWrapper.state('first_name')).toEqual(mockCloseContact2.first_name || '')
@@ -63,7 +66,8 @@ describe('CloseContact', () => {
   it('Properly renders the modal if button is clicked', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
     expect(emptyCCWrapper.state('showModal')).toBeFalsy();
-    emptyCCWrapper.find(Button).simulate('click');
+    expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
+    emptyCCWrapper.find(Button).at(0).simulate('click');
     expect(emptyCCWrapper.state('showModal')).toBeTruthy();
     expect(emptyCCWrapper.find(Modal.Header).exists()).toBeTruthy();
     expect(emptyCCWrapper.find(Modal.Header).find('.sr-only').text()).toEqual('Close Contact');
@@ -87,17 +91,19 @@ describe('CloseContact', () => {
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
   });
 
-  it('Properly renders empty fields when an empty close contact is used as a prop', () => {
+  it('Can properly set fields when an empty close contact is used as a prop', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
     const handleChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleChange');
     const handleDateChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleDateChange');
 
     expect(emptyCCWrapper.state('showModal')).toBeFalsy();
-    emptyCCWrapper.find(Button).simulate('click');
+    expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
+    emptyCCWrapper.find(Button).at(0).simulate('click');
     expect(emptyCCWrapper.state('showModal')).toBeTruthy();
 
     // This iteration assumes the testInputValues order matches the order of the elements in the DOM
     testInputValues.forEach((iv, index) => {
+      expect(emptyCCWrapper.state(iv.field)).toBeFalsy();
       if (iv.inputType === 'DateInput') {
         emptyCCWrapper.find(Modal.Body).find('Row').at(index).find(iv.inputType).simulate('change', iv.value)
         expect(handleDateChangeSpy).toHaveBeenCalled();
@@ -111,7 +117,8 @@ describe('CloseContact', () => {
 
   it('Properly creates the correct assigned user dropdown options', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
-    emptyCCWrapper.find(Button).simulate('click');
+    expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
+    emptyCCWrapper.find(Button).at(0).simulate('click');
     ASSIGNED_USERS.forEach((user, userIndex) => {
       expect(emptyCCWrapper.find(Modal.Body).find('option').at(userIndex).text()).toEqual(`${user}`);
     })
@@ -120,7 +127,8 @@ describe('CloseContact', () => {
   it('Properly clears any values in the modal on close (when adding a new close contact)', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
     expect(emptyCCWrapper.state('showModal')).toBeFalsy();
-    emptyCCWrapper.find(Button).simulate('click');
+    expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
+    emptyCCWrapper.find(Button).at(0).simulate('click');
     expect(emptyCCWrapper.state('showModal')).toBeTruthy();
 
     // This iteration assumes the testInputValues order matches the order of the elements in the DOM
@@ -174,7 +182,8 @@ describe('CloseContact', () => {
   it('Enables submit button when first and last name are not empty', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
     expect(emptyCCWrapper.state('showModal')).toBeFalsy();
-    emptyCCWrapper.find(Button).simulate('click');
+    expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
+    emptyCCWrapper.find(Button).at(0).simulate('click');
     expect(emptyCCWrapper.state('showModal')).toBeTruthy();
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
     emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').simulate('change', { target: { id: 'first_name', value: 'Anthony' } })
@@ -199,7 +208,9 @@ describe('CloseContact', () => {
   it('Properly calls submit when the button is clicked', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
     const submitSpy = jest.spyOn(emptyCCWrapper.instance(), 'submit');
-    emptyCCWrapper.find(Button).simulate('click'); //open the modal
+    expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
+    emptyCCWrapper.find(Button).at(0).simulate('click');
+    expect(emptyCCWrapper.find('Button').at(2).text()).toContain('Create');
     emptyCCWrapper.find(Button).at(2).simulate('click') //click submit
     expect(submitSpy).toHaveBeenCalledTimes(1)
   });
@@ -208,7 +219,8 @@ describe('CloseContact', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
     const testNoteString = 'The Strongest Avenger'
     expect(emptyCCWrapper.state('showModal')).toBeFalsy();
-    emptyCCWrapper.find(Button).simulate('click');
+    expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
+    emptyCCWrapper.find(Button).at(0).simulate('click');
     expect(emptyCCWrapper.state('showModal')).toBeTruthy();
     expect(emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormLabel').at(0).text()).toContain('Notes');
     expect(emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormLabel').at(1).text()).toContain('2000 characters remaining');
