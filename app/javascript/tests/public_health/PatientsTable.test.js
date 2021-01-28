@@ -1,73 +1,217 @@
 import React from 'react'
+import _ from 'lodash';
 import { shallow } from 'enzyme';
+import { DropdownButton, Dropdown } from 'react-bootstrap';
 import PatientsTable from '../../components/public_health/PatientsTable.js'
 import JurisdictionFilter from '../../components/public_health/query/JurisdictionFilter.js'
 import AssignedUserFilter from '../../components/public_health/query/AssignedUserFilter.js'
 import AdvancedFilter from '../../components/public_health/query/AdvancedFilter.js'
 import CustomTable from '../../components/layout/CustomTable'
+import CloseRecords from '../../components/public_health/actions/CloseRecords';
+import UpdateCaseStatus from '../../components/public_health/actions/UpdateCaseStatus';
+import UpdateAssignedUser from '../../components/public_health/actions/UpdateAssignedUser';
+import InfoTooltip from '../../components/util/InfoTooltip';
 import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction'
 import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs'
 import { mockMonitoringReasons } from '../mocks/mockMonitoringReasons'
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
-const workflow = 'exposure'
 const setQueryMock = jest.fn();
 const setMonitoreeCountMock = jest.fn();
+const dropdownOptions = [ 'Close Records', 'Update Case Status', 'Update Assigned User' ];
 
-function ExposurePatientTable() {
-  return shallow(<PatientsTable
-    authenticity_token={authyToken}
-    jurisdiction_paths={mockJurisdictionPaths}
-    workflow={workflow}
-    jurisdiction={mockJurisdiction1}
-    tabs={mockExposureTabs}
-    monitoring_reasons={mockMonitoringReasons}
-    setQuery={setQueryMock}
-    setFilteredMonitoreesCount={setMonitoreeCountMock}
-  />);
+function getExposureWrapper() {
+  return shallow(<PatientsTable authenticity_token={authyToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'exposure'} jurisdiction={mockJurisdiction1}
+    tabs={mockExposureTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock}/>);
 }
 
-function IsolationPatientTable() {
-  return shallow(<PatientsTable
-    authenticity_token={authyToken}
-    jurisdiction_paths={mockJurisdictionPaths}
-    workflow={workflow}
-    jurisdiction={mockJurisdiction1}
-    tabs={mockIsolationTabs}
-    monitoring_reasons={mockMonitoringReasons}
-    setQuery={setQueryMock}
-    setFilteredMonitoreesCount={setMonitoreeCountMock}
-  />);
+function getIsolationWrapper() {
+  return shallow(<PatientsTable authenticity_token={authyToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'isolation'} jurisdiction={mockJurisdiction1}
+    tabs={mockIsolationTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock}/>);
+}
+
+// Set to exposure workflow
+function getInstance() {
+  return shallow(<PatientsTable authenticity_token={authyToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'exposure'} jurisdiction={mockJurisdiction1}
+    tabs={mockExposureTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock}/>).instance();
 }
 
 afterEach(() => {
   jest.clearAllMocks();
+  document.getElementsByTagName('html')[0].innerHTML = '';
 });
 
 describe('PatientsTable', () => {
   it('Properly renders all main components', () => {
-    const patientTable = ExposurePatientTable();
-    expect(patientTable.find('#search').exists()).toBeTruthy();
-    expect(patientTable.containsMatchingElement(JurisdictionFilter)).toBeTruthy();
-    expect(patientTable.containsMatchingElement(AssignedUserFilter)).toBeTruthy();
-    expect(patientTable.containsMatchingElement(AdvancedFilter)).toBeTruthy();
-    expect(patientTable.containsMatchingElement(CustomTable)).toBeTruthy();
+    const wrapper = getExposureWrapper();
+    expect(wrapper.find('#search').exists()).toBeTruthy();
+    expect(wrapper.find('#tab-description').exists()).toBeTruthy();
+    expect(wrapper.find('#clear-all-filters').exists()).toBeTruthy();
+    expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(AdvancedFilter)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(CustomTable)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(DropdownButton)).toBeTruthy();
+    expect(wrapper.find(Dropdown.Item).length).toEqual(3);
+
+    const defaultTab = Object.keys(mockExposureTabs)[0]
+    expect(wrapper.find('#tab-description').text())
+        .toEqual(mockExposureTabs[defaultTab]['description'] + ' You are currently in the exposure workflow.');
   });
+
+  it('Sets state correctly', () => {
+    const wrapper = getExposureWrapper();
+    expect(_.size(wrapper.state('table').colData)).toEqual(20);
+    expect(_.size(wrapper.state('table').displayedColData)).toEqual(0);
+    expect(_.size(wrapper.state('table').rowData)).toEqual(0);
+    expect(wrapper.state('table').totalRows).toEqual(0);
+    expect(wrapper.state('loading')).toBeFalsy();
+    expect(wrapper.state('actionsEnabled')).toBeFalsy();
+    expect(_.size(wrapper.state('selectedPatients'))).toEqual(0);
+    expect(wrapper.state('selectAll')).toBeFalsy();
+    expect(wrapper.state('jurisdiction_paths')).toEqual({});
+    expect(_.size(wrapper.state('assigned_users'))).toEqual(0);
+    expect(wrapper.state('query').workflow).toEqual('exposure');
+    expect(wrapper.state('query').tab).toEqual(Object.keys(mockExposureTabs)[0]);
+    expect(wrapper.state('query').jurisdiction).toEqual(mockJurisdiction1.id);
+    expect(wrapper.state('query').scope).toEqual('all');
+    expect(wrapper.state('query').user).toEqual(null);
+    expect(wrapper.state('query').search).toEqual('');
+    expect(wrapper.state('query').page).toEqual(0);
+    expect(wrapper.state('query').entries).toEqual(25);
+    expect(_.size(wrapper.state('entryOptions'))).toEqual(5);
+  });
+
+  it('Properly renders dropdown', () => {
+    const wrapper = getExposureWrapper();
+    dropdownOptions.forEach(function(option, index) {
+      expect(wrapper.find(Dropdown.Item).at(index).text()).toEqual(option);
+    });
+  });
+
+  // it('Clicking the clear filters button calls clear all filters function', () => {
+  //   // TODO: need to determine how to test with local storage values that have been set
+  //   const wrapper = getExposureWrapper();
+  //   const clearAllFiltersSpy = jest.spyOn(wrapper.instance(), 'clearAllFilters');
+  //   expect(clearAllFiltersSpy).toHaveBeenCalledTimes(0);
+  //   wrapper.find('#clear-all-filters').simulate('click');
+  //   expect(clearAllFiltersSpy).toHaveBeenCalledTimes(1);
+  // });
+
+  // it('Jurisdiction and assigned user filters hidden in Transferred Out line list', () => {
+  //   // TODO: need new wrapper created to ensure other tests are not impacted by testing tab selection
+  //   const wrapper = getExposureWrapper();
+  //   expect(wrapper.find('#transferred_out_tab').exists()).toBeTruthy();
+  //   wrapper.instance().handleTabSelect('transferred_out');
+  //   expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBeFalsy();
+  //   expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBeFalsy();
+  //   expect(wrapper.containsMatchingElement(DropdownButton)).toBeFalsy();
+  // });
+
+  it('Inputting text into search bar calls update table function', () => {
+    const wrapper = getExposureWrapper();
+    const handleSearchChangeSpy = jest.spyOn(wrapper.instance(), 'updateTable');
+    expect(handleSearchChangeSpy).toHaveBeenCalledTimes(0);
+    expect(wrapper.state('query').search).toEqual('');
+    wrapper.find('#search').simulate('change', { target: { id: 'search', value: 'search' } });
+    expect(wrapper.state('query').search).toEqual('search');
+    expect(handleSearchChangeSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it ('Clicking "Close Records" option displays Close Records modal', () => {
+    const wrapper = getExposureWrapper();
+    expect(wrapper.find(CloseRecords).exists()).toBeFalsy();
+    expect(wrapper.find(Dropdown.Item).at(0).text().includes(dropdownOptions[0])).toBeTruthy();
+    wrapper.find(Dropdown.Item).at(0).simulate('click');
+    expect(wrapper.find(CloseRecords).exists()).toBeTruthy();
+  });
+
+  it ('Clicking "Update Case Status" option displays Update Case Status modal', () => {
+    const wrapper = getExposureWrapper();
+    expect(wrapper.find(UpdateCaseStatus).exists()).toBeFalsy();
+    expect(wrapper.find(Dropdown.Item).at(1).text().includes(dropdownOptions[1])).toBeTruthy();
+    wrapper.find(Dropdown.Item).at(1).simulate('click');
+    expect(wrapper.find(UpdateCaseStatus).exists()).toBeTruthy();
+  });
+
+  it ('Clicking "Update Assigned User" option displays Update Assigned User modal', () => {
+    const wrapper = getExposureWrapper();
+    expect(wrapper.find(UpdateAssignedUser).exists()).toBeFalsy();
+    expect(wrapper.find(Dropdown.Item).at(2).text().includes(dropdownOptions[2])).toBeTruthy();
+    wrapper.find(Dropdown.Item).at(2).simulate('click');
+    expect(wrapper.find(UpdateAssignedUser).exists()).toBeTruthy();
+  });
+
+  it('Calls updateAssignedUsers and updateTable methods when component mounts', () => {
+    const instance = getInstance();
+    const updateAssignedUsersSpy = jest.spyOn(instance, 'updateAssignedUsers');
+    expect(updateAssignedUsersSpy).toHaveBeenCalledTimes(0);
+    instance.componentDidMount();
+    expect(updateAssignedUsersSpy).toHaveBeenCalledTimes(1);
+  });
+
+  // it('Close records bulk action hidden in the Closed line list', () => {
+  //   // TODO: need new wrapper created to ensure other tests are not impacted by testing tab selection
+  //   const wrapper = getExposureWrapper();
+  //   expect(wrapper.find(Dropdown.Item).length).toEqual(3);
+  //   expect(wrapper.find('#closed_tab').exists()).toBeTruthy();
+  //   wrapper.instance().handleTabSelect('closed');
+  //   expect(wrapper.find(Dropdown.Item).length).toEqual(2);
+  //   dropdownOptions.forEach(function(option) {
+  //     if (option === 'Close Records') {
+  //       expect(wrapper.find(Dropdown.Item).someWhere((item) => item.text() === option)).toBeFalsy();
+  //     } else {
+  //       expect(wrapper.find(Dropdown.Item).someWhere((item) => item.text() === option)).toBeTruthy();
+  //     }
+  //   });
+  // });
 
   describe('ExposureDashboard', () => {
     it('Properly renders all tabs', () => {
-      const patientTable = ExposurePatientTable();
+      const wrapper = getExposureWrapper();
       for (var key of Object.keys(mockExposureTabs)) {
-        expect(patientTable.find('#' + key + '_tab').exists()).toBeTruthy();
+        expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
+        expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockExposureTabs[key]['label']);
+      }
+    });
+
+    it('Sets the tab description properly for each tab', () => {
+      const wrapper = getExposureWrapper();
+      expect(wrapper.state('query').tab).toEqual(Object.keys(mockExposureTabs)[0]);
+      for (var key of Object.keys(mockExposureTabs)) {
+        wrapper.instance().handleTabSelect(key);
+        expect(wrapper.state('query').tab).toEqual(key);
+        expect(wrapper.find('#tab-description').text())
+            .toContain(mockExposureTabs[key]['description'] + ' You are currently in the exposure workflow.');
+        if (mockExposureTabs[key]['tooltip']) {
+          expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
+          expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual(mockExposureTabs[key]['tooltip'])
+        }
       }
     });
   });
 
   describe('IsolationDashboard', () => {
     it('Properly renders all tabs', () => {
-      const patientTable = IsolationPatientTable();
+      const wrapper = getIsolationWrapper();
       for (var key of Object.keys(mockIsolationTabs)) {
-        expect(patientTable.find('#' + key + '_tab').exists()).toBeTruthy();
+        expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
+        expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockIsolationTabs[key]['label']);
+      }
+    });
+
+    it('Sets the tab description properly for each tab', () => {
+      const wrapper = getIsolationWrapper();
+      expect(wrapper.state('query').tab).toEqual(Object.keys(mockIsolationTabs)[0]);
+      for (var key of Object.keys(mockIsolationTabs)) {
+        wrapper.instance().handleTabSelect(key);
+        expect(wrapper.state('query').tab).toEqual(key);
+        expect(wrapper.find('#tab-description').text())
+            .toContain(mockIsolationTabs[key]['description'] + ' You are currently in the isolation workflow.');
+        if (mockIsolationTabs[key]['tooltip']) {
+          expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
+          expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual(mockIsolationTabs[key]['tooltip'])
+        }
       }
     });
   });
