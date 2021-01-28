@@ -19,7 +19,6 @@ $section-border: #ddd;
 }
 
 .subsection-title {
-  font-size: 0.9rem;
   font-weight: bold;
   text-transform: uppercase;
   margin-bottom: 0.5rem;
@@ -38,13 +37,18 @@ $section-border: #ddd;
 
 .details-expander a {
   text-decoration: none;
-  // margin-right: 10px;
 }
 
-// .details-expander a.arrow-link {padding-bottom:3px} /* tweak to position to make arrow icon appear more vertically centered with the rest of the line */
 .details-expander .line {
   margin-left: 5px;
   border-bottom: 1px dashed #bbb;
-  padding-top: 3px;
   flex-grow: 1;
+}
+
+.item-group {
+  margin-bottom: 1rem;
+}
+
+.none-text {
+  color: dimgray;
 }
