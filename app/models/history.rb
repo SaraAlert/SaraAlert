@@ -55,14 +55,14 @@ class History < ApplicationRecord
     end
   }
 
-  def self.errored_contact_attempt_hoh_and_dependents(patient: nil, created_by: 'Sara Alert System', comment: 'Failed Contact Attempt', error_message: nil)
-    patient&.active_dependents&.each do |dependent|
-      if dependent.responder == dependent
+  def self.errored_contact_dependent_and_their_hoh(patient: nil, created_by: 'Sara Alert System', comment: 'Failed Contact Attempt', error_message: nil)
+    [patient, patient&.responder].each do |pat|
+      if pat.responder == pat
         recipient = 'this monitoree'
-        responder = dependent
+        responder = pat
       else
         recipient = "this monitoree's head of household"
-        responder = dependent.responder
+        responder = pat.responder
       end
       details = if !error_message.nil?
                   ' Error details: ' + error_message
@@ -74,7 +74,7 @@ class History < ApplicationRecord
                 else
                   "Sara Alert attempted to call #{recipient} at #{responder.primary_telephone}, but the call could not be completed.#{details}"
                 end
-      create_history(dependent, created_by, HISTORY_TYPES[:contact_attempt], comment)
+      create_history(pat, created_by, HISTORY_TYPES[:contact_attempt], comment)
     end
   end
 
