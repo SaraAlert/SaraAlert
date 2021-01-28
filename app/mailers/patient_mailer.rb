@@ -209,11 +209,6 @@ class PatientMailer < ApplicationMailer
     History.report_reminder(patient: patient, comment: comment)
   end
 
-  def add_fail_history_voice(patient)
-    comment = "Sara Alert attempted to call monitoree at #{patient.primary_telephone}, but the call could not be completed."
-    History.report_reminder(patient: patient, comment: comment)
-  end
-
   def add_fail_history_blank_field(patient, type)
     History.report_reminder(patient: patient,
                             comment: "Sara Alert could not send a report reminder to this monitoree via \
