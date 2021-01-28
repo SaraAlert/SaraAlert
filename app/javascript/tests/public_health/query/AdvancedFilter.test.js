@@ -716,8 +716,6 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “next” relative date periods include records with today’s date as of the current time. The current setting of "next 1 weeks" will return records with Latest Report date from now through ${moment(new Date()).add(1,'weeks').format('MM/DD/YY')}.`);
   });
 
-  // TO DO: between option bound prevention
-
   it('Clicking "Save" button opens Filter Name modal', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
