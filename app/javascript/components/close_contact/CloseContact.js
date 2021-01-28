@@ -23,10 +23,8 @@ class CloseContact extends React.Component {
     this.state = {
       showModal: false,
       disableCreate:
-        !this.props.close_contact.first_name &&
-        !this.props.close_contact.last_name &&
-        !this.props.close_contact.primary_telephone &&
-        !this.props.close_contact.email,
+        (!this.props.close_contact.first_name && !this.props.close_contact.last_name) ||
+        (!this.props.close_contact.primary_telephone && !this.props.close_contact.email),
       loading: false,
       errors: {},
       first_name: this.props.close_contact.first_name || '',
@@ -54,10 +52,8 @@ class CloseContact extends React.Component {
       // When they click cancel, we want to null out all of the fields
       newState = {
         disableCreate:
-          !this.props.close_contact.first_name &&
-          !this.props.close_contact.last_name &&
-          !this.props.close_contact.primary_telephone &&
-          !this.props.close_contact.email,
+          (!this.props.close_contact.first_name && !this.props.close_contact.last_name) ||
+          (!this.props.close_contact.primary_telephone && !this.props.close_contact.email),
         errors: {},
         first_name: this.props.close_contact.first_name || '',
         last_name: this.props.close_contact.last_name || '',
@@ -83,12 +79,6 @@ class CloseContact extends React.Component {
       event.target.value = '';
     }
     let value;
-    let disableCreate = this.state.disableCreate;
-    const possiblyRequiredFields = ['first_name', 'last_name', 'primary_telephone', 'email'];
-    if (possiblyRequiredFields.includes(event.target.id)) {
-      // This checks that at least one of the possiblyRequiredFields is set to a truthy value
-      disableCreate = !possiblyRequiredFields.some(field => (field === event.target.id ? !!event.target.value : !!this.state[`${field}`]));
-    }
     if (event?.target?.id && event.target.id === 'assigned_user') {
       if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
       // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
@@ -98,7 +88,12 @@ class CloseContact extends React.Component {
     } else {
       value = event.target.value;
     }
-    this.setState({ [event.target.id]: value, disableCreate });
+    this.setState({ [event.target.id]: value }, () => {
+      let disableCreate = (!this.state.first_name && !this.state.last_name) || (!this.state.primary_telephone && !this.state.email);
+      this.setState({
+        disableCreate,
+      });
+    });
   };
 
   contactAttempt = async () => {
@@ -281,7 +276,7 @@ class CloseContact extends React.Component {
           {/* This does not impact component functionality at all. */}
           {this.state.disableCreate && (
             <ReactTooltip id="create-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
-              Please enter one of the following: First Name, Last Name, Phone Number, or Email
+              Please enter at least one name (First Name or Last Name) and at least one reporting method (Phone Number or Email).
             </ReactTooltip>
           )}
         </Modal.Footer>
