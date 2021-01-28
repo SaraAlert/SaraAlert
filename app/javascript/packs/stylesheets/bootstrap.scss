@@ -8,6 +8,16 @@ $yellow:  #F0F020 !default;
 
 $grid-columns: 24;
 
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+  xxxl: 1640px
+);
+
 body {
   background-color: #f5f5f5 !important;
 }
