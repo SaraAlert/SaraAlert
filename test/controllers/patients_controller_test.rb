@@ -241,6 +241,35 @@ class PatientsControllerTest < ActionController::TestCase
     sign_out user
   end
 
+  test 'move_to_household sends error message when record fails to update' do
+    user = create(:public_health_enroller_user)
+    desired_hoh = create(:patient, creator: user)
+    patient = create(:patient, creator: user)
+
+    # Create invalid record and skip validation
+    patient.update_attribute('assigned_user', -1)
+    patient.reload
+
+    sign_in user
+
+    post :move_to_household, params: {
+      id: patient.id,
+      new_hoh_id: desired_hoh.id
+    }
+
+    assert_response(:bad_request)
+    assert_equal(
+      'Move to household action failed: monitoree was unable to be be updated.',
+      JSON.parse(response.body)['error']
+    )
+    assert_not patient.reload.head_of_household
+    assert_not desired_hoh.reload.head_of_household
+    assert_equal(patient.id, patient.responder_id)
+    assert_equal(desired_hoh.id, desired_hoh.responder_id)
+
+    sign_out user
+  end
+
   test 'remove_from_household successfully removes record from a household' do
     user = create(:public_health_enroller_user)
     hoh = create(:patient, creator: user)
@@ -313,6 +342,34 @@ class PatientsControllerTest < ActionController::TestCase
     assert_not dependent.reload.head_of_household
     assert_equal(patient.id, patient.responder_id)
     assert_equal(patient.id, dependent.responder_id)
+
+    sign_out user
+  end
+
+  test 'remove_from_household sends error message when record fails to update' do
+    user = create(:public_health_enroller_user)
+    hoh = create(:patient, creator: user)
+    dependent = create(:patient, creator: user, responder_id: hoh.id)
+
+    # Create invalid record and skip validation
+    dependent.update_attribute('assigned_user', -1)
+    dependent.reload
+
+    sign_in user
+
+    post :remove_from_household, params: {
+      id: dependent.id,
+    }
+
+    assert_response(:bad_request)
+    assert_equal(
+      'Remove from household action failed: monitoree was unable to be be updated.',
+      JSON.parse(response.body)['error']
+    )
+    assert_not dependent.reload.head_of_household
+    assert hoh.reload.head_of_household
+    assert_equal(hoh.id, dependent.responder_id)
+    assert_equal(hoh.id, hoh.responder_id)
 
     sign_out user
   end
@@ -487,6 +544,36 @@ class PatientsControllerTest < ActionController::TestCase
 
     # Verify no history items for other dependents
     assert_equal(0, dependent_1.histories.count)
+
+    sign_out user
+  end
+
+  test 'update_hoh sends error message when record(s) fail to update' do
+    user = create(:public_health_enroller_user)
+    hoh = create(:patient, creator: user)
+    dependent = create(:patient, creator: user, responder_id: hoh.id)
+
+    # Create invalid record and skip validation
+    dependent.update_attribute('assigned_user', -1)
+    dependent.reload
+
+    sign_in user
+
+    post :update_hoh, params: {
+      id: hoh.id,
+      new_hoh_id: dependent.id,
+      household_ids: [dependent.id]
+    }
+
+    assert_response(:bad_request)
+    assert_equal(
+      'Change head of household action failed: monitoree(s) were unable to be be updated.',
+      JSON.parse(response.body)['error']
+    )
+    assert_not dependent.reload.head_of_household
+    assert hoh.reload.head_of_household
+    assert_equal(hoh.id, dependent.responder_id)
+    assert_equal(hoh.id, hoh.responder_id)
 
     sign_out user
   end
