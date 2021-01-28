@@ -70,12 +70,7 @@ class PatientMailer < ApplicationMailer
       params = { prompt: contents, patient_submission_token: patient.submission_token,
                  threshold_hash: threshold_hash, medium: 'SINGLE_SMS' }
       patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
-      if TwilioSender.send_sms(patient, params)
-        add_success_history(dependent)
-      else
-        add_fail_history_sms(dependent)
-        patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
-      end
+      add_success_history(dependent) if TwilioSender.send_sms(patient, params)
     end
   end
 
@@ -117,12 +112,7 @@ class PatientMailer < ApplicationMailer
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
-    if TwilioSender.start_studio_flow_assessment(patient, params)
-      add_success_history(patient)
-    else
-      add_fail_history_sms(patient)
-      patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
-    end
+    add_success_history(patient) if TwilioSender.start_studio_flow_assessment(patient, params)
   end
 
   def assessment_voice(patient)
@@ -165,12 +155,7 @@ class PatientMailer < ApplicationMailer
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
-    if TwilioSender.start_studio_flow_assessment(patient, params)
-      add_success_history(patient)
-    else
-      add_fail_history_voice(patient)
-      patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
-    end
+    add_success_history(patient) if TwilioSender.start_studio_flow_assessment(patient, params)
   end
 
   def assessment_email(patient)
