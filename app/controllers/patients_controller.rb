@@ -288,8 +288,8 @@ class PatientsController < ApplicationController
     updated = current_patient.update(responder_id: new_hoh_id)
 
     if !updated
-      error_message = 'Move to household action failed: Monitoree was unable to be be updated.'
-      render(json: { error: error_message, status: :forbidden }) && return
+      error_message = 'Move to household action failed: monitoree was unable to be be updated.'
+      render(json: { error: error_message }, status: :bad_request) && return
     else
       # Create history item for new HoH
       comment = "User added monitoree with ID #{current_patient.id} to a household. #{new_hoh.first_name} #{new_hoh.last_name}"\
@@ -331,8 +331,8 @@ class PatientsController < ApplicationController
     updated = current_patient.update(responder_id: current_patient.id)
 
     if !updated
-      error_message = 'Remove from household action failed: Monitoree was unable to be be updated.'
-      render(json: { error: error_message, status: :forbidden }) && return
+      error_message = 'Remove from household action failed: monitoree was unable to be be updated.'
+      render(json: { error: error_message }, status: :bad_request) && return
     else
       # Create history item for old HoH
       comment = "User removed dependent monitoree with ID #{current_patient.id} from the household. #{old_hoh.first_name} #{old_hoh.last_name}"\
@@ -389,13 +389,13 @@ class PatientsController < ApplicationController
       Patient.transaction do
         # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
         current_user_patients.where(id: patient_ids_to_update).each do |patient|
-          patient.update(responder_id: new_hoh_id)
+          patient.update!(responder_id: new_hoh_id)
         end
       end
     rescue ActiveRecord::RecordInvalid => e
-      error_message = 'Change head of household action failed: Monitoree(s) were unable to be be updated.'
+      error_message = 'Change head of household action failed: monitoree(s) were unable to be be updated.'
       Rails.logger.info("#{error_message} Error: #{e}")
-      render(json: { error: error_message, status: :bad_request }) && return
+      render(json: { error: error_message }, status: :bad_request) && return
     end
 
     comment = "User changed head of household from monitoree with ID #{old_hoh.id} to monitoree with ID #{new_hoh_id}."\
