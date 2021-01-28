@@ -508,7 +508,7 @@ class PatientsTable extends React.Component {
             <Card.Body className="pl-4 pr-4">
               <Row>
                 <Col md="18">
-                  <div className="lead mt-1 mb-3">
+                  <div id="tab-description" className="lead mt-1 mb-3">
                     {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u> workflow.
                     {this.props.tabs[this.state.query.tab].tooltip && (
                       <InfoTooltip tooltipTextKey={this.props.tabs[this.state.query.tab].tooltip} location="right"></InfoTooltip>
@@ -517,7 +517,7 @@ class PatientsTable extends React.Component {
                 </Col>
                 <Col>
                   <div className="float-right">
-                    <Button size="sm" onClick={this.clearAllFilters}>
+                    <Button id="clear-all-filters" size="sm" onClick={this.clearAllFilters}>
                       <i className="fas fa-eraser"></i>
                       <span className="ml-1">Clear All Filters</span>
                     </Button>
@@ -574,7 +574,7 @@ class PatientsTable extends React.Component {
                     workflow={this.props.workflow}
                     updateStickySettings={true}
                   />
-                  {this.state.query !== 'transferred_out' && (
+                  {this.state.query.tab !== 'transferred_out' && (
                     <DropdownButton
                       as={ButtonGroup}
                       size="sm"
