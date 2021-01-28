@@ -9,13 +9,13 @@ import { mockCloseContact1, mockCloseContact2, mockCloseContact3 } from '../mock
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const ASSIGNED_USERS = [ 123234, 512678, 910132 ]
 const testInputValues = [
-  { field: 'first_name', value: 'Anthony', inputType: 'FormControl' },
-  { field: 'last_name', value: 'Stark', inputType: 'FormControl' },
-  { field: 'primary_telephone', value: '1234567890', inputType: 'PhoneInput' },
-  { field: 'email', value: 'tinman@starkindustries.com', inputType: 'FormControl' },
-  { field: 'last_date_of_exposure', value: '2020-05-16', inputType: 'DateInput' },
-  { field: 'assigned_user', value: ASSIGNED_USERS[0], inputType: 'FormControl' },
-  { field: 'notes', value: 'Inevitable', inputType: 'FormControl' },
+  { field: 'first_name', value: 'Anthony' },
+  { field: 'last_name', value: 'Stark' },
+  { field: 'primary_telephone', value: '1234567890' },
+  { field: 'email', value: 'tinman@starkindustries.com' },
+  { field: 'last_date_of_exposure', value: '2020-05-16' },
+  { field: 'assigned_user', value: ASSIGNED_USERS[0] },
+  { field: 'notes', value: 'Inevitable' },
 ]
 
 function getShallowWrapper(closeContact) {
@@ -92,17 +92,17 @@ describe('CloseContact', () => {
     expect(emptyCCWrapper.find(Modal.Header).find('ModalTitle').text()).toEqual('Close Contact');
     expect(emptyCCWrapper.find(Modal.Body).exists()).toBeTruthy();
     // Using `toContain` instead of `toEqual` to avoid any whitespace issues
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormLabel').text()).toContain(`First Name`);
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormLabel').text()).toContain(`Last Name`);
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(2).find('FormLabel').text()).toContain(`Phone Number`);
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('FormLabel').text()).toContain(`Email`);
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(4).find('FormLabel').text()).toContain(`Last Date of Exposure`);
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(5).find('FormLabel').text()).toContain(`Assigned User`); // There's also the InfoTooltip
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(5).find('FormLabel').containsMatchingElement(<InfoTooltip />)).toBeTruthy();
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormLabel').at(0).text()).toContain(`First Name`);
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormLabel').at(1).text()).toContain(`Last Name`);
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormLabel').at(0).text()).toContain(`Phone Number`);
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormLabel').at(1).text()).toContain(`Email`);
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(2).find('FormLabel').at(0).text()).toContain(`Last Date of Exposure`);
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(2).find('FormLabel').at(1).text()).toContain(`Assigned User`); // There's also the InfoTooltip
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(2).find('FormLabel').containsMatchingElement(<InfoTooltip />)).toBeTruthy();
     expect(emptyCCWrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('assignedUser');
 
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormLabel').at(0).text()).toContain('Notes');
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormLabel').at(1).text()).toContain('2000 characters remaining');
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('FormLabel').at(0).text()).toContain('Notes');
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('FormLabel').at(1).text()).toContain('2000 characters remaining');
     expect(emptyCCWrapper.find(Modal.Footer).exists()).toBeTruthy();
     expect(emptyCCWrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
     expect(emptyCCWrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Create');
@@ -119,18 +119,48 @@ describe('CloseContact', () => {
     emptyCCWrapper.find(Button).at(0).simulate('click');
     expect(emptyCCWrapper.state('showModal')).toBeTruthy();
 
-    // This iteration assumes the testInputValues order matches the order of the elements in the DOM
-    testInputValues.forEach((iv, index) => {
-      expect(emptyCCWrapper.state(iv.field)).toBeFalsy();
-      if (iv.inputType === 'DateInput') {
-        emptyCCWrapper.find(Modal.Body).find('Row').at(index).find(iv.inputType).simulate('change', iv.value)
-        expect(handleDateChangeSpy).toHaveBeenCalled();
-      } else {
-        emptyCCWrapper.find(Modal.Body).find('Row').at(index).find(iv.inputType).simulate('change', { target: { id: iv.field, value: iv.value } })
-        expect(handleChangeSpy).toHaveBeenCalled();
-      }
-      expect(emptyCCWrapper.state(iv.field)).toEqual(iv.value);
-    });
+    let value;
+    value = testInputValues.find(x => x.field === 'first_name').value
+    expect(emptyCCWrapper.state('first_name')).toBeFalsy();
+    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(0).simulate('change', { target: { id: 'first_name', value: value } })
+    expect(handleChangeSpy).toHaveBeenCalled();
+    expect(emptyCCWrapper.state('first_name')).toEqual(value);
+
+    value = testInputValues.find(x => x.field === 'last_name').value
+    expect(emptyCCWrapper.state('last_name')).toBeFalsy();
+    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(1).simulate('change', { target: { id: 'last_name', value: value } })
+    expect(handleChangeSpy).toHaveBeenCalled();
+    expect(emptyCCWrapper.state('last_name')).toEqual(value);
+
+    value = testInputValues.find(x => x.field === 'primary_telephone').value
+    expect(emptyCCWrapper.state('primary_telephone')).toBeFalsy();
+    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('PhoneInput').simulate('change', { target: { id: 'primary_telephone', value: value } })
+    expect(handleChangeSpy).toHaveBeenCalled();
+    expect(emptyCCWrapper.state('primary_telephone')).toEqual(value);
+
+    value = testInputValues.find(x => x.field === 'email').value
+    expect(emptyCCWrapper.state('email')).toBeFalsy();
+    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: value } })
+    expect(handleChangeSpy).toHaveBeenCalled();
+    expect(emptyCCWrapper.state('email')).toEqual(value);
+
+    value = testInputValues.find(x => x.field === 'last_date_of_exposure').value
+    expect(emptyCCWrapper.state('last_date_of_exposure')).toBeFalsy();
+    emptyCCWrapper.find(Modal.Body).find('Row').at(2).find('DateInput').simulate('change', value )
+    expect(handleDateChangeSpy).toHaveBeenCalled();
+    expect(emptyCCWrapper.state('last_date_of_exposure')).toEqual(value);
+
+    value = testInputValues.find(x => x.field === 'assigned_user').value
+    expect(emptyCCWrapper.state('assigned_user')).toBeFalsy();
+    emptyCCWrapper.find(Modal.Body).find('Row').at(2).find('FormControl').simulate('change', { target: { id: 'assigned_user', value: value } })
+    expect(handleChangeSpy).toHaveBeenCalled();
+    expect(emptyCCWrapper.state('assigned_user')).toEqual(value);
+
+    value = testInputValues.find(x => x.field === 'notes').value
+    expect(emptyCCWrapper.state('notes')).toBeFalsy();
+    emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('FormControl').simulate('change', { target: { id: 'notes', value: value } })
+    expect(handleChangeSpy).toHaveBeenCalled();
+    expect(emptyCCWrapper.state('notes')).toEqual(value);
   });
 
   it('Properly creates the correct assigned user dropdown options', () => {
@@ -149,14 +179,21 @@ describe('CloseContact', () => {
     emptyCCWrapper.find(Button).at(0).simulate('click');
     expect(emptyCCWrapper.state('showModal')).toBeTruthy();
 
-    // This iteration assumes the testInputValues order matches the order of the elements in the DOM
-    testInputValues.forEach((iv, index) => {
-      if (iv.inputType === 'DateInput') {
-        emptyCCWrapper.find(Modal.Body).find('Row').at(index).find(iv.inputType).simulate('change', iv.value)
-      } else {
-        emptyCCWrapper.find(Modal.Body).find('Row').at(index).find(iv.inputType).simulate('change', { target: { id: iv.field, value: iv.value } })
-      }
-    });
+    let value;
+    value = testInputValues.find(x => x.field === 'first_name').value
+    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(0).simulate('change', { target: { id: 'first_name', value: value } })
+    value = testInputValues.find(x => x.field === 'last_name').value
+    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(1).simulate('change', { target: { id: 'last_name', value: value } })
+    value = testInputValues.find(x => x.field === 'primary_telephone').value
+    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('PhoneInput').simulate('change', { target: { id: 'primary_telephone', value: value } })
+    value = testInputValues.find(x => x.field === 'email').value
+    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: value } })
+    value = testInputValues.find(x => x.field === 'last_date_of_exposure').value
+    emptyCCWrapper.find(Modal.Body).find('Row').at(2).find('DateInput').simulate('change', value )
+    value = testInputValues.find(x => x.field === 'assigned_user').value
+    emptyCCWrapper.find(Modal.Body).find('Row').at(2).find('FormControl').simulate('change', { target: { id: 'assigned_user', value: value } })
+    value = testInputValues.find(x => x.field === 'notes').value
+    emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('FormControl').simulate('change', { target: { id: 'notes', value: value } })
 
     emptyCCWrapper.find(Button).at(1).simulate('click');
     // Once the modal is closed, the values should default back to their nulled out original values
@@ -176,14 +213,21 @@ describe('CloseContact', () => {
     existingCCWrapper.find(Button).at(0).simulate('click');
     expect(existingCCWrapper.state('showModal')).toBeTruthy();
 
-    // This iteration assumes the testInputValues order matches the order of the elements in the DOM
-    testInputValues.forEach((iv, index) => {
-      if (iv.inputType === 'DateInput') {
-        existingCCWrapper.find(Modal.Body).find('Row').at(index).find(iv.inputType).simulate('change', iv.value)
-      } else {
-        existingCCWrapper.find(Modal.Body).find('Row').at(index).find(iv.inputType).simulate('change', { target: { id: iv.field, value: iv.value } })
-      }
-    });
+    let value;
+    value = testInputValues.find(x => x.field === 'first_name').value
+    existingCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(0).simulate('change', { target: { id: 'first_name', value: value } })
+    value = testInputValues.find(x => x.field === 'last_name').value
+    existingCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(1).simulate('change', { target: { id: 'last_name', value: value } })
+    value = testInputValues.find(x => x.field === 'primary_telephone').value
+    existingCCWrapper.find(Modal.Body).find('Row').at(1).find('PhoneInput').simulate('change', { target: { id: 'primary_telephone', value: value } })
+    value = testInputValues.find(x => x.field === 'email').value
+    existingCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: value } })
+    value = testInputValues.find(x => x.field === 'last_date_of_exposure').value
+    existingCCWrapper.find(Modal.Body).find('Row').at(2).find('DateInput').simulate('change', value )
+    value = testInputValues.find(x => x.field === 'assigned_user').value
+    existingCCWrapper.find(Modal.Body).find('Row').at(2).find('FormControl').simulate('change', { target: { id: 'assigned_user', value: value } })
+    value = testInputValues.find(x => x.field === 'notes').value
+    existingCCWrapper.find(Modal.Body).find('Row').at(3).find('FormControl').simulate('change', { target: { id: 'notes', value: value } })
 
     existingCCWrapper.find(Button).at(3).simulate('click');
     // Once the modal is closed, the values should default back to their nulled out original values
@@ -214,10 +258,46 @@ describe('CloseContact', () => {
     expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
     expect(emptyCCWrapper.state('showModal')).toBeTruthy();
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormLabel').at(0).text()).toContain('Notes');
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormLabel').at(1).text()).toContain('2000 characters remaining');
-    emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormControl').simulate('change', { target: { id: 'notes', value: testNoteString } })
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(6).find('FormLabel').at(1).text()).toContain(`${2000-testNoteString.length} characters remaining`);
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('FormLabel').at(0).text()).toContain('Notes');
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('FormLabel').at(1).text()).toContain('2000 characters remaining');
+    emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('FormControl').simulate('change', { target: { id: 'notes', value: testNoteString } })
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('FormLabel').at(1).text()).toContain(`${2000-testNoteString.length} characters remaining`);
   });
 
+  it('Properly enables and disables the submit/create button when the correct fields are entered or removed', () => {
+    const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
+
+    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
+    emptyCCWrapper.find(Button).at(0).simulate('click');
+
+    let value;
+    value = testInputValues.find(x => x.field === 'first_name').value
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(0).simulate('change', { target: { id: 'first_name', value: value } })
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
+    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(0).simulate('change', { target: { id: 'first_name', value: '' } })
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+
+    value = testInputValues.find(x => x.field === 'last_name').value
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(1).simulate('change', { target: { id: 'last_name', value: value } })
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
+    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(1).simulate('change', { target: { id: 'last_name', value: '' } })
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+
+    value = testInputValues.find(x => x.field === 'primary_telephone').value
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('PhoneInput').simulate('change', { target: { id: 'primary_telephone', value: value } })
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
+    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('PhoneInput').simulate('change', { target: { id: 'primary_telephone', value: '' } })
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+
+    value = testInputValues.find(x => x.field === 'email').value
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: value } })
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
+    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: '' } })
+    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+  })
 });
