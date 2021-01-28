@@ -29,6 +29,7 @@ class PatientPage extends React.Component {
               dependents={this.props.dependents || []}
               details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
               hideBody={this.state.hideBody}
+              editMode={false}
               authenticity_token={this.props.authenticity_token}
             />
           </Card.Body>
