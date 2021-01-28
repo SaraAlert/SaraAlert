@@ -117,7 +117,7 @@ class Patient extends React.Component {
         <Row>
           {/* TO DO: ADD XXL CLASES HERE (with large)*/}
           <Col lg={14}>
-            <div className="section-header my-3">
+            <div className="section-header">
               <h4 className="section-title">Identification</h4>
               <div className="edit-link">
                 {this.props.goto && (
@@ -178,7 +178,7 @@ class Patient extends React.Component {
             </Row>
           </Col>
           <Col lg={10}>
-            <div className="section-header my-3">
+            <div className="section-header">
               <h4 className="section-title">Contact Information</h4>
               <div className="edit-link">
                 {this.props.goto && (
@@ -240,7 +240,7 @@ class Patient extends React.Component {
           <div>
             <Row>
               <Col lg={14} xl={10}>
-                <div className="section-header my-3">
+                <div className="section-header">
                   <h4 className="section-title">Address</h4>
                   <div className="edit-link">
                     {this.props.goto && (
@@ -357,7 +357,7 @@ class Patient extends React.Component {
               <Col lg={10} xl={14}>
                 <Row>
                   <Col xl={12}>
-                    <div className="section-header my-3">
+                    <div className="section-header">
                       <h4 className="section-title">Arrival Information</h4>
                       <div className="edit-link">
                         {this.props.goto && (
@@ -367,7 +367,7 @@ class Patient extends React.Component {
                         )}
                       </div>
                     </div>
-                    {!(showArrivalSection || this.props.details.travel_related_notes) && <span className="none-text">None</span>}
+                    {!(showArrivalSection || this.props.details.travel_related_notes) && <div className="none-text">None</div>}
                     {showArrivalSection && (
                       <Row>
                         <Col md={12} lg={24} xl={12} className="item-group">
@@ -408,9 +408,9 @@ class Patient extends React.Component {
                     {this.props.details.travel_related_notes && (
                       <div>
                         <p className="subsection-title">Notes</p>
-                        {this.props.details.travel_related_notes.length < 400 && <div>{this.props.details.travel_related_notes}</div>}
+                        {this.props.details.travel_related_notes.length < 400 && <div className="notes-text">{this.props.details.travel_related_notes}</div>}
                         {this.props.details.travel_related_notes.length >= 400 && (
-                          <React.Fragment>
+                          <div className="notes-text">
                             <div>
                               {this.state.expandArrivalNotes
                                 ? this.props.details.travel_related_notes
@@ -419,13 +419,13 @@ class Patient extends React.Component {
                             <Button variant="link" className="p-0" onClick={() => this.setState({ expandArrivalNotes: !this.state.expandArrivalNotes })}>
                               {this.state.expandArrivalNotes ? '(Collapse)' : '(View all)'}
                             </Button>
-                          </React.Fragment>
+                          </div>
                         )}
                       </div>
                     )}
                   </Col>
                   <Col xl={12}>
-                    <div className="section-header my-3">
+                    <div className="section-header">
                       <h4 className="section-title">
                         <span className="d-none d-lg-inline d-xl-none d-xxl-inline">Additional</span> Planned Travel
                       </h4>
@@ -437,7 +437,7 @@ class Patient extends React.Component {
                         )}
                       </div>
                     </div>
-                    {!(showPlannedTravel || this.props.details.additional_planned_travel_related_notes) && <span className="none-text">None</span>}
+                    {!(showPlannedTravel || this.props.details.additional_planned_travel_related_notes) && <div className="none-text">None</div>}
                     {showPlannedTravel && (
                       <div className="item-group">
                         <div>
@@ -478,10 +478,10 @@ class Patient extends React.Component {
                       <div>
                         <p className="subsection-title">Notes</p>
                         {this.props.details.additional_planned_travel_related_notes.length < 400 && (
-                          <div>{this.props.details.additional_planned_travel_related_notes}</div>
+                          <div className="notes-text">{this.props.details.additional_planned_travel_related_notes}</div>
                         )}
                         {this.props.details.additional_planned_travel_related_notes.length >= 400 && (
-                          <React.Fragment>
+                          <div className="notes-text">
                             <div>
                               {this.state.expandPlannedTravelNotes
                                 ? this.props.details.additional_planned_travel_related_notes
@@ -493,7 +493,7 @@ class Patient extends React.Component {
                               onClick={() => this.setState({ expandPlannedTravelNotes: !this.state.expandPlannedTravelNotes })}>
                               {this.state.expandPlannedTravelNotes ? '(Collapse)' : '(View all)'}
                             </Button>
-                          </React.Fragment>
+                          </div>
                         )}
                       </div>
                     )}
@@ -503,7 +503,7 @@ class Patient extends React.Component {
             </Row>
             <Row>
               <Col md={12} xl={12} xxl={8}>
-                <div className="section-header my-3">
+                <div className="section-header">
                   <h4 className="section-title">
                     Potential Exposure <span className="d-none d-lg-inline">Information</span>
                   </h4>
@@ -515,7 +515,7 @@ class Patient extends React.Component {
                     )}
                   </div>
                 </div>
-                {!(showPotentialExposureInfo || showRiskFactors || this.props.details.exposure_notes) && <span className="none-text">None</span>}
+                {!(showPotentialExposureInfo || showRiskFactors || this.props.details.exposure_notes) && <div className="none-text">None</div>}
                 {(showPotentialExposureInfo || showRiskFactors) && (
                   <React.Fragment>
                     <div className="item-group">
@@ -530,7 +530,7 @@ class Patient extends React.Component {
                       </div>
                     </div>
                     <p className="subsection-title">Risk Factors</p>
-                    {!showRiskFactors && <span className="none-text">None specified</span>}
+                    {!showRiskFactors && <div className="none-text">None specified</div>}
                     {showRiskFactors && (
                       <ul className="risk-factors">
                         {this.props.details.contact_of_known_case && (
@@ -588,21 +588,21 @@ class Patient extends React.Component {
                 {this.props.details.exposure_notes && !showPotentialExposureInfo && !showRiskFactors && (
                   <React.Fragment>
                     <div className="subsection-title">Notes</div>
-                    {this.props.details.exposure_notes.length < 400 && <p>{this.props.details.exposure_notes}</p>}
+                    {this.props.details.exposure_notes.length < 400 && <div className="notes-text">{this.props.details.exposure_notes}</div>}
                     {this.props.details.exposure_notes.length >= 400 && (
-                      <React.Fragment>
+                      <div className="notes-text">
                         <div>{this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 400) + ' ...'}</div>
                         <Button variant="link" className="p-0" onClick={() => this.setState({ expandNotes: !this.state.expandNotes })}>
                           {this.state.expandNotes ? '(Collapse)' : '(View all)'}
                         </Button>
-                      </React.Fragment>
+                      </div>
                     )}
                   </React.Fragment>
                 )}
               </Col>
               {this.props.details.isolation && (
                 <Col md={12} xl={12} xxl={8}>
-                  <div className="section-header my-3">
+                  <div className="section-header">
                     <h4 className="section-title">Case Information</h4>
                     <div className="edit-link">
                       {this.props.goto && (
@@ -624,7 +624,7 @@ class Patient extends React.Component {
               )}
               {this.props.details.exposure_notes && (showPotentialExposureInfo || showRiskFactors) && (
                 <Col md={12} xl={8} xxl={8}>
-                  <div className="section-header my-3">
+                  <div className="section-header">
                     <h4 className="section-title">Notes</h4>
                     <div className="edit-link">
                       {this.props.goto && (
@@ -634,38 +634,36 @@ class Patient extends React.Component {
                       )}
                     </div>
                   </div>
-                  {this.props.details.exposure_notes.length < 400 && <div>{this.props.details.exposure_notes}</div>}
+                  {this.props.details.exposure_notes.length < 400 && <div className="notes-text">{this.props.details.exposure_notes}</div>}
                   {this.props.details.exposure_notes.length >= 400 && (
-                    <React.Fragment>
+                    <div className="notes-text">
                       <div>{this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 400) + ' ...'}</div>
                       <Button variant="link" className="p-0" onClick={() => this.setState({ expandNotes: !this.state.expandNotes })}>
                         {this.state.expandNotes ? '(Collapse)' : '(View all)'}
                       </Button>
-                    </React.Fragment>
+                    </div>
                   )}
                 </Col>
               )}
             </Row>
           </div>
         </Collapse>
-
-        {/* TO DO: FIX THIS STYLING */}
         {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
-          <div id="household-member-not-hoh" className="pt-2">
-            <Row className="mx-3">
+          <div id="household-member-not-hoh" className="household-info">
+            <Row>
               The reporting responsibility for this monitoree is handled by another monitoree.&nbsp;
               <a href={'/patients/' + this.props.details.responder_id}>Click here to view that monitoree</a>.
             </Row>
-            <Row className="pb-2 mx-3">
+            <Row>
               <RemoveFromHousehold patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
             </Row>
           </div>
         )}
         {this.props?.dependents && this.props?.dependents?.length > 0 && (
-          <Row id="head-of-household" className="pb-3 mx-3 pt-3">
+          <Row id="head-of-household" className="household-info">
             <Col>
-              <Row className="pb-2">This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
-              <Row>
+              <Row>This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
+              <Row className="pt-2">
                 <Table striped bordered hover size="sm">
                   <thead>
                     <tr>
@@ -703,7 +701,7 @@ class Patient extends React.Component {
           this.props?.dependents?.length == 0 &&
           this.props?.details?.responder_id &&
           this.props.details.responder_id == this.props.details.id && (
-            <Row id="no-household" className="pb-3 mx-3 pt-2">
+            <Row id="no-household" className="household-info">
               <Col>
                 <Row>This monitoree is not a member of a household:</Row>
                 {this.props?.dependents?.map((member, index) => {
