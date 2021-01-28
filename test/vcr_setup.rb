@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'vcr'
 # VCR records HTTP interactions to cassettes that can be replayed during unit tests
 # allowing for faster, more predictible web interactions
@@ -17,10 +19,10 @@ VCR.configure do |c|
   ENV['TWILLIO_API_KEY'] = 'test_api_key' unless ENV['TWILLIO_API_KEY']
 
   # Ensure plain text credentials do not show up during logging
-  c.filter_sensitive_data('<TWILLIO_STUDIO_FLOW>') { URI.escape(ENV['TWILLIO_STUDIO_FLOW']) }
-  c.filter_sensitive_data('<TWILLIO_MESSAGING_SERVICE_SID>') { URI.escape(ENV['TWILLIO_MESSAGING_SERVICE_SID']) }
-  c.filter_sensitive_data('<TWILLIO_SENDING_NUMBER>') { URI.escape(ENV['TWILLIO_SENDING_NUMBER']) }
-  c.filter_sensitive_data('<TWILLIO_API_ACCOUNT>') { URI.escape(ENV['TWILLIO_API_ACCOUNT']) }
-  c.filter_sensitive_data('<TWILLIO_API_KEY>') { URI.escape(ENV['TWILLIO_API_KEY']) }
+  c.filter_sensitive_data('<TWILLIO_STUDIO_FLOW>') { ENV['TWILLIO_STUDIO_FLOW'] }
+  c.filter_sensitive_data('<TWILLIO_MESSAGING_SERVICE_SID>') { ENV['TWILLIO_MESSAGING_SERVICE_SID'] }
+  c.filter_sensitive_data('<TWILLIO_SENDING_NUMBER>') { ENV['TWILLIO_SENDING_NUMBER'] }
+  c.filter_sensitive_data('<TWILLIO_API_ACCOUNT>') { ENV['TWILLIO_API_ACCOUNT'] }
+  c.filter_sensitive_data('<TWILLIO_API_KEY>') { ENV['TWILLIO_API_KEY'] }
   c.default_cassette_options = { record: :once }
 end
