@@ -16,6 +16,8 @@ class SendPurgeWarningsJob < ApplicationJob
     recipients.each do |user|
       # Skip for USA admins
       next if user.jurisdiction&.name == 'USA'
+      # Don't send emails to locked users
+      next if !user.locked_at.nil?
 
       # Get num purgeable underneath this admin's purview
       num_purgeable_records = user.viewable_patients.purge_eligible.size
