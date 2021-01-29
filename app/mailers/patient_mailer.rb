@@ -132,7 +132,7 @@ class PatientMailer < ApplicationMailer
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio sms assessment
-    patient.active_dependents.uniq.collect { |pat| add_success_history(pat) } if TwilioSender.start_studio_flow_assessment(patient, params)
+    patient.active_dependents_and_self.uniq.collect { |pat| add_success_history(pat) } if TwilioSender.start_studio_flow_assessment(patient, params)
   end
 
   def assessment_voice(patient)
@@ -175,7 +175,7 @@ class PatientMailer < ApplicationMailer
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
-    patient.active_dependents.uniq.collect { |pat| add_success_history(pat) } if TwilioSender.start_studio_flow_assessment(patient, params)
+    patient.active_dependents_and_self.uniq.collect { |pat| add_success_history(pat) } if TwilioSender.start_studio_flow_assessment(patient, params)
   end
 
   def assessment_email(patient)
@@ -198,7 +198,7 @@ class PatientMailer < ApplicationMailer
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
-    patient.active_dependents.uniq.collect { |pat| add_success_history(pat) }
+    patient.active_dependents_and_self.uniq.collect { |pat| add_success_history(pat) }
   rescue StandardError => e
     patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
     raise "Failed to send email for patient id: #{patient.id}; #{e.message}"
