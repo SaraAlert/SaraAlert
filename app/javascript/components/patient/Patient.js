@@ -61,7 +61,7 @@ class Patient extends React.Component {
       this.props.details.foreign_monitored_address_line_2 ||
       this.props.details.foreign_monitored_address_city ||
       this.props.details.foreign_monitored_address_zip ||
-      this.props.details.foreign_monitored_address_country;
+      this.props.details.foreign_monitored_address_county;
     const showArrivalSection =
       this.props.details.port_of_origin ||
       this.props.details.date_of_departure ||
@@ -115,7 +115,7 @@ class Patient extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col lg={14} className="col-xxl-12">
+          <Col id="identification" lg={14} className="col-xxl-12">
             <div className="section-header">
               <h4 className="section-title">Identification</h4>
               <div className="edit-link">
@@ -149,13 +149,13 @@ class Patient extends React.Component {
               </Col>
               <Col sm={14} className="item-group">
                 <div>
-                  <b>Birth:</b> <span>{this.props.details.sex || '--'}</span>
+                  <b>Birth Sex:</b> <span>{this.props.details.sex || '--'}</span>
                 </div>
                 <div>
-                  <b>Gender:</b> <span>{this.props.details.gender_identity || '--'}</span>
+                  <b>Gender Identity:</b> <span>{this.props.details.gender_identity || '--'}</span>
                 </div>
                 <div>
-                  <b>Sex:</b> <span>{this.props.details.sexual_orientation || '--'}</span>
+                  <b>Sexual Orientation:</b> <span>{this.props.details.sexual_orientation || '--'}</span>
                 </div>
                 <div>
                   <b>Race:</b>{' '}
@@ -176,7 +176,7 @@ class Patient extends React.Component {
               </Col>
             </Row>
           </Col>
-          <Col lg={10} className="col-xxl-12">
+          <Col id="contact-information" lg={10} className="col-xxl-12">
             <div className="section-header">
               <h4 className="section-title">Contact Information</h4>
               <div className="edit-link">
@@ -238,7 +238,7 @@ class Patient extends React.Component {
         <Collapse in={this.state.expanded}>
           <div>
             <Row>
-              <Col lg={14} xl={10} className="col-xxxl-12">
+              <Col id="address" lg={14} xl={10} className="col-xxxl-12">
                 <div className="section-header">
                   <h4 className="section-title">Address</h4>
                   <div className="edit-link">
@@ -346,7 +346,7 @@ class Patient extends React.Component {
                           <b>Zip:</b> <span>{this.props.details.foreign_monitored_address_zip || '--'}</span>
                         </div>
                         <div>
-                          <b>Country:</b> <span>{this.props.details.foreign_monitored_address_country || '--'}</span>
+                          <b>County:</b> <span>{this.props.details.foreign_monitored_address_county || '--'}</span>
                         </div>
                       </Col>
                     )}
@@ -355,7 +355,7 @@ class Patient extends React.Component {
               </Col>
               <Col lg={10} xl={14} className="col-xxxl-12">
                 <Row>
-                  <Col xl={12}>
+                  <Col id="arrival-information" xl={12}>
                     <div className="section-header">
                       <h4 className="section-title">Arrival Information</h4>
                       <div className="edit-link">
@@ -405,12 +405,12 @@ class Patient extends React.Component {
                       </Row>
                     )}
                     {this.props.details.travel_related_notes && (
-                      <div>
+                      <div className="notes-section">
                         <p className="subsection-title">Notes</p>
                         {this.props.details.travel_related_notes.length < 400 && <div className="notes-text">{this.props.details.travel_related_notes}</div>}
                         {this.props.details.travel_related_notes.length >= 400 && (
-                          <div className="notes-text">
-                            <div>
+                          <React.Fragment>
+                            <div className="notes-text">
                               {this.state.expandArrivalNotes
                                 ? this.props.details.travel_related_notes
                                 : this.props.details.travel_related_notes.slice(0, 400) + ' ...'}
@@ -418,12 +418,12 @@ class Patient extends React.Component {
                             <Button variant="link" className="p-0" onClick={() => this.setState({ expandArrivalNotes: !this.state.expandArrivalNotes })}>
                               {this.state.expandArrivalNotes ? '(Collapse)' : '(View all)'}
                             </Button>
-                          </div>
+                          </React.Fragment>
                         )}
                       </div>
                     )}
                   </Col>
-                  <Col xl={12}>
+                  <Col id="planned-travel" xl={12}>
                     <div className="section-header">
                       <h4 className="section-title">
                         <span className="d-none d-lg-inline d-xl-none d-xxl-inline">Additional</span> Planned Travel
@@ -474,14 +474,14 @@ class Patient extends React.Component {
                       </div>
                     )}
                     {this.props.details.additional_planned_travel_related_notes && (
-                      <div>
+                      <div className="notes-section">
                         <p className="subsection-title">Notes</p>
                         {this.props.details.additional_planned_travel_related_notes.length < 400 && (
                           <div className="notes-text">{this.props.details.additional_planned_travel_related_notes}</div>
                         )}
                         {this.props.details.additional_planned_travel_related_notes.length >= 400 && (
-                          <div className="notes-text">
-                            <div>
+                          <React.Fragment>
+                            <div className="notes-text">
                               {this.state.expandPlannedTravelNotes
                                 ? this.props.details.additional_planned_travel_related_notes
                                 : this.props.details.additional_planned_travel_related_notes.slice(0, 400) + ' ...'}
@@ -492,7 +492,7 @@ class Patient extends React.Component {
                               onClick={() => this.setState({ expandPlannedTravelNotes: !this.state.expandPlannedTravelNotes })}>
                               {this.state.expandPlannedTravelNotes ? '(Collapse)' : '(View all)'}
                             </Button>
-                          </div>
+                          </React.Fragment>
                         )}
                       </div>
                     )}
@@ -501,7 +501,7 @@ class Patient extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col md={12} xl={12} className="col-xxl-8">
+              <Col id="potential-exposure-information" md={12} xl={12} className="col-xxl-8">
                 <div className="section-header">
                   <h4 className="section-title">
                     Potential Exposure <span className="d-none d-lg-inline">Information</span>
@@ -519,7 +519,12 @@ class Patient extends React.Component {
                   <React.Fragment>
                     <div className="item-group">
                       <div>
-                        <b>Last Date of Exposure:</b> <span>{this.props.details.last_date_of_exposure || '--'}</span>
+                        <b>Last Date of Exposure:</b>{' '}
+                        <span>
+                          {this.props.details.last_date_of_exposure
+                            ? moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                            : '--'}
+                        </span>
                       </div>
                       <div>
                         <b>Exposure Location:</b> <span>{this.props.details.potential_exposure_location || '--'}</span>
@@ -585,22 +590,24 @@ class Patient extends React.Component {
                   </React.Fragment>
                 )}
                 {this.props.details.exposure_notes && !showPotentialExposureInfo && !showRiskFactors && (
-                  <React.Fragment>
-                    <div className="subsection-title">Notes</div>
+                  <div className="notes-section">
+                    <p className="subsection-title">Notes</p>
                     {this.props.details.exposure_notes.length < 400 && <div className="notes-text">{this.props.details.exposure_notes}</div>}
                     {this.props.details.exposure_notes.length >= 400 && (
-                      <div className="notes-text">
-                        <div>{this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 400) + ' ...'}</div>
+                      <React.Fragment>
+                        <div className="notes-text">
+                          {this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 400) + ' ...'}
+                        </div>
                         <Button variant="link" className="p-0" onClick={() => this.setState({ expandNotes: !this.state.expandNotes })}>
                           {this.state.expandNotes ? '(Collapse)' : '(View all)'}
                         </Button>
-                      </div>
+                      </React.Fragment>
                     )}
-                  </React.Fragment>
+                  </div>
                 )}
               </Col>
               {this.props.details.isolation && (
-                <Col md={12} xl={12} className="col-xxl-8">
+                <Col id="case-information" md={12} xl={12} className="col-xxl-8">
                   <div className="section-header">
                     <h4 className="section-title">Case Information</h4>
                     <div className="edit-link">
@@ -613,16 +620,17 @@ class Patient extends React.Component {
                   </div>
                   <div className="item-group">
                     <div>
-                      <b>Symptom Onset:</b> <span>{this.props.details.symptom_onset || '--'}</span>
+                      <b>Symptom Onset:</b>{' '}
+                      <span>{this.props.details.symptom_onset ? moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY') : '--'}</span>
                     </div>
                     <div>
-                      <b>CaseStatus:</b> <span>{this.props.details.case_status || '--'}</span>
+                      <b>Case Status:</b> <span>{this.props.details.case_status || '--'}</span>
                     </div>
                   </div>
                 </Col>
               )}
               {(showPotentialExposureInfo || showRiskFactors) && (
-                <Col md={12} xl={8} className="col-xxl-8">
+                <Col id="exposure-notes" md={12} xl={8} className="notes-section col-xxl-8">
                   <div className="section-header">
                     <h4 className="section-title">Notes</h4>
                     <div className="edit-link">
@@ -638,12 +646,14 @@ class Patient extends React.Component {
                     <div className="notes-text">{this.props.details.exposure_notes}</div>
                   )}
                   {this.props.details.exposure_notes && this.props.details.exposure_notes.length >= 400 && (
-                    <div className="notes-text">
-                      <div>{this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 400) + ' ...'}</div>
+                    <React.Fragment>
+                      <div className="notes-text">
+                        {this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 400) + ' ...'}
+                      </div>
                       <Button variant="link" className="p-0" onClick={() => this.setState({ expandNotes: !this.state.expandNotes })}>
                         {this.state.expandNotes ? '(Collapse)' : '(View all)'}
                       </Button>
-                    </div>
+                    </React.Fragment>
                   )}
                 </Col>
               )}
