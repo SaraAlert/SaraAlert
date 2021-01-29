@@ -100,7 +100,7 @@ class JurisdictionsControllerTest < ActionController::TestCase
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope } }, as: :json
           assert_response :bad_request && next unless user_jur.subtree.include?(jur)
 
-          patients = scope == 'exact' ? jur.immediate_patients.where.not(assigned_user: nil) : jur.all_patients.where.not(assigned_user: nil)
+          patients = scope == 'exact' ? jur.immediate_patients.where.not(assigned_user: nil) : jur.all_patients_excluding_purged.where.not(assigned_user: nil)
           assert_equal patients.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'exposure', tab: 'all' } },

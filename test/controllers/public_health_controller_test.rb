@@ -387,7 +387,7 @@ class PublicHealthControllerTest < ActionController::TestCase
     sign_in user
 
     post :patients_count, params: { query: { workflow: 'all', tab: 'all', jurisdiction: user.jurisdiction.id } }, as: :json
-    assert_equal user.jurisdiction.all_patients.size, JSON.parse(response.body)['count']
+    assert_equal user.jurisdiction.all_patients_excluding_purged.size, JSON.parse(response.body)['count']
 
     sign_out user
   end
