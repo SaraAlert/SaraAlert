@@ -15,15 +15,14 @@ class Jurisdiction < ApplicationRecord
 
   has_many :stats, class_name: 'Stat'
 
-  # All patients are all those in this or descendent jurisdictions
-  def all_patients
+  # All patients are all those in this or descendent jurisdictions (including purged)
+  def all_patients_including_purged
     Patient.includes([:jurisdiction]).where(jurisdiction_id: subtree_ids)
   end
 
-  # All patients are all those in this or descendent jurisdictions
-  # excluding purged records
+  # All patients are all those in this or descendent jurisdictions (excluding purged)
   def all_patients_excluding_purged
-    all_patients.where(purged: false)
+    all_patients_including_purged.where(purged: false)
   end
 
   # All users that are in this or descendent jurisdictions
@@ -38,10 +37,6 @@ class Jurisdiction < ApplicationRecord
 
   def assigned_users
     immediate_patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
-  end
-
-  def all_assigned_users
-    all_patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
   end
 
   # All patients that were in the jurisdiction before (but were transferred), and are not currently in the subtree
