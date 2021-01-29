@@ -1649,7 +1649,7 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-  test 'validates address_state is required in api context' do
+  test 'validates address_state is required unless foreign_address_country in api context' do
     patient = valid_patient
 
     assert patient.valid?(:api)
@@ -1657,6 +1657,9 @@ class PatientTest < ActiveSupport::TestCase
     patient.address_state = nil
     assert_not patient.valid?(:api)
     assert patient.valid?
+
+    patient.foreign_address_country = 'UK'
+    assert patient.valid?(:api)
   end
 
   test 'validates date_of_birth is required in api context' do

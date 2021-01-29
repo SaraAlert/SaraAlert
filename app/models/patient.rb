@@ -61,12 +61,16 @@ class Patient < ApplicationRecord
     validates date_field, on: :api, date: true
   end
 
-  %i[address_state
-     date_of_birth
+  %i[date_of_birth
      first_name
      last_name].each do |required_field|
     validates required_field, on: :api, presence: { message: 'is required' }
   end
+
+  validates :address_state,
+            on: :api,
+            presence: { message: 'is required' },
+            unless: -> { foreign_address_country.present? }
 
   validates :symptom_onset,
             on: :api,
