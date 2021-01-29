@@ -59,15 +59,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         patient.email ? FHIR::ContactPoint.new(system: 'email', value: patient.email, rank: 1) : nil
       ].reject(&:nil?),
       birthDate: patient.date_of_birth&.strftime('%F'),
-      address: [
-        FHIR::Address.new(
-          line: [patient.address_line_1, patient.address_line_2].reject(&:blank?),
-          city: patient.address_city,
-          district: patient.address_county,
-          state: patient.address_state,
-          postalCode: patient.address_zip
-        )
-      ],
+      address: [to_address_by_type_extension(patient, 'USA'), to_address_by_type_extension(patient, 'Foreign')].reject(&:blank?),
       communication: [
         language_coding(patient.primary_language) ? FHIR::Patient::Communication.new(
           language: FHIR::CodeableConcept.new(coding: [language_coding(patient.primary_language)]),
@@ -104,6 +96,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # create new ones, or update existing ones), using the given FHIR::Patient.
   def patient_from_fhir(patient, default_jurisdiction_id)
     symptom_onset = from_date_extension(patient, ['symptom-onset-date'])
+    address = from_address_by_type_extension(patient, 'USA')
+    foreign_address = from_address_by_type_extension(patient, 'Foreign')
     {
       monitoring: patient&.active.nil? ? false : patient.active,
       first_name: patient&.name&.first&.given&.first,
@@ -114,18 +108,25 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
       date_of_birth: patient&.birthDate,
       age: Patient.calc_current_age_fhir(patient&.birthDate),
-      address_line_1: patient&.address&.first&.line&.first,
-      address_line_2: patient&.address&.first&.line&.second,
-      address_city: patient&.address&.first&.city,
-      address_county: patient&.address&.first&.district,
-      address_state: patient&.address&.first&.state,
-      address_zip: patient&.address&.first&.postalCode,
-      monitored_address_line_1: patient&.address&.first&.line&.first,
-      monitored_address_line_2: patient&.address&.first&.line&.second,
-      monitored_address_city: patient&.address&.first&.city,
-      monitored_address_county: patient&.address&.first&.district,
-      monitored_address_state: patient&.address&.first&.state,
-      monitored_address_zip: patient&.address&.first&.postalCode,
+      address_line_1: address&.line&.first,
+      address_line_2: address&.line&.second,
+      address_city: address&.city,
+      address_county: address&.district,
+      address_state: address&.state,
+      address_zip: address&.postalCode,
+      monitored_address_line_1: address&.line&.first,
+      monitored_address_line_2: address&.line&.second,
+      monitored_address_city: address&.city,
+      monitored_address_county: address&.district,
+      monitored_address_state: address&.state,
+      monitored_address_zip: address&.postalCode,
+      foreign_address_line_1: foreign_address&.line&.first,
+      foreign_address_line_2: foreign_address&.line&.second,
+      foreign_address_line_3: foreign_address&.line&.third,
+      foreign_address_city: foreign_address&.city,
+      foreign_address_state: foreign_address&.state,
+      foreign_address_zip: foreign_address&.postalCode,
+      foreign_address_country: foreign_address&.country,
       primary_language: patient&.communication&.first&.language&.coding&.first&.display,
       interpretation_required: patient&.communication&.first&.preferred,
       white: race_code?(patient, '2106-3'),
@@ -340,5 +341,48 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   def from_statelocal_id_extension(patient)
     statelocal_id = patient&.identifier&.find { |i| i&.system == 'http://saraalert.org/SaraAlert/state-local-id' }
     statelocal_id&.value
+  end
+
+  def to_address_by_type_extension(patient, address_type)
+    case address_type
+    when 'USA'
+      FHIR::Address.new(
+        line: [patient.address_line_1, patient.address_line_2].reject(&:blank?),
+        city: patient.address_city,
+        district: patient.address_county,
+        state: patient.address_state,
+        postalCode: patient.address_zip
+      )
+    when 'Foreign'
+      [patient.foreign_address_line_1,
+       patient.foreign_address_line_2,
+       patient.foreign_address_line_3,
+       patient.foreign_address_city,
+       patient.foreign_address_country,
+       patient.foreign_address_zip,
+       patient.foreign_address_state].any? ?
+      FHIR::Address.new(
+        line: [patient.foreign_address_line_1, patient.foreign_address_line_2, patient.foreign_address_line_3].reject(&:blank?),
+        city: patient.foreign_address_city,
+        country: patient.foreign_address_country,
+        state: patient.foreign_address_state,
+        postalCode: patient.foreign_address_zip,
+        extension: [FHIR::Extension.new(url: 'http://saraalert.org/StructureDefinition/address-type', valueString: 'Foreign')]
+      ) : nil
+    end
+  end
+
+  def from_address_by_type_extension(patient, address_type)
+    address = (patient&.address&.select do |a|
+      a.extension&.any? { |e| e.url == 'http://saraalert.org/StructureDefinition/address-type' && e.valueString == address_type }
+    end).first
+
+    if address.nil? && address_type == 'USA'
+      address = (patient&.address&.select do |a|
+        a.extension&.all? { |e| e.url != 'http://saraalert.org/StructureDefinition/address-type' }
+      end).first
+    end
+
+    address
   end
 end
