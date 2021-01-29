@@ -82,12 +82,14 @@ class PatientMailer < ApplicationMailer
       end
     end
     # Finally add a success history item for the HoH
-    # If an SMS was only sent to HoH
+    # If an SMS was only sent for HoH
     if success_hoh && success_deps.zero?
       add_success_history(dependent)
+    # If an SMS sent for HoH and dependents
     elsif success_hoh && success_deps != 0
       comment = "Sara Alert sent #{success_deps}report reminders to this monitoree for themselves and their dependents via #{parent.preferred_contact_method}."
       History.report_reminder(patient: patient, comment: comment)
+    # If SMS was sent only for dependents
     elsif !success_hoh && success_deps != 0
       comment = "Sara Alert sent #{success_deps}report reminder to this monitoree for their dependent(s) via #{parent.preferred_contact_method}."
       History.report_reminder(patient: patient, comment: comment)
