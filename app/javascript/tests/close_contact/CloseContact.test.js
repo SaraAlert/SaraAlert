@@ -4,7 +4,7 @@ import { Button, Modal } from 'react-bootstrap';
 import InfoTooltip from '../../components/util/InfoTooltip';
 import CloseContact from '../../components/close_contact/CloseContact.js'
 import { mockPatient1 } from '../mocks/mockPatients'
-import { mockCloseContact1, mockCloseContact2 } from '../mocks/mockCloseContact'
+import { mockCloseContact1, mockCloseContact2, mockCloseContact3 } from '../mocks/mockCloseContact'
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const ASSIGNED_USERS = [ 123234, 512678, 910132 ]
@@ -45,7 +45,7 @@ describe('CloseContact', () => {
     expect(emptyCCWrapper.state('contact_attempts')).toEqual(0)
   });
 
-  it('Properly renders all main components for already existing close contact', () => {
+  it('Properly renders all main components for already existing enrolled close contact', () => {
     const alreadyExistingCCWrapper = getShallowWrapper(mockCloseContact2);
     expect(alreadyExistingCCWrapper.find('Button').length).toEqual(3)
     expect(alreadyExistingCCWrapper.find('Button').at(0).text()).toContain('Edit');
@@ -61,6 +61,24 @@ describe('CloseContact', () => {
     expect(alreadyExistingCCWrapper.state('assigned_user')).toEqual(mockCloseContact2.assigned_user || null)
     expect(alreadyExistingCCWrapper.state('notes')).toEqual(mockCloseContact2.notes || '')
     expect(alreadyExistingCCWrapper.state('contact_attempts')).toEqual(mockCloseContact2.contact_attempts || 0)
+  });
+
+  it('Properly renders all main components for already existing unenrolled close contact', () => {
+    const alreadyExistingCCWrapper = getShallowWrapper(mockCloseContact3);
+    expect(alreadyExistingCCWrapper.find('Button').length).toEqual(3)
+    expect(alreadyExistingCCWrapper.find('Button').at(0).text()).toContain('Edit');
+    expect(alreadyExistingCCWrapper.find('Button').at(1).text()).toContain('Contact Attempt');
+    expect(alreadyExistingCCWrapper.find('Button').at(2).text()).toContain('Enroll');
+
+    expect(alreadyExistingCCWrapper.state('showModal')).toBeFalsy();
+    expect(alreadyExistingCCWrapper.state('first_name')).toEqual(mockCloseContact3.first_name || '')
+    expect(alreadyExistingCCWrapper.state('last_name')).toEqual(mockCloseContact3.last_name || '')
+    expect(alreadyExistingCCWrapper.state('primary_telephone')).toEqual(mockCloseContact3.primary_telephone || '')
+    expect(alreadyExistingCCWrapper.state('email')).toEqual(mockCloseContact3.email || '')
+    expect(alreadyExistingCCWrapper.state('last_date_of_exposure')).toEqual(mockCloseContact3.last_date_of_exposure || null)
+    expect(alreadyExistingCCWrapper.state('assigned_user')).toEqual(mockCloseContact3.assigned_user || null)
+    expect(alreadyExistingCCWrapper.state('notes')).toEqual(mockCloseContact3.notes || '')
+    expect(alreadyExistingCCWrapper.state('contact_attempts')).toEqual(mockCloseContact3.contact_attempts || 0)
   });
 
   it('Properly renders the modal if button is clicked', () => {
@@ -177,32 +195,6 @@ describe('CloseContact', () => {
     expect(existingCCWrapper.state('last_date_of_exposure')).toEqual(mockCloseContact2.last_date_of_exposure || null)
     expect(existingCCWrapper.state('assigned_user')).toEqual(mockCloseContact2.assigned_user || null)
     expect(existingCCWrapper.state('notes')).toEqual(mockCloseContact2.notes || '')
-  });
-
-  it('Enables submit button when first and last name are not empty', () => {
-    const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
-    expect(emptyCCWrapper.find('Button').at(0).text()).toContain('Add New Close Contact');
-    emptyCCWrapper.find(Button).at(0).simulate('click');
-    expect(emptyCCWrapper.state('showModal')).toBeTruthy();
-    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
-    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').simulate('change', { target: { id: 'first_name', value: 'Anthony' } })
-    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
-    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'last_name', value: 'Stark' } })
-    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
-
-    // The only two required fields are first_name and last_name
-    // Ensure that nulling out the first_name makes it disabled again
-    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').simulate('change', { target: { id: 'first_name', value: '' } })
-    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
-    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').simulate('change', { target: { id: 'first_name', value: 'Anthony' } })
-    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
-
-    // Ensure that nulling out the last_name makes it disabled again
-    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').simulate('change', { target: { id: 'last_name', value: '' } })
-    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
-    emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').simulate('change', { target: { id: 'last_name', value: 'Stark' } })
-    expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
   });
 
   it('Properly calls submit when the button is clicked', () => {
