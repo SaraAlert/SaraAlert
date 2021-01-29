@@ -59,7 +59,7 @@ class PatientMailer < ApplicationMailer
     # Cover potential race condition where multiple messages are sent for the same monitoree.
     return unless patient.last_assessment_reminder_sent_eligible?
 
-    success_dependents = 0
+    success_deps = 0
     success_hoh = false
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |dependent|
@@ -75,7 +75,7 @@ class PatientMailer < ApplicationMailer
         if patient != dependent
           # Add success history to dependents as we go
           add_success_history(dependent)
-          success_dependents += 1
+          success_deps += 1
         else
           success_hoh = true
         end
@@ -83,12 +83,14 @@ class PatientMailer < ApplicationMailer
     end
     # Finally add a success history item for the HoH
     # If an SMS was only sent to HoH
-    if success_hoh && success_dependents == 0
+    if success_hoh && success_deps.zero?
       add_success_history(dependent)
-    elsif success_hoh && success_dependents != 0
-      History.report_reminder(patient: patient, comment: "Sara Alert sent #{success_dependents}report reminders to this monitoree for themselves and their dependents via #{parent.preferred_contact_method}.")
-    elsif !success_hoh && success_dependents != 0
-      History.report_reminder(patient: patient, comment: "Sara Alert sent #{success_dependents}report reminder to this monitoree for their dependent(s) via #{parent.preferred_contact_method}.")
+    elsif success_hoh && success_deps != 0
+      comment = "Sara Alert sent #{success_deps}report reminders to this monitoree for themselves and their dependents via #{parent.preferred_contact_method}."
+      History.report_reminder(patient: patient, comment: comment)
+    elsif !success_hoh && success_deps != 0
+      comment = "Sara Alert sent #{success_deps}report reminder to this monitoree for their dependent(s) via #{parent.preferred_contact_method}."
+      History.report_reminder(patient: patient, comment: comment)
     end
   end
 
@@ -130,9 +132,7 @@ class PatientMailer < ApplicationMailer
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio sms assessment
-    if TwilioSender.start_studio_flow_assessment(patient, params)
-      patient.active_dependents.uniq.collect { |pat| add_success_history(pat) }
-    end
+    patient.active_dependents.uniq.collect { |pat| add_success_history(pat) } if TwilioSender.start_studio_flow_assessment(patient, params)
   end
 
   def assessment_voice(patient)
@@ -175,9 +175,7 @@ class PatientMailer < ApplicationMailer
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
-    if TwilioSender.start_studio_flow_assessment(patient, params)
-      patient.active_dependents.uniq.collect { |pat| add_success_history(pat) }
-    end
+    patient.active_dependents.uniq.collect { |pat| add_success_history(pat) } if TwilioSender.start_studio_flow_assessment(patient, params)
   end
 
   def assessment_email(patient)
