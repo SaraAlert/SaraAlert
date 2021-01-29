@@ -55,8 +55,9 @@ class History < ApplicationRecord
     end
   }
 
-  def self.errored_contact_dependent_and_their_hoh(patient: nil, created_by: 'Sara Alert System', comment: 'Failed Contact Attempt', error_message: nil)
-    [patient, patient&.responder].each do |pat|
+  def self.errored_contact_group_of_patients(patients: nil, created_by: 'Sara Alert System', comment: 'Failed Contact Attempt', error_message: nil)
+    histories = []
+    patients.uniq.each do |pat|
       if pat.responder == pat
         recipient = 'this monitoree'
         responder = pat
@@ -74,8 +75,9 @@ class History < ApplicationRecord
                 else
                   "Sara Alert attempted to call #{recipient} at #{responder.primary_telephone}, but the call could not be completed.#{details}"
                 end
-      create_history(pat, created_by, HISTORY_TYPES[:contact_attempt], comment)
+      histories << History.new(created_by: created_by, comment: comment, patient_id: pat.id, history_type: HISTORY_TYPES[:contact_attempt])
     end
+    History.import! histories
   end
 
   def self.record_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a record.')

@@ -29,7 +29,7 @@ class PatientMailer < ApplicationMailer
     return if patient&.primary_telephone.blank?
 
     if patient.blocked_sms
-      add_fail_history_sms_blocked(patient)
+      handle_twilio_error_codes(patient, '21610')
       return
     end
 
@@ -52,7 +52,7 @@ class PatientMailer < ApplicationMailer
       return
     end
     if patient.blocked_sms
-      add_fail_history_sms_blocked(patient)
+      handle_twilio_error_codes(patient, '21610')
       return
     end
 
@@ -79,7 +79,7 @@ class PatientMailer < ApplicationMailer
       return
     end
     if patient.blocked_sms
-      add_fail_history_sms_blocked(patient)
+      handle_twilio_error_codes(patient, '21610')
       return
     end
 
@@ -204,36 +204,9 @@ class PatientMailer < ApplicationMailer
     History.report_reminder(patient: patient, comment: comment)
   end
 
-  def add_fail_history_sms(patient)
-    comment = "Sara Alert attempted to send an SMS to #{patient.primary_telephone}, but the message could not be delivered."
-    History.report_reminder(patient: patient, comment: comment)
-  end
-
   def add_fail_history_blank_field(patient, type)
     History.report_reminder(patient: patient,
                             comment: "Sara Alert could not send a report reminder to this monitoree via \
                                      #{patient.preferred_contact_method}, because the monitoree #{type} was blank.")
-  end
-
-  def add_fail_history_sms_blocked(patient)
-    comment = "The system was unable to send an SMS to this monitoree #{patient.primary_telephone}, because monitoree blocked Sara Alert."
-    History.contact_attempt(patient: patient, comment: comment)
-    return if patient.dependents_exclude_self.blank?
-
-    create_contact_attempt_history_for_dependents(patient.dependents_exclude_self, "The system was unable to send an SMS to this monitoree's
-       HoH #{patient.primary_telephone}, because the monitoree's head of household blocked Sara Alert.")
-  end
-
-  # Use the import method here to generate less SQL statements for a bulk insert of
-  # dependent histories instead of 1 statement per dependent.
-  def create_contact_attempt_history_for_dependents(dependents, comment)
-    histories = []
-    dependents.each do |dependent|
-      histories << History.new(patient: dependent,
-                               created_by: 'Sara Alert System',
-                               comment: comment,
-                               history_type: 'Contact Attempt')
-    end
-    History.import! histories
   end
 end

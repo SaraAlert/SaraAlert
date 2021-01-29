@@ -7,45 +7,44 @@ class TwilioSender
     case error_code
     # SaraAlert code for unsupported voice language
     when 'SA1'
-      History.errored_contact_dependent_and_their_hoh(patient: patient,
-                                                      error_message: 'Sara Alert does not support voice assessments in the monitorees primary language.')
+      dispatch_errored_contact_history_items(patient, 'Sara Alert does not support voice assessments in the monitorees primary language.')
     # Invalid To Number https://www.twilio.com/docs/api/errors/21211
     when '21211'
-      History.errored_contact_dependent_and_their_hoh(patient: patient, error_message: 'Invalid recipient phone number.')
+      dispatch_errored_contact_history_items(patient, 'Invalid recipient phone number.')
     # Blocked Number Error https://www.twilio.com/docs/api/errors/21610
     when '21610'
-      PatientMailer.add_fail_history_sms_blocked(patient)
+      dispatch_errored_contact_history_items(patient, 'Recipient phone number blocked communication with Sara Alert')
       monitoree_number = Phonelib.parse(phone_numbers[:monitoree_number], 'US').full_e164
-      BlockedNumber.create(phone_number: monitoree_number)
+      BlockedNumber.create(phone_number: monitoree_number) unless BlockedNumber.exists?(phone_number: monitoree_number)
     # Invalid Mobile Number Error https://www.twilio.com/docs/api/errors/21614
     when '21614'
-      History.errored_contact_dependent_and_their_hoh(patient: patient, error_message: 'Invalid recipient phone number.')
+      dispatch_errored_contact_history_items(patient, 'Invalid recipient phone number.')
     # Unsupported Region Error https://www.twilio.com/docs/api/errors/21408
     when '21408'
-      History.errored_contact_dependent_and_their_hoh(patient: patient, error_message: 'Recipient phone number is in an unsupported region.')
+      dispatch_errored_contact_history_items(patient, 'Recipient phone number is in an unsupported region.')
     # Unreachable Destination Handset Error https://www.twilio.com/docs/api/errors/30003
     when '30003'
-      History.errored_contact_dependent_and_their_hoh(patient: patient, error_message: 'Recipient phone is off or otherwise unavailable.')
+      dispatch_errored_contact_history_items(patient, 'Recipient phone is off or otherwise unavailable.')
     # Message Blocked Error https://www.twilio.com/docs/api/errors/30004
     when '30004'
       error_message = 'Recipient may have blocked communications with SaraAlert, recipient phone may be unavailable or ineligible to receive SMS text messages.'
-      History.errored_contact_dependent_and_their_hoh(patient: patient, error_message: error_message)
+      dispatch_errored_contact_history_items(patient, error_message)
     # Unknown Destination Handset Error https://www.twilio.com/docs/api/errors/30005
     when '30005'
       error_message = 'Recipient phone number may not exist, the phone may be off or the phone is not eligible to receive SMS text messages.'
-      History.errored_contact_dependent_and_their_hoh(patient: patient, error_message: error_message)
+      dispatch_errored_contact_history_items(patient, error_message)
     # Landline or Unreachable Carrier Error https://www.twilio.com/docs/api/errors/30006
     when '30006'
       error_message = 'Recipient phone number may not eligible to receive SMS text messages, or carrier network may be unreachable.'
-      History.errored_contact_dependent_and_their_hoh(patient: patient, error_message: error_message)
+      dispatch_errored_contact_history_items(patient, error_message)
     # Message Filtered By Carrier Error https://www.twilio.com/docs/api/errors/30007
     when '30007'
-      History.errored_contact_dependent_and_their_hoh(patient: patient, error_message: 'Message has been filtered by carrier network.')
+      dispatch_errored_contact_history_items(patient, 'Message has been filtered by carrier network.')
     # Unknown Error https://www.twilio.com/docs/api/errors/30008
     when '30008'
-      History.errored_contact_dependent_and_their_hoh(patient: patient, error_message: 'An unknown error has been encountered by the messaging system.')
+      dispatch_errored_contact_history_items(patient, 'An unknown error has been encountered by the messaging system.')
     else
-      History.errored_contact_dependent_and_their_hoh(patient: patient, error_message: 'An unknown error has been encountered by the messaging system.')
+      dispatch_errored_contact_history_items(patient, 'An unknown error has been encountered by the messaging system.')
     end
   end
 
@@ -121,5 +120,17 @@ class TwilioSender
     return { monitoree_number: phone_number_from, sara_number: phone_number_to } if !phone_number_from.nil? && !phone_number_to.nil?
 
     nil
+  end
+
+  private
+
+  def dispatch_errored_contact_history_items(patient, error_message)
+    # If errored contact was for a communication for all dependents ie: sms_assessment or voice_assessment
+    if patient&.responder == patient
+      History.errored_contact_group_of_patients(patients: [patient, patient&.active_dependents], error_message: error_message)
+    else
+      # If errored contact was for a particular dependent ie: weblink assessment
+      History.errored_contact_group_of_patients(patients: [patient, patient&.responder], error_message: error_message)
+    end
   end
 end
