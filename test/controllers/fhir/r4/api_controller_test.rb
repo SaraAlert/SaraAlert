@@ -1036,6 +1036,67 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal DateTime.now.to_date, p.closed_at&.to_date
   end
 
+  test 'should differentiate USA and Foreign addresses in update' do
+    @patient_1.address << FHIR::Address.new(line: ['123 First Ave', 'Unit 22', 'Sector B'], city: 'Northland', state: 'Quebec', postalCode: '77658-0950',
+                                            country: 'Canada')
+    @patient_1.address[1].extension << FHIR::Extension.new(url: 'http://saraalert.org/StructureDefinition/address-type', valueString: 'Foreign')
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+
+    assert_response :ok
+    patient = Patient.find_by(id: 1)
+    json_response = JSON.parse(response.body)
+    # Test that the address was saved as expected
+    assert_equal @patient_1.address[0].line[0], patient.address_line_1
+    assert_equal @patient_1.address[0].city, patient.address_city
+    assert_equal @patient_1.address[0].state, patient.address_state
+    assert_equal @patient_1.address[0].postalCode, patient.address_zip
+    assert_equal @patient_1.address[0].district, patient.address_county
+    # Test that the foreign address was saved as expected
+    assert_equal @patient_1.address[1].line[0], patient.foreign_address_line_1
+    assert_equal @patient_1.address[1].line[1], patient.foreign_address_line_2
+    assert_equal @patient_1.address[1].line[2], patient.foreign_address_line_3
+    assert_equal @patient_1.address[1].city, patient.foreign_address_city
+    assert_equal @patient_1.address[1].state, patient.foreign_address_state
+    assert_equal @patient_1.address[1].postalCode, patient.foreign_address_zip
+    assert_equal @patient_1.address[1].country, patient.foreign_address_country
+
+    # Test that the response is as expected
+    assert_equal JSON.parse(@patient_1.address.to_json), json_response['address']
+  end
+
+  test 'should ignore unknown address types in update' do
+    @patient_1.address << FHIR::Address.new(line: ['123 First Ave', 'Unit 22', 'Sector B'], city: 'Northland', state: 'Quebec', postalCode: '77658-0950',
+                                            country: 'Canada')
+    @patient_1.address[1].extension << FHIR::Extension.new(url: 'http://saraalert.org/StructureDefinition/address-type', valueString: 'mysterious')
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+
+    assert_response :ok
+    patient = Patient.find_by(id: 1)
+    json_response = JSON.parse(response.body)
+    # Test that the foreign address was not saved
+    assert_nil patient.foreign_address_line_1
+    assert_nil patient.foreign_address_line_2
+    assert_nil patient.foreign_address_line_3
+    assert_nil patient.foreign_address_city
+    assert_nil patient.foreign_address_state
+    assert_nil patient.foreign_address_zip
+    assert_nil patient.foreign_address_country
+
+    # Test that the response is as expected
+    assert_equal JSON.parse(@patient_1.address[0].to_json), json_response['address'][0]
+    assert_nil json_response['address'][1]
+  end
+
   test 'should be bad request via update due to invalid JSON' do
     put(
       '/fhir/r4/Patient/1',
