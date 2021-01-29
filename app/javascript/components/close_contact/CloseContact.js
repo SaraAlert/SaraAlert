@@ -255,7 +255,12 @@ class CloseContact extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={!(this.state.first_name && this.state.last_name) || this.state.loading}>
+          <Button
+            variant="primary btn-square"
+            onClick={submit}
+            disabled={
+              !(this.state.first_name || this.state.last_name || this.state.email || this.state.primary_telephone || this.state.notes) || this.state.loading
+            }>
             {this.props.close_contact.id ? 'Update' : 'Create'}
           </Button>
         </Modal.Footer>
