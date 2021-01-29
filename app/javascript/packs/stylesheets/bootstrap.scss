@@ -217,6 +217,13 @@ select.form-control {
   z-index: 1999;
 }
 
+.advanced-filter-modal-container {
+  // The aggressive z-index ensures that this modal
+  // will be drawn in front of any other modals except the confirm-dialog box
+  background-color: rgba(20, 20, 20, 0.60);
+  z-index: 1999;
+}
+
 .modal-import {
   max-width: 95% !important;
 }
