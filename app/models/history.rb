@@ -58,6 +58,11 @@ class History < ApplicationRecord
   def self.errored_report_reminder_group_of_patients(patients: nil, created_by: 'Sara Alert System', comment: 'Failed Contact Attempt', error_message: nil)
     histories = []
     patients.uniq.each do |pat|
+      # Avoid adding multiple history items if HoH has errored contact attempts for
+      # contact attempts to them on behalf of their dependents. This would be the
+      # case for failed weblinks
+      next if ((Time.now - pat.histories.last.created_at) / 60) < 5
+
       if pat.responder == pat
         recipient = 'this monitoree'
         responder = pat
