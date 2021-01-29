@@ -92,8 +92,8 @@ describe('CloseContact', () => {
     expect(emptyCCWrapper.find(Modal.Header).find('ModalTitle').text()).toEqual('Close Contact');
     expect(emptyCCWrapper.find(Modal.Body).exists()).toBeTruthy();
     // Using `toContain` instead of `toEqual` to avoid any whitespace issues
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormLabel').text()).toContain(`First Name *`);
-    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormLabel').text()).toContain(`Last Name *`);
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormLabel').text()).toContain(`First Name`);
+    expect(emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormLabel').text()).toContain(`Last Name`);
     expect(emptyCCWrapper.find(Modal.Body).find('Row').at(2).find('FormLabel').text()).toContain(`Phone Number`);
     expect(emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('FormLabel').text()).toContain(`Email`);
     expect(emptyCCWrapper.find(Modal.Body).find('Row').at(4).find('FormLabel').text()).toContain(`Last Date of Exposure`);
