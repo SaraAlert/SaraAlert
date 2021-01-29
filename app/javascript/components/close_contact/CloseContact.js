@@ -345,12 +345,10 @@ yup.addMethod(yup.string, 'phone', function() {
 const schema = yup.object().shape({
   first_name: yup
     .string()
-    .required('Please enter a First Name.')
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   last_name: yup
     .string()
-    .required('Please enter a Last Name.')
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   primary_telephone: yup
