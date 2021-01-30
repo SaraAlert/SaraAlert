@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'application_system_test_case'
-require 'byebug'
 
 require_relative 'reports_verifier'
 require_relative '../../../lib/system_test_utils'
