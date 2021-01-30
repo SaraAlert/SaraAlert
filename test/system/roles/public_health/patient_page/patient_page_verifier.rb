@@ -10,7 +10,7 @@ class PublicHealthPatientPageVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def verify_patient_details_and_reports(patient, workflow)
-    sleep(0.2) # wait for any sticky filter to populate so it can be cleared during fill_in
+    sleep(0.5) # wait for any sticky filter to populate so it can be cleared during fill_in
     fill_in('search', with: patient.last_name, fill_options: { clear: :backspace })
     click_on "#{patient.last_name}, #{patient.first_name}"
     verify_patient_details(patient)
