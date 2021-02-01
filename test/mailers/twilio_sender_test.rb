@@ -4,6 +4,11 @@ require 'test_helper'
 require 'vcr_setup'
 
 class TwilioSenderTest < ActiveSupport::TestCase
+
+  def setup
+    ENV['TWILLIO_STUDIO_FLOW'] = 'test'
+  end
+
   def test_get_number_from_single_message_execution
     # SINGLE_SMS execution ie: weblink, enrollment...
     VCR.use_cassette('get_numbers_from_single_message_execution') do
@@ -13,7 +18,7 @@ class TwilioSenderTest < ActiveSupport::TestCase
       execution_id = 'FNf9193a1e62d1333a20a84ef183e751df'
       to_from_numbers = TwilioSender.get_phone_numbers_from_flow_execution(execution_id)
       assert_equal to_from_numbers[:monitoree_number], '+16035555555'
-      assert_equal to_from_numbers[:sara_number], '+16623395318'
+      assert_equal to_from_numbers[:sara_number], '<TWILLIO_SENDING_NUMBER>'
     end
   end
 
@@ -26,7 +31,7 @@ class TwilioSenderTest < ActiveSupport::TestCase
       execution_id = 'FNce1d126c3ed0508a15ba965e4f7197dc'
       to_from_numbers = TwilioSender.get_phone_numbers_from_flow_execution(execution_id)
       assert_equal to_from_numbers[:monitoree_number], '+16035555555'
-      assert_equal to_from_numbers[:sara_number], '+16623395318'
+      assert_equal to_from_numbers[:sara_number], '<TWILLIO_SENDING_NUMBER>'
     end
   end
 
@@ -39,7 +44,7 @@ class TwilioSenderTest < ActiveSupport::TestCase
       execution_id = 'FN304b09128a4f089b8c57a7e3f7cb2221'
       to_from_numbers = TwilioSender.get_phone_numbers_from_flow_execution(execution_id)
       assert_equal to_from_numbers[:monitoree_number], '+16035555555'
-      assert_equal to_from_numbers[:sara_number], '+16623395318'
+      assert_equal to_from_numbers[:sara_number], '<TWILLIO_SENDING_NUMBER>'
     end
   end
 
@@ -52,7 +57,7 @@ class TwilioSenderTest < ActiveSupport::TestCase
       execution_id = 'FNc2b09bcf7ecaca4e33db739422281fcc'
       to_from_numbers = TwilioSender.get_phone_numbers_from_flow_execution(execution_id)
       assert_equal to_from_numbers[:monitoree_number], '+16035555555'
-      assert_equal to_from_numbers[:sara_number], '+16623395318'
+      assert_equal to_from_numbers[:sara_number], '<TWILLIO_SENDING_NUMBER>'
     end
   end
 
@@ -65,7 +70,7 @@ class TwilioSenderTest < ActiveSupport::TestCase
       execution_id = 'FN24eda0b89122c73e93e3d59431e9a52a'
       to_from_numbers = TwilioSender.get_phone_numbers_from_flow_execution(execution_id)
       assert_equal to_from_numbers[:monitoree_number], '+16035555555'
-      assert_equal to_from_numbers[:sara_number], '+16623395318'
+      assert_equal to_from_numbers[:sara_number], '<TWILLIO_SENDING_NUMBER>'
     end
   end
 end
