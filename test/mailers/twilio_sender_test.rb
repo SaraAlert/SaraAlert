@@ -4,7 +4,6 @@ require 'test_helper'
 require 'vcr_setup'
 
 class TwilioSenderTest < ActiveSupport::TestCase
-
   def setup
     ENV['TWILLIO_STUDIO_FLOW'] = 'test'
   end
