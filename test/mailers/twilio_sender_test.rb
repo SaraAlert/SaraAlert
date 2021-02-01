@@ -6,6 +6,7 @@ require 'vcr_setup'
 class TwilioSenderTest < ActiveSupport::TestCase
   def setup
     ENV['TWILLIO_STUDIO_FLOW'] = 'test'
+    ENV['TWILLIO_SENDING_NUMBER'] = '+15555555555'
   end
 
   def test_get_number_from_single_message_execution
