@@ -9,7 +9,7 @@ class SendPurgeWarningsJob < ApplicationJob
     not_sent = []
 
     # Get admin users but skip USA admins and locked users
-    recipients = User.where(role: [Roles::ADMIN, Roles::SUPER_USER], locked_at: nil).where.not(jurisdiction_id: Jurisdiction.find_by(name: 'USA').id)
+    recipients = User.where(role: [Roles::ADMIN, Roles::SUPER_USER], locked_at: nil).where.not(jurisdiction: Jurisdiction.root)
     eligible = recipients.count
 
     # Loop through and send each admin information about their purge eligible monitorees

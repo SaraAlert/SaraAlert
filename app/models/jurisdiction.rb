@@ -15,6 +15,11 @@ class Jurisdiction < ApplicationRecord
 
   has_many :stats, class_name: 'Stat'
 
+  # Find the USA Jurisdiction
+  def self.root
+    Jurisdiction.find_by(name: 'USA')
+  end
+
   # All patients are all those in this or descendent jurisdictions (including purged)
   def all_patients_including_purged
     Patient.includes([:jurisdiction]).where(jurisdiction_id: subtree_ids)
