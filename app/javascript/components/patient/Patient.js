@@ -120,7 +120,7 @@ class Patient extends React.Component {
               <h4 className="section-title">Identification</h4>
               <div className="edit-link">
                 {this.props.goto && (
-                  <Button variant="link" className="py-0" onClick={() => this.props.goto(0)} aria-label="Edit Identification">
+                  <Button variant="link" id="edit-identification-btn" className="py-0" onClick={() => this.props.goto(0)} aria-label="Edit Identification">
                     Edit
                   </Button>
                 )}
@@ -181,7 +181,12 @@ class Patient extends React.Component {
               <h4 className="section-title">Contact Information</h4>
               <div className="edit-link">
                 {this.props.goto && (
-                  <Button variant="link" className="py-0" onClick={() => this.props.goto(2)} aria-label="Edit Contact Information">
+                  <Button
+                    variant="link"
+                    id="edit-contact_information-btn"
+                    className="py-0"
+                    onClick={() => this.props.goto(2)}
+                    aria-label="Edit Contact Information">
                     Edit
                   </Button>
                 )}
@@ -225,6 +230,7 @@ class Patient extends React.Component {
         {!this.props.editMode && (
           <div className="details-expander">
             <a
+              id="details-expander-link"
               href="#"
               onClick={() => {
                 this.setState({ expanded: !this.state.expanded });
@@ -238,12 +244,12 @@ class Patient extends React.Component {
         <Collapse in={this.state.expanded}>
           <div>
             <Row>
-              <Col id="address" lg={14} xl={10} className="col-xxxl-12">
+              <Col id="address" lg={14} xl={12} className="col-xxxl-10">
                 <div className="section-header">
                   <h4 className="section-title">Address</h4>
                   <div className="edit-link">
                     {this.props.goto && (
-                      <Button variant="link" className="py-0" onClick={() => this.props.goto(1)} aria-label="Edit Address">
+                      <Button variant="link" id="edit-address-btn" className="py-0" onClick={() => this.props.goto(1)} aria-label="Edit Address">
                         Edit
                       </Button>
                     )}
@@ -353,14 +359,19 @@ class Patient extends React.Component {
                   </Row>
                 )}
               </Col>
-              <Col lg={10} xl={14} className="col-xxxl-12">
+              <Col lg={10} xl={12} className="col-xxxl-14">
                 <Row>
                   <Col id="arrival-information" xl={12}>
                     <div className="section-header">
                       <h4 className="section-title">Arrival Information</h4>
                       <div className="edit-link">
                         {this.props.goto && (
-                          <Button variant="link" className="py-0" onClick={() => this.props.goto(3)} aria-label="Edit Arrival Information">
+                          <Button
+                            variant="link"
+                            id="edit-arrival_information-btn"
+                            className="py-0"
+                            onClick={() => this.props.goto(3)}
+                            aria-label="Edit Arrival Information">
                             Edit
                           </Button>
                         )}
@@ -430,7 +441,12 @@ class Patient extends React.Component {
                       </h4>
                       <div className="edit-link">
                         {this.props.goto && (
-                          <Button variant="link" className="py-0" onClick={() => this.props.goto(4)} aria-label="Edit Additional Planned Travel">
+                          <Button
+                            variant="link"
+                            id="edit-planned_travel-btn"
+                            className="py-0"
+                            onClick={() => this.props.goto(4)}
+                            aria-label="Edit Additional Planned Travel">
                             Edit
                           </Button>
                         )}
@@ -508,7 +524,12 @@ class Patient extends React.Component {
                   </h4>
                   <div className="edit-link">
                     {this.props.goto && !this.props.details.isolation && (
-                      <Button variant="link" className="py-0" onClick={() => this.props.goto(5)} aria-label="Edit Potential Exposure Information">
+                      <Button
+                        variant="link"
+                        id="edit-potential_exposure_information-btn"
+                        className="py-0"
+                        onClick={() => this.props.goto(5)}
+                        aria-label="Edit Potential Exposure Information">
                         Edit
                       </Button>
                     )}
@@ -612,7 +633,12 @@ class Patient extends React.Component {
                     <h4 className="section-title">Case Information</h4>
                     <div className="edit-link">
                       {this.props.goto && (
-                        <Button variant="link" className="py-0" onClick={() => this.props.goto(5)} aria-label="Edit Case Information">
+                        <Button
+                          variant="link"
+                          id="edit-potential_exposure_information-btn"
+                          className="py-0"
+                          onClick={() => this.props.goto(5)}
+                          aria-label="Edit Case Information">
                           Edit
                         </Button>
                       )}
@@ -635,7 +661,7 @@ class Patient extends React.Component {
                     <h4 className="section-title">Notes</h4>
                     <div className="edit-link">
                       {this.props.goto && (
-                        <Button variant="link" className="py-0" onClick={() => this.props.goto(5)} aria-label="Edit Notes">
+                        <Button variant="link" id="edit-notes-btn" className="py-0" onClick={() => this.props.goto(5)} aria-label="Edit Notes">
                           Edit
                         </Button>
                       )}
