@@ -6,6 +6,8 @@ require 'vcr'
 VCR.configure do |c|
   # This is where the various cassettes will be recorded to
   c.cassette_library_dir = 'test/vcr_cassettes'
+  # This permits non-VCR webmock requests in other tests
+  c.allow_http_connections_when_no_cassette = true
   c.hook_into :webmock
 
   # To avoid storing plain text Twilio API keys or requiring the keys
