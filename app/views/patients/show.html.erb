@@ -132,7 +132,7 @@
           <td><%= cc.email %></td>
           <td><%= cc.last_date_of_exposure&.to_date&.strftime('%m/%d/%Y') %></td>
           <td><%= cc.assigned_user %></td>
-          <td style="word-wrap: anywhere;"><%= cc.notes && cc.notes.length > 500 + 3 ? (cc.notes[0..500] + '...') : cc.notes %></td>
+          <td class="cc-notes-wrap"><%= cc.notes && cc.notes.length > 500 + 3 ? (cc.notes[0..500] + '...') : cc.notes %></td>
           <td><%= cc.contact_attempts || 0 %></td>
           <td><%= cc.enrolled_id ? 'Yes' : 'No' %> </td>
           <td>
