@@ -1692,6 +1692,9 @@ class PatientTest < ActiveSupport::TestCase
     patient.primary_telephone = nil
     assert patient.valid?
 
+    patient.primary_telephone = '+1 123 456 7890'
+    assert_not patient.valid?
+
     patient.primary_telephone = '123'
     assert_not patient.valid?
   end
@@ -1710,6 +1713,9 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.secondary_telephone = nil
     assert patient.valid?
+
+    patient.primary_telephone = '+1 123 456 7890'
+    assert_not patient.valid?
 
     patient.secondary_telephone = '123'
     assert_not patient.valid?
