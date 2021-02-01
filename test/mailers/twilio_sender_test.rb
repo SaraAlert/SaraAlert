@@ -4,6 +4,7 @@ require 'test_helper'
 require 'vcr_setup'
 
 class TwilioSenderTest < ActiveSupport::TestCase
+
   def test_get_number_from_single_message_execution
     # SINGLE_SMS execution ie: weblink, enrollment...
     VCR.use_cassette('get_numbers_from_single_message_execution') do
