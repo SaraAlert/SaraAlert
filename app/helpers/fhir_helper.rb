@@ -99,8 +99,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       american_indian_or_alaska_native: patient.american_indian_or_alaska_native,
       asian: patient.asian,
       native_hawaiian_or_other_pacific_islander: patient.native_hawaiian_or_other_pacific_islander,
-      race_unknown: patient.race_unknown,
       race_other: patient.race_other,
+      race_unknown: patient.race_unknown,
       race_refused_to_answer: patient.race_refused_to_answer
     }
   end
@@ -147,8 +147,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       american_indian_or_alaska_native: race_code?(patient, '1002-5'),
       asian: race_code?(patient, '2028-9'),
       native_hawaiian_or_other_pacific_islander: race_code?(patient, '2076-8'),
-      race_unknown: race_code?(patient, 'UNK'),
       race_other: race_code?(patient, 'OTH'),
+      race_unknown: race_code?(patient, 'UNK'),
       race_refused_to_answer: race_code?(patient, 'ASKU'),
       ethnicity: from_us_core_ethnicity(patient),
       sex: from_us_core_birthsex(patient),
@@ -204,13 +204,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         url: 'ombCategory',
         valueCoding: FHIR::Coding.new(code: '2076-8', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Native Hawaiian or Other Pacific Islander')
       ) : nil,
-      races[:race_unknown] ? FHIR::Extension.new(
-        url: 'ombCategory',
-        valueCoding: FHIR::Coding.new(code: 'UNK', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Unknown')
-      ) : nil,
       races[:race_other] ? FHIR::Extension.new(
         url: 'ombCategory',
         valueCoding: FHIR::Coding.new(code: 'OTH', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Other')
+      ) : nil,
+      races[:race_unknown] ? FHIR::Extension.new(
+        url: 'ombCategory',
+        valueCoding: FHIR::Coding.new(code: 'UNK', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Unknown')
       ) : nil,
       races[:race_refused_to_answer] ? FHIR::Extension.new(
         url: 'ombCategory',
