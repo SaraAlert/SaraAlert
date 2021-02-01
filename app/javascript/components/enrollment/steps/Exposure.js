@@ -450,7 +450,7 @@ class Exposure extends React.Component {
               className="pt-2 my-auto"
               type="switch"
               id="was_in_health_care_facility_with_known_cases"
-              label="WAS IN HEALTH CARE FACILITY WITH KNOWN CASES"
+              label="WAS IN HEALTHCARE FACILITY WITH KNOWN CASES"
               checked={this.state.current.patient.was_in_health_care_facility_with_known_cases}
               onChange={this.handleChange}
             />

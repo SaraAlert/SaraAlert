@@ -20,7 +20,7 @@ class EnrollmentForm < ApplicationSystemTestCase
     @@enrollment_form_steps.steps.each_key do |step|
       next unless monitoree[step.to_s]
 
-      find('b', text: step.to_s.split('_').map(&:upcase).join(' '), match: :prefer_exact).first(:xpath, './/..//..//..').click_on('Edit')
+      click_on "edit-#{step}-btn"
       populate_enrollment_step(step, monitoree[step.to_s])
       @@system_test_utils.wait_for_enrollment_page_transition
     end
@@ -37,8 +37,10 @@ class EnrollmentForm < ApplicationSystemTestCase
           fill_in field[:id], with: data[field[:id]]
         elsif field[:type] == 'select'
           select data[field[:id]], from: field[:id]
-        elsif field[:type] == 'checkbox' || field[:type] == 'race' || field[:type] == 'risk_factor'
+        elsif field[:type] == 'checkbox' || field[:type] == 'race'
           page.find('label', text: field[:label]).click
+        elsif field[:type] == 'risk_factor'
+          page.find('label', text: field[:label].upcase).click
         elsif field[:type] == 'language'
           input_element = page.find_by_id("#{field[:id]}_wrapper").first(:xpath, './/div//div//div//div//div//input')
           input_element.set data[field[:id]]

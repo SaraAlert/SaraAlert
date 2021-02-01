@@ -98,10 +98,10 @@ describe('Patient', () => {
     const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2 ]} goto={goToMock} hideBody={true}
       editMode={false} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(wrapper.find('.details-expander').exists()).toBeTruthy();
-    expect(wrapper.find('.details-expander').find('a').exists()).toBeTruthy();
+    expect(wrapper.find('#details-expander-link').exists()).toBeTruthy();
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).exists()).toBeTruthy();
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).prop('icon').iconName).toEqual('chevron-down');
-    expect(wrapper.find('.details-expander').find('a').find('span').text()).toEqual('Show address, travel, exposure, and case information');
+    expect(wrapper.find('#details-expander-link').find('span').text()).toEqual('Show address, travel, exposure, and case information');
     expect(wrapper.find('.details-expander').find('span').at(1).hasClass('line')).toBeTruthy();
   });
 
@@ -109,11 +109,11 @@ describe('Patient', () => {
     const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2 ]} goto={goToMock} hideBody={true}
       editMode={false} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(wrapper.find('.details-expander').exists()).toBeTruthy();
-    expect(wrapper.find('.details-expander').find('a').exists()).toBeTruthy();
-    wrapper.find('.details-expander').find('a').simulate('click');
+    expect(wrapper.find('#details-expander-link').exists()).toBeTruthy();
+    wrapper.find('#details-expander-link').simulate('click');
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).exists()).toBeTruthy();
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).prop('icon').iconName).toEqual('chevron-up');
-    expect(wrapper.find('.details-expander').find('a').find('span').text()).toEqual('Hide address, travel, exposure, and case information');
+    expect(wrapper.find('#details-expander-link').find('span').text()).toEqual('Hide address, travel, exposure, and case information');
     expect(wrapper.find('.details-expander').find('span').at(1).hasClass('line')).toBeTruthy();
   });
 
@@ -122,10 +122,10 @@ describe('Patient', () => {
       editMode={false} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(wrapper.find(Collapse).prop('in')).toBeFalsy();
     expect(wrapper.state('expanded')).toBeFalsy();
-    wrapper.find('.details-expander').find('a').simulate('click');
+    wrapper.find('#details-expander-link').simulate('click');
     expect(wrapper.find(Collapse).prop('in')).toBeTruthy();
     expect(wrapper.state('expanded')).toBeTruthy();
-    wrapper.find('.details-expander').find('a').simulate('click');
+    wrapper.find('#details-expander-link').simulate('click');
     expect(wrapper.find(Collapse).prop('in')).toBeFalsy();
     expect(wrapper.state('expanded')).toBeFalsy();
   });
