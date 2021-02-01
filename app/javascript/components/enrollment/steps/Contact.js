@@ -483,7 +483,7 @@ yup.addMethod(yup.string, 'phone', function() {
           return true; // Blank numbers are allowed
         }
         // Make sure we'll be able to convert to E164 format at submission time
-        return !!phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) && /\d{10}/.test(value.replace('+1', '').replace(/\D/g, ''));
+        return !!phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) && /(0|[2-9])\d{9}/.test(value.replace('+1', '').replace(/\D/g, ''));
       } catch (e) {
         return false;
       }
