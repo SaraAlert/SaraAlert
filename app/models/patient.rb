@@ -592,7 +592,7 @@ class Patient < ApplicationRecord
 
   # Get all dependents and always include self even if self is not active
   def active_dependents_and_self
-    ([self] + [active_dependents]).uniq
+    ([self] + active_dependents).uniq
   end
 
   # Get this patient's dependents excluding itself
