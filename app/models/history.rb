@@ -55,7 +55,7 @@ class History < ApplicationRecord
     end
   }
 
-  def self.errored_contact_group_of_patients(patients: nil, created_by: 'Sara Alert System', comment: 'Failed Contact Attempt', error_message: nil)
+  def self.errored_report_reminder_group_of_patients(patients: nil, created_by: 'Sara Alert System', comment: 'Failed Contact Attempt', error_message: nil)
     histories = []
     patients.uniq.each do |pat|
       if pat.responder == pat
@@ -75,7 +75,7 @@ class History < ApplicationRecord
                 else
                   "Sara Alert attempted to call #{recipient} at #{responder.primary_telephone}, but the call could not be completed.#{details}"
                 end
-      histories << History.new(created_by: created_by, comment: comment, patient_id: pat.id, history_type: HISTORY_TYPES[:contact_attempt])
+      histories << History.new(created_by: created_by, comment: comment, patient_id: pat.id, history_type: HISTORY_TYPES[:report_reminder])
     end
     History.import! histories
   end
