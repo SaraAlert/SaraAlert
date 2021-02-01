@@ -61,7 +61,7 @@ class History < ApplicationRecord
       # Avoid adding multiple history items if HoH has errored contact attempts for
       # contact attempts to them on behalf of their dependents. This would be the
       # case for failed weblinks
-      next if ((Time.now - pat.histories.last.created_at) / 60) < 5
+      next if !pat&.histories&.last.nil? && ((Time.now - pat&.histories&.last&.created_at) / 60) < 5
 
       if pat.responder == pat
         recipient = 'this monitoree'
