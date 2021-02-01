@@ -73,7 +73,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                                 healthcare_personnel healthcare_personnel_facility_name crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort
                                 member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan exposure_notes full_status symptom_onset
                                 case_status lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report
-                                lab_2_result jurisdiction_path assigned_user gender_identity sexual_orientation].freeze
+                                lab_2_result jurisdiction_path assigned_user gender_identity sexual_orientation race_other race_unknown
+                                race_refused_to_answer].freeze
 
   SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                                'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -97,7 +98,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                                'Member of a Common Exposure Cohort?', 'Common Exposure Cohort Name', 'Exposure Risk Assessment', 'Monitoring Plan',
                                'Exposure Notes', 'Status', 'Symptom Onset Date', 'Case Status', 'Lab 1 Test Type', 'Lab 1 Specimen Collection Date',
                                'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type', 'Lab 2 Specimen Collection Date', 'Lab 2 Report Date', 'Lab 2 Result',
-                               'Full Assigned Jurisdiction Path', 'Assigned User', 'Gender Identity', 'Sexual Orientation'].freeze
+                               'Full Assigned Jurisdiction Path', 'Assigned User', 'Gender Identity', 'Sexual Orientation', 'Race Other', 'Race Unknown',
+                               'Race Refused to Answer'].freeze
 
   FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + [:extended_isolation]).freeze
 
@@ -115,7 +117,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   FULL_HISTORY_HISTORIES_HEADERS = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At'].freeze
 
-  PATIENT_RACE_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].freeze
+  PATIENT_RACE_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander race_other
+                           race_unknown race_refused_to_answer].freeze
 
   PATIENT_LAB_FIELDS = %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result].freeze
 
@@ -168,6 +171,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     american_indian_or_alaska_native: 'American Indian or Alaska Native',
     asian: 'Asian',
     native_hawaiian_or_other_pacific_islander: 'Native Hawaiian or Other Pacific Islander',
+    race_other: 'Race Other',
+    race_unknown: 'Race Unknown',
+    race_refused_to_answer: 'Race Refused to Answer',
     ethnicity: 'Ethnicity',
     nationality: 'Nationality',
     # Enrollment Info - Identification and Demographics - Language
