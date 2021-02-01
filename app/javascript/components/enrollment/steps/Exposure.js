@@ -47,7 +47,7 @@ class Exposure extends React.Component {
     let modified = this.state.modified;
     if (event?.target?.id && event.target.id === 'jurisdiction_id') {
       this.setState({ jurisdiction_path: event.target.value });
-      let jurisdiction_id = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === event.target.value);
+      let jurisdiction_id = parseInt(Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === event.target.value));
       if (jurisdiction_id) {
         value = jurisdiction_id;
         axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -226,7 +226,7 @@ class Exposure extends React.Component {
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, async () => {
-          if (parseInt(self.state.current.patient.jurisdiction_id) !== self.state.originalJurisdictionId) {
+          if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
             // If we set it back to the last saved value no need to confirm.
             if (self.state.current.patient.jurisdiction_id === self.state.selected_jurisdiction) {
               callback();
