@@ -122,15 +122,14 @@ class TwilioSender
     nil
   end
 
-  private
-
-  def dispatch_errored_contact_history_items(patient, error_message)
-    # If errored contact was for a communication for all dependents ie: sms_assessment or voice_assessment
-    if patient&.responder == patient
-      History.errored_contact_group_of_patients(patients: [patient, patient&.active_dependents], error_message: error_message)
-    else
-      # If errored contact was for a particular dependent ie: weblink assessment
-      History.errored_contact_group_of_patients(patients: [patient, patient&.responder], error_message: error_message)
-    end
+  def self.dispatch_errored_contact_history_items(patient, error_message)
+    pats = if patient&.responder == patient
+             # If errored contact was for a communication for all dependents ie: sms_assessment or voice_assessment
+             [patient] + patient&.active_dependents
+           else
+             # If errored contact was for a particular dependent ie: weblink assessment
+             [patient, patient&.responder]
+           end
+    History.errored_report_reminder_group_of_patients(patients: pats, error_message: error_message)
   end
 end
