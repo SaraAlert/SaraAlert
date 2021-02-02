@@ -7,6 +7,54 @@ class TransferTest < ActiveSupport::TestCase
 
   def teardown; end
 
+  test 'get lastest transfers scope' do
+    # Ensure that one patient does not have two transfers returned when a
+    # previous transfer has the same timestamp as another patient's latest transfer
+    jur_1 = create(:jurisdiction)
+    jur_2 = create(:jurisdiction)
+    user = create(:user)
+    # :created_at has precision: 6, while latest_transfer_at
+    # has no specified precision. It's unclear if this is an issue outside of
+    # the test or not - needs further investigation.
+    timestamp_1 = (Time.zone.now - 5.days).to_i
+    timestamp_2 = (Time.zone.now - 2.days).to_i
+
+    patients = [
+      build(:patient),
+      build(:patient),
+      build(:patient)
+    ]
+    transfers = [
+      Transfer.create!(patient: patients[0], from_jurisdiction: jur_1, to_jurisdiction: jur_2, who: user),
+      Transfer.create!(patient: patients[0], from_jurisdiction: jur_2, to_jurisdiction: jur_1, who: user),
+      Transfer.create!(patient: patients[1], from_jurisdiction: jur_1, to_jurisdiction: jur_2, who: user),
+      Transfer.create!(patient: patients[1], from_jurisdiction: jur_2, to_jurisdiction: jur_1, who: user),
+      Transfer.create!(patient: patients[2], from_jurisdiction: jur_2, to_jurisdiction: jur_1, who: user)
+    ]
+    transfers[0].update(created_at: Time.zone.at(timestamp_1))
+    transfers[1].update(created_at: Time.zone.at(timestamp_2))
+    transfers[2].update(created_at: Time.zone.at(timestamp_1))
+    transfers[3].update(created_at: Time.zone.at(timestamp_2))
+    transfers[4].update(created_at: Time.zone.at(timestamp_1))
+    patients[0].update(latest_transfer_at: Time.zone.at(timestamp_2))
+    patients[1].update(latest_transfer_at: Time.zone.at(timestamp_2))
+    patients[2].update(latest_transfer_at: Time.zone.at(timestamp_1))
+    transfers.each(&:reload)
+    patients.each(&:reload)
+
+    assert_equal 3, Transfer.latest_transfers(patients).size
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[1].id
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[3].id
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[4].id
+
+    patient_without_transfer = build(:patient)
+
+    assert_equal 3, Transfer.latest_transfers(patients + [patient_without_transfer]).size
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[1].id
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[3].id
+    assert_includes Transfer.latest_transfers(patients).pluck(:id), transfers[4].id
+  end
+
   test 'create transfer' do
     assert(create(:transfer))
 
@@ -100,32 +148,6 @@ class TransferTest < ActiveSupport::TestCase
     to_jurisdiction = create(:jurisdiction)
     transfer = create(:transfer, to_jurisdiction: to_jurisdiction)
     assert_equal(transfer.to_path, to_jurisdiction.jurisdiction_path_string)
-  end
-
-  test 'with incoming jurisdiction id' do
-    to_jurisdiction = create(:jurisdiction)
-
-    assert_difference("Transfer.with_incoming_jurisdiction_id(#{to_jurisdiction.id}).size", 1) do
-      create(:transfer, to_jurisdiction: to_jurisdiction)
-    end
-
-    assert_no_difference("Transfer.with_incoming_jurisdiction_id(#{to_jurisdiction.id}).size") do
-      create(:transfer)
-    end
-  end
-
-  test 'with outgoing jurisdiction id' do
-    from_jurisdiction = create(:jurisdiction)
-
-    assert_difference("Transfer.with_outgoing_jurisdiction_id(#{from_jurisdiction.id}).size", 1) do
-      transfer = build(:transfer)
-      transfer.from_jurisdiction = from_jurisdiction
-      transfer.save!
-    end
-
-    assert_no_difference("Transfer.with_outgoing_jurisdiction_id(#{from_jurisdiction.id}).size") do
-      create(:transfer)
-    end
   end
 
   test 'transfer in time frame' do

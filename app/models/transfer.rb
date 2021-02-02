@@ -22,16 +22,6 @@ class Transfer < ApplicationRecord
     to_jurisdiction[:path] || to_jurisdiction.jurisdiction_path_string
   end
 
-  # All incoming transfers with the given jurisdiction id
-  scope :with_incoming_jurisdiction_id, lambda { |jurisdiction_id|
-    where('to_jurisdiction_id = ?', jurisdiction_id)
-  }
-
-  # All outgoing transfers with the given jurisdiction id
-  scope :with_outgoing_jurisdiction_id, lambda { |jurisdiction_id|
-    where('from_jurisdiction_id = ?', jurisdiction_id)
-  }
-
   # All transfers within the given time frame
   scope :in_time_frame, lambda { |time_frame|
     case time_frame
@@ -46,6 +36,18 @@ class Transfer < ApplicationRecord
     else
       none
     end
+  }
+
+  scope :latest_transfers, lambda { |patients|
+    where(
+      '(transfers.patient_id, transfers.created_at) IN ('\
+      '  SELECT transfers.patient_id, MAX(transfers.created_at)'\
+      '  FROM transfers'\
+      '  WHERE transfers.patient_id IN (?)'\
+      '  GROUP BY transfers.patient_id'\
+      ')',
+      patients.pluck(:id)
+    )
   }
 
   def custom_details(fields, patient_identifiers, user_emails, jurisdiction_paths)

@@ -102,51 +102,79 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/Patient.*'
       )
 
-      resource = get_patient(params.permit(:id)[:id])
+      # Get the patient that needs to be updated
+      patient = get_patient(params.permit(:id)[:id])
+      status_forbidden && return if patient.nil?
 
-      if request.patch? && !resource.nil?
+      # Get the contents from applying a patch, if needed
+      if request.patch? && !patient.nil?
         begin
-          contents = apply_patch(resource, patch)
+          contents = apply_patch(patient, patch)
         rescue StandardError => e
           status_bad_request([['Unable to apply patch', e&.message].compact.join(': ')]) && return
         end
       end
 
-      updates = patient_from_fhir(contents, default_patient_jurisdiction_id)
+      # Get patient values before updates occur for later comparison
+      patient_before = patient.dup
 
-      # Grab patient before changes to construct diff
-      patient_before = resource.dup
+      # Get key value pairs from the update.
+      request_updates = patient_from_fhir(contents, default_patient_jurisdiction_id)
+      status_unprocessable_entity && return if request_updates.nil?
 
-      # If "monitoring" was set to false for a Patient that was previously being monitored
-      if !resource.nil? && resource.monitoring && updates&.key?(:monitoring) && !updates[:monitoring]
-        # Add closed_at to updates
-        updates[:closed_at] = DateTime.now
+      # Assign any remaining updates to the patient
+      # NOTE: The patient.update method does not allow a context to be passed, so first we assign the updates, then save
+      patient.assign_attributes(request_updates)
+
+      # Wrap updates to the Patient, Transfer creation, and History creation in a transaction
+      # so that they occur atomically
+      ActiveRecord::Base.transaction do
+        # Verify that the updated jurisdiction and other updates are valid
+        unless jurisdiction_valid_for_update?(patient) && patient.save(context: :api)
+          status_unprocessable_entity(format_model_validation_errors(patient)) && return
+        end
+
+        # If the jurisdiction was changed, create a Transfer
+        if request_updates&.keys&.include?(:jurisdiction_id) && !request_updates[:jurisdiction_id].nil?
+          Transfer.create!(patient: patient, from_jurisdiction: patient_before.jurisdiction, to_jurisdiction: patient.jurisdiction, who: @current_actor)
+        end
+
+        # Handle creating history items based on all of the updates
+        update_all_patient_history(request_updates, patient_before, patient)
       end
+
+      status_ok(patient.as_fhir) && return
     else
       status_not_found && return
     end
-
-    status_forbidden && return if resource.nil?
-
-    # Try to update the resource
-    status_unprocessable_entity && return if updates.nil?
-
-    # The resource.update method does not allow a context to be passed, so first we assign the updates, then save
-    resource.assign_attributes(updates)
-    unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
-      status_unprocessable_entity(format_model_validation_errors(resource)) && return
-    end
-
-    if resource_type == 'patient'
-      # Update patient history with detailed edit diff
-      Patient.detailed_history_edit(patient_before, resource, resource.creator&.email, updates, is_api_edit: true)
-    end
-
-    status_ok(resource.as_fhir) && return
   rescue JSON::ParserError
     status_bad_request(['Invalid JSON in request body'])
   rescue StandardError
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
+  end
+
+  # Create History items corresponding to Patient changes from an update.
+  #
+  # updates - A hash that contains attributes corresponding to the Patient.
+  # patient_before - The Patient before updates were applied.
+  # patient - The Patient after the updates have been applied.
+  def update_all_patient_history(updates, patient_before, patient)
+    created_by_label = "#{@m2m_workflow ? current_client_application&.name : current_resource_owner&.email} (API)"
+
+    # Handle History for monitoree details information updates
+    info_updates = updates.filter { |attr, _value| PatientHelper.info_fields.include?(attr) }
+    Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, created_by_label)
+
+    # Handle History for monitoree monitoring information updates
+    history_data = {
+      created_by: created_by_label,
+      patient_before: patient_before,
+      patient: patient,
+      updates: updates,
+      household_status: :patient,
+      propagation: :none
+    }
+    patient.monitoring_history_edit(history_data, nil)
   end
 
   # Create a resource given a type.
@@ -193,19 +221,7 @@ class Fhir::R4::ApiController < ActionController::API
       resource.responder = resource if resource.responder.nil?
 
       # Determine resource creator
-      if current_resource_owner.present?
-        # Creator is authenticated user
-        resource.creator = current_resource_owner
-      else
-        # Creator is client application - need to get created shadow user
-        curr_client_app = current_client_application
-        status_bad_request && return if curr_client_app&.user_id.nil?
-
-        shadow_user = User.find_by(id: current_client_application.user_id)
-        status_bad_request && return unless shadow_user.present?
-
-        resource.creator = shadow_user
-      end
+      resource.creator = @current_actor
 
       # Generate submission token for monitoree
       resource.submission_token = resource.new_submission_token
@@ -474,7 +490,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   private
 
-  # Check whether client is user or M2M flow
+  # Check whether client is user or M2M flow, set instance variables appropriately.
   # Also return a 401 if user doesn't have API access
   def check_client_type
     return if doorkeeper_token.nil?
@@ -482,14 +498,19 @@ class Fhir::R4::ApiController < ActionController::API
     if current_resource_owner.present?
       if current_resource_owner.can_use_api?
         @user_workflow = true
+        @current_actor = current_resource_owner
+        nil
       else
         head :unauthorized
       end
+    elsif current_client_application.present?
+      @m2m_workflow = true
+
+      # Actor is client application - need to get created proxy user
+      proxy_user = User.where(is_api_proxy: true).find_by(id: current_client_application.user_id)
+      head :unauthorized if proxy_user.nil?
+      @current_actor = proxy_user
     end
-
-    return unless current_client_application.present?
-
-    @m2m_workflow = true
   end
 
   # Current user account as authenticated via doorkeeper for user flow
@@ -527,25 +548,43 @@ class Fhir::R4::ApiController < ActionController::API
     false
   end
 
+  # Determine if a Patient's jurisdiction can be updated by the requesting application.
+  #
+  # patient - The Patient to check (patient.jurisdiction_id should be set to the updated value).
+  #
+  # Returns true if the jurisdiction is valid, otherwise false.
+  def jurisdiction_valid_for_update?(patient)
+    allowed_jurisdiction_ids = @current_actor.jurisdictions_for_transfer
+    return true if !patient.jurisdiction_id.nil? && allowed_jurisdiction_ids.keys.include?(patient.jurisdiction_id)
+
+    patient.errors.add(:jurisdiction_id, 'Jurisdiction does not exist or cannot be transferred to')
+
+    false
+  end
+
   # Default jurisdiction to assign to new monitorees
   def default_patient_jurisdiction_id
-    current_resource_owner&.jurisdiction&.id || current_client_application&.jurisdiction&.id
+    if @user_workflow
+      current_resource_owner&.jurisdiction&.id
+    else
+      current_client_application&.jurisdiction&.id
+    end
   end
 
   # Determine the patient data that is accessible by either the current resource owner
   # (user flow) or the current client application (system flow).
   def accessible_patients
     # If there is a current resource owner (end user) that has api access enabled
-    if current_resource_owner.present? && current_resource_owner&.can_use_api?
+    if @user_workflow
       # This will access all patients that the role has access to, if any
       current_resource_owner.patients
     # Otherwise if there NO resource owner and there is a found application, check for a valid associated jurisdiction id.
     # The current resource owner check is to prevent unauthorized users from using it if the application happens to be registered for both workflows.
-    elsif !current_resource_owner.present? && current_client_application.present?
+    elsif @m2m_workflow
       jurisdiction_id = current_client_application[:jurisdiction_id]
       return unless Jurisdiction.exists?(jurisdiction_id)
 
-      Jurisdiction.find_by(id: jurisdiction_id).all_patients
+      Jurisdiction.find_by(id: jurisdiction_id).all_patients_excluding_purged
     end
   end
 

@@ -64,7 +64,7 @@ describe('ConfirmExport', () => {
     wrapper.find(Button).at(0).simulate('click');
     expect(onCancelMock).toHaveBeenCalled();
   });
-  
+
   it('Clicking the submit button calls the submit method with correct arguments (exportType = Line list CSV)', () => {
     const wrapper = getWrapper(true, 'Line list CSV', workflow);
     expect(onStartExportMock).toHaveBeenCalledTimes(0);

@@ -67,7 +67,7 @@ class Exposure extends React.Component {
         value = -1;
       }
     } else if (event?.target?.id && event.target.id === 'assigned_user') {
-      if (isNaN(event.target.value) || parseInt(event.target.value) > 9999) return;
+      if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
 
       // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
       value = event.target.value.trim() === '' ? null : parseInt(event.target.value);
@@ -299,11 +299,11 @@ class Exposure extends React.Component {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} md="24" className="mb-2">
-            <Form.Label htmlFor="isolation_notes" className="nav-input-label ml-1">
+            <Form.Label htmlFor="exposure_notes" className="nav-input-label ml-1">
               NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
             </Form.Label>
             <Form.Control
-              id="isolation_notes"
+              id="exposure_notes"
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
               rows="4"
@@ -669,7 +669,7 @@ class Exposure extends React.Component {
                       {this.props.has_dependents &&
                         this.state.current.patient.assigned_user !== this.state.originalAssignedUser &&
                         (this.state.current.patient.assigned_user === null ||
-                          (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 9999)) && (
+                          (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 999999)) && (
                           <Form.Group className="mt-2">
                             <Form.Check
                               type="switch"

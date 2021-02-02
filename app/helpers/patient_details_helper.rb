@@ -41,15 +41,15 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       end_of_monitoring: (continuous_exposure ? 'Continuous Exposure' : end_of_monitoring) || '',
       risk_level: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
-      latest_report: latest_assessment_at&.rfc2822 || '',
-      transferred_at: latest_transfer_at&.rfc2822 || '',
+      latest_report: latest_assessment_at || '',
+      transferred_at: latest_transfer_at || '',
       reason_for_closure: monitoring_reason || '',
       public_health_action: public_health_action || '',
       status: status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '',
-      closed_at: closed_at&.rfc2822 || '',
+      closed_at: closed_at || '',
       transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || '',
-      expected_purge_date: expected_purge_date,
+      expected_purge_ts: expected_purge_date_exp || '',
       symptom_onset: symptom_onset&.strftime('%F') || '',
       extended_isolation: extended_isolation || ''
     }
@@ -176,8 +176,11 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       responder_id: responder_id || '',
       head_of_household: head_of_household || false,
       pause_notifications: pause_notifications || false,
-      expected_purge_ts: expected_purge_ts || '',
-      monitoring_reason: monitoring_reason || ''
+      expected_purge_ts: expected_purge_date_exp || '',
+      monitoring_reason: monitoring_reason || '',
+      closed_at: closed_at || '',
+      created_at: created_at || '',
+      updated_at: updated_at || ''
     }
 
     full_history_details.merge(additional_custom_export_details)

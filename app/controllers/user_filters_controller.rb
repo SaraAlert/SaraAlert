@@ -10,7 +10,13 @@ class UserFiltersController < ApplicationController
   end
 
   def create
-    redirect_to root_url unless current_user.user_filters.count < 100 # Enforce upper limit per user
+    # Enforce upper limit per user
+    if current_user.user_filters.count >= ADMIN_OPTIONS['max_user_filters']
+      error_message = 'You have reached the maximum allowed number of saved filters for your account. '\
+                      'Please delete an existing filter before attempting to add another.'
+      render(json: { error: error_message }, status: :bad_request) && return
+    end
+
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
         filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :allowRange, options: []),
@@ -44,7 +50,7 @@ class UserFiltersController < ApplicationController
   end
 
   def destroy
-    current_user.user_filters.find_by(id: params.permit(:id)[:id]).destroy!
+    current_user.user_filters.find_by(id: params.permit(:id)[:id])&.destroy!
   end
 
   private

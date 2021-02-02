@@ -1,5 +1,5 @@
 # Version
-version: v1.21.0
+version: v1.22.0
 
 # Base path (useful for WARP or similar environments)
 base_path: ''
@@ -42,3 +42,6 @@ sentry_url: <%= ENV["SENTRY_URL"] || '' %>
 
 # Address to send job run results
 job_run_email: <%= ENV["JOB_RUN_EMAIL"] || '' %>
+
+# Maximum number of allowed user saved filters
+max_user_filters: <%= ENV["MAX_USER_FILTERS"] || 150 %>

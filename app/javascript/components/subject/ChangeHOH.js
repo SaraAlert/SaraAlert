@@ -1,7 +1,9 @@
-import React from 'react';
+import axios from 'axios';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
-import axios from 'axios';
+import React from 'react';
+
+import reportError from '../util/ReportError';
 
 class ChangeHOH extends React.Component {
   constructor(props) {
@@ -34,16 +36,14 @@ class ChangeHOH extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/update_hoh', {
           new_hoh_id: this.state.hoh_selection,
-          household_ids: this.props?.dependents?.map(member => {
-            return member.id;
-          }),
         })
         .then(() => {
-          this.setState({ updateDisabled: false });
-          location.reload(true);
+          this.setState({ updateDisabled: false }, () => {
+            location.reload();
+          });
         })
-        .catch(error => {
-          console.error(error);
+        .catch(err => {
+          reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
   }

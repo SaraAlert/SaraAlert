@@ -4,6 +4,8 @@ require 'test_case'
 
 # rubocop:disable Metrics/ClassLength
 class PatientTest < ActiveSupport::TestCase
+  include PatientHelper
+
   def setup
     @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
     @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
@@ -2141,6 +2143,367 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.update(last_assessment_reminder_sent: 11.hours.ago)
     assert_not patient.last_assessment_reminder_sent_eligible?
+  end
+
+  test 'within preferred contact time scope utc' do
+    patient = create(:patient, monitored_address_state: 'florida', preferred_contact_time: nil)
+    # Production system will run in UTC
+    # Before window
+    Timecop.freeze((Time.now.utc).change(hour: 13)) do
+      assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+    end
+    # During window
+    Timecop.freeze((Time.now.utc).change(hour: 17)) do
+      assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+    end
+    # After window
+    Timecop.freeze((Time.now.utc).change(hour: 23)) do
+      assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+    end
+  end
+
+  test 'update handles monitoring change' do
+    patient = create(:patient, continuous_exposure: true, monitoring: true, closed_at: nil)
+    assert patient.update({ monitoring: false })
+    assert_not patient.monitoring
+    assert_not patient.continuous_exposure
+    assert_not_nil patient.closed_at
+  end
+
+  test 'update handles workflow change' do
+    patient = create(:patient,
+                     isolation: true,
+                     extended_isolation: DateTime.now + 1.day,
+                     user_defined_symptom_onset: true,
+                     symptom_onset: DateTime.now - 1.day)
+    created_at = DateTime.now.to_date - 1.day
+    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: created_at)
+    patient.update({ isolation: false })
+    assert_not patient.isolation
+    assert_nil patient.extended_isolation
+    assert_not patient.user_defined_symptom_onset
+    assert_equal created_at, patient.symptom_onset
+  end
+
+  test 'update handles case_status change' do
+    patient = create(:patient, public_health_action: 'Recommended medical evaluation of symptoms')
+    patient.update({ case_status: 'Unknown' })
+    assert_equal 'Unknown', patient.case_status
+    assert_equal 'None', patient.public_health_action
+  end
+
+  test 'update handles symptom_onset change' do
+    patient = create(:patient, symptom_onset: DateTime.now - 1.day)
+    created_at = DateTime.now.to_date - 2.day
+    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: created_at)
+    patient.update({ symptom_onset: nil })
+    assert_equal created_at, patient.symptom_onset
+    assert_not patient.user_defined_symptom_onset
+  end
+
+  test 'update handles continuous_exposure change' do
+    patient = create(:patient, monitoring: false, continuous_exposure: false)
+    patient.update({ continuous_exposure: true })
+    # This update is not allowed when monitoring is false
+    assert_not patient.continuous_exposure
+
+    # But when monitoring is set to true, the update is allowed
+    patient.update({ monitoring: true, continuous_exposure: true })
+    assert patient.continuous_exposure
+  end
+
+  # monitoring_history_edit tests
+  test 'monitoring_history_edit handles monitoring change' do
+    patient = create(:patient, monitoring: false, continuous_exposure: false)
+    history_data = {
+      patient_before: { monitoring: true, continuous_exposure: true },
+      updates: { monitoring: false },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient)
+    assert_match(/Continuous Exposure/, h.find_by(created_by: 'Sara Alert System').comment)
+    assert_match(/"Monitoring" to "Not Monitoring"/, h.find_by(history_type: 'Monitoring Change').comment)
+  end
+
+  test 'monitoring_history_edit handles exposure_risk_assessment change' do
+    patient = create(:patient, exposure_risk_assessment: 'Low')
+    history_data = {
+      patient_before: { exposure_risk_assessment: 'High' },
+      updates: { exposure_risk_assessment: 'Low' },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient).first
+    assert_match(/Exposure Risk Assessment.*"High".*"Low"/, h.comment)
+  end
+
+  test 'monitoring_history_edit handles monitoring_plan change' do
+    patient = create(:patient, monitoring_plan: 'None')
+    history_data = {
+      patient_before: { monitoring_plan: 'Daily active monitoring' },
+      updates: { monitoring_plan: 'None' },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient).first
+    assert_match(/Monitoring Plan.*"Daily active monitoring".*"None"/, h.comment)
+  end
+
+  test 'monitoring_history_edit handles public_health_action change' do
+    patient = create(:patient, public_health_action: 'None')
+    history_data = {
+      patient_before: { public_health_action: 'Recommended laboratory testing' },
+      updates: { public_health_action: 'None' },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient).first
+    assert_match(/Latest Public Health Action.*"Recommended laboratory testing".*"None"/, h.comment)
+  end
+
+  test 'monitoring_history_edit handles assigned_user change' do
+    patient = create(:patient, assigned_user: 2)
+    history_data = {
+      patient_before: { assigned_user: 1 },
+      updates: { assigned_user: 2 },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient).first
+    assert_match(/Assigned User.*"1".*"2"/, h.comment)
+  end
+
+  test 'monitoring_history_edit handles pause_notifications change' do
+    patient = create(:patient, pause_notifications: false)
+    history_data = {
+      patient_before: { pause_notifications: true },
+      updates: { pause_notifications: false },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient).first
+    assert_match(/resumed notifications/, h.comment)
+  end
+
+  test 'monitoring_history_edit handles last_date_of_exposure change' do
+    patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
+    history_data = {
+      patient_before: { last_date_of_exposure: 6.days.ago.utc.to_date },
+      updates: { last_date_of_exposure: 7.days.ago.utc.to_date },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient).first
+    assert_match(/Last Date of Exposure/, h.comment)
+  end
+
+  test 'monitoring_history_edit handles continuous_exposure change' do
+    patient = create(:patient, continuous_exposure: false)
+    history_data = {
+      patient_before: { continuous_exposure: true },
+      updates: { continuous_exposure: false },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient).first
+    assert_match(/Continuous Exposure/, h.comment)
+  end
+
+  test 'monitoring_history_edit handles isolation change' do
+    patient = create(:patient, isolation: false, extended_isolation: nil, symptom_onset: 6.days.ago.utc.to_date)
+    history_data = {
+      patient_before: { isolation: true, extended_isolation: 2.days.from_now.utc.to_date, symptom_onset: 6.days.ago.utc.to_date },
+      updates: { isolation: false },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient)
+    assert_match(/cleared Extended Isolation Date/, h.first.comment)
+    assert_match(/changed Symptom Onset Date/, h.second.comment)
+  end
+
+  test 'monitoring_history_edit handles symptom_onset change' do
+    patient = create(:patient, symptom_onset: 6.days.ago.utc.to_date)
+    history_data = {
+      patient_before: { symptom_onset: 7.days.ago.utc.to_date },
+      updates: { symptom_onset: 6.days.ago.utc.to_date },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient).first
+    assert_match(/Symptom Onset/, h.comment)
+  end
+
+  test 'monitoring_history_edit handles case_status change' do
+    patient = create(:patient, case_status: 'Unknown', public_health_action: 'None')
+    history_data = {
+      patient_before: { case_status: 'Confirmed', public_health_action: 'Recommended laboratory testing' },
+      updates: { case_status: 'Unknown' },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient)
+    assert_match(/Case Status.*"Confirmed".*"Unknown"/, h.first.comment)
+    assert_match(/Latest Public Health Action.*"Recommended laboratory testing".*"None"/, h.second.comment)
+  end
+
+  test 'monitoring_history_edit handles case_status change with isolation change' do
+    patient = create(:patient, case_status: 'Unknown', public_health_action: 'None', isolation: false)
+    history_data = {
+      patient_before: { case_status: 'Confirmed', isolation: true, public_health_action: 'Recommended laboratory testing' },
+      updates: { isolation: false, case_status: 'Unknown' },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient)
+    assert_match(/Case Status.*"Confirmed".*"Unknown"/, h.first.comment)
+    assert_match(/Latest Public Health Action.*"Recommended laboratory testing".*"None"/, h.second.comment)
+    # Symptom onset message must come after case status message
+    assert_match(/Symptom Onset Date/, h.third.comment)
+  end
+
+  test 'monitoring_history_edit handles jurisdiction_id change' do
+    patient = create(:patient, jurisdiction_id: 2)
+    history_data = {
+      patient_before: { jurisdiction_id: 1 },
+      updates: { jurisdiction_id: 2 },
+      patient: patient
+    }
+    patient.monitoring_history_edit(history_data, nil)
+    h = History.where(patient: patient).first
+    assert_match(/Jurisdiction/, h.comment)
+  end
+
+  test 'timezone offset' do
+    patient = create(:patient)
+    # Timezone defaults to Eastern
+    assert_equal('America/New_York', patient.time_zone)
+    # Should set on update on monitored_address_state
+    patient.update(monitored_address_state: 'minnesota')
+    patient.reload
+    assert_equal('America/Chicago', patient.time_zone)
+    # Should set on update on address_state
+    patient.update(monitored_address_state: nil, address_state: 'montana')
+    patient.reload
+    assert_equal('America/Denver', patient.time_zone)
+    # monitored should take precendence over normal address
+    patient.update(monitored_address_state: 'minnesota')
+    patient.reload
+    assert_equal('America/Chicago', patient.time_zone)
+    # should default back to Eastern
+    patient.update(monitored_address_state: nil, address_state: nil)
+    patient.reload
+    assert_equal('America/New_York', patient.time_zone)
+  end
+
+  test 'within_preferred_contact_time scope' do
+    patient = create(:patient)
+    [
+      { monitored_address_state: nil, address_state: nil },
+      { monitored_address_state: 'minnesota', address_state: nil },
+      { monitored_address_state: nil, address_state: 'minnesota' },
+      { monitored_address_state: 'montana', address_state: nil },
+      { monitored_address_state: nil, address_state: 'florida' }
+    ].each do |state_params|
+      patient.update(state_params)
+      patient.update(preferred_contact_time: nil)
+      patient.reload
+
+      # default time window is 1200 - 1659
+      # before window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 11, minute: 59)) do
+        assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # front edge of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 12)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # middle of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 13)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # back edge of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 16, minute: 59)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # after window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 17)) do
+        assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+
+      # morning time window is 0800 - 1259
+      patient.update(preferred_contact_time: 'Morning')
+      patient.reload
+      # before window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 7, minute: 59)) do
+        assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # front edge of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 8)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # middle of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 10)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # back edge of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 12, minute: 59)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # after window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 13)) do
+        assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+
+      # afternoon time window is 1200 - 1659
+      patient.update(preferred_contact_time: 'Afternoon')
+      patient.reload
+      # before window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 11, minute: 59)) do
+        assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # front edge of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 12)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # middle of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 13)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # back edge of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 16, minute: 59)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # after window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 17)) do
+        assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+
+      # evening time window is 1600 - 1959
+      patient.update(preferred_contact_time: 'Evening')
+      patient.reload
+      # before window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 15, minute: 59)) do
+        assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # front edge of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 16)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # middle of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 17)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # back edge of window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 19, minute: 59)) do
+        assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+      # after window
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 20)) do
+        assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+      end
+    end
   end
 end
 # rubocop:enable Metrics/ClassLength

@@ -16,7 +16,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     user = @@system_test_utils.get_user(user_label)
     export_type = "csv_linelist_#{workflow}".to_sym
     download_export_files(user, export_type)
-    patients = user.jurisdiction.all_patients.where(isolation: workflow == :isolation)
+    patients = user.jurisdiction.all_patients_excluding_purged.where(isolation: workflow == :isolation)
 
     # Verify per outer batch (file)
     patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
@@ -29,7 +29,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     user = @@system_test_utils.get_user(user_label)
     export_type = "sara_alert_format_#{workflow}".to_sym
     download_export_files(user, export_type)
-    patients = user.jurisdiction.all_patients.where(isolation: workflow == :isolation)
+    patients = user.jurisdiction.all_patients_excluding_purged.where(isolation: workflow == :isolation)
 
     # Verify per outer batch (file)
     patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
@@ -61,7 +61,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       }
     }
     download_export_files(user, export_type)
-    patients = user.jurisdiction.all_patients.order(:id)
+    patients = user.jurisdiction.all_patients_excluding_purged.order(:id)
     patients = patients.purge_eligible if scope == :purgeable
     patients = patients.order(:id)
 
@@ -330,8 +330,6 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         elsif field == :creator
           responder_email = User.find(patient.creator_id).email
           assert_equal(responder_email, cell_value, "For field: #{field} in Monitorees List (row #{row + 1})")
-        elsif %i[created_at updated_at closed_at].include?(field)
-          assert_equal(patient[field] || '', cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
         else
           assert_equal(patient_details[field].to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
         end

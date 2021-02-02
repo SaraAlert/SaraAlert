@@ -24,13 +24,7 @@ class PatientsController < ApplicationController
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
 
-    @possible_jurisdiction_paths = if current_user.can_transfer_patients?
-                                     # Allow all jurisdictions as valid transfer options.
-                                     Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
-                                   else
-                                     # Otherwise, only show jurisdictions within hierarchy.
-                                     Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }]
-                                   end
+    @possible_jurisdiction_paths = current_user.jurisdictions_for_transfer
 
     # Household members (dependents) for the HOH excluding HOH
     @dependents_exclude_hoh = @patient.dependents_exclude_self.where(purged: false)
@@ -63,6 +57,8 @@ class PatientsController < ApplicationController
                            last_name: @close_contact.nil? ? '' : @close_contact.last_name,
                            primary_telephone: @close_contact.nil? ? '' : @close_contact.primary_telephone,
                            email: @close_contact.nil? ? '' : @close_contact.email,
+                           last_date_of_exposure: @close_contact.nil? ? '' : @close_contact.last_date_of_exposure,
+                           assigned_user: @close_contact.nil? ? '' : @close_contact.assigned_user,
                            contact_of_known_case: !@close_contact.nil?,
                            contact_of_known_case_id: @close_contact.nil? ? '' : @close_contact.patient_id,
                            exposure_notes: @close_contact.nil? ? '' : @close_contact.notes,
@@ -197,8 +193,7 @@ class PatientsController < ApplicationController
       if current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id].to_i)
         old_jurisdiction = patient.jurisdiction[:path]
         new_jurisdiction = Jurisdiction.find(content[:jurisdiction_id])[:path]
-        transfer = Transfer.new(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction_id: content[:jurisdiction_id], who: current_user)
-        transfer.save!
+        transfer = Transfer.create!(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction_id: content[:jurisdiction_id], who: current_user)
         comment = "User changed Jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
         history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
         if propagated_fields.include?('jurisdiction_id')
@@ -239,63 +234,180 @@ class PatientsController < ApplicationController
       end
     end
 
-    # Reset symptom onset date if moving from isolation to exposure
-    reset_symptom_onset(content, patient, :system) if !content[:isolation].nil? && !content[:isolation]
-
     # Update patient history with detailed edit diff
     patient_before = patient.dup
-    Patient.detailed_history_edit(patient_before, patient, current_user.email, allowed_params) if patient.update(content)
+    Patient.detailed_history_edit(patient_before, patient, allowed_params&.keys, current_user.email) if patient.update(content)
+
+    # Add a history update for any changes from moving from isolation to exposure
+    patient.update_patient_history_for_isolation(patient_before, content[:isolation]) unless content[:isolation].nil?
 
     render json: patient
   end
 
+  # Moves a record into a household
+  def move_to_household
+    new_hoh_id = params.permit(:new_hoh_id)[:new_hoh_id]&.to_i
+    current_patient_id = params.permit(:id)[:id]&.to_i
+
+    current_patient = current_user.get_patient(current_patient_id)
+    new_hoh = current_user.get_patient(new_hoh_id)
+    current_user_patients = current_user.patients
+
+    # ----- Error Checking -----
+
+    # Check to make sure selected HoH record exists.
+    unless current_user_patients.exists?(new_hoh_id)
+      error_message = "Move to household action failed: selected Head of Household with ID #{new_hoh_id} is not accessible."
+      render(json: { error: error_message }, status: :forbidden) && return
+    end
+
+    # Check to make sure user has access to update this record.
+    unless current_user_patients.exists?(current_patient_id)
+      error_message = 'Move to household action failed: user does not have permissions to update current monitoree.'
+      render(json: { error: error_message }, status: :forbidden) && return
+    end
+
+    # Do not do anything if there hasn't been a change to the responder at all.
+    redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
+
+    # Do not allow the user to set this record as a new HoH if they are a dependent already.
+    if new_hoh.responder_id != new_hoh_id
+      error_message = 'Move to household action failed: selected Head of Household is not valid as they are a dependent in an existing household. '\
+                      'Please refresh.'
+      render(json: { error: error_message }, status: :bad_request) && return
+    end
+
+    # Don't allow a HoH to be moved to a household.
+    if current_patient.head_of_household
+      error_message = 'Move to household action failed: monitoree is a head of household and therefore cannot be moved to a household '\
+                      'through the Move to Household action. Please refresh.'
+      render(json: { error: error_message }, status: :bad_request) && return
+    end
+
+    # ----- Record Updates -----
+
+    # Update the record
+    updated = current_patient.update(responder_id: new_hoh_id)
+
+    if !updated
+      error_message = 'Move to household action failed: monitoree was unable to be be updated.'
+      render(json: { error: error_message }, status: :bad_request) && return
+    else
+      # Create history item for new HoH
+      comment = "User added monitoree with ID #{current_patient.id} to a household. This monitoree"\
+                ' will now be responsible for handling the reporting on their behalf.'
+      History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
+
+      # Create history item for current patient being moved to a household
+      comment = "User added monitoree to a household. Monitoree with ID #{new_hoh_id} will now be responsible"\
+                ' for handling the reporting on their behalf.'
+      History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
+    end
+  end
+
+  # Removes a record from a household
+  def remove_from_household
+    current_patient_id = params.permit(:id)[:id]&.to_i
+
+    current_patient = current_user.get_patient(current_patient_id)
+    current_user_patients = current_user.patients
+
+    # ----- Error Checking -----
+
+    # Check to make sure user has access to update this record.
+    unless current_user_patients.exists?(current_patient_id)
+      error_message = 'Remove from household action failed: user does not have permissions to update current monitoree.'
+      render(json: { error: error_message }, status: :forbidden) && return
+    end
+
+    # If the current patients is a HoH, they can't be removed.
+    if current_patient.head_of_household
+      error_message = 'Remove from household action failed: monitoree is a head of household. Please refresh.'
+      render(json: { error: error_message }, status: :bad_request) && return
+    end
+
+    # ----- Record Updates -----
+    old_hoh = current_user.get_patient(current_patient.responder_id)
+
+    # Update the record
+    updated = current_patient.update(responder_id: current_patient.id)
+
+    if !updated
+      error_message = 'Remove from household action failed: monitoree was unable to be be updated.'
+      render(json: { error: error_message }, status: :bad_request) && return
+    else
+      # Create history item for old HoH
+      comment = "User removed dependent monitoree with ID #{current_patient.id} from the household. This monitoree"\
+                ' will no longer be responsible for handling their reporting.'
+      History.monitoring_change(patient: old_hoh, created_by: current_user.email, comment: comment)
+
+      # Create history item on current patient
+      comment = "User removed monitoree from a household. Monitoree with ID #{old_hoh.id} will"\
+                ' no longer be responsible for handling their reporting.'
+      History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
+    end
+  end
+
+  # Changes the HoH of a household
   def update_hoh
     new_hoh_id = params.permit(:new_hoh_id)[:new_hoh_id]&.to_i
     current_patient_id = params.permit(:id)[:id]
-    household_ids = params[:household_ids] || []
+
     current_patient = current_user.get_patient(current_patient_id)
-    old_hoh = current_user.get_patient(current_patient.responder_id)
     new_hoh = current_user.get_patient(new_hoh_id)
-
-    # Don't do anything if there hasn't been a change to the responder at all
-    redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
-
-    if new_hoh_id == current_patient.id
-      comment = "User removed #{current_patient.first_name} #{current_patient.last_name} from the household. #{old_hoh.first_name} #{old_hoh.last_name}"\
-                ' will no longer be responsible for handling their reporting.'
-      History.monitoring_change(patient: old_hoh, created_by: current_user.email, comment: comment)
-      comment = "User removed monitoree from a household. #{old_hoh.first_name} #{old_hoh.last_name} will"\
-                ' no longer be responsible for handling their reporting.'
-    elsif household_ids != []
-      comment = "User changed head of household from #{old_hoh.first_name} #{old_hoh.last_name} to #{new_hoh.first_name}"\
-                " #{new_hoh.last_name}. #{new_hoh.first_name} #{new_hoh.last_name} will now be responsible for handling the reporting for the household."
-      History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
-    else
-      comment = "User added #{current_patient.first_name} #{current_patient.last_name} to the household. #{new_hoh.first_name} #{new_hoh.last_name}"\
-                ' will now be responsible for handling the reporting on their behalf.'
-      History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
-      comment = "User added monitoree to a household. #{new_hoh.first_name} #{new_hoh.last_name} will now be responsible"\
-                ' for handling the reporting on their behalf.'
-    end
-    History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
-
     current_user_patients = current_user.patients
 
-    # update_all below does not invoke ActiveRecord callbacks and will not automatically check if this incomming
-    # id exists. Patient.exists?(nil) => false
-    redirect_to(root_url) && return unless Patient.where(purged: false).exists?(new_hoh_id.to_i)
+    # If the current patient is not accessible, current_patient.dependents will be nil so
+    # in that case we just include the current patient ID in the househld.
+    household_ids = current_patient&.dependents&.pluck(:id) || [current_patient_id]
 
-    patients_to_update = household_ids + [current_patient_id]
+    # ----- Error Checking -----
 
-    # Make sure all household ids are within jurisdiction
-    redirect_to(root_url) && return if patients_to_update.any? do |patient_id|
-      !current_user_patients.exists?(patient_id)
+    # Check to make sure selected HoH record exists.
+    unless current_user_patients.exists?(new_hoh_id)
+      error_message = "Change head of household action failed: selected Head of Household with ID #{new_hoh_id} is not accessible."
+      render(json: { error: error_message }, status: :forbidden) && return
     end
 
-    # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
-    current_user_patients.where(id: patients_to_update).each do |patient|
-      patient.update!(responder_id: new_hoh_id)
+    # Check to make sure user has access to update all of these records.
+    unless current_user_patients.where(id: household_ids).size == household_ids.length
+      error_message = 'Change head of household action failed: user does not have permissions to update current monitoree or one or more of their dependents.'
+      render(json: { error: error_message }, status: :forbidden) && return
     end
+
+    # Do not do anything if there hasn't been a change to the responder at all.
+    redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
+
+    # If the new head of household was removed from the household, don't allow the change
+    unless current_patient.dependents.pluck(:id).include?(new_hoh_id)
+      error_message = 'Change head of household action failed: selected Head of Household is no longer in household. Please refresh.'
+      render(json: { error: error_message }, status: :bad_request) && return
+    end
+
+    # ----- Record Updates -----
+    old_hoh = current_user.get_patient(current_patient.responder_id)
+
+    begin
+      Patient.transaction do
+        # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
+        current_user_patients.where(id: household_ids).each do |patient|
+          patient.update!(responder_id: new_hoh_id)
+        end
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      error_message = 'Change head of household action failed: monitoree(s) were unable to be be updated.'
+      Rails.logger.info("#{error_message} Error: #{e}")
+      render(json: { error: error_message }, status: :bad_request) && return
+    end
+
+    comment = "User changed head of household from monitoree with ID #{old_hoh.id} to monitoree with ID #{new_hoh_id}."\
+              " Monitoree with ID #{new_hoh_id} will now be responsible for handling the reporting for the household."
+
+    # Create history item for old HoH
+    History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
+
+    # Create history item for new HoH
+    History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
   end
 
   def bulk_update
@@ -324,7 +436,8 @@ class PatientsController < ApplicationController
     patients = current_user.get_patients(patient_ids)
 
     patients.each do |patient|
-      update_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent, params[:apply_to_household] ? :group : :none)
+      update_monitoring_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
+                               params[:apply_to_household] ? :group : :none)
     end
   end
 
@@ -352,123 +465,59 @@ class PatientsController < ApplicationController
     # Update patient and all group members
     if params.permit(:apply_to_household)[:apply_to_household]
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents || [])).uniq.each do |member|
-        update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group)
+        update_monitoring_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group)
       end
       # Update patient and all group members in continuous exposure
     elsif params.permit(:apply_to_household_cm_only)[:apply_to_household_cm_only] # update patient and group members only with continuous exposure on
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
-        update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group_cm)
+        update_monitoring_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group_cm)
       end
     else # Update patient
-      update_fields(patient, params, :patient, :none)
+      update_monitoring_fields(patient, params, :patient, :none)
     end
   end
 
-  def update_fields(patient, params, household, propagation)
+  # Make updates to "monitoring fields" and create corresponding History items.
+  # "Monitoring fields" are defined in PatientHelper.monitoring_fields
+  #
+  # patient - The Patient to update.
+  # params - The request params.
+  # household - Indicates if the Patient was updated directly (household = :patient) or updated because their head of household was (household = :dependent)
+  # propogation - Indicates why the updates are being propogated to the Patient.
+  def update_monitoring_fields(patient, params, household, propagation)
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
-    params_to_update = if diff_state.nil?
-                         status_fields
+    permitted_params = if diff_state.nil?
+                         PatientHelper.monitoring_fields
                        else
-                         status_fields & diff_state # Set intersection between what the front end is saying changed, and status fields
+                         # Set intersection between what the front end is saying changed, and status fields
+                         PatientHelper.monitoring_fields & diff_state
                        end
+    # Transforming into hash with symbol keys for consistent parsing later on
+    updates = params.require(:patient).permit(permitted_params).to_h.deep_symbolize_keys
 
-    # Update history before fields are changed
-    history = {
+    patient_before = patient.dup
+
+    # Apply and save updates to the db
+    patient.update!(updates)
+
+    # If the jurisdiction was changed, create a Transfer
+    if updates&.keys&.include?(:jurisdiction_id) && !updates[:jurisdiction_id].nil?
+      Transfer.create(patient: patient, from_jurisdiction: patient_before.jurisdiction, to_jurisdiction: patient.jurisdiction, who: current_user)
+    end
+
+    # Handle creating history items based on the updates
+    history_data = {
       created_by: current_user.email,
+      patient_before: patient_before,
       patient: patient,
-      params: params,
-      household: household,
+      updates: updates,
+      household_status: household,
       propagation: propagation,
       reason: params[:reasoning]
     }
 
-    History.monitoring_actions(history, diff_state)
-
-    # If the monitoree record was closed, set continuous exposure to be false and set the closed at time.
-    if params_to_update.include?(:monitoring) && params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
-      if patient[:continuous_exposure]
-        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: 'System turned off Continuous Exposure because the record was
-        moved to the closed line list.')
-      end
-      patient.continuous_exposure = false
-      patient.closed_at = DateTime.now
-    end
-
-    # Do not allow continuous exposure to updated for closed records
-    params_to_update.delete(:continuous_exposure) if params_to_update.include?(:continuous_exposure) && !patient.monitoring
-
-    # If moving patient to exposure from isolation
-    if params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]
-      # NOTE: In the case where a patient is being moved back to the exposure workflow, the symptom onset should be overwritten
-      #       because if a case is being ruled out (moved back to exposure), that patient no longer has no known symptom onset and
-      #       shouldn't immediately be put back on the symptomatic line list unless they have symptomatic reports.
-      params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
-      reset_symptom_onset(params[:patient], patient, :system)
-
-      # Set extended isolation to nil.
-      params_to_update << :extended_isolation
-      params[:patient][:extended_isolation] = nil
-      unless patient[:extended_isolation].nil?
-        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: 'System cleared Extended Isolation Date because monitoree was
-        moved from isolation to exposure workflow.')
-      end
-    end
-
-    # Reset public health action if case status is change to suspect, unknown, not a case
-    if params_to_update.include?(:case_status) && ['Suspect', 'Unknown', 'Not a Case'].include?(params.require(:patient).permit(:case_status)[:case_status]) &&
-       patient[:public_health_action] != 'None'
-      message = patient[:monitoring] ? "System changed Latest Public Health Action from \"#{patient[:public_health_action]}\" to \"None\" so that the monitoree
-                                        will appear on the appropriate line list in the exposure workflow to continue monitoring."
-                                     : "System changed Latest Public Health Action from \"#{patient[:public_health_action]}\" to \"None\"."
-      History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: message)
-      params_to_update << :public_health_action
-      params[:patient][:public_health_action] = 'None'
-    end
-
-    # If the symptom onset was cleared by the user
-    if params_to_update.include?(:symptom_onset) && params.require(:patient).permit(:symptom_onset)[:symptom_onset].nil?
-      params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
-      reset_symptom_onset(params[:patient], patient, :user)
-    end
-
-    # Update the patient with updated values.
-    patient.update(params.require(:patient).permit(params_to_update))
-
-    if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
-      # Jurisdiction has changed
-      jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
-      unless jur.nil?
-        transfer = Transfer.new(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction: jur, who: current_user)
-        transfer.save!
-        patient.jurisdiction_id = jur.id
-      end
-    end
-    patient.save
-  end
-
-  def reset_symptom_onset(content, patient, initiator)
-    # Set user-defined symptom onset to be false and set the symptom onset date based on latest symptomatic report
-    content[:user_defined_symptom_onset] = false
-    content[:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)&.to_date
-
-    # Log system onset change in history if initiated by system (user initiated changes are logged separately)
-    return if content[:symptom_onset] == patient[:symptom_onset] || initiator != :system
-
-    comment = if !patient[:symptom_onset].nil? && !content[:symptom_onset].nil?
-                "System changed Symptom Onset Date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to #{content[:symptom_onset].strftime('%m/%d/%Y')}
-                because monitoree was moved from isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on
-                daily reports."
-              elsif patient[:symptom_onset].nil? && !content[:symptom_onset].nil?
-                "System changed Symptom Onset Date from blank to #{content[:symptom_onset].strftime('%m/%d/%Y')} because monitoree was moved from isolation to
-                exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
-              elsif !patient[:symptom_onset].nil? && content[:symptom_onset].nil?
-                "System cleared Symptom Onset Date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank because monitoree was moved from isolation to
-                exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
-              else
-                'System changed Symptom Onset Date. This allows the system to show monitoree on appropriate line list based on daily reports.'
-              end
-    History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
+    patient.monitoring_history_edit(history_data, diff_state)
   end
 
   def clear_assessments
@@ -731,26 +780,6 @@ class PatientsController < ApplicationController
       jurisdiction_id
       assigned_user
       continuous_exposure
-    ]
-  end
-
-  # Fields used for updating monitoree state
-  def status_fields
-    %i[
-      monitoring
-      monitoring_reason
-      monitoring_plan
-      exposure_risk_assessment
-      public_health_action
-      isolation
-      pause_notifications
-      symptom_onset
-      case_status
-      assigned_user
-      last_date_of_exposure
-      continuous_exposure
-      user_defined_symptom_onset
-      extended_isolation
     ]
   end
 end

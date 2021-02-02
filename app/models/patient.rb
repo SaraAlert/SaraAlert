@@ -3,6 +3,7 @@
 require 'chronic'
 
 # Patient: patient model
+# rubocop:disable Metrics/ClassLength
 class Patient < ApplicationRecord
   include PatientHelper
   include PatientDetailsHelper
@@ -79,7 +80,7 @@ class Patient < ApplicationRecord
 
   validates :email, on: :api, email: true
 
-  validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
+  validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 999_999 }
 
   validates_with PrimaryContactValidator, on: :api
 
@@ -97,8 +98,14 @@ class Patient < ApplicationRecord
   has_many :close_contacts
   has_many :contact_attempts
 
+  before_update :set_time_zone, if: proc { |patient|
+    patient.monitored_address_state_changed? || patient.address_state_changed?
+  }
+  before_create :set_time_zone
+
   around_save :inform_responder, if: :responder_id_changed?
   around_destroy :inform_responder
+  before_update :handle_update
 
   accepts_nested_attributes_for :laboratories
 
@@ -120,6 +127,33 @@ class Patient < ApplicationRecord
       .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       .where('last_assessment_reminder_sent <= ? OR last_assessment_reminder_sent IS NULL', 12.hours.ago)
       .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
+  }
+
+  scope :within_preferred_contact_time, lambda {
+    where(
+      # If preferred contact time is X,
+      # then valid contact hours in patient's timezone are Y.
+      # 'Morning'   => 0800 - 1200
+      # 'Afternoon' => 1200 - 1600
+      # 'Evening'   => 1600 - 1900
+      #  default    => 1200 - 1600
+      '(patients.preferred_contact_time = "Morning"'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 8'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 12) '\
+      'OR (patients.preferred_contact_time = "Afternoon"'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 12'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 16) '\
+      'OR (patients.preferred_contact_time = "Evening"'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 16'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 19) '\
+      'OR (patients.preferred_contact_time IS NULL'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 12'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 16)',
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00')
+    )
   }
 
   # All individuals currently being monitored
@@ -613,15 +647,19 @@ class Patient < ApplicationRecord
     return (created_at.to_date + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
   end
 
-  # Date when patient is expected to be purged (with timezone displayed as 'UTC')
+  # Date when patient is expected to be purged (without any formatting)
   def expected_purge_ts
-    monitoring ? '' : (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes) || ''
+    monitoring ? nil : (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)
   end
 
   # Date when patient is expected to be purged (with timezone displayed as '+00:00')
   def expected_purge_date
-    exp_purge_ts = expected_purge_ts # avoid calling expected_purge_ts twice
-    exp_purge_ts.blank? ? '' : exp_purge_ts.rfc2822
+    expected_purge_ts&.rfc2822 || ''
+  end
+
+  # Date when patient is expected to be purged (with timezone displayed as 'UTC' for export)
+  def expected_purge_date_exp
+    expected_purge_ts&.strftime('%F %T %Z') || ''
   end
 
   # Determine if this patient's phone number has blocked communication with SaraAlert
@@ -864,11 +902,11 @@ class Patient < ApplicationRecord
 
   def address_timezone_offset
     if monitored_address_state.present?
-      timezone_for_state(monitored_address_state)
+      time_zone_offset_for_state(monitored_address_state)
     elsif address_state.present?
-      timezone_for_state(address_state)
+      time_zone_offset_for_state(address_state)
     else
-      timezone_for_state('massachusetts')
+      time_zone_offset_for_state('massachusetts')
     end
   end
 
@@ -878,21 +916,36 @@ class Patient < ApplicationRecord
     last_assessment_reminder_sent.nil? || last_assessment_reminder_sent <= 12.hours.ago
   end
 
+  # Callback to set the `time_zone` attribute of the patient.
+  # `time_zone` is saved to the DB so that time zone calculations may be done
+  # on patient records without needing to load them into rails.
+  def set_time_zone
+    self.time_zone = if monitored_address_state.present?
+                       time_zone_for_state(monitored_address_state)
+                     elsif address_state.present?
+                       time_zone_for_state(address_state)
+                     else
+                       time_zone_for_state('massachusetts')
+                     end
+  end
+
   # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
-  def self.detailed_history_edit(patient_before, patient_after, user_email, allowed_fields, is_api_edit: false)
-    diffs = patient_diff(patient_before, patient_after, allowed_fields)
+  def self.detailed_history_edit(patient_before, patient_after, attributes, history_creator_label, is_api_edit: false)
+    diffs = patient_diff(patient_before, patient_after, attributes)
     return if diffs.length.zero?
 
     pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
     comment = is_api_edit ? 'Monitoree record edited via API. ' : 'User edited a monitoree record. '
     comment += "Changes were: #{pretty_diff.join(', ')}."
-    History.record_edit(patient: patient_after, created_by: user_email, comment: comment)
+
+    History.record_edit(patient: patient_after, created_by: history_creator_label, comment: comment)
   end
 
   # Construct a diff for a patient update to keep track of changes
-  def self.patient_diff(patient_before, patient_after, allowed_fields)
+  def self.patient_diff(patient_before, patient_after, attributes)
     diffs = []
-    allowed_fields&.keys&.each do |attribute|
+    attributes&.each do |attribute|
+      # Skip if no value change
       next if patient_before[attribute] == patient_after[attribute]
 
       diffs << {
@@ -920,7 +973,7 @@ class Patient < ApplicationRecord
     return if responder.nil?
 
     # update the initial responder if it changed
-    Patient.where(purged: false).find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
+    Patient.find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
     # update the current responder
     responder.refresh_head_of_household
   end
@@ -940,4 +993,155 @@ class Patient < ApplicationRecord
     end
     token
   end
+
+  # Handle side effect updates to fields that happen whenever certain fields are updated.
+  def handle_update
+    monitoring_change if monitoring_changed?
+    isolation_change if isolation_changed?
+    case_status_change if case_status_changed?
+    symptom_onset_change if symptom_onset_changed?
+    continuous_exposure_change if continuous_exposure_changed?
+  end
+
+  # Handle side effects to monitoring being set to false.
+  # * closed_at is set to now, since the record is closed.
+  # * continuous_exposure is not allowed to be true if the Patient is not monitoring.
+  def monitoring_change
+    return if monitoring
+
+    self.closed_at = DateTime.now
+    self.continuous_exposure = false
+  end
+
+  # Handle side effects to isolation being set to false.
+  # * extended_isolation is set to nil, since the Patient is being moves to exposure workflow.
+  # * symptom_onset is set to a calculated value based on the assessments of the Patient, so they
+  #   may be placed in the proper linelist in exposure workflow.
+  # * user_defined_symptom_onset is set to false, since the calculated value is being used.
+  def isolation_change
+    return if isolation
+
+    self.extended_isolation = nil
+    # NOTE: The below will overwrite any new value they may set for symptom onset as they can not be set in the exposure workflow.
+    self.user_defined_symptom_onset = false
+    self.symptom_onset = calculated_symptom_onset(self)
+  end
+
+  # Handle side effects to a change in case status.
+  # * public_health_action is set to 'None' when case_status changes to 'Suspect', 'Unknown', or 'Not a Case' so
+  #   that the Patient will be on the appropriate linelist in the exposure workflow.
+  def case_status_change
+    return unless ['Suspect', 'Unknown', 'Not a Case'].include?(case_status) && public_health_action != 'None'
+
+    self.public_health_action = 'None'
+  end
+
+  # Handle side effects to symptom_onset being set to nil.
+  # * symptom_onset is set to a calculated value based on the assessments of the Patient.
+  # * user_defined_symptom_onset is set to false, since the calculated value is being used.
+  def symptom_onset_change
+    return unless symptom_onset.nil?
+
+    self.user_defined_symptom_onset = false
+    self.symptom_onset = calculated_symptom_onset(self)
+  end
+
+  # Handle side effects to continuous_exposure being set while not monitoring
+  # * continuous_exposure should alwasy remain false when not monitoring
+  def continuous_exposure_change
+    self.continuous_exposure = false if continuous_exposure && !monitoring
+  end
+
+  # Create History items corresponding to updates to monitoring fields.
+  # The History items detail direct edits, and side effects of those direct edits that are made by the Sara Alert System.
+  # These side effects are handled in the handle_update function
+  def monitoring_history_edit(history_data, diff_state)
+    patient_before = history_data[:patient_before]
+    # NOTE: Attributes are sorted so that case_status always comes before isolation, since a case_status change may trigger
+    # an isolation change from the front end, and the case_status message should come first
+    attribute_order = %i[case_status isolation]
+    history_data[:updates].keys.sort_by { |key| attribute_order.index(key) || Float::INFINITY }&.each do |attribute|
+      updated_value = self[attribute]
+      next if patient_before[attribute] == updated_value
+
+      case attribute
+      when :monitoring
+        History.monitoring_status(history_data)
+
+        # If the record was in continuous exposure and then it was closed and continuous exposure was turned off
+        if !updated_value && patient_before[:continuous_exposure] && !continuous_exposure
+          History.monitoring_change(
+            patient: self,
+            created_by: 'Sara Alert System',
+            comment: 'System turned off Continuous Exposure because the record was moved to the closed line list.'
+          )
+        end
+      when :exposure_risk_assessment
+        History.exposure_risk_assessment(history_data)
+      when :monitoring_plan
+        History.monitoring_plan(history_data)
+      when :public_health_action
+        History.public_health_action(history_data)
+      when :assigned_user
+        History.assigned_user(history_data)
+      when :pause_notifications
+        History.pause_notifications(history_data)
+      when :last_date_of_exposure
+        History.last_date_of_exposure(history_data)
+      when :extended_isolation
+        History.extended_isolation(history_data)
+      when :continuous_exposure
+        History.continuous_exposure(history_data)
+      when :isolation
+        update_patient_history_for_isolation(patient_before, updated_value)
+      when :symptom_onset
+        History.symptom_onset(history_data)
+      when :case_status
+        History.case_status(history_data, diff_state)
+
+        # If Case Status was updated to one of the values meant for the Exposure workflow and the Public Health Action was reset.
+        if ['Suspect', 'Unknown', 'Not a Case'].include?(updated_value) && patient_before[:public_health_action] != 'None' && public_health_action == 'None'
+          message = monitoring ?
+          "System changed Latest Public Health Action from \"#{patient_before[:public_health_action]}\" to \"None\" so that the monitoree will appear on
+          the appropriate line list in the exposure workflow to continue monitoring." : "System changed Latest Public Health Action
+          from \"#{patient_before[:public_health_action]}\" to \"None\"."
+          History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: message)
+        end
+      when :jurisdiction_id
+        History.jurisdiction(history_data)
+      end
+    end
+  end
+
+  def update_patient_history_for_isolation(patient_before, new_isolation_value)
+    return if new_isolation_value
+
+    # If moved from Isolation workflow to Exposure workflow and Extended Isolation was cleared
+    if !patient_before[:extended_isolation].nil? && extended_isolation.nil?
+      History.monitoring_change(
+        patient: self,
+        created_by: 'Sara Alert System',
+        comment: 'System cleared Extended Isolation Date because monitoree was moved from isolation to exposure workflow.'
+      )
+    end
+
+    # If moved from Isolation worklflow to Exposure and symptom onset had to be cleared
+    return unless patient_before[:symptom_onset].nil? != symptom_onset
+
+    comment = if !patient_before[:symptom_onset].nil? && !symptom_onset.nil?
+                "System changed Symptom Onset Date from #{patient_before[:symptom_onset].strftime('%m/%d/%Y')} to #{symptom_onset.strftime('%m/%d/%Y')}
+                because monitoree was moved from isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on
+                daily reports."
+              elsif patient_before[:symptom_onset].nil? && !symptom_onset.nil?
+                "System changed Symptom Onset Date from blank to #{symptom_onset.strftime('%m/%d/%Y')} because monitoree was moved from isolation to
+                exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
+              elsif !patient_before[:symptom_onset].nil? && symptom_onset.nil?
+                "System cleared Symptom Onset Date from #{patient_before[:symptom_onset].strftime('%m/%d/%Y')} to blank because monitoree was moved from
+                isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
+              else
+                'System changed Symptom Onset Date. This allows the system to show monitoree on appropriate line list based on daily reports.'
+              end
+    History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: comment)
+  end
 end
+# rubocop:enable Metrics/ClassLength

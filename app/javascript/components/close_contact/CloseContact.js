@@ -3,7 +3,11 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import * as yup from 'yup';
+import _ from 'lodash';
 import libphonenumber from 'google-libphonenumber';
+import DateInput from '../util/DateInput';
+import moment from 'moment';
+import InfoTooltip from '../util/InfoTooltip';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
@@ -23,6 +27,8 @@ class CloseContact extends React.Component {
       last_name: this.props.close_contact.last_name || '',
       primary_telephone: this.props.close_contact.primary_telephone || '',
       email: this.props.close_contact.email || '',
+      last_date_of_exposure: this.props.close_contact.last_date_of_exposure || null,
+      assigned_user: this.props.close_contact.assigned_user || null,
       notes: this.props.close_contact.notes || '',
       enrolled_id: this.props.close_contact.enrolled_id || null,
       contact_attempts: this.props.close_contact.contact_attempts || 0,
@@ -33,14 +39,43 @@ class CloseContact extends React.Component {
   }
 
   toggleModal = () => {
-    let current = this.state.showModal;
-    this.setState({
-      showModal: !current,
-    });
+    let newState = {
+      showModal: !this.state.showModal,
+    };
+    if (this.state.showModal) {
+      // if we currently are showing the modal, that means they clicked cancel
+      // (because the rest of this method hasnt had time to fire, and change 'show' to false)
+      // When they click cancel, we want to null out all of the fields
+      newState = {
+        first_name: this.props.close_contact.first_name || '',
+        last_name: this.props.close_contact.last_name || '',
+        primary_telephone: this.props.close_contact.primary_telephone || '',
+        email: this.props.close_contact.email || '',
+        last_date_of_exposure: this.props.close_contact.last_date_of_exposure || null,
+        assigned_user: this.props.close_contact.assigned_user || null,
+        notes: this.props.close_contact.notes || '',
+        enrolled_id: this.props.close_contact.enrolled_id || null,
+        contact_attempts: this.props.close_contact.contact_attempts || 0,
+        ...newState, // merge in the flip-flopped value of showModal
+      };
+    }
+    this.setState(newState);
   };
 
+  handleDateChange = event => this.setState({ last_date_of_exposure: event });
+
   handleChange = event => {
-    this.setState({ [event.target.id]: event.target.id === 'primary_telephone' ? event.target.value.replace(/-/g, '') : event.target.value });
+    let value;
+    if (event?.target?.id && event.target.id === 'assigned_user') {
+      if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
+      // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
+      value = _.trim(event.target.value) === '' ? null : parseInt(event.target.value);
+    } else if (event?.target?.id && event.target.id === 'primary_telephone') {
+      value = event.target.value.replace(/-/g, '');
+    } else {
+      value = event.target.value;
+    }
+    this.setState({ [event.target.id]: value });
   };
 
   contactAttempt = async () => {
@@ -64,6 +99,8 @@ class CloseContact extends React.Component {
               last_name: this.state.last_name || '',
               primary_telephone: this.state.primary_telephone ? phoneUtil.format(phoneUtil.parse(this.state.primary_telephone, 'US'), PNF.E164) : '',
               email: this.state.email || '',
+              last_date_of_exposure: this.state.last_date_of_exposure || null,
+              assigned_user: this.state.assigned_user || null,
               notes: this.state.notes || '',
               enrolled_id: this.state.enrolled_id || null,
               contact_attempts: this.state.contact_attempts || 0,
@@ -99,7 +136,7 @@ class CloseContact extends React.Component {
           <Form>
             <Row>
               <Form.Group as={Col} controlId="first_name">
-                <Form.Label className="nav-input-label">First Name</Form.Label>
+                <Form.Label className="nav-input-label">First Name {schema?.fields?.first_name?._exclusive?.required && '*'} </Form.Label>
                 <Form.Control size="lg" className="form-square" value={this.state.first_name || ''} onChange={this.handleChange} />
                 <Form.Control.Feedback className="d-block" type="invalid">
                   {this.state.errors['first_name']}
@@ -108,7 +145,7 @@ class CloseContact extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col} controlId="last_name">
-                <Form.Label className="nav-input-label">Last Name</Form.Label>
+                <Form.Label className="nav-input-label">Last Name {schema?.fields?.last_name?._exclusive?.required && '*'} </Form.Label>
                 <Form.Control size="lg" className="form-square" value={this.state.last_name || ''} onChange={this.handleChange} />
                 <Form.Control.Feedback className="d-block" type="invalid">
                   {this.state.errors['last_name']}
@@ -117,7 +154,7 @@ class CloseContact extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col} controlId="primary_telephone">
-                <Form.Label className="nav-input-label">Phone Number</Form.Label>
+                <Form.Label className="nav-input-label">Phone Number {schema?.fields?.primary_telephone?._exclusive?.required && '*'}</Form.Label>
                 <PhoneInput
                   id="primary_telephone"
                   className="form-square"
@@ -132,7 +169,7 @@ class CloseContact extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col} controlId="email">
-                <Form.Label className="nav-input-label">Email</Form.Label>
+                <Form.Label className="nav-input-label">Email {schema?.fields?.email?._exclusive?.required && '*'} </Form.Label>
                 <Form.Control size="lg" className="form-square" value={this.state.email || ''} onChange={this.handleChange} />
                 <Form.Control.Feedback className="d-block" type="invalid">
                   {this.state.errors['email']}
@@ -140,9 +177,61 @@ class CloseContact extends React.Component {
               </Form.Group>
             </Row>
             <Row>
+              <Form.Group as={Col} controlId="last_date_of_exposure">
+                <Form.Label className="nav-input-label">Last Date of Exposure {schema?.fields?.last_date_of_exposure?._exclusive?.required && '*'}</Form.Label>
+                <DateInput
+                  id="last_date_of_exposure"
+                  date={this.state.last_date_of_exposure}
+                  minDate={'2020-01-01'}
+                  maxDate={moment()
+                    .add(30, 'days')
+                    .format('YYYY-MM-DD')}
+                  onChange={this.handleDateChange}
+                  placement="top"
+                  isInvalid={!!this.state.errors['last_date_of_exposure']}
+                  customClass="form-control-lg"
+                  ariaLabel="Last Date of Exposure Input"
+                />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['last_date_of_exposure']}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+            <Row>
+              <Form.Group as={Col} className="mb-2 pt-2" controlId="assigned_user">
+                <Form.Label className="nav-input-label">
+                  Assigned User {schema?.fields?.assigned_user?._exclusive?.required && '*'}
+                  <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
+                </Form.Label>
+                <Form.Control
+                  isInvalid={this.state.errors['assigned_user']}
+                  as="input"
+                  list="assigned_users"
+                  autoComplete="off"
+                  size="lg"
+                  className="d-block"
+                  onChange={this.handleChange}
+                  value={this.state.assigned_user || ''}
+                />
+                <datalist id="assigned_users">
+                  {this.props.assigned_users?.map(num => {
+                    return (
+                      <option value={num} key={num}>
+                        {num}
+                      </option>
+                    );
+                  })}
+                </datalist>
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['assigned_user']}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+            <Row>
               <Form.Group as={Col}>
                 <Form.Label htmlFor="notes" className="nav-input-label">
                   Notes
+                  {schema?.fields?.notes?._exclusive?.required && '*'}
                 </Form.Label>
                 <Form.Control
                   id="notes"
@@ -183,41 +272,50 @@ class CloseContact extends React.Component {
     return (
       <React.Fragment>
         {!this.props.close_contact.id && (
-          <Button onClick={this.toggleModal}>
-            <i className="fas fa-plus"></i> Add New Close Contact
-          </Button>
+          <div className="pl-2">
+            <Button onClick={this.toggleModal}>
+              <i className="fas fa-plus"></i> Add New Close Contact
+            </Button>
+          </div>
         )}
         {this.props.close_contact.id && (
-          <React.Fragment>
-            <Button variant="link" onClick={this.toggleModal} className="btn btn-link py-0" size="sm">
-              <i className="fas fa-edit"></i> Edit
-            </Button>
-            <Button variant="link" onClick={this.contactAttempt} className="btn btn-link py-0" size="sm">
-              <i className="fas fa-phone"></i> Contact Attempt
-            </Button>
-          </React.Fragment>
+          <div className="pl-2">
+            <React.Fragment>
+              <Button variant="link" onClick={this.toggleModal} className="btn btn-link py-0" size="sm">
+                <i className="fas fa-edit"></i> Edit
+              </Button>
+              <div className="pl-2"></div>
+              <Button variant="link" onClick={this.contactAttempt} className="btn btn-link py-0" size="sm">
+                <i className="fas fa-phone fa-flip-horizontal"></i> Contact Attempt
+              </Button>
+            </React.Fragment>
+          </div>
         )}
         {this.props.close_contact.id && this.props.close_contact.enrolled_id && (
-          <Button
-            variant="link"
-            onClick={() => {
-              location.href = window.BASE_PATH + '/patients/' + this.props.close_contact.enrolled_id;
-            }}
-            className="btn btn-link py-0"
-            size="sm">
-            <i className="fas fa-search"></i> View Record
-          </Button>
+          <div className="pl-2">
+            <Button
+              variant="link"
+              onClick={() => {
+                location.href = window.BASE_PATH + '/patients/' + this.props.close_contact.enrolled_id;
+              }}
+              className="btn btn-link py-0"
+              size="sm">
+              <i className="fas fa-search"></i> View Record
+            </Button>
+          </div>
         )}
         {this.props.close_contact.id && !this.props.close_contact.enrolled_id && this.props.can_enroll_patient_close_contacts && (
-          <Button
-            variant="link"
-            onClick={() => {
-              location.href = window.BASE_PATH + `/patients/new?cc=${this.props.close_contact.id}`;
-            }}
-            className="btn btn-link py-0"
-            size="sm">
-            <i className="fas fa-plus"></i> Enroll
-          </Button>
+          <div className="pl-2">
+            <Button
+              variant="link"
+              onClick={() => {
+                location.href = window.BASE_PATH + `/patients/new?cc=${this.props.close_contact.id}`;
+              }}
+              className="btn btn-link py-0"
+              size="sm">
+              <i className="fas fa-plus"></i> Enroll
+            </Button>
+          </div>
         )}
         {this.state.showModal && this.createModal('Close Contact', this.toggleModal, this.submit)}
       </React.Fragment>
@@ -247,12 +345,10 @@ yup.addMethod(yup.string, 'phone', function() {
 const schema = yup.object().shape({
   first_name: yup
     .string()
-    .required('Please enter a First Name.')
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   last_name: yup
     .string()
-    .required('Please enter a Last Name.')
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   primary_telephone: yup
@@ -265,6 +361,23 @@ const schema = yup.object().shape({
     .email('Please enter a valid email.')
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
+  last_date_of_exposure: yup
+    .date('Date must correspond to the "mm/dd/yyyy" format.')
+    .min(moment('2020-01-01'), 'Last Date of Exposure must fall after January 1, 2020.')
+    .max(
+      moment()
+        .add(30, 'days')
+        .toDate(),
+      'Date can not be more than 30 days in the future.'
+    )
+    .nullable(),
+  assigned_user: yup
+    .number()
+    .typeError('Assigned User must be a number (or left blank)')
+    .min(1)
+    .max(999999)
+    .positive('Please enter a valid Assigned User')
+    .nullable(),
   notes: yup
     .string()
     .max(2000, 'Max length exceeded, please limit to 2000 characters.')
@@ -276,6 +389,7 @@ CloseContact.propTypes = {
   can_enroll_patient_close_contacts: PropTypes.bool,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
+  assigned_users: PropTypes.array,
 };
 
 export default CloseContact;

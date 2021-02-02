@@ -1,3 +1,3 @@
 # Sara Alert API
 
-The Sara Alert API documentation can now be found in the [Github Wiki](https://github.com/SaraAlert/SaraAlert/wiki/API-Overview).
+The Sara Alert API documentation has been moved to [here](https://saraalert.github.io/SaraAlert/api/).

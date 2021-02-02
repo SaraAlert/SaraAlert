@@ -48,7 +48,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   LINELIST_FIELDS = %i[id name jurisdiction_name assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring exposure_risk_assessment
                        monitoring_plan latest_assessment_at latest_transfer_at monitoring_reason public_health_action status closed_at transferred_from
-                       transferred_to expected_purge_date symptom_onset extended_isolation].freeze
+                       transferred_to expected_purge_ts symptom_onset extended_isolation].freeze
 
   LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                       'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
@@ -323,6 +323,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     primary_telephone: 'Primary Telephone',
     email: 'Email',
     contact_attempts: 'Contact Attempts',
+    last_date_of_exposure: 'Last Date of Exposure',
+    assigned_user: 'Assigned User',
     notes: 'Notes',
     enrolled_id: 'Enrolled ID',
     created_at: 'Close Contact Created Date',
@@ -476,7 +478,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   CLOSE_CONTACTS_EXPORT_OPTIONS = {
     label: 'Close Contacts',
     nodes: [rct_node(:close_contacts, 'Close Contacts', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id first_name
-                                                           last_name primary_telephone email contact_attempts notes enrolled_id created_at updated_at])]
+                                                           last_name primary_telephone email contact_attempts last_date_of_exposure assigned_user notes
+                                                           enrolled_id created_at updated_at])]
   }.freeze
 
   TRANSFERS_EXPORT_OPTIONS = {
@@ -610,7 +613,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     PATIENT_FIELD_TYPES[:timestamps].each do |field|
-      patient_details[field] = patient[field]&.rfc2822 || '' if fields.include?(field)
+      patient_details[field] = patient[field] || '' if fields.include?(field)
     end
 
     PATIENT_FIELD_TYPES[:booleans].each do |field|
@@ -629,8 +632,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
     patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
     patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
-    patient_details[:expected_purge_date] = patient.expected_purge_date || '' if fields.include?(:expected_purge_date)
-    patient_details[:expected_purge_ts] = patient.expected_purge_ts || '' if fields.include?(:expected_purge_ts)
+    patient_details[:expected_purge_ts] = patient.expected_purge_date_exp || '' if fields.include?(:expected_purge_ts)
     patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase || '' if fields.include?(:full_status)
     patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '' if fields.include?(:status)
 
@@ -639,8 +641,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Gets a hash of the latest transfers of each patient
   def get_patients_transfers(patients)
-    transfers = patients.pluck(:id, :latest_transfer_at)
-    transfers = Transfer.where(patient_id: transfers.map { |lt| lt[0] }, created_at: transfers.map { |lt| lt[1] })
+    transfers = Transfer.latest_transfers(patients)
     jurisdictions = Jurisdiction.find(transfers.pluck(:from_jurisdiction_id, :to_jurisdiction_id).flatten.uniq)
     jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map { |id, path| [id, path] }]
     Hash[transfers.pluck(:patient_id, :created_at, :from_jurisdiction_id, :to_jurisdiction_id)

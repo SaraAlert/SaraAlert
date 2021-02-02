@@ -103,6 +103,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # Create a hash of atttributes that corresponds to a Sara Alert Patient (and can be used to
   # create new ones, or update existing ones), using the given FHIR::Patient.
   def patient_from_fhir(patient, default_jurisdiction_id)
+    symptom_onset = from_date_extension(patient, ['symptom-onset-date'])
     {
       monitoring: patient&.active.nil? ? false : patient.active,
       first_name: patient&.name&.first&.given&.first,
@@ -136,7 +137,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       sex: from_us_core_birthsex(patient),
       preferred_contact_method: from_string_extension(patient, 'preferred-contact-method'),
       preferred_contact_time: from_string_extension(patient, 'preferred-contact-time'),
-      symptom_onset: from_date_extension(patient, ['symptom-onset-date']),
+      symptom_onset: symptom_onset,
+      user_defined_symptom_onset: !symptom_onset.nil?,
       last_date_of_exposure: from_date_extension(patient, %w[last-date-of-exposure last-exposure-date]),
       isolation: from_isolation_extension(patient),
       jurisdiction_id: from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id),

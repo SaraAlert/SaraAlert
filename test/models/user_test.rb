@@ -23,8 +23,8 @@ class UserTest < ActiveSupport::TestCase
     user_with_patients = create(:user, created_patients_count: num_patients, jurisdiction: @jurisdiction)
 
     # Both users can now see patients in this jurisdiction
-    assert_equal @jurisdiction.all_patients, user.viewable_patients
-    assert_equal @jurisdiction.all_patients, user_with_patients.viewable_patients
+    assert_equal @jurisdiction.all_patients_excluding_purged, user.viewable_patients
+    assert_equal @jurisdiction.all_patients_excluding_purged, user_with_patients.viewable_patients
   end
 
   test 'enrolled patients' do
@@ -35,11 +35,11 @@ class UserTest < ActiveSupport::TestCase
     # This user has not enrolled any patients
     assert_equal 0, user.enrolled_patients.length
     # All the patients in this jurisdiction have been enrolled by this user
-    assert_equal @jurisdiction.all_patients, user_with_patients_1.enrolled_patients
+    assert_equal @jurisdiction.all_patients_excluding_purged, user_with_patients_1.enrolled_patients
 
     # Confirm that patient ownership is not overlapping
     user_with_patients_2 = create(:user, created_patients_count: num_patients, jurisdiction: @jurisdiction)
-    difference = @jurisdiction.all_patients - user_with_patients_1.enrolled_patients
+    difference = @jurisdiction.all_patients_excluding_purged - user_with_patients_1.enrolled_patients
     assert_equal difference, user_with_patients_2.enrolled_patients
   end
 

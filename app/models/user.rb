@@ -41,7 +41,7 @@ class User < ApplicationRecord
 
   # Patients this user can view through their jurisdiction access
   def viewable_patients
-    jurisdiction.all_patients
+    jurisdiction.all_patients_excluding_purged
   end
 
   # Patients this user has enrolled
@@ -80,6 +80,17 @@ class User < ApplicationRecord
       viewable_patients.find(ids)
     elsif role?(Roles::ADMIN)
       nil
+    end
+  end
+
+  # Get jurisdictions that the user can transfer patients into
+  def jurisdictions_for_transfer
+    if can_transfer_patients?
+      # Allow all jurisdictions as valid transfer options.
+      Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
+    else
+      # Otherwise, only show jurisdictions within hierarchy.
+      Hash[jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }]
     end
   end
 

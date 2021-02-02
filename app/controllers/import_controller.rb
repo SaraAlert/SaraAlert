@@ -299,9 +299,9 @@ class ImportController < ApplicationController
   def validate_assigned_user(value, row_ind)
     return nil if value.blank?
 
-    return value.to_i if value.to_i.between?(1, 9999)
+    return value.to_i if value.to_i.between?(1, 999_999)
 
-    raise ValidationError.new("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999", row_ind)
+    raise ValidationError.new("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-999999", row_ind)
   end
 
   def validate_workflow_specific_enums(workflow, field, value, row_ind)

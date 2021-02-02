@@ -197,7 +197,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       primary_telephone_type: 'Plain Cell',
       secondary_telephone_type: 'Landline',
       black_or_african_american: true,
-      asian: true
+      asian: true,
+      continuous_exposure: true
     )
     @patient_2 = Patient.find_by(id: 2).as_fhir
 
@@ -926,6 +927,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Afternoon', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
     assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-date-of-exposure' }.first['valueDate']
     assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
+    assert p.user_defined_symptom_onset
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
     assert_equal 'USA, State 1, County 1',
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
@@ -946,6 +948,23 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
+  end
+
+  test 'should create History items when updating patient' do
+    patient = @patient_2
+    patient.active = false
+    resource_path = "/fhir/r4/Patient/#{patient.id}"
+    put(
+      resource_path,
+      params: patient.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal false, json_response['active']
+    histories = History.where(patient: patient.id)
+    assert_match(/Continuous Exposure/, histories.find_by(created_by: 'Sara Alert System').comment)
+    assert_match(/"Monitoring" to "Not Monitoring"/, histories.find_by(history_type: 'Monitoring Change').comment)
   end
 
   test 'should update Patient via update and set omitted fields to nil ' do
@@ -1114,8 +1133,40 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test 'SYSTEM FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
+  test 'SYSTEM FLOW: should allow jurisdiction transfers when jurisdiction exists' do
     @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA, State 2'
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :success
+    json_response = JSON.parse(response.body)
+    assert_equal 'USA, State 2', json_response['extension'].filter { |e| e['url'].include? 'full-assigned-jurisdiction-path' }.first['valueString']
+    t = Transfer.find_by(patient_id: @patient_1.id)
+    assert_equal Jurisdiction.find_by(path: 'USA, State 1').id, t.from_jurisdiction_id
+    assert_equal Jurisdiction.find_by(path: 'USA, State 2').id, t.to_jurisdiction_id
+    assert_equal @system_patient_read_write_app.user_id, t.who_id
+  end
+
+  test 'USER FLOW: should allow jurisdiction transfers when jurisdiction exists' do
+    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA, State 2'
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :success
+    json_response = JSON.parse(response.body)
+    assert_equal 'USA, State 2', json_response['extension'].filter { |e| e['url'].include? 'full-assigned-jurisdiction-path' }.first['valueString']
+    t = Transfer.find_by(patient_id: @patient_1.id)
+    assert_equal Jurisdiction.find_by(path: 'USA, State 1').id, t.from_jurisdiction_id
+    assert_equal Jurisdiction.find_by(path: 'USA, State 2').id, t.to_jurisdiction_id
+    assert_equal @user.id, t.who_id
+  end
+
+  test 'SYSTEM FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
+    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA'
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
@@ -1124,11 +1175,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['issue'].length
-    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction must be within'))
+    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction does not exist'))
   end
 
   test 'USER FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
-    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA, State 2'
+    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA'
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
@@ -1137,7 +1188,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['issue'].length
-    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction must be within'))
+    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction does not exist'))
   end
 
   test 'should update Patient via patch update' do
