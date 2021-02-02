@@ -205,6 +205,7 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'assessment sms weblink message contents using messaging service' do
+    @patient.update(preferred_contact_method: 'SMS Texted Weblink')
     url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
                                                                 @patient.jurisdiction.unique_identifier,
                                                                 'en',
@@ -230,6 +231,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment sms weblink message contents not using messaging service' do
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
+    @patient.update(preferred_contact_method: 'SMS Texted Weblink')
 
     url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
                                                                 @patient.jurisdiction.unique_identifier,
@@ -344,6 +346,8 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'assessment sms message content using messaging service' do
+    @patient.update(preferred_contact_method: 'SMS Text-Message')
+
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
 
@@ -380,8 +384,12 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment sms message content not using messaging service' do
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
+    @patient.update(preferred_contact_method: 'SMS Text-Message')
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+
+    dependent_history_count = dependent.histories.count
+    patient_history_count = @patient.histories.count
 
     params = {
       language: 'EN',
@@ -406,12 +414,19 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                                                from: 'test'
                                                                                                              })
     PatientMailer.assessment_sms(@patient).deliver_now
+
+    # Assert that both the patient and dependent got history items added
+    assert_equal patient_history_count + 1, @patient.histories.count
+    assert_equal dependent_history_count + 1, dependent.histories.count
   end
 
   test 'assessment voice message content should not use messaging service' do
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
-    @patient.update(primary_language: 'so')
+    @patient.update(primary_language: 'so', preferred_contact_method: 'Telephone Call')
+
+    dependent_history_count = dependent.histories.count
+    patient_history_count = @patient.histories.count
 
     params = {
       language: 'EN',
@@ -437,6 +452,10 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                                                parameters: params
                                                                                                              })
     PatientMailer.assessment_voice(@patient).deliver_now
+
+    # Assert that both the patient and dependent got history items added
+    assert_equal patient_history_count + 1, @patient.histories.count
+    assert_equal dependent_history_count + 1, dependent.histories.count
   end
 
   test 'assessment email contents' do
@@ -454,8 +473,14 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'assessment email with dependents' do
+    @patient.update(preferred_contact_method: 'E-mailed Web Link')
+
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
+
+    dependent_history_count = dependent.histories.count
+    patient_history_count = @patient.histories.count
+
     email = PatientMailer.assessment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -469,9 +494,15 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes email_body, @patient.submission_token
     assert_not_includes email_body, dependent.submission_token
+
+    # Assert that the HoH (patient) got a history item for both emails
+    assert_equal patient_history_count + 2, @patient.histories.count
+    # Assert that the dependent got a history item for only the email pertaining to them
+    assert_equal dependent_history_count + 1, dependent.histories.count
   end
 
   test 'assessment email history and reminder' do
+    @patient.update(preferred_contact_method: 'E-mailed Web Link')
     assert_difference '@patient.histories.length', 1 do
       PatientMailer.assessment_email(@patient).deliver_now
       @patient.reload
@@ -482,8 +513,11 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'assessment email patient with dependents' do
+    @patient.update(preferred_contact_method: 'E-mailed Web Link')
+
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
+
     email = PatientMailer.enrollment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
