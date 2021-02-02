@@ -98,6 +98,11 @@ class Patient < ApplicationRecord
   has_many :close_contacts
   has_many :contact_attempts
 
+  before_update :set_time_zone, if: proc { |patient|
+    patient.monitored_address_state_changed? || patient.address_state_changed?
+  }
+  before_create :set_time_zone
+
   around_save :inform_responder, if: :responder_id_changed?
   around_destroy :inform_responder
   before_update :handle_update
@@ -122,6 +127,33 @@ class Patient < ApplicationRecord
       .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       .where('last_assessment_reminder_sent <= ? OR last_assessment_reminder_sent IS NULL', 12.hours.ago)
       .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
+  }
+
+  scope :within_preferred_contact_time, lambda {
+    where(
+      # If preferred contact time is X,
+      # then valid contact hours in patient's timezone are Y.
+      # 'Morning'   => 0800 - 1200
+      # 'Afternoon' => 1200 - 1600
+      # 'Evening'   => 1600 - 1900
+      #  default    => 1200 - 1600
+      '(patients.preferred_contact_time = "Morning"'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 8'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 12) '\
+      'OR (patients.preferred_contact_time = "Afternoon"'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 12'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 16) '\
+      'OR (patients.preferred_contact_time = "Evening"'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 16'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 19) '\
+      'OR (patients.preferred_contact_time IS NULL'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 12'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 16)',
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00')
+    )
   }
 
   # All individuals currently being monitored
@@ -870,11 +902,11 @@ class Patient < ApplicationRecord
 
   def address_timezone_offset
     if monitored_address_state.present?
-      timezone_for_state(monitored_address_state)
+      time_zone_offset_for_state(monitored_address_state)
     elsif address_state.present?
-      timezone_for_state(address_state)
+      time_zone_offset_for_state(address_state)
     else
-      timezone_for_state('massachusetts')
+      time_zone_offset_for_state('massachusetts')
     end
   end
 
@@ -882,6 +914,19 @@ class Patient < ApplicationRecord
   # multiple reports being sent out for the same monitoree.
   def last_assessment_reminder_sent_eligible?
     last_assessment_reminder_sent.nil? || last_assessment_reminder_sent <= 12.hours.ago
+  end
+
+  # Callback to set the `time_zone` attribute of the patient.
+  # `time_zone` is saved to the DB so that time zone calculations may be done
+  # on patient records without needing to load them into rails.
+  def set_time_zone
+    self.time_zone = if monitored_address_state.present?
+                       time_zone_for_state(monitored_address_state)
+                     elsif address_state.present?
+                       time_zone_for_state(address_state)
+                     else
+                       time_zone_for_state('massachusetts')
+                     end
   end
 
   # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
