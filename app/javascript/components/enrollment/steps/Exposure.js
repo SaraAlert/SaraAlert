@@ -245,6 +245,7 @@ class Exposure extends React.Component {
               callback();
             }
           } else {
+            self.setState({ selected_jurisdiction: self.state.current.patient.jurisdiction_id });
             callback();
           }
         });
