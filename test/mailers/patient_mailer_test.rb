@@ -255,9 +255,12 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'assessment sms weblink message contents with dependents' do
+    @patient.update(preferred_contact_method: 'SMS Texted Weblink')
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
 
+    dependent_history_count = dependent.histories.count
+    patient_history_count = @patient.histories.count
     # Cannot do the same expectation as previous tests because the expectation that any instance gets called with create is taken up by the first loop of
     # sending messages. So instead we count the amount of times create was called. Cannot do this with typical rspec methods because when you use
     # any_instance_of the expectation for number of calls applies to EVERY instance, not just any single instance. Instead we calculate
@@ -267,9 +270,12 @@ class PatientMailerTest < ActionMailer::TestCase
       create_count += 1
       true
     end)
-
     PatientMailer.assessment_sms_weblink(@patient).deliver_now
     assert_equal create_count, 2
+
+    # Assert that both the patient and dependent got history items added
+    assert_equal patient_history_count + 1, @patient.histories.count
+    assert_equal dependent_history_count + 1, dependent.histories.count
   end
 
   %i[assessment_sms_weblink].each do |mthd|
@@ -279,7 +285,7 @@ class PatientMailerTest < ActionMailer::TestCase
       end)
 
       assert_difference '@patient.histories.length', 1 do
-        @patient.update(preferred_contact_method: 'SMS Weblink')
+        @patient.update(preferred_contact_method: 'SMS Texted Weblink')
         PatientMailer.send(mthd, @patient).deliver_now
         assert_not_nil @patient.last_assessment_reminder_sent
         @patient.reload

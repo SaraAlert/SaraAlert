@@ -118,7 +118,10 @@ class History < ApplicationRecord
   end
 
   def self.report_reminder(patient: nil, created_by: 'Sara Alert System', comment: 'User sent a report reminder to the monitoree.')
-    create_history(patient, created_by, HISTORY_TYPES[:report_reminder], comment) unless patient&.preferred_contact_method.nil?
+    return if patient&.preferred_contact_method.nil? && patient&.id == patient&.responder_id
+
+    create_history(patient, created_by, HISTORY_TYPES[:report_reminder],
+                   comment)
   end
 
   def self.lab_result(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new lab result.')
