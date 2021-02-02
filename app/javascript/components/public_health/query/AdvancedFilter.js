@@ -873,7 +873,7 @@ class AdvancedFilter extends React.Component {
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
-          <Row key={'rowkey-filter-and' + index} className="and-row pb-2 pt-2">
+          <Row key={'rowkey-filter-and' + index} className="and-row py-2">
             <Col className="py-0">
               <b>AND</b>
             </Col>
