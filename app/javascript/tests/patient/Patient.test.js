@@ -34,7 +34,7 @@ describe('Patient', () => {
     const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2 ]} hideBody={true} editMode={false}
       jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
-    expect(wrapper.find('#monitoree-details-header').find('.h3').text().includes(nameFormatter(mockPatient1))).toBeTruthy();
+    expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient1));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeTruthy();
     expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
     expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
@@ -55,7 +55,7 @@ describe('Patient', () => {
     const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} editMode={true}
       jurisdiction_path='USA, State 1, County 2'  />);
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
-    expect(wrapper.find('#monitoree-details-header').find('.h3').text().includes(nameFormatter(mockPatient1))).toBeTruthy();
+    expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient1));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeFalsy();
     expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
     expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');

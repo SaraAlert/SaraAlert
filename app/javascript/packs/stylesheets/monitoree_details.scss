@@ -41,8 +41,12 @@ $section-border: #ddd;
   margin-bottom: 15px
 }
 
-.details-expander a {
-  text-decoration: none;
+#details-expander-link:focus,
+#details-expander-link:active,
+.notes-button:focus,
+.notes-button:active {
+  outline: none !important;
+  box-shadow: none;
 }
 
 .details-expander .line {
