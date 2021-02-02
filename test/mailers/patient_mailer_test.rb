@@ -347,6 +347,9 @@ class PatientMailerTest < ActionMailer::TestCase
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
 
+    dependent_history_count = dependent.histories.count
+    patient_history_count = @patient.histories.count
+
     params = {
       language: 'EN',
       try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'en'),
@@ -370,6 +373,9 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                                                from: 'test_messaging_sid'
                                                                                                              })
     PatientMailer.assessment_sms(@patient).deliver_now
+    # Assert that both the patient and dependent got history items added
+    assert_equal patient_history_count + 1, @patient.histories.count
+    assert_equal dependent_history_count + 1, dependent.histories.count
   end
 
   test 'assessment sms message content not using messaging service' do
