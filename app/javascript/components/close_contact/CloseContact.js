@@ -22,7 +22,11 @@ class CloseContact extends React.Component {
     super(props);
     this.state = {
       showModal: false,
-      disableCreate: true,
+      disableCreate:
+        !this.props.close_contact.first_name &&
+        !this.props.close_contact.last_name &&
+        !this.props.close_contact.primary_telephone &&
+        !this.props.close_contact.email,
       loading: false,
       errors: {},
       first_name: this.props.close_contact.first_name || '',
@@ -49,7 +53,11 @@ class CloseContact extends React.Component {
       // (because the rest of this method hasnt had time to fire, and change 'show' to false)
       // When they click cancel, we want to null out all of the fields
       newState = {
-        disableCreate: true,
+        disableCreate:
+          !this.props.close_contact.first_name &&
+          !this.props.close_contact.last_name &&
+          !this.props.close_contact.primary_telephone &&
+          !this.props.close_contact.email,
         errors: {},
         first_name: this.props.close_contact.first_name || '',
         last_name: this.props.close_contact.last_name || '',
@@ -69,6 +77,7 @@ class CloseContact extends React.Component {
   handleDateChange = event => this.setState({ last_date_of_exposure: event });
 
   handleChange = event => {
+    event.target.value = _.trimEnd(event.target.value);
     let value;
     let disableCreate = false;
     const possiblyRequiredFields = ['first_name', 'last_name', 'primary_telephone', 'email'];
@@ -160,7 +169,7 @@ class CloseContact extends React.Component {
             </Form.Group>
           </Row>
           <Row>
-            <Form.Group as={Col} controlId="primary_telephone">
+            <Form.Group as={Col} lg="12" controlId="primary_telephone">
               <Form.Label className="nav-input-label">Phone Number {schema?.fields?.primary_telephone?._exclusive?.required && '*'}</Form.Label>
               <PhoneInput
                 id="primary_telephone"
@@ -173,7 +182,7 @@ class CloseContact extends React.Component {
                 {this.state.errors['primary_telephone']}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} controlId="email">
+            <Form.Group as={Col} lg="12" controlId="email">
               <Form.Label className="nav-input-label">Email {schema?.fields?.email?._exclusive?.required && '*'} </Form.Label>
               <Form.Control size="lg" className="form-square" value={this.state.email || ''} onChange={this.handleChange} />
               <Form.Control.Feedback className="d-block" type="invalid">
@@ -183,7 +192,7 @@ class CloseContact extends React.Component {
           </Row>
           <hr></hr>
           <Row>
-            <Form.Group as={Col} controlId="last_date_of_exposure">
+            <Form.Group as={Col} lg="12" controlId="last_date_of_exposure">
               <Form.Label className="nav-input-label">Last Date of Exposure {schema?.fields?.last_date_of_exposure?._exclusive?.required && '*'}</Form.Label>
               <DateInput
                 id="last_date_of_exposure"
@@ -202,7 +211,7 @@ class CloseContact extends React.Component {
                 {this.state.errors['last_date_of_exposure']}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} controlId="assigned_user">
+            <Form.Group as={Col} lg="12" controlId="assigned_user">
               <Form.Label className="nav-input-label">
                 Assigned User {schema?.fields?.assigned_user?._exclusive?.required && '*'}
                 <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
@@ -266,27 +275,11 @@ class CloseContact extends React.Component {
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
-          <ReactTooltip
-            id="create-tooltip"
-            multiline={true}
-            place="top"
-            type="dark"
-            effect="solid"
-            offset={{ left: 113 }}
-            arrowColor="#ffffff00"
-            className="tooltip-container text-left"
-            disable={!this.state.disableCreate}>
-            <div>
-              {' '}
-              Please enter at least one of the following:
-              <ul className="m-0 pl-3">
-                <li>First Name</li>
-                <li>Last Name</li>
-                <li>Phone Number</li>
-                <li>Email</li>
-              </ul>
-            </div>
-          </ReactTooltip>
+          {this.state.disableCreate && (
+            <ReactTooltip id="create-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
+              Please enter one of the following: First Name, Last Name, Phone Number or Email
+            </ReactTooltip>
+          )}
         </Modal.Footer>
       </Modal>
     );

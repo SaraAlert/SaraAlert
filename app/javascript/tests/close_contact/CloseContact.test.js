@@ -274,30 +274,42 @@ describe('CloseContact', () => {
     let value;
     value = testInputValues.find(x => x.field === 'first_name').value
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(0).simulate('change', { target: { id: 'first_name', value: value } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeFalsy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(0).simulate('change', { target: { id: 'first_name', value: '' } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
 
     value = testInputValues.find(x => x.field === 'last_name').value
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(1).simulate('change', { target: { id: 'last_name', value: value } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeFalsy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(1).simulate('change', { target: { id: 'last_name', value: '' } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
 
     value = testInputValues.find(x => x.field === 'primary_telephone').value
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('PhoneInput').simulate('change', { target: { id: 'primary_telephone', value: value } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeFalsy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('PhoneInput').simulate('change', { target: { id: 'primary_telephone', value: '' } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
 
     value = testInputValues.find(x => x.field === 'email').value
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: value } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeFalsy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: '' } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
+    expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
   })
 });
