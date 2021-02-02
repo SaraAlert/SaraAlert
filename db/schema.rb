@@ -405,6 +405,7 @@ ActiveRecord::Schema.define(version: 2021_01_20_170347) do
     t.index ["id", "monitoring", "purged", "isolation", "symptom_onset"], name: "patients_index_chain_4"
     t.index ["id"], name: "index_patients_on_id"
     t.index ["isolation", "jurisdiction_id"], name: "patients_index_chain_6"
+    t.index ["jurisdiction_id", "assigned_user"], name: "patients_index_chain_8"
     t.index ["jurisdiction_id", "isolation", "purged", "assigned_user"], name: "patients_index_chain_three_1"
     t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
     t.index ["last_date_of_exposure"], name: "index_patients_on_last_date_of_exposure"
