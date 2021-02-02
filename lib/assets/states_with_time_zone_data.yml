@@ -1,0 +1,306 @@
+# Offsets are DST
+
+alabama: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+alaska: 
+  :offset: -8
+  :observes_dst: true
+  :zone_name: "America/Juneau"
+
+americansamoa: 
+  :offset: -11
+  :observes_dst: false
+  :zone_name: "Pacific/Pago_Pago"
+
+arizona: 
+  :offset: -7
+  :observes_dst: false
+  :zone_name: "America/Phoenix"
+
+arkansas: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+california: 
+  :offset: -7
+  :observes_dst: true
+  :zone_name: "America/Los_Angeles"
+
+colorado: 
+  :offset: -6
+  :observes_dst: true
+  :zone_name: "America/Denver"
+
+connecticut: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+delaware: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+districtofcolumbia: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+federatedstatesofmicronesia: 
+  :offset: 11
+  :observes_dst: false
+  :zone_name: "Pacific/Noumea"
+
+florida: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+georgia: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+guam: 
+  :offset: 10
+  :observes_dst: false
+  :zone_name: "Pacific/Guam"
+
+hawaii: 
+  :offset: -10
+  :observes_dst: false
+  :zone_name: "Pacific/Honolulu"
+
+idaho: 
+  :offset: -6
+  :observes_dst: true
+  :zone_name: "America/Denver"
+
+illinois: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+indiana: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+iowa: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+kansas: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+kentucky: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+louisiana: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+maine: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+marshallislands: 
+  :offset: 12
+  :observes_dst: false
+  :zone_name: "Pacific/Majuro"
+
+maryland: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+massachusetts: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+michigan: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+minnesota: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+mississippi: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+missouri: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+montana: 
+  :offset: -6
+  :observes_dst: true
+  :zone_name: "America/Denver"
+
+nebraska: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+nevada: 
+  :offset: -7
+  :observes_dst: true
+  :zone_name: "America/Los_Angeles"
+
+newhampshire: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+newjersey: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+newmexico: 
+  :offset: -6
+  :observes_dst: true
+  :zone_name: "America/Denver"
+
+newyork: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+northcarolina: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+northdakota: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+northernmarianaislands: 
+  :offset: 10
+  :observes_dst: false
+  :zone_name: "Pacific/Guam"
+
+ohio: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+oklahoma: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+oregon: 
+  :offset: -7
+  :observes_dst: true
+  :zone_name: "America/Los_Angeles"
+
+palau: 
+  :offset: 9
+  :observes_dst: false
+  :zone_name: "Asia/Tokyo"
+
+pennsylvania: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+puertorico: 
+  :offset: -4
+  :observes_dst: false
+  :zone_name: "America/Puerto_Rico"
+
+rhodeisland: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+southcarolina: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+southdakota: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+tennessee: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+texas: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+utah: 
+  :offset: -6
+  :observes_dst: true
+  :zone_name: "America/Denver"
+
+vermont: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+virginislands: 
+  :offset: -4
+  :observes_dst: false
+  :zone_name: "America/Puerto_Rico"
+
+virginia: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+washington: 
+  :offset: -7
+  :observes_dst: true
+  :zone_name: "America/Los_Angeles"
+
+westvirginia: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+wisconsin: 
+  :offset: -5
+  :observes_dst: true
+  :zone_name: "America/Chicago"
+
+wyoming: 
+  :offset: -6
+  :observes_dst: true
+  :zone_name: "America/Denver"
+
+null: 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
+
+"": 
+  :offset: -4
+  :observes_dst: true
+  :zone_name: "America/New_York"
