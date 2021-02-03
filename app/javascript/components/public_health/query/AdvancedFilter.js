@@ -369,7 +369,7 @@ class AdvancedFilter extends React.Component {
     if (prevNumberOption === 'between' && newNumberOption !== 'between') {
       newValue = 0;
     } else if (prevNumberOption !== 'between' && newNumberOption === 'between') {
-      newValue = { bound1: 0, bound2: 0 };
+      newValue = { firstBound: 0, secondBound: 0 };
     }
     activeFilterOptions[parseInt(index)] = {
       filterOption: activeFilterOptions[parseInt(index)].filterOption,
@@ -954,10 +954,10 @@ class AdvancedFilter extends React.Component {
                     <Form.Control
                       className="advanced-filter-number-input"
                       aria-label="Advanced Filter Number Input Bound 1"
-                      value={value.bound1}
+                      value={value.firstBound}
                       type="number"
                       min="0"
-                      onChange={event => this.changeValue(index, { bound1: event?.target?.value, bound2: value.bound2 })}
+                      onChange={event => this.changeValue(index, { firstBound: event?.target?.value, secondBound: value.secondBound })}
                     />
                     <div className="text-center my-auto mx-4">
                       <b>AND</b>
@@ -965,10 +965,10 @@ class AdvancedFilter extends React.Component {
                     <Form.Control
                       className="advanced-filter-number-input"
                       aria-label="Advanced Filter Number Input Bound 2"
-                      value={value.bound2}
+                      value={value.secondBound}
                       type="number"
                       min="0"
-                      onChange={event => this.changeValue(index, { bound1: value.bound1, bound2: event?.target?.value })}
+                      onChange={event => this.changeValue(index, { firstBound: value.firstBound, secondBound: event?.target?.value })}
                     />
                   </React.Fragment>
                 )}
