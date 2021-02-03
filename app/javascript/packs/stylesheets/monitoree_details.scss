@@ -83,3 +83,13 @@ $section-border: #ddd;
 .household-info {
   padding: 5px 15px 0px;
 }
+
+.chevron-opened {
+  transform: rotate(-90deg);
+  transition: transform .3s;
+}
+
+.chevron-closed {
+  transform: rotate(90deg);
+  transition: transform .3s;
+}
