@@ -30,6 +30,26 @@ class Patient extends React.Component {
     return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
   }
 
+  formatRace = () => {
+    let raceArray = [];
+    if (this.props.details.white) {
+      raceArray.push('White');
+    }
+    if (this.props.details.black_or_african_american) {
+      raceArray.push('Black or African American');
+    }
+    if (this.props.details.asian) {
+      raceArray.push('Asian');
+    }
+    if (this.props.details.american_indian_or_alaska_native) {
+      raceArray.push('American Indian or Alaska Native');
+    }
+    if (this.props.details.native_hawaiian_or_other_pacific_islander) {
+      raceArray.push('Native Hawaiian or Other Pacific Islander');
+    }
+    return <span>{raceArray.length === 0 ? '--' : raceArray.join(', ')}</span>;
+  };
+
   render() {
     if (!this.props.details) {
       return <React.Fragment>No monitoree details to show.</React.Fragment>;
@@ -159,14 +179,7 @@ class Patient extends React.Component {
                   <b>Sexual Orientation:</b> <span>{this.props.details.sexual_orientation || '--'}</span>
                 </div>
                 <div>
-                  <b>Race:</b>{' '}
-                  <span>
-                    {`${this.props.details.white ? 'White' : ''}
-                    ${this.props.details.black_or_african_american ? ' Black or African American' : ''}
-                    ${this.props.details.asian ? ' Asian' : ''}
-                    ${this.props.details.american_indian_or_alaska_native ? ' American Indian or Alaska Native' : ''}
-                    ${this.props.details.native_hawaiian_or_other_pacific_islander ? ' Native Hawaiian or Other Pacific Islander' : ''}`}
-                  </span>
+                  <b>Race:</b> {this.formatRace()}
                 </div>
                 <div>
                   <b>Ethnicity:</b> <span>{this.props.details.ethnicity || '--'}</span>
@@ -206,7 +219,7 @@ class Patient extends React.Component {
                 <b>Preferred Contact Time:</b> <span>{this.props.details.preferred_contact_time || '--'}</span>
               </div>
               <div>
-                <b>Type:</b> <span>{this.props.details.primary_telephone_type || '--'}</span>
+                <b>Primary Telephone Type:</b> <span>{this.props.details.primary_telephone_type || '--'}</span>
               </div>
               <div>
                 <b>Email:</b> <span>{this.props.details.email || '--'}</span>

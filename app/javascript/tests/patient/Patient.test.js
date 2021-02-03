@@ -15,7 +15,7 @@ const goToMock = jest.fn();
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const hohTableHeaders = [ 'Name', 'Workflow', 'Monitoring Status', 'Continuous Exposure?' ];
 const identificationFields = [ 'DOB', 'Age', 'Language', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality' ];
-const contactFields = [ 'Phone', 'Preferred Contact Time', 'Type', 'Email', 'Preferred Reporting Method' ];
+const contactFields = [ 'Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Reporting Method' ];
 const domesticAddressFields = [ 'Address 1', 'Address 2', 'Town/City', 'State', 'Zip', 'County'];
 const foreignAddressFields = [ 'Address 1', 'Address 2', 'Address 3', 'Town/City', 'State', 'Zip', 'Country' ];
 const additionalTravelFields = [ 'Type', 'Place', 'Port of Departure', 'Start Date', 'End Date' ];
