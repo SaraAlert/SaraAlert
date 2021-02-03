@@ -102,7 +102,7 @@ describe('Patient', () => {
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).exists()).toBeTruthy();
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).prop('icon').iconName).toEqual('chevron-down');
     expect(wrapper.find('#details-expander-link').find('span').text()).toEqual('Show address, travel, exposure, and case information');
-    expect(wrapper.find('.details-expander').find('span').at(1).hasClass('line')).toBeTruthy();
+    expect(wrapper.find('.details-expander').find('span').at(1).hasClass('dashed-line')).toBeTruthy();
   });
 
   it('Properly renders show/hide divider when expanded is true', () => {
@@ -114,7 +114,7 @@ describe('Patient', () => {
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).exists()).toBeTruthy();
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).prop('icon').iconName).toEqual('chevron-up');
     expect(wrapper.find('#details-expander-link').find('span').text()).toEqual('Hide address, travel, exposure, and case information');
-    expect(wrapper.find('.details-expander').find('span').at(1).hasClass('line')).toBeTruthy();
+    expect(wrapper.find('.details-expander').find('span').at(1).hasClass('dashed-line')).toBeTruthy();
   });
 
   it('Clicking show/hide divider updates label and expands or collapses details', () => {
