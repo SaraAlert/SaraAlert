@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button, Col, Collapse, Form, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import BadgeHOH from '../util/BadgeHOH';
 import ChangeHOH from '../subject/ChangeHOH';
@@ -236,7 +236,7 @@ class Patient extends React.Component {
               className="p-0"
               aria-label="Edit Notes"
               onClick={() => this.setState({ expanded: !this.state.expanded })}>
-              {this.state.expanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
+              <FontAwesomeIcon className={this.state.expanded ? 'chevron-opened' : 'chevron-closed'} icon={faChevronRight} />
               <span className="pl-2">{this.state.expanded ? 'Hide' : 'Show'} address, travel, exposure, and case information</span>
             </Button>
             <span className="dashed-line"></span>
