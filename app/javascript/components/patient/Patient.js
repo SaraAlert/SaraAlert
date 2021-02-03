@@ -100,7 +100,6 @@ class Patient extends React.Component {
               </span>
               {this.props?.dependents && this.props?.dependents?.length > 0 && <BadgeHOH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
-            <div className="clearfix"></div>
           </Col>
           <Col sm={12}>
             <div className="jurisdiction-user-box">
@@ -240,7 +239,7 @@ class Patient extends React.Component {
               {this.state.expanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
               <span className="pl-2">{this.state.expanded ? 'Hide' : 'Show'} address, travel, exposure, and case information</span>
             </Button>
-            <span className="line"></span>
+            <span className="dashed-line"></span>
           </div>
         )}
         <Collapse in={this.state.expanded}>
