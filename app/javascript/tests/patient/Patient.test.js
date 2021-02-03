@@ -100,7 +100,7 @@ describe('Patient', () => {
     expect(wrapper.find('.details-expander').exists()).toBeTruthy();
     expect(wrapper.find('#details-expander-link').exists()).toBeTruthy();
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).exists()).toBeTruthy();
-    expect(wrapper.find('.details-expander').find(FontAwesomeIcon).prop('icon').iconName).toEqual('chevron-down');
+    expect(wrapper.find('.details-expander').find(FontAwesomeIcon).hasClass('chevron-closed')).toBeTruthy();
     expect(wrapper.find('#details-expander-link').find('span').text()).toEqual('Show address, travel, exposure, and case information');
     expect(wrapper.find('.details-expander').find('span').at(1).hasClass('dashed-line')).toBeTruthy();
   });
@@ -112,7 +112,7 @@ describe('Patient', () => {
     expect(wrapper.find('#details-expander-link').exists()).toBeTruthy();
     wrapper.find('#details-expander-link').simulate('click');
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).exists()).toBeTruthy();
-    expect(wrapper.find('.details-expander').find(FontAwesomeIcon).prop('icon').iconName).toEqual('chevron-up');
+    expect(wrapper.find('.details-expander').find(FontAwesomeIcon).hasClass('chevron-opened')).toBeTruthy();
     expect(wrapper.find('#details-expander-link').find('span').text()).toEqual('Hide address, travel, exposure, and case information');
     expect(wrapper.find('.details-expander').find('span').at(1).hasClass('dashed-line')).toBeTruthy();
   });
