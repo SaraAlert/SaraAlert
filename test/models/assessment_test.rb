@@ -15,19 +15,19 @@ class AssessmentTest < ActiveSupport::TestCase
     patient.update(updated_at: 1.day.ago)
     ActiveRecord::Base.record_timestamps = true
     assessment = create(:assessment, patient: patient)
-    assert_in_delta patient.updated_at, DateTime.now, 1
+    assert_in_delta patient.updated_at, Time.now.utc, 1
 
     ActiveRecord::Base.record_timestamps = false
     patient.update(updated_at: 1.day.ago)
     ActiveRecord::Base.record_timestamps = true
     assessment.update(symptomatic: true)
-    assert_in_delta patient.updated_at, DateTime.now, 1
+    assert_in_delta patient.updated_at, Time.now.utc, 1
 
     ActiveRecord::Base.record_timestamps = false
     patient.update(updated_at: 1.day.ago)
     ActiveRecord::Base.record_timestamps = true
     assessment.destroy
-    assert_in_delta patient.updated_at, DateTime.now, 1
+    assert_in_delta patient.updated_at, Time.now.utc, 1
   end
 
   test 'update patient linelist' do
