@@ -369,7 +369,7 @@ class AdvancedFilter extends React.Component {
     if (prevNumberOption === 'between' && newNumberOption !== 'between') {
       newValue = 0;
     } else if (prevNumberOption !== 'between' && newNumberOption === 'between') {
-      newValue = { low: 0, high: 0 };
+      newValue = { bound1: 0, bound2: 0 };
     }
     activeFilterOptions[parseInt(index)] = {
       filterOption: activeFilterOptions[parseInt(index)].filterOption,
@@ -953,22 +953,22 @@ class AdvancedFilter extends React.Component {
                   <React.Fragment>
                     <Form.Control
                       className="advanced-filter-number-input"
-                      aria-label="Advanced Filter Number Low Input"
-                      value={value.low}
+                      aria-label="Advanced Filter Number Input Bound 1"
+                      value={value.bound1}
                       type="number"
                       min="0"
-                      onChange={event => this.changeValue(index, { low: event?.target?.value, high: value.high })}
+                      onChange={event => this.changeValue(index, { bound1: event?.target?.value, bound2: value.bound2 })}
                     />
                     <div className="text-center my-auto mx-4">
                       <b>AND</b>
                     </div>
                     <Form.Control
                       className="advanced-filter-number-input"
-                      aria-label="Advanced Filter Number High Input"
-                      value={value.high}
+                      aria-label="Advanced Filter Number Input Bound 2"
+                      value={value.bound2}
                       type="number"
                       min="0"
-                      onChange={event => this.changeValue(index, { low: value.low, high: event?.target?.value })}
+                      onChange={event => this.changeValue(index, { bound1: value.bound1, bound2: event?.target?.value })}
                     />
                   </React.Fragment>
                 )}

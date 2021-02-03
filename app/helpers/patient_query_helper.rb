@@ -389,8 +389,11 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'age'
         # specific case where value is a range not a single value
         if filter[:numberOption] == 'between'
-          low_bound = filter[:value][:low].to_i
-          high_bound = filter[:value][:high].to_i + 1
+          # compute which bound is higher than the other
+          first_bound = filter[:value][:bound1].to_i
+          second_bound = filter[:value][:bound2].to_i
+          low_bound = [first_bound, second_bound].min
+          high_bound = [first_bound, second_bound].max + 1
           # find monitorees who have a DOB between the low and high bounds of the age range
           # low bound DOB is calculated by finding the date of youngest possible person of low bound age (i.e. current date - low bound age )
           # high bound DOB is calculated by finding the date of the oldest possible person of the high bound age (i.e. current date - high bound age + 1)
