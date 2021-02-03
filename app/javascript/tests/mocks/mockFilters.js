@@ -70,7 +70,7 @@ const mockFilterNumberOption = {
   },
   numberOption: 'between',
   relativeOption: null,
-  value: {low: 20, high: 30}
+  value: {firstBound: 20, secondBound: 30}
 }
 
 const mockFilterDefaultDateOption = {

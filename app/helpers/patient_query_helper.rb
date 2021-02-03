@@ -390,8 +390,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         # specific case where value is a range not a single value
         if filter[:numberOption] == 'between'
           # compute which bound is higher than the other
-          first_bound = filter[:value][:bound1].to_i
-          second_bound = filter[:value][:bound2].to_i
+          first_bound = filter[:value][:firstBound].to_i
+          second_bound = filter[:value][:secondBound].to_i
           low_bound = [first_bound, second_bound].min
           high_bound = [first_bound, second_bound].max + 1
           # find monitorees who have a DOB between the low and high bounds of the age range
