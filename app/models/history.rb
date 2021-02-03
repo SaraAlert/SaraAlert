@@ -37,7 +37,16 @@ class History < ApplicationRecord
 
   validates :history_type, inclusion: { in: HISTORY_TYPES.values }
 
-  belongs_to :patient, touch: true
+  belongs_to :patient
+
+  after_save :touch_patient
+  before_destroy :touch_patient
+
+  def touch_patient
+    # patient updated_at should not be updated if history was created by a system generated report reminder or contact attempt
+    patient.touch unless history_type == HISTORY_TYPES[:report_reminder] ||
+                         (history_type == HISTORY_TYPES[:contact_attempt] && created_by == 'Sara Alert System')
+  end
 
   # All histories within the given time frame
   scope :in_time_frame, lambda { |time_frame|

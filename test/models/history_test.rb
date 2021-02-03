@@ -49,19 +49,37 @@ class HistoryTest < ActiveSupport::TestCase
     patient.update(updated_at: 1.day.ago)
     ActiveRecord::Base.record_timestamps = true
     history = create(:history, patient: patient)
-    assert_in_delta patient.updated_at, DateTime.now, 1
+    assert_in_delta patient.updated_at, Time.now.utc, 1
 
     ActiveRecord::Base.record_timestamps = false
     patient.update(updated_at: 1.day.ago)
     ActiveRecord::Base.record_timestamps = true
     history.update(comment: 'hodor')
-    assert_in_delta patient.updated_at, DateTime.now, 1
+    assert_in_delta patient.updated_at, Time.now.utc, 1
 
     ActiveRecord::Base.record_timestamps = false
     patient.update(updated_at: 1.day.ago)
     ActiveRecord::Base.record_timestamps = true
     history.destroy
-    assert_in_delta patient.updated_at, DateTime.now, 1
+    assert_in_delta patient.updated_at, Time.now.utc, 1
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    create(:history, patient: patient, history_type: History::HISTORY_TYPES[:report_reminder])
+    assert_in_delta patient.updated_at, 1.day.ago, 1
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    create(:history, patient: patient, history_type: History::HISTORY_TYPES[:contact_attempt])
+    assert_in_delta patient.updated_at, 1.day.ago, 1
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    create(:history, patient: patient, history_type: History::HISTORY_TYPES[:contact_attempt], created_by: 'state1_epi_enroller@example.com')
+    assert_in_delta patient.updated_at, Time.now.utc, 1
   end
 
   test 'history in time frame' do
