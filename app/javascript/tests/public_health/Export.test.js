@@ -22,11 +22,6 @@ function getIsolationWrapper() {
     jurisdiction_paths={mockJurisdictionPaths} jurisdiction={mockJurisdiction1} query={mockQuery2} tabs={mockIsolationTabs} />);
 }
 
-function getInstance() {
-  return shallow(<Export all_monitorees_count={200} authenticity_token={authyToken} current_monitorees_count={32} custom_export_options={{}}
-    jurisdiction_paths={mockJurisdictionPaths} jurisdiction={mockJurisdiction1} query={mockQuery2} tabs={mockIsolationTabs} />).instance();
-}
-
 describe('Export', () => {
   it('Properly renders all main components', () => {
     const wrapper = getExposureWrapper();
@@ -110,7 +105,7 @@ describe('Export', () => {
   });
 
   it('Calls reloadExportPresets method when component mounts', () => {
-    const instance  = getInstance();
+    const instance  = getExposureWrapper().instance();
     const reloadPresetsSpy = jest.spyOn(instance, 'reloadExportPresets');
     expect(reloadPresetsSpy).toHaveBeenCalledTimes(0); 
     instance.componentDidMount();

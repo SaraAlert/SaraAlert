@@ -5,13 +5,6 @@ import { Button, Form, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstr
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class AssignedUserFilter extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      assigned_user: props.assigned_user !== 'none' ? props.assigned_user : '' || '',
-    };
-  }
-
   handleAssignedUserChange = assigned_user => {
     if (!isNaN(assigned_user) && parseInt(assigned_user) > 0 && parseInt(assigned_user) <= 999999) {
       this.setState({ assigned_user }, () => {
