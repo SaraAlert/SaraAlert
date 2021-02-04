@@ -133,12 +133,12 @@ class PatientsTable extends React.Component {
     let sortField = localStorage.getItem(`SaraSortField`);
     let sortDirection = localStorage.getItem(`SaraSortDirection`);
     if (priorWorkflow && this.props.workflow === priorWorkflow) {
-      if (page) {
+      if (parseInt(page)) {
         query.page = parseInt(page);
       }
       if (sortField && sortDirection) {
         query.order = sortField;
-        query.direction = sortDirection;
+        query.direction = sortDirection === 'asc' ? 'asc' : 'desc';
       }
       // Set a flag so any sticky advanced filter does not reset page & sort settings
       localStorage.setItem('KeepCurrentSettings', true);
@@ -147,10 +147,10 @@ class PatientsTable extends React.Component {
       localStorage.removeItem(`SaraSortField`);
       localStorage.removeItem(`SaraSortDirection`);
       localStorage.setItem('KeepCurrentSettings', false);
+      // Update workflow local storage to be the current workflow
+      localStorage.setItem(`Workflow`, this.props.workflow);
       query.page = 0;
     }
-    // Update workflow local storage to be the current workflow
-    localStorage.setItem(`Workflow`, this.props.workflow);
 
     // Set entries if it exists in local storage
     let entries = localStorage.getItem(`SaraEntries`);
@@ -175,8 +175,6 @@ class PatientsTable extends React.Component {
     if (await confirmDialog('Are you sure you want to clear all filters? All active filters and searches will be cleared.')) {
       localStorage.removeItem(`SaraFilter`);
       localStorage.removeItem(`SaraPage`);
-      localStorage.removeItem(`SaraSortField`);
-      localStorage.removeItem(`SaraSortDirection`);
       localStorage.removeItem(`SaraEntries`);
       localStorage.removeItem(`SaraSearch`);
       localStorage.removeItem(`SaraJurisdiction`);
@@ -197,7 +195,7 @@ class PatientsTable extends React.Component {
     localStorage.removeItem(`SaraSortDirection`);
     this.setState(
       state => {
-        return { query: { ...state.query, tab, page: 0 } };
+        return { query: { ...state.query, tab, order: '', direction: '', page: 0 } };
       },
       () => {
         this.updateAssignedUsers(this.state.query);
@@ -233,8 +231,6 @@ class PatientsTable extends React.Component {
    */
   handleEntriesChange = event => {
     localStorage.removeItem(`SaraPage`);
-    localStorage.removeItem(`SaraSortField`);
-    localStorage.removeItem(`SaraSortDirection`);
     const value = event?.target?.value || event;
     this.setState(
       state => {
@@ -253,8 +249,6 @@ class PatientsTable extends React.Component {
     if (jurisdiction !== this.state.query.jurisdiction) {
       this.updateAssignedUsers({ ...this.state.query, jurisdiction, page: 0 });
       localStorage.removeItem(`SaraPage`);
-      localStorage.removeItem(`SaraSortField`);
-      localStorage.removeItem(`SaraSortDirection`);
       localStorage.setItem(`SaraJurisdiction`, jurisdiction);
     }
   };
@@ -263,8 +257,6 @@ class PatientsTable extends React.Component {
     if (scope !== this.state.query.scope) {
       this.updateAssignedUsers({ ...this.state.query, scope, page: 0 });
       localStorage.removeItem(`SaraPage`);
-      localStorage.removeItem(`SaraSortField`);
-      localStorage.removeItem(`SaraSortDirection`);
       localStorage.setItem(`SaraScope`, scope);
     }
   };
@@ -273,8 +265,6 @@ class PatientsTable extends React.Component {
     if (user !== this.state.query.user) {
       this.updateTable({ ...this.state.query, user, page: 0 });
       localStorage.removeItem(`SaraPage`);
-      localStorage.removeItem(`SaraSortField`);
-      localStorage.removeItem(`SaraSortDirection`);
       if (user) {
         localStorage.setItem(`SaraAssignedUser`, user);
       } else {
@@ -286,8 +276,6 @@ class PatientsTable extends React.Component {
   handleSearchChange = event => {
     this.updateTable({ ...this.state.query, search: event.target?.value, page: 0 });
     localStorage.removeItem(`SaraPage`);
-    localStorage.removeItem(`SaraSortField`);
-    localStorage.removeItem(`SaraSortDirection`);
     localStorage.setItem(`SaraSearch`, event.target.value);
   };
 
