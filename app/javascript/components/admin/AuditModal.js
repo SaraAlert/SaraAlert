@@ -200,7 +200,8 @@ class AuditModal extends React.Component {
         } else {
           return (
             <span>
-              <b>Role</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;
+              <b>Role</b>: Changed from &quot;{_.map(change.details[0].split('_'), _.capitalize).join(' ')}&quot; to &quot;
+              {_.map(change.details[1].split('_'), _.capitalize).join(' ')}&quot;
             </span>
           );
         }
