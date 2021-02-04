@@ -30,18 +30,12 @@ function getIsolationWrapper() {
     tabs={mockIsolationTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock}/>);
 }
 
-// Set to exposure workflow
-function getInstance() {
-  return shallow(<PatientsTable authenticity_token={authyToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'exposure'} jurisdiction={mockJurisdiction1}
-    tabs={mockExposureTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock}/>).instance();
-}
-
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('PatientsTable', () => {
-  it('Properly renders all main components', () => {
+  it('Properly renders all main components for the exposure workflow', () => {
     const wrapper = getExposureWrapper();
     expect(wrapper.find('#search').exists()).toBeTruthy();
     expect(wrapper.find('#tab-description').exists()).toBeTruthy();
@@ -58,7 +52,24 @@ describe('PatientsTable', () => {
         .toEqual(mockExposureTabs[defaultTab]['description'] + ' You are currently in the exposure workflow.');
   });
 
-  it('Sets state correctly', () => {
+  it('Properly renders all main components for the isolation workflow', () => {
+    const wrapper = getIsolationWrapper();
+    expect(wrapper.find('#search').exists()).toBeTruthy();
+    expect(wrapper.find('#tab-description').exists()).toBeTruthy();
+    expect(wrapper.find('#clear-all-filters').exists()).toBeTruthy();
+    expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(AdvancedFilter)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(CustomTable)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(DropdownButton)).toBeTruthy();
+    expect(wrapper.find(Dropdown.Item).length).toEqual(3);
+
+    const defaultTab = Object.keys(mockIsolationTabs)[0]
+    expect(wrapper.find('#tab-description').text())
+        .toEqual(mockIsolationTabs[defaultTab]['description'] + ' You are currently in the isolation workflow.');
+  });
+
+  it('Sets intial state correctly', () => {
     const wrapper = getExposureWrapper();
     expect(_.size(wrapper.state('table').colData)).toEqual(20);
     expect(_.size(wrapper.state('table').displayedColData)).toEqual(0);
@@ -123,30 +134,26 @@ describe('PatientsTable', () => {
   });
 
   it('Calls updateAssignedUsers and updateTable methods when component mounts', () => {
-    const instance = getInstance();
+    const instance = getExposureWrapper().instance();
     const updateAssignedUsersSpy = jest.spyOn(instance, 'updateAssignedUsers');
     expect(updateAssignedUsersSpy).toHaveBeenCalledTimes(0);
     instance.componentDidMount();
     expect(updateAssignedUsersSpy).toHaveBeenCalledTimes(1);
   });
 
-  describe('ExposureDashboard', () => {
-    it('Properly renders all tabs', () => {
-      const wrapper = getExposureWrapper();
-      for (var key of Object.keys(mockExposureTabs)) {
-        expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
-        expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockExposureTabs[key]['label']);
-      }
-    });
+  it('Properly renders all tabs on exposure dashboard', () => {
+    const wrapper = getExposureWrapper();
+    for (var key of Object.keys(mockExposureTabs)) {
+      expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
+      expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockExposureTabs[key]['label']);
+    }
   });
 
-  describe('IsolationDashboard', () => {
-    it('Properly renders all tabs', () => {
-      const wrapper = getIsolationWrapper();
-      for (var key of Object.keys(mockIsolationTabs)) {
-        expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
-        expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockIsolationTabs[key]['label']);
-      }
-    });
+  it('Properly renders all tabs on isolation dashboard', () => {
+    const wrapper = getIsolationWrapper();
+    for (var key of Object.keys(mockIsolationTabs)) {
+      expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
+      expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockIsolationTabs[key]['label']);
+    }
   });
 });
