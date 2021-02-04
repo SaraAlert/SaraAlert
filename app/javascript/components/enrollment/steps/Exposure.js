@@ -634,7 +634,7 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                       {this.props.has_dependents &&
                         this.state.current.patient.jurisdiction_id !== this.state.originalJurisdictionId &&
-                        Object.keys(this.props.jurisdiction_paths).includes(this.state.current.patient.jurisdiction_id) && (
+                        Object.keys(this.props.jurisdiction_paths).includes(this.state.current.patient.jurisdiction_id.toString()) && (
                           <Form.Group className="mt-2">
                             <Form.Check
                               type="switch"
