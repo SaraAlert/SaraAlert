@@ -1090,6 +1090,15 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal @patient_1.address[0].postalCode, patient.address_zip
     assert_equal @patient_1.address[0].district, patient.address_county
 
+    # Test that the foreign address was not saved
+    assert_nil patient.foreign_address_line_1
+    assert_nil patient.foreign_address_line_2
+    assert_nil patient.foreign_address_line_3
+    assert_nil patient.foreign_address_city
+    assert_nil patient.foreign_address_state
+    assert_nil patient.foreign_address_zip
+    assert_nil patient.foreign_address_country
+
     # Test that the response is as expected
     assert_equal @patient_1.address[0].line, json_response['address'][0]['line']
     assert_equal @patient_1.address[0].city, json_response['address'][0]['city']
