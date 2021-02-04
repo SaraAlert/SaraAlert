@@ -2356,7 +2356,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'within preferred contact time scope utc' do
-    patient = create(:patient, monitored_address_state: 'florida', preferred_contact_time: nil)
+    patient = create(:patient, monitored_address_state: 'Florida', preferred_contact_time: nil)
     # Production system will run in UTC
     # Before window
     Timecop.freeze((Time.now.utc).change(hour: 13)) do
@@ -2590,15 +2590,15 @@ class PatientTest < ActiveSupport::TestCase
     # Timezone defaults to Eastern
     assert_equal('America/New_York', patient.time_zone)
     # Should set on update on monitored_address_state
-    patient.update(monitored_address_state: 'minnesota')
+    patient.update(monitored_address_state: 'Minnesota')
     patient.reload
     assert_equal('America/Chicago', patient.time_zone)
     # Should set on update on address_state
-    patient.update(monitored_address_state: nil, address_state: 'montana')
+    patient.update(monitored_address_state: nil, address_state: 'Montana')
     patient.reload
     assert_equal('America/Denver', patient.time_zone)
     # monitored should take precendence over normal address
-    patient.update(monitored_address_state: 'minnesota')
+    patient.update(monitored_address_state: 'Minnesota')
     patient.reload
     assert_equal('America/Chicago', patient.time_zone)
     # should default back to Eastern
@@ -2611,10 +2611,10 @@ class PatientTest < ActiveSupport::TestCase
     patient = create(:patient)
     [
       { monitored_address_state: nil, address_state: nil },
-      { monitored_address_state: 'minnesota', address_state: nil },
-      { monitored_address_state: nil, address_state: 'minnesota' },
-      { monitored_address_state: 'montana', address_state: nil },
-      { monitored_address_state: nil, address_state: 'florida' }
+      { monitored_address_state: 'Minnesota', address_state: nil },
+      { monitored_address_state: nil, address_state: 'Minnesota' },
+      { monitored_address_state: 'Montana', address_state: nil },
+      { monitored_address_state: nil, address_state: 'Florida' }
     ].each do |state_params|
       patient.update(state_params)
       patient.update(preferred_contact_time: nil)
