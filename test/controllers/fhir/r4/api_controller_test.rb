@@ -1069,6 +1069,34 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal JSON.parse(@patient_1.address.to_json), json_response['address']
   end
 
+  test 'should update address fields from an explicit USA address' do
+    @patient_1.address = [FHIR::Address.new(line: ['123 First Ave', 'Unit 22'], city: 'Southland', state: 'Vermont', postalCode: '77658-0950',
+                                            district: 'Middletown')]
+    @patient_1.address[0].extension << FHIR::Extension.new(url: 'http://saraalert.org/StructureDefinition/address-type', valueString: 'USA')
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+
+    assert_response :ok
+    patient = Patient.find_by(id: 1)
+    json_response = JSON.parse(response.body)
+    # Test that the address was saved as expected
+    assert_equal @patient_1.address[0].line[0], patient.address_line_1
+    assert_equal @patient_1.address[0].city, patient.address_city
+    assert_equal @patient_1.address[0].state, patient.address_state
+    assert_equal @patient_1.address[0].postalCode, patient.address_zip
+    assert_equal @patient_1.address[0].district, patient.address_county
+
+    # Test that the response is as expected
+    assert_equal @patient_1.address[0].line, json_response['address'][0]['line']
+    assert_equal @patient_1.address[0].city, json_response['address'][0]['city']
+    assert_equal @patient_1.address[0].state, json_response['address'][0]['state']
+    assert_equal @patient_1.address[0].postalCode, json_response['address'][0]['postalCode']
+  end
+
   test 'should ignore unknown address types in update' do
     @patient_1.address << FHIR::Address.new(line: ['123 First Ave', 'Unit 22', 'Sector B'], city: 'Northland', state: 'Quebec', postalCode: '77658-0950',
                                             country: 'Canada')
@@ -1091,6 +1119,13 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_nil patient.foreign_address_state
     assert_nil patient.foreign_address_zip
     assert_nil patient.foreign_address_country
+
+    # Test that the address was saved as expected
+    assert_equal @patient_1.address[0].line[0], patient.address_line_1
+    assert_equal @patient_1.address[0].city, patient.address_city
+    assert_equal @patient_1.address[0].state, patient.address_state
+    assert_equal @patient_1.address[0].postalCode, patient.address_zip
+    assert_equal @patient_1.address[0].district, patient.address_county
 
     # Test that the response is as expected
     assert_equal JSON.parse(@patient_1.address[0].to_json), json_response['address'][0]
