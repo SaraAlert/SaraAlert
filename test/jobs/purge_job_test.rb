@@ -120,6 +120,7 @@ class PurgeJobTest < ActiveSupport::TestCase
     patient.update(laboratories: [create(:laboratory, patient: patient)])
     patient.update(histories: [create(:history, patient: patient, history_type: 'Comment')])
     patient.update(contact_attempts: [create(:contact_attempt, patient: patient)])
+    patient.update(vaccines: [create(:vaccine, patient: patient)])
     patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago)
 
     PurgeJob.perform_now
@@ -138,5 +139,6 @@ class PurgeJobTest < ActiveSupport::TestCase
     assert_empty(patient.close_contacts)
     assert_empty(patient.histories)
     assert_empty(patient.contact_attempts)
+    assert_empty(patient.vaccines)
   end
 end

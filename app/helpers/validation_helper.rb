@@ -208,8 +208,6 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     continuous_exposure: { label: 'Continuous Exposure', checks: [:bool] }
   }.freeze
 
-  def validate_date; end
-
   # Validates if a given date value is between (inclusive) two dates.
   def validate_between_dates(record, attribute, earliest_date, latest_date)
     return if attribute.nil? || record.nil? || !record.has_attribute?(attribute)

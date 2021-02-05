@@ -115,6 +115,7 @@ class Patient < ApplicationRecord
   has_many :histories
   has_many :transfers
   has_many :laboratories
+  has_many :vaccines
   has_many :close_contacts
   has_many :contact_attempts
 

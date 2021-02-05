@@ -18,6 +18,7 @@ class PurgeJob < ApplicationJob
       monitoree.close_contacts.destroy_all
       monitoree.histories.destroy_all
       monitoree.contact_attempts.destroy_all
+      monitoree.vaccines.destroy_all
 
       attributes = Patient.new.attributes.keys
       attributes -= PurgeJob.attributes_to_keep

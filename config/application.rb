@@ -23,5 +23,8 @@ module SARAAlert
 
     # Set default mailer queue
     config.action_mailer.deliver_later_queue_name = :mailers
+
+    # Load vaccine configuration
+    config.vaccine_standards = YAML.safe_load(File.read('config/vaccines.yml'))
   end
 end

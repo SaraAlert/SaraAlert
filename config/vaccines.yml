@@ -1,0 +1,8 @@
+
+# CONFIGURATION FOR SUPPORT VACCINES AND ASSOCIATED DATA IN SARA ALERT
+# Follows supported mappings as defined by CDC at: https://www2a.cdc.gov/vaccines/iis/iisstandards/vaccines.asp?rpt=vg
+'COVID-19':
+  name: 'COVID-19'
+  vaccines:
+    - product_name: 'Moderna COVID-19 Vaccine'
+    - product_name: 'Pfizer-BioNTech COVID-19 Vaccine'

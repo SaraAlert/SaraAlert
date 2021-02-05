@@ -102,6 +102,18 @@
 </div>
 <% end %>
 
+<% if current_user.can_view_patient_vaccines? %>
+  <%= react_component('patient/vaccines/VaccineTable', {
+                        patient: @patient,
+                        current_user: current_user,
+                        authenticity_token: form_authenticity_token,
+                        vaccine_mapping: Vaccine::VACCINE_STANDARDS,
+                        group_name_options: Vaccine.group_name_options,
+                        additional_product_name_options: Vaccine::ADDITIONAL_PRODUCT_NAME_OPTIONS,
+                        dose_number_options: Vaccine::DOSE_OPTIONS.filter { |option| !option.nil? }
+                      })%>
+<% end %>
+
 <% if current_user.can_view_patient_close_contacts? %>
 <div id="close-contacts-table" class="card mx-2 mt-3 mb-4 card-square">
   <div class="card-header h5">
