@@ -451,7 +451,9 @@ class AdvancedFilter extends React.Component {
     axios
       .post(window.BASE_PATH + '/user_filters', { activeFilterOptions: this.state.activeFilterOptions, name: this.state.filterName })
       .catch(err => {
-        toast.error(err?.response?.data?.error ? err.response.data.error : 'Failed to save filter.');
+        toast.error(err?.response?.data?.error ? err.response.data.error : 'Failed to save filter.', {
+          autoClose: 8000,
+        });
       })
       .then(response => {
         if (response?.data) {
