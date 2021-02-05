@@ -100,6 +100,8 @@ Rails.application.routes.draw do
   resources :patients, param: :submission_token do
     resources :assessments, only: [:create, :new, :index]
   end
+
+  resources :vaccines, only: [:index, :create, :update]
   
   resources :user_filters, only: [:index, :create, :update, :destroy]
 

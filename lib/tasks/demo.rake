@@ -219,6 +219,10 @@ desc 'Backup the database'
       laboratory_histories = demo_populate_laboratories(today, days_ago, existing_patients)
       histories = histories.concat(laboratory_histories)
 
+      # Create vaccinations
+      vaccine_histories = demo_populate_vaccines(today, days_ago, existing_patients)
+      histories = histories.concat(vaccine_histories)
+
       # Create close contacts
       close_contacts_histories = demo_populate_close_contacts(today, days_ago, existing_patients)
       histories = histories.concat(close_contacts_histories)
@@ -655,6 +659,42 @@ desc 'Backup the database'
       )
     end
     Laboratory.import! laboratories
+    printf(" done.\n")
+
+    return histories
+  end
+
+  def demo_populate_vaccines(today, days_ago, existing_patients)
+    printf("Generating vaccinations...")
+    vaccines = []
+    histories = []
+    patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
+    patient_ids.each_with_index do |patient_id, index|
+      printf("\rGenerating vaccine #{index+1} of #{patient_ids.length}...")
+      changes_ts = create_fake_timestamp(today, today)
+      group_name = Vaccine.group_name_options.sample
+      notes = rand < 0.5 ? Faker::Games::LeagueOfLegends.quote : nil
+      vaccines << Vaccine.new(
+        patient_id: patient_id,
+        group_name: group_name,
+        product_name: Vaccine.product_name_options(group_name).sample,
+        administration_date: create_fake_timestamp(1.week.ago, today),
+        dose_number: Vaccine::DOSE_OPTIONS.sample,
+        notes: notes,
+        created_at: changes_ts,
+        updated_at: changes_ts
+      )
+
+      histories << History.new(
+        patient_id: patient_id,
+        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        comment: "User added a new vaccine.",
+        history_type: History::HISTORY_TYPES[:vaccine],
+        created_at: changes_ts,
+        updated_at: changes_ts
+      )
+    end
+    Vaccine.import! vaccines
     printf(" done.\n")
 
     return histories

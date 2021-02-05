@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_03_212021) do
+ActiveRecord::Schema.define(version: 2021_02_04_191950) do
 
   create_table "analytics", charset: "utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -521,6 +521,18 @@ ActiveRecord::Schema.define(version: 2021_02_03_212021) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jurisdiction_id"], name: "index_users_on_jurisdiction_id"
     t.index ["password_changed_at"], name: "index_users_on_password_changed_at"
+  end
+
+  create_table "vaccines", charset: "utf8", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.string "group_name"
+    t.string "product_name"
+    t.date "administration_date"
+    t.string "dose_number"
+    t.text "notes"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_vaccines_on_patient_id"
   end
 
   add_foreign_key "jwt_identifiers", "oauth_applications", column: "application_id"
