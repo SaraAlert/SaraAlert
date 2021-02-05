@@ -180,7 +180,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     case order
     when 'name'
-      patients = patients.order(last_name: dir).order(first_name: dir).order(id: dir)
+      patients = patients.order(last_name: dir, first_name: dir, id: dir)
     when 'jurisdiction'
       patients = patients.includes(:jurisdiction).order('jurisdictions.name ' + dir, id: dir)
     when 'transferred_from'

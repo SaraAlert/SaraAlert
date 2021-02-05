@@ -193,9 +193,33 @@ class PatientsTable extends React.Component {
     localStorage.removeItem(`SaraPage`);
     localStorage.removeItem(`SaraSortField`);
     localStorage.removeItem(`SaraSortDirection`);
+
+    const query = {};
+    query.tab = tab;
+
+    // specifically grab jurisdiction & assigned user filter values when coming from the Transferred Out line list (cause they were hidden)
+    if (this.state.query.tab === 'transferred_out') {
+      // Set jurisdiction if it exists in local storage
+      let jurisdiction = localStorage.getItem('SaraJurisdiction');
+      if (jurisdiction) {
+        query.jurisdiction = parseInt(jurisdiction);
+      }
+
+      // Set scope if it exists in local storage
+      let scope = localStorage.getItem('SaraScope');
+      if (scope) {
+        query.scope = scope;
+      }
+
+      // Set assigned user if it exists in local storage
+      let assigned_user = localStorage.getItem('SaraAssignedUser');
+      if (assigned_user) {
+        query.user = assigned_user;
+      }
+    }
     this.setState(
       state => {
-        return { query: { ...state.query, tab, order: '', direction: '', page: 0 } };
+        return { query: { ...state.query, ...query, order: '', direction: '', page: 0 } };
       },
       () => {
         this.updateAssignedUsers(this.state.query);
