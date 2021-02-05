@@ -216,7 +216,10 @@ class CustomTable extends React.Component {
             <Spinner variant="secondary" animation="border" size="lg" />
           </div>
         )}
-        <div className={this.props.getCustomTableClassName ? `table-responsive ${this.props.getCustomTableClassName()}` : 'table-responsive'}>
+        <div
+          className={
+            this.props.getCustomTableClassName ? `table-responsive custom-table' ${this.props.getCustomTableClassName()}` : 'table-responsive custom-table'
+          }>
           <Table striped bordered hover size="sm" className="opaque-table">
             <thead>
               <tr>

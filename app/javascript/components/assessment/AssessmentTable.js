@@ -43,7 +43,8 @@ class AssessmentTable extends React.Component {
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
       editRow: null,
-      showAssessmentModal: false,
+      showEditAssessmentModal: false,
+      showAddAssessmentModal: false,
     };
   }
 
@@ -230,8 +231,8 @@ class AssessmentTable extends React.Component {
   };
 
   /**
-   * Called when the Add User button is clicked.
-   * Updates the state to show the appropriate modal for adding a user.
+   * Called when the Add New Report button is clicked.
+   * Updates the state to show the appropriate modal for adding a new report.
    */
   handleAddReportClick = () => {
     this.setState({
@@ -249,7 +250,7 @@ class AssessmentTable extends React.Component {
   };
 
   /**
-   * Called when the Add User button is clicked.
+   * Called when the Edit Report button is clicked.
    * Updates the state to show the appropriate modal for adding a user.
    */
   handleEditReportClick = row => {
