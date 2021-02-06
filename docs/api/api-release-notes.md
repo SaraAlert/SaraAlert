@@ -4,6 +4,16 @@ title: Release Notes
 parent: API
 nav_order: 1
 ---
+
+# 1.22.0
+* Add important side effects when certain data is modified via the API
+  * "Closed at" is set to the current time and "Continuous Exposure" is set to `false` when "Monitoring Status" is changed to "Not Monitoring"
+  * "Symptom Onset" is set to the time of the first symptomatic report (if such a report exists) if "Isolation" is set to `false`, or if "Symptom Onset" is deleted
+  * Transfers are handled correctly when jurisdiction changes
+  * History items are created to track the side effects detailed above
+
+***
+
 # 1.20.0
 * Fixed a bug which prevented multiple races from being set at once via the [race](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-race.html) extension
 
