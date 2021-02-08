@@ -79,6 +79,11 @@ class History < ApplicationRecord
     where('comment like ?', '%Continue Monitoring in Isolation Workflow%')
   }
 
+  # Histories that indicate a public health action
+  scope :changed_public_health_action, lambda {
+    where('comment like ?', '%changed Latest Public Health Action from "None" to%')
+  }
+
   # Histories created in the last 24 hours that show a user enrolling a record
   scope :user_enrolled_last_24h, lambda {
     where('created_at >= ?', 24.hours.ago)

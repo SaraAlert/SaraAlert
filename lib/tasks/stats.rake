@@ -2,7 +2,9 @@
 
 namespace :stats do
   task eval_queries: :environment do
-    ids = ENV['ids']&.split(',')&.collect { |id| id.to_i }
+    ids = ENV['ids']&.split(',')&.collect { |id| id.to_i } || []
+    excludes = ENV['exclude']&.split(',')&.collect { |id| id.to_i } || []
+    exclude_ids = excludes.collect { |ex_id| Jurisdiction.find_by(id: ex_id).subtree_ids }.flatten.uniq
 
     raise 'You must provide at least one id (e.g. ids=1,2,3)' if ids.nil? || ids.empty?
 
@@ -17,7 +19,7 @@ namespace :stats do
     jurisdictions.each do |jur|
       results = {}
 
-      jur_patients = jur.all_patients_excluding_purged
+      jur_patients = jur.all_patients_excluding_purged.where.not(jurisdiction_id: exclude_ids)
 
       puts 'Step 1 of 6: linelists'
       title = 'LINELISTS: Daily snapshots'
@@ -47,11 +49,11 @@ namespace :stats do
         isolation: 'N/A'
       }
       results[title]['Exposure Transferred In'] = {
-        exposure: jur.transferred_in_patients.where(isolation: false).count,
+        exposure: jur.transferred_in_patients.where(isolation: false).where.not(jurisdiction_id: exclude_ids).count,
         isolation: 'N/A'
       }
       results[title]['Exposure Transferred Out'] = {
-        exposure: jur.transferred_out_patients.where(isolation: false).count,
+        exposure: jur.transferred_out_patients.where(isolation: false).where.not(jurisdiction_id: exclude_ids).count,
         isolation: 'N/A'
       }
       results[title]['Exposure Continuous Monitoring'] = {
@@ -76,63 +78,65 @@ namespace :stats do
       }
       results[title]['Isolation Transferred In'] = {
         exposure: 'N/A',
-        isolation: jur.transferred_in_patients.where(isolation: true).count
+        isolation: jur.transferred_in_patients.where(isolation: true).where.not(jurisdiction_id: exclude_ids).count
       }
       results[title]['Isolation Transferred Out'] = {
         exposure: 'N/A',
-        isolation: jur.transferred_out_patients.where(isolation: true).count
+        isolation: jur.transferred_out_patients.where(isolation: true).where.not(jurisdiction_id: exclude_ids).count
       }
-      results[title]['Isolation Previously in Exposure'] = {
+      results[title]['Isolation Previously in Exposure EXCLUDING closed'] = {
         exposure: 'N/A',
-        isolation: jur_patients.where(isolation: true).where_assoc_exists(:histories, &:exposure_to_isolation).count
+        isolation: jur_patients.where(monitoring: true, isolation: true).where_assoc_exists(:histories, &:exposure_to_isolation).count
       }
 
       puts 'Step 2 of 6: monitoring activity'
-      title = "MONITORING ACTIVITY: Cohort of monitorees existing or added during 14 day period\nINCLUDING Opt-out or Unknown reporting methods"
+      title = "MONITORING ACTIVITY: Cohort of monitorees existing or added during 14 day period EXCLUDING Opt-out or Unknown reporting methods"
       results[title] = {}
+      activity_exp = jur_patients.where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
+      activity_iso = jur_patients.where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       results[title]['Total'] = {
-        exposure: jur_patients.where(isolation: false).count,
-        isolation: jur_patients.where(isolation: true).count
+        exposure: activity_exp.where(isolation: false).count,
+        isolation: activity_iso.where(isolation: true).count
       }
       results[title]['New today'] = {
-        exposure: jur_patients.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).count,
-        isolation: jur_patients.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).count
+        exposure: activity_exp.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).count,
+        isolation: activity_iso.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).count
       }
       results[title]['New today enrolled by user'] = {
-        exposure: jur_patients.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:user_enrolled_last_24h).count,
-        isolation: jur_patients.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:user_enrolled_last_24h).count
+        exposure: activity_exp.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:user_enrolled_last_24h).count,
+        isolation: activity_iso.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:user_enrolled_last_24h).count
       }
       results[title]['New today enrolled by API'] = {
-        exposure: jur_patients.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:api_enrolled_last_24h).count,
-        isolation: jur_patients.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:api_enrolled_last_24h).count
+        exposure: activity_exp.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:api_enrolled_last_24h).count,
+        isolation: activity_iso.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:api_enrolled_last_24h).count
       }
       results[title]['Total with activity today'] = {
-        exposure: jur_patients.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.count,
-        isolation: jur_patients.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.count
+        exposure: activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.count,
+        isolation: activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.count
       }
       results[title]['Total with activity since start of evaluation'] = {
-        exposure: jur_patients.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(start) }.count,
-        isolation: jur_patients.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(start) }.count
+        exposure: activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(start) }.count,
+        isolation: activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(start) }.count
       }
       results[title]['Closed today - Enrolled more than 14 days after last date of exposure (system)'] = {
-        exposure: jur_patients.where(monitoring: false, monitoring_reason: 'Enrolled more than 14 days after last date of exposure (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
+        exposure: activity_exp.where(monitoring: false, monitoring_reason: 'Enrolled more than 14 days after last date of exposure (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
         isolation: 'N/A'
       }
       results[title]['Closed today - Enrolled on last day of monitoring period (system)'] = {
-        exposure: jur_patients.where(monitoring: false, monitoring_reason: 'Enrolled on last day of monitoring period (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
+        exposure: activity_exp.where(monitoring: false, monitoring_reason: 'Enrolled on last day of monitoring period (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
         isolation: 'N/A'
       }
       results[title]['Closed today - Completed Monitoring (system)'] = {
-        exposure: jur_patients.where(monitoring: false, monitoring_reason: 'Completed Monitoring (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
+        exposure: activity_exp.where(monitoring: false, monitoring_reason: 'Completed Monitoring (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
         isolation: 'N/A'
       }
       results[title]['Closed today - manually'] = {
-        exposure: jur_patients.where(isolation: false, monitoring: false).where_assoc_exists(:histories, &:user_closed_last_24h).count,
-        isolation: jur_patients.where(isolation: true, monitoring: false).where_assoc_exists(:histories, &:user_closed_last_24h).count
+        exposure: activity_exp.where(isolation: false, monitoring: false).where_assoc_exists(:histories, &:user_closed_last_24h).count,
+        isolation: activity_iso.where(isolation: true, monitoring: false).where_assoc_exists(:histories, &:user_closed_last_24h).count
       }
 
       puts 'Step 3 of 6: reporting rates'
-      title = "REPORTING: Cohort of monitorees existing or added during 14 day period\nEXCLUDING Opt-out or Unknown reporting methods"
+      title = "REPORTING: Cohort of active monitorees existing or added during 14 day period EXCLUDING Opt-out or Unknown reporting methods"
       results[title] = {}
       active_exp = jur_patients.where(monitoring: true, isolation: false).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       active_iso = jur_patients.where(monitoring: true, isolation: true).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
@@ -173,12 +177,17 @@ namespace :stats do
       phone_rates_exp = []
       sms_text_rates_exp = []
       overall_rates_exp = []
+      emailed_rates_count_exp = 0
+      sms_weblink_rates_count_exp = 0
+      phone_rates_count_exp = 0
+      sms_text_rates_count_exp = 0
+      overall_rates_count_exp = 0
       enrollment_to_lde_exp = []
       enrollment_to_first_rep_exp = []
       active_exp.find_each do |patient|
-        times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.uniq
-        times_recv_self = patient.assessments.created_since(start).pluck(:created_at).collect { |ca| ca.to_date }.uniq
-        times_recv_self_and_user = patient.assessments.created_since(start).created_by_monitoree.pluck(:created_at).collect { |ca| ca.to_date }.uniq
+        times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self = patient.assessments.created_since(start).created_by_monitoree.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self_and_user = patient.assessments.created_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         responded_to_all_reminders_self_exp += 1 if times_sent.count == times_recv_self.count
         responded_to_all_reminders_self_and_user_exp += 1 if times_sent.count == times_recv_self_and_user.count
         not_respond_to_all_reminders_self_exp += 1 unless times_sent.count == times_recv_self.count
@@ -207,6 +216,11 @@ namespace :stats do
         sms_text_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
         overall_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if !times_sent.empty?
         enrollment_to_lde_exp << (patient.created_at.to_date - patient.last_date_of_exposure.to_date).to_i unless patient.last_date_of_exposure.nil?
+        emailed_rates_count_exp += times_sent.count if patient.preferred_contact_method == 'E-mailed Web Link' && !times_sent.empty?
+        sms_weblink_rates_count_exp += times_sent.count if patient.preferred_contact_method == 'SMS Texted Weblink' && !times_sent.empty?
+        phone_rates_count_exp += times_sent.count if patient.preferred_contact_method == 'Telephone call' && !times_sent.empty?
+        sms_text_rates_count_exp += times_sent.count patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
+        overall_rates_count_exp += times_sent.count if !times_sent.empty?
         enrollment_to_first_rep_exp << (times_recv_self_and_user.first - patient.created_at.to_date).to_i unless times_recv_self_and_user.empty?
       end
       responded_to_all_reminders_self_iso = 0
@@ -222,11 +236,16 @@ namespace :stats do
       phone_rates_iso = []
       sms_text_rates_iso = []
       overall_rates_iso = []
+      emailed_rates_count_iso = 0
+      sms_weblink_rates_count_iso = 0
+      phone_rates_count_iso = 0
+      sms_text_rates_count_iso = 0
+      overall_rates_count_iso = 0
       enrollment_to_first_rep_iso = []
       active_iso.find_each do |patient|
-        times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.uniq
-        times_recv_self = patient.assessments.created_since(start).pluck(:created_at).collect { |ca| ca.to_date }.uniq
-        times_recv_self_and_user = patient.assessments.created_since(start).created_by_monitoree.pluck(:created_at).collect { |ca| ca.to_date }.uniq
+        times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self = patient.assessments.created_since(start).created_by_monitoree.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self_and_user = patient.assessments.created_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         responded_to_all_reminders_self_iso += 1 if times_sent.count == times_recv_self.count
         responded_to_all_reminders_self_and_user_iso += 1 if times_sent.count == times_recv_self_and_user.count
         not_respond_to_all_reminders_self_iso += 1 unless times_sent.count == times_recv_self.count
@@ -254,6 +273,11 @@ namespace :stats do
         phone_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'Telephone call' && !times_sent.empty?
         sms_text_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
         overall_rates_iso << times_recv_self_and_user.count / times_sent.count.to_f if !times_sent.empty?
+        emailed_rates_count_iso += times_sent.count if patient.preferred_contact_method == 'E-mailed Web Link' && !times_sent.empty?
+        sms_weblink_rates_count_iso += times_sent.count if patient.preferred_contact_method == 'SMS Texted Weblink' && !times_sent.empty?
+        phone_rates_count_iso += times_sent.count if patient.preferred_contact_method == 'Telephone call' && !times_sent.empty?
+        sms_text_rates_count_iso += times_sent.count patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
+        overall_rates_count_iso += times_sent.count if !times_sent.empty?
         enrollment_to_first_rep_iso << (times_recv_self_and_user.first - patient.created_at.to_date).to_i unless times_recv_self_and_user.empty?
       end
       results[title]['Number of monitorees responding to ALL automated messages (monitoree or proxy response only)'] = {
@@ -308,6 +332,26 @@ namespace :stats do
         exposure: overall_rates_exp.inject{ |sum, el| sum + el }.to_f / overall_rates_exp.size,
         isolation: overall_rates_iso.inject{ |sum, el| sum + el }.to_f / overall_rates_iso.size
       }
+      results[title]['Monitoree Total Sent Message Count - E-mailed Web Link'] = {
+        exposure: emailed_rates_count_exp,
+        isolation: emailed_rates_count_iso
+      }
+      results[title]['Monitoree Total Sent Message Count - SMS Texted Weblink'] = {
+        exposure: sms_weblink_rates_count_exp,
+        isolation: sms_weblink_rates_count_iso
+      }
+      results[title]['Monitoree Total Sent Message Count - Telephone call'] = {
+        exposure: phone_rates_count_exp,
+        isolation: phone_rates_count_iso
+      }
+      results[title]['Monitoree Total Sent Message Count - SMS Text-message'] = {
+        exposure: sms_text_rates_count_exp,
+        isolation: sms_text_rates_count_iso
+      }
+      results[title]['Monitoree Total Sent Message Count - Overall'] = {
+        exposure: overall_rates_count_exp,
+        isolation: overall_rates_count_iso
+      }
       results[title]['Number of monitorees reporting symptoms consistent with COVID-19 case definition'] = {
         exposure: active_exp.where_assoc_exists(:assessments, symptomatic: true).count,
         isolation: active_iso.where_assoc_exists(:assessments, symptomatic: true).count
@@ -325,12 +369,12 @@ namespace :stats do
         isolation: enrollment_to_first_rep_iso.inject{ |sum, el| sum + el }.to_f / enrollment_to_first_rep_iso.size
       }
       results[title]['Number of monitorees with any action other than none in their history'] = {
-        exposure: active_exp.where.not(public_health_action: 'None').count,
-        isolation: active_iso.where.not(public_health_action: 'None').count
+        exposure: active_exp.where_assoc_exists(:histories, &:changed_public_health_action).count,
+        isolation: active_iso.where_assoc_exists(:histories, &:changed_public_health_action).count
       }
 
       puts 'Step 4 of 6: demographics'
-      title = "DEMOGRAPHICS: Cohort of monitorees existing or added during 14 day period\nEXCLUDING Opt-out or Unknown reporting methods"
+      title = "DEMOGRAPHICS: Cohort of active monitorees existing or added during 14 day period EXCLUDING Opt-out or Unknown reporting methods"
       results[title] = {}
       active_exp = jur_patients.where(monitoring: true, isolation: false).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       active_iso = jur_patients.where(monitoring: true, isolation: true).where('patients.updated_at >= ?', start.to_time.beginning_of_day).where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
@@ -496,22 +540,60 @@ namespace :stats do
       puts 'Step 5 of 6: user snapshots'
       title = 'USERS: Daily snapshots'
       results[title] = {}
-      results[title]['Total'] = { exposure: jur.all_users.where.not(role: [nil, '', 'none']).count, isolation: nil }
-      results[title]['Active'] = { exposure: jur.all_users.where(locked_at: nil).where.not(role: [nil, '', 'none']).count, isolation: nil }
-      results[title]['Super User'] = { exposure: jur.all_users.where(role: 'super_user').count, isolation: nil }
-      results[title]['Public Health Enroller'] = { exposure: jur.all_users.where(role: 'public_health_enroller').count, isolation: nil }
-      results[title]['Contact Tracer'] = { exposure: jur.all_users.where(role: 'contact_tracer').count, isolation: nil }
-      results[title]['Public Health'] = { exposure: jur.all_users.where(role: 'public_health').count, isolation: nil }
-      results[title]['Enroller'] = { exposure: jur.all_users.where(role: 'enroller').count, isolation: nil }
-      results[title]['Analyst'] = { exposure: jur.all_users.where(role: 'analyst').count, isolation: nil }
-      results[title]['Admins'] = { exposure: jur.all_users.where(role: 'admin').count, isolation: nil }
+      results[title]['Total'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where.not(role: [nil, '', 'none']).count, isolation: nil }
+      results[title]['Active'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(locked_at: nil).where.not(role: [nil, '', 'none']).count, isolation: nil }
+      results[title]['Super User'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'super_user').count, isolation: nil }
+      results[title]['Public Health Enroller'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'public_health_enroller').count, isolation: nil }
+      results[title]['Contact Tracer'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'contact_tracer').count, isolation: nil }
+      results[title]['Public Health'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'public_health').count, isolation: nil }
+      results[title]['Enroller'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'enroller').count, isolation: nil }
+      results[title]['Analyst'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'analyst').count, isolation: nil }
+      results[title]['Admins'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'admin').count, isolation: nil }
 
       puts 'Step 6 of 6: finish'
       json = {}
       json[today] = results
-      puts JSON.pretty_generate(json)
+      puts JSON.pretty_generate(json, { allow_nan: true })
       Stat.create!(contents: json.to_json, jurisdiction_id: jur.id, tag: 'eval_queries')
       UserMailer.stats_eval_email(ids).deliver_now
     end
+  end
+
+  task eval_queries_export: :environment do
+    ids = ENV['ids']&.split(',')&.collect { |id| id.to_i }
+
+    raise 'You must provide at least one id (e.g. ids=1,2,3)' if ids.nil? || ids.empty?
+
+    jurisdictions = Jurisdiction.where(id: ids)
+    package = Axlsx::Package.new
+    workbook = package.workbook
+    styles = workbook.styles
+    header = styles.add_style sz: 14, b: true, alignment: { horizontal: :center }
+    subheader = styles.add_style sz: 12, b: true, alignment: { horizontal: :center }
+    jurisdictions.each do |jur|
+      stats = Stat.where(jurisdiction_id: jur.id, tag: 'eval_queries')
+      contents = stats.collect { |s| JSON.parse(s.contents).values.first }
+      days = stats.collect { |s| JSON.parse(s.contents).keys.first }
+      structure = {}; contents.first.keys.each { |k| structure[k] = contents.first[k].keys }
+      rows = []
+      structure.keys.each do |h|
+        rows << [h]
+        structure[h].each do |sh|
+          vals = []
+          contents.each do |content|
+            vals << content[h][sh].values
+          end
+          rows << (['    ' + sh] + vals).flatten
+        end
+        rows << [' ']
+      end
+      workbook.add_worksheet(name: "#{jur.name}") do |sheet|
+        sheet.add_row([''] + days.collect { |d| [d, ''] }.flatten, style: header)
+        sheet.add_row([''] + (['Exposure', 'Isolation'] * days.count), style: subheader)
+        rows.each { |row| sheet.add_row row }
+      end
+    end
+
+    package.serialize 'eval_queries.xlsx'
   end
 end
