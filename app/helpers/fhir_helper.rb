@@ -373,14 +373,14 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def from_address_by_type_extension(patient, address_type)
-    address = (patient&.address&.select do |a|
+    address = patient&.address&.find do |a|
       a.extension&.any? { |e| e.url == 'http://saraalert.org/StructureDefinition/address-type' && e.valueString == address_type }
-    end).first
+    end
 
     if address.nil? && address_type == 'USA'
-      address = (patient&.address&.select do |a|
+      address = patient&.address&.find do |a|
         a.extension&.all? { |e| e.url != 'http://saraalert.org/StructureDefinition/address-type' }
-      end).first
+      end
     end
 
     address
