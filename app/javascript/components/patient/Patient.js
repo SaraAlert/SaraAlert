@@ -51,7 +51,10 @@ class Patient extends React.Component {
   };
 
   renderEditLink(section, index) {
-    const sectionId = `edit-${section.replace(/\s+/g, '_').toLowerCase()}-btn`;
+    let sectionId = `edit-${section.replace(/\s+/g, '_').toLowerCase()}-btn`;
+    if (section === 'Case Information') {
+      sectionId = 'edit-potential_exposure_information-btn';
+    }
     if (this.props.goto) {
       return (
         <div className="edit-link">

@@ -16,7 +16,7 @@ class EnrollmentForm < ApplicationSystemTestCase
   end
 
   def edit_monitoree_info(monitoree)
-    click_on '(edit details)'
+    find('#details-expander-link').click
     @@enrollment_form_steps.steps.each_key do |step|
       next unless monitoree[step.to_s]
 
