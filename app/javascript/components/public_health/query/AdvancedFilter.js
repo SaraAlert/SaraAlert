@@ -538,6 +538,9 @@ class AdvancedFilter extends React.Component {
 
   // Render the options for the select that represents fields to filter on
   renderOptions = (current, index) => {
+    const selectedValue = this.getFormattedOptions().find(option => {
+      return option.value === current;
+    });
     const Option = props => {
       return (
         <components.Option {...props}>
@@ -549,9 +552,7 @@ class AdvancedFilter extends React.Component {
     return (
       <Select
         options={this.getFormattedOptions()}
-        value={this.getFormattedOptions().find(option => {
-          return option.value === current;
-        })}
+        value={selectedValue || null}
         isOptionDisabled={option => option.disabled}
         components={{ Option }}
         onChange={event => {
