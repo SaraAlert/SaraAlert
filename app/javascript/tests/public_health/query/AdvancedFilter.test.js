@@ -198,14 +198,16 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilter2.contents[1].value);
   });
 
-  it('Clicking "+" button adds another filter statement row', () => {
+  it('Clicking "+" button adds another filter statement row and updates state', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     _.times(4, (i) => {
       expect(wrapper.find('.advanced-filter-statement').length).toEqual(i+1);
+      expect(wrapper.state('activeFilterOptions').length).toEqual(i+1);
       wrapper.find('#add-filter-row').simulate('click');
     });
     expect(wrapper.find('.advanced-filter-statement').length).toEqual(5);
+    expect(wrapper.state('activeFilterOptions').length).toEqual(5);
   });
 
   it('Clicking "+" button displays "AND" row', () => {
@@ -231,20 +233,63 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('.advanced-filter-statement').length).toEqual(5);
   });
 
-  it('Clicking "-" button removes filter statement row', () => {
+  it('Clicking "-" button removes filter statement row and updates state', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    _.times(4, (i) => {
+    _.times(4, () => {
       wrapper.find('#add-filter-row').simulate('click');
     });
     expect(wrapper.find('.advanced-filter-statement').length).toEqual(5);
+    expect(wrapper.state('activeFilterOptions').length).toEqual(5);
     expect(wrapper.find('.remove-filter-row').length).toEqual(5);
     expect(wrapper.find('.and-row').length).toEqual(4);
     _.times(5, (i) => {
       let random = _.random(1, wrapper.find('.remove-filter-row').length);
       wrapper.find('.remove-filter-row').at(random-1).simulate('click');
       expect(wrapper.find('.advanced-filter-statement').length).toEqual(4-i);
+      expect(wrapper.state('activeFilterOptions').length).toEqual(4-i);
+      expect(wrapper.find('.remove-filter-row').length).toEqual(4-i);
+      expect(wrapper.find('.and-row').length).toEqual(3-i > 0 ? 3-i : 0);
     });
+  });
+
+  it('Clicking "-" button removes properly updates state and dropdown value', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    _.times(4, () => {
+      wrapper.find('#add-filter-row').simulate('click');
+    });
+    wrapper.find('.advanced-filter-select').at(0).simulate('change', { value: mockFilterDefaultBoolOption.filterOption.name });
+    wrapper.find('.advanced-filter-select').at(1).simulate('change', { value: mockFilterOptionsOption.filterOption.name });
+    wrapper.find('.advanced-filter-select').at(2).simulate('change', { value: mockFilterDefaultNumberOption.filterOption.name });
+    wrapper.find('.advanced-filter-select').at(3).simulate('change', { value: mockFilterDefaultSearchOption.filterOption.name });
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption, mockFilterOptionsOption, mockFilterDefaultNumberOption, mockFilterDefaultSearchOption, { filterOption: null } ]);
+    expect(wrapper.find('.advanced-filter-select').at(0).prop('value').value).toEqual(mockFilterDefaultBoolOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-select').at(1).prop('value').value).toEqual(mockFilterOptionsOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-select').at(2).prop('value').value).toEqual(mockFilterDefaultNumberOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-select').at(3).prop('value').value).toEqual(mockFilterDefaultSearchOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-select').at(4).prop('value')).toEqual(null);
+    wrapper.find('.remove-filter-row').at(3).simulate('click');
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption, mockFilterOptionsOption, mockFilterDefaultNumberOption, { filterOption: null } ]);
+    expect(wrapper.find('.advanced-filter-select').at(0).prop('value').value).toEqual(mockFilterDefaultBoolOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-select').at(1).prop('value').value).toEqual(mockFilterOptionsOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-select').at(2).prop('value').value).toEqual(mockFilterDefaultNumberOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-select').at(3).prop('value')).toEqual(null);
+    wrapper.find('.remove-filter-row').at(1).simulate('click');
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption, mockFilterDefaultNumberOption, { filterOption: null } ]);
+    expect(wrapper.find('.advanced-filter-select').at(0).prop('value').value).toEqual(mockFilterDefaultBoolOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-select').at(1).prop('value').value).toEqual(mockFilterDefaultNumberOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-select').at(2).prop('value')).toEqual(null);
+    wrapper.find('.remove-filter-row').at(1).simulate('click');
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption, { filterOption: null } ]);
+    expect(wrapper.find('.advanced-filter-select').at(0).prop('value').value).toEqual(mockFilterDefaultBoolOption.filterOption.name);
+    expect(wrapper.find('.advanced-filter-select').at(1).prop('value')).toEqual(null);
+    wrapper.find('.remove-filter-row').at(0).simulate('click');
+    expect(wrapper.state('activeFilterOptions')).toEqual([ { filterOption: null } ]);
+    expect(wrapper.find('.advanced-filter-select').at(0).prop('value')).toEqual(null);
+    wrapper.find('.remove-filter-row').at(0).simulate('click');
+    expect(wrapper.state('activeFilterOptions')).toEqual([ ]);
+    expect(wrapper.find('.advanced-filter-select').length).toEqual(0);
   });
 
   it('Properly renders advanced filter boolean type statement', () => {
