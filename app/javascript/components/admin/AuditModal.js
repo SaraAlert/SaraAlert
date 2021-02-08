@@ -126,6 +126,14 @@ class AuditModal extends React.Component {
   }
 
   /**
+   * Formats role values coming from the database to be human readable (capitalized and space separated)
+   * @param {*} role - the role string to be converted
+   */
+  formatRole(role) {
+    return _.map(role.split('_'), _.capitalize).join(' ');
+  }
+
+  /**
    * Formatting method for displaying each audit action in the table.
    * @param {Object} data - Data about the cell this filter is called on.
    */
@@ -200,8 +208,8 @@ class AuditModal extends React.Component {
         } else {
           return (
             <span>
-              <b>Role</b>: Changed from &quot;{_.map(change.details[0].split('_'), _.capitalize).join(' ')}&quot; to &quot;
-              {_.map(change.details[1].split('_'), _.capitalize).join(' ')}&quot;
+              <b>Role</b>: Changed from &quot;{this.formatRole(change.details[0])}&quot; to &quot;
+              {this.formatRole(change.details[1])}&quot;
             </span>
           );
         }
