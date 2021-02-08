@@ -50,6 +50,27 @@ class Patient extends React.Component {
     return <span>{raceArray.length === 0 ? '--' : raceArray.join(', ')}</span>;
   };
 
+  renderEditLink(section, index) {
+    const sectionId = `edit-${section.replace(/\s+/g, '_').toLowerCase()}-btn`;
+    if (this.props.goto) {
+      return (
+        <div className="edit-link">
+          <Button variant="link" id={sectionId} className="py-0" onClick={() => this.props.goto(index)} aria-label={`Edit ${section}`}>
+            Edit
+          </Button>
+        </div>
+      );
+    } else {
+      return (
+        <div className="edit-link">
+          <a href={window.BASE_PATH + '/patients/' + this.props.details.id + '/edit?step=' + index} id={sectionId} aria-label={`Edit ${section}`}>
+            Edit
+          </a>
+        </div>
+      );
+    }
+  }
+
   render() {
     if (!this.props.details) {
       return <React.Fragment>No monitoree details to show.</React.Fragment>;
@@ -139,13 +160,7 @@ class Patient extends React.Component {
           <Col id="identification" lg={14} className="col-xxl-12">
             <div className="section-header">
               <h4 className="section-title">Identification</h4>
-              <div className="edit-link">
-                {this.props.goto && (
-                  <Button variant="link" id="edit-identification-btn" className="py-0" onClick={() => this.props.goto(0)} aria-label="Edit Identification">
-                    Edit
-                  </Button>
-                )}
-              </div>
+              {this.renderEditLink('Identification', 0)}
             </div>
             <Row>
               <Col sm={10} className="item-group">
@@ -193,18 +208,7 @@ class Patient extends React.Component {
           <Col id="contact-information" lg={10} className="col-xxl-12">
             <div className="section-header">
               <h4 className="section-title">Contact Information</h4>
-              <div className="edit-link">
-                {this.props.goto && (
-                  <Button
-                    variant="link"
-                    id="edit-contact_information-btn"
-                    className="py-0"
-                    onClick={() => this.props.goto(2)}
-                    aria-label="Edit Contact Information">
-                    Edit
-                  </Button>
-                )}
-              </div>
+              {this.renderEditLink('Contact Information', 2)}
             </div>
             <div className="item-group">
               <div>
@@ -241,7 +245,7 @@ class Patient extends React.Component {
             </div>
           </Col>
         </Row>
-        {!this.props.editMode && (
+        {!this.props.edit_mode && (
           <div className="details-expander">
             <Button
               id="details-expander-link"
@@ -261,13 +265,7 @@ class Patient extends React.Component {
               <Col id="address" lg={14} xl={12} className="col-xxxl-10">
                 <div className="section-header">
                   <h4 className="section-title">Address</h4>
-                  <div className="edit-link">
-                    {this.props.goto && (
-                      <Button variant="link" id="edit-address-btn" className="py-0" onClick={() => this.props.goto(1)} aria-label="Edit Address">
-                        Edit
-                      </Button>
-                    )}
-                  </div>
+                  {this.renderEditLink('Address', 1)}
                 </div>
                 {!(showDomesticAddress || showMonitoredAddress || showForeignAddress || showForeignMonitoringAddress) && <div className="none-text">None</div>}
                 {(showDomesticAddress || showMonitoredAddress) && (
@@ -379,18 +377,7 @@ class Patient extends React.Component {
                   <Col id="arrival-information" xl={24} className="col-xxxl-12">
                     <div className="section-header">
                       <h4 className="section-title">Arrival Information</h4>
-                      <div className="edit-link">
-                        {this.props.goto && (
-                          <Button
-                            variant="link"
-                            id="edit-arrival_information-btn"
-                            className="py-0"
-                            onClick={() => this.props.goto(3)}
-                            aria-label="Edit Arrival Information">
-                            Edit
-                          </Button>
-                        )}
-                      </div>
+                      {this.renderEditLink('Arrival Information', 3)}
                     </div>
                     {!(showArrivalSection || this.props.details.travel_related_notes) && <div className="none-text">None</div>}
                     {showArrivalSection && (
@@ -456,18 +443,7 @@ class Patient extends React.Component {
                       <h4 className="section-title">
                         <span className="d-none d-lg-inline d-xl-none d-xxl-inline">Additional</span> Planned Travel
                       </h4>
-                      <div className="edit-link">
-                        {this.props.goto && (
-                          <Button
-                            variant="link"
-                            id="edit-planned_travel-btn"
-                            className="py-0"
-                            onClick={() => this.props.goto(4)}
-                            aria-label="Edit Additional Planned Travel">
-                            Edit
-                          </Button>
-                        )}
-                      </div>
+                      {this.renderEditLink('Planned Travel', 4)}
                     </div>
                     {!(showPlannedTravel || this.props.details.additional_planned_travel_related_notes) && <div className="none-text">None</div>}
                     {showPlannedTravel && (
@@ -539,18 +515,7 @@ class Patient extends React.Component {
                   <h4 className="section-title">
                     Potential Exposure <span className="d-none d-lg-inline">Information</span>
                   </h4>
-                  <div className="edit-link">
-                    {this.props.goto && !this.props.details.isolation && (
-                      <Button
-                        variant="link"
-                        id="edit-potential_exposure_information-btn"
-                        className="py-0"
-                        onClick={() => this.props.goto(5)}
-                        aria-label="Edit Potential Exposure Information">
-                        Edit
-                      </Button>
-                    )}
-                  </div>
+                  {!this.props.details.isolation && this.renderEditLink('Potential Exposure Information', 5)}
                 </div>
                 {!(showPotentialExposureInfo || showRiskFactors || this.props.details.exposure_notes) && <div className="none-text">None</div>}
                 {(showPotentialExposureInfo || showRiskFactors) && (
@@ -648,18 +613,7 @@ class Patient extends React.Component {
                 <Col id="case-information" md={10} xl={12} className="col-xxxl-8">
                   <div className="section-header">
                     <h4 className="section-title">Case Information</h4>
-                    <div className="edit-link">
-                      {this.props.goto && (
-                        <Button
-                          variant="link"
-                          id="edit-potential_exposure_information-btn"
-                          className="py-0"
-                          onClick={() => this.props.goto(5)}
-                          aria-label="Edit Case Information">
-                          Edit
-                        </Button>
-                      )}
-                    </div>
+                    {this.renderEditLink('Case Information', 5)}
                   </div>
                   <div className="item-group">
                     <div>
@@ -676,13 +630,7 @@ class Patient extends React.Component {
                 <Col id="exposure-notes" md={10} xl={12} className="notes-section col-xxxl-8">
                   <div className="section-header">
                     <h4 className="section-title">Notes</h4>
-                    <div className="edit-link">
-                      {this.props.goto && (
-                        <Button variant="link" id="edit-notes-btn" className="py-0" onClick={() => this.props.goto(5)} aria-label="Edit Notes">
-                          Edit
-                        </Button>
-                      )}
-                    </div>
+                    {this.renderEditLink('Edit Notes', 5)}
                   </div>
                   {!this.props.details.exposure_notes && <div className="none-text">None</div>}
                   {this.props.details.exposure_notes && this.props.details.exposure_notes.length < 400 && (
@@ -784,7 +732,7 @@ Patient.propTypes = {
   details: PropTypes.object,
   jurisdiction_path: PropTypes.string,
   goto: PropTypes.func,
-  editMode: PropTypes.bool,
+  edit_mode: PropTypes.bool,
   hideBody: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };

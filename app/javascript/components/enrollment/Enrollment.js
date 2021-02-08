@@ -25,13 +25,14 @@ class Enrollment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      index: this.props.editMode ? 6 : 0,
+      index: props.enrollment_step != undefined ? props.enrollment_step : props.edit_mode ? 6 : 0,
+      lastIndex: props.enrollment_step != undefined ? 6 : null,
       direction: null,
       enrollmentState: {
-        patient: pickBy(this.props.patient, identity),
+        patient: pickBy(props.patient, identity),
         propagatedFields: {},
-        isolation: !!this.props.patient.isolation,
-        blocked_sms: this.props.blocked_sms,
+        isolation: !!props.patient.isolation,
+        blocked_sms: props.blocked_sms,
       },
     };
   }
@@ -58,8 +59,8 @@ class Enrollment extends React.Component {
     if (await confirmDialog(confirmText)) {
       data['bypass_duplicate'] = true;
       axios({
-        method: this.props.editMode ? 'patch' : 'post',
-        url: window.BASE_PATH + (this.props.editMode ? '/patients/' + this.props.patient.id : '/patients'),
+        method: this.props.edit_mode ? 'patch' : 'post',
+        url: window.BASE_PATH + (this.props.edit_mode ? '/patients/' + this.props.patient.id : '/patients'),
         data: data,
       })
         .then(response => {
@@ -85,7 +86,7 @@ class Enrollment extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
 
     // If enrolling, include ALL fields in diff keys. If editing, only include the ones that have changed
-    let diffKeys = this.props.editMode
+    let diffKeys = this.props.edit_mode
       ? Object.keys(this.state.enrollmentState.patient).filter(k => _.get(this.state.enrollmentState.patient, k) !== _.get(this.props.patient, k) || k === 'id')
       : Object.keys(this.state.enrollmentState.patient);
 
@@ -100,7 +101,7 @@ class Enrollment extends React.Component {
     data.patient.secondary_telephone = data.patient.secondary_telephone
       ? phoneUtil.format(phoneUtil.parse(data.patient.secondary_telephone, 'US'), PNF.E164)
       : data.patient.secondary_telephone;
-    const message = this.props.editMode ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
+    const message = this.props.edit_mode ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
     if (this.props.parent_id) {
       data['responder_id'] = this.props.parent_id;
     }
@@ -112,8 +113,8 @@ class Enrollment extends React.Component {
     }
     data['bypass_duplicate'] = false;
     axios({
-      method: this.props.editMode ? 'patch' : 'post',
-      url: window.BASE_PATH + (this.props.editMode ? '/patients/' + this.props.patient.id : '/patients'),
+      method: this.props.edit_mode ? 'patch' : 'post',
+      url: window.BASE_PATH + (this.props.edit_mode ? '/patients/' + this.props.patient.id : '/patients'),
       data: data,
     })
       .then(response => {
@@ -266,7 +267,8 @@ Enrollment.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   assigned_users: PropTypes.array,
-  editMode: PropTypes.bool,
+  edit_mode: PropTypes.bool,
+  enrollment_step: PropTypes.number,
   parent_id: PropTypes.number,
   cc_id: PropTypes.number,
   can_add_group: PropTypes.bool,
