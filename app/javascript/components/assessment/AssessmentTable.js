@@ -296,7 +296,7 @@ class AssessmentTable extends React.Component {
           <i className="fas fa-cogs fw"></i>
         </Dropdown.Toggle>
         <Dropdown.Menu className="test-class" drop={'up'}>
-          <Dropdown.Item className="px-4 hi" onClick={() => this.handleEditReportClick(rowIndex)}>
+          <Dropdown.Item id={`report-edit-button-${rowData.id}`} className="px-4 hi" onClick={() => this.handleEditReportClick(rowIndex)}>
             <i className="fas fa-edit fa-fw"></i>
             <span className="ml-2">Edit</span>
           </Dropdown.Item>

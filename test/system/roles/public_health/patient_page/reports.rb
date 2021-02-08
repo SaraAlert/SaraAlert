@@ -24,7 +24,7 @@ class PublicHealthPatientPageReports < ApplicationSystemTestCase
   def edit_report(user_label, assessment_id, assessment, submit: true)
     search_for_report(assessment_id)
     find("#report-action-button-#{assessment_id}").click
-    click_on 'Edit'
+    find("#report-edit-button-#{assessment_id}").click
     @@assessment_form.submit_assessment(assessment['symptoms'])
     if submit
       click_on 'OK'
