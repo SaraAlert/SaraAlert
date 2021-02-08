@@ -19,9 +19,8 @@ describe('PatientPage', () => {
 
   it('Properly renders all main components', () => {
     expect(wrapper.find('#patient-info-header').exists()).toBeTruthy();
-    expect(wrapper.find('#patient-info-header').text().includes('Monitoree Details  (edit details)')).toBeTruthy();
-    expect(wrapper.find('#patient-info-header a').prop('href')).toEqual('undefined/patients/17/edit');
+    expect(wrapper.find('#patient-info-header').text().includes('Monitoree Details')).toBeTruthy();
     expect(wrapper.containsMatchingElement(Patient)).toBeTruthy();
-    expect(wrapper2.find('#patient-info-header').text().includes('Monitoree Details (ID: 00000-1) (edit details)')).toBeTruthy();
+    expect(wrapper2.find('#patient-info-header').text().includes('Monitoree Details (ID: 00000-1)')).toBeTruthy();
   });
 });
