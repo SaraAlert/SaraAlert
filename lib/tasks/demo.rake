@@ -158,7 +158,8 @@ desc 'Backup the database'
     cache_analytics = (ENV['SKIP_ANALYTICS'] != 'true')
 
     jurisdictions = Jurisdiction.all
-    assigned_users = Hash[jurisdictions.pluck(:id).map {|id| [id, (1..999_999).to_a.sample(10)]}]
+    assigned_users = Hash[jurisdictions.pluck(:id).map { |id| [id, 10.times.map { |n| Faker::Number.number(digits: 6) }] }]
+    case_ids = Hash[jurisdictions.pluck(:id).map { |id| [id, 15.times.map { |n| Faker::Number.leading_zero_number(digits: 8) }] }]
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
 
@@ -171,7 +172,7 @@ desc 'Backup the database'
       days_ago = days - day
 
       # Populate patients, assessments, laboratories, transfers, histories, analytics
-      demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, cache_analytics, counties)
+      demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties)
 
       # Cases increase 10-20% every day
       num_patients_today += (num_patients_today * (0.1 + (rand / 10))).round
@@ -187,16 +188,17 @@ desc 'Backup the database'
     cache_analytics = (ENV['SKIP_ANALYTICS'] != 'true')
 
     jurisdictions = Jurisdiction.all
-    assigned_users = Hash[jurisdictions.map {|jur| [jur[:id], jur.assigned_users]}]
+    assigned_users = Hash[jurisdictions.map { |jur| [jur[:id], jur.assigned_users] }]
+    case_ids = Hash[jurisdictions.map { |jur| [jur[:id], jur.immediate_patients.where.not(contact_of_known_case_id: nil).distinct.pluck(:contact_of_known_case_id).sort] }]
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
 
     printf("Simulating today\n")
 
-    demo_populate_day(Date.today, num_patients_today, 0, jurisdictions, assigned_users, cache_analytics, counties)
+    demo_populate_day(Date.today, num_patients_today, 0, jurisdictions, assigned_users, case_ids, cache_analytics, counties)
   end
 
-  def demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, cache_analytics, counties)
+  def demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties)
     # Transactions speeds things up a bit
     ActiveRecord::Base.transaction do
       # Patients created before today
@@ -206,7 +208,7 @@ desc 'Backup the database'
       histories = []
 
       # Create patients
-      patient_histories = demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, counties)
+      patient_histories = demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties)
       histories = histories.concat(patient_histories)
 
       # Create assessments
@@ -247,7 +249,7 @@ desc 'Backup the database'
     demo_cache_analytics(today, cache_analytics)
   end
 
-  def demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, counties)
+  def demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties)
     territory_names = ['American Samoa', 'District of Columbia', 'Federated States of Micronesia', 'Guam', 'Marshall Islands', 'Northern Mariana Islands',
                        'Palau', 'Puerto Rico', 'Virgin Islands'].freeze
 
@@ -374,9 +376,13 @@ desc 'Backup the database'
       patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
       patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
       patient[:exposure_notes] = Faker::Games::LeagueOfLegends.quote if rand < 0.5
+      patient[:jurisdiction_id] = jurisdictions.sample[:id]
+      patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.8
+      patient[:exposure_risk_assessment] = ValidationHelper::VALID_PATIENT_ENUMS[:exposure_risk_assessment].sample
+      patient[:monitoring_plan] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_plan].sample
       if rand < 0.85
-        patient[:contact_of_known_case] = rand < 0.3
-        patient[:contact_of_known_case_id] = Faker::Code.ean if patient[:contact_of_known_case] && rand < 0.5
+        patient[:contact_of_known_case] = rand < 0.5
+        patient[:contact_of_known_case_id] = case_ids[patient[:jurisdiction_id]].sample(rand(1..3)).join(', ') if patient[:contact_of_known_case] && rand < 0.9
         patient[:member_of_a_common_exposure_cohort] = rand < 0.35
         patient[:member_of_a_common_exposure_cohort_type] = Faker::Superhero.name if patient[:member_of_a_common_exposure_cohort] && rand < 0.5
         patient[:travel_to_affected_country_or_area] = rand < 0.1
@@ -388,10 +394,6 @@ desc 'Backup the database'
         patient[:was_in_health_care_facility_with_known_cases] = rand < 0.15
         patient[:was_in_health_care_facility_with_known_cases_facility_name] = Faker::GreekPhilosophers.name if patient[:was_in_health_care_facility_with_known_cases] && rand < 0.15
       end
-      patient[:jurisdiction_id] = jurisdictions.sample[:id]
-      patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.8
-      patient[:exposure_risk_assessment] = ValidationHelper::VALID_PATIENT_ENUMS[:exposure_risk_assessment].sample
-      patient[:monitoring_plan] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_plan].sample
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
