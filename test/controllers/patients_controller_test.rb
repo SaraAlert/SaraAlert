@@ -30,6 +30,35 @@ class PatientsControllerTest < ActionController::TestCase
     assert patient.self_reporter_or_proxy?
   end
 
+  test 'enrolling a patient sets the timezone correctly' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+
+    post :create, params: {
+      patient: {
+        jurisdicton_id: 1,
+        monitoring: true,
+        monitoring_plan: 'None',
+        public_health_action: 'None',
+        preferred_contact_method: 'Unknown',
+        time_zone: 'America/New_York',
+        first_name: 'test',
+        last_name: 'test',
+        date_of_birth: '2021-02-08',
+        age: 0,
+        address_line_1: '1234 Test Lane',
+        address_city: 'Test Town',
+        address_state: 'California',
+        address_zip: '90210',
+        continuous_exposure: false,
+        last_date_of_exposure: '2021-01-31'
+      }
+    }
+    assert_response :success
+    patient = Patient.find(JSON.parse(response.body)['id'])
+    assert_equal patient.time_zone, 'America/Los_Angeles'
+  end
+
   test 'head of household when creating a patient matching contact info email' do
     user = create(:public_health_enroller_user)
     head_of_household = create(:patient, creator: user, email: 'test@example.com')
