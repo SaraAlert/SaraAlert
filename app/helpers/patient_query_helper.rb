@@ -472,8 +472,14 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       timespan = filter[:value][:number].to_i.months if filter[:value][:unit] == 'months'
       return patients if timespan.nil?
 
-      timeframe = { after: (timespan.ago - tz_diff).beginning_of_day, before: local_current_time } if filter[:value][:when] == 'past'
-      timeframe = { after: local_current_time, before: (timespan.from_now - tz_diff).end_of_day } if filter[:value][:when] == 'next'
+      case filter[:value][:operator]
+      when 'less-than'
+        timeframe = { after: (timespan.ago - tz_diff).beginning_of_day, before: local_current_time } if filter[:value][:when] == 'past'
+        timeframe = { after: local_current_time, before: (timespan.from_now - tz_diff).end_of_day } if filter[:value][:when] == 'future'
+      when 'more-than'
+        timeframe = { before: (timespan.ago - tz_diff).beginning_of_day } if filter[:value][:when] == 'past'
+        timeframe = { after: (timespan.from_now - tz_diff).end_of_day } if filter[:value][:when] == 'future'
+      end
     end
     return patients if timeframe.nil?
 
