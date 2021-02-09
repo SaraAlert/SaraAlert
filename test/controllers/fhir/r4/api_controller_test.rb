@@ -950,9 +950,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
   end
 
-  test 'should create History items when updating patient' do
+  test 'should create "Monitoring Change" and "Record Edit" History items when updating patient' do
     patient = @patient_2
     patient.active = false
+    patient.identifier = [FHIR::Identifier.new(system: 'http://saraalert.org/SaraAlert/state-local-id', value: '123')]
     resource_path = "/fhir/r4/Patient/#{patient.id}"
     put(
       resource_path,
@@ -965,6 +966,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     histories = History.where(patient: patient.id)
     assert_match(/Continuous Exposure/, histories.find_by(created_by: 'Sara Alert System').comment)
     assert_match(/"Monitoring" to "Not Monitoring"/, histories.find_by(history_type: 'Monitoring Change').comment)
+    assert_match(/Changes were.*User defined id statelocal \("EX-904188" to "123"\)/, histories.find_by(history_type: 'Record Edit').comment)
   end
 
   test 'should update Patient via update and set omitted fields to nil ' do
