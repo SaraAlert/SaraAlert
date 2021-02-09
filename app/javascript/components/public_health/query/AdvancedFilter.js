@@ -269,24 +269,28 @@ class AdvancedFilter extends React.Component {
   };
 
   // Apply the current filter
-  apply = () => {
+  apply = keepStickySettings => {
     const appliedFilter = {
       activeFilter: this.state.activeFilter,
       activeFilterOptions: _.cloneDeep(this.state.activeFilterOptions),
     };
     this.setState({ show: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
-      this.props.advancedFilterUpdate(this.state.activeFilterOptions);
+      this.props.advancedFilterUpdate(this.state.activeFilterOptions, keepStickySettings);
       if (this.props.updateStickySettings && this.state.activeFilter) {
         localStorage.setItem(`SaraFilter`, this.state.activeFilter.id);
       }
     });
   };
 
+  handleApplyClick = () => {
+    this.apply(false);
+  };
+
   // Clear the current filter
   clear = () => {
     this.setState({ activeFilterOptions: [], show: false, activeFilter: null, applied: false }, () => {
       this.add();
-      this.props.advancedFilterUpdate(this.state.activeFilter);
+      this.props.advancedFilterUpdate(this.state.activeFilter, false);
       if (this.props.updateStickySettings) {
         localStorage.setItem(`SaraFilter`, null);
       }
@@ -313,12 +317,18 @@ class AdvancedFilter extends React.Component {
     });
   };
 
-  // Set the active filter
+  /**
+   * Set the active filter
+   *
+   * @param {Object} filter
+   * @param {Bool} apply - only true when called from componentDidMount(), a flag to determine when the filter should be applied to the results
+   *                         results & when other existing sticky settings/filter on the table should persist
+   */
   setFilter = (filter, apply = false) => {
     if (filter) {
       this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter?.contents || [] }, () => {
         if (apply) {
-          this.apply();
+          this.apply(true);
         }
       });
     }
@@ -825,7 +835,7 @@ class AdvancedFilter extends React.Component {
                 <Button id="advanced-filter-reset" variant="danger" onClick={this.reset}>
                   Reset
                 </Button>
-                <Button id="advanced-filter-apply" variant="primary" className="ml-2" onClick={this.apply}>
+                <Button id="advanced-filter-apply" variant="primary" className="ml-2" onClick={this.handleApplyClick}>
                   Apply
                 </Button>
               </div>

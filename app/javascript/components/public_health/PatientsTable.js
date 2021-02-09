@@ -140,13 +140,10 @@ class PatientsTable extends React.Component {
         query.order = sortField;
         query.direction = sortDirection === 'asc' ? 'asc' : 'desc';
       }
-      // Set a flag so any sticky advanced filter does not reset page & sort settings
-      localStorage.setItem('KeepCurrentSettings', true);
     } else {
       localStorage.removeItem(`SaraPage`);
       localStorage.removeItem(`SaraSortField`);
       localStorage.removeItem(`SaraSortDirection`);
-      localStorage.setItem('KeepCurrentSettings', false);
       // Update workflow local storage to be the current workflow
       localStorage.setItem(`Workflow`, this.props.workflow);
       query.page = 0;
@@ -160,6 +157,7 @@ class PatientsTable extends React.Component {
 
     // Update the assigned users drop down & patients table a single time
     this.updateAssignedUsers({ ...this.state.query, ...query });
+    this.updateTable({ ...this.state.query, ...query });
 
     // fetch workflow and tab counts
     Object.keys(this.props.tabs).forEach(tab => {
@@ -180,6 +178,8 @@ class PatientsTable extends React.Component {
       localStorage.removeItem(`SaraJurisdiction`);
       localStorage.removeItem(`SaraAssignedUser`);
       localStorage.removeItem(`SaraScope`);
+      localStorage.removeItem(`SaraSortField`);
+      localStorage.removeItem(`SaraSortDirection`);
       location.reload();
       this.setState(state => {
         const query = state.query;
@@ -191,8 +191,6 @@ class PatientsTable extends React.Component {
 
   handleTabSelect = tab => {
     localStorage.removeItem(`SaraPage`);
-    localStorage.removeItem(`SaraSortField`);
-    localStorage.removeItem(`SaraSortDirection`);
 
     const query = {};
     query.tab = tab;
@@ -219,10 +217,11 @@ class PatientsTable extends React.Component {
     }
     this.setState(
       state => {
-        return { query: { ...state.query, ...query, order: '', direction: '', page: 0 } };
+        return { query: { ...state.query, ...query, page: 0 } };
       },
       () => {
         this.updateAssignedUsers(this.state.query);
+        this.updateTable(this.state.query);
         localStorage.setItem(`${this.props.workflow}Tab`, tab);
       }
     );
@@ -271,7 +270,8 @@ class PatientsTable extends React.Component {
 
   handleJurisdictionChange = jurisdiction => {
     if (jurisdiction !== this.state.query.jurisdiction) {
-      this.updateAssignedUsers({ ...this.state.query, jurisdiction, page: 0 });
+      this.updateAssignedUsers({ ...this.state.query, jurisdiction });
+      this.updateTable({ ...this.state.query, jurisdiction, page: 0 });
       localStorage.removeItem(`SaraPage`);
       localStorage.setItem(`SaraJurisdiction`, jurisdiction);
     }
@@ -279,7 +279,8 @@ class PatientsTable extends React.Component {
 
   handleScopeChange = scope => {
     if (scope !== this.state.query.scope) {
-      this.updateAssignedUsers({ ...this.state.query, scope, page: 0 });
+      this.updateAssignedUsers({ ...this.state.query, scope });
+      this.updateTable({ ...this.state.query, scope, page: 0 });
       localStorage.removeItem(`SaraPage`);
       localStorage.setItem(`SaraScope`, scope);
     }
@@ -398,22 +399,25 @@ class PatientsTable extends React.Component {
       });
   }, 500);
 
-  advancedFilterUpdate = filter => {
+  /**
+   * Function to update patient results with the set advanced filter
+   * @param {Object} filter
+   * @param {Bool} keepStickySettings - flag for when existing sticky settings should presist during a filter update
+   */
+  advancedFilterUpdate = (filter, keepStickySettings) => {
     // When applicable, set the pagination & sort settings when the page is reloaded with a sticky advanced filter
-    const keepCurrentSettings = localStorage.getItem('KeepCurrentSettings') == 'true';
     const localStoragePage = localStorage.getItem('SaraPage');
     const sortField = localStorage.getItem('SaraSortField');
     const sortDirection = localStorage.getItem('SaraSortDirection');
     let page = 0;
     let sort = false;
-    if (keepCurrentSettings) {
+    if (keepStickySettings) {
       if (localStoragePage) {
         page = parseInt(localStoragePage);
       }
       if (sortField && sortDirection) {
         sort = true;
       }
-      localStorage.removeItem(`KeepCurrentSettings`);
     } else {
       localStorage.removeItem(`SaraPage`);
       localStorage.removeItem(`SaraSortField`);
@@ -449,10 +453,7 @@ class PatientsTable extends React.Component {
         })
         .then(response => {
           this.setState({ assigned_users: response.data.assigned_users });
-          this.updateTable({ ...this.state.query, ...query });
         });
-    } else {
-      this.updateTable({ ...this.state.query, ...query });
     }
   };
 
