@@ -147,6 +147,7 @@ const mockFilterDefaultCustomRelativeOption = {
   numberOption: null,
   relativeOption: 'custom',
   value: {
+    operator: 'less-than',
     number: 1,
     unit: 'days',
     when: 'past'
@@ -166,6 +167,7 @@ const mockFilterCustomRelativeOption = {
   numberOption: null,
   relativeOption: 'custom',
   value: {
+    operator: 'more-than',
     number: 2,
     unit: 'weeks',
     when: 'next'
