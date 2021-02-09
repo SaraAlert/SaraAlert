@@ -159,7 +159,9 @@ class Fhir::R4::ApiController < ActionController::API
     created_by_label = "#{@m2m_workflow ? current_client_application&.name : current_resource_owner&.email} (API)"
 
     # Handle History for monitoree details information updates
-    info_updates = updates.filter { |attr, _value| PatientHelper.info_fields.include?(attr) }
+    # NOTE: "isolation" is a special case, becasue it is not a monitoring field, but it has side effects that are handled
+    # alongside monitoring fields
+    info_updates = updates.filter { |attr, _value| !PatientHelper.monitoring_fields.include?(attr) || attr == :isolation }
     Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, created_by_label)
 
     # Handle History for monitoree monitoring information updates
