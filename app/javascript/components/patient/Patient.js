@@ -80,6 +80,7 @@ class Patient extends React.Component {
       this.props.details.foreign_monitored_address_line_1 ||
       this.props.details.foreign_monitored_address_line_2 ||
       this.props.details.foreign_monitored_address_city ||
+      this.props.details.foreign_monitored_address_state ||
       this.props.details.foreign_monitored_address_zip ||
       this.props.details.foreign_monitored_address_county;
     const showArrivalSection =
@@ -269,6 +270,7 @@ class Patient extends React.Component {
                     )}
                   </div>
                 </div>
+                {!(showDomesticAddress || showMonitoredAddress || showForeignAddress || showForeignMonitoringAddress) && <div className="none-text">None</div>}
                 {(showDomesticAddress || showMonitoredAddress) && (
                   <Row>
                     {showDomesticAddress && (
@@ -405,12 +407,6 @@ class Patient extends React.Component {
                               {this.props.details.date_of_departure ? moment(this.props.details.date_of_departure, 'YYYY-MM-DD').format('MM/DD/YYYY') : '--'}
                             </span>
                           </div>
-                          <div>
-                            <b>Carrier:</b> <span>{this.props.details.flight_or_vessel_carrier || '--'}</span>
-                          </div>
-                          <div>
-                            <b>Flight or Vessel #:</b> <span>{this.props.details.flight_or_vessel_number || '--'}</span>
-                          </div>
                         </Col>
                         <Col md={12} lg={24} xl={12} className="item-group">
                           <p className="subsection-title">Arrival</p>
@@ -425,6 +421,14 @@ class Patient extends React.Component {
                           </div>
                           <div>
                             <b>Source of Report:</b> <span>{this.props.details.source_of_report || '--'}</span>
+                          </div>
+                        </Col>
+                        <Col className="item-group">
+                          <div>
+                            <b>Carrier:</b> <span>{this.props.details.flight_or_vessel_carrier || '--'}</span>
+                          </div>
+                          <div>
+                            <b>Flight or Vessel #:</b> <span>{this.props.details.flight_or_vessel_number || '--'}</span>
                           </div>
                         </Col>
                       </Row>
