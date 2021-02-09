@@ -34,9 +34,9 @@ const numberOptionValues = [ 'less-than', 'less-than-equal', 'equal', 'greater-t
 const numberOptionValuesText = [ 'less than', 'less than or equal to', 'equal to', 'greater than or equal to', 'greater than', 'between' ];
 const dateOptionValues = [ 'within', 'before', 'after' ];
 const relativeOptionValues = [ 'today', 'tomorrow', 'yesterday', 'custom' ];
-const relativeOptionValuesText = [ 'today', 'tomorrow', 'yesterday', 'more...' ];
-const relativeOptionWhenValues = [ 'past', 'next' ];
+const relativeOptionOperatorValues = [ 'less-than', 'more-than' ];
 const relativeOptionUnitValues = [ 'day(s)', 'week(s)', 'month(s)' ];
+const relativeOptionWhenValues = [ 'past', 'future' ];
 
 function getWrapper() {
   return shallow(<AdvancedFilter workflow={'exposure'} advancedFilterUpdate={advancedFilterUpdateMock} updateStickySettings={true}
@@ -409,12 +409,13 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual('today');
     expect(wrapper.find('.advanced-filter-relative-options').find('option').length).toEqual(relativeOptionValues.length);
     relativeOptionValues.forEach(function(value, index) {
-      expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).text()).toEqual(relativeOptionValuesText[index]);
+      expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).text()).toEqual(value);
       expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).prop('value')).toEqual(value);
     });
-    expect(wrapper.find('.advanced-filter-when-input').exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-operator-input').exists()).toBeFalsy();
     expect(wrapper.find('.advanced-filter-number-input').exists()).toBeFalsy();
     expect(wrapper.find('.advanced-filter-unit-input').exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-when-input').exists()).toBeFalsy();
     expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
     expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
   });
@@ -425,33 +426,39 @@ describe('AdvancedFilter', () => {
     wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultCustomRelativeOption.filterOption.name });
     expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterDefaultCustomRelativeOption.filterOption.name);
     wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: 'custom' } });
-    expect(wrapper.find(Form.Control).length).toEqual(4);
+    expect(wrapper.find(Form.Control).length).toEqual(5);
     expect(wrapper.find('.advanced-filter-relative-options').exists()).toBeTruthy();
     expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual('custom');
     expect(wrapper.find('.advanced-filter-relative-options').find('option').length).toEqual(relativeOptionValues.length);
     relativeOptionValues.forEach(function(value, index) {
-      expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).text()).toEqual(relativeOptionValuesText[index]);
+      expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).text()).toEqual(value);
       expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).prop('value')).toEqual(value);
     });
-    expect(wrapper.find('.advanced-filter-when-input').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual('past');
-    expect(wrapper.find('.advanced-filter-when-input').find('option').length).toEqual(relativeOptionWhenValues.length);
-    relativeOptionWhenValues.forEach(function(value, index) {
-      expect(wrapper.find('.advanced-filter-when-input').find('option').at(index).text()).toEqual(`in the ${value}`);
-      expect(wrapper.find('.advanced-filter-when-input').find('option').at(index).prop('value')).toEqual(value);
+    expect(wrapper.find('.advanced-filter-operator-input').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.operator);
+    expect(wrapper.find('.advanced-filter-operator-input').find('option').length).toEqual(relativeOptionOperatorValues.length);
+    relativeOptionOperatorValues.forEach(function(value, index) {
+      expect(wrapper.find('.advanced-filter-operator-input').find('option').at(index).text()).toEqual(value.replace('-', ' '));
+      expect(wrapper.find('.advanced-filter-operator-input').find('option').at(index).prop('value')).toEqual(value);
     });
     expect(wrapper.find('.advanced-filter-number-input').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(1);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.number);
     expect(wrapper.find('.advanced-filter-unit-input').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual('days');
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.unit);
     expect(wrapper.find('.advanced-filter-unit-input').find('option').length).toEqual(relativeOptionUnitValues.length);
     relativeOptionUnitValues.forEach(function(value, index) {
       expect(wrapper.find('.advanced-filter-unit-input').find('option').at(index).text()).toEqual(value);
       expect(wrapper.find('.advanced-filter-unit-input').find('option').at(index).prop('value')).toEqual(value.replace('(', '').replace(')', ''));
     });
+    expect(wrapper.find('.advanced-filter-when-input').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.when);
+    expect(wrapper.find('.advanced-filter-when-input').find('option').length).toEqual(relativeOptionWhenValues.length);
+    relativeOptionWhenValues.forEach(function(value, index) {
+      expect(wrapper.find('.advanced-filter-when-input').find('option').at(index).text()).toEqual(`in the ${value}`);
+      expect(wrapper.find('.advanced-filter-when-input').find('option').at(index).prop('value')).toEqual(value);
+    });
     expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “past” relative date periods include records dated through today’s date. The current setting of "past 1 days" will return records with Latest Report date from ${moment(new Date()).subtract(1,'d').format('MM/DD/YY')} through now.`);
   });
 
   it('Properly renders advanced filter search type statement', () => {
@@ -640,33 +647,50 @@ describe('AdvancedFilter', () => {
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultCustomRelativeOption ]);
     expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.relativeOption);
-    wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.when } });
+    wrapper.find('.advanced-filter-operator-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.operator } });
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterCustomRelativeOption.value.when);
+    expect(wrapper.state('activeFilterOptions')[0].value.operator).toEqual(mockFilterCustomRelativeOption.value.operator);
     expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterDefaultCustomRelativeOption.value.number);
     expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterDefaultCustomRelativeOption.value.unit);
+    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterDefaultCustomRelativeOption.value.when);
     expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.when);
+    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.operator);
     expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.number);
     expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.unit);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.when);
     wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.number } });
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterCustomRelativeOption.value.when);
+    expect(wrapper.state('activeFilterOptions')[0].value.operator).toEqual(mockFilterCustomRelativeOption.value.operator);
     expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterCustomRelativeOption.value.number);
     expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterDefaultCustomRelativeOption.value.unit);
+    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterDefaultCustomRelativeOption.value.when);
     expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.when);
+    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.operator);
     expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.number);
     expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.unit);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.when);
     wrapper.find('.advanced-filter-unit-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.unit } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterCustomRelativeOption.relativeOption);
+    expect(wrapper.state('activeFilterOptions')[0].value.operator).toEqual(mockFilterCustomRelativeOption.value.operator);
+    expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterCustomRelativeOption.value.number);
+    expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterCustomRelativeOption.value.unit);
+    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterDefaultCustomRelativeOption.value.when);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
+    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.operator);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.number);
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.unit);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption.value.when);
+    wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.when } });
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterCustomRelativeOption ]);
     expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.when);
+    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.operator);
     expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.number);
     expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.unit);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.when);
     wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: mockFilterDefaultRelativeOption.relativeOption } });
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultRelativeOption ]);
@@ -749,16 +773,20 @@ describe('AdvancedFilter', () => {
     wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultCustomRelativeOption.filterOption.name });
     expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
     wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: 'custom' } });
-    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “past” relative date periods include records dated through today’s date. The current setting of "past 1 days" will return records with Latest Report date from ${moment(new Date()).subtract(1,'d').format('MM/DD/YY')} through now.`);
+    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy(); 
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “less than past” relative date periods include records dated through today’s date. The current setting of "less than 1 days in the past" will return records with Latest Report date from ${moment(new Date()).subtract(1,'d').format('MM/DD/YY')} through now.`);
     wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 3 } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “past” relative date periods include records dated through today’s date. The current setting of "past 3 days" will return records with Latest Report date from ${moment(new Date()).subtract(3,'d').format('MM/DD/YY')} through now.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “less than past” relative date periods include records dated through today’s date. The current setting of "less than 3 days in the past" will return records with Latest Report date from ${moment(new Date()).subtract(3,'d').format('MM/DD/YY')} through now.`);
     wrapper.find('.advanced-filter-unit-input').simulate('change', { target: { value: 'weeks' } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “past” relative date periods include records dated through today’s date. The current setting of "past 3 weeks" will return records with Latest Report date from ${moment(new Date()).subtract(3,'weeks').format('MM/DD/YY')} through now.`);
-    wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: 'next' } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “next” relative date periods include records with today’s date as of the current time. The current setting of "next 3 weeks" will return records with Latest Report date from now through ${moment(new Date()).add(3,'weeks').format('MM/DD/YY')}.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “less than past” relative date periods include records dated through today’s date. The current setting of "less than 3 weeks in the past" will return records with Latest Report date from ${moment(new Date()).subtract(3,'weeks').format('MM/DD/YY')} through now.`);
+    wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: 'future' } });
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “less than future” relative date periods include records with today’s date as of the current time. The current setting of "less than 3 weeks in the future" will return records with Latest Report date from now through ${moment(new Date()).add(3,'weeks').format('MM/DD/YY')}.`);
     wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 1 } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “next” relative date periods include records with today’s date as of the current time. The current setting of "next 1 weeks" will return records with Latest Report date from now through ${moment(new Date()).add(1,'weeks').format('MM/DD/YY')}.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Latest Report “less than future” relative date periods include records with today’s date as of the current time. The current setting of "less than 1 weeks in the future" will return records with Latest Report date from now through ${moment(new Date()).add(1,'weeks').format('MM/DD/YY')}.`);
+    wrapper.find('.advanced-filter-operator-input').simulate('change', { target: { value: 'more-than' } });
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "more than 1 weeks in the future" will return records with Latest Report date after ${moment(new Date()).add(1,'w').format('MM/DD/YY')}.`);
+    wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: 'past' } });
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "more than 1 weeks in the past" will return records with Latest Report date before ${moment(new Date()).subtract(1,'w').format('MM/DD/YY')}.`);
   });
 
   it('Clicking "Save" button opens Filter Name modal', () => {
