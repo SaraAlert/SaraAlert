@@ -414,19 +414,19 @@ desc 'Backup the database'
     end
 
     Patient.import! patients
-    new_patients = Patient.where('created_at >= ?', today)
-    new_patients.update_all('responder_id = id')
+    new_patientients = Patient.where('created_at >= ?', today)
+    new_patientients.update_all('responder_id = id')
 
     # 10-20% of patients are managed by a household member
-    new_children = new_patients.sample(new_patients.count * rand(10..20) / 100)
-    new_parents = new_patients - new_children
+    new_children = new_patientients.sample(new_patientients.count * rand(10..20) / 100)
+    new_parents = new_patientients - new_children
     new_children_updates =  new_children.map { |new_child|
       parent = new_parents.sample
       { responder_id: parent[:id], jurisdiction_id: parent[:jurisdiction_id] }
     }
     Patient.update(new_children.map { |p| p[:id] }, new_children_updates)
 
-    new_patients.each do |patient|
+    new_patientients.each do |patient|
       # enrollment
       histories << History.new(
         patient_id: patient[:id],
@@ -902,62 +902,76 @@ desc 'Backup the database'
     Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
   end
 
+  def duplicate_timestamps(from, to)
+    to.created_at = from.created_at
+    to.updated_at = from.updated_at
+  end
+
   # Duplicate patient and all nested relations and change last name
   def deep_duplicate_patient(patient, responder_id = nil)
-    new_pat = patient.dup
-    new_pat.responder_id = responder_id unless responder_id.nil?
-    new_pat.last_name = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
-    new_pat.save
-    new_pat.update(responder_id: new_pat.id) if responder_id.nil?
+    new_patient = patient.dup
+    new_patient.responder_id = responder_id unless responder_id.nil?
+    new_patient.last_name = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
+    new_patient.submission_token = new_patient.new_submission_token
+    duplicate_timestamps(patient, new_patient)
+    new_patient.save
+    new_patient.update(responder_id: new_patient.id) if responder_id.nil?
     patient.dependents.each do |p|
       if p.id != p.responder_id
-         deep_duplicate_patient(p, new_pat.id)
+         deep_duplicate_patient(p, new_patient.id)
       end
     end
-    patient.assessments.each do |a| 
-        newa = a.dup
-        newa.created_at = a.created_at
-        rep_condition = a.reported_condition
-        newr = rep_condition.dup
-        newr.save
+    patient.assessments.each do |assessment| 
+        new_assessment = assessment.dup
+        duplicate_timestamps(assessment, new_assessment)
+        rep_condition = assessment.reported_condition
+        new_reported_condition = rep_condition.dup
+        new_reported_condition.save
         symptoms = []
-        a.reported_condition.symptoms.each do |s|
+        assessment.reported_condition.symptoms.each do |s|
             news = s.dup
-            news.condition_id = newr.id
+            duplicate_timestamps(s, news)
+            news.condition_id = new_reported_condition.id
             symptoms << news
         end
         Symptom.import symptoms
-        newa.patient_id = new_pat.id
-        newa.save
-        newr.update(assessment_id: newa.id)
+        new_assessment.patient_id = new_patient.id
+        new_assessment.save
+        new_reported_condition.update(assessment_id: new_assessment.id, updated_at: rep_condition.updated_at, created_at: rep_condition.created_at)
     end
 
     histories = []
-    patient.histories.each do |h| 
-        newh = h.dup
-        newh.created_at = h.created_at
-        newh.patient_id = new_pat.id
-        histories << newh
+    patient.histories.each do |history| 
+        new_history = history.dup
+        duplicate_timestamps(history, new_history)
+        histories << new_history
     end
     History.import histories
 
-    patient.transfers.each do |t| 
-        newt = t.dup
-        newt.patient_id = new_pat.id
-        newt.save
+    patient.transfers.each do |transfer| 
+        new_transfer = transfer.dup
+        duplicate_timestamps(transfer, new_transfer)
+        new_transfer.patient_id = new_patient.id
+        new_transfer.save
     end
 
-    patient.laboratories.each do |l| 
-        newl = l.dup
-        newl.created_at = l.created_at
-        newl.patient_id = new_pat.id
-        newl.save
+    patient.laboratories.each do |lab| 
+        new_lab = lab.dup
+        new_lab.patient_id = new_patient.id
+        duplicate_timestamps(lab, new_lab)
+        new_lab.save
     end
 
-    patient.close_contacts.each do |c| 
-        newc = c.dup
-        newc.patient_id = new_pat.id
-        newc.save
+    patient.close_contacts.each do |contact| 
+        new_contact = contact.dup
+        duplicate_timestamps(contact, new_contact)
+        new_contact.save
+    end
+
+    patient.contact_attempts.each do |contact_attempt| 
+      new_contact_attempt = contact_attempt.dup
+      duplicate_timestamps(contact_attempt, new_contact_attempt)
+      new_contact_attempt.save
     end
   end
 
