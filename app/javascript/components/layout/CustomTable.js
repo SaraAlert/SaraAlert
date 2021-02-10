@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Spinner, Table, Form, InputGroup, Row, Col } from 'react-bootstrap';
+import { Spinner, Table, Form, InputGroup } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import InfoTooltip from '../util/InfoTooltip';
 
@@ -205,64 +205,67 @@ class CustomTable extends React.Component {
             </tbody>
           </Table>
         </div>
-        <div className="d-flex justify-content-between">
-          <Form inline className="align-middle">
-            <Row className="fixed-row-size">
-              <Col>
-                <InputGroup>
-                  <InputGroup.Prepend>
-                    <InputGroup.Text className="rounded-0">
-                      <i className="fas fa-list"></i>
-                      <span className="ml-1">Show</span>
-                    </InputGroup.Text>
-                  </InputGroup.Prepend>
-                  <Form.Control
-                    as="select"
-                    size="md"
-                    name="entries"
-                    value={this.props.entries}
-                    onChange={this.props.handleEntriesChange}
-                    aria-label="Adjust number of records">
-                    {this.props.entryOptions.map(num => {
-                      return (
-                        <option key={num} value={num}>
-                          {num}
-                        </option>
-                      );
-                    })}
-                  </Form.Control>
-                </InputGroup>
-              </Col>
-              <span className="ml-2 text-nowrap align-self-center">{`Displaying ${this.props.rowData.length} out of ${this.props.totalRows} rows.`}</span>
-            </Row>
-          </Form>
-          {this.props.totalRows > 0 && (
-            <ReactPaginate
-              className=""
-              disableInitialCallback={true}
-              pageCount={Math.ceil(this.props.totalRows / this.props.entries)}
-              pageRangeDisplayed={4}
-              marginPagesDisplayed={1}
-              initialPage={this.props.page}
-              forcePage={this.props.page}
-              onPageChange={this.props.handlePageUpdate}
-              previousLabel="Previous"
-              nextLabel="Next"
-              breakLabel="..."
-              containerClassName="pagination mb-0"
-              activeClassName="active"
-              disabledClassName="disabled"
-              pageClassName="paginate_button page-item"
-              previousClassName="paginate_button page-item"
-              nextClassName="paginate_button page-item"
-              breakClassName="paginate_button page-item"
-              pageLinkClassName="page-link text-primary"
-              previousLinkClassName={this.props.page === 0 ? 'page-link' : 'page-link text-primary'}
-              nextLinkClassName={this.props.page === Math.ceil(this.props.totalRows / this.props.entries) - 1 ? 'page-link' : 'page-link text-primary'}
-              activeLinkClassName="page-link text-light"
-              breakLinkClassName="page-link text-primary"
-            />
-          )}
+        <div className="row-container">
+          <div className="left-container">
+            <div className="left-box-1">
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Text className="rounded-0">
+                    <i className="fas fa-list"></i>
+                    <span className="ml-1">Show</span>
+                  </InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form.Control
+                  as="select"
+                  size="md"
+                  name="entries"
+                  value={this.props.entries}
+                  onChange={this.props.handleEntriesChange}
+                  aria-label="Adjust number of records">
+                  {this.props.entryOptions.map(num => {
+                    return (
+                      <option key={num} value={num}>
+                        {num}
+                      </option>
+                    );
+                  })}
+                </Form.Control>
+              </InputGroup>
+            </div>
+            <div className="left-box-2">
+              <span className="ml-0 ml-md-2 text-nowrap align-self-center">{`Displaying ${this.props.rowData.length} out of ${this.props.totalRows} rows.`}</span>
+            </div>
+          </div>
+          <div className="right-container">
+            {this.props.totalRows > 0 && (
+              <div style={{ float: 'right' }}>
+                <ReactPaginate
+                  disableInitialCallback={true}
+                  pageCount={Math.ceil(this.props.totalRows / this.props.entries)}
+                  pageRangeDisplayed={4}
+                  marginPagesDisplayed={1}
+                  initialPage={this.props.page}
+                  forcePage={this.props.page}
+                  onPageChange={this.props.handlePageUpdate}
+                  previousLabel="Previous"
+                  nextLabel="Next"
+                  breakLabel="..."
+                  containerClassName="pagination mb-0"
+                  activeClassName="active"
+                  disabledClassName="disabled"
+                  pageClassName="paginate_button page-item"
+                  previousClassName="paginate_button page-item"
+                  nextClassName="paginate_button page-item"
+                  breakClassName="paginate_button page-item"
+                  pageLinkClassName="page-link text-primary"
+                  previousLinkClassName={this.props.page === 0 ? 'page-link' : 'page-link text-primary'}
+                  nextLinkClassName={this.props.page === Math.ceil(this.props.totalRows / this.props.entries) - 1 ? 'page-link' : 'page-link text-primary'}
+                  activeLinkClassName="page-link text-light"
+                  breakLinkClassName="page-link text-primary"
+                />
+              </div>
+            )}
+          </div>
         </div>
       </React.Fragment>
     );
