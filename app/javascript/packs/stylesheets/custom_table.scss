@@ -1,29 +1,71 @@
 .sort-header {
-    position: relative;
+  position: relative;
 
-    &__button {
-        &--default {
-            color: #b8b8b8;
-            position: absolute;
-            right: -12px;
-        }
-
-        &--selected {
-            position: absolute;
-            right: -12px;
-        }
+  &__button {
+    &--default {
+      color: #b8b8b8;
+      position: absolute;
+      right: -12px;
     }
+
+    &--selected {
+      position: absolute;
+      right: -12px;
+    }
+  }
 }
 
 .pointer-cursor {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .fixed-row-size {
-    width: 430px;
+  width: 430px;
 }
 
 .opaque-table {
-    opacity: 1;
-    background-color: white;
+  opacity: 1;
+  background-color: white;
+}
+
+.row-container {
+  width: 100%;
+}
+
+.left-container {
+  display: inline-block;
+  width: 430px !important;
+}
+
+.left-box-1 {
+  width: 40%;
+  display: inline-block;
+}
+
+.left-box-2 {
+  width: 60%;
+  display: inline-block;
+}
+.right-container {
+  display: inline;
+  float: right;
+}
+
+// the medium bootstrap breakpoint
+@media only screen and (max-width: 768px) {
+  .left-box-1 {
+    width: 172px; // 40% of 430px
+    display: inline-block;
+  }
+
+  .left-box-2 {
+    width: 100%;
+    display: inline-block;
+  }
+}
+
+@media only screen and (max-width: 1100px) {
+  .left-container {
+    margin-bottom: 12px;
+  }
 }
