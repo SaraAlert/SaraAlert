@@ -286,7 +286,8 @@ class ImportController < ApplicationController
     resource.errors&.messages&.each_with_object([]) do |(attribute, errors), messages|
       next unless VALIDATION.key?(attribute)
 
-      value = resource.public_send("#{attribute}_before_type_cast") || resource[attribute]
+      # NOTE: If the value is a date, the typecast value may not correspond to original user input, so get value_before_type_cast
+      value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
       msg_header = (value ? " Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}'"
       errors.each do |error_message|
         messages << "#{msg_header} #{error_message}"
