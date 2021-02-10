@@ -118,6 +118,12 @@ class LaboratoryTest < ActiveSupport::TestCase
 
     lab.result = 'positive'
     assert lab.valid?
+    lab.result = 'negative'
+    assert lab.valid?
+    lab.result = 'indeterminate'
+    assert lab.valid?
+    lab.result = 'other'
+    assert lab.valid?
 
     lab.result = ''
     assert lab.valid?
@@ -133,6 +139,18 @@ class LaboratoryTest < ActiveSupport::TestCase
     lab = create(:laboratory)
 
     lab.lab_type = 'PCR'
+    assert lab.valid?
+    lab.lab_type = 'Antigen'
+    assert lab.valid?
+    lab.lab_type = 'Total Antibody'
+    assert lab.valid?
+    lab.lab_type = 'IgG Antibody'
+    assert lab.valid?
+    lab.lab_type = 'IgM Antibody'
+    assert lab.valid?
+    lab.lab_type = 'IgA Antibody'
+    assert lab.valid?
+    lab.lab_type = 'Other'
     assert lab.valid?
 
     lab.lab_type = ''
