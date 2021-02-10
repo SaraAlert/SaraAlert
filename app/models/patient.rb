@@ -83,7 +83,7 @@ class Patient < ApplicationRecord
                                             allow_nil: true,
                                             greater_than: 0,
                                             less_than_or_equal_to: 999_999,
-                                            message: 'is not valid, acceptable values are numbers between 1-9999' }
+                                            message: 'is not valid, acceptable values are numbers between 1-999999' }
 
   validates_with PrimaryContactValidator
 
