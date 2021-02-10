@@ -69,27 +69,33 @@ describe('PatientsTable', () => {
         .toEqual(mockIsolationTabs[defaultTab]['description'] + ' You are currently in the isolation workflow.');
   });
 
-  it('Sets intial state correctly', () => {
+  it('Sets intial state after mount correctly', () => {
     const wrapper = getExposureWrapper();
-    expect(_.size(wrapper.state('table').colData)).toEqual(20);
-    expect(_.size(wrapper.state('table').displayedColData)).toEqual(0);
-    expect(_.size(wrapper.state('table').rowData)).toEqual(0);
-    expect(wrapper.state('table').totalRows).toEqual(0);
-    expect(wrapper.state('loading')).toBeFalsy();
-    expect(wrapper.state('actionsEnabled')).toBeFalsy();
-    expect(_.size(wrapper.state('selectedPatients'))).toEqual(0);
-    expect(wrapper.state('selectAll')).toBeFalsy();
-    expect(wrapper.state('jurisdiction_paths')).toEqual({});
-    expect(_.size(wrapper.state('assigned_users'))).toEqual(0);
-    expect(wrapper.state('query').workflow).toEqual('exposure');
-    expect(wrapper.state('query').tab).toEqual(Object.keys(mockExposureTabs)[0]);
-    expect(wrapper.state('query').jurisdiction).toEqual(mockJurisdiction1.id);
-    expect(wrapper.state('query').scope).toEqual('all');
-    expect(wrapper.state('query').user).toEqual(null);
-    expect(wrapper.state('query').search).toEqual('');
-    expect(wrapper.state('query').page).toEqual(0);
-    expect(wrapper.state('query').entries).toEqual(25);
-    expect(_.size(wrapper.state('entryOptions'))).toEqual(5);
+
+    // componentDidMount is called when mounted and that calls an async method (updateTable),
+    // as a result, we added a timeout to give it time to resolve.
+    setTimeout (() => {
+      expect(_.size(wrapper.state('table').colData)).toEqual(20);
+      expect(_.size(wrapper.state('table').displayedColData)).toEqual(0);
+      expect(_.size(wrapper.state('table').rowData)).toEqual(0);
+      expect(wrapper.state('table').totalRows).toEqual(0);
+      expect(wrapper.state('loading')).toBeFalsy();
+      expect(wrapper.state('actionsEnabled')).toBeFalsy();
+      expect(_.size(wrapper.state('selectedPatients'))).toEqual(0);
+      expect(wrapper.state('selectAll')).toBeFalsy();
+      expect(wrapper.state('jurisdiction_paths')).toEqual({});
+      expect(_.size(wrapper.state('assigned_users'))).toEqual(0);
+      expect(wrapper.state('query').workflow).toEqual('exposure');
+      expect(wrapper.state('query').tab).toEqual(Object.keys(mockExposureTabs)[0]);
+      expect(wrapper.state('query').jurisdiction).toEqual(mockJurisdiction1.id);
+      expect(wrapper.state('query').scope).toEqual('all');
+      expect(wrapper.state('query').user).toEqual(null);
+      expect(wrapper.state('query').search).toEqual('');
+      expect(wrapper.state('query').page).toEqual(0);
+      expect(wrapper.state('query').entries).toEqual(25);
+      expect(_.size(wrapper.state('entryOptions'))).toEqual(5);
+    }, 500)
+
   });
 
   it('Properly renders dropdown', () => {
