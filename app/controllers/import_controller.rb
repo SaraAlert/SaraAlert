@@ -205,6 +205,8 @@ class ImportController < ApplicationController
     return value if value.blank?
     return (value.to_s.downcase == 'true') if %w[true false].include?(value.to_s.downcase)
 
+    # NOTE: The controller still validates boolean values, since validating those on the model does not work
+    # because by that point they will have been typecast from a string to a bool
     err_msg = "Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value, acceptable values are: 'True' and 'False'"
     raise ValidationError.new(err_msg, row_ind)
   end
