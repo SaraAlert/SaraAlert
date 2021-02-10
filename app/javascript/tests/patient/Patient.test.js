@@ -139,7 +139,7 @@ describe('Patient', () => {
     expect(section.find(Row).find(Col).length).toEqual(1);
     const domesticAddressColumn = section.find(Row).find(Col);
     expect(domesticAddressColumn.prop('sm')).toEqual(24);
-    expect(domesticAddressColumn.find('p').text()).toEqual('Home Address');
+    expect(domesticAddressColumn.find('p').text()).toEqual('Home Address (USA)');
     domesticAddressFields.forEach(function(field, index) {
       expect(domesticAddressColumn.find('b').at(index).text()).toEqual(field + ':');
     });
@@ -155,7 +155,7 @@ describe('Patient', () => {
     const domesticAddressColumn = section.find(Row).find(Col).at(0);
     const monitoringAddressColumn = section.find(Row).find(Col).at(1);
     expect(domesticAddressColumn.prop('sm')).toEqual(12);
-    expect(domesticAddressColumn.find('p').text()).toEqual('Home Address');
+    expect(domesticAddressColumn.find('p').text()).toEqual('Home Address (USA)');
     domesticAddressFields.forEach(function(field, index) {
       expect(domesticAddressColumn.find('b').at(index).text()).toEqual(field + ':');
     });
@@ -175,7 +175,7 @@ describe('Patient', () => {
     expect(section.find(Row).find(Col).length).toEqual(1);
     const foreignAddressColumn = section.find(Row).find(Col);
     expect(foreignAddressColumn.prop('sm')).toEqual(24);
-    expect(foreignAddressColumn.find('p').text()).toEqual('Home Address');
+    expect(foreignAddressColumn.find('p').text()).toEqual('Home Address (Foreign)');
     foreignAddressFields.forEach(function(field, index) {
       expect(foreignAddressColumn.find('b').at(index).text()).toEqual(field + ':');
     });
@@ -191,7 +191,7 @@ describe('Patient', () => {
     const foreignAddressColumn = section.find(Row).find(Col).at(0);
     const monitoringAddressColumn = section.find(Row).find(Col).at(1);
     expect(foreignAddressColumn.prop('sm')).toEqual(12);
-    expect(foreignAddressColumn.find('p').text()).toEqual('Home Address');
+    expect(foreignAddressColumn.find('p').text()).toEqual('Home Address (Foreign)');
     foreignAddressFields.forEach(function(field, index) {
       expect(foreignAddressColumn.find('b').at(index).text()).toEqual(field + ':');
     });
