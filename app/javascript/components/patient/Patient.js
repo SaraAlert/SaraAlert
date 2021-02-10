@@ -89,8 +89,7 @@ class Patient extends React.Component {
       this.props.details.flight_or_vessel_carrier ||
       this.props.details.flight_or_vessel_number ||
       this.props.details.port_of_entry_into_usa ||
-      this.props.details.date_of_arrival ||
-      this.props.details.source_of_report;
+      this.props.details.date_of_arrival;
     const showPlannedTravel =
       this.props.details.additional_planned_travel_type ||
       this.props.details.additional_planned_travel_destination_country ||
@@ -275,7 +274,7 @@ class Patient extends React.Component {
                   <Row>
                     {showDomesticAddress && (
                       <Col sm={showDomesticAddress && showMonitoredAddress ? 12 : 24} className="item-group">
-                        <p className="subsection-title">Home Address</p>
+                        <p className="subsection-title">Home Address (USA)</p>
                         <div>
                           <b>Address 1:</b> <span>{this.props.details.address_line_1 || '--'}</span>
                         </div>
@@ -325,7 +324,7 @@ class Patient extends React.Component {
                   <Row>
                     {showForeignAddress && (
                       <Col sm={showForeignAddress && showForeignMonitoringAddress ? 12 : 24} className="item-group">
-                        <p className="subsection-title">Home Address</p>
+                        <p className="subsection-title">Home Address (Foreign)</p>
                         <div>
                           <b>Address 1:</b> <span>{this.props.details.foreign_address_line_1 || '--'}</span>
                         </div>
@@ -418,9 +417,6 @@ class Patient extends React.Component {
                             <span>
                               {this.props.details.date_of_arrival ? moment(this.props.details.date_of_arrival, 'YYYY-MM-DD').format('MM/DD/YYYY') : '--'}
                             </span>
-                          </div>
-                          <div>
-                            <b>Source of Report:</b> <span>{this.props.details.source_of_report || '--'}</span>
                           </div>
                         </Col>
                         <Col className="item-group">
