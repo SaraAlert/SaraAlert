@@ -77,9 +77,13 @@ class CloseContact extends React.Component {
   handleDateChange = event => this.setState({ last_date_of_exposure: event });
 
   handleChange = event => {
-    event.target.value = _.trimEnd(event.target.value);
+    if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.match(/^\s*$/) !== null) {
+      // Empty spaces are allowed to be typed (for example, a first name may be 'Mary Beth')
+      // But empty starting first spaces should not be allowed
+      event.target.value = '';
+    }
     let value;
-    let disableCreate = false;
+    let disableCreate = this.state.disableCreate;
     const possiblyRequiredFields = ['first_name', 'last_name', 'primary_telephone', 'email'];
     if (possiblyRequiredFields.includes(event.target.id)) {
       // This checks that at least one of the possiblyRequiredFields is set to a truthy value
@@ -147,8 +151,8 @@ class CloseContact extends React.Component {
   createModal(title, toggle, submit) {
     return (
       <Modal size="lg" show centered onHide={toggle}>
+        <h1 className="sr-only">{title}</h1>
         <Modal.Header>
-          <h1 className="sr-only">{title}</h1>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="px-5">
