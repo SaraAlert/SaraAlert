@@ -39,13 +39,12 @@ class History < ApplicationRecord
 
   belongs_to :patient
 
-  after_save :touch_patient
-  before_destroy :touch_patient
+  # Patient updated_at should not be updated if history was created by a system generated action
+  after_create(proc { patient.touch unless system_report_action_or_download? })
 
-  def touch_patient
-    # patient updated_at should not be updated if history was created by a system generated report reminder or contact attempt
-    patient.touch unless history_type == HISTORY_TYPES[:report_reminder] ||
-                         (history_type == HISTORY_TYPES[:contact_attempt] && created_by == 'Sara Alert System')
+  def system_report_action_or_download?
+    history_type == HISTORY_TYPES[:report_reminder] || history_type == HISTORY_TYPES[:monitoree_data_downloaded] ||
+      (history_type == HISTORY_TYPES[:contact_attempt] && created_by == 'Sara Alert System')
   end
 
   # All histories within the given time frame
