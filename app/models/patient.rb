@@ -1072,7 +1072,7 @@ class Patient < ApplicationRecord
     patient_before = history_data[:patient_before]
     # NOTE: Attributes are sorted so that case_status always comes before isolation, since a case_status change may trigger
     # an isolation change from the front end, and the case_status message should come first
-    attribute_order = %i[case_status isolation]
+    attribute_order = %i[case_status isolation continuous_exposure last_date_of_exposure]
     history_data[:updates].keys.sort_by { |key| attribute_order.index(key) || Float::INFINITY }&.each do |attribute|
       updated_value = self[attribute]
       next if patient_before[attribute] == updated_value
