@@ -276,9 +276,7 @@ class LastDateExposure extends React.Component {
                   <InfoTooltip getCustomText={this.endOfMonitoringTooltipText} location="right"></InfoTooltip>
                 </Col>
               </Row>
-              <Row>
-                <Col>{this.props.patient.linelist.end_of_monitoring}</Col>
-              </Row>
+              <Row>{this.props.patient.continuous_exposure ? <Col>Continuous Exposure</Col> : <Col>{this.props.patient.end_of_monitoring || ''}</Col>}</Row>
               <Row>
                 <Col></Col>
               </Row>
