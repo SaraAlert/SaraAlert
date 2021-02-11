@@ -48,25 +48,19 @@ class HistoryTest < ActiveSupport::TestCase
     ActiveRecord::Base.record_timestamps = false
     patient.update(updated_at: 1.day.ago)
     ActiveRecord::Base.record_timestamps = true
-    history = create(:history, patient: patient)
-    assert_in_delta patient.updated_at, Time.now.utc, 1
-
-    ActiveRecord::Base.record_timestamps = false
-    patient.update(updated_at: 1.day.ago)
-    ActiveRecord::Base.record_timestamps = true
-    history.update(comment: 'hodor')
-    assert_in_delta patient.updated_at, Time.now.utc, 1
-
-    ActiveRecord::Base.record_timestamps = false
-    patient.update(updated_at: 1.day.ago)
-    ActiveRecord::Base.record_timestamps = true
-    history.destroy
+    create(:history, patient: patient)
     assert_in_delta patient.updated_at, Time.now.utc, 1
 
     ActiveRecord::Base.record_timestamps = false
     patient.update(updated_at: 1.day.ago)
     ActiveRecord::Base.record_timestamps = true
     create(:history, patient: patient, history_type: History::HISTORY_TYPES[:report_reminder])
+    assert_in_delta patient.updated_at, 1.day.ago, 1
+
+    ActiveRecord::Base.record_timestamps = false
+    patient.update(updated_at: 1.day.ago)
+    ActiveRecord::Base.record_timestamps = true
+    create(:history, patient: patient, history_type: History::HISTORY_TYPES[:monitoree_data_downloaded])
     assert_in_delta patient.updated_at, 1.day.ago, 1
 
     ActiveRecord::Base.record_timestamps = false
