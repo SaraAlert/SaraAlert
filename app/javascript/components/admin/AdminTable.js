@@ -672,6 +672,7 @@ class AdminTable extends React.Component {
           isSelectable={true}
           isEditable={true}
           isLoading={this.state.isLoading}
+          showPagination={true}
           page={this.state.query.page}
           handlePageUpdate={this.handlePageUpdate}
           selectedRows={this.state.table.selectedRows}
