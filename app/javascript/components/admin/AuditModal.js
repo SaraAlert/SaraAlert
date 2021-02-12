@@ -324,6 +324,7 @@ class AuditModal extends React.Component {
               isEditable={false}
               isSelectable={false}
               isLoading={this.state.isLoading}
+              showPagination={true}
               page={this.state.query.page}
               handlePageUpdate={this.handlePageUpdate}
               entryOptions={this.state.entryOptions}

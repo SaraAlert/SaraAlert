@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow, mount } from 'enzyme';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
-import MoveToHousehold from '../../components/subject/MoveToHousehold.js'
+import MoveToHousehold from '../../components/subject/household_actions/MoveToHousehold.js'
 import CustomTable from '../../components/layout/CustomTable';
 
 import { mockPatient1 } from '../mocks/mockPatients'
