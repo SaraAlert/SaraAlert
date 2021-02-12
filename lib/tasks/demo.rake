@@ -13,6 +13,7 @@ desc 'Backup the database'
   task restore_database: :environment do
     # Example usage: rake demo:restore_database FILE=sara_database_1606835867.sql
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    raise 'FILE environment variable must be set to run this task' if ENV['FILE'].nil?
     username = ActiveRecord::Base.configurations.configurations[1].config['username']
     database = ActiveRecord::Base.configurations.configurations[1].config['database']
     system "mysql --user=#{username} #{database} < #{ENV['FILE']}"
