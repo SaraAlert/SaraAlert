@@ -502,7 +502,7 @@ class Fhir::R4::ApiController < ActionController::API
         head :unauthorized
       end
     elsif current_client_application.present?
-      Rails.logger.info "Client: Applicaiton, ID: #{current_client_application.id}, Name: #{current_client_application.name}"
+      Rails.logger.info "Client: Application, ID: #{current_client_application.id}, Name: #{current_client_application.name}"
       @m2m_workflow = true
 
       # Actor is client application - need to get created proxy user
