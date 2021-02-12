@@ -4,9 +4,9 @@ import { Form, Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 
+import ApplyToHousehold from '../household_actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
-import ApplyToHousehold from '../household_actions/ApplyToHousehold';
 
 class ExposureRiskAssessment extends React.Component {
   constructor(props) {
@@ -41,6 +41,7 @@ class ExposureRiskAssessment extends React.Component {
       showExposureRiskAssessmentModal: !current,
       exposure_risk_assessment: this.props.patient.exposure_risk_assessment ? this.props.patient.exposure_risk_assessment : '',
       apply_to_household: false,
+      apply_to_household_ids: [],
       reasoning: '',
     });
   };

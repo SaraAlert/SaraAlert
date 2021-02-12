@@ -4,6 +4,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 
+import ApplyToHousehold from '../household_actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
 
@@ -15,6 +16,7 @@ class AssignedUser extends React.Component {
       assigned_user: props.patient.assigned_user || '',
       original_assigned_user: props.patient.assigned_user || '',
       apply_to_household: false,
+      apply_to_household_ids: [],
       loading: false,
       reasoning: '',
     };
@@ -28,11 +30,6 @@ class AssignedUser extends React.Component {
     ) {
       this.setState({ assigned_user: event?.target?.value ? parseInt(event.target.value) : '' });
     }
-  };
-
-  handleApplyHouseholdChange = event => {
-    const applyToHousehold = event.target.id === 'apply_to_household_yes';
-    this.setState({ apply_to_household: applyToHousehold });
   };
 
   handleReasoningChange = event => {
@@ -54,6 +51,7 @@ class AssignedUser extends React.Component {
       showAssignedUserModal: !current,
       assigned_user: current ? this.state.original_assigned_user : this.state.assigned_user,
       apply_to_household: false,
+      apply_to_household_ids: [],
       reasoning: '',
     });
   };
@@ -67,6 +65,7 @@ class AssignedUser extends React.Component {
           assigned_user: this.state.assigned_user,
           reasoning: this.state.reasoning,
           apply_to_household: this.state.apply_to_household,
+          apply_to_household_ids: this.state.apply_to_household_ids,
           diffState: diffState,
         })
         .then(() => {
@@ -88,30 +87,12 @@ class AssignedUser extends React.Component {
           <p>
             Are you sure you want to change assigned user from &quot;{this.state.original_assigned_user}&quot; to &quot;{this.state.assigned_user}&quot;?
           </p>
-          {this.props.has_dependents && (
-            <React.Fragment>
-              <p className="mb-2">Please select the records that you would like to apply this change to:</p>
-              <Form.Group className="px-4">
-                <Form.Check
-                  type="radio"
-                  className="mb-1"
-                  name="apply_to_household"
-                  id="apply_to_household_no"
-                  label="This monitoree only"
-                  onChange={this.handleApplyHouseholdChange}
-                  checked={!this.state.apply_to_household}
-                />
-                <Form.Check
-                  type="radio"
-                  className="mb-3"
-                  name="apply_to_household"
-                  id="apply_to_household_yes"
-                  label="This monitoree and all household members"
-                  onChange={this.handleApplyHouseholdChange}
-                  checked={this.state.apply_to_household}
-                />
-              </Form.Group>
-            </React.Fragment>
+          {this.props.household_members.length > 0 && (
+            <ApplyToHousehold
+              household_members={this.props.household_members}
+              handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household })}
+              handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
+            />
           )}
           <Form.Group>
             <Form.Label>Please include any additional details:</Form.Label>
@@ -180,7 +161,7 @@ class AssignedUser extends React.Component {
 AssignedUser.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  has_dependents: PropTypes.bool,
+  household_members: PropTypes.array,
   assigned_users: PropTypes.array,
 };
 
