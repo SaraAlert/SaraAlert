@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import React from 'react';
 
-import reportError from '../util/ReportError';
+import reportError from '../../util/ReportError';
 
 class ChangeHOH extends React.Component {
   constructor(props) {
@@ -13,24 +13,21 @@ class ChangeHOH extends React.Component {
       showModal: false,
       loading: false,
     };
-    this.toggleModal = this.toggleModal.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.submit = this.submit.bind(this);
   }
 
-  toggleModal() {
+  toggleModal = () => {
     let current = this.state.showModal;
     this.setState({
       updateDisabled: true,
       showModal: !current,
     });
-  }
+  };
 
-  handleChange(event) {
+  handleChange = event => {
     this.setState({ [event.target.id]: event.target.value, updateDisabled: false });
-  }
+  };
 
-  submit() {
+  submit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -46,7 +43,7 @@ class ChangeHOH extends React.Component {
           reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
-  }
+  };
 
   createModal(title, toggle, submit) {
     return (
