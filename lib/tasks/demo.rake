@@ -415,19 +415,19 @@ desc 'Backup the database'
     end
 
     Patient.import! patients
-    new_patientients = Patient.where('created_at >= ?', today)
-    new_patientients.update_all('responder_id = id')
+    new_patients = Patient.where('created_at >= ?', today)
+    new_patients.update_all('responder_id = id')
 
     # 10-20% of patients are managed by a household member
-    new_children = new_patientients.sample(new_patientients.count * rand(10..20) / 100)
-    new_parents = new_patientients - new_children
+    new_children = new_patients.sample(new_patients.count * rand(10..20) / 100)
+    new_parents = new_patients - new_children
     new_children_updates =  new_children.map { |new_child|
       parent = new_parents.sample
       { responder_id: parent[:id], jurisdiction_id: parent[:jurisdiction_id] }
     }
     Patient.update(new_children.map { |p| p[:id] }, new_children_updates)
 
-    new_patientients.each do |patient|
+    new_patients.each do |patient|
       # enrollment
       histories << History.new(
         patient_id: patient[:id],
