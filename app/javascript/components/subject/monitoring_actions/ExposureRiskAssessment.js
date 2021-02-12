@@ -6,6 +6,7 @@ import axios from 'axios';
 
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
+import ApplyToHousehold from '../household_actions/ApplyToHousehold';
 
 class ExposureRiskAssessment extends React.Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class ExposureRiskAssessment extends React.Component {
       reasoning: '',
       exposure_risk_assessment: props.patient.exposure_risk_assessment || '',
       apply_to_household: false,
+      apply_to_household_ids: [],
       loading: false,
     };
     this.origState = Object.assign({}, this.state);
@@ -26,11 +28,6 @@ class ExposureRiskAssessment extends React.Component {
       showExposureRiskAssessmentModal: true,
       exposure_risk_assessment: event.target.value || '',
     });
-  };
-
-  handleApplyHouseholdChange = event => {
-    const applyToHousehold = event.target.id === 'apply_to_household_yes';
-    this.setState({ apply_to_household: applyToHousehold });
   };
 
   handleReasoningChange = event => {
@@ -57,6 +54,7 @@ class ExposureRiskAssessment extends React.Component {
           exposure_risk_assessment: this.state.exposure_risk_assessment,
           reasoning: this.state.reasoning,
           apply_to_household: this.state.apply_to_household,
+          apply_to_household_ids: this.state.apply_to_household_ids,
           diffState: diffState,
         })
         .then(() => {
@@ -79,30 +77,12 @@ class ExposureRiskAssessment extends React.Component {
             Are you sure you want to change exposure risk assessment to{' '}
             {this.state.exposure_risk_assessment ? `"${this.state.exposure_risk_assessment}"` : 'blank'}?
           </p>
-          {this.props.has_dependents && (
-            <React.Fragment>
-              <p className="mb-2">Please select the records that you would like to apply this change to:</p>
-              <Form.Group className="px-4">
-                <Form.Check
-                  type="radio"
-                  className="mb-1"
-                  name="apply_to_household"
-                  id="apply_to_household_no"
-                  label="This monitoree only"
-                  onChange={this.handleApplyHouseholdChange}
-                  checked={!this.state.apply_to_household}
-                />
-                <Form.Check
-                  type="radio"
-                  className="mb-3"
-                  name="apply_to_household"
-                  id="apply_to_household_yes"
-                  label="This monitoree and all household members"
-                  onChange={this.handleApplyHouseholdChange}
-                  checked={this.state.apply_to_household}
-                />
-              </Form.Group>
-            </React.Fragment>
+          {this.props.household_members.length > 0 && (
+            <ApplyToHousehold
+              household_members={this.props.household_members}
+              handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household })}
+              handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
+            />
           )}
           <Form.Group>
             <Form.Label>Please include any additional details:</Form.Label>
@@ -156,7 +136,7 @@ class ExposureRiskAssessment extends React.Component {
 ExposureRiskAssessment.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  has_dependents: PropTypes.bool,
+  household_members: PropTypes.array,
 };
 
 export default ExposureRiskAssessment;
