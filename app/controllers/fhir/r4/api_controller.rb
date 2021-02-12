@@ -233,7 +233,7 @@ class Fhir::R4::ApiController < ActionController::API
     end
 
     if resource_type == 'patient'
-      Rails.logger.info("Created Patient with ID: #{resource.id}")
+      Rails.logger.info "Created Patient with ID: #{resource.id}"
 
       # Send enrollment notification only to responders
       resource.send_enrollment_notification if resource.self_reporter_or_proxy?
@@ -483,8 +483,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Handle general unkown error. Log and serve a 500
   def handle_server_error(error)
-    Rails.logger.error(error.message)
-    error.backtrace.each { |line| Rails.logger.error line }
+    Rails.logger.error ([error.message] + error.backtrace).join("\n")
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
   end
 
@@ -494,7 +493,7 @@ class Fhir::R4::ApiController < ActionController::API
     return if doorkeeper_token.nil?
 
     if current_resource_owner.present?
-      Rails.logger.info("Client:User, ID:#{current_resource_owner.id}, Email:#{current_resource_owner.email}")
+      Rails.logger.info "Client: User, ID: #{current_resource_owner.id}, Email: #{current_resource_owner.email}"
       if current_resource_owner.can_use_api?
         @user_workflow = true
         @current_actor = current_resource_owner
@@ -503,7 +502,7 @@ class Fhir::R4::ApiController < ActionController::API
         head :unauthorized
       end
     elsif current_client_application.present?
-      Rails.logger.info("Client:Applicaiton, ID:#{current_client_application.id}, Name:#{current_client_application.name}")
+      Rails.logger.info "Client: Applicaiton, ID: #{current_client_application.id}, Name: #{current_client_application.name}"
       @m2m_workflow = true
 
       # Actor is client application - need to get created proxy user
@@ -787,7 +786,7 @@ class Fhir::R4::ApiController < ActionController::API
       msg_header = 'Validation Error' + (value ? " for value '#{value}'" : '') + " on '#{VALIDATION[attribute][:label]}':"
       errors.each do |error_message|
         # Exclude the actual value in logging to avoid PII/PHI
-        Rails.logger.info("Validation Error on #{attribute}: #{error_message}")
+        Rails.logger.info "Validation Error on #{attribute}: #{error_message}"
         messages << "#{msg_header} #{error_message}"
       end
     end
