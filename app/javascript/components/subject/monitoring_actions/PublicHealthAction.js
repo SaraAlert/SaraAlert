@@ -4,6 +4,7 @@ import { Form, Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 
+import ApplyToHousehold from '../household_actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
 
@@ -16,6 +17,7 @@ class PublicHealthAction extends React.Component {
       reasoning: '',
       public_health_action: props.patient.public_health_action || '',
       apply_to_household: false,
+      apply_to_household_ids: [],
       loading: false,
     };
     this.origState = Object.assign({}, this.state);
@@ -26,11 +28,6 @@ class PublicHealthAction extends React.Component {
       showPublicHealthActionModal: true,
       public_health_action: event.target.value || '',
     });
-  };
-
-  handleApplyHouseholdChange = event => {
-    const applyToHousehold = event.target.id === 'apply_to_household_yes';
-    this.setState({ apply_to_household: applyToHousehold });
   };
 
   handleReasoningChange = event => {
@@ -44,6 +41,7 @@ class PublicHealthAction extends React.Component {
       showPublicHealthActionModal: !current,
       public_health_action: this.props.patient.public_health_action ? this.props.patient.public_health_action : '',
       apply_to_household: false,
+      apply_to_household_ids: [],
       reasoning: '',
     });
   };
@@ -57,6 +55,7 @@ class PublicHealthAction extends React.Component {
           public_health_action: this.state.public_health_action,
           reasoning: this.state.reasoning,
           apply_to_household: this.state.apply_to_household,
+          apply_to_household_ids: this.state.apply_to_household_ids,
           diffState: diffState,
         })
         .then(() => {
@@ -92,38 +91,22 @@ class PublicHealthAction extends React.Component {
               <b> The monitoree will be moved into the PUI line list.</b>
             )}
           </p>
-          {this.props.has_dependents && (
+          {this.props.household_members.length > 0 && (
             <React.Fragment>
-              <p className="mb-2">Please select the records that you would like to apply this change to:</p>
-              <Form.Group className="px-4">
-                <Form.Check
-                  type="radio"
-                  className="mb-1"
-                  name="apply_to_household"
-                  id="apply_to_household_no"
-                  label="This monitoree only"
-                  onChange={this.handleApplyHouseholdChange}
-                  checked={!this.state.apply_to_household}
-                />
-                <Form.Check
-                  type="radio"
-                  className="mb-3"
-                  name="apply_to_household"
-                  id="apply_to_household_yes"
-                  label="This monitoree and all household members"
-                  onChange={this.handleApplyHouseholdChange}
-                  checked={this.state.apply_to_household}
-                />
-              </Form.Group>
-              <Form.Group>
-                {this.state.apply_to_household && this.props.patient.monitoring && (
+              <ApplyToHousehold
+                household_members={this.props.household_members}
+                handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household })}
+                handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
+              />
+              {this.state.apply_to_household && this.props.patient.monitoring && (
+                <Form.Group>
                   <i>
                     If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health
                     action other than &quot;None&quot; is selected above. If any household members are being monitored in the isolation workflow, this update
                     will not impact the line list on which those records appear.
                   </i>
-                )}
-              </Form.Group>
+                </Form.Group>
+              )}
             </React.Fragment>
           )}
           <Form.Group>
@@ -179,7 +162,7 @@ class PublicHealthAction extends React.Component {
 PublicHealthAction.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  has_dependents: PropTypes.bool,
+  household_members: PropTypes.array,
 };
 
 export default PublicHealthAction;
