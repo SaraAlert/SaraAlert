@@ -5,9 +5,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import Patient from '../../components/patient/Patient.js'
 import BadgeHOH from '../../components/util/BadgeHOH';
-import ChangeHOH from '../../components/subject/ChangeHOH';
-import MoveToHousehold from '../../components/subject/MoveToHousehold';
-import RemoveFromHousehold from '../../components/subject/RemoveFromHousehold';
+import ChangeHOH from '../../components/subject/household_actions/ChangeHOH';
+import MoveToHousehold from '../../components/subject/household_actions/MoveToHousehold';
+import RemoveFromHousehold from '../../components/subject/household_actions/RemoveFromHousehold';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankMockPatient } from '../mocks/mockPatients'
 import { nameFormatter, dateFormatter } from '../util.js'
 

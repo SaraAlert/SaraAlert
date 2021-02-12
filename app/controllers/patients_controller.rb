@@ -31,7 +31,8 @@ class PatientsController < ApplicationController
 
     # All household members regardless if current patient is HOH
     household = current_user.get_patient(@patient.responder_id)&.dependents
-    @household_members = ([@patient] + (household.nil? ? [] : household)).uniq
+    @household_members = (household.nil? ? [] : household).uniq
+    @household_members_exclude_self = (household.nil? ? [] : household.where.not(id: @patient.id)).uniq
 
     # All household members that are in the exposure workflow with continuous exposure excluding the current patient
     @household_members_with_ce_in_exposure_excludes_patient = household.nil? ? [] : household.where(isolation: false, continuous_exposure: true)

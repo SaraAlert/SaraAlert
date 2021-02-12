@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Spinner, Table, Form, InputGroup } from 'react-bootstrap';
+import { Spinner, Table, Form, InputGroup, Row, Col } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import InfoTooltip from '../util/InfoTooltip';
 
@@ -141,6 +141,26 @@ class CustomTable extends React.Component {
     );
   };
 
+  renderSelectAllCheckbox = () => {
+    return (
+      <th>
+        <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll} aria-label="Table Select All Rows"></input>
+      </th>
+    );
+  };
+
+  renderRowCheckbox = (rowData, rowIndex) => {
+    return (
+      <td>
+        <input
+          type="checkbox"
+          aria-label={`Table Select${rowData.name ? ` Monitoree: ${rowData.name}` : ''}${this.props.currentUser ? ` User: ${this.props.currentUser}` : ''}`}
+          checked={this.props.selectAll || this.props.selectedRows.includes(rowIndex)}
+          onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
+      </td>
+    );
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -153,21 +173,19 @@ class CustomTable extends React.Component {
           <Table striped bordered hover size="sm" className="opaque-table">
             <thead>
               <tr>
+                {this.props.isSelectable && this.props.checkboxColumnLocation === 'left' && this.renderSelectAllCheckbox()}
                 {this.props.columnData.map(data => {
                   return this.renderTableHeader(data.field, data.label, data.isSortable, data.tooltip, data.icon, data.colWidth);
                 })}
                 {this.props.isEditable && <th>Edit</th>}
-                {this.props.isSelectable && (
-                  <th>
-                    <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll} aria-label="Table Select All Rows"></input>
-                  </th>
-                )}
+                {this.props.isSelectable && this.props.checkboxColumnLocation === 'right' && this.renderSelectAllCheckbox()}
               </tr>
             </thead>
             <tbody>
               {this.props.rowData?.map((rowData, rowIndex) => {
                 return (
                   <tr key={rowIndex} id={rowData.id ? rowData.id : rowIndex} className={this.props.getRowClassName ? this.props.getRowClassName(rowData) : ''}>
+                    {this.props.isSelectable && this.props.checkboxColumnLocation === 'left' && this.renderRowCheckbox(rowData, rowIndex)}
                     {Object.values(this.props.columnData).map((colData, colIndex) => {
                       let value = rowData[colData.field];
                       if (colData.options) {
@@ -192,17 +210,7 @@ class CustomTable extends React.Component {
                         </div>
                       </td>
                     )}
-                    {this.props.isSelectable && (
-                      <td>
-                        <input
-                          type="checkbox"
-                          aria-label={`Table Select${rowData.name ? ` Monitoree: ${rowData.name}` : ''}${
-                            this.props.currentUser ? ` User: ${this.props.currentUser}` : ''
-                          }`}
-                          checked={this.props.selectAll || this.props.selectedRows.includes(rowIndex)}
-                          onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
-                      </td>
-                    )}
+                    {this.props.isSelectable && this.props.checkboxColumnLocation === 'right' && this.renderRowCheckbox(rowData, rowIndex)}
                   </tr>
                 );
               })}
@@ -291,6 +299,8 @@ CustomTable.propTypes = {
   selectAll: PropTypes.bool,
   isEditable: PropTypes.bool,
   isSelectable: PropTypes.bool,
+  checkboxColumnLocation: PropTypes.string,
+  showPagination: PropTypes.bool,
   handleEdit: PropTypes.func,
   handleTableUpdate: PropTypes.func,
   handleSelect: PropTypes.func,
@@ -305,7 +315,7 @@ CustomTable.propTypes = {
   getCustomTableClassName: PropTypes.func,
   currentUser: PropTypes.string,
   orderBy: PropTypes.string,
-  sortDirection: PropTypes.string,
+  sortDirection: PropTypes.string
 };
 
 CustomTable.defaultProps = {
@@ -314,6 +324,7 @@ CustomTable.defaultProps = {
   handleSelect: () => {},
   orderBy: '',
   sortDirection: '',
+  checkboxColumnLocation: 'right'
 };
 
 export default CustomTable;
