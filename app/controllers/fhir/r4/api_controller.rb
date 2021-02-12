@@ -786,7 +786,7 @@ class Fhir::R4::ApiController < ActionController::API
       msg_header = 'Validation Error' + (value ? " for value '#{value}'" : '') + " on '#{VALIDATION[attribute][:label]}':"
       errors.each do |error_message|
         # Exclude the actual value in logging to avoid PII/PHI
-        Rails.logger.info "Validation Error on #{attribute}: #{error_message}"
+        Rails.logger.info "Validation Error on: #{attribute}"
         messages << "#{msg_header} #{error_message}"
       end
     end
