@@ -908,6 +908,17 @@ desc 'Backup the database'
     to.updated_at = from.updated_at
   end
 
+  def duplicate_collection(collection, old_pat, new_pat)
+    new_collection = []
+    collection.each do |resource|
+        new_resource = resource.dup
+        duplicate_timestamps(resource, new_resource)
+        new_resource.patient_id = new_pat.id
+        new_collection << new_resource
+    end
+    return new_collection
+  end
+
   # Duplicate patient and all nested relations and change last name
   def deep_duplicate_patient(patient, responder_id = nil)
     new_patient = patient.dup
@@ -941,39 +952,12 @@ desc 'Backup the database'
         new_reported_condition.update(assessment_id: new_assessment.id, updated_at: rep_condition.updated_at, created_at: rep_condition.created_at)
     end
 
-    histories = []
-    patient.histories.each do |history| 
-        new_history = history.dup
-        duplicate_timestamps(history, new_history)
-        histories << new_history
-    end
-    History.import histories
 
-    patient.transfers.each do |transfer| 
-        new_transfer = transfer.dup
-        duplicate_timestamps(transfer, new_transfer)
-        new_transfer.patient_id = new_patient.id
-        new_transfer.save
-    end
-
-    patient.laboratories.each do |lab| 
-        new_lab = lab.dup
-        new_lab.patient_id = new_patient.id
-        duplicate_timestamps(lab, new_lab)
-        new_lab.save
-    end
-
-    patient.close_contacts.each do |contact| 
-        new_contact = contact.dup
-        duplicate_timestamps(contact, new_contact)
-        new_contact.save
-    end
-
-    patient.contact_attempts.each do |contact_attempt| 
-      new_contact_attempt = contact_attempt.dup
-      duplicate_timestamps(contact_attempt, new_contact_attempt)
-      new_contact_attempt.save
-    end
+    History.import duplicate_collection(patient.histories, patient, new_patient)
+    Transfer.import duplicate_collection(patient.transfers, patient, new_patient)
+    Laboratory.import duplicate_collection(patient.laboratories, patient, new_patient)
+    CloseContact.import duplicate_collection(patient.close_contacts, patient, new_patient)
+    ContactAttempt.import duplicate_collection(patient.contact_attempts, patient, new_patient)
   end
 
 end
