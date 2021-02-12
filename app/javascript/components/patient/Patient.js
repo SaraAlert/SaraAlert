@@ -6,9 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import BadgeHOH from '../util/BadgeHOH';
-import ChangeHOH from '../subject/ChangeHOH';
-import MoveToHousehold from '../subject/MoveToHousehold';
-import RemoveFromHousehold from '../subject/RemoveFromHousehold';
+import ChangeHOH from '../subject/household_actions/ChangeHOH';
+import MoveToHousehold from '../subject/household_actions/MoveToHousehold';
+import RemoveFromHousehold from '../subject/household_actions/RemoveFromHousehold';
 import InfoTooltip from '../util/InfoTooltip';
 
 class Patient extends React.Component {

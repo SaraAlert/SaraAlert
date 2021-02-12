@@ -5,9 +5,9 @@ import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 
-import BadgeHOH from '../util/BadgeHOH';
-import CustomTable from '../layout/CustomTable';
-import reportError from '../util/ReportError';
+import BadgeHOH from '../../util/BadgeHOH';
+import CustomTable from '../../layout/CustomTable';
+import reportError from '../../util/ReportError';
 
 class MoveToHousehold extends React.Component {
   constructor(props) {
@@ -333,6 +333,7 @@ class MoveToHousehold extends React.Component {
             isSelectable={false}
             isEditable={false}
             isLoading={this.state.isLoading}
+            showPagination={true}
             page={this.state.query.page}
             handlePageUpdate={this.handlePageUpdate}
             entryOptions={this.state.entryOptions}

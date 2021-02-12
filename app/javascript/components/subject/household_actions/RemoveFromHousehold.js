@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
 
-import reportError from '../util/ReportError';
+import reportError from '../../util/ReportError';
 
 class RemoveFromHousehold extends React.Component {
   constructor(props) {
@@ -13,24 +13,20 @@ class RemoveFromHousehold extends React.Component {
       showModal: false,
       loading: false,
     };
-    this.checkHouseholdRemoveEligible = this.checkHouseholdRemoveEligible.bind(this);
-    this.toggleModal = this.toggleModal.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.submit = this.submit.bind(this);
   }
 
-  toggleModal() {
+  toggleModal = () => {
     let current = this.state.showModal;
     this.setState({
       showModal: !current,
     });
-  }
+  };
 
-  handleChange(event) {
+  handleChange = event => {
     this.setState({ [event.target.id]: event.target.value });
-  }
+  };
 
-  submit() {
+  submit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -42,9 +38,9 @@ class RemoveFromHousehold extends React.Component {
           reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
-  }
+  };
 
-  checkHouseholdRemoveEligible() {
+  checkHouseholdRemoveEligible = () => {
     let self = this;
     axios
       .get(window.BASE_PATH + '/patients/' + this.props.patient.id + '/household_removeable')
@@ -54,7 +50,7 @@ class RemoveFromHousehold extends React.Component {
       .catch(error => {
         console.error(error);
       });
-  }
+  };
 
   createModal(title, toggle, submit) {
     return (
