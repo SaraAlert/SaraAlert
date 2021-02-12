@@ -28,7 +28,6 @@
                         authenticity_token: form_authenticity_token,
                         has_dependents: @dependents_exclude_hoh.exists?,
                         household_members: @household_members_exclude_self,
-                        in_household_with_member_with_ce_in_exposure: @household_members_with_ce_in_exposure_excludes_patient.count > 1,
                         patient: @patient,
                         jurisdiction_paths: @possible_jurisdiction_paths,
                         assigned_users: @patient.jurisdiction.assigned_users,
@@ -41,7 +40,7 @@
   <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
   <%= react_component('assessment/AssessmentTable', {
                         patient: @patient,
-                        is_household_member: @household_members.count > 1,
+                        household_members: @household_members_exclude_self,
                         report_eligibility: @patient.report_eligibility,
                         patient_status: @patient.status,
                         calculated_age: @patient.calc_current_age,
