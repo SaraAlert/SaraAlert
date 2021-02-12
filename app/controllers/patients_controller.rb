@@ -34,9 +34,6 @@ class PatientsController < ApplicationController
     @household_members = (household.nil? ? [] : household).uniq
     @household_members_exclude_self = (household.nil? ? [] : household.where.not(id: @patient.id)).uniq
 
-    # All household members that are in the exposure workflow with continuous exposure excluding the current patient
-    @household_members_with_ce_in_exposure_excludes_patient = household.nil? ? [] : household.where(isolation: false, continuous_exposure: true)
-
     @translations = Assessment.new.translations
 
     @history_types = History::HISTORY_TYPES
@@ -456,7 +453,7 @@ class PatientsController < ApplicationController
     # Update LDE for patient and group members only in the exposure workflow with continuous exposure on
     # NOTE: This is a possible option when changing monitoring status of HoH in isolation.
     if params.permit(:apply_to_household_cm_exp_only)[:apply_to_household_cm_exp_only] && params[:apply_to_household_cm_exp_only_date].present?
-      # Only update dependents (not including the HoH) in exposure with continuoous exposure is turned on
+      # Only update dependents (not including the HoH) in exposure with continuous exposure is turned on
       (current_user.get_patient(patient.responder_id)&.dependents_exclude_self&.where(continuous_exposure: true, isolation: false) || []).uniq.each do |member|
         History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: "User updated Monitoring Status for another member in this
         monitoree's household and chose to update Last Date of Exposure for household members so System changed Last Date of Exposure from
@@ -467,18 +464,16 @@ class PatientsController < ApplicationController
       end
     end
 
-    # Update patient and all group members
-    if params.permit(:apply_to_household)[:apply_to_household]
-      ([patient] + (current_user.get_patient(patient.responder_id)&.dependents || [])).uniq.each do |member|
-        update_monitoring_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group)
-      end
-      # Update patient and all group members in continuous exposure
-    elsif params.permit(:apply_to_household_cm_only)[:apply_to_household_cm_only] # update patient and group members only with continuous exposure on
-      ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
-        update_monitoring_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group_cm)
-      end
-    else # Update patient
-      update_monitoring_fields(patient, params, :patient, :none)
+    # Update patient
+    update_monitoring_fields(patient, params, :patient, :none)
+
+    # If not applying to household, return
+    return unless params.permit(:apply_to_household)[:apply_to_household] && params[:apply_to_household_ids].count.positive?
+
+    # Update selected group members if applying to household and ids are supplied
+    params[:apply_to_household_ids].each do |id|
+      member = current_user.get_patient(id)
+      update_monitoring_fields(member, params, :patient, :none)
     end
   end
 

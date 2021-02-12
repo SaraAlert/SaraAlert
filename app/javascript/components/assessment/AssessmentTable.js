@@ -373,7 +373,7 @@ class AssessmentTable extends React.Component {
             <LastDateExposure
               authenticity_token={this.props.authenticity_token}
               patient={this.props.patient}
-              is_household_member={this.props.is_household_member}
+              household_members={this.props.household_members}
               monitoring_period_days={this.props.monitoring_period_days}
             />
           </Card.Body>
@@ -420,7 +420,7 @@ AssessmentTable.propTypes = {
   patient: PropTypes.object,
   symptoms: PropTypes.array,
   threshold_condition_hash: PropTypes.string,
-  is_household_member: PropTypes.bool,
+  household_members: PropTypes.array,
   report_eligibility: PropTypes.object,
   patient_status: PropTypes.string,
   calculated_age: PropTypes.number,
