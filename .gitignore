@@ -46,3 +46,6 @@ dump.rdb
 coverage
 gemsurance_report.html
 tls/
+
+# Ignore database backups
+sara_database_*
