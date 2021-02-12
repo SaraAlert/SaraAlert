@@ -4,6 +4,7 @@ import { Form, Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 
+import ApplyToHousehold from '../household_actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
 
@@ -16,6 +17,7 @@ class MonitoringPlan extends React.Component {
       reasoning: '',
       monitoring_plan: props.patient.monitoring_plan || '',
       apply_to_household: false,
+      apply_to_household_ids: [],
       loading: false,
     };
     this.origState = Object.assign({}, this.state);
@@ -26,11 +28,6 @@ class MonitoringPlan extends React.Component {
       showMonitoringPlanModal: true,
       monitoring_plan: event.target.value || '',
     });
-  };
-
-  handleApplyHouseholdChange = event => {
-    const applyToHousehold = event.target.id === 'apply_to_household_yes';
-    this.setState({ apply_to_household: applyToHousehold });
   };
 
   handleReasoningChange = event => {
@@ -44,6 +41,7 @@ class MonitoringPlan extends React.Component {
       showMonitoringPlanModal: !current,
       monitoring_plan: this.props.patient.monitoring_plan ? this.props.patient.monitoring_plan : '',
       apply_to_household: false,
+      apply_to_household_ids: [],
       reasoning: '',
     });
   };
@@ -57,6 +55,7 @@ class MonitoringPlan extends React.Component {
           monitoring_plan: this.state.monitoring_plan,
           reasoning: this.state.reasoning,
           apply_to_household: this.state.apply_to_household,
+          apply_to_household_ids: this.state.apply_to_household_ids,
           diffState: diffState,
         })
         .then(() => {
@@ -76,30 +75,12 @@ class MonitoringPlan extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>Are you sure you want to change monitoring plan to {this.state.monitoring_plan ? `"${this.state.monitoring_plan}"` : 'blank'}?</p>
-          {this.props.has_dependents && (
-            <React.Fragment>
-              <p className="mb-2">Please select the records that you would like to apply this change to:</p>
-              <Form.Group className="px-4">
-                <Form.Check
-                  type="radio"
-                  className="mb-1"
-                  name="apply_to_household"
-                  id="apply_to_household_no"
-                  label="This monitoree only"
-                  onChange={this.handleApplyHouseholdChange}
-                  checked={!this.state.apply_to_household}
-                />
-                <Form.Check
-                  type="radio"
-                  className="mb-3"
-                  name="apply_to_household"
-                  id="apply_to_household_yes"
-                  label="This monitoree and all household members"
-                  onChange={this.handleApplyHouseholdChange}
-                  checked={this.state.apply_to_household}
-                />
-              </Form.Group>
-            </React.Fragment>
+          {this.props.household_members.length > 0 && (
+            <ApplyToHousehold
+              household_members={this.props.household_members}
+              handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household })}
+              handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
+            />
           )}
           <Form.Group>
             <Form.Label>Please include any additional details:</Form.Label>
@@ -154,7 +135,7 @@ class MonitoringPlan extends React.Component {
 MonitoringPlan.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  has_dependents: PropTypes.bool,
+  household_members: PropTypes.array,
 };
 
 export default MonitoringPlan;
