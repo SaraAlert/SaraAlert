@@ -168,6 +168,8 @@ GEM
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
     faraday-net_http (1.0.1)
+    fast_excel (0.3.0)
+      ffi (> 1.9, < 2)
     ffi (1.14.2)
     ffi-hunspell (0.6.0)
       ffi (~> 1.0)
@@ -449,6 +451,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   fakeredis
+  fast_excel
   ffi-hunspell
   fhir_models
   gemsurance
