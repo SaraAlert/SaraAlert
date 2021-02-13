@@ -475,8 +475,8 @@ namespace :demo do
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: rand < 0.95 ? 'Monitoree' : User.all.select { |u| u.role?('public_health') }.sample[:email] ,
-        comment: "Sara Alert sent a report reminder to this monitoree.",
+        created_by: 'Sara Alert System',
+        comment: "Sara Alert sent a report reminder to this monitoree via Telephone call.",
         history_type: History::HISTORY_TYPES[:report_reminder],
         created_at: assessment_ts,
         updated_at: assessment_ts
