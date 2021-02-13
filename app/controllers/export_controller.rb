@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'axlsx'
-
 # ExportController: for exporting subjects
 class ExportController < ApplicationController
   include ImportExport

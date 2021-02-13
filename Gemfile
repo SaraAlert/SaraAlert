@@ -60,6 +60,7 @@ gem 'roo'
 
 # Excel Export
 gem 'caxlsx'
+gem 'fast_excel'
 
 # Fast XML
 gem 'ox'
