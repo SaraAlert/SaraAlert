@@ -30,17 +30,9 @@ module PatientHelper
   end
 
   def time_zone_offset_for_state(name)
-    # Grab state time zone information by name
-    state = states_with_time_zone_data[normalize_name(name)]
-
-    # Grab time zone offset
-    offset = state.nil? ? -4 : state[:offset]
-
-    # Adjust for DST (if observed)
-    offset -= 1 if state && state[:observes_dst] && !Time.use_zone('Eastern Time (US & Canada)') { Time.now.dst? }
-
-    # Format and return the offset
-    (offset.negative? ? '' : '+') + format('%<offset>.2d', offset: offset) + ':00'
+    # Call TimeZone#now to create a TimeWithZone object that will contextualize
+    # the time to the current truth
+    ActiveSupport::TimeZone[time_zone_for_state(name)].now.formatted_offset
   end
 
   def time_zone_for_state(name)
