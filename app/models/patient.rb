@@ -84,8 +84,13 @@ class Patient < ApplicationRecord
 
   validates :last_date_of_exposure,
             on: :api,
-            presence: { message: "is required when 'Isolation' is 'false'" },
-            if: -> { !isolation }
+            presence: { message: "is required when 'Isolation' is 'false' and 'Continuous Exposure' is 'false'" },
+            if: -> { !isolation && !continuous_exposure }
+
+  validates :continuous_exposure,
+            on: :api,
+            absence: { message: "cannot be 'true' when 'Last Date of Exposure' is specified" },
+            if: -> { last_date_of_exposure.present? }
 
   validates :email, on: %i[api import], email: true
 
@@ -1070,8 +1075,9 @@ class Patient < ApplicationRecord
   # These side effects are handled in the handle_update function
   def monitoring_history_edit(history_data, diff_state)
     patient_before = history_data[:patient_before]
-    # NOTE: Attributes are sorted so that case_status always comes before isolation, since a case_status change may trigger
-    # an isolation change from the front end, and the case_status message should come first
+    # NOTE: Attributes are sorted so that:
+    # - case_status always comes before isolation, since a case_status change may trigger an isolation change from the front end
+    # - continuous_exposure comes before last_date_of_exposure, since a continuous_exposure change may trigger an lde change from the front end
     attribute_order = %i[case_status isolation continuous_exposure last_date_of_exposure]
     history_data[:updates].keys.sort_by { |key| attribute_order.index(key) || Float::INFINITY }&.each do |attribute|
       updated_value = self[attribute]

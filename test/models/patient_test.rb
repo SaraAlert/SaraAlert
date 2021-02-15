@@ -2058,22 +2058,46 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-  test 'validates last_date_of_exposure is present when isolation is false in api context' do
+  test 'validates last_date_of_exposure is present when isolation and continuous_exposure are false in api context' do
     patient = valid_patient
 
     patient.isolation = true
+    patient.continuous_exposure = false
     patient.last_date_of_exposure = nil
     assert patient.valid?(:api)
 
     patient.isolation = false
+    patient.continuous_exposure = true
+    patient.last_date_of_exposure = nil
+    assert patient.valid?(:api)
+
+    patient.isolation = false
+    patient.continuous_exposure = false
     patient.last_date_of_exposure = Time.now - 1.day
     assert patient.valid?(:api)
 
     patient.isolation = false
+    patient.continuous_exposure = false
     patient.last_date_of_exposure = nil
     assert_not patient.valid?(:api)
     assert patient.valid?(:import)
     assert patient.valid?
+  end
+
+  test 'validates continuous_exposure is false when last_date_of_exposure is present' do
+    patient = valid_patient
+
+    patient.continuous_exposure = true
+    patient.last_date_of_exposure = nil
+    assert patient.valid?(:api)
+
+    patient.continuous_exposure = true
+    patient.last_date_of_exposure = ''
+    assert patient.valid?(:api)
+
+    patient.continuous_exposure = true
+    patient.last_date_of_exposure = Time.now - 1.day
+    assert_not patient.valid?(:api)
   end
 
   test 'ten_day_quarantine_candidates scope checks purged, monitoring, isolation, and continuous_exposure' do
