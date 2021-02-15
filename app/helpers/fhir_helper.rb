@@ -87,7 +87,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_date_extension(patient.date_of_arrival, 'date-of-arrival'),
         to_string_extension(patient.exposure_notes, 'exposure-notes'),
         to_string_extension(patient.travel_related_notes, 'travel-related-notes'),
-        to_string_extension(patient.additional_planned_travel_related_notes, 'additional-planned-travel-notes')
+        to_string_extension(patient.additional_planned_travel_related_notes, 'additional-planned-travel-notes'),
+        to_bool_extension(patient.continuous_exposure, 'continuous-exposure')
       ].reject(&:nil?)
     )
   end
@@ -141,7 +142,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       symptom_onset: symptom_onset,
       user_defined_symptom_onset: !symptom_onset.nil?,
       last_date_of_exposure: from_date_extension(patient, %w[last-date-of-exposure last-exposure-date]),
-      isolation: from_isolation_extension(patient),
+      isolation: from_bool_extension(patient, 'isolation'),
       jurisdiction_id: from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id),
       monitoring_plan: from_string_extension(patient, 'monitoring-plan'),
       assigned_user: from_positive_integer_extension(patient, 'assigned-user'),
@@ -156,7 +157,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       additional_planned_travel_related_notes: from_string_extension(patient, 'additional-planned-travel-notes'),
       primary_telephone_type: from_primary_phone_type_extension(patient),
       secondary_telephone_type: from_secondary_phone_type_extension(patient),
-      user_defined_id_statelocal: from_statelocal_id_extension(patient)
+      user_defined_id_statelocal: from_statelocal_id_extension(patient),
+      continuous_exposure: from_bool_extension(patient, 'continuous-exposure')
     }
   end
 
@@ -263,8 +265,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   # Helper to understand an extension for isolation status
-  def from_isolation_extension(patient)
-    patient&.extension&.select { |e| e.url.include?('isolation') }&.first&.valueBoolean == true
+  def from_bool_extension(patient, extension_id)
+    patient&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueBoolean == true
   end
 
   def to_bool_extension(value, extension_id)

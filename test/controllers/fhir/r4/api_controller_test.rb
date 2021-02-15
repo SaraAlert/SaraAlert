@@ -178,7 +178,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     Patient.find_by(id: 2).update!(
       preferred_contact_method: 'SMS Texted Weblink',
       preferred_contact_time: 'Afternoon',
-      last_date_of_exposure: 4.days.ago,
       symptom_onset: 3.days.ago,
       isolation: true,
       primary_telephone: '+15555559999',
@@ -198,7 +197,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       secondary_telephone_type: 'Landline',
       black_or_african_american: true,
       asian: true,
-      continuous_exposure: true
+      continuous_exposure: true,
+      last_date_of_exposure: nil
     )
     @patient_2 = Patient.find_by(id: 2).as_fhir
 
@@ -925,7 +925,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Kirlin44', json_response['name'].first['family']
     assert_equal 'SMS Texted Weblink', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
     assert_equal 'Afternoon', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
-    assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-date-of-exposure' }.first['valueDate']
+    assert json_response['extension'].filter { |e| e['url'].include? 'continuous-exposure' }.first['valueBoolean']
     assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert p.user_defined_symptom_onset
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
@@ -974,7 +974,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       'birthDate' => @patient_2.birthDate,
       'name' => @patient_2.name,
       'address' => @patient_2.address,
-      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-date-of-exposure' },
+      'extension' => @patient_1.extension.find { |e| e.url.include? 'last-date-of-exposure' },
       'active' => false,
       'resourceType' => 'Patient'
     }
@@ -1004,7 +1004,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       'birthDate' => @patient_2.birthDate,
       'name' => @patient_2.name,
       'address' => @patient_2.address,
-      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-date-of-exposure' },
+      'extension' => @patient_1.extension.find { |e| e.url.include? 'last-date-of-exposure' },
       'active' => false,
       'resourceType' => 'Patient',
       'telecom' => [
