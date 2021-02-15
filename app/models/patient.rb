@@ -35,7 +35,7 @@ class Patient < ApplicationRecord
      monitoring_plan
      monitoring_reason
      case_status].each do |enum_field|
-    validates enum_field, inclusion: {
+    validates enum_field, on: %i[api import], inclusion: {
       in: VALID_PATIENT_ENUMS[enum_field],
       message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].reject(&:blank?).join("', '")}'"
     }
@@ -43,7 +43,7 @@ class Patient < ApplicationRecord
 
   %i[primary_telephone
      secondary_telephone].each do |phone_field|
-    validates phone_field, phone_number: true
+    validates phone_field, on: %i[api import], phone_number: true
   end
 
   %i[date_of_birth
@@ -53,7 +53,7 @@ class Patient < ApplicationRecord
      additional_planned_travel_end_date
      date_of_departure
      date_of_arrival].each do |date_field|
-    validates date_field, date: true
+    validates date_field, on: %i[api import], date: true
   end
 
   %i[date_of_birth
@@ -77,7 +77,7 @@ class Patient < ApplicationRecord
             presence: { message: "is required when 'Isolation' is 'false'" },
             if: -> { !isolation }
 
-  validates :email, email: true
+  validates :email, on: %i[api import], email: true
 
   validates :assigned_user, numericality: { only_integer: true,
                                             allow_nil: true,
@@ -85,7 +85,7 @@ class Patient < ApplicationRecord
                                             less_than_or_equal_to: 999_999,
                                             message: 'is not valid, acceptable values are numbers between 1-999999' }
 
-  validates_with PrimaryContactValidator
+  validates_with PrimaryContactValidator, on: %i[api import]
 
   # NOTE: Commented out until additional testing
   # validates_with PatientDateValidator

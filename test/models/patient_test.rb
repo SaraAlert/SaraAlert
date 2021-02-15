@@ -1475,387 +1475,467 @@ class PatientTest < ActiveSupport::TestCase
     assert_not new_head.reload.head_of_household
   end
 
-  test 'validates address_state inclusion' do
+  test 'validates address_state inclusion in api and import context' do
     patient = valid_patient
 
     patient.address_state = 'Georgia'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.address_state = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates monitored_address_state inclusion' do
+  test 'validates monitored_address_state inclusion in api and import context' do
     patient = valid_patient
 
     patient.monitored_address_state = 'Oregon'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.monitored_address_state = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.monitored_address_state = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.monitored_address_state = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates foreign_monitored_address_state inclusion' do
+  test 'validates foreign_monitored_address_state inclusion in api and import context' do
     patient = valid_patient
 
     patient.foreign_monitored_address_state = 'Oregon'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.foreign_monitored_address_state = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.foreign_monitored_address_state = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.foreign_monitored_address_state = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates additional_planned_travel_destination_state inclusion' do
+  test 'validates additional_planned_travel_destination_state inclusion in api and import context' do
     patient = valid_patient
 
     patient.additional_planned_travel_destination_state = 'Oregon'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.additional_planned_travel_destination_state = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.additional_planned_travel_destination_state = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.additional_planned_travel_destination_state = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates ethnicity inclusion' do
+  test 'validates ethnicity inclusion in api and import context' do
     patient = valid_patient
 
     patient.ethnicity = 'Hispanic or Latino'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.ethnicity = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.ethnicity = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.ethnicity = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates preferred contact method inclusion' do
+  test 'validates preferred contact method inclusion in api and import context' do
     patient = valid_patient
 
     patient.preferred_contact_method = 'Unknown'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.preferred_contact_method = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.preferred_contact_method = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.preferred_contact_method = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates preferred contact time inclusion' do
+  test 'validates preferred contact time inclusion in api and import context' do
     patient = valid_patient
 
     patient.preferred_contact_time = 'Morning'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.preferred_contact_time = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.preferred_contact_time = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.preferred_contact_time = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates sex inclusion' do
+  test 'validates sex inclusion in api and import context' do
     patient = valid_patient
 
     patient.sex = 'Female'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.sex = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.sex = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.sex = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates primary_telephone_type inclusion' do
+  test 'validates primary_telephone_type inclusion in api and import context' do
     patient = valid_patient
 
     patient.primary_telephone_type = 'Smartphone'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.primary_telephone_type = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.primary_telephone_type = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.primary_telephone_type = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates secondary_telephone_type inclusion' do
+  test 'validates secondary_telephone_type inclusion in api and import context' do
     patient = valid_patient
 
     patient.secondary_telephone_type = 'Smartphone'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.secondary_telephone_type = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.secondary_telephone_type = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.secondary_telephone_type = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates additional_planned_travel_type inclusion' do
+  test 'validates additional_planned_travel_type inclusion in api and import context' do
     patient = valid_patient
 
     patient.additional_planned_travel_type = 'Domestic'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.additional_planned_travel_type = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.additional_planned_travel_type = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.additional_planned_travel_type = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates monitoring_plan inclusion' do
+  test 'validates monitoring_plan inclusion in api and import context' do
     patient = valid_patient
 
     patient.monitoring_plan = 'None'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.monitoring_plan = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.monitoring_plan = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.monitoring_plan = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates case_status inclusion' do
+  test 'validates case_status inclusion in api and import context' do
     patient = valid_patient
 
     patient.case_status = 'Confirmed'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.case_status = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.case_status = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.case_status = 'foo'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates primary phone is a possible phone number' do
+  test 'validates primary phone is a possible phone number in api and import context' do
     patient = valid_patient
 
     patient.primary_telephone = '+15555555555'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.primary_telephone = '+1 555 555 5555'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.primary_telephone = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.primary_telephone = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.primary_telephone = '+1 123 456 7890'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
 
     patient.primary_telephone = '123'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates secondary phone is a possible phone number' do
+  test 'validates secondary phone is a possible phone number in api and import context' do
     patient = valid_patient
 
     patient.secondary_telephone = '+15555555555'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.secondary_telephone = '+1 555 555 5555'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.secondary_telephone = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.secondary_telephone = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.primary_telephone = '+1 123 456 7890'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
 
     patient.secondary_telephone = '123'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates date_of_birth is a valid date' do
+  test 'validates date_of_birth is a valid date in api and import context' do
     patient = valid_patient
 
     patient.date_of_birth = 25.years.ago
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.date_of_birth = '01-15-2000'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
 
     patient.date_of_birth = '2000-13-13'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates last_date_of_exposure is a valid date' do
+  test 'validates last_date_of_exposure is a valid date in api and import context' do
     patient = valid_patient
 
-    patient.last_date_of_exposure = Time.now - 1.day
-    assert patient.valid?
+    patient.last_date_of_exposure = 25.years.ago
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.last_date_of_exposure = '01-15-2000'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
 
     patient.last_date_of_exposure = '2000-13-13'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates symptom_onset is a valid date' do
+  test 'validates symptom_onset is a valid date in api and import context' do
     patient = valid_patient
 
-    patient.symptom_onset = Time.now - 1.day
-    assert patient.valid?
-
-    patient.symptom_onset = ''
-    assert patient.valid?
-
-    patient.symptom_onset = nil
-    assert patient.valid?
+    patient.symptom_onset = 25.years.ago
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.symptom_onset = '01-15-2000'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
 
     patient.symptom_onset = '2000-13-13'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates additional_planned_travel_start_date is a valid date' do
+  test 'validates additional_planned_travel_start_date is a valid date in api and import context' do
     patient = valid_patient
 
-    patient.additional_planned_travel_start_date = Time.now - 1.day
-    assert patient.valid?
-
-    patient.additional_planned_travel_start_date = ''
-    assert patient.valid?
-
-    patient.additional_planned_travel_start_date = nil
-    assert patient.valid?
+    patient.additional_planned_travel_start_date = 25.years.ago
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.additional_planned_travel_start_date = '01-15-2000'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
 
     patient.additional_planned_travel_start_date = '2000-13-13'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates additional_planned_travel_end_date is a valid date' do
+  test 'validates additional_planned_travel_end_date is a valid date in api and import context' do
     patient = valid_patient
 
-    patient.additional_planned_travel_end_date = Time.now - 1.day
-    assert patient.valid?
-
-    patient.additional_planned_travel_end_date = ''
-    assert patient.valid?
-
-    patient.additional_planned_travel_end_date = nil
-    assert patient.valid?
+    patient.additional_planned_travel_end_date = 25.years.ago
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.additional_planned_travel_end_date = '01-15-2000'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
 
     patient.additional_planned_travel_end_date = '2000-13-13'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates date_of_departure is a valid date' do
+  test 'validates date_of_departure is a valid date in api and import context' do
     patient = valid_patient
 
-    patient.date_of_departure = Time.now - 1.day
-    assert patient.valid?
-
-    patient.date_of_departure = ''
-    assert patient.valid?
-
-    patient.date_of_departure = nil
-    assert patient.valid?
+    patient.date_of_departure = 25.years.ago
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.date_of_departure = '01-15-2000'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
 
     patient.date_of_departure = '2000-13-13'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates date_of_arrival is a valid date' do
+  test 'validates date_of_arrival is a valid date in api and import context' do
     patient = valid_patient
 
-    patient.date_of_arrival = Time.now - 1.day
-    assert patient.valid?
-
-    patient.date_of_arrival = ''
-    assert patient.valid?
-
-    patient.date_of_arrival = nil
-    assert patient.valid?
+    patient.date_of_arrival = 25.years.ago
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.date_of_arrival = '01-15-2000'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
 
     patient.date_of_arrival = '2000-13-13'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates email is a valid email address' do
+  test 'validates email is a valid email address in api and import context' do
     patient = valid_patient
 
     patient.email = 'foo@bar.com'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.email = ''
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.email = nil
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.email = 'not@an@email.com'
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
   test 'validates address_state is required unless foreign_address_country in api context' do
@@ -1865,6 +1945,7 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.address_state = nil
     assert_not patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
 
     patient.foreign_address_country = 'UK'
@@ -1878,6 +1959,7 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.date_of_birth = nil
     assert_not patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
@@ -1888,6 +1970,7 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.first_name = nil
     assert_not patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
@@ -1898,32 +1981,39 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.last_name = nil
     assert_not patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
-  test 'validates email is not blank when preferred_contact_method is "E-mailed Web Link"' do
+  test 'validates email is not blank when preferred_contact_method is "E-mailed Web Link" in api and import context' do
     patient = valid_patient
 
     patient.email = 'foo@bar.com'
     patient.preferred_contact_method = 'E-mailed Web Link'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.email = ''
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates primary_telephone is not blank when preferred_contact_method requires a phone' do
+  test 'validates primary_telephone is not blank when preferred_contact_method requires a phone in api and import context' do
     patient = valid_patient
 
     patient.primary_telephone = '+15555555555'
     patient.preferred_contact_method = 'SMS Text-message'
-    assert patient.valid?
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
 
     patient.primary_telephone = ''
-    assert_not patient.valid?
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
   end
 
-  test 'validates symptom_onset is present when isolation is true' do
+  test 'validates symptom_onset is present when isolation is true in api context' do
     patient = valid_patient
 
     patient.isolation = false
@@ -1937,10 +2027,11 @@ class PatientTest < ActiveSupport::TestCase
     patient.isolation = true
     patient.symptom_onset = nil
     assert_not patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
-  test 'validates last_date_of_exposure is present when isolation is false' do
+  test 'validates last_date_of_exposure is present when isolation is false in api context' do
     patient = valid_patient
 
     patient.isolation = true
@@ -1954,6 +2045,7 @@ class PatientTest < ActiveSupport::TestCase
     patient.isolation = false
     patient.last_date_of_exposure = nil
     assert_not patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
