@@ -88,7 +88,7 @@ class ImportController < ApplicationController
         begin
           # Validate using Patient model validators without saving
           validation_patient = Patient.new(patient.slice(*Patient.attribute_names.map(&:to_sym)))
-          unless validation_patient.valid?
+          unless validation_patient.valid?(:import)
             format_model_validation_errors(validation_patient).each do |error|
               @errors << ValidationError.new(error, row_ind).message
             end
@@ -103,7 +103,7 @@ class ImportController < ApplicationController
             # Validate using Laboratory model validators without saving
             lab_results.each do |lab_data|
               validation_lab_result = Laboratory.new(lab_data)
-              next if validation_lab_result.valid?
+              next if validation_lab_result.valid?(:import)
 
               format_model_validation_errors(validation_lab_result).each do |error|
                 @errors << ValidationError.new(error, row_ind).message
