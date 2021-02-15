@@ -7,7 +7,7 @@ class Laboratory < ApplicationRecord
 
   %i[result
      lab_type].each do |enum_field|
-    validates enum_field, inclusion: {
+    validates enum_field, on: %i[api import], inclusion: {
       in: VALID_PATIENT_ENUMS[enum_field],
       message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].reject(&:blank?).join("', '")}'"
     }
@@ -15,7 +15,7 @@ class Laboratory < ApplicationRecord
 
   %i[specimen_collection
      report].each do |date_field|
-    validates date_field, date: true
+    validates date_field, on: %i[api import], date: true
   end
 
   # NOTE: Commented out until additional testing
