@@ -247,7 +247,7 @@ class Patient extends React.Component {
               id="details-expander-link"
               variant="link"
               className="p-0"
-              aria-label="Edit Notes"
+              aria-label="Show address, travel, exposure, and case information"
               onClick={() => this.setState({ expanded: !this.state.expanded })}>
               <FontAwesomeIcon className={this.state.expanded ? 'chevron-opened' : 'chevron-closed'} icon={faChevronRight} />
               <span className="pl-2">{this.state.expanded ? 'Hide' : 'Show'} address, travel, exposure, and case information</span>
