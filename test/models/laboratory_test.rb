@@ -113,35 +113,27 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert_empty patient.laboratories
   end
 
-  test 'validates result inclusion in api and import context' do
+  test 'validates result inclusion' do
     lab = create(:laboratory)
 
     lab.result = 'positive'
-    assert lab.valid?(:api)
-    assert lab.valid?(:import)
+    assert lab.valid?
     lab.result = 'negative'
-    assert lab.valid?(:api)
-    assert lab.valid?(:import)
+    assert lab.valid?
     lab.result = 'indeterminate'
-    assert lab.valid?(:api)
-    assert lab.valid?(:import)
+    assert lab.valid?
     lab.result = 'other'
-    assert lab.valid?(:api)
-    assert lab.valid?(:import)
+    assert lab.valid?
     lab.result = ''
-    assert lab.valid?(:api)
-    assert lab.valid?(:import)
+    assert lab.valid?
     lab.result = nil
-    assert lab.valid?(:api)
-    assert lab.valid?(:import)
+    assert lab.valid?
 
     lab.result = 'foo'
-    assert_not lab.valid?(:api)
-    assert_not lab.valid?(:import)
-    assert lab.valid?
+    assert_not lab.valid?
   end
 
-  test 'validates lab_type inclusion' do
+  test 'validates lab_type inclusion in api and import context' do
     lab = create(:laboratory)
 
     lab.lab_type = 'PCR'
