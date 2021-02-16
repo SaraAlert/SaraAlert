@@ -1698,25 +1698,52 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-  test 'validates monitoring_plan inclusion in api and import context' do
+  test 'validates monitoring_plan inclusion' do
     patient = valid_patient
 
     patient.monitoring_plan = 'None'
-    assert patient.valid?(:api)
-    assert patient.valid?(:import)
+    assert patient.valid?
 
     patient.monitoring_plan = ''
-    assert patient.valid?(:api)
-    assert patient.valid?(:import)
+    assert patient.valid?
 
     patient.monitoring_plan = nil
-    assert patient.valid?(:api)
-    assert patient.valid?(:import)
+    assert patient.valid?
 
     patient.monitoring_plan = 'foo'
-    assert_not patient.valid?(:api)
-    assert_not patient.valid?(:import)
+    assert_not patient.valid?
+  end
+
+  test 'validates monitoring_reason inclusion' do
+    patient = valid_patient
+
+    patient.monitoring_reason = 'Other'
     assert patient.valid?
+
+    patient.monitoring_reason = ''
+    assert patient.valid?
+
+    patient.monitoring_reason = nil
+    assert patient.valid?
+
+    patient.monitoring_reason = 'foo'
+    assert_not patient.valid?
+  end
+
+  test 'validates exposure_risk_assessment inclusion' do
+    patient = valid_patient
+
+    patient.exposure_risk_assessment = 'Medium'
+    assert patient.valid?
+
+    patient.exposure_risk_assessment = ''
+    assert patient.valid?
+
+    patient.exposure_risk_assessment = nil
+    assert patient.valid?
+
+    patient.exposure_risk_assessment = 'foo'
+    assert_not patient.valid?
   end
 
   test 'validates case_status inclusion in api and import context' do
