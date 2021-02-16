@@ -239,6 +239,7 @@ class PatientsController < ApplicationController
 
     render(json: patient.errors, status: 422) and return unless patient.update(content)
 
+    allowed_params&.keys&.reject! { |apk| %w[jurisdiction_id assigned_user].include? apk }
     Patient.detailed_history_edit(patient_before, patient, allowed_params&.keys, current_user.email)
     # Add a history update for any changes from moving from isolation to exposure
     patient.update_patient_history_for_isolation(patient_before, content[:isolation]) unless content[:isolation].nil?
