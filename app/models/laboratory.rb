@@ -5,13 +5,12 @@ class Laboratory < ApplicationRecord
   include ValidationHelper
   belongs_to :patient, touch: true
 
-  %i[result
-     lab_type].each do |enum_field|
-    validates enum_field, on: %i[api import], inclusion: {
-      in: VALID_PATIENT_ENUMS[enum_field],
-      message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].reject(&:blank?).join("', '")}'"
-    }
-  end
+  validates :result, inclusion: { in: ['positive', 'negative', 'indeterminate', 'other', nil, ''] }
+
+  validates :lab_type, on: %i[api import], inclusion: {
+    in: VALID_PATIENT_ENUMS[:lab_type],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:lab_type].reject(&:blank?).join("', '")}'"
+  }
 
   %i[specimen_collection
      report].each do |date_field|

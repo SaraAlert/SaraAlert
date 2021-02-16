@@ -237,7 +237,7 @@ class PatientsController < ApplicationController
     # Update patient history with detailed edit diff
     patient_before = patient.dup
 
-    render(json: patient.errors, status: 422) && return unless patient.update(content)
+    render(json: patient.errors, status: 422) and return unless patient.update(content)
 
     Patient.detailed_history_edit(patient_before, patient, allowed_params&.keys, current_user.email) if patient.update(content)
     # Add a history update for any changes from moving from isolation to exposure
