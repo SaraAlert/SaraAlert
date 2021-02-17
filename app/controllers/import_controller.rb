@@ -63,8 +63,6 @@ class ImportController < ApplicationController
               # TODO: when workflow specific case status validation re-enabled: uncomment
               # elsif col_num == 86
               #   patient[field] = validate_workflow_specific_enums(workflow, field, row[col_num], row_ind)
-              elsif [102, 103].include?(col_num)
-                patient[field] = import_exclusive_race_field(field, row, col_num, row_ind)
               else
                 # TODO: when workflow specific case status validation re-enabled: this line can be updated to not have to check the 86 col
                 patient[field] = import_field(field, row[col_num], row_ind) unless [85, 86].include?(col_num) && workflow != :isolation
@@ -215,22 +213,6 @@ class ImportController < ApplicationController
 
   def import_date_field(value)
     value.blank? ? nil : value
-  end
-
-  def import_exclusive_race_field(field, row, col_num, row_ind)
-    value = validate_bool_field(field, row[col_num], row_ind)
-    return value if value.blank?
-
-    race_col_nums = [7, 8, 9, 10, 11, 101, 102, 103]
-    race_col_nums.each do |race_col|
-      next unless race_col != col_num
-
-      next unless value && row[race_col].to_s.downcase == 'true'
-
-      err_msg = "'#{VALIDATION[field][:label]}' cannot be true if any other race field is true"
-      raise ValidationError.new(err_msg, row_ind)
-    end
-    value
   end
 
   def import_phone_field(value)

@@ -3,7 +3,6 @@
 # Validates that a given date (attribute) is valid
 class RaceValidator < ActiveModel::Validator
   def validate(record)
-    # If value is unsuccessfully typecast to a date, it will be nil, so validate on the value before cast
     has_non_exclusive_race = record.white || record.black_or_african_american || record.american_indian_or_alaska_native ||
                              record.asian || record.native_hawaiian_or_other_pacific_islander || record.race_other
 

@@ -89,6 +89,21 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     'Other'
   ].freeze
 
+  RACE_OPTIONS = {
+    non_exclusive: [
+      { race: :white, label: 'WHITE' },
+      { race: :black_or_african_american, label: 'BLACK OR AFRICAN AMERICAN' },
+      { race: :american_indian_or_alaska_native, label: 'AMERICAN INDIAN OR ALASKA NATIVE' },
+      { race: :asian, label: 'ASIAN' },
+      { race: :native_hawaiian_or_other_pacific_islander, label: 'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER' },
+      { race: :race_other, label: 'OTHER' }
+    ],
+    exclusive: [
+      { race: :race_unknown, label: 'UNKNOWN' },
+      { race: :race_refused_to_answer, label: 'REFUSED TO ANSWER' }
+    ]
+  }.freeze
+
   SYSTEM_SELECTABLE_MONITORING_REASONS = [
     'Enrolled more than 14 days after last date of exposure (system)', 'Enrolled more than 10 days after last date of exposure (system)',
     'Enrolled on last day of monitoring period (system)', 'Completed Monitoring (system)', '', nil
@@ -99,7 +114,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
                       'Transgender Female (Male-to-Female [MTF]', 'Genderqueer / gender nonconforming (neither exclusively male nor female)', 'Another',
                       'Chose not to disclose'],
     sexual_orientation: ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'],
-    ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino', nil, ''],
+    ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino', 'Unknown', 'Refused to Answer', nil, ''],
     preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown', nil, ''],
     primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
     secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
@@ -153,7 +168,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     native_hawaiian_or_other_pacific_islander: { label: 'Native Hawaiian or Other Pacific Islander', checks: [:bool] },
     race_other: { label: 'Other', checks: [:bool] },
     race_unknown: { label: 'Unknown', checks: [:bool] },
-    race_refused_to_answer: { label: 'Other', checks: [:bool] },
+    race_refused_to_answer: { label: 'Refused to Answer', checks: [:bool] },
     ethnicity: { label: 'Ethnicity', checks: [:enum] },
     interpretation_required: { label: 'Interpretation Required?', checks: [:bool] },
     address_state: { label: 'State', checks: %i[required state] },

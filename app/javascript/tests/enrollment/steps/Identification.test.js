@@ -1,5 +1,5 @@
 import React from 'react'
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import Identification from '../../../components/enrollment/steps/Identification.js'
 import { blankMockPatient, mockPatient1, mockPatient2 } from '../../mocks/mockPatients'
 
@@ -29,16 +29,31 @@ const requiredStrings = [
   'NNDSS LOC. REC. ID/CASE ID'
 ]
 
+const race_options = {
+  non_exclusive: [
+    { race: 'white', label: 'WHITE' },
+    { race: 'black_or_african_american', label: 'BLACK OR AFRICAN AMERICAN' },
+    { race: 'american_indian_or_alaska_native', label: 'AMERICAN INDIAN OR ALASKA NATIVE' },
+    { race: 'asian', label: 'ASIAN' },
+    { race: 'native_hawaiian_or_other_pacific_islander', label: 'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER' },
+    { race: 'race_other', label: 'OTHER' },
+  ],
+  exclusive: [
+    { race: 'race_unknown', label: 'UNKNOWN' },
+    { race: 'race_refused_to_answer', label: 'REFUSED TO ANSWER' },
+  ],
+};
+
 describe('Identification', () => {
   it('Properly renders all main components', () => {
-    const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
+    const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} race_options={race_options} />);
     requiredStrings.forEach(requiredString => {
       expect(wrapper.text().includes(requiredString)).toBe(true);
     })
   });
 
   it('Properly allows setting of all identification information', () => {
-    const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
+    const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} race_options={race_options} />);
     expect(wrapper.find('#first_name').instance().value).toEqual('')
     expect(wrapper.find('#middle_name').instance().value).toEqual('')
     expect(wrapper.find('#last_name').instance().value).toEqual('')
