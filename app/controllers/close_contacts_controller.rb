@@ -6,7 +6,8 @@ class CloseContactsController < ApplicationController
 
   # Create a new close contact
   def create
-    redirect_to root_url && return unless current_user.can_create_patient_close_contacts?
+    redirect_to(root_url) && return unless current_user.can_create_patient_close_contacts?
+
     cc = CloseContact.new(first_name: params.permit(:first_name)[:first_name],
                           last_name: params.permit(:last_name)[:last_name],
                           primary_telephone: params.permit(:primary_telephone)[:primary_telephone],
@@ -25,7 +26,8 @@ class CloseContactsController < ApplicationController
 
   # Update an existing close contact
   def update
-    redirect_to root_url && return unless current_user.can_edit_patient_close_contacts?
+    redirect_to(root_url) && return unless current_user.can_edit_patient_close_contacts?
+
     cc = CloseContact.find_by(id: params.permit(:id)[:id])
     cc.update(first_name: params.permit(:first_name)[:first_name],
               last_name: params.permit(:last_name)[:last_name],
