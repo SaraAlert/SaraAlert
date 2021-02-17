@@ -36,7 +36,7 @@ desc 'Backup the database'
     threads.each(&:join)
 
   end
-  
+
   desc 'Configure the database for demo use'
   task setup: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
@@ -271,7 +271,10 @@ desc 'Backup the database'
       patient[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
       patient[:date_of_birth] = Faker::Date.birthday(min_age: 1, max_age: 85)
       patient[:age] = ((Date.today - patient[:date_of_birth]) / 365.25).round
-      %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample(rand(0..4)).each { |race| patient[race] = true }
+      if rand < 0.9
+        exclusive = rand < 0.75
+        ValidationHelper::RACE_OPTIONS[exclusive ? :exclusive : :non_exclusive].map { |option| option[:race] }.sample(exclusive ? 1 : rand(0..4)).each { |race| patient[race] = true }
+      end
       patient[:ethnicity] = rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino'
       patient[:primary_language] = rand < 0.7 ? 'English' : Faker::Nation.language
       patient[:secondary_language] = Faker::Nation.language if rand < 0.4
@@ -943,7 +946,7 @@ desc 'Backup the database'
          deep_duplicate_patient(p, new_patient.id)
       end
     end
-    patient.assessments.each do |assessment| 
+    patient.assessments.each do |assessment|
         new_assessment = assessment.dup
         duplicate_timestamps(assessment, new_assessment)
         rep_condition = assessment.reported_condition
