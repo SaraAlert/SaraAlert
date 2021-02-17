@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Form } from 'react-bootstrap';
 import * as yup from 'yup';
@@ -25,15 +24,6 @@ class Identification extends React.Component {
       modified: {},
       languageOptions: this.getLanguageOptions(),
     };
-    this.default_races = [
-      'white',
-      'black_or_african_american',
-      'american_indian_or_alaska_native',
-      'asian',
-      'native_hawaiian_or_other_pacific_islander',
-      'race_other',
-    ];
-    this.exclusive_race_options = ['race_unknown', 'race_refused_to_answer'];
   }
 
   handleChange = event => {
@@ -54,42 +44,37 @@ class Identification extends React.Component {
   };
 
   // Special function for handling race selection: If an exclusive race value (e.g. "unknown" or "refused to answer")
-  // is selected, unselects all other checkboxes, and if a standard race value (e.g. "white, black or african amrican", "other")
+  // is selected, unselects all other checkboxes, and if a standard race value (e.g. "white, black or african american", "other")
   // is selected, unselects all exclusive checkboxes.
   handleRaceChange = event => {
     let value = event.target.checked;
-    var modified_races = {};
+    let modified_races = {};
     let current = this.state.current;
     let modified = this.state.modified;
 
     const self = this;
     event.persist();
+
     if (value) {
-      if (self.exclusive_race_options.includes(event.target.id)) {
-        modified_races = _.reduce(
-          _.union(this.exclusive_race_options, this.default_races),
-          (memo, race) => {
-            return _.extend(memo, { [race]: race == event.target.id });
-          },
-          {}
-        );
-      } else {
-        let test_memo = { [event.target.id]: true };
-        modified_races = _.reduce(
-          this.exclusive_race_options,
-          (memo, race) => {
-            return _.extend(memo, { [race]: false });
-          },
-          test_memo
-        );
+      // Reset exclusive races if any option is selected
+      let races_to_reset = this.props.race_options.exclusive;
+
+      // Reset all races if exclusive option is selected
+      if (self.props.race_options.exclusive.map(options => options.race).includes(event.target.id)) {
+        races_to_reset = races_to_reset.concat(this.props.race_options.non_exclusive);
       }
-    } else {
-      modified_races = { [event.target.id]: false };
+
+      races_to_reset.forEach(option => {
+        modified_races[`${option.race}`] = false;
+      });
     }
+
+    // Set race to value
+    modified_races[`${event.target.id}`] = value;
     this.setState(
       {
-        current: { ...current, patient: { ..._.extend(current.patient, modified_races) } },
-        modified: { ...modified, patient: { ..._.extend(current.patient, modified_races) } },
+        current: { ...current, patient: { ...current.patient, ...modified_races } },
+        modified: { ...modified, patient: { ...current.patient, ...modified_races } },
       },
       () => {
         self.props.setEnrollmentState({ ...self.state.modified });
@@ -250,6 +235,7 @@ class Identification extends React.Component {
         cursor: 'pointer',
       }),
     };
+    const exclusive_race_selected = !!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer;
     return (
       <React.Fragment>
         <h1 className="sr-only">Monitoree Identification</h1>
@@ -419,80 +405,38 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-1">
+              <Form.Row>
                 <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
-                  <Form.Check
-                    type="checkbox"
-                    id="white"
-                    label="WHITE"
-                    checked={!!this.state.current.patient.white}
-                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="black_or_african_american"
-                    label="BLACK OR AFRICAN AMERICAN"
-                    checked={!!this.state.current.patient.black_or_african_american}
-                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="american_indian_or_alaska_native"
-                    label="AMERICAN INDIAN OR ALASKA NATIVE"
-                    checked={!!this.state.current.patient.american_indian_or_alaska_native}
-                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="asian"
-                    label="ASIAN"
-                    checked={!!this.state.current.patient.asian}
-                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="native_hawaiian_or_other_pacific_islander"
-                    label="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER"
-                    checked={!!this.state.current.patient.native_hawaiian_or_other_pacific_islander}
-                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="race_other"
-                    label="OTHER"
-                    checked={!!this.state.current.patient.race_other}
-                    disabled={!!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="race_unknown"
-                    label="UNKNOWN"
-                    checked={!!this.state.current.patient.race_unknown}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="race_refused_to_answer"
-                    label="REFUSED TO ANSWER"
-                    checked={!!this.state.current.patient.race_refused_to_answer}
-                    onChange={this.handleRaceChange}
-                  />
+                  {this.props.race_options.non_exclusive.map(option => {
+                    return (
+                      <Form.Check
+                        className="py-1"
+                        type="checkbox"
+                        id={option.race}
+                        label={option.label}
+                        checked={!!this.state.current.patient[`${option.race}`]}
+                        disabled={exclusive_race_selected}
+                        onChange={this.handleRaceChange}
+                        key={option.race}
+                      />
+                    );
+                  })}
+                  {this.props.race_options.exclusive.map(option => {
+                    return (
+                      <Form.Check
+                        className="py-1"
+                        type="checkbox"
+                        id={option.race}
+                        label={option.label}
+                        checked={!!this.state.current.patient[`${option.race}`]}
+                        disabled={exclusive_race_selected && !this.state.current.patient[`${option.race}`]}
+                        onChange={this.handleRaceChange}
+                        key={option.race}
+                      />
+                    );
+                  })}
                 </Form.Group>
-                <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} md="8" controlId="ethnicity">
                   <Form.Label className="nav-input-label">ETHNICITY{schema?.fields?.ethnicity?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.patient.ethnicity || ''} onChange={this.handleChange}>
@@ -697,6 +641,7 @@ const schema = yup.object().shape({
 
 Identification.propTypes = {
   currentState: PropTypes.object,
+  race_options: PropTypes.object,
   next: PropTypes.func,
 };
 
