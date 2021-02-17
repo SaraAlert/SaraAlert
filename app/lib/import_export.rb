@@ -114,6 +114,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   FULL_HISTORY_HISTORIES_HEADERS = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At'].freeze
 
+  PATIENT_ALTERNATIVE_IDENTIFIERS = %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss].freeze
+
   PATIENT_RACE_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].freeze
 
   PATIENT_LAB_FIELDS = %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result].freeze
@@ -715,10 +717,37 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Extracts transfer data values given relevant fields
   def extract_transfers_details(patients_identifiers, transfers, fields)
-    user_emails = Hash[User.find(transfers.map(&:who_id).uniq).pluck(:id, :email).map { |id, email| [id, email] }]
-    jurisdiction_ids = [transfers.map(&:from_jurisdiction_id), transfers.map(&:to_jurisdiction_id)].flatten.uniq
-    jurisdiction_paths = Hash[Jurisdiction.find(jurisdiction_ids).pluck(:id, :path).map { |id, path| [id, path] }]
-    transfers.map { |transfer| transfer.custom_details(fields, patients_identifiers[transfer.patient_id], user_emails, jurisdiction_paths) }
+    selected_fields = fields & %i[id patient_id created_at updated_at]
+    plucked_fields = selected_fields.dup
+
+    if fields.include?(:who)
+      transfers = transfers.joins('INNER JOIN users ON transfers.who_id = users.id')
+      selected_fields << 'users.email AS who'
+      plucked_fields << :who
+    end
+
+    if fields.include?(:from_jurisdiction)
+      transfers = transfers.joins('INNER JOIN jurisdictions from_jurs ON transfers.from_jurisdiction_id = from_jurs.id')
+      selected_fields << 'from_jurs.path AS from_jurisdiction'
+      plucked_fields << :from_jurisdiction
+    end
+
+    if fields.include?(:to_jurisdiction)
+      transfers = transfers.joins('INNER JOIN jurisdictions to_jurs ON transfers.to_jurisdiction_id = to_jurs.id')
+      selected_fields << 'to_jurs.path AS to_jurisdiction'
+      plucked_fields << :to_jurisdiction
+    end
+
+    transfers.pluck(*selected_fields).map do |t|
+      transfer = plucked_fields.zip(t).to_h
+      (PATIENT_ALTERNATIVE_IDENTIFIERS & fields).each { |identifier| transfer[identifier] = patients_identifiers[transfer[:patient_id]][identifier] }
+      transfer
+    end
+
+    # user_emails = Hash[User.find(transfers.map(&:who_id).uniq).pluck(:id, :email).map { |id, email| [id, email] }]
+    # jurisdiction_ids = [transfers.map(&:from_jurisdiction_id), transfers.map(&:to_jurisdiction_id)].flatten.uniq
+    # jurisdiction_paths = Hash[Jurisdiction.find(jurisdiction_ids).pluck(:id, :path).map { |id, path| [id, path] }]
+    # transfers.map { |transfer| transfer.custom_details(fields, patients_identifiers[transfer.patient_id], user_emails, jurisdiction_paths) }
   end
 
   # Extracts history data values given relevant fields
