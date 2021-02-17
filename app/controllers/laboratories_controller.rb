@@ -6,7 +6,8 @@ class LaboratoriesController < ApplicationController
 
   # Create a new lab result
   def create
-    redirect_to root_url && return unless current_user.can_create_patient_laboratories?
+    redirect_to(root_url) && return unless current_user.can_create_patient_laboratories?
+
     lab = Laboratory.new(lab_type: params.permit(:lab_type)[:lab_type],
                          specimen_collection: params.permit(:specimen_collection)[:specimen_collection],
                          report: params.permit(:report)[:report],
@@ -20,7 +21,8 @@ class LaboratoriesController < ApplicationController
 
   # Update an existing lab result
   def update
-    redirect_to root_url && return unless current_user.can_edit_patient_laboratories?
+    redirect_to(root_url) && return unless current_user.can_edit_patient_laboratories?
+
     lab = Laboratory.find_by(id: params.permit(:id)[:id])
     lab.update!(lab_type: params.permit(:lab_type)[:lab_type],
                 specimen_collection: params.permit(:specimen_collection)[:specimen_collection],

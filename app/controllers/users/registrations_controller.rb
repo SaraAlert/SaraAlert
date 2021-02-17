@@ -14,7 +14,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # rubocop:enable Lint/UselessMethodDefinition
 
   def password_expired
-    redirect_to edit_user_registration_url && return
+    redirect_to(edit_user_registration_url) && return
   end
 
   protected
