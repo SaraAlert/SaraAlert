@@ -547,15 +547,21 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   def extract_patients_details(patients, fields)
     # perform the following queries in bulk only if requested for better performance
     if fields.include?(:jurisdiction_name)
-      jurisdiction_names = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :name).map { |id, name| [id, name] }]
+      jurisdiction_names = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :path).map { |id, name| [id, name] }]
     end
-    if fields.include?(:jurisdiction_path)
-      jurisdiction_paths = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :path).map { |id, path| [id, path] }]
+    if (fields & %i[jurisdiction_path transferred_from transferred_to]).size.positive?
+      jur_ids = patients.pluck(:jurisdiction_id).uniq
+      jur_ids &= patients.pluck(:latest_transfer_from).uniq if fields.include?(:transferred_from)
+      jurisdiction_paths = Hash[Jurisdiction.find(jur_ids).pluck(:id, :path).map { |id, path| [id, path] }]
     end
 
-    patients_transfers = get_patients_transfers(patients) if (fields & %i[transferred_from transferred_to]).any?
-    patients_laboratories = get_patients_laboratories(patients) if (fields & PATIENT_LAB_FIELDS).any?
-    patients_creators = Hash[User.find(patients.pluck(:creator_id)).pluck(:id, :email)] if fields.include?(:creator)
+    patients_creators = Hash[patients.joins('INNER JOIN users ON patients.creator_id = users.id').pluck('users.id', 'users.email')] if fields.include?(:creator)
+    if (fields & PATIENT_LAB_FIELDS).any?
+      patients_laboratories = Laboratory.where(patient_id: patients.pluck(:id))
+                                        .order(specimen_collection: :desc)
+                                        .group_by(&:patient_id)
+                                        .transform_values { |v| v.take(2) }
+    end
 
     # construct patient details
     patients_details = []
@@ -571,9 +577,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       patient_details[:jurisdiction_path] = jurisdiction_paths[patient.jurisdiction_id] || '' if fields.include?(:jurisdiction_path)
 
       # populate latest transfer from and to if requested
-      if patients_transfers&.key?(patient.id)
-        patient_details[:transferred_from] = patients_transfers[patient.id][:transferred_from] if fields.include?(:transferred_from)
-        patient_details[:transferred_to] = patients_transfers[patient.id][:transferred_to] if fields.include?(:transferred_to)
+      if patient[:latest_transfer_from].present?
+        patient_details[:transferred_from] = jurisdiction_paths[patient.latest_transfer_from]
+        patient_details[:transferred_to] = jurisdiction_paths[patient.jurisdiction_id]
       end
 
       # populate labs if requested
@@ -639,27 +645,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '' if fields.include?(:status)
 
     patient_details
-  end
-
-  # Gets a hash of the latest transfers of each patient
-  def get_patients_transfers(patients)
-    transfers = Transfer.latest_transfers(patients)
-    jurisdictions = Jurisdiction.find(transfers.pluck(:from_jurisdiction_id, :to_jurisdiction_id).flatten.uniq)
-    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map { |id, path| [id, path] }]
-    Hash[transfers.pluck(:patient_id, :created_at, :from_jurisdiction_id, :to_jurisdiction_id)
-                  .map do |patient_id, created_at, from_jurisdiction_id, to_jurisdiction_id|
-                    [patient_id, {
-                      transferred_at: created_at.rfc2822,
-                      transferred_from: jurisdiction_paths[from_jurisdiction_id],
-                      transferred_to: jurisdiction_paths[to_jurisdiction_id]
-                    }]
-                  end
-        ]
-  end
-
-  # Gets a hash of the 2 latest laboratories of each patient
-  def get_patients_laboratories(patients)
-    Laboratory.where(patient_id: patients.pluck(:id)).order(specimen_collection: :desc).group_by(&:patient_id).transform_values { |v| v.take(2) }
   end
 
   # Extracts assessment data values given relevant fields
