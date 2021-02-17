@@ -59,7 +59,7 @@ class SymptomsAssessment extends React.Component {
     const keysToIgnore = ['who_reported'];
     let allFieldsEmpty = true;
     _.map(object, (value, key) => {
-      if (object[String(key)] !== null && !keysToIgnore.includes(key)) {
+      if (object[String(key)] && !keysToIgnore.includes(key)) {
         allFieldsEmpty = false;
       }
     });
@@ -144,13 +144,21 @@ class SymptomsAssessment extends React.Component {
     const id = `${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
     return (
       <Form.Row className="pt-3" key={key}>
-        <Form.Label className="nav-input-label" key={key} htmlFor={id}>
+        <Form.Label className="nav-input-label" key={key + '_label'} htmlFor={id}>
           <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b>{' '}
           {this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
             ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
             : ''}
         </Form.Label>
-        <Form.Control size="lg" id={id} key={key} className="form-square" value={symp.value || ''} type="number" onChange={this.handleChange} />
+        <Form.Control
+          size="lg"
+          id={id + '_control'}
+          key={key + '_control'}
+          className="form-square"
+          value={symp.value || ''}
+          type="number"
+          onChange={this.handleChange}
+        />
       </Form.Row>
     );
   };
