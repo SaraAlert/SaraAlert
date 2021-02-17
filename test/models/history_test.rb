@@ -42,7 +42,7 @@ class HistoryTest < ActiveSupport::TestCase
     end
   end
 
-  test 'update patient updated_at upon history create, update, and delete' do
+  test 'update patient updated_at upon history create' do
     patient = create(:patient)
 
     ActiveRecord::Base.record_timestamps = false
@@ -54,26 +54,8 @@ class HistoryTest < ActiveSupport::TestCase
     ActiveRecord::Base.record_timestamps = false
     patient.update(updated_at: 1.day.ago)
     ActiveRecord::Base.record_timestamps = true
-    create(:history, patient: patient, history_type: History::HISTORY_TYPES[:report_reminder])
-    assert_in_delta patient.updated_at, 1.day.ago, 1
-
-    ActiveRecord::Base.record_timestamps = false
-    patient.update(updated_at: 1.day.ago)
-    ActiveRecord::Base.record_timestamps = true
     create(:history, patient: patient, history_type: History::HISTORY_TYPES[:monitoree_data_downloaded])
     assert_in_delta patient.updated_at, 1.day.ago, 1
-
-    ActiveRecord::Base.record_timestamps = false
-    patient.update(updated_at: 1.day.ago)
-    ActiveRecord::Base.record_timestamps = true
-    create(:history, patient: patient, history_type: History::HISTORY_TYPES[:contact_attempt])
-    assert_in_delta patient.updated_at, 1.day.ago, 1
-
-    ActiveRecord::Base.record_timestamps = false
-    patient.update(updated_at: 1.day.ago)
-    ActiveRecord::Base.record_timestamps = true
-    create(:history, patient: patient, history_type: History::HISTORY_TYPES[:contact_attempt], created_by: 'state1_epi_enroller@example.com')
-    assert_in_delta patient.updated_at, Time.now.utc, 1
   end
 
   test 'history in time frame' do
