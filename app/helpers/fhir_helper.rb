@@ -142,14 +142,14 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       foreign_address_country: foreign_address&.country,
       primary_language: patient&.communication&.first&.language&.coding&.first&.display,
       interpretation_required: patient&.communication&.first&.preferred,
-      white: race_code?(patient, '2106-3'),
-      black_or_african_american: race_code?(patient, '2054-5'),
-      american_indian_or_alaska_native: race_code?(patient, '1002-5'),
-      asian: race_code?(patient, '2028-9'),
-      native_hawaiian_or_other_pacific_islander: race_code?(patient, '2076-8'),
-      race_other: race_code?(patient, 'OTH'),
-      race_unknown: race_code?(patient, 'UNK'),
-      race_refused_to_answer: race_code?(patient, 'ASKU'),
+      white: race_code?(patient, '2106-3', 'ombCategory', false),
+      black_or_african_american: race_code?(patient, '2054-5', 'ombCategory', false),
+      american_indian_or_alaska_native: race_code?(patient, '1002-5', 'ombCategory', false),
+      asian: race_code?(patient, '2028-9', 'ombCategory', false),
+      native_hawaiian_or_other_pacific_islander: race_code?(patient, '2076-8', 'ombCategory', false),
+      race_other: race_code?(patient, '2131-1', 'detailed', false),
+      race_unknown: race_code?(patient, 'unknown', 'http://hl7.org/fhir/StructureDefinition/data-absent-reason', true),
+      race_refused_to_answer: race_code?(patient, 'asked-declined', 'http://hl7.org/fhir/StructureDefinition/data-absent-reason', true),
       ethnicity: from_us_core_ethnicity(patient),
       sex: from_us_core_birthsex(patient),
       preferred_contact_method: from_string_extension(patient, 'preferred-contact-method'),
@@ -205,16 +205,16 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         valueCoding: FHIR::Coding.new(code: '2076-8', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Native Hawaiian or Other Pacific Islander')
       ) : nil,
       races[:race_other] ? FHIR::Extension.new(
-        url: 'ombCategory',
-        valueCoding: FHIR::Coding.new(code: 'OTH', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Other')
+        url: 'detailed',
+        valueCoding: FHIR::Coding.new(code: '2131-1', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Other Race')
       ) : nil,
       races[:race_unknown] ? FHIR::Extension.new(
-        url: 'ombCategory',
-        valueCoding: FHIR::Coding.new(code: 'UNK', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Unknown')
+        url: 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+        valueCode: 'unknown'
       ) : nil,
       races[:race_refused_to_answer] ? FHIR::Extension.new(
-        url: 'ombCategory',
-        valueCoding: FHIR::Coding.new(code: 'ASKU', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Refused to Answer')
+        url: 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+        valueCode: 'asked-declined'
       ) : nil,
       FHIR::Extension.new(
         url: 'text',
@@ -231,15 +231,15 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   # Return a boolean indicating if the given race code is present on the given FHIR::Patient.
-  def race_code?(patient, code)
-    url = 'us-core-race'
-    patient&.extension&.select { |e| e.url.include?(url) }&.first&.extension&.select { |e| e.url == 'ombCategory' }&.any? { |e| e&.valueCoding&.code == code }
+  def race_code?(patient, code, url, absent)
+    race_extension = patient&.extension&.select { |e| e.url.include?('us-core-race') }&.first&.extension
+    race_extension&.select { |e| e.url == url }&.any? { |e| (absent ? e&.valueCode : e&.valueCoding&.code) == code }
   end
 
   # Build a FHIR US Core Ethnicity Extension given Sara Alert ethnicity information.
   def to_us_core_ethnicity(ethnicity)
     # Don't return an extension if no ethnicity specified
-    return nil unless ['Hispanic or Latino', 'Not Hispanic or Latino'].include?(ethnicity)
+    return nil unless ValidationHelper::VALID_PATIENT_ENUMS[:ethnicity].include?(ethnicity)
 
     # Build out extension based on what ethnicity was specified
     FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity', extension: [
@@ -252,12 +252,12 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
                             valueCoding: FHIR::Coding.new(code: '2186-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Not Hispanic or Latino')
                           ) : nil,
                           ethnicity == 'Unknown' ? FHIR::Extension.new(
-                            url: 'ombCategory',
-                            valueCoding: FHIR::Coding.new(code: 'UNK', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Unknown')
+                            url: 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+                            valueCode: 'unknown'
                           ) : nil,
                           ethnicity == 'Refused to Answer' ? FHIR::Extension.new(
-                            url: 'ombCategory',
-                            valueCoding: FHIR::Coding.new(code: 'ASKU', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Refused to Answer')
+                            url: 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+                            valueCode: 'asked-declined'
                           ) : nil,
                           FHIR::Extension.new(
                             url: 'text',
@@ -268,12 +268,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   # Return a string representing the ethnicity of the given FHIR::Patient
   def from_us_core_ethnicity(patient)
-    url = 'us-core-ethnicity'
-    code = patient&.extension&.select { |e| e.url.include?(url) }&.first&.extension&.select { |e| e.url == 'ombCategory' }&.first&.valueCoding&.code
+    urls = %w[ombCategory http://hl7.org/fhir/StructureDefinition/data-absent-reason]
+    ethnicity = patient&.extension&.select { |e| e.url.include?('us-core-ethnicity') }&.first&.extension&.select { |e| urls.include?(e.url) }&.first
+    code = ethnicity&.valueCoding&.code || ethnicity&.valueCode
     return 'Hispanic or Latino' if code == '2135-2'
     return 'Not Hispanic or Latino' if code == '2186-5'
-    return 'Unknown' if code == 'UNK'
-    return 'Refused to Answer' if code == 'ASKU'
+    return 'Unknown' if code == 'unknown'
+    return 'Refused to Answer' if code == 'asked-declined'
 
     code
   end

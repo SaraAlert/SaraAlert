@@ -204,7 +204,13 @@ class Enrollment extends React.Component {
           direction={this.state.direction}
           onSelect={() => {}}>
           <Carousel.Item>
-            <Identification goto={this.goto} next={this.next} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+            <Identification
+              goto={this.goto}
+              next={this.next}
+              setEnrollmentState={this.setEnrollmentState}
+              currentState={this.state.enrollmentState}
+              race_options={this.props.race_options}
+            />
           </Carousel.Item>
           <Carousel.Item>
             <Address currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
@@ -268,6 +274,7 @@ Enrollment.propTypes = {
   assigned_users: PropTypes.array,
   edit_mode: PropTypes.bool,
   enrollment_step: PropTypes.number,
+  race_options: PropTypes.object,
   parent_id: PropTypes.number,
   cc_id: PropTypes.number,
   can_add_group: PropTypes.bool,
