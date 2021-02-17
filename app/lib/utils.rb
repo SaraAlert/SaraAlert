@@ -4,7 +4,6 @@
 module Utils
   # Converts phone number from e164 to CDC recommended format
   def format_phone_number(phone)
-    # cleaned_phone_number = Phonelib.parse(phone).national(false)
     cleaned_phone_number = phone&.gsub('+1', '')
     return nil if cleaned_phone_number.nil? || cleaned_phone_number.length != 10
 
