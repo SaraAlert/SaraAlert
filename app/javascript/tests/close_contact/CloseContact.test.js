@@ -12,7 +12,7 @@ const testInputValues = [
   { field: 'first_name', value: 'Anthony' },
   { field: 'last_name', value: 'Stark' },
   { field: 'primary_telephone', value: '1234567890' },
-  { field: 'email', value: 'tinman@starkindustries.com' },
+  { field: 'email', value: 'tinman@example.com' },
   { field: 'last_date_of_exposure', value: '2020-05-16' },
   { field: 'assigned_user', value: ASSIGNED_USERS[0] },
   { field: 'notes', value: 'Inevitable' },

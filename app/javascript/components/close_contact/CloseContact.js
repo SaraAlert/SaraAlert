@@ -281,7 +281,7 @@ class CloseContact extends React.Component {
           {/* This does not impact component functionality at all. */}
           {this.state.disableCreate && (
             <ReactTooltip id="create-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
-              Please enter one of the following: First Name, Last Name, Phone Number or Email
+              Please enter one of the following: First Name, Last Name, Phone Number, or Email
             </ReactTooltip>
           )}
         </Modal.Footer>
