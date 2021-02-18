@@ -10,6 +10,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   include TransferQueryHelper
   include HistoryQueryHelper
   include Utils
+  include ExcelSanitizer
 
   EXPORT_TYPES = {
     csv_linelist_exposure: { label: 'Line list CSV (exposure)', filename: 'Sara-Alert-Linelist-Exposure' },
@@ -604,8 +605,12 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   def extract_incomplete_patient_details(patient, fields)
     patient_details = {}
 
-    (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:strings]).each do |field|
+    PATIENT_FIELD_TYPES[:numbers].each do |field|
       patient_details[field] = patient[field] || '' if fields.include?(field)
+    end
+
+    PATIENT_FIELD_TYPES[:strings].each do |field|
+      patient_details[field] = remove_formula_start(patient[field]) || '' if fields.include?(field)
     end
 
     PATIENT_FIELD_TYPES[:dates].each do |field|
@@ -626,7 +631,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     PATIENT_RACE_FIELDS.each { |race| patient_details[race] = patient[race] || false } if fields.include?(:race)
 
-    patient_details[:name] = patient.displayed_name if fields.include?(:name)
+    patient_details[:name] = remove_formula_start(patient.displayed_name) if fields.include?(:name)
     patient_details[:age] = patient.calc_current_age if fields.include?(:age)
     patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
     patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
