@@ -780,19 +780,6 @@ class Fhir::R4::ApiController < ActionController::API
     end
   end
 
-  def format_model_validation_errors(resource)
-    resource.errors&.messages&.each_with_object([]) do |(attribute, errors), messages|
-      # NOTE: If the value is a date, the typecast value may not correspond to original user input, so get value_before_type_cast
-      value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
-      msg_header = 'Validation Error' + (value ? " for value '#{value}'" : '') + " on '#{VALIDATION[attribute][:label]}':"
-      errors.each do |error_message|
-        # Exclude the actual value in logging to avoid PII/PHI
-        Rails.logger.info "Validation Error on: #{attribute}"
-        messages << "#{msg_header} #{error_message}"
-      end
-    end
-  end
-
   # Allow cross-origin requests
   def cors_headers
     headers['Access-Control-Allow-Origin'] = '*'
