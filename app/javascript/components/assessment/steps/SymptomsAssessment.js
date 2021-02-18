@@ -150,15 +150,7 @@ class SymptomsAssessment extends React.Component {
             ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
             : ''}
         </Form.Label>
-        <Form.Control
-          size="lg"
-          id={id + '_control'}
-          key={key + '_control'}
-          className="form-square"
-          value={symp.value || ''}
-          type="number"
-          onChange={this.handleChange}
-        />
+        <Form.Control size="lg" id={id} key={key + '_control'} className="form-square" value={symp.value || ''} type="number" onChange={this.handleChange} />
       </Form.Row>
     );
   };
