@@ -33,15 +33,8 @@ class SymptomsAssessment extends React.Component {
   };
 
   handleFloatChange = event => {
-    if (
-      event?.target?.value === '' ||
-      event?.target?.value === '.' ||
-      (event?.target?.value && !isNaN(event.target.value) && !isNaN(parseFloat(event.target.value)))
-    ) {
-      // To prevent the user from just submitting a period character
-      if (event.target.value === '.') {
-        event.target.value = '0.';
-      }
+    const validInputs = ['', '.', '-', '-.'];
+    if (validInputs.includes(event?.target?.value) || (event?.target?.value && !isNaN(event.target.value) && !isNaN(parseFloat(event.target.value)))) {
       this.handleChange(event, event.target.value);
     }
   };
@@ -111,13 +104,16 @@ class SymptomsAssessment extends React.Component {
     }
   };
 
-  // Converts all FloatSymptoms to be floating point values
-  // Specifically needed for the case of input "0." so an error doesn't occurr on submission
+  // Converts all FloatSymptoms to be floating point values and nulls out any non-floating point values provided
   formatedReportState = () => {
     let reportState = this.state.reportState;
     for (const key in this.state.reportState['symptoms']) {
-      if (parseInt(key) && reportState['symptoms'][parseInt(key)].type == 'FloatSymptom' && !isNaN(parseFloat(reportState['symptoms'][parseInt(key)].value))) {
-        reportState['symptoms'][parseInt(key)].value = parseFloat(reportState['symptoms'][parseInt(key)].value);
+      if (parseInt(key) && reportState['symptoms'][parseInt(key)].type == 'FloatSymptom') {
+        if (!isNaN(parseFloat(reportState['symptoms'][parseInt(key)].value))) {
+          reportState['symptoms'][parseInt(key)].value = parseFloat(reportState['symptoms'][parseInt(key)].value);
+        } else {
+          reportState['symptoms'][parseInt(key)].value = null;
+        }
       }
     }
     return reportState;
