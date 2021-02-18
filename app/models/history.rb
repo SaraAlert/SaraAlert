@@ -5,6 +5,8 @@ require 'action_view/helpers'
 
 # History: history model
 class History < ApplicationRecord
+  include ExcelSanitizer
+
   HISTORY_TYPES = {
     record_edit: 'Record Edit',
     report_created: 'Report Created',
@@ -344,9 +346,9 @@ class History < ApplicationRecord
     history_details[:user_defined_id_statelocal] = patient_identifiers[:user_defined_id_statelocal]
     history_details[:user_defined_id_cdc] = patient_identifiers[:user_defined_id_cdc]
     history_details[:user_defined_id_nndss] = patient_identifiers[:user_defined_id_nndss]
-    history_details[:created_by] = created_by || '' if fields.include?(:created_by)
+    history_details[:created_by] = remove_formula_start(created_by) || '' if fields.include?(:created_by)
     history_details[:history_type] = history_type || '' if fields.include?(:history_type)
-    history_details[:comment] = comment || '' if fields.include?(:comment)
+    history_details[:comment] = remove_formula_start(comment) || '' if fields.include?(:comment)
     history_details[:created_at] = created_at || '' if fields.include?(:created_at)
     history_details[:updated_at] = updated_at || '' if fields.include?(:updated_at)
     history_details
