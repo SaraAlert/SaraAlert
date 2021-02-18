@@ -283,19 +283,6 @@ class ImportController < ApplicationController
     end
     raise ValidationError.new(err_msg, row_ind)
   end
-
-  def format_model_validation_errors(resource)
-    resource.errors&.messages&.each_with_object([]) do |(attribute, errors), messages|
-      next unless VALIDATION.key?(attribute)
-
-      # NOTE: If the value is a date, the typecast value may not correspond to original user input, so get value_before_type_cast
-      value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
-      msg_header = (value ? " Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}'"
-      errors.each do |error_message|
-        messages << "#{msg_header} #{error_message}"
-      end
-    end
-  end
 end
 
 # Exception used for reporting validation errors
