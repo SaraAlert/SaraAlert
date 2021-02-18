@@ -4,6 +4,7 @@
 class Assessment < ApplicationRecord
   extend OrderAsSpecified
   include PatientHelper
+  include ExcelSanitizer
 
   columns.each do |column|
     case column.type
@@ -159,7 +160,7 @@ class Assessment < ApplicationRecord
     assessment_details[:user_defined_id_cdc] = patient_identifiers[:user_defined_id_cdc]
     assessment_details[:user_defined_id_nndss] = patient_identifiers[:user_defined_id_nndss]
     assessment_details[:symptomatic] = symptomatic || false if fields.include?(:symptomatic)
-    assessment_details[:who_reported] = who_reported || '' if fields.include?(:who_reported)
+    assessment_details[:who_reported] = remove_formula_start(who_reported) || '' if fields.include?(:who_reported)
     assessment_details[:created_at] = created_at || '' if fields.include?(:created_at)
     assessment_details[:updated_at] = updated_at || '' if fields.include?(:updated_at)
     assessment_details
