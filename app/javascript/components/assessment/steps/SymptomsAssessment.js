@@ -19,13 +19,31 @@ class SymptomsAssessment extends React.Component {
     };
   }
 
-  handleChange = event => {
-    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+  handleChange = (event, value) => {
     let report = this.state.reportState;
     let field_id = event.target.id.split('_idpre')[0];
     Object.values(report.symptoms).find(symp => symp.name === field_id).value = value;
     this.setState({ reportState: report });
     this.updateBoolSymptomCount();
+  };
+
+  handleBoolChange = event => {
+    let value = event.target.checked;
+    this.handleChange(event, value);
+  };
+
+  handleFloatChange = event => {
+    if (
+      event?.target?.value === '' ||
+      event?.target?.value === '.' ||
+      (event?.target?.value && !isNaN(event.target.value) && !isNaN(parseFloat(event.target.value)))
+    ) {
+      // To prevent the user from just submitting a period character
+      if (event.target.value === '.') {
+        event.target.value = '0.';
+      }
+      this.handleChange(event, event.target.value);
+    }
   };
 
   handleNoSymptomChange = event => {
@@ -77,19 +95,32 @@ class SymptomsAssessment extends React.Component {
   };
 
   handleSubmit = async () => {
+    const reportState = this.formatedReportState();
     if (this.fieldIsEmptyOrNew(this.props.assessment)) {
-      this.props.submit(this.state.reportState);
+      this.props.submit(reportState);
     } else {
       if (this.hasChanges()) {
         if (await confirmDialog("Are you sure you'd like to modify this report?")) {
-          this.props.submit(this.state.reportState);
+          this.props.submit(reportState);
         } else {
           this.setState({ loading: false });
         }
       } else {
-        this.props.submit(this.state.reportState);
+        this.props.submit(reportState);
       }
     }
+  };
+
+  // Converts all FloatSymptoms to be floating point values
+  // Specifically needed for the case of input "0." so an error doesn't occurr on submission
+  formatedReportState = () => {
+    let reportState = this.state.reportState;
+    for (const key in this.state.reportState['symptoms']) {
+      if (parseInt(key) && reportState['symptoms'][parseInt(key)].type == 'FloatSymptom' && !isNaN(parseFloat(reportState['symptoms'][parseInt(key)].value))) {
+        reportState['symptoms'][parseInt(key)].value = parseFloat(reportState['symptoms'][parseInt(key)].value);
+      }
+    }
+    return reportState;
   };
 
   noSymptom = () => {
@@ -135,7 +166,7 @@ class SymptomsAssessment extends React.Component {
           </div>
         }
         className="pb-2"
-        onChange={this.handleChange}></Form.Check>
+        onChange={this.handleBoolChange}></Form.Check>
     );
   };
 
@@ -150,7 +181,7 @@ class SymptomsAssessment extends React.Component {
             ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
             : ''}
         </Form.Label>
-        <Form.Control size="lg" id={id} key={key + '_control'} className="form-square" value={symp.value || ''} type="number" onChange={this.handleChange} />
+        <Form.Control size="lg" id={id} key={key + '_control'} className="form-square" value={symp.value || ''} maxlength="35" onChange={this.handleFloatChange} />
       </Form.Row>
     );
   };
