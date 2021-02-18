@@ -3,6 +3,7 @@
 # Laboratory: represents a lab result
 class Laboratory < ApplicationRecord
   include ValidationHelper
+  include ExcelSanitizer
   belongs_to :patient, touch: true
 
   validates :result, inclusion: { in: ['positive', 'negative', 'indeterminate', 'other', nil, ''] }
@@ -56,7 +57,7 @@ class Laboratory < ApplicationRecord
     laboratory_details[:user_defined_id_statelocal] = patient_identifiers[:user_defined_id_statelocal]
     laboratory_details[:user_defined_id_cdc] = patient_identifiers[:user_defined_id_cdc]
     laboratory_details[:user_defined_id_nndss] = patient_identifiers[:user_defined_id_nndss]
-    laboratory_details[:lab_type] = lab_type || '' if fields.include?(:lab_type)
+    laboratory_details[:lab_type] = remove_formula_start(lab_type) || '' if fields.include?(:lab_type)
     laboratory_details[:specimen_collection] = specimen_collection&.strftime('%F') || '' if fields.include?(:specimen_collection)
     laboratory_details[:report] = report&.strftime('%F') || '' if fields.include?(:report)
     laboratory_details[:result] = result || '' if fields.include?(:result)
