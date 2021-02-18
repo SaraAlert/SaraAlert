@@ -547,11 +547,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   def extract_patients_details(patients, fields)
     # perform the following queries in bulk only if requested for better performance
     if fields.include?(:jurisdiction_name)
-      jurisdiction_names = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :path).map { |id, name| [id, name] }]
+      jurisdiction_names = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :name).map { |id, name| [id, name] }]
     end
     if (fields & %i[jurisdiction_path transferred_from transferred_to]).size.positive?
       jur_ids = patients.pluck(:jurisdiction_id).uniq
-      jur_ids &= patients.pluck(:latest_transfer_from).uniq if fields.include?(:transferred_from)
+      jur_ids = (jur_ids + patients.pluck(:latest_transfer_from)).uniq if fields.include?(:transferred_from)
       jurisdiction_paths = Hash[Jurisdiction.find(jur_ids).pluck(:id, :path).map { |id, path| [id, path] }]
     end
 
@@ -650,25 +650,19 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   # Extracts assessment data values given relevant fields
   def extract_assessments_details(patients_identifiers, assessments, fields)
     if fields.include?(:symptoms)
-      # conditions_assessments_map = Hash[assessments.joins(:reported_condition).pluck('conditions.id', :assessment_id).map { |cid, aid| [cid, aid] }]
-      # assessments_hash = Hash[conditions_assessments_map.values.map { |aid| [aid, { symptoms: {} }] }]
       conditions_hash = Hash[assessments.joins(:reported_condition).pluck('conditions.id', :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
                         .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
 
       # Uses index_symptoms_on_condition_id
       all_symptoms = Symptom.where(condition_id: conditions_hash.keys)
-      # all_symptoms = Symptom.where(condition_id: conditions_assessments_map.keys)
       all_symptoms.where(type: 'BoolSymptom').pluck(:condition_id, :name, :bool_value).each do |(condition_id, name, bool_value)|
         conditions_hash[condition_id][:symptoms][name] = bool_value
-        # assessments_hash[conditions_assessments_map[condition_id]][:symptoms][name] = bool_value
       end
       all_symptoms.where(type: 'IntegerSymptom').pluck(:condition_id, :name, :bool_value).each do |(condition_id, name, int_value)|
         conditions_hash[condition_id][:symptoms][name] = int_value
-        # assessments_hash[conditions_assessments_map[condition_id]][:symptoms][name] = int_value
       end
       all_symptoms.where(type: 'FloatSymptom').pluck(:condition_id, :name, :bool_value).each do |(condition_id, name, float_value)|
         conditions_hash[condition_id][:symptoms][name] = float_value
-        # assessments_hash[conditions_assessments_map[condition_id]][:symptoms][name] = float_value
       end
       assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
     end
@@ -728,11 +722,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       (PATIENT_ALTERNATIVE_IDENTIFIERS & fields).each { |identifier| transfer[identifier] = patients_identifiers[transfer[:patient_id]][identifier] }
       transfer
     end
-
-    # user_emails = Hash[User.find(transfers.map(&:who_id).uniq).pluck(:id, :email).map { |id, email| [id, email] }]
-    # jurisdiction_ids = [transfers.map(&:from_jurisdiction_id), transfers.map(&:to_jurisdiction_id)].flatten.uniq
-    # jurisdiction_paths = Hash[Jurisdiction.find(jurisdiction_ids).pluck(:id, :path).map { |id, path| [id, path] }]
-    # transfers.map { |transfer| transfer.custom_details(fields, patients_identifiers[transfer.patient_id], user_emails, jurisdiction_paths) }
   end
 
   # Extracts history data values given relevant fields
@@ -773,7 +762,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # 2) Get export data in batches to decrease size of export data hash maintained in memory
     patients_group.in_batches(of: inner_batch_size) do |batch_group|
-      puts 'INNER BATCH'
       # The config should be passed to this function rather than data, because it determines values
       # based on the original configuration.
       exported_data = get_export_data(batch_group.order(:id), config[:data])
@@ -806,6 +794,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       files = []
       workbooks = {}
       sheets = {}
+      last_row_nums = {}
 
       # 1) This initial loops creates all of the files and column headers which should not be done in the batched loop
       CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
@@ -816,20 +805,20 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         worksheet = workbook.add_worksheet(config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label))
         worksheet.auto_width = true
         worksheet.append_row(field_data.dig(data_type, :headers))
+        last_row_nums[data_type] = 0
         sheets[data_type] = worksheet
         workbooks[data_type] = workbook
       end
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
       patients_group.in_batches(of: inner_batch_size) do |batch_group|
-        puts 'INNER BATCH'
         exported_data = get_export_data(batch_group.order(:id), config[:data])
 
         #  Write to appropriate sheets (in each file)
         CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
           next unless config.dig(:data, data_type, :checked).present?
 
-          write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked])
+          last_row_nums[data_type] = write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked], last_row_nums[data_type])
         end
       end
 
@@ -846,6 +835,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       workbook = FastExcel.open(constant_memory: true)
       sheets = {}
       fields = {}
+      last_row_nums = {}
 
       # 1) This initial loops writes all of column headers which should not be done in the batched loop
       CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
@@ -857,18 +847,18 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         worksheet = workbook.add_worksheet(config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label))
         worksheet.auto_width = true
         worksheet.append_row(field_data.dig(data_type, :headers))
+        last_row_nums[data_type] = 0
         sheets[data_type] = worksheet
       end
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
       patients_group.in_batches(of: inner_batch_size) do |batch_group|
-        puts 'INNER BATCH'
         exported_data = get_export_data(batch_group.order(:id), config[:data])
 
         CUSTOM_EXPORT_OPTIONS.each_key do |data_type|
           next unless config.dig(:data, data_type, :checked).present?
 
-          write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked])
+          last_row_nums[data_type] = write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked], last_row_nums[data_type])
         end
       end
 
@@ -877,10 +867,16 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
   end
 
-  def write_xlsx_rows(exported_data, data_type, worksheet, fields)
+  def write_xlsx_rows(exported_data, data_type, worksheet, fields, last_row_num)
     exported_data[data_type]&.each do |record|
-      worksheet.append_row(fields.map { |field| record[field] })
+      # fast_excel unfortunately does not provide a method to modify the @last_row_number class variable so it needs to be manually kept track of
+      last_row_num += 1
+      fields.each_with_index do |field, col_index|
+        # write_string is used instead of append_row because it does not provide the capability to write data as strings
+        worksheet.write_string(last_row_num, col_index, record[field].to_s, nil)
+      end
     end
+    last_row_num
   end
 
   # Gets data for this batch of patients that may not have already been present in the export config (such as specific symptoms).

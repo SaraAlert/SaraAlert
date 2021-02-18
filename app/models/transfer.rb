@@ -50,21 +50,6 @@ class Transfer < ApplicationRecord
     )
   }
 
-  def custom_details(fields, patient_identifiers, user_emails, jurisdiction_paths)
-    transfer_details = {}
-    transfer_details[:id] = id || '' if fields.include?(:id)
-    transfer_details[:patient_id] = patient_id || '' if fields.include?(:patient_id)
-    transfer_details[:user_defined_id_statelocal] = patient_identifiers[:user_defined_id_statelocal]
-    transfer_details[:user_defined_id_cdc] = patient_identifiers[:user_defined_id_cdc]
-    transfer_details[:user_defined_id_nndss] = patient_identifiers[:user_defined_id_nndss]
-    transfer_details[:who] = user_emails[who_id] || '' if fields.include?(:who)
-    transfer_details[:from_jurisdiction] = jurisdiction_paths[from_jurisdiction_id] || '' if fields.include?(:from_jurisdiction)
-    transfer_details[:to_jurisdiction] = jurisdiction_paths[to_jurisdiction_id] || '' if fields.include?(:to_jurisdiction)
-    transfer_details[:created_at] = created_at || '' if fields.include?(:created_at)
-    transfer_details[:updated_at] = updated_at || '' if fields.include?(:updated_at)
-    transfer_details
-  end
-
   private
 
   def update_patient_linelist_after_save
