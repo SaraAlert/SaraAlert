@@ -1,21 +1,17 @@
 import React from 'react'
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
-import MoveToHousehold from '../../components/subject/household_actions/MoveToHousehold.js'
-import CustomTable from '../../components/layout/CustomTable';
+import MoveToHousehold from '../../../components/subject/household_actions/MoveToHousehold.js'
+import CustomTable from '../../../components/layout/CustomTable';
 
-import { mockPatient1 } from '../mocks/mockPatients'
-import { nameFormatterAlt } from '../util.js'
+import { mockPatient1 } from '../../mocks/mockPatients'
+import { nameFormatterAlt } from '../../util.js'
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 
 function getWrapper(patient) {
   return shallow(<MoveToHousehold patient={patient} authenticity_token={authyToken} />);
-}
-
-function getMountedWrapper(patient) {
-  return mount(<MoveToHousehold patient={patient} authenticity_token={authyToken} />);
 }
 
 afterEach(() => {

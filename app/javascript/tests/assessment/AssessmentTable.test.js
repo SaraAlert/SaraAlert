@@ -26,14 +26,14 @@ const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEU
 
 function getWrapperIsolation() {
   return shallow(<AssessmentTable current_user={mockUser1} patient={mockPatient1} calculated_age={77} patient_initials={'MM'}
-    is_household_member={true} monitoring_period_days={14} symptoms={mockNewSymptoms} patient_status={'isolation_symp_non_test_based'}
+    household_members={[ mockPatient2 ]} monitoring_period_days={14} symptoms={mockNewSymptoms} patient_status={'isolation_symp_non_test_based'}
     report_eligibility={reportEligibility} translations={mockTranslations} authenticity_token={authyToken}
     threshold_condition_hash={mockAssessment1.threshold_condition_hash} />);
 }
 
 function getWrapperExposure() {
   return shallow(<AssessmentTable current_user={mockUser1} patient={mockPatient2} calculated_age={79} patient_initials={'MM'}
-    is_household_member={true} monitoring_period_days={14} symptoms={mockNewSymptoms} patient_status={'exposure_symptomatic'}
+    household_members={[ mockPatient1 ]} monitoring_period_days={14} symptoms={mockNewSymptoms} patient_status={'exposure_symptomatic'}
     report_eligibility={reportEligibility} translations={mockTranslations} authenticity_token={authyToken}
     threshold_condition_hash={mockAssessment1.threshold_condition_hash} />);
 }
