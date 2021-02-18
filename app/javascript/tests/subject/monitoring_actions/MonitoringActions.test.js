@@ -19,9 +19,9 @@ const assigned_users = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
 
 describe('MonitoringActions', () => {
   it('Properly renders all main components', () => {
-    const wrapper = shallow(<MonitoringActions patient={mockPatient1} has_dependents={false} in_household_with_member_with_ce_in_exposure={false} isolation={false}
-      authenticity_token={authyToken} jurisdiction_paths={mockJurisdictionPaths} current_user={mockUser1} assigned_users={assigned_users} user_can_transfer={false}
-      monitoring_reasons={mockMonitoringReasons}/>);
+    const wrapper = shallow(<MonitoringActions patient={mockPatient1} household_members={[]} isolation={false}
+      authenticity_token={authyToken} jurisdiction_paths={mockJurisdictionPaths} current_user={mockUser1}
+      assigned_users={assigned_users} user_can_transfer={false} monitoring_reasons={mockMonitoringReasons}/>);
 
     expect(wrapper.find(Form).exists()).toBeTruthy();
     expect(wrapper.find(Form.Group).length).toEqual(7);
