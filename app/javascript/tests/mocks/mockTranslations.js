@@ -89,6 +89,10 @@ const mockTranslations = {
       'congestion_or_runny_nose': {
         'name': 'Congestion or Runny Nose',
         'notes': ''
+      },
+      'general_health': {
+        'name': 'General Health',
+        'notes': 'How are you feeling on a scale of 1 (feeling great) to 10 (feeling very sickly)?'
       }
     },
     'threshold-op': {
@@ -259,6 +263,10 @@ const mockTranslations = {
       'congestion_or_runny_nose': {
         'name': 'Congestión nasal o un exceso de moco en la nariz',
         'notes': ''
+      },
+      'general_health': {
+        'name': 'General Health',
+        'notes': 'How are you feeling on a scale of 1 (feeling great) to 10 (feeling very sickly)?'
       }
     },
     'threshold-op': {
@@ -429,6 +437,10 @@ const mockTranslations = {
       'congestion_or_runny_nose': {
         'name': 'Congestión nasal o un exceso de moco en la nariz',
         'notes': ''
+      },
+      'general_health': {
+        'name': 'General Health',
+        'notes': 'How are you feeling on a scale of 1 (feeling great) to 10 (feeling very sickly)?'
       }
     },
     'threshold-op': {
@@ -599,6 +611,10 @@ const mockTranslations = {
       'congestion_or_runny_nose': {
         'name': 'Congestion nasale ou nez qui coule',
         'notes': ''
+      },
+      'general_health': {
+        'name': 'General Health',
+        'notes': 'How are you feeling on a scale of 1 (feeling great) to 10 (feeling very sickly)?'
       }
     },
     'threshold_op': {
@@ -769,6 +785,10 @@ const mockTranslations = {
       'congestion_or_runny_nose': {
         'name': 'San xidhan ama duuf leh',
         'notes': ''
+      },
+      'general_health': {
+        'name': 'General Health',
+        'notes': 'How are you feeling on a scale of 1 (feeling great) to 10 (feeling very sickly)?'
       }
     },
     'threshold-op': {

@@ -287,6 +287,23 @@ const mockNewSymptoms = [
     type: 'FloatSymptom',
     updated_at: null,
     value: null
+  },
+  {
+    bool_value: null,
+    condition_id: 915,
+    created_at: null,
+    float_value: null,
+    group: 1,
+    id: null,
+    int_value: null,
+    label: 'General Health',
+    name: 'general_health',
+    notes: null,
+    required: true,
+    threshold_operator: 'Greater Than',
+    type: 'IntegerSymptom',
+    updated_at: null,
+    value: null
   }
 ];
 
@@ -577,6 +594,23 @@ const mockSymptoms1 = [
     required: true,
     threshold_operator: 'Less Than',
     type: 'FloatSymptom',
+    updated_at: '2020-12-23T15:12:53.000Z',
+    value: null
+  },
+  {
+    bool_value: null,
+    condition_id: 915,
+    created_at: '2020-12-23T15:12:53.000Z',
+    float_value: null,
+    group: 1,
+    id: 22985,
+    int_value: null,
+    label: 'General Health',
+    name: 'general_health',
+    notes: null,
+    required: true,
+    threshold_operator: 'Greater Than',
+    type: 'IntegerSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
     value: null
   }
@@ -871,6 +905,23 @@ const mockSymptoms2 = [
     type: 'FloatSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
     value: 1
+  },
+  {
+    bool_value: null,
+    condition_id: 915,
+    created_at: '2020-12-22T08:57:53.000Z',
+    float_value: null,
+    group: 1,
+    id: 22985,
+    int_value: 5,
+    label: 'General Health',
+    name: 'general_health',
+    notes: null,
+    required: true,
+    threshold_operator: 'Greater Than',
+    type: 'IntegerSymptom',
+    updated_at: '2020-12-22T08:57:53.000Z',
+    value: 5
   }
 ];
 
