@@ -26,7 +26,7 @@ describe('SymptomsAssessment', () => {
     expect(wrapper.find(Card.Body).find(Form.Row).at(0).text()).toEqual(mockTranslations['en']['web']['bool-title']);
     expect(wrapper.find(Card.Body).find(Form.Group).exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find(Form.Check).length).toEqual(17);
-    expect(wrapper.find(Card.Body).find(Form.Control).length).toEqual(1);
+    expect(wrapper.find(Card.Body).find(Form.Control).length).toEqual(2);
     expect(wrapper.find(Card.Body).find(Button).exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find(Button).text()).toEqual(mockTranslations['en']['web']['submit']);
   });
@@ -38,7 +38,10 @@ describe('SymptomsAssessment', () => {
       expect(cb.prop('checked')).toBeFalsy();
       expect(cb.prop('disabled')).toBeFalsy();
     });
-    expect(wrapper.find(Form.Control).prop('value')).toEqual('');
+    const formControls = wrapper.find(Form.Control);
+    formControls.forEach(fc => {
+      expect(fc.prop('value')).toEqual('');
+    });
   });
 
   it('Properly renders checked bool symptoms when editing a report', () => {
@@ -50,17 +53,22 @@ describe('SymptomsAssessment', () => {
     });
     expect(wrapper.find(Form.Check).at(16).prop('checked')).toBeFalsy();
     expect(wrapper.find(Form.Check).at(16).prop('disabled')).toBeTruthy();
-    expect(wrapper.find(Form.Control).prop('value')).toEqual('');
+    const formControls = wrapper.find(Form.Control);
+    formControls.forEach(fc => {
+      expect(fc.prop('value')).toEqual('');
+    });
   });
 
-  it('Properly renders float symptom values when editing a report', () => {
+  it('Properly renders float & integer symptom values when editing a report', () => {
     const wrapper = getWrapper(mockAssessment2, mockSymptoms2, '777');
     const checkboxes = wrapper.find(Form.Check);
     checkboxes.forEach(cb => {
       expect(cb.prop('checked')).toBeFalsy();
       expect(cb.prop('disabled')).toBeFalsy();
     });
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(1);
+    const formControls = wrapper.find(Form.Control);
+    expect(formControls.at(0).prop('value')).toEqual(5);
+    expect(formControls.at(1).prop('value')).toEqual(1);
   });
 
   it('Clicking "I am not experiencing any symptoms" disables all bool symptom checkboxes', () => {
@@ -80,7 +88,7 @@ describe('SymptomsAssessment', () => {
   it('Clicking any bool symptom disables the "I am not experiencing any symptoms" checkbox', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
     const checkbox = wrapper.find(Form.Check).at(0);
-    checkbox.simulate('change', { target: { id: checkbox.prop('id'), value: true } });
+    checkbox.simulate('change', { target: { id: checkbox.prop('id'), checked: true } });
     wrapper.find(Form.Check).forEach(cb => {
       if (checkbox.prop('id') === cb.prop('id')) {
         expect(cb.prop('checked')).toBeTruthy();
@@ -111,7 +119,7 @@ describe('SymptomsAssessment', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
     const checkbox = wrapper.find(Form.Check).at(0);
     const checkboxId = checkbox.prop('id');
-    checkbox.simulate('change', { target: { id: checkboxId, value: true } });
+    checkbox.simulate('change', { target: { id: checkboxId, checked: true } });
     expect(wrapper.state('noSymptomsCheckbox')).toBeFalsy();
     expect(wrapper.state('selectedBoolSymptomCount')).toEqual(1);
     wrapper.state('reportState').symptoms.forEach(symp => {
@@ -140,7 +148,7 @@ describe('SymptomsAssessment', () => {
     const navigateSpy = jest.spyOn(wrapper.instance(), 'navigate');
     const handleSubmitSpy = jest.spyOn(wrapper.instance(), 'handleSubmit');
     const checkbox = wrapper.find(Form.Check).at(7);
-    checkbox.simulate('change', { target: { id: checkbox.prop('id'), value: true } });
+    checkbox.simulate('change', { target: { id: checkbox.prop('id'), checked: true } });
 
     expect(navigateSpy).toHaveBeenCalledTimes(0);
     expect(handleSubmitSpy).toHaveBeenCalledTimes(0);
