@@ -32,6 +32,16 @@ class SymptomsAssessment extends React.Component {
     this.handleChange(event, value);
   };
 
+  handleIntChange = event => {
+    const validInputs = ['', '-'];
+    if (
+      validInputs.includes(event?.target?.value) ||
+      (!event?.target?.value.includes('.') && event?.target?.value && !isNaN(event.target.value) && !isNaN(parseInt(event.target.value)))
+    ) {
+      this.handleChange(event, event.target.value);
+    }
+  };
+
   handleFloatChange = event => {
     const validInputs = ['', '.', '-', '-.'];
     if (validInputs.includes(event?.target?.value) || (event?.target?.value && !isNaN(event.target.value) && !isNaN(parseFloat(event.target.value)))) {
@@ -104,13 +114,19 @@ class SymptomsAssessment extends React.Component {
     }
   };
 
-  // Converts all FloatSymptoms to be floating point values and nulls out any non-floating point values provided
+  // Converts all FloatSymptoms and IntergerSymptoms to numerical values and nulls out any non-numerical values provided (such as '-', '.', and '-.')
   formatedReportState = () => {
     let reportState = this.state.reportState;
     for (const key in this.state.reportState['symptoms']) {
       if (parseInt(key) && reportState['symptoms'][parseInt(key)].type == 'FloatSymptom') {
         if (!isNaN(parseFloat(reportState['symptoms'][parseInt(key)].value))) {
           reportState['symptoms'][parseInt(key)].value = parseFloat(reportState['symptoms'][parseInt(key)].value);
+        } else {
+          reportState['symptoms'][parseInt(key)].value = null;
+        }
+      } else if (parseInt(key) && reportState['symptoms'][parseInt(key)].type == 'IntegerSymptom') {
+        if (!isNaN(parseInt(reportState['symptoms'][parseInt(key)].value))) {
+          reportState['symptoms'][parseInt(key)].value = parseInt(reportState['symptoms'][parseInt(key)].value);
         } else {
           reportState['symptoms'][parseInt(key)].value = null;
         }
@@ -166,6 +182,22 @@ class SymptomsAssessment extends React.Component {
     );
   };
 
+  integerSymptom = symp => {
+    const key = `key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
+    const id = `${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
+    return (
+      <Form.Row className="pt-3" key={key}>
+        <Form.Label className="nav-input-label" key={key + '_label'} htmlFor={id}>
+          <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b>{' '}
+          {this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
+            ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
+            : ''}
+        </Form.Label>
+        <Form.Control size="lg" id={id} key={key + '_control'} className="form-square" value={symp.value || ''} maxLength="9" onChange={this.handleIntChange} />
+      </Form.Row>
+    );
+  };
+
   floatSymptom = symp => {
     const key = `key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
     const id = `${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
@@ -210,6 +242,11 @@ class SymptomsAssessment extends React.Component {
                 })
                 .map(symp => this.boolSymptom(symp))}
               {this.noSymptom()}
+              {this.state.reportState.symptoms
+                .filter(x => {
+                  return x.type === 'IntegerSymptom';
+                })
+                .map(symp => this.integerSymptom(symp))}
               {this.state.reportState.symptoms
                 .filter(x => {
                   return x.type === 'FloatSymptom';
