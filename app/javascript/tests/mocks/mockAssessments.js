@@ -23,6 +23,7 @@ const mockAssessment1 = {
     difficulty_breathing: true,
     fatigue: true,
     fever: true,
+    general_health: null,
     headache: false,
     muscle_pain: false,
     nausea_or_vomiting: false,
@@ -34,6 +35,7 @@ const mockAssessment1 = {
     sore_throat: true,
     used_a_fever_reducer: false
   },
+  general_health: '',
   pulse_ox: '',
   repeated_shaking_with_chills: 'No',
   shortness_of_breath: 'No',
@@ -68,6 +70,7 @@ const mockAssessment2 = {
     difficulty_breathing: false,
     fatigue: false,
     fever: false,
+    general_health: false,
     headache: false,
     muscle_pain: false,
     nausea_or_vomiting: false,
@@ -79,6 +82,7 @@ const mockAssessment2 = {
     sore_throat: false,
     used_a_fever_reducer: false
   },
+  general_health: 5,
   pulse_ox: 1,
   repeated_shaking_with_chills: 'No',
   shortness_of_breath: 'No',
