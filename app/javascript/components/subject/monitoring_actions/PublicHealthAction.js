@@ -95,6 +95,8 @@ class PublicHealthAction extends React.Component {
             <React.Fragment>
               <ApplyToHousehold
                 household_members={this.props.household_members}
+                current_user={this.props.current_user}
+                jurisdiction_paths={this.props.jurisdiction_paths}
                 handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household })}
                 handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
               />
@@ -163,6 +165,8 @@ PublicHealthAction.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   household_members: PropTypes.array,
+  current_user: PropTypes.object,
+  jurisdiction_paths: PropTypes.object,
 };
 
 export default PublicHealthAction;
