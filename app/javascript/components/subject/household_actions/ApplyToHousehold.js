@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form } from 'react-bootstrap';
+import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import CustomTable from '../../layout/CustomTable';
@@ -12,18 +13,20 @@ class ApplyToHousehold extends React.Component {
     this.state = {
       table: {
         colData: [
-          { field: 'name', label: 'Name', isSortable: true, tooltip: null, filter: this.renderPatientName },
-          { field: 'age', label: 'Age', isSortable: true, tooltip: null },
-          { field: 'isolation', label: 'Workflow', isSortable: true, tooltip: null, filter: this.renderWorkflow },
-          { field: 'monitoring', label: 'Monitoring Status', isSortable: true, tooltip: null, filter: this.renderMonitoring },
-          { field: 'continuous_exposure', label: 'Continuous Exposure?', isSortable: true, tooltip: null, filter: this.renderContinuousExposure },
+          { field: 'name', label: 'Name', isSortable: true, tooltip: null, filter: this.formatPatientName },
+          { field: 'date_of_birth', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDate },
+          { field: 'isolation', label: 'Workflow', isSortable: true, tooltip: null, filter: this.formatWorkflow },
+          { field: 'monitoring', label: 'Monitoring Status', isSortable: true, tooltip: null, filter: this.formatMonitoring },
+          { field: 'continuous_exposure', label: 'Continuous Exposure?', isSortable: true, tooltip: null, filter: this.formatContinuousExposure },
         ],
         rowData: props.household_members,
         selectedRows: [],
+        disabledRows: this.getDisabledRows(props.household_members),
         selectAll: false,
       },
       applyToHousehold: false,
       selectedIds: [],
+      disabledIds: this.getDisabledIds(props.household_members),
     };
   }
 
@@ -35,7 +38,8 @@ class ApplyToHousehold extends React.Component {
   };
 
   handleSelect = selectedRows => {
-    const selectAll = selectedRows.length >= this.state.table.rowData.length;
+    const enabledRows = this.state.table.rowData.filter(row => this.validJurisdiction(row));
+    const selectAll = selectedRows.length >= enabledRows.length;
     this.setState(
       state => {
         return {
@@ -48,12 +52,58 @@ class ApplyToHousehold extends React.Component {
     );
   };
 
+  getDisabledRows = householdMembers => {
+    let disabledRows = [];
+    householdMembers.forEach((member, index) => {
+      if (!this.validJurisdiction(member)) {
+        disabledRows.push(index);
+      }
+    });
+    return disabledRows;
+  };
+
+  getDisabledIds = householdMembers => {
+    let disabledIds = [];
+    householdMembers.forEach(member => {
+      if (!this.validJurisdiction(member)) {
+        disabledIds.push(member.id);
+      }
+    });
+    return disabledIds;
+  };
+
+  validJurisdiction = patient => {
+    let isValid = true;
+    const jurisdiction = this.props.jurisdiction_paths[patient.jurisdiction_id];
+    if (_.isNil(jurisdiction)) {
+      isValid = false;
+    } else {
+      const jurisdictionArray = jurisdiction.split(', ');
+      this.props.current_user.jurisdiction_path.forEach((path, index) => {
+        if (path !== jurisdictionArray[index]) {
+          isValid = false;
+        }
+      });
+    }
+    return isValid;
+  };
+
   handleTableSort = sort => {
     const orderBy = sort.orderBy;
     const direction = sort.sortDirection;
     let rowData = _.cloneDeep(this.state.table.rowData);
     if (orderBy === 'name') {
       rowData = this.sortByName(rowData, direction);
+    } else if (orderBy === 'date_of_birth') {
+      if (direction === 'asc') {
+        rowData.sort((a, b) => {
+          return moment(a.date_of_birth).format('YYYYMMDD') - moment(b.date_of_birth).format('YYYYMMDD');
+        });
+      } else {
+        rowData.sort((a, b) => {
+          return moment(b.date_of_birth).format('YYYYMMDD') - moment(a.date_of_birth).format('YYYYMMDD');
+        });
+      }
     } else {
       if ((orderBy !== 'monitoring' && direction === 'asc') || (orderBy === 'monitoring' && direction === 'desc')) {
         rowData.sort((a, b) => {
@@ -66,9 +116,10 @@ class ApplyToHousehold extends React.Component {
       }
     }
     const selectedRows = this.updateSelectedRows(rowData);
+    const disabledRows = this.updateDisabledRows(rowData);
     this.setState(state => {
       return {
-        table: { ...state.table, rowData, selectedRows },
+        table: { ...state.table, rowData, selectedRows, disabledRows },
       };
     });
   };
@@ -116,7 +167,17 @@ class ApplyToHousehold extends React.Component {
     return selectedRows;
   };
 
-  renderPatientName = data => {
+  updateDisabledRows = rowData => {
+    let disabledRows = [];
+    rowData.forEach((row, index) => {
+      if (this.state.disabledIds.includes(row.id)) {
+        disabledRows.push(index);
+      }
+    });
+    return disabledRows;
+  };
+
+  formatPatientName = data => {
     const rowData = data.rowData;
     const monitoreeName = `${rowData.last_name || ''}, ${rowData.first_name || ''} ${rowData.middle_name || ''}`;
 
@@ -124,28 +185,39 @@ class ApplyToHousehold extends React.Component {
       return (
         <div>
           <BadgeHOH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
-          <a href={`/patients/${rowData.id}`} rel="noreferrer" target="_blank">
-            {monitoreeName}
-          </a>
+          {this.validJurisdiction(rowData) ? (
+            <a href={`/patients/${rowData.id}`} rel="noreferrer" target="_blank">
+              {monitoreeName}
+            </a>
+          ) : (
+            <div>{monitoreeName}</div>
+          )}
         </div>
       );
     }
-    return (
+    return this.validJurisdiction(rowData) ? (
       <a href={`/patients/${rowData.id}`} rel="noreferrer" target="_blank">
         {monitoreeName}
       </a>
+    ) : (
+      <div>{monitoreeName}</div>
     );
   };
 
-  renderWorkflow = data => {
+  formatDate(data) {
+    const date = data.value;
+    return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
+  }
+
+  formatWorkflow = data => {
     return <React.Fragment>{data.value ? 'Isolation' : 'Exposure'}</React.Fragment>;
   };
 
-  renderMonitoring = data => {
+  formatMonitoring = data => {
     return <React.Fragment>{data.value ? 'Actively Monitoring' : 'Not Monitoring'}</React.Fragment>;
   };
 
-  renderContinuousExposure = data => {
+  formatContinuousExposure = data => {
     return <React.Fragment>{data.value ? 'Yes' : 'No'}</React.Fragment>;
   };
 
@@ -182,6 +254,8 @@ class ApplyToHousehold extends React.Component {
             selectedRows={this.state.table.selectedRows}
             selectAll={this.state.table.selectAll}
             handleSelect={this.handleSelect}
+            disabledRows={this.state.table.disabledRows}
+            disabledTooltipText={'You cannot update this record since it is not within your assigned jurisdiction'}
           />
         )}
       </React.Fragment>
@@ -193,6 +267,8 @@ ApplyToHousehold.propTypes = {
   household_members: PropTypes.array,
   handleApplyHouseholdChange: PropTypes.func,
   handleApplyHouseholdIdsChange: PropTypes.func,
+  current_user: PropTypes.object,
+  jurisdiction_paths: PropTypes.object,
 };
 
 export default ApplyToHousehold;
