@@ -26,6 +26,8 @@ class MonitoringActions extends React.Component {
                 authenticity_token={this.props.authenticity_token}
                 household_members={this.props.household_members}
                 monitoring_reasons={this.props.monitoring_reasons}
+                current_user={this.props.current_user}
+                jurisdiction_paths={this.props.jurisdiction_paths}
               />
             </Form.Group>
             <Form.Group as={Col} md="12" lg="8" className="pt-2">
@@ -33,6 +35,8 @@ class MonitoringActions extends React.Component {
                 patient={this.props.patient}
                 authenticity_token={this.props.authenticity_token}
                 household_members={this.props.household_members}
+                current_user={this.props.current_user}
+                jurisdiction_paths={this.props.jurisdiction_paths}
               />
             </Form.Group>
             <Form.Group as={Col} md="12" lg="8" className="pt-2">
@@ -40,16 +44,26 @@ class MonitoringActions extends React.Component {
                 patient={this.props.patient}
                 authenticity_token={this.props.authenticity_token}
                 household_members={this.props.household_members}
+                current_user={this.props.current_user}
+                jurisdiction_paths={this.props.jurisdiction_paths}
               />
             </Form.Group>
             <Form.Group as={Col} md="12" lg="8" className="pt-2">
-              <CaseStatus patient={this.props.patient} authenticity_token={this.props.authenticity_token} household_members={this.props.household_members} />
+              <CaseStatus
+                patient={this.props.patient}
+                authenticity_token={this.props.authenticity_token}
+                household_members={this.props.household_members}
+                current_user={this.props.current_user}
+                jurisdiction_paths={this.props.jurisdiction_paths}
+              />
             </Form.Group>
             <Form.Group as={Col} md="12" lg="8" className="pt-2">
               <PublicHealthAction
                 patient={this.props.patient}
                 authenticity_token={this.props.authenticity_token}
                 household_members={this.props.household_members}
+                current_user={this.props.current_user}
+                jurisdiction_paths={this.props.jurisdiction_paths}
               />
             </Form.Group>
             <Form.Group as={Col} md="12" lg="8" className="pt-2">
@@ -58,6 +72,8 @@ class MonitoringActions extends React.Component {
                 authenticity_token={this.props.authenticity_token}
                 household_members={this.props.household_members}
                 assigned_users={this.props.assigned_users}
+                current_user={this.props.current_user}
+                jurisdiction_paths={this.props.jurisdiction_paths}
               />
             </Form.Group>
             <Form.Group as={Col} lg="24" className="pt-2">

@@ -373,6 +373,8 @@ class AssessmentTable extends React.Component {
             <LastDateExposure
               authenticity_token={this.props.authenticity_token}
               patient={this.props.patient}
+              current_user={this.props.current_user}
+              jurisdiction_paths={this.props.jurisdiction_paths}
               household_members={this.props.household_members}
               monitoring_period_days={this.props.monitoring_period_days}
             />
@@ -429,6 +431,7 @@ AssessmentTable.propTypes = {
   current_user: PropTypes.object,
   translations: PropTypes.object,
   authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
 };
 
 export default AssessmentTable;
