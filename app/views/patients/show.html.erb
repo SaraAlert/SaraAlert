@@ -51,7 +51,8 @@
                         monitoring_period_days: ADMIN_OPTIONS['monitoring_period_days'].to_i,
                         current_user: current_user,
                         translations: Assessment.new.translations,
-                        authenticity_token: form_authenticity_token
+                        authenticity_token: form_authenticity_token,
+                        jurisdiction_paths: @possible_jurisdiction_paths
                       }) %>
 <% end %>
 

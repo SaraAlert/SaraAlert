@@ -105,6 +105,8 @@ class MonitoringStatus extends React.Component {
           {this.props.household_members.length > 0 && (
             <ApplyToHousehold
               household_members={this.props.household_members}
+              current_user={this.props.current_user}
+              jurisdiction_paths={this.props.jurisdiction_paths}
               handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household, apply_to_household_cm_exp_only: false })}
               handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
             />
@@ -224,6 +226,8 @@ MonitoringStatus.propTypes = {
   authenticity_token: PropTypes.string,
   household_members: PropTypes.array,
   monitoring_reasons: PropTypes.array,
+  current_user: PropTypes.object,
+  jurisdiction_paths: PropTypes.object,
 };
 
 export default MonitoringStatus;
