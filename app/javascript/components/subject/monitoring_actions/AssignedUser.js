@@ -90,6 +90,8 @@ class AssignedUser extends React.Component {
           {this.props.household_members.length > 0 && (
             <ApplyToHousehold
               household_members={this.props.household_members}
+              current_user={this.props.current_user}
+              jurisdiction_paths={this.props.jurisdiction_paths}
               handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household })}
               handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
             />
@@ -163,6 +165,8 @@ AssignedUser.propTypes = {
   authenticity_token: PropTypes.string,
   household_members: PropTypes.array,
   assigned_users: PropTypes.array,
+  current_user: PropTypes.object,
+  jurisdiction_paths: PropTypes.object,
 };
 
 export default AssignedUser;

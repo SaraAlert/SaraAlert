@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Spinner, Table, Form, InputGroup } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
+import ReactTooltip from 'react-tooltip';
 import InfoTooltip from '../util/InfoTooltip';
 
 class CustomTable extends React.Component {
@@ -74,7 +75,8 @@ class CustomTable extends React.Component {
    * or deselects all rows based on the current selectAll value.
    */
   toggleSelectAll = () => {
-    const selectedRows = this.props.selectAll ? [] : [...Array(this.props.rowData.length).keys()];
+    let selectedRows = this.props.selectAll ? [] : [...Array(this.props.rowData.length).keys()];
+    selectedRows = selectedRows.filter(row => !this.props.disabledRows.includes(row));
     // Call parent handler
     this.props.handleSelect(selectedRows);
   };
@@ -144,7 +146,12 @@ class CustomTable extends React.Component {
   renderSelectAllCheckbox = () => {
     return (
       <th>
-        <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll} aria-label="Table Select All Rows"></input>
+        <input
+          type="checkbox"
+          onChange={this.toggleSelectAll}
+          disabled={this.props.disabledRows.length === this.props.rowData.length}
+          checked={this.props.selectAll}
+          aria-label="Table Select All Rows"></input>
       </th>
     );
   };
@@ -152,11 +159,19 @@ class CustomTable extends React.Component {
   renderRowCheckbox = (rowData, rowIndex) => {
     return (
       <td>
-        <input
-          type="checkbox"
-          aria-label={`Table Select${rowData.name ? ` Monitoree: ${rowData.name}` : ''}${this.props.currentUser ? ` User: ${this.props.currentUser}` : ''}`}
-          checked={this.props.selectAll || this.props.selectedRows.includes(rowIndex)}
-          onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
+        <span data-for={`table-row-${rowIndex}-tooltip`} data-tip="">
+          <input
+            type="checkbox"
+            disabled={this.props.disabledRows.includes(rowIndex)}
+            aria-label={`Table Select${rowData.name ? ` Monitoree: ${rowData.name}` : ''}${this.props.currentUser ? ` User: ${this.props.currentUser}` : ''}`}
+            checked={(this.props.selectAll && !this.props.disabledRows.includes(rowIndex)) || this.props.selectedRows.includes(rowIndex)}
+            onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
+        </span>
+        {this.props.disabledRows.includes(rowIndex) && (
+          <ReactTooltip id={`table-row-${rowIndex}-tooltip`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+            {this.props.disabledTooltipText}
+          </ReactTooltip>
+        )}
       </td>
     );
   };
@@ -301,6 +316,8 @@ CustomTable.propTypes = {
   selectAll: PropTypes.bool,
   isEditable: PropTypes.bool,
   isSelectable: PropTypes.bool,
+  disabledRows: PropTypes.array,
+  disabledTooltipText: PropTypes.string,
   checkboxColumnLocation: PropTypes.string,
   showPagination: PropTypes.bool,
   handleEdit: PropTypes.func,
@@ -317,7 +334,7 @@ CustomTable.propTypes = {
   getCustomTableClassName: PropTypes.func,
   currentUser: PropTypes.string,
   orderBy: PropTypes.string,
-  sortDirection: PropTypes.string
+  sortDirection: PropTypes.string,
 };
 
 CustomTable.defaultProps = {
@@ -326,7 +343,8 @@ CustomTable.defaultProps = {
   handleSelect: () => {},
   orderBy: '',
   sortDirection: '',
-  checkboxColumnLocation: 'right'
+  disabledRows: [],
+  checkboxColumnLocation: 'right',
 };
 
 export default CustomTable;
