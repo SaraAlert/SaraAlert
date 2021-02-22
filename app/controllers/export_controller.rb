@@ -167,7 +167,26 @@ class ExportController < ApplicationController
       }
     }
 
-    send_data write_export_data_to_files(config, patients, nil, 1)[0][:content]
+    data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
+    field_data = get_field_data(config)
+
+    workbook = FastExcel.open
+    sheets = {}
+    last_row_nums = {}
+    data_types.each do |data_type|
+      worksheet = workbook.add_worksheet(config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label))
+      worksheet.auto_width = true
+      worksheet.append_row(field_data.dig(data_type, :headers))
+      last_row_nums[data_type] = 0
+      sheets[data_type] = worksheet
+    end
+
+    exported_data = get_export_data(patients, config[:data])
+    data_types.each do |data_type|
+      last_row_nums[data_type] = write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked], last_row_nums[data_type])
+    end
+
+    send_data Base64.encode64(workbook.read_string)
   end
 
   # Single patient NBS export
