@@ -220,6 +220,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
       value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
       msg_header = (value ? " Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}'"
       errors.each do |error_message|
+        # Exclude the actual value in logging to avoid PII/PHI
+        Rails.logger.info "Validation Error on: #{attribute}"
         messages << "#{msg_header} #{error_message}"
       end
     end
