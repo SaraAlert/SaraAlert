@@ -36,7 +36,7 @@ desc 'Backup the database'
     threads.each(&:join)
 
   end
-  
+
   desc 'Configure the database for demo use'
   task setup: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
@@ -704,7 +704,7 @@ desc 'Backup the database'
     transfers = []
     histories = []
     patient_updates = {}
-    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map {|id, path| [id, path]}]
+    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path)]
     patients_transfer = existing_patients.pluck(:id, :jurisdiction_id, :assigned_user).sample(existing_patients.count * rand(5..10) / 100)
     patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
       printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
@@ -941,7 +941,7 @@ desc 'Backup the database'
          deep_duplicate_patient(p, new_patient.id)
       end
     end
-    patient.assessments.each do |assessment| 
+    patient.assessments.each do |assessment|
         new_assessment = assessment.dup
         duplicate_timestamps(assessment, new_assessment)
         rep_condition = assessment.reported_condition
