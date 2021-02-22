@@ -12,6 +12,10 @@ namespace :stats do
 
     raise 'You must provide a start date (e.g. start=2020-01-01)' if start.nil?
 
+    tag = ENV['tag']
+
+    raise 'You must provide a tag (e.g. tag=blah)' if tag.nil?
+
     today = 6.hours.ago.in_time_zone('Eastern Time (US & Canada)').strftime("%m-%d-%Y")
 
     jurisdictions = Jurisdiction.where(id: ids)
@@ -369,8 +373,8 @@ namespace :stats do
         isolation: enrollment_to_first_rep_iso.inject{ |sum, el| sum + el }.to_f / enrollment_to_first_rep_iso.size
       }
       results[title]['Number of monitorees with any action other than none in their history'] = {
-        exposure: active_exp.where_assoc_exists(:histories, &:changed_public_health_action).count,
-        isolation: active_iso.where_assoc_exists(:histories, &:changed_public_health_action).count
+        exposure: active_exp.where_assoc_exists(:histories) { user_generated_since(start) }.count,
+        isolation: active_iso.where_assoc_exists(:histories) { user_generated_since(start) }.count
       }
 
       puts 'Step 4 of 6: demographics'
@@ -554,7 +558,7 @@ namespace :stats do
       json = {}
       json[today] = results
       puts JSON.pretty_generate(json, { allow_nan: true })
-      Stat.create!(contents: json.to_json, jurisdiction_id: jur.id, tag: 'eval_queries')
+      Stat.create!(contents: json.to_json, jurisdiction_id: jur.id, tag: tag)
       UserMailer.stats_eval_email(ids).deliver_now
     end
   end
@@ -564,6 +568,10 @@ namespace :stats do
 
     raise 'You must provide at least one id (e.g. ids=1,2,3)' if ids.nil? || ids.empty?
 
+    tag = ENV['tag']
+
+    raise 'You must provide a tag (e.g. tag=blah)' if tag.nil?
+
     jurisdictions = Jurisdiction.where(id: ids)
     package = Axlsx::Package.new
     workbook = package.workbook
@@ -571,7 +579,7 @@ namespace :stats do
     header = styles.add_style sz: 14, b: true, alignment: { horizontal: :center }
     subheader = styles.add_style sz: 12, b: true, alignment: { horizontal: :center }
     jurisdictions.each do |jur|
-      stats = Stat.where(jurisdiction_id: jur.id, tag: 'eval_queries')
+      stats = Stat.where(jurisdiction_id: jur.id, tag: tag)
       contents = stats.collect { |s| JSON.parse(s.contents).values.first }
       days = stats.collect { |s| JSON.parse(s.contents).keys.first }
       structure = {}; contents.first.keys.each { |k| structure[k] = contents.first[k].keys }
