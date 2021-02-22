@@ -347,6 +347,8 @@ class AdvancedFilter extends React.Component {
           .format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
       };
+    } else if (filterOption.type === 'relative') {
+      value = 'today';
     } else if (filterOption.type === 'search') {
       value = '';
     }
@@ -408,9 +410,9 @@ class AdvancedFilter extends React.Component {
   };
 
   // Change the relative filter option for type relative date
-  changeFilterRelativeOption = (index, value, relativeOption) => {
+  changeFilterRelativeOption = (index, relativeOption) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
-    let defaultValue = relativeOption === 'custom' ? { number: 1, unit: 'days', when: 'past' } : null;
+    let defaultValue = relativeOption === 'custom' ? { number: 1, unit: 'days', when: 'past' } : relativeOption;
     activeFilterOptions[parseInt(index)] = {
       filterOption: activeFilterOptions[parseInt(index)].filterOption,
       value: defaultValue,
@@ -607,7 +609,7 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render relative date specific options
-  renderRelativeOptions = (current, index, value) => {
+  renderRelativeOptions = (current, index) => {
     return (
       <Form.Control
         as="select"
@@ -615,7 +617,7 @@ class AdvancedFilter extends React.Component {
         className="advanced-filter-relative-options py-0 my-0 mr-4"
         aria-label="Advanced Filter Relative Date Select Options"
         onChange={event => {
-          this.changeFilterRelativeOption(index, value, event.target.value);
+          this.changeFilterRelativeOption(index, event.target.value);
         }}>
         <option value="today">today</option>
         <option value="tomorrow">tomorrow</option>
@@ -1038,7 +1040,7 @@ class AdvancedFilter extends React.Component {
             )}
             {filterOption?.type === 'relative' && (
               <Form.Group className="form-group-inline py-0 my-0">
-                {this.renderRelativeOptions(relativeOption, index, value)}
+                {this.renderRelativeOptions(relativeOption, index)}
                 {relativeOption === 'custom' && (
                   <React.Fragment>
                     <Form.Control
