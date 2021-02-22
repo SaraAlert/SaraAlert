@@ -9,7 +9,7 @@
                       authenticity_token: form_authenticity_token,
                       can_add_group: current_user.can_create_patient?,
                       has_dependents: false,
-                      jurisdiction_paths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }],
+                      jurisdiction_paths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path)],
                       assigned_users: @patient.jurisdiction.assigned_users,
                       race_options: ValidationHelper::RACE_OPTIONS
                     }) %>
