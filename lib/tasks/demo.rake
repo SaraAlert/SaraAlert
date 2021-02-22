@@ -749,7 +749,7 @@ desc 'Backup the database'
     transfers = []
     histories = []
     patient_updates = {}
-    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map {|id, path| [id, path]}]
+    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path)]
     patients_transfer = existing_patients.pluck(:id, :jurisdiction_id, :assigned_user).sample(existing_patients.count * rand(5..10) / 100)
     patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
       printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
