@@ -116,7 +116,7 @@ const mockFilterDefaultRelativeOption = {
   },
   numberOption: null,
   relativeOption: 'today',
-  value: null
+  value: 'today'
 }
 
 const mockFilterRelativeOption = {
@@ -131,7 +131,7 @@ const mockFilterRelativeOption = {
   },
   numberOption: null,
   relativeOption: 'yesterday',
-  value: null
+  value: 'yesterday'
 }
 
 const mockFilterDefaultCustomRelativeOption = {
