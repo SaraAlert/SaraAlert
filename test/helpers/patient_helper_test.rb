@@ -2,9 +2,7 @@
 
 require 'test_case'
 
-class PatientHelperTest < ActiveSupport::TestCase
-  include PatientHelper
-
+class PatientHelperTest < ActionView::TestCase
   test 'State names are normalized' do
     test_subject = Patient.new(monitored_address_state: 'New  Hampshire', address_state: 'new Hampshire',
                                additional_planned_travel_destination_state: 'NEW HAMPSHIRE ')
@@ -22,5 +20,13 @@ class PatientHelperTest < ActiveSupport::TestCase
     Timecop.freeze(Time.local(2008, 2, 1, 12, 0, 0))
     assert_equal('-05:00', time_zone_offset_for_state('Massachusetts'))
     Timecop.return
+  end
+
+  test 'time zone offset for state returns data' do
+    assert_nothing_raised do
+      state_names.each do |state|
+        time_zone_offset_for_state(state[0])
+      end
+    end
   end
 end
