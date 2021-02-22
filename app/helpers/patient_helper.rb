@@ -7,7 +7,6 @@ module PatientHelper
     PATIENT_HELPER_FILES[:state_names]
   end
 
-  # Offsets are DST
   def states_with_time_zone_data
     PATIENT_HELPER_FILES[:states_with_time_zone_data]
   end
