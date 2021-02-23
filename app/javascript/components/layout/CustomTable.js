@@ -239,7 +239,7 @@ class CustomTable extends React.Component {
             </tbody>
           </Table>
         </div>
-        {this.showPagination && (
+        {this.props.showPagination && (
           <div id="pagination-container" className="row-container">
             <div className="left-container">
               <div className="left-box-1">
@@ -344,6 +344,7 @@ CustomTable.defaultProps = {
   orderBy: '',
   sortDirection: '',
   disabledRows: [],
+  showPagination: true,
   checkboxColumnLocation: 'right',
 };
 
