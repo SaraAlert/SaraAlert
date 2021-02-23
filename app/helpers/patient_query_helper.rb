@@ -283,35 +283,35 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'continous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
       when 'close-contact-with-known-case'
-        case filter[:additionalFilterOption]
-        when 'Exact Match'
-          patients = if filter[:value].blank?
-                       patients.where(contact_of_known_case_id: [nil, ''])
-                     else
-                       patients.where('patients.contact_of_known_case_id = ?', filter[:value])
-                     end
-        when 'Contains'
-          patients = if filter[:value].blank?
-                       patients.where(contact_of_known_case_id: [nil, ''])
-                     else
-                       patients.where('patients.contact_of_known_case_id like ?', "%#{filter[:value]}%")
-                     end
+        if filter[:value].blank?
+          patients = patients.where(contact_of_known_case_id: [nil, ''])
+        else
+          value_array = filter[:value].split(/\s*,\s*/)
+          filtered_patient_ids = []
+          case filter[:additionalFilterOption]
+          when 'Exact Match'
+            value_array.each do |value|
+              filtered_patient_ids += patients.where('contact_of_known_case_id REGEXP ?', "(^|,)(#{value})(,|$)").pluck(:id)
+            end
+          when 'Contains'
+            value_array.each do |value|
+              filtered_patient_ids += patients.where('contact_of_known_case_id like ?', "%#{value}%").pluck(:id)
+            end
+          end
+          patients = patients.where(id: filtered_patient_ids)
         end
       when 'telephone-number'
-        case filter[:additionalFilterOption]
-        when 'Exact Match'
-          patients = if filter[:value].blank?
-                       patients.where(primary_telephone: [nil, ''])
-                     else
-                       patients.where('patients.primary_telephone like ?', Phonelib.parse(filter[:value], 'US').full_e164)
-                     end
-        when 'Contains'
-          patients = if filter[:value].blank?
-                       patients.where(primary_telephone: [nil, ''])
-                     else
-                       patients.where('patients.primary_telephone like ?', "%#{filter[:value]}%")
-                     end
-        end
+        patients = if filter[:value].blank?
+                     patients.where(primary_telephone: [nil, ''])
+                   else
+                     patients.where('patients.primary_telephone like ?', Phonelib.parse(filter[:value], 'US').full_e164)
+                   end
+      when 'telephone-number-partial'
+        patients = if filter[:value].blank?
+                     patients.where(primary_telephone: [nil, ''])
+                   else
+                     patients.where('patients.primary_telephone like ?', "%#{filter[:value]}%")
+                   end
       when 'email'
         patients = if filter[:value].blank?
                      patients.where(email: [nil, ''])
