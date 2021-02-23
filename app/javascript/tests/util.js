@@ -55,7 +55,21 @@ function sortByNameDescending(patients) {
   });
 }
 
-/** sorts array of patients alphabetically by specified field  */
+/** sorts array of patients by specified date field oldest to youngest */
+function sortByDateAscending(patients, field) {
+  return patients.sort((a, b) => {
+    return moment(a[field]).format('YYYYMMDD') - moment(b[field]).format('YYYYMMDD');
+  });
+}
+
+/** sorts array of patients by specified date field youngest to oldest */
+function sortByDateDescending(patients, field) {
+  return patients.sort((a, b) => {
+    return moment(b[field]).format('YYYYMMDD') - moment(a[field]).format('YYYYMMDD');
+  });
+}
+
+/** sorts array of patients alphabetically by specified field */
 function sortByAscending(patients, field) {
   return patients.sort((a, b) => {
     return a[field] - b[field];
@@ -79,6 +93,8 @@ export {
   analyticsDateFormatter,
   sortByNameAscending,
   sortByNameDescending,
+  sortByDateAscending,
+  sortByDateDescending,
   sortByAscending,
   sortByDescending
 };
