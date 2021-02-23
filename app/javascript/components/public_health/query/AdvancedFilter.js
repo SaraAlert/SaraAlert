@@ -528,6 +528,7 @@ class AdvancedFilter extends React.Component {
           show: false,
           applied: false,
           activeFilter: null,
+          activeFilterOptions: null,
           savedFilters: [
             ...self.state.savedFilters.filter(filter => {
               return filter.id != id;
