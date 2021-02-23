@@ -761,6 +761,7 @@ class PatientsControllerTest < ActionController::TestCase
     post :update_status, params: {
       id: hoh_patient.id,
       apply_to_household: true,
+      apply_to_household_ids: [dependent_patient.id],
       patient: { monitoring: false }
     }, as: :json
 
@@ -769,29 +770,6 @@ class PatientsControllerTest < ActionController::TestCase
     assert_not hoh_patient.monitoring
     dependent_patient.reload
     assert_not dependent_patient.monitoring
-  end
-
-  test 'update status for a patient with dependents and apply to continuous exposure household' do
-    user = create(:public_health_enroller_user)
-    sign_in user
-    hoh_patient = create(:patient, creator: user, monitoring: true)
-    dependent_patient = create(:patient, creator: user, monitoring: true)
-    dependent_patient_ce = create(:patient, creator: user, monitoring: true, continuous_exposure: true)
-    hoh_patient.dependents << [dependent_patient, dependent_patient_ce]
-
-    post :update_status, params: {
-      id: hoh_patient.id,
-      apply_to_household_cm_only: true,
-      patient: { monitoring: false }
-    }, as: :json
-
-    assert_response :success
-    hoh_patient.reload
-    assert_not hoh_patient.monitoring
-    dependent_patient_ce.reload
-    assert_not dependent_patient_ce.monitoring
-    dependent_patient.reload
-    assert dependent_patient.monitoring
   end
 
   test 'update status while ignoring fields not specified in diffState' do
