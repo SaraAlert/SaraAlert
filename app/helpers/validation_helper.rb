@@ -187,7 +187,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     report: { label: 'Lab Report Date', checks: [:date] },
     result: { label: 'Result', checks: [:enum] },
     assigned_user: { label: 'Assigned User', checks: [] },
-    continuous_exposure: { label: 'Continuous Exposure', checks: [] }
+    continuous_exposure: { label: 'Continuous Exposure', checks: [:bool] }
   }.freeze
 
   def validate_date; end
