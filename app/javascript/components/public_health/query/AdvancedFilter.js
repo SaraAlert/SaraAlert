@@ -134,10 +134,15 @@ class AdvancedFilter extends React.Component {
         },
         {
           name: 'telephone-number',
-          title: 'Telephone Number (Text)',
-          description: 'Monitoree telephone number',
+          title: 'Telephone Number (Exact Match) (Text)',
+          description: 'Monitorees with specified 10 digit telephone number',
           type: 'search',
-          options: ['Exact Match', 'Contains'],
+        },
+        {
+          name: 'telephone-number-partial',
+          title: 'Telephone Number (Contains) (Text)',
+          description: 'Monitorees with a telephone number that contains specified digits',
+          type: 'search',
         },
         {
           name: 'close-contact-with-known-case',
@@ -746,7 +751,9 @@ class AdvancedFilter extends React.Component {
     // Filters of type number only get a tooltip if the numberOption is "between" (i.e. a range)
     // NOTE: Right now because of how this is set up, relative dates can't have a tooltip in addition to the one that is shown
     // here once "more" is selected.
-    if (filter.type === 'relative') {
+    if (filter.name === 'close-contact-with-known-case') {
+      statement = 'Use commas to separate multiple specified values. Multiple values must also be separated by commas in Monitoree Details.';
+    } else if (filter.type === 'relative') {
       statement = this.getRelativeTooltipString(filter, value);
     } else if (filter.type === 'number') {
       statement = '"Between" is inclusive and will filter for values within the user-entered range, including the start and end values.';
@@ -1140,7 +1147,7 @@ class AdvancedFilter extends React.Component {
             )}
           </Col>
           <Col className="py-0" md="auto">
-            {filterOption && (filterOption.tooltip || numberOption === 'between' || relativeOption === 'custom') && (
+            {filterOption && (filterOption.tooltip || numberOption === 'between' || relativeOption === 'custom' || additionalFilterOption === 'Multiple') && (
               <span className="align-middle mx-3">{this.renderOptionTooltip(filterOption, value, index)}</span>
             )}
             <div className="float-right">
