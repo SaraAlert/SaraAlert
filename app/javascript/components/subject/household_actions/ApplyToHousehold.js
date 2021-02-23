@@ -30,6 +30,10 @@ class ApplyToHousehold extends React.Component {
     };
   }
 
+  /**
+   * Handles change of apply to household radio buttons. Shows child table based on selection.
+   * @param {SyntheticEvent} event - Event when the search input changes
+   */
   handleChange = event => {
     let applyToHousehold = event.target.id === 'apply_to_household_yes';
     this.setState({ applyToHousehold }, () => {
@@ -37,6 +41,11 @@ class ApplyToHousehold extends React.Component {
     });
   };
 
+  /**
+   * Callback called when child Table component detects a selection change.
+   * Updates the selected rows and enables/disables actions accordingly.
+   * @param {Number[]} selectedRows - Array of selected row indices.
+   */
   handleSelect = selectedRows => {
     const enabledRows = this.state.table.rowData.filter(row => this.validJurisdiction(row));
     const selectAll = selectedRows.length >= enabledRows.length;
@@ -52,42 +61,10 @@ class ApplyToHousehold extends React.Component {
     );
   };
 
-  getDisabledRows = householdMembers => {
-    let disabledRows = [];
-    householdMembers.forEach((member, index) => {
-      if (!this.validJurisdiction(member)) {
-        disabledRows.push(index);
-      }
-    });
-    return disabledRows;
-  };
-
-  getDisabledIds = householdMembers => {
-    let disabledIds = [];
-    householdMembers.forEach(member => {
-      if (!this.validJurisdiction(member)) {
-        disabledIds.push(member.id);
-      }
-    });
-    return disabledIds;
-  };
-
-  validJurisdiction = patient => {
-    let isValid = true;
-    const jurisdiction = this.props.jurisdiction_paths[patient.jurisdiction_id];
-    if (_.isNil(jurisdiction)) {
-      isValid = false;
-    } else {
-      const jurisdictionArray = jurisdiction.split(', ');
-      this.props.current_user.jurisdiction_path.forEach((path, index) => {
-        if (path !== jurisdictionArray[index]) {
-          isValid = false;
-        }
-      });
-    }
-    return isValid;
-  };
-
+  /**
+   * Callback called when child Table component detects a sort change.
+   * @param {Object} sort - Object containing sort field and direction
+   */
   handleTableSort = sort => {
     const orderBy = sort.orderBy;
     const direction = sort.sortDirection;
@@ -124,6 +101,11 @@ class ApplyToHousehold extends React.Component {
     });
   };
 
+  /**
+   * Sorts array of monitorees by name (first name, then last name)
+   * @param {Object[]} patients - array of patient objects
+   * @param {String} direction - direction in which to sort
+   */
   sortByName = (patients, direction) => {
     if (direction === 'asc') {
       patients
@@ -145,6 +127,10 @@ class ApplyToHousehold extends React.Component {
     return patients;
   };
 
+  /**
+   * Called when child table detects a change in selection and the selectedRows change
+   * Updates the array of monitoree selectedIds and sends them to parent component
+   */
   updateSelectedIds = () => {
     let selectedIds = [];
     this.state.table.rowData.forEach((row, index) => {
@@ -157,6 +143,11 @@ class ApplyToHousehold extends React.Component {
     });
   };
 
+  /**
+   * Called when child table detects a change in sort and persists the selectedRows
+   * Updates the array of selectedRows based on the array of selectedIds
+   * @param {Object[]} rowData - array of patient objects
+   */
   updateSelectedRows = rowData => {
     let selectedRows = [];
     rowData.forEach((row, index) => {
@@ -167,6 +158,11 @@ class ApplyToHousehold extends React.Component {
     return selectedRows;
   };
 
+  /**
+   * Called when child table detects a change in sort and persists the disabledRows
+   * Updates the array of disabledRows based on the array of disabledIds
+   * @param {Object[]} rowData - array of patient objects
+   */
   updateDisabledRows = rowData => {
     let disabledRows = [];
     rowData.forEach((row, index) => {
@@ -177,6 +173,59 @@ class ApplyToHousehold extends React.Component {
     return disabledRows;
   };
 
+  /**
+   * Generates list of initial disabledRows based on if jurisdiction is valid
+   * @param {Object[]} householdMembers - array of patient objects
+   */
+  getDisabledRows = householdMembers => {
+    let disabledRows = [];
+    householdMembers.forEach((member, index) => {
+      if (!this.validJurisdiction(member)) {
+        disabledRows.push(index);
+      }
+    });
+    return disabledRows;
+  };
+
+  /**
+   * Generates list of initial disabledIds based on if jurisdiction is valid
+   * @param {Object[]} householdMembers - array of patient objects
+   */
+  getDisabledIds = householdMembers => {
+    let disabledIds = [];
+    householdMembers.forEach(member => {
+      if (!this.validJurisdiction(member)) {
+        disabledIds.push(member.id);
+      }
+    });
+    return disabledIds;
+  };
+
+  /**
+   * Returns boolean if patient jurisdiction falls within current user's domain
+   * @param {Object} patient - patient object
+   */
+  validJurisdiction = patient => {
+    let isValid = true;
+    const jurisdiction = this.props.jurisdiction_paths[patient.jurisdiction_id];
+    if (_.isNil(jurisdiction)) {
+      isValid = false;
+    } else {
+      const jurisdictionArray = jurisdiction.split(', ');
+      this.props.current_user.jurisdiction_path.forEach((path, index) => {
+        if (path !== jurisdictionArray[parseInt(index)]) {
+          isValid = false;
+        }
+      });
+    }
+    return isValid;
+  };
+
+  /**
+   * Formats monitoree name into consistent format.
+   * Creates a link (if jurisdication is valid) and renders HoH badge for monitoree name in table.
+   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
+   */
   formatPatientName = data => {
     const rowData = data.rowData;
     const monitoreeName = `${rowData.last_name || ''}, ${rowData.first_name || ''} ${rowData.middle_name || ''}`;
@@ -204,19 +253,35 @@ class ApplyToHousehold extends React.Component {
     );
   };
 
+  /**
+   * Formats a date value into consistent format.
+   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
+   */
   formatDate(data) {
     const date = data.value;
     return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
   }
 
+  /**
+   * Formats workflow boolean value into user readable format.
+   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
+   */
   formatWorkflow = data => {
     return <React.Fragment>{data.value ? 'Isolation' : 'Exposure'}</React.Fragment>;
   };
 
+  /**
+   * Formats monitoring boolean value into user readable format.
+   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
+   */
   formatMonitoring = data => {
     return <React.Fragment>{data.value ? 'Actively Monitoring' : 'Not Monitoring'}</React.Fragment>;
   };
 
+  /**
+   * Formats continuous exposure boolean value into user readable format.
+   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
+   */
   formatContinuousExposure = data => {
     return <React.Fragment>{data.value ? 'Yes' : 'No'}</React.Fragment>;
   };
@@ -250,6 +315,7 @@ class ApplyToHousehold extends React.Component {
             totalRows={this.state.table.totalRows}
             handleTableUpdate={this.handleTableSort}
             isSelectable={true}
+            showPagination={false}
             checkboxColumnLocation={'left'}
             selectedRows={this.state.table.selectedRows}
             selectAll={this.state.table.selectAll}

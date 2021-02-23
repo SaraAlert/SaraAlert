@@ -1,25 +1,27 @@
-import React from 'react'
+import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { Form } from 'react-bootstrap';
 import _ from 'lodash';
-import ApplyToHousehold from '../../../components/subject/household_actions/ApplyToHousehold.js'
+import ApplyToHousehold from '../../../components/subject/household_actions/ApplyToHousehold.js';
 import CustomTable from '../../../components/layout/CustomTable';
 import BadgeHOH from '../../../components/util/BadgeHOH';
-import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../mocks/mockPatients'
-import { nameFormatterAlt, sortByNameAscending, sortByNameDescending, sortByAscending, sortByDescending } from '../../util.js'
+import { mockUser1 } from '../../mocks/mockUsers';
+import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
+import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
+import { nameFormatterAlt, dateFormatter, sortByNameAscending, sortByNameDescending, sortByDateAscending, sortByDateDescending, sortByAscending, sortByDescending } from '../../util.js';
 
 const householdMembers = [ mockPatient1, mockPatient2, mockPatient3, mockPatient4 ];
 const handleApplyHouseholdChangeMock = jest.fn();
 const handleApplyHouseholdIdsChangeMock = jest.fn();
 
 function getWrapper() {
-  return shallow(<ApplyToHousehold household_members={householdMembers} handleApplyHouseholdChange={handleApplyHouseholdChangeMock}
-    handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
+  return shallow(<ApplyToHousehold household_members={householdMembers} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths}
+    handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
 }
 
 function getMountedWrapper() {
-  return mount(<ApplyToHousehold household_members={householdMembers} handleApplyHouseholdChange={handleApplyHouseholdChangeMock}
-    handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
+  return mount(<ApplyToHousehold household_members={householdMembers} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths}
+    handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
 }
 
 afterEach(() => {
@@ -100,7 +102,7 @@ describe('ApplyToHousehold', () => {
       } else {
         expect(row.find('td').at(1).find(BadgeHOH).exists()).toBeFalsy();
       }
-      expect(row.find('td').at(2).text()).toEqual(String(rowData[wrapper.state('table').colData[1].field]));
+      expect(row.find('td').at(2).text()).toEqual(dateFormatter(rowData[wrapper.state('table').colData[1].field]));
       expect(row.find('td').at(3).text()).toEqual(rowData[wrapper.state('table').colData[2].field] ? 'Isolation' : 'Exposure');
       expect(row.find('td').at(4).text()).toEqual(rowData[wrapper.state('table').colData[3].field] ? 'Actively Monitoring' : 'Not Monitoring');
       expect(row.find('td').at(5).text()).toEqual(rowData[wrapper.state('table').colData[4].field] ? 'Yes' : 'No');
@@ -199,13 +201,13 @@ describe('ApplyToHousehold', () => {
     expect(wrapper.state('table').rowData).toEqual(sortByNameDescending(householdMembers));
   });
 
-  it('Properly sorts table by age', () => {
+  it('Properly sorts table by DOB', () => {
     const wrapper = getMountedWrapper();
     wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     wrapper.find('th').at(2).simulate('click');
-    expect(wrapper.state('table').rowData).toEqual(sortByAscending(householdMembers, 'age'));
+    expect(wrapper.state('table').rowData).toEqual(sortByDateAscending(householdMembers, 'date_of_birth'));
     wrapper.find('th').at(2).simulate('click');
-    expect(wrapper.state('table').rowData).toEqual(sortByDescending(householdMembers, 'age'));
+    expect(wrapper.state('table').rowData).toEqual(sortByDateDescending(householdMembers, 'date_of_birth'));
   });
 
   it('Properly sorts table by workflow', () => {
@@ -230,14 +232,145 @@ describe('ApplyToHousehold', () => {
     const wrapper = getMountedWrapper();
     wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     wrapper.find('th').at(5).simulate('click');
-    expect(wrapper.state('table').rowData).toEqual(sortByAscending(householdMembers, 'continuous-exposure'));
+    expect(wrapper.state('table').rowData).toEqual(sortByAscending(householdMembers, 'continuous_exposure'));
     wrapper.find('th').at(5).simulate('click');
-    expect(wrapper.state('table').rowData).toEqual(sortByDescending(householdMembers, 'continuous-exposure'));
+    expect(wrapper.state('table').rowData).toEqual(sortByDescending(householdMembers, 'continuous_exposure'));
   });
 
+  it('Maintains table state (sort and selected monitorees) when toggling radio buttons', () => {
+    let sortedHouseholdMembers = sortByDateDescending(householdMembers, 'date_of_birth');
+    let random = _.random(0, householdMembers.length - 1);
+    let selectedRows = [ random ];
+    let selectedIds = [ sortedHouseholdMembers[random].id ];
 
-// sorting maintains selected rows
-// table stays the same when toggling radio btns
+    // setup and checking intial table state
+    const wrapper = getMountedWrapper();
+    wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
+    wrapper.find('th').at(2).simulate('click');
+    wrapper.find('th').at(2).simulate('click');
+    wrapper.find('tbody').find('tr').at(random).find('input').simulate('change', { target: { checked: true } });
+    expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
+    expect(wrapper.state('table').selectAll).toBeFalsy();
+    expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
+    expect(wrapper.state('selectedIds')).toEqual(selectedIds);
+    expect(wrapper.find('thead').find('input').prop('checked')).toBeFalsy();
+    wrapper.find('tbody').find('tr').forEach((row, index) => {
+      expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
+      expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[index]));
+    });
+    
+    // toggle apply to household and check that the table state is the same
+    wrapper.find('#apply_to_household_no').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
+    wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
+    expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
+    expect(wrapper.state('table').selectAll).toBeFalsy();
+    expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
+    expect(wrapper.state('selectedIds')).toEqual(selectedIds);
+    wrapper.find('tbody').find('tr').forEach((row, index) => {
+      expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
+      expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[index]));
+    });
+  });
 
+  it('Sorting household members table maintains selected and disabled rows', () => {
+    householdMembers.push(mockPatient5);
+    let selectedRows = [ 0 , 2 ];
+    let selectedIds = [ householdMembers[0].id, householdMembers[2].id ];
+    let disabledRows = [ 4 ];
+    let disabledIds = [ householdMembers[4].id ];
+    const wrapper = mount(<ApplyToHousehold household_members={householdMembers} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths}
+      handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
+    
+    // initial load
+    wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
+    selectedRows.forEach(rowId => {
+      wrapper.find('tbody').find('tr').at(rowId).find('input').simulate('change', { target: { checked: true } });
+    });
+    expect(wrapper.state('table').rowData).toEqual(householdMembers);
+    expect(wrapper.state('table').selectAll).toBeFalsy();
+    expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
+    expect(wrapper.state('selectedIds')).toEqual(selectedIds);
+    expect(wrapper.state('table').disabledRows).toEqual(disabledRows);
+    expect(wrapper.state('disabledIds')).toEqual(disabledIds)
+    expect(wrapper.find('thead').find('input').prop('checked')).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('disabled')).toBeFalsy();
+    wrapper.find('tbody').find('tr').forEach((row, index) => {
+      expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
+      expect(row.find('input').prop('disabled')).toEqual(disabledRows.includes(index));
+      if (disabledRows.includes(index)) {
+        expect(row.find('td').at(1).find('div').text()).toEqual(nameFormatterAlt(householdMembers[index]));
+      } else {
+        expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(householdMembers[index]));
+      }
+    });
 
+    // sort by name, asc
+    let sortedHouseholdMembers = sortByNameAscending(householdMembers);
+    selectedRows = [ 1, 4 ];
+    disabledRows = [ 0 ];
+    wrapper.find('th').at(1).simulate('click');
+    expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
+    expect(wrapper.state('table').selectAll).toBeFalsy();
+    expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
+    expect(wrapper.state('selectedIds')).toEqual(selectedIds);
+    expect(wrapper.state('table').disabledRows).toEqual(disabledRows);
+    expect(wrapper.state('disabledIds')).toEqual(disabledIds)
+    expect(wrapper.find('thead').find('input').prop('checked')).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('disabled')).toBeFalsy();
+    wrapper.find('tbody').find('tr').forEach((row, index) => {
+      expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
+      expect(row.find('input').prop('disabled')).toEqual(disabledRows.includes(index));
+      if (disabledRows.includes(index)) {
+        expect(row.find('td').at(1).find('div').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[index]));
+      } else {
+        expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[index]));
+      }
+    });
+
+    // sort by DOB, desc
+    sortedHouseholdMembers = sortByDateDescending(sortedHouseholdMembers, 'date_of_birth');
+    selectedRows = [ 0, 2 ];
+    disabledRows = [ 4 ];
+    wrapper.find('th').at(2).simulate('click');
+    expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
+    expect(wrapper.state('table').selectAll).toBeFalsy();
+    expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
+    expect(wrapper.state('selectedIds')).toEqual(selectedIds);
+    expect(wrapper.state('table').disabledRows).toEqual(disabledRows);
+    expect(wrapper.state('disabledIds')).toEqual(disabledIds)
+    expect(wrapper.find('thead').find('input').prop('checked')).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('disabled')).toBeFalsy();
+    wrapper.find('tbody').find('tr').forEach((row, index) => {
+      expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
+      expect(row.find('input').prop('disabled')).toEqual(disabledRows.includes(index));
+      if (disabledRows.includes(index)) {
+        expect(row.find('td').at(1).find('div').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[index]));
+      } else {
+        expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[index]));
+      }
+    });
+
+    // sort by workflow, asc
+    sortedHouseholdMembers = sortByAscending(sortedHouseholdMembers, 'isolation');
+    selectedRows = [ 3, 4 ];
+    disabledRows = [ 2 ];
+    wrapper.find('th').at(3).simulate('click');
+    expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
+    expect(wrapper.state('table').selectAll).toBeFalsy();
+    expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
+    expect(wrapper.state('selectedIds')).toEqual(selectedIds);
+    expect(wrapper.state('table').disabledRows).toEqual(disabledRows);
+    expect(wrapper.state('disabledIds')).toEqual(disabledIds)
+    expect(wrapper.find('thead').find('input').prop('checked')).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('disabled')).toBeFalsy();
+    wrapper.find('tbody').find('tr').forEach((row, index) => {
+      expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
+      expect(row.find('input').prop('disabled')).toEqual(disabledRows.includes(index));
+      if (disabledRows.includes(index)) {
+        expect(row.find('td').at(1).find('div').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[index]));
+      } else {
+        expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[index]));
+      }
+    });
+  });
 });
