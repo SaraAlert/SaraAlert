@@ -284,7 +284,7 @@ describe('CloseContact', () => {
     emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('PhoneInput').simulate('change', { target: { id: 'primary_telephone', value: '' } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
     expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
-  })
+  });
 
   it('Properly enables and disables the submit/create button when First Name and Email is entered', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
@@ -299,14 +299,14 @@ describe('CloseContact', () => {
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
     expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(0).simulate('change', { target: { id: 'first_name', value: value1 } })
-      emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: value2 } })
+    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: value2 } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeFalsy()
     expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeFalsy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(0).find('FormControl').at(0).simulate('change', { target: { id: 'first_name', value: '' } })
-      emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: '' } })
+    emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: '' } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
     expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
-  })
+  });
 
   it('Properly enables and disables the submit/create button when Last Name and Phone is entered', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
@@ -328,7 +328,7 @@ describe('CloseContact', () => {
     emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('PhoneInput').simulate('change', { target: { id: 'primary_telephone', value: '' } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
     expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
-  })
+  });
 
   it('Properly enables and disables the submit/create button when Last Name and Email is entered', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
@@ -350,7 +350,7 @@ describe('CloseContact', () => {
     emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: '' } })
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
     expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
-  })
+  });
 
   it('Properly keeps the buttons disabled when all the required fields are not added', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
@@ -390,5 +390,5 @@ describe('CloseContact', () => {
     expect(emptyCCWrapper.find(Button).at(2).props().disabled).toBeTruthy()
     expect(emptyCCWrapper.find('#create-tooltip').exists()).toBeTruthy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(1).find('FormControl').simulate('change', { target: { id: 'email', value: '' } })
-  })
+  });
 });
