@@ -1,16 +1,21 @@
-import React from 'react'
-import { shallow } from 'enzyme';
+import React from 'react';
+import { shallow, mount } from 'enzyme';
 import { Button, Modal, Form } from 'react-bootstrap';
-import CaseStatus from '../../../components/subject/monitoring_actions/CaseStatus'
+import CaseStatus from '../../../components/subject/monitoring_actions/CaseStatus';
+import ApplyToHousehold from '../../../components/subject/household_actions/ApplyToHousehold';
+import CustomTable from '../../../components/layout/CustomTable';
 import InfoTooltip from '../../../components/util/InfoTooltip';
+import { mockUser1 } from '../../mocks/mockUsers';
+import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const caseStatusValues = [ '', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case' ];
 const monitoringOptionValues = [ '', 'End Monitoring', 'Continue Monitoring in Isolation Workflow' ];
 
-function getWrapper(patient, householdMembers) {
-    return shallow(<CaseStatus patient={patient} household_members={householdMembers || []} authenticity_token={authyToken} />);
+function getWrapper(patient) {
+    return shallow(<CaseStatus patient={patient} current_user={mockUser1} household_members={[]}
+      jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} />);
 }
 
 describe('CaseStatus', () => {
@@ -40,6 +45,7 @@ describe('CaseStatus', () => {
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Title).text()).toEqual('Case Status');
     expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Body).find(ApplyToHousehold).exists()).toBeFalsy();
     expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
     expect(wrapper.find(Button).at(0).text()).toEqual('Cancel');
     expect(wrapper.find(Button).at(1).text()).toEqual('Submit');
@@ -120,7 +126,7 @@ describe('CaseStatus', () => {
   });
 
   it('Correctly renders modal body and changes line list but not workflow when changing Case Status to Suspect, Unknown or Not A Case in the PUI line list of the exposure workflow', () => {
-    const wrapper = getWrapper(mockPatient5, false);
+    const wrapper = getWrapper(mockPatient5);
     wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Suspect' }, persist: jest.fn() });
     const modalBody = wrapper.find(Modal.Body);
     expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
@@ -132,7 +138,7 @@ describe('CaseStatus', () => {
   });
 
   it('Correctly renders modal body when changing Case Status to Confirmed or Probable (all other cases)', () => {
-    const wrapper = getWrapper(mockPatient1, false);
+    const wrapper = getWrapper(mockPatient1);
     wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
     const modalBody = wrapper.find(Modal.Body);
 
@@ -154,7 +160,7 @@ describe('CaseStatus', () => {
   });
 
   it('Changing monitoring option dropdown updates workflow and disable/enables the submit button', () => {
-    const wrapper = getWrapper(mockPatient1, false);
+    const wrapper = getWrapper(mockPatient1);
     wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
 
     // initial modal state with monitoring option empty
@@ -185,44 +191,35 @@ describe('CaseStatus', () => {
     expect(wrapper.find(Button).at(1).prop('disabled')).toBeTruthy();
   });
 
-  // it('Properly renders radio buttons for HoH', () => {
-  //   const wrapper = getWrapper(mockPatient1, true);
-  //   wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
-  //   const modalBody = wrapper.find(Modal.Body);
-  //   expect(modalBody.find(Form.Group).exists()).toBeTruthy();
-  //   expect(modalBody.find(Form.Check).length).toEqual(2);
-  //   expect(modalBody.find('#apply_to_household_no').prop('type')).toEqual('radio');
-  //   expect(modalBody.find('#apply_to_household_no').prop('label')).toEqual('This monitoree only');
-  //   expect(modalBody.find('#apply_to_household_yes').prop('type')).toEqual('radio');
-  //   expect(modalBody.find('#apply_to_household_yes').prop('label')).toEqual('This monitoree and all household members');
-  // });
+  it('Toggling HoH radio buttons hides/shows household members table and updates state', () => {
+    const wrapper = mount(<CaseStatus patient={mockPatient1} current_user={mockUser1} household_members={[ mockPatient2, mockPatient3, mockPatient4 ]}
+      jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} />);
+    wrapper.find('#case_status').at(1).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
 
-  // it('Clicking HoH radio buttons toggles this.state.apply_to_household', () => {
-  //   const wrapper = getWrapper(mockPatient1, true);
-  //   wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
+    // initial radio button state
+    expect(wrapper.find(ApplyToHousehold).exists()).toBeTruthy();
+    expect(wrapper.find(CustomTable).exists()).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeTruthy();
+    expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeFalsy();
 
-  //   // initial radio button state
-  //   expect(wrapper.state('apply_to_household')).toBeFalsy();
-  //   expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeTruthy();
-  //   expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeFalsy();
+    // change to apply to all of household
+    wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
+    expect(wrapper.find(CustomTable).exists()).toBeTruthy();
+    expect(wrapper.state('apply_to_household')).toBeTruthy();
+    expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeFalsy();
+    expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeTruthy();
 
-  //   // change to apply to all of household
-  //   wrapper.find('#apply_to_household_yes').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' }, persist: jest.fn() });
-  //   wrapper.update();
-  //   expect(wrapper.state('apply_to_household')).toBeTruthy();
-  //   expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeFalsy();
-  //   expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeTruthy();
-
-  //   // change back to just this monitoree
-  //   wrapper.find('#apply_to_household_no').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' }, persist: jest.fn() });
-  //   wrapper.update();
-  //   expect(wrapper.state('apply_to_household')).toBeFalsy();
-  //   expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeTruthy();
-  //   expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeFalsy();
-  // });
+    // change back to just this monitoree
+    wrapper.find('#apply_to_household_no').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
+    expect(wrapper.find(CustomTable).exists()).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeTruthy();
+    expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeFalsy();
+  });
 
   it('Clicking the cancel button closes modal and resets state', () => {
-    const wrapper = getWrapper(mockPatient1, false);
+    const wrapper = getWrapper(mockPatient1);
 
     // closes modal
     wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
@@ -236,6 +233,7 @@ describe('CaseStatus', () => {
     expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
     expect(wrapper.state('confirmedOrProbable')).toEqual(mockPatient1.case_status === 'Confirmed' || mockPatient1.case_status === 'Probable');
     expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.state('apply_to_household_ids')).toEqual([]);
     expect(wrapper.state('case_status')).toEqual(mockPatient1.case_status);
     expect(wrapper.state('disabled')).toBeFalsy();
     expect(wrapper.state('isolation')).toEqual(mockPatient1.isolation);
@@ -246,7 +244,7 @@ describe('CaseStatus', () => {
   });
 
   it('Clicking the submit button calls the submit method', () => {
-    const wrapper = getWrapper(mockPatient1, false);
+    const wrapper = getWrapper(mockPatient1);
     const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
     wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
     expect(submitSpy).toHaveBeenCalledTimes(0);

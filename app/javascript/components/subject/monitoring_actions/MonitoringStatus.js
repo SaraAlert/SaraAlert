@@ -88,7 +88,7 @@ class MonitoringStatus extends React.Component {
   };
 
   createModal(toggle, submit) {
-    const householdMemberWithContinuousEsposureInExposureWorkflow =
+    const householdMemberWithContinuousExposureInExposureWorkflow =
       this.props.household_members.filter(member => member.continuous_exposure && !member.isolation).length > 0;
 
     return (
@@ -128,7 +128,7 @@ class MonitoringStatus extends React.Component {
             <Form.Label>Please include any additional details:</Form.Label>
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} aria-label="Additional Details Text Area" />
           </Form.Group>
-          {this.props.patient.isolation && !this.state.monitoring && householdMemberWithContinuousEsposureInExposureWorkflow && !this.state.apply_to_household && (
+          {this.props.patient.isolation && !this.state.monitoring && householdMemberWithContinuousExposureInExposureWorkflow && !this.state.apply_to_household && (
             <div className="update-dependent-lde">
               <hr />
               <p className="mb-2">
