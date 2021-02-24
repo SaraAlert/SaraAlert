@@ -65,7 +65,7 @@ class VaccinesController < ApplicationController
     # Handle vaccine creation success or failure
     if vaccine.valid?
       # Create history item on successful record creation
-      History.vaccine(patient: patient_id,
+      History.vaccination(patient: patient_id,
                       created_by: current_user.email,
                       comment: "User added a new vaccine to the monitoree (vaccine ID: #{vaccine.id}).")
     else
@@ -119,7 +119,7 @@ class VaccinesController < ApplicationController
     # Handle vaccine update success or failure
     if vaccine.update(update_params)
       # Create history item on successful update
-      History.vaccine_edit(
+      History.vaccination_edit(
         patient: params.permit(:patient_id)[:patient_id],
         created_by: current_user.email,
         comment: "User edited a vaccine on the monitoree (vaccine ID: #{vaccine_id})."

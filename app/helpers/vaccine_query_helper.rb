@@ -77,7 +77,8 @@ module VaccineQueryHelper
     when 'dose_number'
       vaccines = vaccines.order(Arel.sql('CASE WHEN dose_number IS NULL THEN 1 ELSE 0 END, dose_number ' + dir))
     when 'notes'
-      vaccines = vaccines.order(Arel.sql('CASE WHEN notes IS NULL THEN 1 ELSE 0 END, notes ' + dir))
+      # nil or empty string values are always sorted at the bottom
+      vaccines = vaccines.order(Arel.sql("CASE WHEN notes IS NULL THEN 2 WHEN notes = '' THEN 1 ELSE 0 END, notes " + dir))
     end
     vaccines
   end
