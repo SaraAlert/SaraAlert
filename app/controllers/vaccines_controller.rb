@@ -66,8 +66,8 @@ class VaccinesController < ApplicationController
     if vaccine.valid?
       # Create history item on successful record creation
       History.vaccination(patient: patient_id,
-                      created_by: current_user.email,
-                      comment: "User added a new vaccine to the monitoree (vaccine ID: #{vaccine.id}).")
+                          created_by: current_user.email,
+                          comment: "User added a new vaccine to the monitoree (vaccine ID: #{vaccine.id}).")
     else
       # Handle case where vaccine create failed
       error_message = 'Vaccine was unable to be created.'
