@@ -258,7 +258,7 @@ class PatientsTable extends React.Component {
     this.setState(
       state => {
         return {
-          query: { ...state.query, entries: value, page: 0 },
+          query: { ...state.query, entries: parseInt(value), page: 0 },
         };
       },
       () => {

@@ -410,7 +410,7 @@ class AdminTable extends React.Component {
    * @param {SyntheticEvent} event - Event when num entries changes
    */
   handleEntriesChange = event => {
-    const value = event.target.value;
+    const value = parseInt(event.target.value);
     this.setState(
       state => {
         return {
