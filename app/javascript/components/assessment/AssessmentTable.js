@@ -182,7 +182,7 @@ class AssessmentTable extends React.Component {
    * @param {SyntheticEvent} event - Event when the search input changes
    */
   handleSearchChange = event => {
-    const value = parseInt(event.target.value);
+    const value = event.target.value;
     this.setState(
       state => {
         return { query: { ...state.query, search: value } };
@@ -199,7 +199,7 @@ class AssessmentTable extends React.Component {
    * @param {SyntheticEvent} event - Event when num entries changes
    */
   handleEntriesChange = event => {
-    const value = event.target.value;
+    const value = parseInt(event.target.value);
     this.setState(
       state => {
         return {
