@@ -147,7 +147,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Gets data for this batch of patients that may not have already been present in the export config (such as specific symptoms).
   def get_field_data(config)
-    data = config[:data].deep_dup
+    data = {}.merge!(config[:data])
 
     # Update the checked data (used for obtaining values) with race information
     update_checked_race_data(data)

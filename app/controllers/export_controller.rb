@@ -139,55 +139,22 @@ class ExportController < ApplicationController
 
     History.monitoree_data_downloaded(patient: patients.first, created_by: current_user.email)
 
-    config = {
-      format: 'xlsx',
-      separate_files: false,
-      data: {
-        patients: {
-          checked: FULL_HISTORY_PATIENTS_FIELDS,
-          headers: FULL_HISTORY_PATIENTS_HEADERS,
-          tab: 'Monitorees List'
-        },
-        # assessment fields and headers need to be duplicated because they may be modified
-        assessments: {
-          checked: FULL_HISTORY_ASSESSMENTS_FIELDS.dup,
-          headers: FULL_HISTORY_ASSESSMENTS_HEADERS.dup,
-          tab: 'Reports'
-        },
-        laboratories: {
-          checked: FULL_HISTORY_LABORATORIES_FIELDS,
-          headers: FULL_HISTORY_LABORATORIES_HEADERS,
-          tab: 'Lab Results'
-        },
-        histories: {
-          checked: FULL_HISTORY_HISTORIES_FIELDS,
-          headers: FULL_HISTORY_HISTORIES_HEADERS,
-          tab: 'Edit Histories'
-        }
-      }
-    }
-
-    # NOTE: separate implementation used for single patient export for performance and to keep this endpoint's logic separate from main export logic
-    # Get all of the field data based on the config
-    data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
-    field_data = get_field_data(config)
-
-    # Create export file
+    field_data = get_field_data(FULL_HISTORY_PATIENT_CONFIG)
     workbook = FastExcel.open
-    sheets = {}
-    last_row_nums = {}
-    data_types.each do |data_type|
-      # Add separate worksheet for each data type
-      worksheet = workbook.add_worksheet(config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label))
+    sheets, last_row_nums = {}, {}
+
+    # Add sheets and headers
+    FULL_HISTORY_PATIENT_CONFIG[:data].each_key do |data_type|
+      worksheet = workbook.add_worksheet(FULL_HISTORY_PATIENT_CONFIG.dig(:data, data_type, :tab))
       worksheet.auto_width = true
       worksheet.append_row(field_data.dig(data_type, :headers))
       last_row_nums[data_type] = 0
       sheets[data_type] = worksheet
     end
 
-    # Get export data hashes for each data type from config and write data to each sheet
-    exported_data = get_export_data(patients, config[:data])
-    data_types.each do |data_type|
+    # Add data rows to each sheet
+    exported_data = get_export_data(patients, FULL_HISTORY_PATIENT_CONFIG[:data])
+    FULL_HISTORY_PATIENT_CONFIG[:data].each_key do |data_type|
       last_row_nums[data_type] = write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked], last_row_nums[data_type])
     end
 

@@ -492,4 +492,32 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     transfers: TRANSFERS_EXPORT_OPTIONS,
     histories: HISTORIES_EXPORT_OPTIONS
   }.freeze
+
+  FULL_HISTORY_PATIENT_CONFIG = {
+    format: 'xlsx',
+    separate_files: false,
+    data: {
+      patients: {
+        checked: FULL_HISTORY_PATIENTS_FIELDS,
+        headers: FULL_HISTORY_PATIENTS_HEADERS,
+        tab: 'Monitorees List'
+      },
+      # assessment fields and headers need to be duplicated because they may be modified
+      assessments: {
+        checked: FULL_HISTORY_ASSESSMENTS_FIELDS.dup,
+        headers: FULL_HISTORY_ASSESSMENTS_HEADERS.dup,
+        tab: 'Reports'
+      },
+      laboratories: {
+        checked: FULL_HISTORY_LABORATORIES_FIELDS,
+        headers: FULL_HISTORY_LABORATORIES_HEADERS,
+        tab: 'Lab Results'
+      },
+      histories: {
+        checked: FULL_HISTORY_HISTORIES_FIELDS,
+        headers: FULL_HISTORY_HISTORIES_HEADERS,
+        tab: 'Edit Histories'
+      }
+    }
+  }.freeze
 end
