@@ -111,11 +111,11 @@ In the `PAYLOAD` section enter:
 If using DEMO server:
 ```javascript
 {
-  "iss":"myTestApp",
-  "sub":"myTestApp",
+  "iss":"myTestApp", // Example value that should be replaced with your Client ID
+  "sub":"myTestApp", // Example value that should be replaced with your Client ID
   "aud":"http://demo.saraalert.org/oauth/token",
   "exp":1599600491, // Make sure this time is in the future otherwise you will see a SignatureExpired error
-  "jti":1599600191
+  "jti":"1599600191" // Must be a random unique identifier for this JWT
 }
 ```
 
@@ -125,11 +125,11 @@ If using DEMO server:
 
 ```javascript
 {
-  "iss":"myTestApp",
-  "sub":"myTestApp",
+  "iss":"myTestApp", // Example value that should be replaced with your Client ID
+  "sub":"myTestApp", // Example value that should be replaced with your Client ID
   "aud":"http://localhost:3000/oauth/token",
   "exp":1599600491, // Make sure this time is in the future otherwise you will see a SignatureExpired error
-  "jti":1599600191
+  "jti":"1599600191" // Must be a random unique identifier for this JWT
 }
 ```
 </div>
