@@ -59,7 +59,7 @@ class SymptomsAssessment extends React.Component {
     const keysToIgnore = ['who_reported'];
     let allFieldsEmpty = true;
     _.map(object, (value, key) => {
-      if (object[String(key)] && !keysToIgnore.includes(key)) {
+      if (object[String(key)] !== null && object[String(key)] !== undefined && !keysToIgnore.includes(key)) {
         allFieldsEmpty = false;
       }
     });
