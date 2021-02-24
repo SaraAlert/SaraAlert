@@ -197,7 +197,8 @@ class SymptomsAssessment extends React.Component {
                   <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
                 </React.Fragment>
               )}
-              {this.props.translations[this.props.lang]['web']['submit']}
+              {/* The following <span> tags cannot be removed. They prevent Google Translate from confusing the react node-tree when translated */}
+              <span>{this.props.translations[this.props.lang]['web']['submit']}</span>
             </Button>
           </Form.Row>
         </Card.Body>
