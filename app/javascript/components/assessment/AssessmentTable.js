@@ -367,7 +367,6 @@ class AssessmentTable extends React.Component {
                   entryOptions={this.state.entryOptions}
                   entries={this.state.query.entries}
                   getRowClassName={this.getRowClassName}
-                  getCustomTableClassName={() => 'reports-table'}
                 />
               </div>
             </div>

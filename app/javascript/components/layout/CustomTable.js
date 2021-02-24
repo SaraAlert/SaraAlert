@@ -218,7 +218,7 @@ class CustomTable extends React.Component {
         )}
         <div
           className={
-            this.props.getCustomTableClassName ? `table-responsive custom-table' ${this.props.getCustomTableClassName()}` : 'table-responsive custom-table'
+            this.props.getCustomTableClassName ? `table-responsive custom-table ${this.props.getCustomTableClassName()}` : 'table-responsive custom-table'
           }>
           <Table striped bordered hover size="sm" className="opaque-table">
             <thead>
