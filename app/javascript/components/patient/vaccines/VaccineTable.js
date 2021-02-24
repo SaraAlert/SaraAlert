@@ -91,7 +91,7 @@ class VaccineTable extends React.Component {
         }
       })
       .then(response => {
-        if (response && response.data && response.data.table_data && response.data.total) {
+        if (response && response.data && response.data.table_data && response.data.total !== null && response.data.total !== undefined) {
           this.setState(state => {
             return {
               table: {
@@ -131,7 +131,7 @@ class VaccineTable extends React.Component {
     const value = event.target.value;
     this.setState(
       state => {
-        return { query: { ...state.query, search: value } };
+        return { query: { ...state.query, search: value, page: 0 } };
       },
       () => {
         this.updateTable(this.state.query);
@@ -145,7 +145,7 @@ class VaccineTable extends React.Component {
    * @param {SyntheticEvent} event - Event when num entries changes
    */
   handleEntriesChange = event => {
-    const value = event.target.value;
+    const value = parseInt(event.target.value);
     this.setState(
       state => {
         return {

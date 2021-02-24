@@ -21,8 +21,8 @@ class History < ApplicationRecord
     report_note: 'Report Note',
     lab_result: 'Lab Result',
     lab_result_edit: 'Lab Result Edit',
-    vaccine: 'Vaccination',
-    vaccine_edit: 'Vaccination Edit',
+    vaccination: 'Vaccination',
+    vaccination_edit: 'Vaccination Edit',
     close_contact: 'Close Contact',
     close_contact_edit: 'Close Contact Edit',
     contact_attempt: 'Contact Attempt',
@@ -151,12 +151,12 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:report_reminder], comment) unless patient&.preferred_contact_method.nil?
   end
 
-  def self.vaccine(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new vacciation to the monitoree record..')
-    create_history(patient, created_by, HISTORY_TYPES[:vaccine], comment)
+  def self.vaccination(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new vacciation to the monitoree record..')
+    create_history(patient, created_by, HISTORY_TYPES[:vaccination], comment)
   end
 
-  def self.vaccine_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a vacciation on the monitoree record.')
-    create_history(patient, created_by, HISTORY_TYPES[:vaccine_edit], comment)
+  def self.vaccination_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a vacciation on the monitoree record.')
+    create_history(patient, created_by, HISTORY_TYPES[:vaccination_edit], comment)
   end
 
   def self.lab_result(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new lab result.')
