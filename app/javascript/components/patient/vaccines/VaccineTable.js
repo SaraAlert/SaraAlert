@@ -339,7 +339,7 @@ class VaccineTable extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Card id="assessments-table" className="mx-2 mt-3 mb-4 card-square">
+        <Card id="vaccines-table" className="mx-2 mt-3 mb-4 card-square">
           <Card.Header className="h5">Vaccinations</Card.Header>
           <Card.Body>
             <div className="mt-4">
