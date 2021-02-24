@@ -66,7 +66,6 @@ class VaccineTable extends React.Component {
    * Returns updated table data via an axios GET request.
    * Debounces the query to avoid too many querys at once when someone is typing in the search bar, for example.
    * @param {Object} query - Updated query for table data after change.
-   * @param {Boolean} isInitialLoad - Flag for if it's the initial load on component mount. Used to determine if colData needs to be updated.
    */
   queryServer = _.debounce(query => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
