@@ -21,6 +21,8 @@ class VaccineModal extends React.Component {
       administration_date: this.props.currentVaccineData?.administration_date,
       dose_number: this.props.currentVaccineData?.dose_number,
       notes: this.props.currentVaccineData?.notes,
+      // Sorting so that the blank option shows up at the top
+      sorted_dose_number_options: this.props.dose_number_options ? this.props.dose_number_options.sort() : [],
       isValid: false,
     };
   }
