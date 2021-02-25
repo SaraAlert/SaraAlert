@@ -68,7 +68,7 @@ module AssessmentQueryHelper
   end
 
   # Formats assessments to be displayed on the frontend.
-  def format(assessments)
+  def format_for_frontend(assessments)
     table_data = []
     symptoms = Assessment.get_unique_symptoms_for_assessments(assessments.pluck(:id))
 
