@@ -24,7 +24,7 @@ class AssessmentsController < ApplicationController
     assessments = search(assessments, search_text)
     assessments = sort(assessments, sort_order, sort_direction)
     assessments = paginate(assessments, entries, page)
-    assessments = format(assessments)
+    assessments = format_for_frontend(assessments)
 
     render json: assessments
   end
