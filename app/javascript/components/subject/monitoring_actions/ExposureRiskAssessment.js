@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Form, Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
+import ReactTooltip from 'react-tooltip';
 
 import ApplyToHousehold from '../household_actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
@@ -19,6 +20,7 @@ class ExposureRiskAssessment extends React.Component {
       apply_to_household: false,
       apply_to_household_ids: [],
       loading: false,
+      noMembersSelected: false,
     };
     this.origState = Object.assign({}, this.state);
   }
@@ -35,6 +37,16 @@ class ExposureRiskAssessment extends React.Component {
     this.setState({ [event.target.id]: value || '' });
   };
 
+  handleApplyHouseholdChange = apply_to_household => {
+    const noMembersSelected = apply_to_household && this.state.apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household, noMembersSelected });
+  };
+
+  handleApplyHouseholdIdsChange = apply_to_household_ids => {
+    const noMembersSelected = this.state.apply_to_household && apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household_ids, noMembersSelected });
+  };
+
   toggleExposureRiskAssessmentModal = () => {
     const current = this.state.showExposureRiskAssessmentModal;
     this.setState({
@@ -43,6 +55,7 @@ class ExposureRiskAssessment extends React.Component {
       apply_to_household: false,
       apply_to_household_ids: [],
       reasoning: '',
+      noMembersSelected: false,
     });
   };
 
@@ -81,8 +94,8 @@ class ExposureRiskAssessment extends React.Component {
           {this.props.household_members.length > 0 && (
             <ApplyToHousehold
               household_members={this.props.household_members}
-              handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household })}
-              handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
+              handleApplyHouseholdChange={this.handleApplyHouseholdChange}
+              handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
               current_user={this.props.current_user}
               jurisdiction_paths={this.props.jurisdiction_paths}
             />
@@ -96,13 +109,20 @@ class ExposureRiskAssessment extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading || this.state.noMembersSelected}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
               </React.Fragment>
             )}
-            Submit
+            <span data-for="exposure-risk-assessment-submit" data-tip="">
+              Submit
+            </span>
+            {this.state.noMembersSelected && (
+              <ReactTooltip id="exposure-risk-assessment-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
+                <div>Please select at least one household member or change your selection to apply to this monitoree only</div>
+              </ReactTooltip>
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
