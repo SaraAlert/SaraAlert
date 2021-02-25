@@ -94,6 +94,7 @@ class PatientsController < ApplicationController
 
     @dependents_exclude_hoh = @patient.dependents_exclude_self
     @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
+    @enrollment_step = params.permit(:step)[:step]&.to_i
   end
 
   # This follows 'new', this will receive the subject details and save a new subject

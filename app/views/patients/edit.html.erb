@@ -5,7 +5,7 @@
                       patient: @patient,
                       propagated_fields: @propagated_fields,
                       edit_mode: true,
-                      enrollment_step: params[:step].to_i,
+                      enrollment_step: @enrollment_step,
                       authenticity_token: form_authenticity_token,
                       can_add_group: current_user.can_create_patient?,
                       has_dependents: @dependents_exclude_hoh.count.positive?,
