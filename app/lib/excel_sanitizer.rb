@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # String manipulation of data fields that are to be exported
-# Not intended for to protect against any threat vector through Excel
+# Not intended to protect against any threat vector through Excel
 # Intent is to reduce errors when viewing exported files
 module ExcelSanitizer
   # Removes = from the beginning of a string to avoid "#NAME!" and
