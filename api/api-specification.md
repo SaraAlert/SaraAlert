@@ -974,6 +974,33 @@ Use `http://saraalert.org/StructureDefinition/phone-type` to specify the type of
   }
 ]
 ```
+
+Use `http://saraalert.org/StructureDefinition/address-type` to specify the type of an address (options are: `USA` and `Foreign`). Note that this extension should be placed on an element in the `Patient.address` array. If this extension is not present on an address in the `Patient.address` array, the address is assumed to be a `USA` address.
+```json
+"address": [
+  {
+    "extension": [
+      {
+        "url": "http://saraalert.org/StructureDefinition/address-type",
+        "valueString": "Foreign"
+      }
+    ],
+    "line": ["24961 Linnie Inlet", "Apt. 497"],
+    "city": "Ottawa",
+    "state": "Ontario",
+    "country": "Canada",
+    "postalCode": "192387"
+  },
+  {
+    "line": ["35047 Van Light"],
+    "city": "New Tambra",
+    "state": "Mississippi",
+    "district": "Summer Square",
+    "postalCode": "05657",
+  }
+]
+```
+
 ### POST `[base]/Patient`
 
 <a name="create-post-pat"/>
