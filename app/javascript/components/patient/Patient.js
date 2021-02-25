@@ -50,7 +50,12 @@ class Patient extends React.Component {
     return <span>{raceArray.length === 0 ? '--' : raceArray.join(', ')}</span>;
   };
 
-  renderEditLink(section, index) {
+  /**
+   * Renders the edit link depending on if the user is coming from the monitoree details section or summary of the enrollment wizard.
+   * @param {String} section - title of the monitoree details section
+   * @param {Number} enrollmentStep - the number of the step for the section within the enrollment wizard
+   */
+  renderEditLink(section, enrollmentStep) {
     let sectionId = `edit-${section.replace(/\s+/g, '_').toLowerCase()}-btn`;
     if (section === 'Case Information') {
       sectionId = 'edit-potential_exposure_information-btn';
@@ -58,7 +63,7 @@ class Patient extends React.Component {
     if (this.props.goto) {
       return (
         <div className="edit-link">
-          <Button variant="link" id={sectionId} className="py-0" onClick={() => this.props.goto(index)} aria-label={`Edit ${section}`}>
+          <Button variant="link" id={sectionId} className="py-0" onClick={() => this.props.goto(enrollmentStep)} aria-label={`Edit ${section}`}>
             Edit
           </Button>
         </div>
@@ -66,7 +71,7 @@ class Patient extends React.Component {
     } else {
       return (
         <div className="edit-link">
-          <a href={window.BASE_PATH + '/patients/' + this.props.details.id + '/edit?step=' + index} id={sectionId} aria-label={`Edit ${section}`}>
+          <a href={window.BASE_PATH + '/patients/' + this.props.details.id + '/edit?step=' + enrollmentStep} id={sectionId} aria-label={`Edit ${section}`}>
             Edit
           </a>
         </div>
