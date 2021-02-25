@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button, Modal, Form } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
+import ReactTooltip from 'react-tooltip';
 
 import ApplyToHousehold from '../household_actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
@@ -17,8 +18,9 @@ class AssignedUser extends React.Component {
       original_assigned_user: props.patient.assigned_user || '',
       apply_to_household: false,
       apply_to_household_ids: [],
-      loading: false,
       reasoning: '',
+      loading: false,
+      noMembersSelected: false,
     };
     this.origState = Object.assign({}, this.state);
   }
@@ -37,6 +39,16 @@ class AssignedUser extends React.Component {
     this.setState({ [event.target.id]: value || '' });
   };
 
+  handleApplyHouseholdChange = apply_to_household => {
+    const noMembersSelected = apply_to_household && this.state.apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household, noMembersSelected });
+  };
+
+  handleApplyHouseholdIdsChange = apply_to_household_ids => {
+    const noMembersSelected = this.state.apply_to_household && apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household_ids, noMembersSelected });
+  };
+
   // if user hits the Enter key after changing the Assigned User value, shows the modal (in leu of clicking the button)
   handleKeyPress = event => {
     if (event.which === 13 && this.state.assigned_user !== this.state.original_assigned_user) {
@@ -53,6 +65,7 @@ class AssignedUser extends React.Component {
       apply_to_household: false,
       apply_to_household_ids: [],
       reasoning: '',
+      noMembersSelected: false,
     });
   };
 
@@ -92,8 +105,8 @@ class AssignedUser extends React.Component {
               household_members={this.props.household_members}
               current_user={this.props.current_user}
               jurisdiction_paths={this.props.jurisdiction_paths}
-              handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household })}
-              handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
+              handleApplyHouseholdChange={this.handleApplyHouseholdChange}
+              handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
             />
           )}
           <Form.Group>
@@ -105,13 +118,20 @@ class AssignedUser extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading || this.state.noMembersSelected}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
               </React.Fragment>
             )}
-            Submit
+            <span data-for="assigned-user-submit" data-tip="">
+              Submit
+            </span>
+            {this.state.noMembersSelected && (
+              <ReactTooltip id="assigned-user-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
+                <div>Please select at least one household member or change your selection to apply to this monitoree only</div>
+              </ReactTooltip>
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
