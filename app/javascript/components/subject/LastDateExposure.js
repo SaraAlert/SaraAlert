@@ -4,6 +4,7 @@ import { Form, Row, Col, Button, Modal, OverlayTrigger, Tooltip } from 'react-bo
 import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
+import ReactTooltip from 'react-tooltip';
 
 import ApplyToHousehold from './household_actions/ApplyToHousehold';
 import DateInput from '../util/DateInput';
@@ -19,6 +20,7 @@ class LastDateExposure extends React.Component {
       last_date_of_exposure: this.props.patient.last_date_of_exposure,
       continuous_exposure: !!this.props.patient.continuous_exposure,
       loading: false,
+      noMembersSelected: false,
       apply_to_household: false,
       apply_to_household_ids: [],
       showLastDateOfExposureModal: false,
@@ -49,6 +51,16 @@ class LastDateExposure extends React.Component {
     });
   };
 
+  handleApplyHouseholdChange = apply_to_household => {
+    const noMembersSelected = apply_to_household && this.state.apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household, noMembersSelected });
+  };
+
+  handleApplyHouseholdIdsChange = apply_to_household_ids => {
+    const noMembersSelected = this.state.apply_to_household && apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household_ids, noMembersSelected });
+  };
+
   openContinuousExposureModal = () => {
     this.setState({
       showContinuousExposureModal: true,
@@ -56,6 +68,7 @@ class LastDateExposure extends React.Component {
       continuous_exposure: !this.props.patient.continuous_exposure,
       apply_to_household: false,
       apply_to_household_ids: [],
+      noMembersSelected: false,
     });
   };
 
@@ -67,6 +80,7 @@ class LastDateExposure extends React.Component {
         continuous_exposure: date === null,
         apply_to_household: false,
         apply_to_household_ids: [],
+        noMembersSelected: false,
       });
     }
   };
@@ -79,6 +93,7 @@ class LastDateExposure extends React.Component {
       showContinuousExposureModal: false,
       apply_to_household: false,
       apply_to_household_ids: [],
+      noMembersSelected: false,
     });
   };
 
@@ -106,8 +121,8 @@ class LastDateExposure extends React.Component {
               household_members={this.props.household_members}
               current_user={this.props.current_user}
               jurisdiction_paths={this.props.jurisdiction_paths}
-              handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household })}
-              handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
+              handleApplyHouseholdChange={this.handleApplyHouseholdChange}
+              handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
             />
           )}
           {!!this.props.patient.continuous_exposure && !this.state.continuous_exposure && (
@@ -134,13 +149,20 @@ class LastDateExposure extends React.Component {
           <Button
             variant="primary btn-square"
             onClick={submit}
-            disabled={this.state.loading || (!this.state.last_date_of_exposure && !this.state.continuous_exposure)}>
+            disabled={this.state.loading || this.state.noMembersSelected || (!this.state.last_date_of_exposure && !this.state.continuous_exposure)}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
               </React.Fragment>
             )}
-            Submit
+            <span data-for="lde-submit" data-tip="">
+              Submit
+            </span>
+            {this.state.noMembersSelected && (
+              <ReactTooltip id="lde-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
+                <div>Please select at least one household member or change your selection to apply to this monitoree only</div>
+              </ReactTooltip>
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
