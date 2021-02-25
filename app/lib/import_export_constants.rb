@@ -502,10 +502,9 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
         headers: FULL_HISTORY_PATIENTS_HEADERS,
         tab: 'Monitorees List'
       },
-      # assessment fields and headers need to be duplicated because they may be modified
       assessments: {
-        checked: FULL_HISTORY_ASSESSMENTS_FIELDS.dup,
-        headers: FULL_HISTORY_ASSESSMENTS_HEADERS.dup,
+        checked: FULL_HISTORY_ASSESSMENTS_FIELDS,
+        headers: FULL_HISTORY_ASSESSMENTS_HEADERS,
         tab: 'Reports'
       },
       laboratories: {
