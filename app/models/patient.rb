@@ -656,6 +656,11 @@ class Patient < ApplicationRecord
     dependents.where.not(id: id)
   end
 
+  # Get this patient's household members including itself
+  def household
+    responder&.dependents
+  end
+
   # Single place for calculating the end of monitoring date for this subject.
   def end_of_monitoring
     return 'Continuous Exposure' if continuous_exposure
@@ -975,11 +980,7 @@ class Patient < ApplicationRecord
     diffs
   end
 
-  # Use the cached attribute if it exists, if not query with count for performance
-  # instead of loading all dependents.
   def head_of_household?
-    return head_of_household unless head_of_household.nil?
-
     dependents_exclude_self.where(purged: false).size.positive?
   end
 

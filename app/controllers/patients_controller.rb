@@ -30,9 +30,8 @@ class PatientsController < ApplicationController
     @dependents_exclude_hoh = @patient.dependents_exclude_self.where(purged: false)
 
     # All household members regardless if current patient is HOH
-    household = current_user.get_patient(@patient.responder_id)&.dependents
-    @household_members = (household.nil? ? [] : household).uniq
-    @household_members_exclude_self = (household.nil? ? [] : household.where.not(id: @patient.id)).uniq
+    @household_members = @patient.household.where(purged: false)
+    @household_members_exclude_self = @household_members.where.not(id: @patient.id)
 
     @translations = Assessment.new.translations
 
@@ -473,7 +472,7 @@ class PatientsController < ApplicationController
     # Update selected group members if applying to household and ids are supplied
     params[:apply_to_household_ids].each do |id|
       member = current_user.get_patient(id)
-      update_monitoring_fields(member, params, :patient, :none)
+      update_monitoring_fields(member, params, :patient, :none) unless member.nil?
     end
   end
 
