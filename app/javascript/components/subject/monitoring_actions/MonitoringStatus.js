@@ -4,6 +4,7 @@ import { Form, Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
+import ReactTooltip from 'react-tooltip';
 
 import ApplyToHousehold from '../household_actions/ApplyToHousehold';
 import DateInput from '../../util/DateInput';
@@ -20,6 +21,7 @@ class MonitoringStatus extends React.Component {
       monitoring_reason: '',
       reasoning: '',
       loading: false,
+      noMembersSelected: false,
       apply_to_household: false,
       apply_to_household_ids: [],
       apply_to_household_cm_exp_only: false,
@@ -33,6 +35,16 @@ class MonitoringStatus extends React.Component {
       monitoring: event.target.value === 'Actively Monitoring',
       monitoring_status: event?.target?.value ? event.target.value : '',
     });
+  };
+
+  handleApplyHouseholdChange = apply_to_household => {
+    const noMembersSelected = apply_to_household && this.state.apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household, apply_to_household_cm_exp_only: false, noMembersSelected });
+  };
+
+  handleApplyHouseholdIdsChange = apply_to_household_ids => {
+    const noMembersSelected = this.state.apply_to_household && apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household_ids, noMembersSelected });
   };
 
   handleApplyLdeChange = event => {
@@ -57,6 +69,7 @@ class MonitoringStatus extends React.Component {
       apply_to_household_ids: [],
       apply_to_household_cm_exp_only: false,
       apply_to_household_cm_exp_only_date: moment(new Date()).format('YYYY-MM-DD'),
+      noMembersSelected: false,
     });
   };
 
@@ -107,8 +120,8 @@ class MonitoringStatus extends React.Component {
               household_members={this.props.household_members}
               current_user={this.props.current_user}
               jurisdiction_paths={this.props.jurisdiction_paths}
-              handleApplyHouseholdChange={apply_to_household => this.setState({ apply_to_household, apply_to_household_cm_exp_only: false })}
-              handleApplyHouseholdIdsChange={apply_to_household_ids => this.setState({ apply_to_household_ids })}
+              handleApplyHouseholdChange={this.handleApplyHouseholdChange}
+              handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
             />
           )}
           {!this.state.monitoring && (
@@ -184,13 +197,20 @@ class MonitoringStatus extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading || this.state.noMembersSelected}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
               </React.Fragment>
             )}
-            Submit
+            <span data-for="monitoring-status-submit" data-tip="">
+              Submit
+            </span>
+            {this.state.noMembersSelected && (
+              <ReactTooltip id="monitoring-status-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
+                <div>Please select at least one household member or change your selection to apply to this monitoree only</div>
+              </ReactTooltip>
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
