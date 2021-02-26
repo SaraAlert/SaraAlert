@@ -99,8 +99,8 @@ class Jurisdiction extends React.Component {
             location.reload(true);
           }
         })
-        .catch(error => {
-          reportError(error);
+        .catch(err => {
+          reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
   };

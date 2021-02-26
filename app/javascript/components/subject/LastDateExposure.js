@@ -45,8 +45,8 @@ class LastDateExposure extends React.Component {
         .then(() => {
           location.reload(true);
         })
-        .catch(error => {
-          reportError(error);
+        .catch(err => {
+          reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
   };
