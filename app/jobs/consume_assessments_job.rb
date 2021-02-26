@@ -13,7 +13,8 @@ class ConsumeAssessmentsJob < ApplicationJob
     while (msg = queue.pop)
       begin
         message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array',
-                                         'patient_submission_token', 'experiencing_symptoms', 'response_status')
+                                         'patient_submission_token', 'experiencing_symptoms',
+                                         'response_status', 'error_code')
         # Invalid message
         if message.nil?
           Rails.logger.info 'ConsumeAssessmentsJob: skipping nil message...'
@@ -37,6 +38,15 @@ class ConsumeAssessmentsJob < ApplicationJob
         # Failed to find patient
         if patient.nil?
           Rails.logger.info "ConsumeAssessmentsJob: skipping nil patient (token: #{message['patient_submission_token']})..."
+          queue.commit
+          next
+        end
+
+        # Error occured in twilio studio flow
+        if message['error_code'].present?
+          TwilioSender.handle_twilio_error_codes(patient, message['error_code'])
+          # Will attempt to resend assessment if phone is off or if unknown error occurs
+          patient.update(last_assessment_reminder_sent: nil) if message['error_code']&.in? TwilioSender.retry_eligible_error_codes
           queue.commit
           next
         end
@@ -216,7 +226,7 @@ class ConsumeAssessmentsJob < ApplicationJob
     BlockedNumber.create(phone_number: monitoree_number) if message['response_status'] == 'opt_out'
     BlockedNumber.where(phone_number: monitoree_number).destroy_all if message['response_status'] == 'opt_in'
     patients = Patient.responder_for_number(monitoree_number)
-    patients.uniq.each do |patient|
+    patients.each do |patient|
       next if patient.nil?
 
       # Get list of dependents excluding the patient itself.

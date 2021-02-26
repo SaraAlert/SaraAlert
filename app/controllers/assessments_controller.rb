@@ -91,6 +91,7 @@ class AssessmentsController < ApplicationController
                               .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).exists? &&
              !(params.permit(:response_status)['response_status'].in? %w[opt_out opt_in])
         assessment_placeholder = {}
+        assessment_placeholder = assessment_placeholder.merge(params.permit(:error_code).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:response_status).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes required] }).to_h)

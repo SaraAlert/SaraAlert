@@ -1,0 +1,93 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://studio.twilio.com/v1/Flows/<TWILLIO_STUDIO_FLOW>/Executions/FNf9193a1e62d1333a20a84ef183e751df/Context
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - twilio-ruby/5.45.1 (ruby/x86_64-darwin19 2.6.6-p146)
+      Accept-Charset:
+      - utf-8
+      Accept:
+      - application/json
+      Authorization:
+      - Basic QUM1ZGE3NDRhODdmNTM0MTgyZWNlZGJjMTljNDcyYTA2YjpmYTBmMTVlZjY1ZDA2YjliZTQzYzBkOTkyZTNkY2RkMw==
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 26 Jan 2021 20:54:29 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '2626'
+      Connection:
+      - keep-alive
+      Twilio-Concurrent-Requests:
+      - '1'
+      Twilio-Request-Id:
+      - RQ07c6ba0ad8604c69a6942af863207a7f
+      Twilio-Request-Duration:
+      - '0.022'
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match,
+        If-Unmodified-Since
+      Access-Control-Allow-Methods:
+      - GET, POST, DELETE, OPTIONS
+      Access-Control-Expose-Headers:
+      - ETag
+      Access-Control-Allow-Credentials:
+      - 'true'
+      X-Powered-By:
+      - AT-5000
+      X-Shenanigans:
+      - none
+      X-Home-Region:
+      - us1
+      X-Api-Domain:
+      - studio.twilio.com
+      Strict-Transport-Security:
+      - max-age=31536000
+    body:
+      encoding: UTF-8
+      string: '{"url": "https://studio.twilio.com/v1/Flows/<TWILLIO_STUDIO_FLOW>/Executions/FNf9193a1e62d1333a20a84ef183e751df/Context",
+        "execution_sid": "FNf9193a1e62d1333a20a84ef183e751df", "flow_sid": "<TWILLIO_STUDIO_FLOW>",
+        "context": {"widgets": {"send_single_message": {"MessageSid": "SM5a3e4eba25ba4aa4beff811a961f4383",
+        "SmsStatus": "failed", "MessagingServiceSid": "<TWILLIO_MESSAGING_SERVICE_SID>",
+        "ApiVersion": "2010-04-01", "ErrorCode": "21610", "To": "+16035555555", "From":
+        "<TWILLIO_SENDING_NUMBER>", "MessageStatus": "failed", "AccountSid": "<TWILLIO_API_ACCOUNT>",
+        "outbound": {"Status": "accepted", "ErrorCode": null, "Direction": "outbound-api",
+        "ErrorMessage": null, "From": null, "DateSent": null, "PriceUnit": null, "Price":
+        null, "Sid": "SM5a3e4eba25ba4aa4beff811a961f4383", "MessagingServiceSid":
+        "<TWILLIO_MESSAGING_SERVICE_SID>", "Body": "Veuillez remplir le rapport quotidien
+        de Sara Alert pour MG-66: http://localhost:3000/r/dmHCpUHC-Q/Z2tPR1o1a1/fr/MG66",
+        "ApiVersion": "2010-04-01", "DateCreated": "2021-01-26T18:52:32Z", "SubresourceUris":
+        {"media": "/2010-04-01/Accounts/<TWILLIO_API_ACCOUNT>/Messages/SM5a3e4eba25ba4aa4beff811a961f4383/Media.json"},
+        "To": "+16035555555", "NumMedia": "0", "AccountSid": "<TWILLIO_API_ACCOUNT>",
+        "NumSegments": "0", "DateUpdated": "2021-01-26T18:52:32Z"}, "executionSid":
+        "FNf9193a1e62d1333a20a84ef183e751df", "SmsSid": "SM5a3e4eba25ba4aa4beff811a961f4383"},
+        "send_single_message_error": {"body": "", "status_code": 200, "content_type":
+        "text/plain"}, "sms_or_voice": {}, "initialize_retry_count": {"retry_count":
+        "0"}}, "trigger": {"request": {"to": "+16035555555", "from": "<TWILLIO_MESSAGING_SERVICE_SID>",
+        "parameters": {"patient_submission_token": "dmHCpUHC-Q", "threshold_hash":
+        "cd03cdd081fa6266ed4f55cada179ff2d67b90a239ec63b661f4e8c129f361f4", "medium":
+        "SINGLE_SMS", "prompt": "Veuillez remplir le rapport quotidien de Sara Alert
+        pour MG-66: http://localhost:3000/r/dmHCpUHC-Q/Z2tPR1o1a1/fr/MG66"}}}, "contact":
+        {"channel": {"address": "+16035555555"}}, "flow": {"variables": {"retry_count":
+        "0"}, "data": {"patient_submission_token": "dmHCpUHC-Q", "threshold_hash":
+        "cd03cdd081fa6266ed4f55cada179ff2d67b90a239ec63b661f4e8c129f361f4", "medium":
+        "SINGLE_SMS", "prompt": "Veuillez remplir le rapport quotidien de Sara Alert
+        pour MG-66: http://localhost:3000/r/dmHCpUHC-Q/Z2tPR1o1a1/fr/MG66"}, "flow_sid":
+        "<TWILLIO_STUDIO_FLOW>", "channel": {"address": "<TWILLIO_MESSAGING_SERVICE_SID>"},
+        "sid": "FNf9193a1e62d1333a20a84ef183e751df"}}, "account_sid": "<TWILLIO_API_ACCOUNT>"}'
+  recorded_at: Tue, 26 Jan 2021 20:54:29 GMT
+recorded_with: VCR 6.0.0

@@ -110,4 +110,78 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
       assert_equal 'Proxy', dependent.assessments.first.who_reported
     end
   end
+
+  test 'consume errored sms assessment' do
+    @patient.update(preferred_contact_method: 'SMS Texted Weblink')
+    assert_difference '@patient.assessments.count', 0 do
+      assert_difference '@patient.histories.count', 1 do
+        @redis_queue.push @assessment_generator.error_sms_assessment
+        ConsumeAssessmentsJob.perform_now
+        @patient.reload
+      end
+    end
+  end
+
+  test 'consume errored sms assessment retry-eligible error resets last_assessment_reminder_sent' do
+    error_code = TwilioSender.retry_eligible_error_codes.first
+    @patient.update(preferred_contact_method: 'SMS Texted Weblink', last_assessment_reminder_sent: DateTime.now)
+    assert_difference '@patient.assessments.count', 0 do
+      assert_difference '@patient.histories.count', 1 do
+        assert_changes '@patient.last_assessment_reminder_sent' do
+          @redis_queue.push @assessment_generator.error_sms_assessment(error_code: error_code)
+          ConsumeAssessmentsJob.perform_now
+          @patient.reload
+        end
+      end
+    end
+  end
+
+  test 'consume errored voice assessment' do
+    @patient.update(preferred_contact_method: 'Telephone Call')
+    assert_difference '@patient.assessments.count', 0 do
+      assert_difference '@patient.histories.count', 1 do
+        @redis_queue.push @assessment_generator.error_voice_assessment
+        ConsumeAssessmentsJob.perform_now
+        @patient.reload
+      end
+    end
+  end
+
+  test 'consume errored sms assessment with dependents' do
+    dependent = create(:patient)
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    @patient.update(preferred_contact_method: 'SMS Texted Weblink')
+    assert_difference '@patient.assessments.count', 0 do
+      assert_difference 'dependent.assessments.count', 0 do
+        assert_difference 'dependent.histories.count', 1 do
+          # Assert that patient (HoH) gets a history item for themseleves and their dependent
+          assert_difference '@patient.histories.count', 2 do
+            @redis_queue.push @assessment_generator.error_sms_assessment
+            @redis_queue.push @assessment_generator.error_sms_assessment(patient: dependent)
+            ConsumeAssessmentsJob.perform_now
+            @patient.reload
+            dependent.reload
+          end
+        end
+      end
+    end
+  end
+
+  test 'consume errored voice assessment with dependents' do
+    dependent = create(:patient)
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    @patient.update(preferred_contact_method: 'Telephone Call')
+    assert_difference '@patient.assessments.count', 0 do
+      assert_difference 'dependent.assessments.count', 0 do
+        assert_difference 'dependent.histories.count', 1 do
+          assert_difference '@patient.histories.count', 1 do
+            @redis_queue.push @assessment_generator.error_voice_assessment
+            ConsumeAssessmentsJob.perform_now
+            @patient.reload
+            dependent.reload
+          end
+        end
+      end
+    end
+  end
 end

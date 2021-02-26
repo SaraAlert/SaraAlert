@@ -854,6 +854,11 @@ class Patient < ApplicationRecord
     active_dependents.where.not(id: id)
   end
 
+  # Get all dependents and always include self even if self is not active
+  def active_dependents_and_self
+    ([self] + active_dependents).uniq
+  end
+
   # Get this patient's dependents excluding itself
   def dependents_exclude_self
     dependents.where.not(id: id)
