@@ -202,38 +202,33 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   # Gets all associated relevant data for patients group based on queries and fields
   def get_export_data(patients, data, field_data)
     exported_data = {}
-    patients_identifiers = Hash[patients.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
-                                        .map do |id, statelocal, cdc, nndss|
-                                          [id, { user_defined_id_statelocal: statelocal, user_defined_id_cdc: cdc, user_defined_id_nndss: nndss }]
-                                        end]
-
+    patient_ids = patients.pluck(:id)
     exported_data[:patients] = extract_patients_details(patients, data[:patients][:checked]) if data.dig(:patients, :checked).present?
 
     if data.dig(:assessments, :checked).present?
-      assessments = assessments_by_patient_ids(patients_identifiers.keys)
-      exported_data[:assessments] = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked],
-                                                                field_data[:assessments][:checked] - data[:assessments][:checked])
+      assessments = assessments_by_patient_ids(patient_ids).includes(:patient)
+      exported_data[:assessments] = extract_assessments_details(patients, assessments, data[:assessments][:checked])
     end
 
-    if data.dig(:laboratories, :checked).present?
-      laboratories = laboratories_by_patient_ids(patients_identifiers.keys)
-      exported_data[:laboratories] = extract_laboratories_details(patients_identifiers, laboratories, data[:laboratories][:checked])
-    end
+    # if data.dig(:laboratories, :checked).present?
+    #   laboratories = laboratories_by_patient_ids(patient_ids)
+    #   exported_data[:laboratories] = extract_laboratories_details(patients_identifiers, laboratories, data[:laboratories][:checked])
+    # end
 
-    if data.dig(:close_contacts, :checked).present?
-      close_contacts = close_contacts_by_patient_ids(patients_identifiers.keys)
-      exported_data[:close_contacts] = extract_close_contacts_details(patients_identifiers, close_contacts, data[:close_contacts][:checked])
-    end
+    # if data.dig(:close_contacts, :checked).present?
+    #   close_contacts = close_contacts_by_patient_ids(patient_ids)
+    #   exported_data[:close_contacts] = extract_close_contacts_details(patients_identifiers, close_contacts, data[:close_contacts][:checked])
+    # end
 
-    if data.dig(:transfers, :checked).present?
-      transfers = transfers_by_patient_ids(patients_identifiers.keys)
-      exported_data[:transfers] = extract_transfers_details(patients_identifiers, transfers, data[:transfers][:checked])
-    end
+    # if data.dig(:transfers, :checked).present?
+    #   transfers = transfers_by_patient_ids(patient_ids)
+    #   exported_data[:transfers] = extract_transfers_details(patients_identifiers, transfers, data[:transfers][:checked])
+    # end
 
-    if data.dig(:histories, :checked).present?
-      histories = histories_by_patient_ids(patients_identifiers.keys)
-      exported_data[:histories] = extract_histories_details(patients_identifiers, histories, data[:histories][:checked])
-    end
+    # if data.dig(:histories, :checked).present?
+    #   histories = histories_by_patient_ids(patient_ids)
+    #   exported_data[:histories] = extract_histories_details(patients_identifiers, histories, data[:histories][:checked])
+    # end
 
     exported_data
   end
@@ -342,7 +337,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Extract assessment data values given relevant fields
-  def extract_assessments_details(patients_identifiers, assessments, fields, symptom_names)
+  def extract_assessments_details(patients, assessments, fields)
     if fields.include?(:symptoms)
       conditions_hash = Hash[assessments.joins(:reported_condition).pluck('conditions.id', :assessment_id)]
                         .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
@@ -363,7 +358,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     assessments_details = []
     assessments.each do |assessment|
-      assessment_details = assessment.custom_details(fields, patients_identifiers[assessment.patient_id]) || {}
+      assessment_details = assessment.custom_details(fields, assessment.patient) || {}
 
       # Nil check in case for some reason there were assessments with nil ReportedCondition
       if fields.include?(:symptoms) && assessments_hash[assessment[:id]].present?
