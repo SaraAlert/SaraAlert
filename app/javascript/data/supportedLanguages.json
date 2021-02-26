@@ -279,14 +279,6 @@
         "email": false,
         "phone": false
       }
-    },
-    {
-      "name": "Other",
-      "supported": {
-        "sms": false,
-        "email": false,
-        "phone": false
-      }
     }
   ]
 }

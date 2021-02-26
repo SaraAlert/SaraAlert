@@ -14,12 +14,12 @@ const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 class Contact extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, isedit_mode: window.location.href.includes('edit') };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, isEditMode: window.location.href.includes('edit') };
     this.validate = this.validate.bind(this);
   }
 
   componentDidMount() {
-    if (this.state.isedit_mode) {
+    if (this.state.isEditMode) {
       // Update the Schema Validator by simulating the user changing their preferred_contact_method to what their actual preferred_contact_method really is.
       // This is to trigger schema validation when editing.
       this.updatePrimaryContactMethodValidations({
