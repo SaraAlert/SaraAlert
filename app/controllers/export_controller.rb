@@ -167,13 +167,17 @@ class ExportController < ApplicationController
       }
     }
 
+    # NOTE: separate implementation used for single patient export for performance and to keep this endpoint's logic separate from main export logic
+    # Get all of the field data based on the config
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
     field_data = get_field_data(config)
 
+    # Create export file
     workbook = FastExcel.open
     sheets = {}
     last_row_nums = {}
     data_types.each do |data_type|
+      # Add separate worksheet for each data type
       worksheet = workbook.add_worksheet(config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label))
       worksheet.auto_width = true
       worksheet.append_row(field_data.dig(data_type, :headers))
@@ -181,11 +185,13 @@ class ExportController < ApplicationController
       sheets[data_type] = worksheet
     end
 
+    # Get export data hashes for each data type from config and write data to each sheet
     exported_data = get_export_data(patients, config[:data])
     data_types.each do |data_type|
       last_row_nums[data_type] = write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked], last_row_nums[data_type])
     end
 
+    # Send file
     send_data Base64.encode64(workbook.read_string)
   end
 

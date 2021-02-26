@@ -105,12 +105,6 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
 
   FULL_HISTORY_HISTORIES_HEADERS = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At'].freeze
 
-  PATIENT_ALTERNATIVE_IDENTIFIERS = %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss].freeze
-
-  PATIENT_RACE_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].freeze
-
-  PATIENT_LAB_FIELDS = %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result].freeze
-
   PATIENT_FIELD_TYPES = {
     numbers: %i[id assigned_user responder_id],
     strings: %i[first_name middle_name last_name sex ethnicity primary_language secondary_language nationality user_defined_id_statelocal user_defined_id_cdc
@@ -129,10 +123,13 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
               symptom_onset extended_isolation],
     timestamps: %i[created_at updated_at closed_at latest_assessment_at latest_transfer_at last_assessment_reminder_sent],
+    races: %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander],
     booleans: %i[interpretation_required isolation continuous_exposure contact_of_known_case travel_to_affected_country_or_area
                  was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
-                 member_of_a_common_exposure_cohort head_of_household pause_notifications].concat(PATIENT_RACE_FIELDS),
-    phones: %i[primary_telephone secondary_telephone]
+                 member_of_a_common_exposure_cohort head_of_household pause_notifications],
+    phones: %i[primary_telephone secondary_telephone],
+    alternative_identifiers: %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss],
+    lab_fields: %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result]
   }.freeze
 
   PATIENT_FIELD_NAMES = {

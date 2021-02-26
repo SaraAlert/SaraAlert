@@ -307,7 +307,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     # Replace "race" option with actual race field names
     race_index = checked.index(:race)
     checked.delete(:race)
-    checked.insert(race_index, *PATIENT_RACE_FIELDS)
+    checked.insert(race_index, *PATIENT_FIELD_TYPES[:races])
 
     # Validate headers
     checked.each_with_index do |header, col|

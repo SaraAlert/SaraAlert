@@ -35,13 +35,15 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     # Declare variables in scope outside of batch loop
     csvs = nil
     packages = nil
+    inner_batch_iterations_per_outer_batch = outer_batch_size / inner_batch_size
     total_inner_batches = (patients.size / inner_batch_size.to_f).ceil
 
     # NOTE: in_batches appears to NOT sort within batches, so explicit ordering on ID is also done deeper down.
     # The reorder('') here allows this ordering done later on to work properly.
     patients.reorder('').in_batches(of: inner_batch_size).each_with_index do |batch_group, inner_batch_index|
-      # 1) Create file(s) for new batch
-      if (inner_batch_index % (outer_batch_size / inner_batch_size)).zero?
+      # 1) Create CSV files on the first inner batch iteration of each outer batch. If `outer_batch_size` is 10,000 and `inner_batch_size` is 100,
+      #    then this will create a new CSV every 100 batches, therefore handling the outer batching.
+      if (inner_batch_index % inner_batch_iterations_per_outer_batch).zero?
         # One file for all data types, each data type in a different tab
         csvs = {}
         packages = {}
@@ -56,15 +58,16 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
-      exported_data = get_export_data(batch_group.order(:id), config[:data])
+      exported_data = get_export_data(batch_group.order(:id), config[:data], field_data)
       data_types.each do |data_type|
         exported_data[data_type]&.each do |record|
           csvs[data_type] << field_data[data_type][:checked].map { |field| record[field] }
         end
       end
 
-      # 3) Save files to db at the end of each outer batch
-      next unless ((inner_batch_index + 1) % (outer_batch_size / inner_batch_size)).zero? || inner_batch_index == total_inner_batches - 1
+      # 3) Check if the next inner_batch_index is the start of a new outer batch or if this current batch is the final batch
+      #    If so, save files to db as this is the end of the current outer batch
+      next unless ((inner_batch_index + 1) % inner_batch_iterations_per_outer_batch).zero? || inner_batch_index == total_inner_batches - 1
 
       outer_batch_index = inner_batch_index * inner_batch_size / outer_batch_size
       data_types.each do |data_type|
@@ -92,13 +95,15 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     workbook = nil unless separate_files
     sheets = nil
     last_row_nums = nil
+    inner_batch_iterations_per_outer_batch = outer_batch_size / inner_batch_size
     total_inner_batches = (patients.size / inner_batch_size.to_f).ceil
 
     # NOTE: in_batches appears to NOT sort within batches, so explicit ordering on ID is also done deeper down.
     # The reorder('') here allows this ordering done later on to work properly.
     patients.reorder('').in_batches(of: inner_batch_size).each_with_index do |batch_group, inner_batch_index|
-      # 1) Create file(s) for new batch
-      if (inner_batch_index % (outer_batch_size / inner_batch_size)).zero?
+      # 1) Create excel file(s) on the first inner batch iteration of each outer batch. If `outer_batch_size` is 10,000 and `inner_batch_size` is 100,
+      #    then this will create a new excel file(s) every 100 batches, therefore handling the outer batching.
+      if (inner_batch_index % inner_batch_iterations_per_outer_batch).zero?
         # One file for all data types, each data type in a different tab
         workbooks = {} if separate_files
         workbook = FastExcel.open(constant_memory: true) unless separate_files
@@ -116,13 +121,14 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
-      exported_data = get_export_data(batch_group.order(:id), config[:data])
+      exported_data = get_export_data(batch_group.order(:id), config[:data], field_data)
       data_types.each do |data_type|
         last_row_nums[data_type] = write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked], last_row_nums[data_type])
       end
 
-      # 3) Save files to db at the end of each outer batch
-      next unless ((inner_batch_index + 1) % (outer_batch_size / inner_batch_size)).zero? || inner_batch_index == total_inner_batches - 1
+      # 3) Check if the next inner_batch_index is the start of a new outer batch or if this current batch is the final batch
+      #    If so, save files to db as this is the end of the current outer batch
+      next unless ((inner_batch_index + 1) % inner_batch_iterations_per_outer_batch).zero? || inner_batch_index == total_inner_batches - 1
 
       outer_batch_index = inner_batch_index * inner_batch_size / outer_batch_size
       if separate_files
@@ -164,23 +170,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     # Replace race field with actual race fields
     race_index = data[:patients][:checked].index(:race)
     data[:patients][:checked].delete(:race)
-    data[:patients][:checked].insert(race_index, *PATIENT_RACE_FIELDS)
-  end
-
-  # Finds the symptoms needed for the reports columns
-  def update_assessment_symptom_data(data)
-    # Don't update if assessment symptom data isn't needed
-    return unless data.dig(:assessments, :checked)&.include?(:symptoms)
-
-    # Using Symptom.all for finding distinct symptom names is actually faster here because it can use symptoms_index_chain_1
-    symptom_names = Symptom.all.distinct.pluck(:name).sort
-    symptom_labels = symptom_names.map { |name| Symptom.find_by(name: name).label }
-
-    data[:assessments][:checked].delete(:symptoms)
-    data[:assessments][:checked].concat(symptom_names.map(&:to_sym))
-
-    data[:assessments][:headers].delete('Symptoms Reported')
-    data[:assessments][:headers].concat(symptom_labels)
+    data[:patients][:checked].insert(race_index, *PATIENT_FIELD_TYPES[:races])
   end
 
   # Update the header data (used for obtaining column names)
@@ -193,8 +183,24 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
   end
 
+  # Finds the symptoms needed for the reports columns
+  def update_assessment_symptom_data(data)
+    # Don't update if assessment symptom data isn't needed
+    return unless data.dig(:assessments, :checked)&.include?(:symptoms)
+
+    # Using Symptom.all for finding distinct symptom names is faster here because it can use symptoms_index_chain_1
+    symptom_names = Symptom.all.distinct.pluck(:name).sort
+    symptom_labels = symptom_names.map { |name| Symptom.find_by(name: name).label }
+
+    data[:assessments][:checked].delete(:symptoms)
+    data[:assessments][:checked].concat(symptom_names.map(&:to_sym))
+
+    data[:assessments][:headers].delete('Symptoms Reported')
+    data[:assessments][:headers].concat(symptom_labels)
+  end
+
   # Gets all associated relevant data for patients group based on queries and fields
-  def get_export_data(patients, data)
+  def get_export_data(patients, data, field_data)
     exported_data = {}
     patients_identifiers = Hash[patients.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
                                         .map do |id, statelocal, cdc, nndss|
@@ -205,7 +211,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     if data.dig(:assessments, :checked).present?
       assessments = assessments_by_patient_ids(patients_identifiers.keys)
-      exported_data[:assessments] = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
+      exported_data[:assessments] = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked],
+                                                                field_data[:assessments][:checked] - data[:assessments][:checked])
     end
 
     if data.dig(:laboratories, :checked).present?
@@ -247,7 +254,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patients_creators = Hash[patients.joins('INNER JOIN users ON patients.creator_id = users.id').pluck('users.id', 'users.email')] if fields.include?(:creator)
 
     # query patients laboratories in bulk if requested
-    if (fields & PATIENT_LAB_FIELDS).any?
+    if (fields & PATIENT_FIELD_TYPES[:lab_fields]).any?
       patients_laboratories = Laboratory.where(patient_id: patients.pluck(:id))
                                         .order(specimen_collection: :desc)
                                         .group_by(&:patient_id)
@@ -261,7 +268,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       # populate inherent fields
       (fields & (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:strings])).each do |field|
-        patient_details[field] = patient[field]&.to_s || ''
+        patient_details[field] = patient[field] || ''
       end
 
       (fields & PATIENT_FIELD_TYPES[:dates]).each do |field|
@@ -272,6 +279,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         patient_details[field] = patient[field] || ''
       end
 
+      (fields & PATIENT_FIELD_TYPES[:races]).each do |field|
+        patient_details[field] = patient[field] || false
+      end
+
       (fields & PATIENT_FIELD_TYPES[:booleans]).each do |field|
         patient_details[field] = (patient[field] || false).to_s
       end
@@ -279,8 +290,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       (fields & PATIENT_FIELD_TYPES[:phones]).each do |field|
         patient_details[field] = format_phone_number(patient[field])
       end
-
-      PATIENT_RACE_FIELDS.each { |race| patient_details[race] = patient[race] || false } if fields.include?(:race)
 
       # populate computed fields
       patient_details[:name] = patient.displayed_name if fields.include?(:name)
@@ -302,8 +311,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       # populate latest transfer from and to if requested
       if patient[:latest_transfer_from].present?
-        patient_details[:transferred_from] = jurisdiction_paths[patient.latest_transfer_from]
-        patient_details[:transferred_to] = jurisdiction_paths[patient.jurisdiction_id]
+        patient_details[:transferred_from] = jurisdiction_paths[patient.latest_transfer_from] || '' if fields.include?(:transferred_from)
+        patient_details[:transferred_to] = jurisdiction_paths[patient.jurisdiction_id] || '' if fields.include?(:transferred_to)
       end
 
       # populate labs if requested
@@ -333,9 +342,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Extract assessment data values given relevant fields
-  def extract_assessments_details(patients_identifiers, assessments, fields)
+  def extract_assessments_details(patients_identifiers, assessments, fields, symptom_names)
     if fields.include?(:symptoms)
-      conditions_hash = Hash[assessments.joins(:reported_condition).pluck('conditions.id', :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
+      conditions_hash = Hash[assessments.joins(:reported_condition).pluck('conditions.id', :assessment_id)]
                         .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
 
       # Uses index_symptoms_on_condition_id
@@ -358,8 +367,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
       # Nil check in case for some reason there were assessments with nil ReportedCondition
       if fields.include?(:symptoms) && assessments_hash[assessment[:id]].present?
-        # Using Symptom.all for finding distinct symptom names is actually faster here because it can use symptoms_index_chain_1
-        Symptom.all.distinct.pluck(:name).each do |symptom_name|
+        symptom_names.each do |symptom_name|
           assessment_details[symptom_name.to_sym] = assessments_hash[assessment[:id]][symptom_name]
         end
       end
@@ -403,7 +411,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     transfers.pluck(*selected_fields).map do |t|
       transfer = plucked_fields.zip(t).to_h
-      (PATIENT_ALTERNATIVE_IDENTIFIERS & fields).each { |identifier| transfer[identifier] = patients_identifiers[transfer[:patient_id]][identifier] }
+      (PATIENT_FIELD_TYPES[:alternative_identifiers] & fields).each do |identifier|
+        transfer[identifier] = patients_identifiers[transfer[:patient_id]][identifier]
+      end
       transfer
     end
   end
@@ -419,7 +429,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       # fast_excel unfortunately does not provide a method to modify the @last_row_number class variable so it needs to be manually kept track of
       last_row_num += 1
       fields.each_with_index do |field, col_index|
-        # write_string is used instead of append_row because it does not provide the capability to write data as strings
+        # write_string is used instead of append_row because append_row does not provide the capability to write data to excel files simply formatted as strings
+        # calling write_string directly is also more performant because is skips all the unnecessary logic in write_value that tries to detect each value type
         worksheet.write_string(last_row_num, col_index, record[field].to_s, nil)
       end
     end
