@@ -282,23 +282,23 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_diff, :date)
       when 'continous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
-      when 'close-contact-with-known-case'
+      when 'close-contact-with-known-case-id'
         if filter[:value].blank?
           patients = patients.where(contact_of_known_case_id: [nil, ''])
         else
-          value_array = filter[:value].split(/\s*,\s*/)
-          filtered_patient_ids = []
+          value_string = filter[:value].split(/\s*,\s*/).join('|')
           case filter[:additionalFilterOption]
           when 'Exact Match'
-            value_array.each do |value|
-              filtered_patient_ids += patients.where('contact_of_known_case_id REGEXP ?', "(^|,)(#{value})(,|$)").pluck(:id)
-            end
+            # regexp expression takes a list of strings separated by | and returns the monitorees where the
+            # contact of known case value has an exact match any of the values in the list
+            # the possible cases are: exact match of the entire value or contained in the value but preceeded and/or followed by a comma
+            # whitespace directly after the first comma and before the second is accounted for when checking possible matches
+            patients = patients.where('contact_of_known_case_id REGEXP ?', "(^|,\s*)(#{value_string})(\s*,|$)")
           when 'Contains'
-            value_array.each do |value|
-              filtered_patient_ids += patients.where('contact_of_known_case_id like ?', "%#{value}%").pluck(:id)
-            end
+            # regexp expression takes a list of strings separated by | and returns the monitorees where the
+            # contact of known case value contains any of the values in the list
+            patients = patients.where('contact_of_known_case_id REGEXP ?', value_string.to_s)
           end
-          patients = patients.where(id: filtered_patient_ids)
         end
       when 'telephone-number'
         patients = if filter[:value].blank?
