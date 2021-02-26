@@ -1,0 +1,146 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://studio.twilio.com/v1/Flows/<TWILLIO_STUDIO_FLOW>/Executions/FNce1d126c3ed0508a15ba965e4f7197dc/Context
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - twilio-ruby/5.45.1 (ruby/x86_64-darwin19 2.6.6-p146)
+      Accept-Charset:
+      - utf-8
+      Accept:
+      - application/json
+      Authorization:
+      - Basic QUM1ZGE3NDRhODdmNTM0MTgyZWNlZGJjMTljNDcyYTA2YjpmYTBmMTVlZjY1ZDA2YjliZTQzYzBkOTkyZTNkY2RkMw==
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 26 Jan 2021 21:57:55 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '6727'
+      Connection:
+      - keep-alive
+      Twilio-Concurrent-Requests:
+      - '1'
+      Twilio-Request-Id:
+      - RQ650973ae0eac46d4969b33284a284a73
+      Twilio-Request-Duration:
+      - '0.030'
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match,
+        If-Unmodified-Since
+      Access-Control-Allow-Methods:
+      - GET, POST, DELETE, OPTIONS
+      Access-Control-Expose-Headers:
+      - ETag
+      Access-Control-Allow-Credentials:
+      - 'true'
+      X-Powered-By:
+      - AT-5000
+      X-Shenanigans:
+      - none
+      X-Home-Region:
+      - us1
+      X-Api-Domain:
+      - studio.twilio.com
+      Strict-Transport-Security:
+      - max-age=31536000
+    body:
+      encoding: UTF-8
+      string: '{"url": "https://studio.twilio.com/v1/Flows/<TWILLIO_STUDIO_FLOW>/Executions/FNce1d126c3ed0508a15ba965e4f7197dc/Context",
+        "execution_sid": "FNce1d126c3ed0508a15ba965e4f7197dc", "flow_sid": "<TWILLIO_STUDIO_FLOW>",
+        "context": {"widgets": {"set_language_FR": {"voice": "Polly.Chantal", "language":
+        "fr-CA"}, "set_language_voice_options": {}, "call_user": {"FromZip": "38646",
+        "From": "<TWILLIO_SENDING_NUMBER>", "FromCity": "MARKS", "ApiVersion": "2010-04-01",
+        "To": "+16035555555", "ToCity": "CONCORD", "CalledState": "NH", "FromState":
+        "MS", "Direction": "outbound-api", "CallStatus": "in-progress", "ToZip": "03301",
+        "CallerCity": "MARKS", "FromCountry": "US", "CalledCity": "CONCORD", "CalledCountry":
+        "US", "Caller": "<TWILLIO_SENDING_NUMBER>", "CallerZip": "38646", "MachineDetectionDuration":
+        "3952", "AccountSid": "<TWILLIO_API_ACCOUNT>", "Called": "+16035555555", "CallerCountry":
+        "US", "CalledZip": "03301", "CallSid": "CAced6df5f5aa6d1f1853923004b763a50",
+        "AnsweredBy": "human", "CallerState": "MS", "ToCountry": "US", "ToState":
+        "NH"}, "voice_send_assessment_yes": {"body": "{\"success\":false,\"error\":{\"message\":\"Too
+        many requests, please create a new URL\\/token\",\"id\":null}}", "status_code":
+        410, "parsed": {"success": false, "error": {"message": "Too many requests,
+        please create a new URL/token", "id": null}}, "content_type": "application/json"},
+        "split_on_retry_en": {}, "welcome_prompt": {"FromZip": "38646", "From": "<TWILLIO_SENDING_NUMBER>",
+        "FlowEvent": "audioComplete", "FromCity": "MARKS", "ApiVersion": "2010-04-01",
+        "To": "+16035555555", "ToCity": "CONCORD", "CalledState": "NH", "FromState":
+        "MS", "Direction": "outbound-api", "CallStatus": "in-progress", "ToZip": "03301",
+        "CallerCity": "MARKS", "FromCountry": "US", "CalledCity": "CONCORD", "CalledCountry":
+        "US", "Caller": "<TWILLIO_SENDING_NUMBER>", "CallerZip": "38646", "MachineDetectionDuration":
+        "3952", "AccountSid": "<TWILLIO_API_ACCOUNT>", "Called": "+16035555555", "CallerCountry":
+        "US", "CalledZip": "03301", "CallSid": "CAced6df5f5aa6d1f1853923004b763a50",
+        "AnsweredBy": "human", "CallerState": "MS", "ToCountry": "US", "ToState":
+        "NH"}, "sms_or_voice": {}, "voice_reply_to_prompt": {"Confidence": "0.91833675",
+        "From": "<TWILLIO_SENDING_NUMBER>", "FlowEvent": "timeout", "FromCity": "MARKS",
+        "ApiVersion": "2010-04-01", "To": "+16035555555", "SpeechResult": "oui", "CallStatus":
+        "in-progress", "CalledState": "NH", "FromState": "MS", "Direction": "outbound-api",
+        "FromZip": "38646", "ToCity": "CONCORD", "ToZip": "03301", "CallerCity": "MARKS",
+        "FromCountry": "US", "Language": "fr-CA", "CalledCity": "CONCORD", "CalledCountry":
+        "US", "Caller": "<TWILLIO_SENDING_NUMBER>", "CallerZip": "38646", "MachineDetectionDuration":
+        "3952", "AccountSid": "<TWILLIO_API_ACCOUNT>", "Called": "+16035555555", "CallerCountry":
+        "US", "CalledZip": "03301", "CallSid": "CAced6df5f5aa6d1f1853923004b763a50",
+        "AnsweredBy": "human", "CallerState": "MS", "ToCountry": "US", "ToState":
+        "NH"}, "check_yes_no_voice": {}, "say_lets_try_again": {"FromZip": "38646",
+        "From": "<TWILLIO_SENDING_NUMBER>", "FlowEvent": "audioComplete", "FromCity":
+        "MARKS", "ApiVersion": "2010-04-01", "To": "+16035555555", "ToCity": "CONCORD",
+        "CalledState": "NH", "FromState": "MS", "Direction": "outbound-api", "CallStatus":
+        "in-progress", "ToZip": "03301", "CallerCity": "MARKS", "FromCountry": "US",
+        "CalledCity": "CONCORD", "CalledCountry": "US", "Caller": "<TWILLIO_SENDING_NUMBER>",
+        "CallerZip": "38646", "MachineDetectionDuration": "3952", "AccountSid": "<TWILLIO_API_ACCOUNT>",
+        "Called": "+16035555555", "CallerCountry": "US", "CalledZip": "03301", "CallSid":
+        "CAced6df5f5aa6d1f1853923004b763a50", "AnsweredBy": "human", "CallerState":
+        "MS", "ToCountry": "US", "ToState": "NH"}, "split_1": {}, "increment_retry_count_en":
+        {"retry_count": "3"}, "initialize_retry_count": {"retry_count": "0"}}, "trigger":
+        {"request": {"to": "+16035555555", "from": "<TWILLIO_SENDING_NUMBER>", "parameters":
+        {"medium": "VOICE", "prompt": " Il s\u2019agit d\u2019un rapport d\u2019alerte
+        Sara quotidien destin\u00e9 aux: M, G, \u00e2ge 66, Cette personne est-elle  y
+        en a-t-il qui pr\u00e9sentent un des sympt\u00f4mes suivants Toux, Difficult\u00e9s
+        respiratoires, Nouvelle perte de l\u2019odorat, Nouvelle perte de go\u00fbt,
+        Essoufflement, Fi\u00e8vre, Frissons, Tremblements r\u00e9p\u00e9t\u00e9s
+        accompagn\u00e9s de frissons, Douleurs musculaires, Maux de t\u00eate, Maux
+        de gorge, Naus\u00e9es ou vomissements, Diarrh\u00e9e, Fatigue, Congestion
+        nasale ou nez qui coule? Veuillez r\u00e9pondre par \"Oui\" ou par \"Non\"",
+        "language": "FR", "patient_submission_token": "dmHCpUHC-Q", "try_again": "Je
+        suis d\u00e9sol\u00e9, je n''ai pas compris. Essayons encore.", "threshold_hash":
+        "cd03cdd081fa6266ed4f55cada179ff2d67b90a239ec63b661f4e8c129f361f4", "intro":
+        "Bonjour, voici Sara, l''assistante de sant\u00e9 publique automatis\u00e9e
+        qui demande votre rapport quotidien.", "thanks": "Merci d''avoir rempli votre
+        rapport quotidien! Au revoir.", "max_retries_message": "Je suis d\u00e9sol\u00e9,
+        vous avez atteint le nombre maximum de tentatives de r\u00e9ponse. Si vous
+        rencontrez une urgence m\u00e9dicale, veuillez appeler le 911."}}}, "contact":
+        {"channel": {"address": "+16035555555"}}, "flow": {"variables": {"retry_count":
+        "3", "voice": "Polly.Chantal", "language": "fr-CA"}, "data": {"medium": "VOICE",
+        "prompt": " Il s\u2019agit d\u2019un rapport d\u2019alerte Sara quotidien
+        destin\u00e9 aux: M, G, \u00e2ge 66, Cette personne est-elle  y en a-t-il
+        qui pr\u00e9sentent un des sympt\u00f4mes suivants Toux, Difficult\u00e9s
+        respiratoires, Nouvelle perte de l\u2019odorat, Nouvelle perte de go\u00fbt,
+        Essoufflement, Fi\u00e8vre, Frissons, Tremblements r\u00e9p\u00e9t\u00e9s
+        accompagn\u00e9s de frissons, Douleurs musculaires, Maux de t\u00eate, Maux
+        de gorge, Naus\u00e9es ou vomissements, Diarrh\u00e9e, Fatigue, Congestion
+        nasale ou nez qui coule? Veuillez r\u00e9pondre par \"Oui\" ou par \"Non\"",
+        "language": "FR", "patient_submission_token": "dmHCpUHC-Q", "try_again": "Je
+        suis d\u00e9sol\u00e9, je n''ai pas compris. Essayons encore.", "threshold_hash":
+        "cd03cdd081fa6266ed4f55cada179ff2d67b90a239ec63b661f4e8c129f361f4", "intro":
+        "Bonjour, voici Sara, l''assistante de sant\u00e9 publique automatis\u00e9e
+        qui demande votre rapport quotidien.", "thanks": "Merci d''avoir rempli votre
+        rapport quotidien! Au revoir.", "max_retries_message": "Je suis d\u00e9sol\u00e9,
+        vous avez atteint le nombre maximum de tentatives de r\u00e9ponse. Si vous
+        rencontrez une urgence m\u00e9dicale, veuillez appeler le 911."}, "flow_sid":
+        "<TWILLIO_STUDIO_FLOW>", "channel": {"address": "<TWILLIO_SENDING_NUMBER>"},
+        "sid": "FNce1d126c3ed0508a15ba965e4f7197dc"}}, "account_sid": "<TWILLIO_API_ACCOUNT>"}'
+  recorded_at: Tue, 26 Jan 2021 21:57:55 GMT
+recorded_with: VCR 6.0.0
