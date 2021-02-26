@@ -145,11 +145,12 @@ class AdvancedFilter extends React.Component {
           type: 'search',
         },
         {
-          name: 'close-contact-with-known-case',
-          title: 'Close Contact with a Known Case (Text)',
+          name: 'close-contact-with-known-case-id',
+          title: 'Close Contact with a Known Case ID (Text)',
           description: 'Monitorees with a known exposure to a probable or confirmed case ID',
           type: 'search',
           options: ['Exact Match', 'Contains'],
+          tooltip: true,
         },
         { name: 'email', title: 'Email (Text)', description: 'Monitoree email address', type: 'search' },
         { name: 'sara-id', title: 'Sara Alert ID (Text)', description: 'Monitoree Sara Alert ID', type: 'search' },
@@ -744,7 +745,7 @@ class AdvancedFilter extends React.Component {
    * @param {*} value - Filter value
    * @param {Number} index  - Filter index
    */
-  renderOptionTooltip = (filter, value, index) => {
+  renderOptionTooltip = (filter, value, index, additionalFilterOption) => {
     const tooltipId = `${filter.name}-${index}`;
     let statement;
 
@@ -752,8 +753,14 @@ class AdvancedFilter extends React.Component {
     // Filters of type number only get a tooltip if the numberOption is "between" (i.e. a range)
     // NOTE: Right now because of how this is set up, relative dates can't have a tooltip in addition to the one that is shown
     // here once "more" is selected.
-    if (filter.name === 'close-contact-with-known-case') {
-      statement = 'Use commas to separate multiple specified values. Multiple values must also be separated by commas in Monitoree Details.';
+    if (filter.name === 'close-contact-with-known-case-id') {
+      if (additionalFilterOption === 'Exact Match') {
+        statement =
+          'Returns records with an exact match to one or more of the user-entered search values when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “45” or “45, 12”).';
+      } else if (additionalFilterOption === 'Contains') {
+        statement =
+          'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451).';
+      }
     } else if (filter.type === 'relative') {
       statement = this.getRelativeTooltipString(filter, value);
     } else if (filter.type === 'number') {
@@ -1148,8 +1155,8 @@ class AdvancedFilter extends React.Component {
             )}
           </Col>
           <Col className="py-0" md="auto">
-            {filterOption && (filterOption.tooltip || numberOption === 'between' || relativeOption === 'custom' || additionalFilterOption === 'Multiple') && (
-              <span className="align-middle mx-3">{this.renderOptionTooltip(filterOption, value, index)}</span>
+            {filterOption && (filterOption.tooltip || numberOption === 'between' || relativeOption === 'custom') && (
+              <span className="align-middle mx-3">{this.renderOptionTooltip(filterOption, value, index, additionalFilterOption)}</span>
             )}
             <div className="float-right">
               <Button className="remove-filter-row" variant="danger" onClick={() => this.remove(index)} aria-label="Remove Advanced Filter Option">
