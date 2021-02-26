@@ -664,7 +664,7 @@ class AdvancedFilter extends React.Component {
    */
   getRelativeTooltipString(filter, value) {
     const filterName = filter.title.replace(' (Relative Date)', '');
-    let rangeString, before, after;
+    let before, after;
     let statement = '';
     const operatorValue = value.operator.replace('-', ' ');
 
@@ -682,13 +682,11 @@ class AdvancedFilter extends React.Component {
       // set variables for date options including a time stamp
       if (filter.hasTimestamp) {
         if (value.when === 'past') {
-          rangeString = 'dated through today’s date';
           after = moment()
             .subtract(value.number, value.unit)
             .format('MM/DD/YY');
           before = 'now';
         } else {
-          rangeString = 'with today’s date as of the current time';
           after = 'now';
           before = moment()
             .add(value.number, value.unit)
@@ -699,13 +697,11 @@ class AdvancedFilter extends React.Component {
       // set variables for date options without a timestamp
       else {
         if (value.when === 'past') {
-          rangeString = 'dated through today’s date';
           after = moment()
             .subtract(value.number, value.unit)
             .format('MM/DD/YY');
           before = moment().format('MM/DD/YY');
         } else {
-          rangeString = 'with today’s date';
           after = moment().format('MM/DD/YY');
           before = moment()
             .add(value.number, value.unit)
@@ -714,19 +710,23 @@ class AdvancedFilter extends React.Component {
       }
     }
 
-    if (value.operator === 'less-than') {
-      statement = `${filterName} “${operatorValue} ${value.when}” relative date periods include records ${rangeString}. `;
-    }
     statement += `The current setting of "${operatorValue} ${value.number} ${value.unit} in the ${value.when}" will return records with ${filterName} date`;
     if (value.operator === 'less-than') {
-      statement += ` from ${after} through ${before}.`;
-    } else {
+      const timestampString = filter.hasTimestamp ? 'the current time on ' : '';
       if (value.when === 'past') {
-        statement += ` before ${before}.`;
+        statement += ` from ${timestampString}${after} through ${before}. `;
       } else {
-        statement += ` after ${after}.`;
+        statement += ` from ${after} through ${timestampString}${before}. `;
+      }
+    } else {
+      const timestampString = filter.hasTimestamp ? 'the current time on ' : '';
+      if (value.when === 'past') {
+        statement += ` before ${timestampString}${before}. `;
+      } else {
+        statement += ` after ${timestampString}${after}. `;
       }
     }
+    statement += `To filter between two dates, use the "more than" and "less than" filters in combination.`;
     return statement;
   }
 
@@ -1119,7 +1119,7 @@ class AdvancedFilter extends React.Component {
                         this.changeValue(index, { operator: value.operator, number: value.number, unit: value.unit, when: event.target.value });
                       }}>
                       <option value="past">in the past</option>
-                      <option value="future">in the future</option>
+                      {!filterOption.hasTimestamp && <option value="future">in the future</option>}
                     </Form.Control>
                   </Row>
                 )}
