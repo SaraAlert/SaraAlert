@@ -1,0 +1,84 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://studio.twilio.com/v1/Flows/<TWILLIO_STUDIO_FLOW>/Executions/FN24eda0b89122c73e93e3d59431e9a52a/Context
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - twilio-ruby/5.45.1 (ruby/x86_64-darwin19 2.6.6-p146)
+      Accept-Charset:
+      - utf-8
+      Accept:
+      - application/json
+      Authorization:
+      - Basic QUM1ZGE3NDRhODdmNTM0MTgyZWNlZGJjMTljNDcyYTA2YjpmYTBmMTVlZjY1ZDA2YjliZTQzYzBkOTkyZTNkY2RkMw==
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 26 Jan 2021 23:18:10 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '1820'
+      Connection:
+      - keep-alive
+      Twilio-Concurrent-Requests:
+      - '1'
+      Twilio-Request-Id:
+      - RQacca98836a1e45e49601bb55a028e639
+      Twilio-Request-Duration:
+      - '0.041'
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match,
+        If-Unmodified-Since
+      Access-Control-Allow-Methods:
+      - GET, POST, DELETE, OPTIONS
+      Access-Control-Expose-Headers:
+      - ETag
+      Access-Control-Allow-Credentials:
+      - 'true'
+      X-Powered-By:
+      - AT-5000
+      X-Shenanigans:
+      - none
+      X-Home-Region:
+      - us1
+      X-Api-Domain:
+      - studio.twilio.com
+      Strict-Transport-Security:
+      - max-age=31536000
+    body:
+      encoding: UTF-8
+      string: '{"url": "https://studio.twilio.com/v1/Flows/<TWILLIO_STUDIO_FLOW>/Executions/FN24eda0b89122c73e93e3d59431e9a52a/Context",
+        "execution_sid": "FN24eda0b89122c73e93e3d59431e9a52a", "flow_sid": "<TWILLIO_STUDIO_FLOW>",
+        "context": {"widgets": {"say_incoming_call": {"FromZip": "03301", "From":
+        "+16035555555", "FlowEvent": "audioComplete", "FromCity": "CONCORD", "ApiVersion":
+        "2010-04-01", "To": "<TWILLIO_SENDING_NUMBER>", "ToCity": "MARKS", "CalledState":
+        "MS", "FromState": "NH", "Direction": "inbound", "CallStatus": "in-progress",
+        "ToZip": "38646", "CallerCity": "CONCORD", "FromCountry": "US", "CalledCity":
+        "MARKS", "CalledCountry": "US", "Caller": "+16035555555", "CallerZip": "03301",
+        "AccountSid": "<TWILLIO_API_ACCOUNT>", "Called": "<TWILLIO_SENDING_NUMBER>",
+        "CallerCountry": "US", "CalledZip": "38646", "CallSid": "CA6068e2534436980bc16c2e706afc11fd",
+        "CallerState": "NH", "ToCountry": "US", "ToState": "MS"}}, "trigger": {"call":
+        {"FromZip": "03301", "From": "+16035555555", "FromCity": "CONCORD", "ApiVersion":
+        "2010-04-01", "To": "<TWILLIO_SENDING_NUMBER>", "ToCity": "MARKS", "CalledState":
+        "MS", "FromState": "NH", "Direction": "inbound", "CallerZip": "03301", "CallStatus":
+        "ringing", "ToZip": "38646", "CallerCity": "CONCORD", "FromCountry": "US",
+        "CalledCity": "MARKS", "CalledCountry": "US", "Caller": "+16035555555", "CallerState":
+        "NH", "AccountSid": "<TWILLIO_API_ACCOUNT>", "Called": "<TWILLIO_SENDING_NUMBER>",
+        "CallerCountry": "US", "CalledZip": "38646", "CallSid": "CA6068e2534436980bc16c2e706afc11fd",
+        "ToCountry": "US", "ToState": "MS"}}, "contact": {"channel": {"address": "+16035555555"}},
+        "flow": {"flow_sid": "<TWILLIO_STUDIO_FLOW>", "channel": {"address": "<TWILLIO_SENDING_NUMBER>"},
+        "sid": "FN24eda0b89122c73e93e3d59431e9a52a"}}, "account_sid": "<TWILLIO_API_ACCOUNT>"}'
+  recorded_at: Tue, 26 Jan 2021 23:18:10 GMT
+recorded_with: VCR 6.0.0
