@@ -45,6 +45,24 @@ module ConsumeAssessmentsJobTestHelper
       }.to_json
     end
 
+    def error_sms_assessment(error_code: '30008', patient: @patient)
+      {
+        response_status: 'error_sms',
+        error_code: error_code,
+        threshold_condition_hash: patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
+        patient_submission_token: patient.submission_token
+      }.to_json
+    end
+
+    def error_voice_assessment(error_code: '30008', patient: @patient)
+      {
+        response_status: 'error_voice',
+        error_code: error_code,
+        threshold_condition_hash: patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
+        patient_submission_token: patient.submission_token
+      }.to_json
+    end
+
     def missing_threshold_condition
       {
         response_status: nil,

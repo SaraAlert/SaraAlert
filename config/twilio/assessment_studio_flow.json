@@ -1,5 +1,5 @@
 {
-  "description": "SaraAlertProdFlow",
+  "description": "SaraAlertDemoFlow",
   "states": [
     {
       "name": "Trigger",
@@ -14,14 +14,14 @@
           "event": "incomingCall"
         },
         {
-          "next": "initialize_retry_count",
+          "next": "initialize_variables",
           "event": "incomingRequest"
         }
       ],
       "properties": {
         "offset": {
-          "x": 1380,
-          "y": -960
+          "x": 1170,
+          "y": -1130
         }
       }
     },
@@ -44,8 +44,8 @@
       ],
       "properties": {
         "offset": {
-          "x": -540,
-          "y": 40
+          "x": -890,
+          "y": -250
         },
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
@@ -117,8 +117,8 @@
       "properties": {
         "input": "{{widgets.sms_assessment_prompt.inbound.Body}}",
         "offset": {
-          "x": -530,
-          "y": 740
+          "x": -550,
+          "y": 530
         }
       }
     },
@@ -135,7 +135,7 @@
           "event": "timeout"
         },
         {
-          "next": "send_assessment_sms_error",
+          "next": "bad_response_sms_error",
           "event": "deliveryFailure"
         }
       ],
@@ -247,7 +247,7 @@
       "type": "make-outgoing-call-v2",
       "transitions": [
         {
-          "next": "split_1",
+          "next": "split_on_answered_by",
           "event": "answered"
         },
         {
@@ -267,8 +267,8 @@
         "machine_detection_speech_threshold": "2400",
         "detect_answering_machine": true,
         "offset": {
-          "x": 1050,
-          "y": 570
+          "x": 1490,
+          "y": 320
         },
         "recording_channels": "mono",
         "timeout": 60,
@@ -292,14 +292,14 @@
         }
       ],
       "properties": {
-        "voice": "Polly.Joanna",
+        "voice": "{{flow.variables.voice}}",
         "offset": {
-          "x": 1050,
-          "y": 1120
+          "x": 1490,
+          "y": 870
         },
         "loop": 1,
         "say": "{{flow.data.intro}}",
-        "language": "en-US"
+        "language": "{{flow.variables.language}}"
       }
     },
     {
@@ -314,26 +314,27 @@
           "event": "speech"
         },
         {
-          "next": "increment_retry_count_en",
+          "next": "increment_retry_count_voice",
           "event": "timeout"
         }
       ],
       "properties": {
-        "voice": "Polly.Joanna",
-        "speech_timeout": "auto",
+        "voice": "{{flow.variables.voice}}",
         "offset": {
-          "x": 1090,
-          "y": 1540
+          "x": 1490,
+          "y": 1200
         },
-        "loop": 1,
-        "hints": "yes, yeah, yup, no, nope, nah",
+        "hints": "yes, no, si, oui, non",
         "finish_on_key": "#",
         "say": "{{flow.data.prompt}}",
-        "language": "en-US",
+        "language": "{{flow.variables.language}}",
         "stop_gather": true,
-        "gather_language": "en-US",
+        "speech_model": "numbers_and_commands",
         "profanity_filter": "true",
-        "timeout": 6
+        "timeout": 5,
+        "speech_timeout": "auto",
+        "loop": 1,
+        "gather_language": "{{flow.variables.language}}"
       }
     },
     {
@@ -341,7 +342,7 @@
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "increment_retry_count_en",
+          "next": "increment_retry_count_voice",
           "event": "noMatch"
         },
         {
@@ -349,12 +350,12 @@
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value matches_any_of yes,Yes,no,No",
+              "friendly_name": "If value matches_any_of no",
               "arguments": [
                 "{{widgets.voice_reply_to_prompt.SpeechResult}}"
               ],
               "type": "matches_any_of",
-              "value": "no,No.,nope,Nope.,nope."
+              "value": "no,No.,NO,nope,Nope.,nope.,Non, non, NON, Non. NON., non."
             }
           ]
         },
@@ -363,12 +364,12 @@
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value matches_any_of yes,Yes,Yes.,Yeah,yeah,Yeah.",
+              "friendly_name": "If value matches_any_of yes",
               "arguments": [
                 "{{widgets.voice_reply_to_prompt.SpeechResult}}"
               ],
               "type": "matches_any_of",
-              "value": "yes,Yes,Yes.,Yeah,yeah,Yeah."
+              "value": "yes,Yes,Yes.,Yeah,yeah,Yeah.,si, Si,oui, OUI, Oui, oui.,OUI.,Oui."
             }
           ]
         }
@@ -376,8 +377,8 @@
       "properties": {
         "input": "{{widgets.voice_reply_to_prompt.SpeechResult}}",
         "offset": {
-          "x": 1230,
-          "y": 1880
+          "x": 1670,
+          "y": 1630
         }
       }
     },
@@ -391,14 +392,14 @@
         }
       ],
       "properties": {
-        "voice": "Polly.Joanna",
+        "voice": "{{flow.variables.voice}}",
         "offset": {
-          "x": 1630,
-          "y": 1630
+          "x": 2070,
+          "y": 1380
         },
         "loop": 1,
         "say": "{{flow.data.try_again}}",
-        "language": "en-US"
+        "language": "{{flow.variables.language}}"
       }
     },
     {
@@ -414,8 +415,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 1630,
-          "y": 1080
+          "x": 2070,
+          "y": 830
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -424,7 +425,7 @@
       }
     },
     {
-      "name": "split_1",
+      "name": "split_on_answered_by",
       "type": "split-based-on",
       "transitions": [
         {
@@ -449,8 +450,8 @@
       "properties": {
         "input": "{{widgets.call_user.AnsweredBy}}",
         "offset": {
-          "x": 870,
-          "y": 850
+          "x": 1310,
+          "y": 600
         }
       }
     },
@@ -467,8 +468,8 @@
       ],
       "properties": {
         "offset": {
-          "x": -1670,
-          "y": 1720
+          "x": -2080,
+          "y": 1730
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -489,12 +490,12 @@
       ],
       "properties": {
         "offset": {
-          "x": -2080,
-          "y": 1720
+          "x": -420,
+          "y": 370
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "body": "{\"response_status\": \"error_sms\", \"error_code\": \"{{widgets.sms_assessment_prompt.ErrorCode}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\", \"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
         "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
@@ -511,12 +512,12 @@
       ],
       "properties": {
         "offset": {
-          "x": 1710,
-          "y": 820
+          "x": 2150,
+          "y": 570
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "body": "{\"response_status\": \"error_voice\",\"error_code\":\"{{widgets.call_user.ErrorCode}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
         "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
@@ -530,316 +531,11 @@
       ],
       "properties": {
         "offset": {
-          "x": 1310,
-          "y": -690
+          "x": 1230,
+          "y": -780
         },
         "loop": 1,
         "say": "Hello, you have reached Sara Alert outside of your daily report requirement, please contact your public health department directly if you are experiencing symptoms."
-      }
-    },
-    {
-      "name": "split_on_language",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "event": "noMatch"
-        },
-        {
-          "next": "call_user",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to EN",
-              "arguments": [
-                "{{flow.data.language}}"
-              ],
-              "type": "equal_to",
-              "value": "EN"
-            }
-          ]
-        },
-        {
-          "next": "call_user_spanish",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to ES",
-              "arguments": [
-                "{{flow.data.language}}"
-              ],
-              "type": "equal_to",
-              "value": "ES"
-            }
-          ]
-        },
-        {
-          "next": "call_user_french",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to FR",
-              "arguments": [
-                "{{flow.data.language}}"
-              ],
-              "type": "equal_to",
-              "value": "FR"
-            }
-          ]
-        },
-        {
-          "next": "voice_send_error_somali",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to SO",
-              "arguments": [
-                "{{flow.data.language}}"
-              ],
-              "type": "equal_to",
-              "value": "SO"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{flow.data.language}}",
-        "offset": {
-          "x": 1920,
-          "y": -20
-        }
-      }
-    },
-    {
-      "name": "call_user_spanish",
-      "type": "make-outgoing-call-v2",
-      "transitions": [
-        {
-          "next": "voice_split_spanish",
-          "event": "answered"
-        },
-        {
-          "event": "busy"
-        },
-        {
-          "next": "voice_send_no_answer_spanish",
-          "event": "noAnswer"
-        },
-        {
-          "next": "voice_send_error_spanish",
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "machine_detection_speech_threshold": "2400",
-        "detect_answering_machine": true,
-        "offset": {
-          "x": 2190,
-          "y": 550
-        },
-        "recording_channels": "mono",
-        "timeout": 60,
-        "machine_detection": "Enable",
-        "trim": "do-not-trim",
-        "record": false,
-        "machine_detection_speech_end_threshold": "1200",
-        "machine_detection_timeout": "30",
-        "from": "{{flow.channel.address}}",
-        "to": "{{contact.channel.address}}",
-        "machine_detection_silence_timeout": "10000"
-      }
-    },
-    {
-      "name": "voice_split_spanish",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "next": "voice_send_no_answer_spanish",
-          "event": "noMatch"
-        },
-        {
-          "next": "welcome_prompt_spanish",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to human",
-              "arguments": [
-                "{{widgets.call_user_spanish.AnsweredBy}}"
-              ],
-              "type": "matches_any_of",
-              "value": "human, unknown"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{widgets.call_user_spanish.AnsweredBy}}",
-        "offset": {
-          "x": 2210,
-          "y": 930
-        }
-      }
-    },
-    {
-      "name": "voice_send_error_spanish",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 3100,
-          "y": 1130
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
-      }
-    },
-    {
-      "name": "voice_send_no_answer_spanish",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 2760,
-          "y": 1140
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
-      }
-    },
-    {
-      "name": "welcome_prompt_spanish",
-      "type": "say-play",
-      "transitions": [
-        {
-          "next": "voice_reply_to_prompt_spanish",
-          "event": "audioComplete"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Conchita",
-        "offset": {
-          "x": 2390,
-          "y": 1200
-        },
-        "loop": 1,
-        "say": "{{flow.data.intro}}",
-        "language": "es-ES"
-      }
-    },
-    {
-      "name": "voice_reply_to_prompt_spanish",
-      "type": "gather-input-on-call",
-      "transitions": [
-        {
-          "event": "keypress"
-        },
-        {
-          "next": "check_yes_no_voice_spanish",
-          "event": "speech"
-        },
-        {
-          "next": "increment_retry_count_es",
-          "event": "timeout"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Conchita",
-        "speech_timeout": "auto",
-        "offset": {
-          "x": 2420,
-          "y": 1450
-        },
-        "loop": 1,
-        "hints": "si, no",
-        "finish_on_key": "#",
-        "say": "{{flow.data.prompt}}",
-        "language": "es-ES",
-        "stop_gather": true,
-        "gather_language": "es-ES",
-        "profanity_filter": "true",
-        "timeout": 6
-      }
-    },
-    {
-      "name": "lets_try_again_spanish",
-      "type": "say-play",
-      "transitions": [
-        {
-          "next": "voice_reply_to_prompt_spanish",
-          "event": "audioComplete"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Conchita",
-        "offset": {
-          "x": 2890,
-          "y": 1450
-        },
-        "loop": 1,
-        "say": "{{flow.data.try_again}}",
-        "language": "es-ES"
-      }
-    },
-    {
-      "name": "check_yes_no_voice_spanish",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "next": "increment_retry_count_es",
-          "event": "noMatch"
-        },
-        {
-          "next": "voice_send_assessment_yes",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of si, Si",
-              "arguments": [
-                "{{widgets.voice_reply_to_prompt_spanish.SpeechResult}}"
-              ],
-              "type": "matches_any_of",
-              "value": "si, Si"
-            }
-          ]
-        },
-        {
-          "next": "voice_send_assessment_no",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of no, No",
-              "arguments": [
-                "{{widgets.voice_reply_to_prompt_spanish.SpeechResult}}"
-              ],
-              "type": "matches_any_of",
-              "value": "no, No, NO"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{widgets.voice_reply_to_prompt_spanish.SpeechResult}}",
-        "offset": {
-          "x": 2430,
-          "y": 1750
-        }
       }
     },
     {
@@ -847,7 +543,7 @@
       "type": "make-http-request",
       "transitions": [
         {
-          "next": "thank_you_split_on_language",
+          "next": "thank_you_voice",
           "event": "success"
         },
         {
@@ -856,8 +552,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 2360,
-          "y": 2970
+          "x": 1730,
+          "y": 2000
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -866,7 +562,7 @@
       }
     },
     {
-      "name": "thank_you_voice_spanish",
+      "name": "thank_you_voice",
       "type": "say-play",
       "transitions": [
         {
@@ -874,14 +570,14 @@
         }
       ],
       "properties": {
-        "voice": "Polly.Conchita",
+        "voice": "{{flow.variables.voice}}",
         "offset": {
-          "x": 2650,
-          "y": 3840
+          "x": 1980,
+          "y": 2320
         },
         "loop": 1,
         "say": "{{flow.data.thanks}}",
-        "language": "es-ES"
+        "language": "{{flow.variables.language}}"
       }
     },
     {
@@ -889,7 +585,7 @@
       "type": "make-http-request",
       "transitions": [
         {
-          "next": "thank_you_split_on_language",
+          "next": "thank_you_voice",
           "event": "success"
         },
         {
@@ -898,267 +594,12 @@
       ],
       "properties": {
         "offset": {
-          "x": 2810,
-          "y": 2970
+          "x": 2200,
+          "y": 1990
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
         "body": "{\"response_status\": \"success_voice\", \n\"experiencing_symptoms\":\"No\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
-      }
-    },
-    {
-      "name": "call_user_french",
-      "type": "make-outgoing-call-v2",
-      "transitions": [
-        {
-          "next": "voice_split_french",
-          "event": "answered"
-        },
-        {
-          "event": "busy"
-        },
-        {
-          "next": "voice_send_no_answer_french",
-          "event": "noAnswer"
-        },
-        {
-          "next": "voice_send_error_french",
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "machine_detection_speech_threshold": "2400",
-        "detect_answering_machine": true,
-        "offset": {
-          "x": 3400,
-          "y": 550
-        },
-        "recording_channels": "mono",
-        "timeout": 60,
-        "machine_detection": "Enable",
-        "trim": "do-not-trim",
-        "record": false,
-        "machine_detection_speech_end_threshold": "1200",
-        "machine_detection_timeout": "30",
-        "from": "{{flow.channel.address}}",
-        "to": "{{contact.channel.address}}",
-        "machine_detection_silence_timeout": "10000"
-      }
-    },
-    {
-      "name": "voice_split_french",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "next": "voice_send_no_answer_french",
-          "event": "noMatch"
-        },
-        {
-          "next": "welcome_prompt_french",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value equal_to human",
-              "arguments": [
-                "{{widgets.call_user_french.AnsweredBy}}"
-              ],
-              "type": "matches_any_of",
-              "value": "human, unknown"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{widgets.call_user_french.AnsweredBy}}",
-        "offset": {
-          "x": 3420,
-          "y": 930
-        }
-      }
-    },
-    {
-      "name": "welcome_prompt_french",
-      "type": "say-play",
-      "transitions": [
-        {
-          "next": "voice_reply_to_prompt_french",
-          "event": "audioComplete"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Chantal",
-        "offset": {
-          "x": 3600,
-          "y": 1200
-        },
-        "loop": 1,
-        "say": "{{flow.data.intro}}",
-        "language": "fr-CA"
-      }
-    },
-    {
-      "name": "voice_send_no_answer_french",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 3970,
-          "y": 1140
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
-      }
-    },
-    {
-      "name": "voice_send_error_french",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 4300,
-          "y": 1140
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
-        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
-      }
-    },
-    {
-      "name": "voice_reply_to_prompt_french",
-      "type": "gather-input-on-call",
-      "transitions": [
-        {
-          "event": "keypress"
-        },
-        {
-          "next": "check_yes_no_voice_french",
-          "event": "speech"
-        },
-        {
-          "next": "increment_retry_count_fr",
-          "event": "timeout"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Chantal",
-        "speech_timeout": "auto",
-        "offset": {
-          "x": 3630,
-          "y": 1450
-        },
-        "loop": 1,
-        "hints": "si, no",
-        "finish_on_key": "#",
-        "say": "{{flow.data.prompt}}",
-        "language": "fr-CA",
-        "stop_gather": true,
-        "gather_language": "es-ES",
-        "profanity_filter": "true",
-        "timeout": 6
-      }
-    },
-    {
-      "name": "lets_try_again_french",
-      "type": "say-play",
-      "transitions": [
-        {
-          "next": "voice_reply_to_prompt_french",
-          "event": "audioComplete"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Chantal",
-        "offset": {
-          "x": 4030,
-          "y": 1450
-        },
-        "loop": 1,
-        "say": "{{flow.data.try_again}}",
-        "language": "fr-CA"
-      }
-    },
-    {
-      "name": "check_yes_no_voice_french",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "next": "increment_retry_count_fr",
-          "event": "noMatch"
-        },
-        {
-          "next": "voice_send_assessment_yes",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of oui",
-              "arguments": [
-                "{{widgets.voice_reply_to_prompt_french.SpeechResult}}"
-              ],
-              "type": "matches_any_of",
-              "value": "oui, OUI, Oui, oui.,OUI.,Oui."
-            }
-          ]
-        },
-        {
-          "next": "voice_send_assessment_no",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value matches_any_of non",
-              "arguments": [
-                "{{widgets.voice_reply_to_prompt_french.SpeechResult}}"
-              ],
-              "type": "matches_any_of",
-              "value": "Non, non, NON, Non. NON., non."
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{widgets.voice_reply_to_prompt_french.SpeechResult}}",
-        "offset": {
-          "x": 3640,
-          "y": 1750
-        }
-      }
-    },
-    {
-      "name": "voice_send_error_somali",
-      "type": "make-http-request",
-      "transitions": [
-        {
-          "event": "success"
-        },
-        {
-          "event": "failed"
-        }
-      ],
-      "properties": {
-        "offset": {
-          "x": 4000,
-          "y": 550
-        },
-        "method": "POST",
-        "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
         "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
@@ -1201,8 +642,8 @@
       "properties": {
         "input": "{{trigger.message.OptOutType}}",
         "offset": {
-          "x": -1230,
-          "y": -730
+          "x": 10,
+          "y": -740
         }
       }
     },
@@ -1228,7 +669,7 @@
           ]
         },
         {
-          "next": "split_on_language",
+          "next": "set_language_voice_options",
           "event": "match",
           "conditions": [
             {
@@ -1240,13 +681,27 @@
               "value": "VOICE"
             }
           ]
+        },
+        {
+          "next": "split_on_iterator",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to SINGLE_SMS",
+              "arguments": [
+                "{{flow.data.medium}}"
+              ],
+              "type": "equal_to",
+              "value": "SINGLE_SMS"
+            }
+          ]
         }
       ],
       "properties": {
         "input": "{{flow.data.medium}}",
         "offset": {
-          "x": 1640,
-          "y": -410
+          "x": 900,
+          "y": -470
         }
       }
     },
@@ -1263,8 +718,8 @@
       ],
       "properties": {
         "offset": {
-          "x": -1290,
-          "y": 2180
+          "x": 490,
+          "y": 2580
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -1312,8 +767,8 @@
       "properties": {
         "input": "{{widgets.sms_assessment_prompt.inbound.OptOutType}}",
         "offset": {
-          "x": -1230,
-          "y": 340
+          "x": -1360,
+          "y": 140
         }
       }
     },
@@ -1375,8 +830,8 @@
       ],
       "properties": {
         "offset": {
-          "x": -890,
-          "y": 2170
+          "x": 50,
+          "y": 2580
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -1385,7 +840,7 @@
       }
     },
     {
-      "name": "initialize_retry_count",
+      "name": "initialize_variables",
       "type": "set-variables",
       "transitions": [
         {
@@ -1398,11 +853,15 @@
           {
             "value": "0",
             "key": "retry_count"
+          },
+          {
+            "value": "0",
+            "key": "iterator"
           }
         ],
         "offset": {
-          "x": 1640,
-          "y": -670
+          "x": 1630,
+          "y": -780
         }
       }
     },
@@ -1484,11 +943,11 @@
       }
     },
     {
-      "name": "split_on_retry_en",
+      "name": "split_on_retry_voice",
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "max_retries_exceeded_en",
+          "next": "max_retries_exceeded",
           "event": "noMatch"
         },
         {
@@ -1509,17 +968,17 @@
       "properties": {
         "input": "{{flow.variables.retry_count}}",
         "offset": {
-          "x": 620,
-          "y": 1720
+          "x": 1060,
+          "y": 1470
         }
       }
     },
     {
-      "name": "increment_retry_count_en",
+      "name": "increment_retry_count_voice",
       "type": "set-variables",
       "transitions": [
         {
-          "next": "split_on_retry_en",
+          "next": "split_on_retry_voice",
           "event": "next"
         }
       ],
@@ -1531,13 +990,13 @@
           }
         ],
         "offset": {
-          "x": 610,
-          "y": 1520
+          "x": 1050,
+          "y": 1270
         }
       }
     },
     {
-      "name": "max_retries_exceeded_en",
+      "name": "max_retries_exceeded",
       "type": "say-play",
       "transitions": [
         {
@@ -1546,14 +1005,14 @@
         }
       ],
       "properties": {
-        "voice": "Polly.Joanna",
+        "voice": "{{flow.variables.voice}}",
         "offset": {
-          "x": 670,
-          "y": 2010
+          "x": 1110,
+          "y": 1760
         },
         "loop": 1,
         "say": "{{flow.data.max_retries_message}}",
-        "language": "en-US"
+        "language": "{{flow.variables.language}}"
       }
     },
     {
@@ -1569,8 +1028,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 2040,
-          "y": 2240
+          "x": 1140,
+          "y": 2030
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -1601,199 +1060,37 @@
       }
     },
     {
-      "name": "increment_retry_count_es",
-      "type": "set-variables",
+      "name": "bad_response_sms_error",
+      "type": "make-http-request",
       "transitions": [
         {
-          "next": "split_on_retry_es",
-          "event": "next"
+          "event": "success"
+        },
+        {
+          "event": "failed"
         }
       ],
       "properties": {
-        "variables": [
-          {
-            "value": "{%- if flow.variables.retry_count -%}\n  {{flow.variables.retry_count | plus: 1}}\n{%- else -%}\n  0\n{%- endif -%}",
-            "key": "retry_count"
-          }
-        ],
         "offset": {
-          "x": 2000,
-          "y": 1200
-        }
+          "x": -1680,
+          "y": 1710
+        },
+        "method": "POST",
+        "content_type": "application/json;charset=utf-8",
+        "body": "{\"response_status\": \"error_sms\", \"error_code\": {{widgets.bad_response.outbound.ErrorCode}}, \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
     {
-      "name": "split_on_retry_es",
+      "name": "set_language_voice_options",
       "type": "split-based-on",
       "transitions": [
         {
-          "next": "max_retries_exceeded_es",
+          "next": "set_language_EN",
           "event": "noMatch"
         },
         {
-          "next": "lets_try_again_spanish",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value less than 4",
-              "arguments": [
-                "{{flow.variables.retry_count}}"
-              ],
-              "type": "less_than",
-              "value": "4"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{flow.variables.retry_count}}",
-        "offset": {
-          "x": 2010,
-          "y": 1400
-        }
-      }
-    },
-    {
-      "name": "max_retries_exceeded_es",
-      "type": "say-play",
-      "transitions": [
-        {
-          "next": "voice_send_max_retry",
-          "event": "audioComplete"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Conchita",
-        "offset": {
-          "x": 2020,
-          "y": 1620
-        },
-        "loop": 1,
-        "say": "{{flow.data.max_retries_message}}",
-        "language": "es-ES"
-      }
-    },
-    {
-      "name": "max_retries_exceeded_fr",
-      "type": "say-play",
-      "transitions": [
-        {
-          "next": "voice_send_max_retry",
-          "event": "audioComplete"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Chantal",
-        "offset": {
-          "x": 3280,
-          "y": 1740
-        },
-        "loop": 1,
-        "say": "{{flow.data.max_retries_message}}",
-        "language": "fr-CA"
-      }
-    },
-    {
-      "name": "split_on_retry_fr",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "next": "max_retries_exceeded_fr",
-          "event": "noMatch"
-        },
-        {
-          "next": "lets_try_again_french",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value less than 4",
-              "arguments": [
-                "{{flow.variables.retry_count}}"
-              ],
-              "type": "less_than",
-              "value": "4"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{flow.variables.retry_count}}",
-        "offset": {
-          "x": 3270,
-          "y": 1520
-        }
-      }
-    },
-    {
-      "name": "increment_retry_count_fr",
-      "type": "set-variables",
-      "transitions": [
-        {
-          "next": "split_on_retry_fr",
-          "event": "next"
-        }
-      ],
-      "properties": {
-        "variables": [
-          {
-            "value": "{%- if flow.variables.retry_count -%}\n  {{flow.variables.retry_count | plus: 1}}\n{%- else -%}\n  0\n{%- endif -%}",
-            "key": "retry_count"
-          }
-        ],
-        "offset": {
-          "x": 3260,
-          "y": 1320
-        }
-      }
-    },
-    {
-      "name": "thank_you_voice_english",
-      "type": "say-play",
-      "transitions": [
-        {
-          "event": "audioComplete"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Joanna",
-        "offset": {
-          "x": 2130,
-          "y": 3850
-        },
-        "loop": 1,
-        "say": "{{flow.data.thanks}}",
-        "language": "en-US"
-      }
-    },
-    {
-      "name": "thank_you_voice_french",
-      "type": "say-play",
-      "transitions": [
-        {
-          "event": "audioComplete"
-        }
-      ],
-      "properties": {
-        "voice": "Polly.Chantal",
-        "offset": {
-          "x": 3110,
-          "y": 3820
-        },
-        "loop": 1,
-        "say": "{{flow.data.thanks}}",
-        "language": "fr-CA"
-      }
-    },
-    {
-      "name": "thank_you_split_on_language",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "next": "thank_you_voice_english",
-          "event": "noMatch"
-        },
-        {
-          "next": "thank_you_voice_english",
+          "next": "set_language_EN",
           "event": "match",
           "conditions": [
             {
@@ -1807,7 +1104,7 @@
           ]
         },
         {
-          "next": "thank_you_voice_spanish",
+          "next": "set_language_ES",
           "event": "match",
           "conditions": [
             {
@@ -1821,7 +1118,7 @@
           ]
         },
         {
-          "next": "thank_you_voice_french",
+          "next": "set_language_FR",
           "event": "match",
           "conditions": [
             {
@@ -1838,8 +1135,208 @@
       "properties": {
         "input": "{{flow.data.language}}",
         "offset": {
+          "x": 1190,
+          "y": -210
+        }
+      }
+    },
+    {
+      "name": "set_language_EN",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "call_user",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "value": "en-US",
+            "key": "language"
+          },
+          {
+            "value": "Polly.Joanna",
+            "key": "voice"
+          }
+        ],
+        "offset": {
+          "x": 1140,
+          "y": 80
+        }
+      }
+    },
+    {
+      "name": "set_language_ES",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "call_user",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "value": "es-ES",
+            "key": "language"
+          },
+          {
+            "value": "Polly.Conchita",
+            "key": "voice"
+          }
+        ],
+        "offset": {
+          "x": 1440,
+          "y": 80
+        }
+      }
+    },
+    {
+      "name": "set_language_FR",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "call_user",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "value": "fr-CA",
+            "key": "language"
+          },
+          {
+            "value": "Polly.Chantal",
+            "key": "voice"
+          }
+        ],
+        "offset": {
+          "x": 1740,
+          "y": 80
+        }
+      }
+    },
+    {
+      "name": "send_single_message_error",
+      "type": "make-http-request",
+      "transitions": [
+        {
+          "next": "increment_params_iterator",
+          "event": "success"
+        },
+        {
+          "next": "increment_params_iterator",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3060,
+          "y": 120
+        },
+        "method": "POST",
+        "content_type": "application/json;charset=utf-8",
+        "body": "{% assign i=flow.variables.iterator | plus:0 %}\n{\"response_status\": \"error_sms\", \"error_code\": \"{{widgets.send_single_message.ErrorCode}}\", \"patient_submission_token\": \"{{flow.data.messages_array[i].patient_submission_token}}\", \"threshold_hash\": \"{{flow.data.messages_array[i].threshold_hash}}\"}",
+        "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
+      }
+    },
+    {
+      "name": "send_single_message",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "no_op_widget",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "no_op_widget",
+          "event": "timeout"
+        },
+        {
+          "next": "send_single_message_error",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 2710,
+          "y": -230
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "{% assign i=flow.variables.iterator | plus:0 %}\n{{flow.data.messages_array[i].prompt}}",
+        "timeout": "0"
+      }
+    },
+    {
+      "name": "no_op_widget",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "increment_params_iterator",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [],
+        "offset": {
+          "x": 2740,
+          "y": 120
+        }
+      }
+    },
+    {
+      "name": "increment_params_iterator",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_on_iterator",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "value": "{{flow.variables.iterator | plus: 1}}",
+            "key": "iterator"
+          }
+        ],
+        "offset": {
+          "x": 2830,
+          "y": 410
+        }
+      }
+    },
+    {
+      "name": "split_on_iterator",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "event": "noMatch"
+        },
+        {
+          "next": "send_single_message",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less_than {{flow.data.prompt.messages_array.size}}",
+              "arguments": [
+                "{{flow.variables.iterator}}"
+              ],
+              "type": "less_than",
+              "value": "{{flow.data.messages_array.size}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.iterator}}",
+        "offset": {
           "x": 2460,
-          "y": 3240
+          "y": -520
         }
       }
     }
