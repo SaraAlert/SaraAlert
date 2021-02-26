@@ -134,7 +134,7 @@ const mockFilterRelativeOption = {
   value: 'yesterday'
 }
 
-const mockFilterDefaultCustomRelativeOption = {
+const mockFilterDefaultCustomRelativeOption1 = {
   additionalFilterOption: null,
   dateOption: null,
   filterOption: {
@@ -143,6 +143,26 @@ const mockFilterDefaultCustomRelativeOption = {
     description: 'Monitorees with latest report during specified date range (relative to the current date)',
     type: 'relative',
     hasTimestamp: true
+  },
+  numberOption: null,
+  relativeOption: 'custom',
+  value: {
+    operator: 'less-than',
+    number: 1,
+    unit: 'days',
+    when: 'past'
+  }
+}
+
+const mockFilterDefaultCustomRelativeOption2 = {
+  additionalFilterOption: null,
+  dateOption: null,
+  filterOption: {
+    name: 'symptom-onset-relative',
+    title: 'Symptom Onset (Relative Date)',
+    description: 'Monitorees who have a symptom onset date during specified date range (relative to the current date)',
+    type: 'relative',
+    hasTimestamp: false,
   },
   numberOption: null,
   relativeOption: 'custom',
@@ -280,7 +300,8 @@ export {
   mockFilterDateOption,
   mockFilterDefaultRelativeOption,
   mockFilterRelativeOption,
-  mockFilterDefaultCustomRelativeOption,
+  mockFilterDefaultCustomRelativeOption1,
+  mockFilterDefaultCustomRelativeOption2,
   mockFilterCustomRelativeOption,
   mockFilterDefaultSearchOption,
   mockFilterSearchOption,
