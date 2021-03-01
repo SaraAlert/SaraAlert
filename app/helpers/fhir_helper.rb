@@ -232,8 +232,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   # Return a boolean indicating if the given race code is present on the given FHIR::Patient.
   def race_code?(patient, code, url, absent)
-    race_extension = patient&.extension&.select { |e| e.url.include?('us-core-race') }&.first&.extension
-    race_extension&.select { |e| e.url == url }&.any? { |e| (absent ? e&.valueCode : e&.valueCoding&.code) == code }
+    race_extension = patient&.extension&.select { |e| e&.url&.include?('us-core-race') }&.first&.extension
+    race_extension&.select { |e| e&.url == url }&.any? { |e| (absent ? e&.valueCode : e&.valueCoding&.code) == code }
   end
 
   # Build a FHIR US Core Ethnicity Extension given Sara Alert ethnicity information.
