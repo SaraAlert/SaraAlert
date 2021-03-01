@@ -3,9 +3,9 @@ bundle exec rails s &
 
 sleep 15
 
-for script in $(ls script/jmeter/); do
+for script in $(ls performance/jmeter/); do
   echo "Executing JMeter test: $script"
-  ruby script/jmeter/$script
+  bundle exec ruby performance/jmeter/$script
   sleep 5
 done
 
@@ -16,4 +16,4 @@ if [ -f "tmp/pids/server.pid" ]; then
     kill -9 $(cat tmp/pids/server.pid)
 fi
 
-ruby script/assert_jmeter_results.rb
+bundle exec ruby performance/assert_jmeter_results.rb
