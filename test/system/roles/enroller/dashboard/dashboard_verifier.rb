@@ -98,8 +98,8 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
   end
 
   def verify_enrollment_analytics
-    system_stats = find('div', class: 'h5', text: 'System Statistics').first(:xpath, '..').all(:css, 'div.display-1')
-    your_stats = find('div', class: 'h5', text: 'Your Statistics').first(:xpath, '..').all(:css, 'div.display-1')
+    system_stats = find('div', class: 'h5', text: 'System Statistics').first(:xpath, '..').all(:css, 'h3.display-3')
+    your_stats = find('div', class: 'h5', text: 'Your Statistics').first(:xpath, '..').all(:css, 'h3.display-3')
     stats = {
       system_total_subjects: system_stats[0].text.to_i,
       system_new_subjects: system_stats[1].text.to_i,

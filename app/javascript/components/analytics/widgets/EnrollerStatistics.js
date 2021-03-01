@@ -15,38 +15,22 @@ class EnrollerStatistics extends React.Component {
           <Card.Body className="mt-4">
             <Row id="monitoreeAnalytics" className="mx-4 mt-3 g-border-bottom-2">
               <Col>
-                <Row>
-                  <div className="h4">TOTAL MONITOREES</div>
-                </Row>
-                <Row>
-                  <div className="display-3 h3">{this.props.total_monitorees}</div>
-                </Row>
+                <h4 className="text-left"> TOTAL MONITOREES </h4>
+                <h3 className="display-3 text-left"> {this.props.total_monitorees} </h3>
               </Col>
               <Col>
-                <Row>
-                  <div className="h4">NEW LAST 24 HOURS</div>
-                </Row>
-                <Row>
-                  <div className="display-3 h3">{this.props.new_monitorees}</div>
-                </Row>
+                <h4 className="text-left"> NEW LAST 24 HOURS </h4>
+                <h3 className="display-3 text-left"> {this.props.new_monitorees} </h3>
               </Col>
             </Row>
             <Row id="reportAnalytics" className="mx-4 mt-4">
               <Col>
-                <Row>
-                  <div className="h4">TOTAL REPORTS</div>
-                </Row>
-                <Row>
-                  <div className="display-3 h3">{this.props.total_reports}</div>
-                </Row>
+                <h4 className="text-left"> TOTAL REPORTS </h4>
+                <h3 className="display-3 text-left"> {this.props.total_reports} </h3>
               </Col>
               <Col>
-                <Row>
-                  <div className="h4">NEW LAST 24 HOURS</div>
-                </Row>
-                <Row>
-                  <div className="display-3 h3">{this.props.new_reports}</div>
-                </Row>
+                <h4 className="text-left"> NEW LAST 24 HOURS </h4>
+                <h3 className="display-3 text-left"> {this.props.new_reports} </h3>
               </Col>
             </Row>
           </Card.Body>
