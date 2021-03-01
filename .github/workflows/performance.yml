@@ -1,0 +1,286 @@
+name: Performance
+
+on: [push]
+
+jobs:
+  close-patients-job-benchmark:
+    runs-on: ubuntu-18.04
+    services:
+      mysql:
+        image: ghcr.io/saraalert/saraalert-1m-database:latest
+        credentials:
+          username: ${{ secrets.GHCR_USER }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Install Yarn
+        run: npm install yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
+      - name: Run Yarn Install
+        run: yarn install --ignore-engines
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+      - name: Migrate DB
+        run: bundle exec rails db:migrate
+        env:
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+      - name: Run close_patients_job Benchmark
+        run: bundle exec ruby performance/benchmarks/close_patients_job_benchmark.rb
+        env:
+          JOB_RUN_EMAIL: foobar@example.com
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
+          NO_MEMPROF: true
+          NO_STACKPROF: true
+      - uses: actions/upload-artifact@v2
+        with:
+          name: close-patients-job-benchmark
+          path: performance/benchmarks/output/
+          retention-days: 2
+
+  send-assessments-job-benchmark:
+    runs-on: ubuntu-18.04
+    services:
+      mysql:
+        image: ghcr.io/saraalert/saraalert-1m-database:latest
+        credentials:
+          username: ${{ secrets.GHCR_USER }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Install Yarn
+        run: npm install yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
+      - name: Run Yarn Install
+        run: yarn install --ignore-engines
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+      - name: Migrate DB
+        run: bundle exec rails db:migrate
+        env:
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+      - name: Run send_assessments_job Benchmark
+        run: bundle exec ruby performance/benchmarks/send_assessments_job_benchmark.rb
+        env:
+          JOB_RUN_EMAIL: foobar@example.com
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
+          NO_MEMPROF: true
+          NO_STACKPROF: true
+      - uses: actions/upload-artifact@v2
+        with:
+          name: send-assessments-job-benchmark
+          path: performance/benchmarks/output/
+          retention-days: 2
+
+  micro-benchmarks:
+    runs-on: ubuntu-18.04
+    services:
+      mysql:
+        image: ghcr.io/saraalert/saraalert-1m-database:latest
+        credentials:
+          username: ${{ secrets.GHCR_USER }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Install Yarn
+        run: npm install yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
+      - name: Run Yarn Install
+        run: yarn install --ignore-engines
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+      - name: Migrate DB
+        run: bundle exec rails db:migrate
+        env:
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+      - name: Run Micro Benchmarks
+        run: bundle exec ruby performance/benchmarks/micro_benchmarks.rb
+        env:
+          JOB_RUN_EMAIL: foobar@example.com
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
+          NO_MEMPROF: true
+      - uses: actions/upload-artifact@v2
+        with:
+          name: micro-benchmarks
+          path: performance/benchmarks/output/
+          retention-days: 2
+
+  jmeter-benchmark:
+    runs-on: ubuntu-18.04
+    services:
+      mysql:
+        image: ghcr.io/saraalert/saraalert-1m-database:latest
+        credentials:
+          username: ${{ secrets.GHCR_USER }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: install jmeter
+        run: |
+          wget 'https://mirror.olnevhost.net/pub/apache//jmeter/binaries/apache-jmeter-5.2.1.zip'
+          unzip 'apache-jmeter-5.2.1.zip'
+          sudo ln -s $(pwd)/apache-jmeter-5.2.1/bin/jmeter /usr/local/bin/jmeter
+          jmeter --version
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Install Yarn
+        run: npm install yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
+      - name: Run Yarn Install
+        run: yarn install --ignore-engines
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - uses: actions/cache@v2
+        with:
+          path: |
+            public/assets/
+            public/packs/
+            public/packs-test/
+          key: ${{ runner.os }}-precompile
+      - name: Precompile Assets
+        run: bundle exec rails assets:precompile
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+      - name: Migrate DB
+        run: bundle exec rails db:migrate
+        env:
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+      - name: Run jmeter Benchmark
+        run: ./performance/run_jmeter_tests.sh
+        env:
+          JOB_RUN_EMAIL: foobar@example.com
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
+          NO_MEMPROF: true
+          NO_STACKPROF: true
+      - uses: actions/upload-artifact@v2
+        with:
+          name: send-assessments-job-benchmark
+          path: performance/benchmarks/output/
+          retention-days: 2

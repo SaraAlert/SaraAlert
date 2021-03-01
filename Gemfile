@@ -116,6 +116,7 @@ group :development, :test do
   gem 'rubocop'
   gem 'ruby-jmeter'
   gem 'stackprof'
+  gem 'timecop'
 end
 
 group :development do
@@ -137,7 +138,6 @@ group :test do
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'simplecov-lcov'
-  gem 'timecop'
   gem 'webdrivers'
 end
 
