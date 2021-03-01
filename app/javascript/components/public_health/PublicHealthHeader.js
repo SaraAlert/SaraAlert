@@ -126,8 +126,7 @@ class PublicHealthHeader extends React.Component {
         <Modal.Body>
           {this.state.importType === 'saf' && (
             <div className="mb-3">
-              <a href="https://github.com/SaraAlert/SaraAlert/blob/master/public/Sara%20Alert%20Import%20Format.xlsx?raw=true">Download formatting guidance</a>{' '}
-              (Updated 3/23/2021)
+              <a href="Sara%20Alert%20Import%20Format.xlsx?raw=true">Download formatting guidance</a> (Updated 3/23/2021)
             </div>
           )}
           <Form inline>
