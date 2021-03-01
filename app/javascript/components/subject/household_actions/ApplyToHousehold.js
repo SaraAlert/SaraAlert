@@ -15,9 +15,15 @@ class ApplyToHousehold extends React.Component {
         colData: [
           { field: 'name', label: 'Name', isSortable: true, tooltip: null, filter: this.formatPatientName },
           { field: 'date_of_birth', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDate },
-          { field: 'isolation', label: 'Workflow', isSortable: true, tooltip: null, filter: this.formatWorkflow },
-          { field: 'monitoring', label: 'Monitoring Status', isSortable: true, tooltip: null, filter: this.formatMonitoring },
-          { field: 'continuous_exposure', label: 'Continuous Exposure?', isSortable: true, tooltip: null, filter: this.formatContinuousExposure },
+          { field: 'isolation', label: 'Workflow', isSortable: true, tooltip: null, options: { true: 'Isolation', false: 'Exposure' } },
+          {
+            field: 'monitoring',
+            label: 'Monitoring Status',
+            isSortable: true,
+            tooltip: null,
+            options: { true: 'Actively Monitoring', false: 'Not Monitoring' },
+          },
+          { field: 'continuous_exposure', label: 'Continuous Exposure?', isSortable: true, tooltip: null, options: { true: 'Yes', false: 'No' } },
         ],
         rowData: props.household_members,
         selectedRows: [],
@@ -67,31 +73,24 @@ class ApplyToHousehold extends React.Component {
    */
   handleTableSort = sort => {
     const orderBy = sort.orderBy;
-    const direction = sort.sortDirection;
+    let direction = sort.sortDirection;
     let rowData = _.cloneDeep(this.state.table.rowData);
-    if (orderBy === 'name') {
-      rowData = this.sortByName(rowData, direction);
-    } else if (orderBy === 'date_of_birth') {
-      if (direction === 'asc') {
-        rowData.sort((a, b) => {
-          return moment(a.date_of_birth).format('YYYYMMDD') - moment(b.date_of_birth).format('YYYYMMDD');
-        });
-      } else {
-        rowData.sort((a, b) => {
-          return moment(b.date_of_birth).format('YYYYMMDD') - moment(a.date_of_birth).format('YYYYMMDD');
-        });
-      }
-    } else {
-      if ((orderBy !== 'monitoring' && direction === 'asc') || (orderBy === 'monitoring' && direction === 'desc')) {
-        rowData.sort((a, b) => {
-          return a[sort.orderBy] - b[sort.orderBy];
-        });
-      } else if ((orderBy !== 'monitoring' && direction === 'desc') || (orderBy === 'monitoring' && direction === 'asc')) {
-        rowData.sort((a, b) => {
-          return b[sort.orderBy] - a[sort.orderBy];
-        });
-      }
+    switch (orderBy) {
+      case 'name':
+        rowData = this.sortByName(rowData, direction);
+        break;
+      case 'date_of_birth':
+        rowData = this.sortByDOB(rowData, direction);
+        break;
+      case 'monitoring':
+        // flop the order by to account for the boolean words to be alphabetical
+        direction = direction === 'asc' ? 'desc' : 'asc';
+        rowData = this.sortByBooleanField(rowData, orderBy, direction);
+        break;
+      default:
+        rowData = this.sortByBooleanField(rowData, orderBy, direction);
     }
+
     const selectedRows = this.updateSelectedRows(rowData);
     const disabledRows = this.updateDisabledRows(rowData);
     this.setState(state => {
@@ -123,6 +122,43 @@ class ApplyToHousehold extends React.Component {
         .sort((a, b) => {
           return b.last_name.localeCompare(a.last_name);
         });
+    }
+    return patients;
+  };
+
+  /**
+   * Sorts array of monitorees by date of birth
+   * @param {Object[]} patients - array of patient objects
+   * @param {String} direction - direction in which to sort
+   */
+  sortByDOB = (patients, direction) => {
+    if (direction === 'asc') {
+      patients.sort((a, b) => {
+        return moment(a.date_of_birth).format('YYYYMMDD') - moment(b.date_of_birth).format('YYYYMMDD');
+      });
+    } else {
+      patients.sort((a, b) => {
+        return moment(b.date_of_birth).format('YYYYMMDD') - moment(a.date_of_birth).format('YYYYMMDD');
+      });
+    }
+    return patients;
+  };
+
+  /**
+   * Sorts array of monitorees by a specified boolean field on the patient
+   * @param {Object[]} patients - array of patient objects
+   * @param {String} field - field in which to sort by
+   * @param {String} direction - direction in which to sort
+   */
+  sortByBooleanField = (patients, field, direction) => {
+    if (direction === 'asc') {
+      patients.sort((a, b) => {
+        return a[field] - b[field];
+      });
+    } else {
+      patients.sort((a, b) => {
+        return b[field] - a[field];
+      });
     }
     return patients;
   };
@@ -261,30 +297,6 @@ class ApplyToHousehold extends React.Component {
     const date = data.value;
     return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
   }
-
-  /**
-   * Formats workflow boolean value into user readable format.
-   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
-   */
-  formatWorkflow = data => {
-    return <React.Fragment>{data.value ? 'Isolation' : 'Exposure'}</React.Fragment>;
-  };
-
-  /**
-   * Formats monitoring boolean value into user readable format.
-   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
-   */
-  formatMonitoring = data => {
-    return <React.Fragment>{data.value ? 'Actively Monitoring' : 'Not Monitoring'}</React.Fragment>;
-  };
-
-  /**
-   * Formats continuous exposure boolean value into user readable format.
-   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
-   */
-  formatContinuousExposure = data => {
-    return <React.Fragment>{data.value ? 'Yes' : 'No'}</React.Fragment>;
-  };
 
   render() {
     return (
