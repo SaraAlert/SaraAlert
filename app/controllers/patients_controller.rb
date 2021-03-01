@@ -467,18 +467,19 @@ class PatientsController < ApplicationController
     update_monitoring_fields(patient, params, :patient, :none)
 
     # If not applying to household, return
-    return unless params.permit(:apply_to_household)[:apply_to_household] && params[:apply_to_household_ids].count.positive?
+    apply_to_household_ids = params.permit(apply_to_household_ids: [])[:apply_to_household_ids]
+    return unless params.permit(:apply_to_household)[:apply_to_household] && !apply_to_household_ids.nil?
 
     # If a household member has been removed, they should not be updated
-    current_household_member_ids = patient.household.where.not(id: patient.id).pluck(:id)
-    diff_household_array = params[:apply_to_household_ids] - current_household_member_ids
+    current_household_ids = patient.household.where(purged: false).where.not(id: patient.id).pluck(:id)
+    diff_household_array = apply_to_household_ids - current_household_ids
     unless diff_household_array.empty?
       error_message = 'Apply to household action failed: changes have been made to this household. Please refresh.'
       render(json: { error: error_message }, status: :bad_request) && return
     end
 
     # Update selected group members if applying to household and ids are supplied
-    params[:apply_to_household_ids].each do |id|
+    apply_to_household_ids.each do |id|
       member = current_user.get_patient(id)
       update_monitoring_fields(member, params, :patient, :none) unless member.nil?
     end
