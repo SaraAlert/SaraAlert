@@ -49,7 +49,7 @@ const LINELIST_STYLE_OPTIONS = [
   },
 ];
 
-class RiskStratification extends React.Component {
+class PreferredReportingMethod extends React.Component {
   constructor(props) {
     super(props);
     let contactMethodMonitoreeCounts = props.stats.monitoree_counts.filter(x => x.category_type === 'Contact Method');
@@ -149,8 +149,8 @@ class RiskStratification extends React.Component {
   }
 }
 
-RiskStratification.propTypes = {
+PreferredReportingMethod.propTypes = {
   stats: PropTypes.object,
 };
 
-export default RiskStratification;
+export default PreferredReportingMethod;
