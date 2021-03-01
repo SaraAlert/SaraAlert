@@ -23,19 +23,23 @@ require_relative '../config/environment'
 # ENV Variables:
 # - MYSQL_PATH: specify the MySQL datadir manually for temporary DB backups
 # - NO_MEMPROF: set this to anything to disable memory-profiler for the benchmark
-def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, &block)
-  check_mysql_path_env
+# - APP_IN_CI: this is expected to be present in GitHub actions, where MySQL is not local
+#
+# If `no_exit` is set to true, then the benchmark will not exit with an exit code at
+# the end of the benchmark. It will instead return true if passed and false if failed.
+def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exit: false, &block)
+  check_mysql_path_env if ENV['APP_IN_CI'].nil?
   warn_about_memprof
 
-  backup(ENV['MYSQL_PATH'])
+  backup(ENV['MYSQL_PATH']) if ENV['APP_IN_CI'].nil?
 
   ActionMailer::Base.perform_deliveries = false
 
   timestamp = Time.now.utc.iso8601
-  stackprof_file = "script/benchmarks/output/#{name}_#{timestamp}_CPU.dump"
-  flamegraph_file = "script/benchmarks/output/#{name}_#{timestamp}_FLM"
-  memprof_file = "script/benchmarks/output/#{name}_#{timestamp}_MEM.log"
-  benchmark_file = "script/benchmarks/output/#{name}_#{timestamp}_BCM.log"
+  stackprof_file = "performance/benchmarks/output/#{name}_#{timestamp}_CPU.dump".gsub(':', '-')
+  flamegraph_file = "performance/benchmarks/output/#{name}_#{timestamp}_FLM".gsub(':', '-')
+  memprof_file = "performance/benchmarks/output/#{name}_#{timestamp}_MEM.log".gsub(':', '-')
+  benchmark_file = "performance/benchmarks/output/#{name}_#{timestamp}_BCM.log".gsub(':', '-')
   $stdout = File.new(benchmark_file, 'w') if ENV['CAP_STDOUT']
   $stdout.sync = true if ENV['CAP_STDOUT']
 
@@ -63,7 +67,11 @@ def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, &block
   end
 
   puts 'clearing redis'
-  Sidekiq.redis(&:flushdb)
+  begin
+    Sidekiq.redis(&:flushdb)
+  rescue Redis::CannotConnectError
+    puts 'Redis not found. Skipping.'
+  end
 
   puts "\n"
   puts "\ncat #{benchmark_file}" if ENV['CAP_STDOUT']
@@ -80,14 +88,16 @@ def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, &block
   puts "Acceptable real time threshold: #{format('%.3f', time_threshold).rjust(10, ' ')}"
   puts "    Actual real time threshold: #{format('%.3f', benchmark_report.real).rjust(10, ' ')}"
 
-  restore(ENV['MYSQL_PATH'])
+  restore(ENV['MYSQL_PATH']) if ENV['APP_IN_CI'].nil?
 
   if time_threshold < benchmark_report.real
     puts 'TEST FAILED'
-    exit(1)
+    exit(1) unless no_exit
+    false
   else
     puts 'TEST PASSED'
-    exit(0)
+    exit(0) unless no_exit
+    true
   end
 end
 
