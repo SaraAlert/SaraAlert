@@ -6,17 +6,9 @@ import EnrollerAnalytics from '../../components/analytics/EnrollerAnalytics.js'
 import { mockUser1 } from '../mocks/mockUsers'
 import { mockEnrollerStatistics1 } from '../mocks/mockEnrollerStatistics'
 
-function getShallowWrapper() {
-  return shallow(<EnrollerAnalytics user={mockUser1} stats={mockEnrollerStatistics1}/>);
-}
-
-afterEach(() => {
-  jest.clearAllMocks();
-});
-
 describe('EnrollerAnalytics', () => {
   it('Properly Renders Both EnrollerStatistics Cards correctly', () => {
-    const eaWrapper = getShallowWrapper();
+    const eaWrapper = shallow(<EnrollerAnalytics user={mockUser1} stats={mockEnrollerStatistics1}/>);
     expect(eaWrapper.find('Fragment').find('Row').find('Col').at(0).containsMatchingElement(<EnrollerStatistics />)).toBeTruthy();
     expect(eaWrapper.find(EnrollerStatistics).at(0).prop('title')).toEqual('System Statistics');
     expect(eaWrapper.find(EnrollerStatistics).at(0).prop('total_monitorees')).toEqual(mockEnrollerStatistics1.system_subjects);
