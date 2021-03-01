@@ -94,6 +94,51 @@ class CustomTable extends React.Component {
   };
 
   /**
+   * Renders the select all checkbox in the header element
+   * Checkbox is disabled if every entry in rowData is disabled
+   */
+  renderSelectAllCheckbox = () => {
+    return (
+      <th>
+        <input
+          type="checkbox"
+          onChange={this.toggleSelectAll}
+          disabled={this.props.disabledRows.length === this.props.rowData.length}
+          checked={this.props.selectAll}
+          aria-label="Table Select All Rows"></input>
+      </th>
+    );
+  };
+
+  /**
+   * Renders the checkbox in the specified row in the table body
+   * Checkbox is disabled if rowIndex is included in the dieabledRows prop
+   * Whether a row should be disabled is determined by the parent component
+   *
+   * @param {Object} rowData - Data for the row the checkbox is being rendered in.
+   * @param {Number} rowIndex - Index of the row the checkbox is being rendered in.
+   */
+  renderRowCheckbox = (rowData, rowIndex) => {
+    return (
+      <td>
+        <span data-for={`table-row-${rowIndex}-tooltip`} data-tip="">
+          <input
+            type="checkbox"
+            disabled={this.props.disabledRows.includes(rowIndex)}
+            aria-label={`Table Select${rowData.name ? ` Monitoree: ${rowData.name}` : ''}${this.props.currentUser ? ` User: ${this.props.currentUser}` : ''}`}
+            checked={(this.props.selectAll && !this.props.disabledRows.includes(rowIndex)) || this.props.selectedRows.includes(rowIndex)}
+            onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
+        </span>
+        {this.props.disabledRows.includes(rowIndex) && (
+          <ReactTooltip id={`table-row-${rowIndex}-tooltip`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+            {this.props.disabledTooltipText}
+          </ReactTooltip>
+        )}
+      </td>
+    );
+  };
+
+  /**
    * Renders the header element of the table for a given field with
    * optional sorting functionality and a toolip.
    *
@@ -140,39 +185,6 @@ class CustomTable extends React.Component {
         )}
         {tooltip && <InfoTooltip tooltipTextKey={tooltip} location="right"></InfoTooltip>}
       </th>
-    );
-  };
-
-  renderSelectAllCheckbox = () => {
-    return (
-      <th>
-        <input
-          type="checkbox"
-          onChange={this.toggleSelectAll}
-          disabled={this.props.disabledRows.length === this.props.rowData.length}
-          checked={this.props.selectAll}
-          aria-label="Table Select All Rows"></input>
-      </th>
-    );
-  };
-
-  renderRowCheckbox = (rowData, rowIndex) => {
-    return (
-      <td>
-        <span data-for={`table-row-${rowIndex}-tooltip`} data-tip="">
-          <input
-            type="checkbox"
-            disabled={this.props.disabledRows.includes(rowIndex)}
-            aria-label={`Table Select${rowData.name ? ` Monitoree: ${rowData.name}` : ''}${this.props.currentUser ? ` User: ${this.props.currentUser}` : ''}`}
-            checked={(this.props.selectAll && !this.props.disabledRows.includes(rowIndex)) || this.props.selectedRows.includes(rowIndex)}
-            onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
-        </span>
-        {this.props.disabledRows.includes(rowIndex) && (
-          <ReactTooltip id={`table-row-${rowIndex}-tooltip`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
-            {this.props.disabledTooltipText}
-          </ReactTooltip>
-        )}
-      </td>
     );
   };
 
