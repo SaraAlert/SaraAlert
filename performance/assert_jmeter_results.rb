@@ -75,6 +75,7 @@ end
 
 def compare(rows, cfg)
   rows = rows.filter { |row| row['label'] == cfg[:label] }
+
   actual = rows_stats(rows)
   thresholds = cfg[:failure_thresholds]
   any_failure = (

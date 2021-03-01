@@ -1,0 +1,61 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+      # - SA-1350/perfActions
+
+jobs:
+  build-1m-database-image:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+      redis: # The name of the service
+        image: redis # A docker image
+        ports: ['6379:6379'] # The ports that you can access the service on
+        options: --entrypoint redis-server # Options for the service
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.6
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+          mysql -h 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -proot -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_development;'
+      - name: Show Disk Space 1
+        run: df -h
+      - name: Run DB Image Build
+        run: ./performance/docker/build-push-1m-database-image.sh
+        env:
+          JOB_RUN_EMAIL: foobar@example.com
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          REDIS_URL: redis://localhost:${{ job.services.redis.ports['6739'] }}/1
+          APP_IN_CI: true
+          GHCR_USER: ${{ secrets.GHCR_USER }}
+          GHCR_PASSWORD: ${{ secrets.GHCR_PASSWORD }}
+      # - name: Show Disk Space 2
+      #   run: df -h
