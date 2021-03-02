@@ -732,7 +732,7 @@ class PatientsControllerTest < ActionController::TestCase
     end
   end
 
-  test 'update status for a patient with no dependents' do
+  test 'update status for a patient with no other household members' do
     user = create(:public_health_enroller_user)
     sign_in user
     patient = create(:patient, creator: user, monitoring: true, continuous_exposure: true)
@@ -751,25 +751,224 @@ class PatientsControllerTest < ActionController::TestCase
     assert_match(/System turned off Continuous Exposure/, History.find_by(patient: patient, created_by: 'Sara Alert System').comment)
   end
 
-  test 'update status for a patient with dependents and apply to household' do
+  test 'update status for a the head of household and not apply to household' do
     user = create(:public_health_enroller_user)
     sign_in user
-    hoh_patient = create(:patient, creator: user, monitoring: true)
-    dependent_patient = create(:patient, creator: user, monitoring: true)
-    hoh_patient.dependents << dependent_patient
+    patient = create(:patient, creator: user, monitoring: true)
+    household_member_1 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+    household_member_2 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
 
     post :update_status, params: {
-      id: hoh_patient.id,
-      apply_to_household: true,
-      apply_to_household_ids: [dependent_patient.id],
+      id: patient.id,
+      apply_to_household: false,
       patient: { monitoring: false }
     }, as: :json
 
     assert_response :success
-    hoh_patient.reload
-    assert_not hoh_patient.monitoring
-    dependent_patient.reload
-    assert_not dependent_patient.monitoring
+    patient.reload
+    assert_not patient.monitoring
+    household_member_1.reload
+    assert household_member_1.monitoring
+    household_member_2.reload
+    assert household_member_2.monitoring
+  end
+
+  test 'update status for a head of household and apply to household with no dependent ids' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    patient = create(:patient, creator: user, monitoring: true)
+    household_member_1 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+    household_member_2 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+
+    post :update_status, params: {
+      id: patient.id,
+      apply_to_household: true,
+      apply_to_household_ids: [],
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_not patient.monitoring
+    household_member_1.reload
+    assert household_member_1.monitoring
+    household_member_2.reload
+    assert household_member_2.monitoring
+  end
+
+  test 'update status for a head of household and apply to household with some dependent ids' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    patient = create(:patient, creator: user, monitoring: true)
+    household_member_1 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+    household_member_2 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+    household_member_3 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+
+    post :update_status, params: {
+      id: patient.id,
+      apply_to_household: true,
+      apply_to_household_ids: [household_member_1.id, household_member_2.id],
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_not patient.monitoring
+    household_member_1.reload
+    assert_not household_member_1.monitoring
+    household_member_2.reload
+    assert_not household_member_2.monitoring
+    household_member_3.reload
+    assert household_member_3.monitoring
+  end
+
+  test 'update status for a head of household and apply to household with all dependent ids' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    patient = create(:patient, creator: user, monitoring: true)
+    household_member_1 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+    household_member_2 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+    household_member_3 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+
+    post :update_status, params: {
+      id: patient.id,
+      apply_to_household: true,
+      apply_to_household_ids: [household_member_1.id, household_member_2.id, household_member_3.id],
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_not patient.monitoring
+    household_member_1.reload
+    assert_not household_member_1.monitoring
+    household_member_2.reload
+    assert_not household_member_2.monitoring
+    household_member_3.reload
+    assert_not household_member_3.monitoring
+  end
+
+  test 'update status for just patient that has household members' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    household_member_1 = create(:patient, creator: user, monitoring: true)
+    household_member_2 = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+    patient = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+
+    post :update_status, params: {
+      id: patient.id,
+      apply_to_household: false,
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_not patient.monitoring
+    household_member_1.reload
+    assert household_member_1.monitoring
+    household_member_2.reload
+    assert household_member_2.monitoring
+  end
+
+  test 'update status for a patient with household members and apply to household with no household ids' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    household_member_1 = create(:patient, creator: user, monitoring: true)
+    household_member_2 = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+    patient = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+
+    post :update_status, params: {
+      id: patient.id,
+      apply_to_household: true,
+      apply_to_household_ids: [],
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_not patient.monitoring
+    household_member_1.reload
+    assert household_member_1.monitoring
+    household_member_2.reload
+    assert household_member_2.monitoring
+  end
+
+  test 'update status for a patient with household members and apply to household with some household ids' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    household_member_1 = create(:patient, creator: user, monitoring: true)
+    household_member_2 = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+    household_member_3 = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+    patient = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+
+    post :update_status, params: {
+      id: patient.id,
+      apply_to_household: true,
+      apply_to_household_ids: [household_member_1.id, household_member_2.id],
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_not patient.monitoring
+    household_member_1.reload
+    assert_not household_member_1.monitoring
+    household_member_2.reload
+    assert_not household_member_2.monitoring
+    household_member_3.reload
+    assert household_member_3.monitoring
+  end
+
+  test 'update status for a patient with household members and apply to household with all household ids' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    household_member_1 = create(:patient, creator: user, monitoring: true)
+    household_member_2 = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+    household_member_3 = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+    patient = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+
+    post :update_status, params: {
+      id: patient.id,
+      apply_to_household: true,
+      apply_to_household_ids: [household_member_1.id, household_member_2.id, household_member_3.id],
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_not patient.monitoring
+    household_member_1.reload
+    assert_not household_member_1.monitoring
+    household_member_2.reload
+    assert_not household_member_2.monitoring
+    household_member_3.reload
+    assert_not household_member_3.monitoring
+  end
+
+  test 'update status for a patient with household members and apply to household with out of date household ids' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    patient = create(:patient, creator: user, monitoring: true)
+    household_member_1 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+    household_member_2 = create(:patient, creator: user, monitoring: true, responder_id: patient.id)
+    non_household_member = create(:patient, creator: user, monitoring: true)
+
+    post :update_status, params: {
+      id: patient.id,
+      apply_to_household: true,
+      apply_to_household_ids: [household_member_1.id, household_member_2.id, non_household_member.id],
+      patient: { monitoring: false }
+    }, as: :json
+
+    assert_response :bad_request
+    patient.reload
+    assert_not patient.monitoring
+    household_member_1.reload
+    assert household_member_1.monitoring
+    household_member_2.reload
+    assert household_member_2.monitoring
+    non_household_member.reload
+    assert non_household_member.monitoring
   end
 
   test 'update status while ignoring fields not specified in diffState' do
