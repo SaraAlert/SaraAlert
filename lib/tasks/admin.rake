@@ -8,9 +8,10 @@ namespace :admin do
   desc "Import/Update Jurisdictions"
   task import_or_update_jurisdictions: :environment do
     ActiveRecord::Base.transaction do
-      config_contents = YAML.load_file('config/sara/jurisdictions.yml')
 
-      config_contents.each do |jur_name, jur_values|
+      config_name = ENV['PERFORMANCE'].nil? ? 'jurisdictions' : 'performance_jurisdictions'
+
+      YAML.load_file("config/sara/#{config_name}.yml").each do |jur_name, jur_values|
         parse_jurisdiction(nil, jur_name, jur_values)
       end
 

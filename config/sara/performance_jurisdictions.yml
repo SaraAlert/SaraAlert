@@ -1,0 +1,962 @@
+'USA':
+    symptoms:
+        'Cough':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'Difficulty Breathing':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'New Loss of Smell':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'New Loss of Taste':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'Shortness of Breath':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'Fever':
+            value: true
+            type: 'BoolSymptom'
+            notes: 'Feeling feverish or have a measured temperature at or above 100.4°F/38°C'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Used A Fever Reducer':
+            value: true
+            type: 'BoolSymptom'
+            notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
+            required: false
+            threshold_operator: 'Equal'
+            group: 2
+        'Chills':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Repeated Shaking with Chills':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Muscle Pain':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Headache':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Sore Throat':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Nausea or Vomiting':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Diarrhea':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Fatigue':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Congestion or Runny Nose':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Pulse Ox':
+            value: 90
+            threshold_operator: 'Less Than'
+            type: 'FloatSymptom'
+            required: true
+    children:
+        'Alabama':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: true
+            children:
+                'Alabama County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Alabama County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Alaska':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Alaska County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Alaska County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Arizona':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Arizona County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Arizona County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Arkansas':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Arkansas County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Arkansas County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'California':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'California County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'California County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Colorado':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Colorado County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Colorado County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Connecticut':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Connecticut County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Connecticut County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Delaware':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Delaware County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Delaware County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'District of Columbia':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+        'Florida':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Florida County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Florida County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Georgia':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Georgia County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Georgia County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Hawaii':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Hawaii County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Hawaii County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Idaho':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Idaho County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Idaho County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Illinois':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Illinois County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Illinois County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Indiana':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Indiana County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Indiana County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Iowa':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Iowa County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Iowa County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Kansas':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Kansas County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Kansas County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Kentucky':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Kentucky County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Kentucky County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Lousiana':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Lousiana County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Lousiana County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Maine':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Maine County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Maine County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Maryland':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Maryland County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Maryland County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Massachusetts':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Massachusetts County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Massachusetts County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Michigan':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Michigan County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Michigan County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Minnesota':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Minnesota County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Minnesota County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Mississippi':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Mississippi County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Mississippi County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Missouri':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Missouri County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Missouri County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Montana':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Montana County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Montana County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Nebraska':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Nebraska County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Nebraska County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Nevada':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Nevada County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Nevada County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'New Hampshire':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'New Hampshire County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'New Hampshire County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'New Jersey':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'New Jersey County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'New Jersey County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'New Mexico':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'New Mexico County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'New Mexico County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'New York':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'New York County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'New York County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'North Carolina':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'North Carolina County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'North Carolina County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'North Dakota':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'North Dakota County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'North Dakota County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Ohio':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Ohio County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Ohio County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Oklahoma':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Oklahoma County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Oklahoma County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Oregon':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Oregon County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Oregon County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Pennsylvania':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Pennsylvania County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Pennsylvania County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Rhode Island':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Rhode Island County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Rhode Island County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'South Carolina':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'South Carolina County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'South Carolina County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'South Dakota':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'South Dakota County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'South Dakota County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Tennessee':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Tennessee County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Tennessee County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Texas':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Texas County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Texas County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Utah':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Utah County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Utah County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Vermont':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Vermont County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Vermont County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Virginia':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Virginia County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Virginia County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Washington':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Washington County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Washington County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'West Virginia':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'West Virginia County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'West Virginia County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Wisconsin':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Wisconsin County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Wisconsin County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+        'Wyoming':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+                'Wyoming County 1':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'
+                'Wyoming County 2':
+                  phone: '+13455555555'
+                  webpage: 'www.example.com'
+                  email: 'contact@example.com'
+                  message: 'This Is a Custom Jurisdiction Message'

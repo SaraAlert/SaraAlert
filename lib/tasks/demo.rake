@@ -37,6 +37,54 @@ desc 'Backup the database'
 
   end
 
+  desc 'Configure the users in the database for performance testing'
+  task setup_performance_test_users: :environment do
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+
+    jurisdictions = Jurisdiction.all
+    if !(jurisdictions.size > 50)
+      puts ' Jurisdictions were not found! Make sure to run `PERFORMANCE=true bundle exec rake admin:import_or_update_jurisdictions`'
+      exit(1)
+    end
+
+    users = []
+
+    # Super User at the USA level
+    users << create_user("#{jurisdictions.first.unique_identifier}_super_user", Roles::SUPER_USER, jurisdictions.first)
+
+    index = 0
+    length = jurisdictions.size
+    while index < length
+      # Create one enroller, admin, public_health, contact_tracer per jurisdiction. Users with these roles are not a large percentage.
+      users << create_user("#{jurisdictions[index].unique_identifier}_enroller", Roles::ENROLLER, jurisdictions[index])
+      users << create_user("#{jurisdictions[index].unique_identifier}_admin", Roles::ADMIN, jurisdictions[index])
+      users << create_user("#{jurisdictions[index].unique_identifier}_epi", Roles::PUBLIC_HEALTH, jurisdictions[index])
+      users << create_user("#{jurisdictions[index].unique_identifier}_contact_tracer", Roles::CONTACT_TRACER, jurisdictions[index])
+
+      # Very few analysts
+      users << create_user("#{jurisdictions[index].unique_identifier}_analyst", Roles::ANALYST, jurisdictions[index]) if index % 1 == 0
+
+      # Create 35-times that many public-health enrollers (based on production data)
+      35.times do |phe_number|
+        users << create_user("#{jurisdictions[index].unique_identifier}_#{phe_number}_epi_enroller", Roles::PUBLIC_HEALTH_ENROLLER, jurisdictions[index])
+      end
+      index += 1
+    end
+    User.import! users
+  end
+
+  def create_user(email, role, jurisdiction)
+    User.new(
+      email: "#{email}@example.com",
+      password: '1234567ab!',
+      role: role,
+      jurisdiction: jurisdiction,
+      force_password_change: false,
+      authy_enabled: false,
+      authy_enforced: false
+    )
+  end
+
   desc 'Configure the database for demo use'
   task setup: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
