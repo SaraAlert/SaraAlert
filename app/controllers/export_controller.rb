@@ -102,10 +102,9 @@ class ExportController < ApplicationController
           name: 'Monitorees',
           tab: 'Monitorees List'
         },
-        # assessment fields and headers need to be duplicated because they may be modified
         assessments: {
-          checked: FULL_HISTORY_ASSESSMENTS_FIELDS.dup,
-          headers: FULL_HISTORY_ASSESSMENTS_HEADERS.dup,
+          checked: FULL_HISTORY_ASSESSMENTS_FIELDS,
+          headers: FULL_HISTORY_ASSESSMENTS_HEADERS,
           name: 'Reports',
           tab: 'Reports'
         },
@@ -141,7 +140,7 @@ class ExportController < ApplicationController
 
     # NOTE: separate implementation used for single patient export for performance and to keep this endpoint's logic separate from main export logic
     # Get all of the field data based on the config
-    field_data, symptom_names = get_field_data(FULL_HISTORY_PATIENT_CONFIG)
+    field_data = get_field_data(FULL_HISTORY_PATIENT_CONFIG, patients)
 
     # Create export file
     workbook = FastExcel.open
@@ -157,7 +156,7 @@ class ExportController < ApplicationController
     end
 
     # Get export data hashes for each data type from config and write data to each sheet
-    exported_data = get_export_data(patients, FULL_HISTORY_PATIENT_CONFIG[:data], symptom_names)
+    exported_data = get_export_data(patients, FULL_HISTORY_PATIENT_CONFIG[:data])
     FULL_HISTORY_PATIENT_CONFIG[:data].each_key do |data_type|
       last_row_nums[data_type] = write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked], last_row_nums[data_type])
     end

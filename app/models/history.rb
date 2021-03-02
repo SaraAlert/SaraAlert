@@ -6,6 +6,7 @@ require 'action_view/helpers'
 # History: history model
 class History < ApplicationRecord
   include ExcelSanitizer
+  include ImportExportConstants
 
   HISTORY_TYPES = {
     record_edit: 'Record Edit',
@@ -349,18 +350,10 @@ class History < ApplicationRecord
     }
   end
 
-  def custom_details(fields, patient_identifiers)
+  def custom_details(fields)
     history_details = {}
-    history_details[:id] = id || '' if fields.include?(:id)
-    history_details[:patient_id] = patient_id || '' if fields.include?(:patient_id)
-    history_details[:user_defined_id_statelocal] = patient_identifiers[:user_defined_id_statelocal]
-    history_details[:user_defined_id_cdc] = patient_identifiers[:user_defined_id_cdc]
-    history_details[:user_defined_id_nndss] = patient_identifiers[:user_defined_id_nndss]
-    history_details[:created_by] = remove_formula_start(created_by) || '' if fields.include?(:created_by)
-    history_details[:history_type] = history_type || '' if fields.include?(:history_type)
-    history_details[:comment] = remove_formula_start(comment) || '' if fields.include?(:comment)
-    history_details[:created_at] = created_at || '' if fields.include?(:created_at)
-    history_details[:updated_at] = updated_at || '' if fields.include?(:updated_at)
+    (fields & HISTORY_FIELD_TYPES[:unfiltered]).each { |field| history_details[field] = self[field] }
+    (fields & HISTORY_FIELD_TYPES[:remove_formula_start]).each { |field| history_details[field] = remove_formula_start(self[field]) }
     history_details
   end
 

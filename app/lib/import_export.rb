@@ -31,7 +31,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
 
     # Get all of the field data based on the config
-    field_data, symptom_names = get_field_data(config)
+    field_data = get_field_data(config, patients)
 
     # Declare variables in scope outside of batch loop
     csvs = nil
@@ -59,7 +59,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
-      exported_data = get_export_data(batch_group.order(:id), config[:data], symptom_names)
+      exported_data = get_export_data(batch_group.order(:id), config[:data])
       data_types.each do |data_type|
         exported_data[data_type]&.each do |record|
           csvs[data_type] << field_data[data_type][:checked].map { |field| record[field] }
@@ -89,7 +89,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
 
     # Get all of the field data based on the config
-    field_data, symptom_names = get_field_data(config)
+    field_data = get_field_data(config, patients)
 
     # Declare variables in scope outside of batch loop
     workbooks = nil if separate_files
@@ -122,7 +122,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
-      exported_data = get_export_data(batch_group.order(:id), config[:data], symptom_names)
+      exported_data = get_export_data(batch_group.order(:id), config[:data])
       data_types.each do |data_type|
         last_row_nums[data_type] = write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked], last_row_nums[data_type])
       end
@@ -147,7 +147,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Gets data for this batch of patients that may not have already been present in the export config (such as specific symptoms).
-  def get_field_data(config)
+  def get_field_data(config, patients)
     data = config[:data].deep_dup
 
     # Update the checked data (used for obtaining values) with race information
@@ -158,9 +158,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # Update the checked and header data for assessment symptoms
     # NOTE: this must be done after updating the general headers above
-    symptom_names = update_assessment_symptom_data(data)
+    update_assessment_symptom_data(data, patients)
 
-    [data, symptom_names]
+    data
   end
 
   # Finds the race values that should be included if the Race (All Race Fields) option is checked in custom export
@@ -185,25 +185,26 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Finds the symptoms needed for the reports columns
-  def update_assessment_symptom_data(data)
+  def update_assessment_symptom_data(data, patients)
     # Don't update if assessment symptom data isn't needed
     return unless data.dig(:assessments, :checked)&.include?(:symptoms)
 
-    # Using Symptom.all for finding distinct symptom names is faster here because it can use symptoms_index_chain_1
-    symptom_names = Symptom.all.distinct.pluck(:name).sort
-    symptom_labels = symptom_names.map { |name| Symptom.find_by(name: name).label }
-
     data[:assessments][:checked].delete(:symptoms)
-    data[:assessments][:checked].concat(symptom_names.map(&:to_sym))
-
     data[:assessments][:headers].delete('Symptoms Reported')
-    data[:assessments][:headers].concat(symptom_labels)
 
-    symptom_names
+    # Nested querying by id is faster than joining patients to assessments to conditions to symptoms
+    symptoms = Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: patients.pluck(:id)).pluck(:id)).pluck(:id))
+    symptom_names_and_labels = symptoms.distinct.order(:label).pluck(:name, :label).transpose
+
+    # Empty symptoms check
+    return unless symptom_names_and_labels.present?
+
+    data[:assessments][:checked].concat(symptom_names_and_labels.first.map(&:to_sym))
+    data[:assessments][:headers].concat(symptom_names_and_labels.second)
   end
 
   # Gets all associated relevant data for patients group based on queries and fields
-  def get_export_data(patients, data, symptom_names)
+  def get_export_data(patients, data)
     exported_data = {}
     patients_identifiers = Hash[patients.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
                                         .map do |id, statelocal, cdc, nndss|
@@ -214,7 +215,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     if data.dig(:assessments, :checked).present?
       assessments = assessments_by_patient_ids(patients_identifiers.keys)
-      exported_data[:assessments] = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked], symptom_names)
+      exported_data[:assessments] = extract_assessments_details(patients_identifiers, assessments, data[:assessments][:checked])
     end
 
     if data.dig(:laboratories, :checked).present?
@@ -264,8 +265,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     # construct patient details
-    patients_details = []
-    patients.each do |patient|
+    patients.map do |patient|
       patient_details = {}
 
       # populate inherent fields by type
@@ -322,55 +322,53 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         end
       end
 
-      patients_details << patient_details
+      patient_details
     end
-
-    patients_details
   end
 
   # Extract assessment data values given relevant fields
-  def extract_assessments_details(patients_identifiers, assessments, fields, symptom_names)
-    if fields.include?(:symptoms)
+  def extract_assessments_details(patients_identifiers, assessments, fields)
+    include_symptoms = fields.include?(:symptoms)
+
+    if include_symptoms
       conditions_hash = Hash[assessments.joins(:reported_condition).pluck('conditions.id', :assessment_id)]
                         .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
 
-      # Uses index_symptoms_on_condition_id
-      all_symptoms = Symptom.where(condition_id: conditions_hash.keys)
-      all_symptoms.where(type: 'BoolSymptom').pluck(:condition_id, :name, :bool_value).each do |(condition_id, name, bool_value)|
-        conditions_hash[condition_id][:symptoms][name] = bool_value
-      end
-      all_symptoms.where(type: 'IntegerSymptom').pluck(:condition_id, :name, :int_value).each do |(condition_id, name, int_value)|
-        conditions_hash[condition_id][:symptoms][name] = int_value
-      end
-      all_symptoms.where(type: 'FloatSymptom').pluck(:condition_id, :name, :float_value).each do |(condition_id, name, float_value)|
-        conditions_hash[condition_id][:symptoms][name] = float_value
+      # Pluck is used here because only a subset of symptom fields are needed, this saves memory and increases performance. An alternative solution of querying
+      # by each symptom type and plucking specific symptom values was also explored which saves more memory, but is noticeably slower due to having more queries
+      Symptom.where(condition_id: conditions_hash.keys)
+             .pluck(*%i[condition_id name type bool_value int_value float_value])
+             .each do |(condition_id, name, type, bool_value, int_value, float_value)|
+        case type
+        when 'BoolSymptom'
+          conditions_hash[condition_id][:symptoms][name.to_sym] = bool_value
+        when 'IntegerSymptom'
+          conditions_hash[condition_id][:symptoms][name.to_sym] = int_value
+        when 'FloatSymptom'
+          conditions_hash[condition_id][:symptoms][name.to_sym] = float_value
+        end
       end
       assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
     end
 
-    assessments_details = []
-    assessments.each do |assessment|
-      assessment_details = assessment.custom_details(fields, patients_identifiers[assessment.patient_id]) || {}
+    # NOTE: calling map and custom_details is more performant in terms of speed and memory than using as_json and directly modifying hash
+    assessments.map do |assessment|
+      assessment_details = assessment.custom_details(fields).merge(patients_identifiers[assessment.patient_id])
 
-      # Nil check in case for some reason there were assessments with nil ReportedCondition
-      if fields.include?(:symptoms) && assessments_hash[assessment[:id]].present?
-        symptom_names.each do |symptom_name|
-          assessment_details[symptom_name.to_sym] = assessments_hash[assessment[:id]][symptom_name]
-        end
-      end
-      assessments_details << assessment_details
+      # Add symptoms to assessments if included (nil check in case for some reason there were assessments with nil ReportedCondition)
+      assessment_details = assessment_details.merge(assessments_hash[assessment.id]) if include_symptoms && assessments_hash[assessment.id].present?
+      assessment_details
     end
-    assessments_details
   end
 
   # Extract laboratory data values given relevant fields
   def extract_laboratories_details(patients_identifiers, laboratories, fields)
-    laboratories.map { |laboratory| laboratory.custom_details(fields, patients_identifiers[laboratory.patient_id]) }
+    laboratories.map { |laboratory| laboratory.custom_details(fields).merge(patients_identifiers[laboratory.patient_id]) }
   end
 
   # Extract close contact data values given relevant fields
   def extract_close_contacts_details(patients_identifiers, close_contacts, fields)
-    close_contacts.map { |close_contact| close_contact.custom_details(fields, patients_identifiers[close_contact.patient_id]) }
+    close_contacts.map { |close_contact| close_contact.custom_details(fields).merge(patients_identifiers[close_contact.patient_id]) }
   end
 
   # Extract transfer data values given relevant fields
@@ -378,12 +376,12 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     user_emails = Hash[User.find(transfers.map(&:who_id).uniq).pluck(:id, :email)]
     jurisdiction_ids = [transfers.map(&:from_jurisdiction_id), transfers.map(&:to_jurisdiction_id)].flatten.uniq
     jurisdiction_paths = Hash[Jurisdiction.find(jurisdiction_ids).pluck(:id, :path)]
-    transfers.map { |transfer| transfer.custom_details(fields, patients_identifiers[transfer.patient_id], user_emails, jurisdiction_paths) }
+    transfers.map { |transfer| transfer.custom_details(fields, user_emails, jurisdiction_paths).merge(patients_identifiers[transfer.patient_id]) }
   end
 
   # Extract history data values given relevant fields
   def extract_histories_details(patients_identifiers, histories, fields)
-    histories.map { |history| history.custom_details(fields, patients_identifiers[history.patient_id]) }
+    histories.map { |history| history.custom_details(fields).merge(patients_identifiers[history.patient_id]) }
   end
 
   # Write exported data of data_type to worksheet
