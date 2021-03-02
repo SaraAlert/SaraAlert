@@ -268,30 +268,15 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patients.each do |patient|
       patient_details = {}
 
-      # populate inherent fields
-      (fields & (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:strings])).each do |field|
-        patient_details[field] = patient[field] || ''
-      end
+      # populate inherent fields by type
+      (fields & PATIENT_FIELD_TYPES[:strings]).each { |field| patient_details[field] = remove_formula_start(patient[field]) }
+      (fields & PATIENT_FIELD_TYPES[:dates]).each { |field| patient_details[field] = patient[field]&.strftime('%F') }
+      (fields & PATIENT_FIELD_TYPES[:phones]).each { |field| patient_details[field] = format_phone_number(patient[field]) }
+      (fields & (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:timestamps])).each { |field| patient_details[field] = patient[field] }
+      (fields & (PATIENT_FIELD_TYPES[:booleans] + PATIENT_FIELD_TYPES[:races])).each { |field| patient_details[field] = patient[field] || false }
 
-      (fields & PATIENT_FIELD_TYPES[:dates]).each do |field|
-        patient_details[field] = patient[field]&.strftime('%F') || ''
-      end
-
-      (fields & PATIENT_FIELD_TYPES[:timestamps]).each do |field|
-        patient_details[field] = patient[field] || ''
-      end
-
-      (fields & PATIENT_FIELD_TYPES[:phones]).each do |field|
-        patient_details[field] = format_phone_number(patient[field])
-      end
-
-      (fields & PATIENT_FIELD_TYPES[:booleans]).each do |field|
-        patient_details[field] = (patient[field] || false).to_s
-      end
-
-      (fields.include?(:race) ? PATIENT_FIELD_TYPES[:races] : fields & PATIENT_FIELD_TYPES[:races]).each do |field|
-        patient_details[field] = patient[field] || false
-      end
+      # populate all races if race field is selected
+      PATIENT_FIELD_TYPES[:races].each { |field| patient_details[field] = patient[field] || false } if fields.include?(:race)
 
       # populate computed fields
       patient_details[:name] = patient.displayed_name if fields.include?(:name)
@@ -299,41 +284,41 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
       patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
       patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
-      patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
-      patient_details[:expected_purge_ts] = patient.expected_purge_date_exp || '' if fields.include?(:expected_purge_ts)
-      patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase || '' if fields.include?(:full_status)
-      patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '' if fields.include?(:status)
+      patient_details[:end_of_monitoring] = patient.end_of_monitoring if fields.include?(:end_of_monitoring)
+      patient_details[:expected_purge_ts] = patient.expected_purge_date_exp if fields.include?(:expected_purge_ts)
+      patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase if fields.include?(:full_status)
+      patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
 
       # populate creator if requested
-      patient_details[:creator] = patients_creators[patient.creator_id] || '' if fields.include?(:creator)
+      patient_details[:creator] = patients_creators[patient.creator_id] if fields.include?(:creator)
 
       # populate jurisdiction if requested
-      patient_details[:jurisdiction_name] = jurisdiction_names[patient.jurisdiction_id] || '' if fields.include?(:jurisdiction_name)
-      patient_details[:jurisdiction_path] = jurisdiction_paths[patient.jurisdiction_id] || '' if fields.include?(:jurisdiction_path)
+      patient_details[:jurisdiction_name] = jurisdiction_names[patient.jurisdiction_id] if fields.include?(:jurisdiction_name)
+      patient_details[:jurisdiction_path] = jurisdiction_paths[patient.jurisdiction_id] if fields.include?(:jurisdiction_path)
 
       # populate latest transfer from and to if requested
       if patient[:latest_transfer_from].present?
-        patient_details[:transferred_from] = jurisdiction_paths[patient.latest_transfer_from] || '' if fields.include?(:transferred_from)
-        patient_details[:transferred_to] = jurisdiction_paths[patient.jurisdiction_id] || '' if fields.include?(:transferred_to)
+        patient_details[:transferred_from] = jurisdiction_paths[patient.latest_transfer_from] if fields.include?(:transferred_from)
+        patient_details[:transferred_to] = jurisdiction_paths[patient.jurisdiction_id] if fields.include?(:transferred_to)
       end
 
       # populate labs if requested
       if patients_laboratories&.key?(patient.id)
         if patients_laboratories[patient.id]&.first&.present?
-          patient_details[:lab_1_type] = patients_laboratories[patient.id].first[:lab_type] || '' if fields.include?(:lab_1_type)
+          patient_details[:lab_1_type] = patients_laboratories[patient.id].first[:lab_type] if fields.include?(:lab_1_type)
           if fields.include?(:lab_1_specimen_collection)
-            patient_details[:lab_1_specimen_collection] = patients_laboratories[patient.id].first[:specimen_collection]&.strftime('%F') || ''
+            patient_details[:lab_1_specimen_collection] = patients_laboratories[patient.id].first[:specimen_collection]&.strftime('%F')
           end
-          patient_details[:lab_1_report] = patients_laboratories[patient.id].first[:report]&.strftime('%F') || '' if fields.include?(:lab_1_report)
-          patient_details[:lab_1_result] = patients_laboratories[patient.id].first[:result] || '' if fields.include?(:lab_1_result)
+          patient_details[:lab_1_report] = patients_laboratories[patient.id].first[:report]&.strftime('%F') if fields.include?(:lab_1_report)
+          patient_details[:lab_1_result] = patients_laboratories[patient.id].first[:result] if fields.include?(:lab_1_result)
         end
         if patients_laboratories[patient.id]&.second&.present?
-          patient_details[:lab_2_type] = patients_laboratories[patient.id].second[:lab_type] || '' if fields.include?(:lab_2_type)
+          patient_details[:lab_2_type] = patients_laboratories[patient.id].second[:lab_type] if fields.include?(:lab_2_type)
           if fields.include?(:lab_2_specimen_collection)
-            patient_details[:lab_2_specimen_collection] = patients_laboratories[patient.id].second[:specimen_collection]&.strftime('%F') || ''
+            patient_details[:lab_2_specimen_collection] = patients_laboratories[patient.id].second[:specimen_collection]&.strftime('%F')
           end
-          patient_details[:lab_2_report] = patients_laboratories[patient.id].second[:report]&.strftime('%F') || '' if fields.include?(:lab_2_report)
-          patient_details[:lab_2_result] = patients_laboratories[patient.id].second[:result] || '' if fields.include?(:lab_2_result)
+          patient_details[:lab_2_report] = patients_laboratories[patient.id].second[:report]&.strftime('%F') if fields.include?(:lab_2_report)
+          patient_details[:lab_2_result] = patients_laboratories[patient.id].second[:result] if fields.include?(:lab_2_result)
         end
       end
 
@@ -341,49 +326,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     patients_details
-  end
-
-  # Extract incomplete patient data values given relevant fields
-  def extract_incomplete_patient_details(patient, fields)
-    patient_details = {}
-
-    (fields & PATIENT_FIELD_TYPES[:strings]).each do |field|
-      patient_details[field] = remove_formula_start(patient[field]) || ''
-    end
-
-    (fields & PATIENT_FIELD_TYPES[:numbers]).each do |field|
-      patient_details[field] = patient[field]&.to_s || ''
-    end
-
-    (fields & PATIENT_FIELD_TYPES[:dates]).each do |field|
-      patient_details[field] = patient[field]&.strftime('%F') || ''
-    end
-
-    (fields & PATIENT_FIELD_TYPES[:timestamps]).each do |field|
-      patient_details[field] = patient[field] || ''
-    end
-
-    (fields & PATIENT_FIELD_TYPES[:booleans]).each do |field|
-      patient_details[field] = (patient[field] || false).to_s
-    end
-
-    (fields & PATIENT_FIELD_TYPES[:phones]).each do |field|
-      patient_details[field] = format_phone_number(patient[field])
-    end
-
-    PATIENT_RACE_FIELDS.each { |race| patient_details[race] = patient[race] || false } if fields.include?(:race)
-
-    patient_details[:name] = remove_formula_start(patient.displayed_name) if fields.include?(:name)
-    patient_details[:age] = patient.calc_current_age if fields.include?(:age)
-    patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
-    patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
-    patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
-    patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
-    patient_details[:expected_purge_ts] = patient.expected_purge_date_exp || '' if fields.include?(:expected_purge_ts)
-    patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase || '' if fields.include?(:full_status)
-    patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '' if fields.include?(:status)
-
-    patient_details
   end
 
   # Extract assessment data values given relevant fields
@@ -433,34 +375,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Extract transfer data values given relevant fields
   def extract_transfers_details(patients_identifiers, transfers, fields)
-    selected_fields = fields & %i[id patient_id created_at updated_at]
-    plucked_fields = selected_fields.dup
-
-    if fields.include?(:who)
-      transfers = transfers.joins('INNER JOIN users ON transfers.who_id = users.id')
-      selected_fields << 'users.email AS who'
-      plucked_fields << :who
-    end
-
-    if fields.include?(:from_jurisdiction)
-      transfers = transfers.joins('INNER JOIN jurisdictions from_jurs ON transfers.from_jurisdiction_id = from_jurs.id')
-      selected_fields << 'from_jurs.path AS from_jurisdiction'
-      plucked_fields << :from_jurisdiction
-    end
-
-    if fields.include?(:to_jurisdiction)
-      transfers = transfers.joins('INNER JOIN jurisdictions to_jurs ON transfers.to_jurisdiction_id = to_jurs.id')
-      selected_fields << 'to_jurs.path AS to_jurisdiction'
-      plucked_fields << :to_jurisdiction
-    end
-
-    transfers.pluck(*selected_fields).map do |t|
-      transfer = plucked_fields.zip(t).to_h
-      (PATIENT_FIELD_TYPES[:alternative_identifiers] & fields).each do |identifier|
-        transfer[identifier] = patients_identifiers[transfer[:patient_id]][identifier]
-      end
-      transfer
-    end
+    user_emails = Hash[User.find(transfers.map(&:who_id).uniq).pluck(:id, :email)]
+    jurisdiction_ids = [transfers.map(&:from_jurisdiction_id), transfers.map(&:to_jurisdiction_id)].flatten.uniq
+    jurisdiction_paths = Hash[Jurisdiction.find(jurisdiction_ids).pluck(:id, :path)]
+    transfers.map { |transfer| transfer.custom_details(fields, patients_identifiers[transfer.patient_id], user_emails, jurisdiction_paths) }
   end
 
   # Extract history data values given relevant fields
