@@ -177,6 +177,41 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     }
   end
 
+  def close_contact_as_fhir(close_contact)
+    FHIR::RelatedPerson.new(
+      id: close_contact.id,
+      name: [FHIR::HumanName.new(given: [close_contact.first_name].reject(&:blank?), family: close_contact.last_name)],
+      telecom: [
+        close_contact.primary_telephone ? FHIR::ContactPoint.new(system: 'phone',
+                                                                 value: close_contact.primary_telephone,
+                                                                 rank: 1)
+                                  : nil,
+        close_contact.email ? FHIR::ContactPoint.new(system: 'email', value: close_contact.email, rank: 1) : nil
+      ].reject(&:nil?),
+      patient: FHIR::Reference.new(reference: "Patient/#{close_contact.patient_id}"),
+      extension: [
+        to_date_extension(close_contact.last_date_of_exposure, 'last-date-of-exposure'),
+        to_positive_integer_extension(close_contact.assigned_user, 'assigned-user'),
+        to_positive_integer_extension(close_contact.contact_attempts, 'contact-attempts'),
+        to_string_extension(close_contact.notes, 'close-contact-notes')
+      ]
+    )
+  end
+
+  def close_contact_from_fhir(related_person)
+    {
+      first_name: related_person&.name&.first&.given&.first,
+      last_name: related_person&.name&.first&.family,
+      primary_telephone: from_fhir_phone_number(related_person&.telecom&.find { |t| t&.system == 'phone' }&.value),
+      email: related_person&.telecom&.find { |t| t&.system == 'email' }&.value,
+      last_date_of_exposure: from_date_extension(related_person, %w[last-date-of-exposure last-exposure-date]),
+      assigned_user: from_positive_integer_extension(related_person, 'assigned-user'),
+      notes: from_string_extension(related_person, 'close-contact-notes'),
+      patient_id: related_person&.patient&.reference&.match(%r{^Patient/(\d+)$}).to_a[1],
+      contact_attempts: from_positive_integer_extension(related_person, 'contact-attempts')
+    }
+  end
+
   # Build a FHIR US Core Race Extension given Sara Alert race booleans.
   def to_us_core_race(races)
     # Don't return an extension if all race categories are false or nil
@@ -325,10 +360,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   # Check for multiple extension IDs for the sake of backwards compatibility with IDs that have changed
-  def from_date_extension(patient, extension_ids)
+  def from_date_extension(element, extension_ids)
     val = nil
     extension_ids.each do |eid|
-      val = patient&.extension&.select { |e| e.url.include?(eid) }&.first&.valueDate
+      val = element&.extension&.select { |e| e.url.include?(eid) }&.first&.valueDate
       break unless val.nil?
     end
     val
@@ -341,8 +376,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def from_string_extension(patient, extension_id)
-    patient&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueString
+  def from_string_extension(element, extension_id)
+    element&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueString
   end
 
   def to_positive_integer_extension(value, extension_id)
@@ -352,8 +387,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def from_positive_integer_extension(patient, extension_id)
-    patient&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valuePositiveInt
+  def from_positive_integer_extension(element, extension_id)
+    element&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valuePositiveInt
   end
 
   # Convert from FHIR extension for Full Assigned Jurisdiction Path.
