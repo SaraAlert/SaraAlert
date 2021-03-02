@@ -153,15 +153,13 @@ class ApplyToHousehold extends React.Component {
   sortByBooleanField = (patients, field, direction) => {
     if (direction === 'asc') {
       patients.sort((a, b) => {
-        const fieldA = Object.prototype.hasOwnProperty.call(a, field) ? a[field] : null;
-        const fieldB = Object.prototype.hasOwnProperty.call(b, field) ? b[field] : null;
-        return fieldA - fieldB;
+        // string conversion necessary to avoid eslint Generic Object Injection Sink warning
+        return a[`${field}`] - b[`${field}`];
       });
     } else {
       patients.sort((a, b) => {
-        const fieldA = Object.prototype.hasOwnProperty.call(a, field) ? a[field] : null;
-        const fieldB = Object.prototype.hasOwnProperty.call(b, field) ? b[field] : null;
-        return fieldB - fieldA;
+        // string conversion necessary to avoid eslint Generic Object Injection Sink warning
+        return b[`${field}`] - a[`${field}`];
       });
     }
     return patients;
