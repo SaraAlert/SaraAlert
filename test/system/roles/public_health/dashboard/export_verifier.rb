@@ -323,7 +323,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         if field == :full_status
           assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
         elsif field == :status
-          assert_equal(patient.status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', ''), cell_value,
+          assert_equal(patient.status&.to_s&.humanize&.downcase&.sub('exposure ', '')&.sub('isolation ', ''), cell_value,
                        "For field: #{field} in Monitorees List (row #{row + 1})")
         elsif %i[primary_telephone secondary_telephone].include?(field)
           assert_equal(format_phone_number(patient_details[field]).to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
