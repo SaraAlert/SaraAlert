@@ -153,11 +153,15 @@ class ApplyToHousehold extends React.Component {
   sortByBooleanField = (patients, field, direction) => {
     if (direction === 'asc') {
       patients.sort((a, b) => {
-        return a[field] - b[field];
+        const fieldA = Object.prototype.hasOwnProperty.call(a, field) ? a[field] : null;
+        const fieldB = Object.prototype.hasOwnProperty.call(b, field) ? b[field] : null;
+        return fieldA - fieldB;
       });
     } else {
       patients.sort((a, b) => {
-        return b[field] - a[field];
+        const fieldA = Object.prototype.hasOwnProperty.call(a, field) ? a[field] : null;
+        const fieldB = Object.prototype.hasOwnProperty.call(b, field) ? b[field] : null;
+        return fieldB - fieldA;
       });
     }
     return patients;
