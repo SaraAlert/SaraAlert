@@ -2,6 +2,7 @@
 
 require 'test_case'
 
+# rubocop:disable Metrics/ClassLength
 class PatientsControllerTest < ActionController::TestCase
   def setup; end
 
@@ -1046,3 +1047,4 @@ class PatientsControllerTest < ActionController::TestCase
     assert_match(/changed Symptom Onset Date/, h.second.comment)
   end
 end
+# rubocop:enable Metrics/ClassLength
