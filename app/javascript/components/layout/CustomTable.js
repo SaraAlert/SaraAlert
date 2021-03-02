@@ -112,7 +112,7 @@ class CustomTable extends React.Component {
 
   /**
    * Renders the checkbox in the specified row in the table body
-   * Checkbox is disabled if rowIndex is included in the dieabledRows prop
+   * Checkbox is disabled if rowIndex is included in the disabledRows prop
    * Whether a row should be disabled is determined by the parent component
    *
    * @param {Object} rowData - Data for the row the checkbox is being rendered in.
