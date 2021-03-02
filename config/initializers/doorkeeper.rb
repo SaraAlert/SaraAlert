@@ -231,11 +231,17 @@ Doorkeeper.configure do
     'user/Patient.read',
     'user/Patient.write',
     'user/Patient.*',
+    'user/RelatedPerson.read',
+    'user/RelatedPerson.write',
+    'user/RelatedPerson.*',
     'user/Observation.read',
     'user/QuestionnaireResponse.read',
     'system/Patient.read',
     'system/Patient.write',
     'system/Patient.*',
+    'system/RelatedPerson.read',
+    'system/RelatedPerson.write',
+    'system/RelatedPerson.*',
     'system/Observation.read',
     'system/QuestionnaireResponse.read'
   )

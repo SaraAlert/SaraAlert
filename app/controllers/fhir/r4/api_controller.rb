@@ -178,13 +178,13 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Create a resource given a type.
   #
-  # Supports (writing): Patient
+  # Supports (writing): Patient, RelatedPerson
   #
   # POST /fhir/r4/[:resource_type]
   def create
     status_unsupported_media_type && return unless content_type_header?('application/fhir+json')
 
-    # Parse in the FHIR::Patient
+    # Parse in the FHIR
     contents = FHIR.from_contents(request.body.string)
     errors = contents&.validate
     status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
@@ -224,17 +224,13 @@ class Fhir::R4::ApiController < ActionController::API
 
       # Generate submission token for monitoree
       resource.submission_token = resource.new_submission_token
-    else
-      status_not_found && return
-    end
 
-    status_bad_request && return if resource.nil?
+      status_bad_request && return if resource.nil?
 
-    unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
-      status_unprocessable_entity(format_model_validation_errors(resource)) && return
-    end
+      unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
+        status_unprocessable_entity(format_model_validation_errors(resource)) && return
+      end
 
-    if resource_type == 'patient'
       Rails.logger.info "Created Patient with ID: #{resource.id}"
 
       # Send enrollment notification only to responders
@@ -242,6 +238,23 @@ class Fhir::R4::ApiController < ActionController::API
 
       # Create a history for the enrollment
       History.enrollment(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree enrolled via API.')
+    when 'relatedperson'
+      return if doorkeeper_authorize!(
+        :'user/RelatedPerson.write',
+        :'user/RelatedPerson.*',
+        :'system/RelatedPerson.write',
+        :'system/RelatedPerson.*'
+      )
+
+      resource = CloseContact.new(close_contact_from_fhir(contents))
+
+      unless referenced_patient_valid_for_client?(resource) && resource.save(context: :api)
+        status_unprocessable_entity(format_model_validation_errors(resource)) && return
+      end
+
+      # Will need to add logs and history updates here
+    else
+      status_not_found && return
     end
     status_created(resource.as_fhir) && return
   rescue JSON::ParserError
@@ -544,6 +557,21 @@ class Fhir::R4::ApiController < ActionController::API
       else
         patient.errors.add(:jurisdiction_id, "Jurisdiction must be within the client application's jurisdiction hierarchy")
       end
+    end
+
+    false
+  end
+
+  # Determine if the patient referenced by a close_contact exists and is valid for the requesting application
+  def referenced_patient_valid_for_client?(close_contact)
+    referenced_patient = accessible_patients.find_by_id(close_contact.patient_id)
+
+    return true unless referenced_patient.nil?
+
+    if @user_workflow
+      close_contact.errors.add(:patient_id, 'does not refer to a Patient which is accessible to the API user')
+    elsif @m2m_workflow
+      close_contact.errors.add(:patient_id, 'does not refer to a Patient which is accessible to the client application')
     end
 
     false
