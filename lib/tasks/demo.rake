@@ -314,7 +314,6 @@ desc 'Backup the database'
 
       # Identification
       sex = Faker::Gender.binary_type
-      sexualOrientations = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know', 'Unknown'].freeze
       patient[:sex] = rand < 0.9 ? sex : 'Unknown' if rand < 0.9
       patient[:gender_identity] = ValidationHelper::VALID_PATIENT_ENUMS[:gender_identity].sample if rand < 0.7
       patient[:sexual_orientation] = ValidationHelper::VALID_PATIENT_ENUMS[:sexual_orientation].sample if rand < 0.6
