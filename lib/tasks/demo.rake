@@ -36,17 +36,46 @@ namespace :demo do
   desc 'Generate N many more monitorees based on existing data'
   task create_bulk_data: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
-    num_patients = (ENV['COUNT'] || 100000).to_i
-    num_threads = (ENV['THREADS'] || 8).to_i
 
-    duplicateable = Patient.where('responder_id = id').pluck(:id)
-    threads = []
-    (1..num_threads).each do |x|
-      threads << Thread.new do  (1..(num_patients/num_threads)).each {|x| deep_duplicate_patient(Patient.find(duplicateable.sample)) } end
+    num_patients = (ENV['COUNT'] || 100000).to_i
+    num_forks = (ENV['FORKS'] || 8).to_i
+
+    # Found that forks were consistently performing drastically differently when id's were not shuffled
+    # i.e. fork 1 was always the slowest between 5 to 10 p/s and fork 8 was always the fastest between 20 to 25 p/s
+    # After shuffling, all forks end up at a much more similar 9 to 10 p/s
+    patient_ids = Patient.where('patients.responder_id = patients.id').limit(num_patients).pluck(:id).shuffle
+
+    pids = []
+
+    ::ActiveRecord::Base.clear_all_connections!
+    slices = patient_ids.each_slice(patient_ids.size / num_forks).to_a
+    num_forks.times.with_index do |index|
+      fork_num = index + 1
+      slice = slices[index]
+      next if slice.nil?
+
+      pids << fork do
+        start_time = Time.now
+        ::ActiveRecord::Base.establish_connection
+
+        num_to_create = num_patients / num_forks
+        num_created = 0
+        while num_created < num_to_create do
+          # deep_duplicate returns exactly how many patients were created (including duplicated dependents)
+          num_created += deep_duplicate_patient(Patient.find(slice.sample))
+          print "\r#{(num_created / (Time.now - start_time)).truncate(2)} p/s"
+        end
+
+        elapsed = Time.now - start_time
+        puts "\n\nFork #{fork_num} has created #{num_created} patients in #{elapsed} seconds. (#{(num_created / elapsed).truncate(2)} patients / sec)"
+      ensure
+        ::ActiveRecord::Base.clear_all_connections!
+        Process.exit! true
+      end
     end
 
-    threads.each(&:join)
-
+    pids.each { |pid| Process.waitpid(pid, 0)  }
+    puts "\nDone!"
   end
 
   desc 'Configure the database for demo use'
@@ -165,12 +194,14 @@ namespace :demo do
     # Remove analytics that are created in admin:import_or_update_jurisdictions task
     Analytic.delete_all
 
+    patient_limit = (ENV['LIMIT'] || 1_500_000).to_i
     days = (ENV['DAYS'] || 14).to_i
     num_patients_today = (ENV['COUNT'] || 25).to_i
     cache_analytics = (ENV['SKIP_ANALYTICS'] != 'true')
 
     jurisdictions = Jurisdiction.all
-    assigned_users = Hash[jurisdictions.pluck(:id).map { |id| [id, 10.times.map { |n| Faker::Number.number(digits: 6) }] }]
+    assigned_users_range = 10_000.times.map { rand(1..999_000) }
+    assigned_users = Hash[jurisdictions.pluck(:id).map { |id| [id, assigned_users_range]}]
     case_ids = Hash[jurisdictions.pluck(:id).map { |id| [id, 15.times.map { |n| Faker::Number.leading_zero_number(digits: 8) }] }]
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
@@ -178,8 +209,17 @@ namespace :demo do
 
     # Freeze beginning of day outside loop to prevent problems when script is called over midnight
     beginning_of_today = DateTime.now.beginning_of_day
+    created_patients = 0
+
+    # Get symptoms for each jurisdiction
+    threshold_conditions = fetch_all_threshold_conditions
 
     days.times do |day|
+      if patient_limit - created_patients <= 0
+        puts "Patient limit of #{patient_limit} has been reached!"
+        break
+      end
+
       # Calculate number of days ago
       days_ago = days - day
       beginning_of_day = beginning_of_today - days_ago.days
@@ -188,14 +228,18 @@ namespace :demo do
       printf("Simulating day #{day + 1} (#{beginning_of_day.to_date}):\n")
 
       # Populate patients, assessments, laboratories, transfers, histories, analytics
-      demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes)
+      demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions)
+      created_patients += num_patients_today
 
       # Cases increase 10-20% every day
       num_patients_today += (num_patients_today * (0.1 + (rand / 10))).round
+      # Protect from going over the patient limit
+      num_patients_today = patient_limit - created_patients if created_patients + num_patients_today > patient_limit
 
       printf("\n")
     end
   end
+  
   desc 'Add synthetic patient/monitoree data to the database for a single day (today)'
   task update: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
@@ -212,10 +256,28 @@ namespace :demo do
 
     printf("Simulating today\n")
 
-    demo_populate_day(DateTime.now.beginning_of_day, num_patients_today, 0, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes)
+    # Get symptoms for each jurisdiction
+    # Used in demo_populate_assessments
+    threshold_conditions = fetch_all_threshold_conditions
+
+    demo_populate_day(DateTime.now.beginning_of_day, num_patients_today, 0, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions)
   end
 
-  def demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes)
+  def fetch_all_threshold_conditions
+    print 'Fetching threshold_conditions for all jurisdictions... '
+    threshold_conditions = {}
+    Jurisdiction.all.each do |jurisdiction|
+      threshold_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
+      threshold_conditions[jurisdiction[:id]] = {
+        hash: threshold_condition[:threshold_condition_hash],
+        symptoms: threshold_condition.symptoms
+      }
+    end
+    puts 'done.'
+    threshold_conditions
+  end
+
+  def demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions)
     # Transactions speeds things up a bit
     ActiveRecord::Base.transaction do
       # Patients created before today
@@ -225,7 +287,7 @@ namespace :demo do
       demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes)
 
       # Create assessments
-      demo_populate_assessments(beginning_of_day, days_ago, existing_patients, jurisdictions)
+      demo_populate_assessments(beginning_of_day, days_ago, existing_patients, threshold_conditions)
 
       # Create laboratories
       demo_populate_laboratories(beginning_of_day, days_ago, existing_patients)
@@ -260,14 +322,14 @@ namespace :demo do
     printf("Generating monitorees...")
     patients = []
     histories = []
-
+    enroller_ids = User.all.where(role: 'enroller').pluck(:id)
+    enroller_emails = User.all.where(role: 'enroller').pluck(:email)
     num_patients_today.times do |i|
-      printf("\rGenerating monitoree #{i + 1} of #{num_patients_today}...")
+      printf("\rGenerating monitoree #{i + 1} of #{num_patients_today}...") unless ENV['APP_IN_CI']
       patient = Patient.new()
 
       # Identification
       sex = Faker::Gender.binary_type
-      sexualOrientations = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know', 'Unknown'].freeze
       patient[:sex] = rand < 0.9 ? sex : 'Unknown' if rand < 0.9
       patient[:gender_identity] = ValidationHelper::VALID_PATIENT_ENUMS[:gender_identity].sample if rand < 0.7
       patient[:sexual_orientation] = ValidationHelper::VALID_PATIENT_ENUMS[:sexual_orientation].sample if rand < 0.6
@@ -407,7 +469,7 @@ namespace :demo do
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
-      patient[:creator_id] = User.all.select { |u| u.role?('enroller') }.sample[:id]
+      patient[:creator_id] = enroller_ids.sample
       patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
       patient_ts = create_fake_timestamp(beginning_of_day)
       patient[:created_at] = patient_ts
@@ -431,12 +493,13 @@ namespace :demo do
 
       patients << patient
     end
-
+    print ' importing monitorees...'
     Patient.import! patients
     new_patients = Patient.where('created_at >= ?', beginning_of_day)
     new_patients.update_all('responder_id = id')
 
     # Create household members (10-20% of patients are managed by a HoH)
+    print ' setting dependents...'
     new_children = new_patients.limit(new_patients.count * rand(10..20) / 100).order('RAND()')
     new_parents = new_patients - new_children
     new_children_updates =  new_children.map { |new_child|
@@ -470,11 +533,13 @@ namespace :demo do
     end
     Laboratory.import! laboratories
 
-    new_patients.each do |patient|
+    puts "\n" unless ENV['APP_IN_CI']
+    new_patients.each_with_index do |patient, i|
+      printf("\rGenerating histories for monitoree #{i + 1} of #{new_patients.size}...") unless ENV['APP_IN_CI']
       # enrollment
       histories << History.new(
         patient_id: patient[:id],
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: 'User enrolled monitoree.',
         history_type: 'Enrollment',
         created_at: patient[:created_at],
@@ -483,7 +548,7 @@ namespace :demo do
       # monitoring status
       histories << History.new(
         patient_id: patient[:id],
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: "User changed monitoring status to \"Not Monitoring\". Reason: #{patient[:monitoring_reason]}",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -491,7 +556,7 @@ namespace :demo do
       ) unless patient[:monitoring]
       # exposure risk assessment
       histories << History.new(
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: "User changed exposure risk assessment to \"#{patient[:exposure_risk_assessment]}\".",
         patient_id: patient[:id],
         history_type: 'Monitoring Change',
@@ -501,7 +566,7 @@ namespace :demo do
       # case status
       histories << History.new(
         patient_id: patient[:id],
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: "User changed case status to \"#{patient[:case_status]}\", and chose to \"Continue Monitoring in Isolation Workflow\".",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -510,7 +575,7 @@ namespace :demo do
       # public health action
       histories << History.new(
         patient_id: patient[:id],
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: "User changed latest public health action to \"#{patient[:public_health_action]}\".",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -519,7 +584,7 @@ namespace :demo do
       # pause notifications
       histories << History.new(
         patient_id: patient[:id],
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: "User paused notifications for this monitoree.",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -531,14 +596,15 @@ namespace :demo do
     printf(" done.\n")
   end
 
-  def demo_populate_assessments(beginning_of_day, days_ago, existing_patients, jurisdictions)
+  def demo_populate_assessments(beginning_of_day, days_ago, existing_patients, threshold_conditions)
     printf("Generating assessments...")
     assessments = []
     assessment_receipts = []
     histories = []
+    public_health_emails = User.where(role: 'public_health').pluck(:email)
     patient_jur_ids_and_sub_tokens = existing_patients.limit(existing_patients.count * rand(55..60) / 100).order('RAND()').pluck(:id, :jurisdiction_id, :submission_token)
     patient_jur_ids_and_sub_tokens.each_with_index do |(patient_id, jur_id, sub_token), index|
-      printf("\rGenerating assessment #{index+1} of #{patient_jur_ids_and_sub_tokens.length}...")
+      printf("\rGenerating assessment #{index+1} of #{patient_jur_ids_and_sub_tokens.length}...") unless ENV['APP_IN_CI']
       assessment_ts = create_fake_timestamp(beginning_of_day)
       assessments << Assessment.new(
         patient_id: patient_id,
@@ -561,7 +627,7 @@ namespace :demo do
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        created_by: public_health_emails.sample,
         comment: "User created a new report.",
         history_type: 'Report Created',
         created_at: assessment_ts,
@@ -575,21 +641,11 @@ namespace :demo do
     Assessment.import! assessments
     printf(" done.\n")
 
-    # Get symptoms for each jurisdiction
-    threshold_conditions = {}
-    jurisdictions.each do |jurisdiction|
-      threshold_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
-      threshold_conditions[jurisdiction[:id]] = {
-        hash: threshold_condition[:threshold_condition_hash],
-        symptoms: threshold_condition.symptoms
-      }
-    end
-
     printf("Generating condition for assessments...")
     reported_conditions = []
     new_assessments = Assessment.where('assessments.created_at >= ?', beginning_of_day).joins(:patient)
     new_assessments.each_with_index do |assessment, index|
-      printf("\rGenerating condition for assessment #{index+1} of #{new_assessments.length}...")
+      printf("\rGenerating condition for assessment #{index+1} of #{new_assessments.length}...") unless ENV['APP_IN_CI']
       reported_conditions << ReportedCondition.new(
         assessment_id: assessment[:id],
         threshold_condition_hash: threshold_conditions[assessment.patient.jurisdiction_id][:hash],
@@ -613,7 +669,7 @@ namespace :demo do
     symptoms = []
     new_reported_conditions = ReportedCondition.where('conditions.created_at >= ?', beginning_of_day).joins(assessment: :reported_condition)
     new_reported_conditions.each_with_index do |reported_condition, index|
-      printf("\rGenerating symptoms for assessment #{index+1} of #{new_reported_conditions.length}...")
+      printf("\rGenerating symptoms for assessment #{index+1} of #{new_reported_conditions.length}...") unless ENV['APP_IN_CI']
       threshold_symptoms = threshold_conditions[reported_condition.assessment.patient.jurisdiction_id][:symptoms]
       symptomatic_assessment = symptomatic_assessments.include?(reported_condition.assessment)
       num_symptomatic_symptoms = ((rand ** 2) * threshold_symptoms.length).floor # creates a distribution favored towards fewer symptoms
@@ -643,7 +699,7 @@ namespace :demo do
     patient_symptom_onset_date_updates = {}
     symptomatic_patients_without_symptom_onset_ids = Patient.where(id: symptomatic_assessments.pluck(:patient_id), symptom_onset: nil).ids
     symptomatic_assessments.each_with_index do |assessment, index|
-      printf("\rUpdating symptomatic status #{index+1} of #{symptomatic_assessments.length}...")
+      printf("\rUpdating symptomatic status #{index+1} of #{symptomatic_assessments.length}...") unless ENV['APP_IN_CI']
       if assessment.symptomatic?
         assessment_symptomatic_statuses[assessment[:id]] = { symptomatic: true }
         patient_symptom_onset_date_updates[assessment[:patient_id]] = { symptom_onset: assessment[:created_at] }
@@ -660,6 +716,7 @@ namespace :demo do
     printf("Generating laboratories...")
     laboratories = []
     histories = []
+    public_health_emails = User.where(role: 'public_health').pluck(:email)
     isolation_patients = existing_patients.where(isolation: true)
     if days_ago > 10
       patient_ids_lab = isolation_patients.limit(isolation_patients.count * rand(90..95) / 100).order('RAND()').pluck(:id)
@@ -667,7 +724,7 @@ namespace :demo do
       patient_ids_lab = isolation_patients.limit(isolation_patients.count * rand(20..30) / 100).order('RAND()').pluck(:id)
     end
     patient_ids_lab.each_with_index do |patient_id, index|
-      printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
+      printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...") unless ENV['APP_IN_CI']
       lab_ts = create_fake_timestamp(beginning_of_day)
       if days_ago > 10
         result = (Array.new(12, 'positive') + ['negative', 'indeterminate', 'other']).sample
@@ -688,7 +745,7 @@ namespace :demo do
       laboratories << laboratory
       histories << History.new(
         patient_id: patient_id,
-        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        created_by: public_health_emails.sample,
         comment: "User added a new lab result.",
         history_type: 'Lab Result',
         created_at: lab_ts,
@@ -706,6 +763,7 @@ namespace :demo do
     vaccines = []
     histories = []
     patient_ids = existing_patients.limit(existing_patients.count * rand(15..25) / 100).order('RAND()').pluck(:id)
+    public_health_emails = User.where(role: 'public_health').pluck(:email)
     patient_ids.each_with_index do |patient_id, index|
       printf("\rGenerating vaccine #{index+1} of #{patient_ids.length}...")
       vaccine_ts = create_fake_timestamp(beginning_of_day)
@@ -724,7 +782,7 @@ namespace :demo do
 
       histories << History.new(
         patient_id: patient_id,
-        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        created_by: public_health_emails.sample,
         comment: "User added a new vaccine.",
         history_type: History::HISTORY_TYPES[:vaccination],
         created_at: vaccine_ts,
@@ -745,7 +803,7 @@ namespace :demo do
     enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).limit(existing_patients.count * rand(5..15) / 100).order('RAND()').pluck(:id)
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
-      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
+      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...") unless ENV['APP_IN_CI']
       close_contact_ts = create_fake_timestamp(beginning_of_day)
       close_contact = {
         patient_id: patient_id,
@@ -786,10 +844,12 @@ namespace :demo do
     transfers = []
     histories = []
     patient_updates = {}
+    public_health_ids = User.where(role: 'public_health').pluck(:id)
+    public_health_emails = User.where(role: 'public_health').pluck(:email)
     jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path)]
     patients_transfer = existing_patients.limit(existing_patients.count * rand(5..10) / 100).order('RAND()').pluck(:id, :jurisdiction_id, :assigned_user)
     patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
-      printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
+      printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...") unless ENV['APP_IN_CI']
       transfer_ts = create_fake_timestamp(beginning_of_day)
       to_jurisdiction = (jurisdictions.ids - [jur_id]).sample
       patient_updates[patient_id] = {
@@ -800,13 +860,13 @@ namespace :demo do
         patient_id: patient_id,
         to_jurisdiction_id: to_jurisdiction,
         from_jurisdiction_id: jur_id,
-        who_id: User.all.select { |u| u.role?('public_health') }.sample[:id],
+        who_id: public_health_ids.sample,
         created_at: transfer_ts,
         updated_at: transfer_ts
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        created_by: public_health_emails.sample,
         comment: "User changed jurisdiction from \"#{jurisdiction_paths[jur_id]}\" to #{jurisdiction_paths[to_jurisdiction]}.",
         history_type: 'Monitoring Change',
         created_at: transfer_ts,
@@ -825,10 +885,11 @@ namespace :demo do
     close_contacts = []
     histories = []
     patient_ids = existing_patients.limit(existing_patients.count * rand(15..25) / 100).order('RAND()').pluck(:id)
+    public_health_emails = User.where(role: 'public_health').pluck(:email)
     enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).limit(existing_patients.count * rand(5..15) / 100).order('RAND()').pluck(:id)
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
-      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
+      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...") unless ENV['APP_IN_CI']
       close_contact_ts = create_fake_timestamp(beginning_of_day)
       close_contact = {
         patient_id: patient_id,
@@ -853,7 +914,7 @@ namespace :demo do
       close_contacts << close_contact
       histories << History.new(
         patient_id: patient_id,
-        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        created_by: public_health_emails.sample,
         comment: "User created a new close contact.",
         history_type: 'Close Contact',
         created_at: close_contact_ts,
@@ -870,18 +931,19 @@ namespace :demo do
     printf("Generating contact attempts...")
     contact_attempts = []
     histories = []
+    public_health_users = User.where(role: 'public_health').pluck(:id, :email)
     patients_contact_attempts = existing_patients.limit(existing_patients.count * rand(10..20) / 100).order('RAND()').pluck(:id)
     patients_contact_attempts.each_with_index do |patient_id, index|
-      printf("\rGenerating contact attempt #{index+1} of #{patients_contact_attempts.length}...")
+      printf("\rGenerating contact attempt #{index+1} of #{patients_contact_attempts.length}...") unless ENV['APP_IN_CI']
       successful = rand < 0.45
       note = rand < 0.65 ? " #{Faker::TvShows::GameOfThrones.quote}" : ''
       contact_attempt_ts = create_fake_timestamp(beginning_of_day)
-      user = User.all.select { |u| u.role?('public_health') }.sample
       manual_attempt = rand < 0.7
+      user = public_health_users.sample
       if manual_attempt
         contact_attempts << ContactAttempt.new(
           patient_id: patient_id,
-          user_id: user[:id],
+          user_id: user[0],
           successful: successful,
           note: note,
           created_at: contact_attempt_ts,
@@ -890,7 +952,7 @@ namespace :demo do
       end
       histories << History.new(
         patient_id: patient_id,
-        created_by: manual_attempt ? user[:email] : 'Sara Alert System',
+        created_by: manual_attempt ? user[1] : 'Sara Alert System',
         comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}",
         history_type: 'Contact Attempt',
         created_at: contact_attempt_ts,
@@ -1030,25 +1092,34 @@ namespace :demo do
   end
 
   # Duplicate patient and all nested relations and change last name
-  def deep_duplicate_patient(patient, responder_id = nil)
+  def deep_duplicate_patient(patient, responder: nil)
+    patients_created = 1
     new_patient = patient.dup
-    new_patient.responder_id = responder_id unless responder_id.nil?
-    new_patient.last_name = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
+    new_patient.responder = responder || new_patient
     new_patient.submission_token = new_patient.new_submission_token
     duplicate_timestamps(patient, new_patient)
-    new_patient.save
-    new_patient.update(responder_id: new_patient.id) if responder_id.nil?
+    new_patient.save(validate: false)
     patient.dependents.each do |p|
       if p.id != p.responder_id
-         deep_duplicate_patient(p, new_patient.id)
+         deep_duplicate_patient(p, responder: new_patient)
+         patients_created += 1
       end
     end
-    patient.assessments.each do |assessment|
+    patient.assessments.each do |assessment| 
+        # Assessment
         new_assessment = assessment.dup
+        new_assessment.patient_id = new_patient.id
         duplicate_timestamps(assessment, new_assessment)
+        new_assessment.save(validate: false)
+
+        # Reported Condition
         rep_condition = assessment.reported_condition
         new_reported_condition = rep_condition.dup
-        new_reported_condition.save
+        new_reported_condition.assessment_id = new_assessment.id
+        duplicate_timestamps(rep_condition, new_reported_condition)
+        new_reported_condition.save(validate: false)
+
+        # Symptoms
         symptoms = []
         assessment.reported_condition.symptoms.each do |s|
             news = s.dup
@@ -1056,18 +1127,12 @@ namespace :demo do
             news.condition_id = new_reported_condition.id
             symptoms << news
         end
-        Symptom.import symptoms
-        new_assessment.patient_id = new_patient.id
-        new_assessment.save
-        new_reported_condition.update(assessment_id: new_assessment.id, updated_at: rep_condition.updated_at, created_at: rep_condition.created_at)
+        Symptom.import symptoms, validate: false
     end
 
-
-    History.import duplicate_collection(patient.histories, patient, new_patient)
-    Transfer.import duplicate_collection(patient.transfers, patient, new_patient)
-    Laboratory.import duplicate_collection(patient.laboratories, patient, new_patient)
-    CloseContact.import duplicate_collection(patient.close_contacts, patient, new_patient)
-    ContactAttempt.import duplicate_collection(patient.contact_attempts, patient, new_patient)
+    [History, Transfer, Laboratory, CloseContact, ContactAttempt, Vaccine].each do |collection|
+      collection.import duplicate_collection(collection.where(patient_id: patient.id), patient, new_patient), validate: false
+    end
+    patients_created
   end
-
 end
