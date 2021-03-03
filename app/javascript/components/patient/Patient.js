@@ -52,10 +52,10 @@ class Patient extends React.Component {
       raceArray.push('Other');
     }
     if (this.props.details.race_unknown) {
-      raceArray.push('Unknown')
+      raceArray.push('Unknown');
     }
     if (this.props.details.race_refused_to_answer) {
-      raceArray.push('Refused to Answer')
+      raceArray.push('Refused to Answer');
     }
     return <span>{raceArray.length === 0 ? '--' : raceArray.join(', ')}</span>;
   };
