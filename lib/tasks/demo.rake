@@ -689,7 +689,7 @@ desc 'Backup the database'
         patient_id: patient_id,
         created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
         comment: "User added a new vaccine.",
-        history_type: History::HISTORY_TYPES[:vaccine],
+        history_type: History::HISTORY_TYPES[:vaccination],
         created_at: changes_ts,
         updated_at: changes_ts
       )

@@ -333,7 +333,6 @@ class MoveToHousehold extends React.Component {
             isSelectable={false}
             isEditable={false}
             isLoading={this.state.isLoading}
-            showPagination={true}
             page={this.state.query.page}
             handlePageUpdate={this.handlePageUpdate}
             entryOptions={this.state.entryOptions}
