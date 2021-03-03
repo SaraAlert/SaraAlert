@@ -1,0 +1,25 @@
+close_contact_1:
+  id: 1
+  created_at: <%= 35.days.ago %>
+  updated_at: <%= 35.days.ago %>
+  first_name: 'Close1'
+  last_name: 'Contact1'
+  primary_telephone: '+15555550111'
+  email: 'jeremy@example.com'
+  last_date_of_exposure: <%= 45.days.ago %>
+  contact_attempts: 3
+  notes: 'Close and contacted'
+  assigned_user: 1
+  patient_id: 1
+close_contact_2:
+  id: 2
+  created_at: <%= 33.days.ago %>
+  updated_at: <%= 33.days.ago %>
+  first_name: 'Close2'
+  last_name: 'Contact2'
+  primary_telephone: '+15555550111'
+  email: 'jeremy@example.com'
+  last_date_of_exposure: <%= 35.days.ago %>
+  contact_attempts: 0
+  assigned_user: 1
+  patient_id: 0
