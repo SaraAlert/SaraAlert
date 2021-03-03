@@ -360,7 +360,6 @@ class AssessmentTable extends React.Component {
                   handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
                   handleEntriesChange={this.handleEntriesChange}
                   isLoading={this.state.isLoading}
-                  showPagination={true}
                   page={this.state.query.page}
                   handlePageUpdate={this.handlePageUpdate}
                   entryOptions={this.state.entryOptions}
