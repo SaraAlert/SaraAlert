@@ -627,7 +627,6 @@ class PatientsTable extends React.Component {
                 isSelectable={true}
                 isEditable={false}
                 isLoading={this.state.loading}
-                showPagination={true}
                 page={this.state.query.page}
                 handlePageUpdate={this.handlePageUpdate}
                 selectedRows={this.state.selectedPatients}
