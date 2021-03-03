@@ -319,7 +319,7 @@ desc 'Backup the database'
     patients = []
     histories = []
     num_patients_today.times do |i|
-      printf("\rGenerating monitoree #{i + 1} of #{num_patients_today}...")
+      printf("\rGenerating monitoree #{i + 1} of #{num_patients_today}...") unless ENV['APP_IN_CI']
       patient = Patient.new()
 
       # Identification
@@ -561,7 +561,7 @@ desc 'Backup the database'
     histories = []
     patient_jur_ids_and_sub_tokens = existing_patients.pluck(:id, :jurisdiction_id, :submission_token).sample(existing_patients.count * rand(55..60) / 100)
     patient_jur_ids_and_sub_tokens.each_with_index do |(patient_id, jur_id, sub_token), index|
-      printf("\rGenerating assessment #{index+1} of #{patient_jur_ids_and_sub_tokens.length}...")
+      printf("\rGenerating assessment #{index+1} of #{patient_jur_ids_and_sub_tokens.length}...") unless ENV['APP_IN_CI']
       assessment_ts = create_fake_timestamp(today, today)
       assessments << Assessment.new(
         patient_id: patient_id,
@@ -612,7 +612,7 @@ desc 'Backup the database'
     reported_conditions = []
     new_assessments = Assessment.where('assessments.created_at >= ?', today).joins(:patient)
     new_assessments.each_with_index do |assessment, index|
-      printf("\rGenerating condition for assessment #{index+1} of #{new_assessments.length}...")
+      printf("\rGenerating condition for assessment #{index+1} of #{new_assessments.length}...") unless ENV['APP_IN_CI']
       reported_conditions << ReportedCondition.new(
         assessment_id: assessment[:id],
         threshold_condition_hash: threshold_conditions[assessment.patient.jurisdiction_id][:hash],
@@ -634,7 +634,7 @@ desc 'Backup the database'
     symptoms = []
     new_reported_conditions = ReportedCondition.where('conditions.created_at >= ?', today).joins(assessment: :reported_condition)
     new_reported_conditions.each_with_index do |reported_condition, index|
-      printf("\rGenerating symptoms for assessment #{index+1} of #{new_reported_conditions.length}...")
+      printf("\rGenerating symptoms for assessment #{index+1} of #{new_reported_conditions.length}...") unless ENV['APP_IN_CI']
       threshold_symptoms = threshold_conditions[reported_condition.assessment.patient.jurisdiction_id][:symptoms]
       symptomatic_assessment = symptomatic_assessments.include?(reported_condition.assessment)
       num_symptomatic_symptoms = ((rand ** 2) * threshold_symptoms.length).floor # creates a distribution favored towards fewer symptoms
@@ -664,7 +664,7 @@ desc 'Backup the database'
     patient_symptom_onset_date_updates = {}
     symptomatic_patients_without_symptom_onset_ids = Patient.where(id: symptomatic_assessments.pluck(:patient_id), symptom_onset: nil).ids
     symptomatic_assessments.each_with_index do |assessment, index|
-      printf("\rUpdating symptomatic status #{index+1} of #{symptomatic_assessments.length}...")
+      printf("\rUpdating symptomatic status #{index+1} of #{symptomatic_assessments.length}...") unless ENV['APP_IN_CI']
       if assessment.symptomatic?
         assessment_symptomatic_statuses[assessment[:id]] = { symptomatic: true }
         patient_symptom_onset_date_updates[assessment[:patient_id]] = { symptom_onset: assessment[:created_at] }
@@ -688,7 +688,7 @@ desc 'Backup the database'
       patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(20..30) / 100)
     end
     patient_ids_lab.each_with_index do |patient_id, index|
-      printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
+      printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...") unless ENV['APP_IN_CI']
       lab_ts = create_fake_timestamp(today, today)
       if days_ago > 10
         result = (Array.new(12, 'positive') + ['negative', 'indeterminate', 'other']).sample
@@ -765,7 +765,7 @@ desc 'Backup the database'
     enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).pluck(:id).sample(existing_patients.count * rand(5..15) / 100)
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
-      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
+      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...") unless ENV['APP_IN_CI']
       close_contact_ts = create_fake_timestamp(today, today)
       close_contact = {
         patient_id: patient_id,
@@ -809,7 +809,7 @@ desc 'Backup the database'
     jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path)]
     patients_transfer = existing_patients.pluck(:id, :jurisdiction_id, :assigned_user).sample(existing_patients.count * rand(5..10) / 100)
     patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
-      printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
+      printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...") unless ENV['APP_IN_CI']
       transfer_ts = create_fake_timestamp(today, today)
       to_jurisdiction = (jurisdictions.ids - [jur_id]).sample
       patient_updates[patient_id] = {
@@ -848,7 +848,7 @@ desc 'Backup the database'
     enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).pluck(:id).sample(existing_patients.count * rand(5..15) / 100)
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
-      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
+      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...") unless ENV['APP_IN_CI']
       close_contact_ts = create_fake_timestamp(today, today)
       close_contact = {
         patient_id: patient_id,
@@ -892,7 +892,7 @@ desc 'Backup the database'
     histories = []
     patients_contact_attempts = existing_patients.pluck(:id).sample(existing_patients.count * rand(10..20) / 100)
     patients_contact_attempts.each_with_index do |patient_id, index|
-      printf("\rGenerating contact attempt #{index+1} of #{patients_contact_attempts.length}...")
+      printf("\rGenerating contact attempt #{index+1} of #{patients_contact_attempts.length}...") unless ENV['APP_IN_CI']
       successful = rand < 0.45
       note = rand < 0.65 ? " #{Faker::TvShows::GameOfThrones.quote}" : ''
       contact_attempt_ts = create_fake_timestamp(today, today)
