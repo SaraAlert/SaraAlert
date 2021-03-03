@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Spinner, Table, Form, InputGroup, Row, Col } from 'react-bootstrap';
+import { Spinner, Table, Form, InputGroup } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import ReactTooltip from 'react-tooltip';
 import InfoTooltip from '../util/InfoTooltip';
@@ -188,26 +188,6 @@ class CustomTable extends React.Component {
     );
   };
 
-  renderSelectAllCheckbox = () => {
-    return (
-      <th>
-        <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll} aria-label="Table Select All Rows"></input>
-      </th>
-    );
-  };
-
-  renderRowCheckbox = (rowData, rowIndex) => {
-    return (
-      <td>
-        <input
-          type="checkbox"
-          aria-label={`Table Select${rowData.name ? ` Monitoree: ${rowData.name}` : ''}${this.props.currentUser ? ` User: ${this.props.currentUser}` : ''}`}
-          checked={this.props.selectAll || this.props.selectedRows.includes(rowIndex)}
-          onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
-      </td>
-    );
-  };
-
   render() {
     return (
       <React.Fragment>
@@ -369,7 +349,7 @@ CustomTable.propTypes = {
   getCustomTableClassName: PropTypes.func,
   currentUser: PropTypes.string,
   orderBy: PropTypes.string,
-  sortDirection: PropTypes.string
+  sortDirection: PropTypes.string,
 };
 
 CustomTable.defaultProps = {
