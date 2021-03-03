@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test-model-controller:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:5.7
@@ -64,7 +64,7 @@ jobs:
           name: coverage-tests
           path: coverage/.resultset.json
   test-system-public-health-bulk-edit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -128,7 +128,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-public-health-dashboard:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -192,7 +192,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-public-health-import:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -256,7 +256,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-public-health-export:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -320,7 +320,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-public-health-custom-export:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -384,7 +384,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-public-health-patient-page:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -448,7 +448,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-enroller-dashboard:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -512,7 +512,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-enroller-enrollment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -576,7 +576,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-analyst:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -640,7 +640,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-admin:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -704,7 +704,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-monitoree:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -768,7 +768,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-system-workflow:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     services:
       mysql:
         image: mysql:latest
@@ -832,7 +832,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   test-react-components:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js
@@ -871,7 +871,7 @@ jobs:
       test-system-analyst,
       test-system-admin
     ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
