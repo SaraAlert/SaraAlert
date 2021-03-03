@@ -22,6 +22,25 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       notes: 'Only the educated are free.'
     )
   end
+  #----- show tests -----
+
+  test 'should get RelatedPerson via show' do
+    get(
+      '/fhir/r4/RelatedPerson/1',
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :ok
+    assert_equal JSON.parse(CloseContact.find_by_id(1).as_fhir.to_json), JSON.parse(response.body)
+  end
+
+  test 'should be forbidden via show for inaccessible RelatedPerson' do
+    get(
+      '/fhir/r4/RelatedPerson/2',
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+    # assert_equal JSON.parse(CloseContact.find_by_id(1).as_fhir.to_json), JSON.parse(response.body)
+  end
 
   test 'should create RelatedPerson via create' do
     post(

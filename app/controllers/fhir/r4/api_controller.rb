@@ -11,17 +11,25 @@ class Fhir::R4::ApiController < ActionController::API
       :'user/Patient.write',
       :'user/Patient.*',
       :'system/Patient.write',
-      :'system/Patient.*'
+      :'system/Patient.*',
+      :'user/RelatedPerson.write',
+      :'user/RelatedPerson.*',
+      :'system/RelatedPerson.write',
+      :'system/RelatedPerson.*'
     )
   end
   before_action only: %i[show search] do
     doorkeeper_authorize!(
       :'user/Patient.read',
       :'user/Patient.*',
+      :'user/RelatedPerson.read',
+      :'user/RelatedPerson.*',
       :'user/Observation.read',
       :'user/QuestionnaireResponse.read',
       :'system/Patient.read',
       :'system/Patient.*',
+      :'system/RelatedPerson.read',
+      :'system/RelatedPerson.*',
       :'system/Observation.read',
       :'system/QuestionnaireResponse.read'
     )
@@ -31,7 +39,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Return a resource given a type and an id.
   #
-  # Supports (reading): Patient, Observation, QuestionnaireResponse
+  # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson
   #
   # GET /[:resource_type]/[:id]
   def show
@@ -62,6 +70,15 @@ class Fhir::R4::ApiController < ActionController::API
       )
 
       resource = get_assessment(params.permit(:id)[:id])
+    when 'relatedperson'
+      return if doorkeeper_authorize!(
+        :'user/RelatedPerson.read',
+        :'user/RelatedPerson.*',
+        :'system/RelatedPerson.read',
+        :'system/RelatedPerson.*'
+      )
+
+      resource = get_close_contact(params.permit(:id)[:id])
     else
       status_not_found && return
     end
@@ -754,6 +771,11 @@ class Fhir::R4::ApiController < ActionController::API
   # Get an assessment by id
   def get_assessment(id)
     Assessment.where(patient_id: accessible_patients).find_by(id: id)
+  end
+
+  # Get an CloseContact by id
+  def get_close_contact(id)
+    CloseContact.where(patient_id: accessible_patients).find_by(id: id)
   end
 
   # Construct a full url via a request and resource
