@@ -316,7 +316,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Return a FHIR Bundle containing results that match the given query.
   #
-  # Supports (searching): Patient, Observation, QuestionnaireResponse
+  # Supports (searching): Patient, Observation, QuestionnaireResponse, RelatedPerson
   #
   # GET /fhir/r4/[:resource_type]?parameter(s)
   def search
@@ -324,7 +324,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     search_params = params.slice('family', 'given', 'telecom', 'email', 'subject', 'active',
-                                 '_count', '_id')
+                                 '_count', '_id', 'patient')
     case resource_type
     when 'patient'
       return if doorkeeper_authorize!(
@@ -352,6 +352,16 @@ class Fhir::R4::ApiController < ActionController::API
 
       resources = search_assessments(search_params) || []
       resource_type = 'QuestionnaireResponse'
+    when 'relatedperson'
+      return if doorkeeper_authorize!(
+        :'user/RelatedPerson.read',
+        :'user/RelatedPerson.*',
+        :'system/RelatedPerson.read',
+        :'system/RelatedPerson.*'
+      )
+
+      resources = search_close_contacts(search_params) || []
+      resource_type = 'RelatedPerson'
     else
       status_not_found && return
     end
@@ -381,12 +391,12 @@ class Fhir::R4::ApiController < ActionController::API
     status_ok(bundle) && return
   end
 
-  # Return a FHIR Bundle containing a monitoree and all their assessments and
-  # lab results.
+  # Return a FHIR Bundle containing a monitoree and all their assessments, labe results,
+  # and close contacts
   #
   # GET /fhir/r4/Patient/[:id]/$everything
   def all
-    # Require all scopes for all three resources
+    # Require all scopes for all four resources
     return if doorkeeper_authorize!(
       :'user/Patient.read',
       :'user/Patient.*',
@@ -401,6 +411,12 @@ class Fhir::R4::ApiController < ActionController::API
       :'user/QuestionnaireResponse.read',
       :'system/QuestionnaireResponse.read'
     )
+    return if doorkeeper_authorize!(
+      :'user/RelatedPerson.read',
+      :'user/RelatedPerson.*',
+      :'system/RelatedPerson.read',
+      :'system/RelatedPerson.*'
+    )
 
     status_not_acceptable && return unless accept_header?
 
@@ -411,7 +427,8 @@ class Fhir::R4::ApiController < ActionController::API
     # Gather assessments and lab results
     assessments = patient.assessments || []
     laboratories = patient.laboratories || []
-    all = [patient] + assessments.to_a + laboratories.to_a
+    close_contacts = patient.close_contacts || []
+    all = [patient] + assessments.to_a + laboratories.to_a + close_contacts.to_a
     results = all.collect { |r| FHIR::Bundle::Entry.new(fullUrl: full_url_helper(r.as_fhir), resource: r.as_fhir) }
 
     # Construct bundle from monitoree and data
@@ -753,19 +770,21 @@ class Fhir::R4::ApiController < ActionController::API
   def search_patients(options)
     query = accessible_patients
     options.each do |option, search|
+      next unless search.present?
+
       case option
       when 'family'
-        query = query.where('last_name like ?', "%#{search}%") if search.present?
+        query = query.where('last_name like ?', "%#{search}%")
       when 'given'
-        query = query.where('first_name like ?', "%#{search}%") if search.present?
+        query = query.where('first_name like ?', "%#{search}%")
       when 'telecom'
-        query = query.where('primary_telephone like ?', Phonelib.parse(search, 'US').full_e164) if search.present?
+        query = query.where('primary_telephone like ?', Phonelib.parse(search, 'US').full_e164)
       when 'email'
-        query = query.where('email like ?', "%#{search}%") if search.present?
+        query = query.where('email like ?', "%#{search}%")
       when '_id'
-        query = query.where(id: search) if search.present?
+        query = query.where(id: search)
       when 'active'
-        query = query.where(monitoring: search == 'true') if search.present?
+        query = query.where(monitoring: search == 'true')
       end
     end
     query
@@ -775,11 +794,13 @@ class Fhir::R4::ApiController < ActionController::API
   def search_laboratories(options)
     query = Laboratory.where(patient: accessible_patients)
     options.each do |option, search|
+      next unless search.present?
+
       case option
       when 'subject'
-        query = accessible_patients.find_by(id: search.split('/')[-1])&.laboratories if search.present?
+        query = query.where(patient_id: search.match(%r{^Patient/(\d+)$}).to_a[1])
       when '_id'
-        query = query.where(id: search) if search.present?
+        query = query.where(id: search)
       end
     end
     query
@@ -789,11 +810,29 @@ class Fhir::R4::ApiController < ActionController::API
   def search_assessments(options)
     query = Assessment.where(patient: accessible_patients)
     options.each do |option, search|
+      next unless search.present?
+
       case option
       when 'subject'
-        query = accessible_patients.find_by(id: search.split('/')[-1])&.assessments if search.present?
+        query = query.where(patient_id: search.match(%r{^Patient/(\d+)$}).to_a[1])
       when '_id'
-        query = query.where(id: search) if search.present?
+        query = query.where(id: search)
+      end
+    end
+    query
+  end
+
+  # Search for CloseContacts
+  def search_close_contacts(options)
+    query = CloseContact.where(patient: accessible_patients)
+    options.each do |option, search|
+      next unless search.present?
+
+      case option
+      when 'patient'
+        query = query.where(patient_id: search.match(%r{^Patient/(\d+)$}).to_a[1])
+      when '_id'
+        query = query.where(id: search)
       end
     end
     query
