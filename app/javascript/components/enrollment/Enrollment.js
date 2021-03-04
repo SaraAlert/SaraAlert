@@ -248,7 +248,6 @@ class Enrollment extends React.Component {
               previous={this.previous}
               goto={this.goto}
               submit={this.submit}
-              parent_id={this.props.parent_id}
               canAddGroup={this.props.can_add_group}
               jurisdiction_paths={this.props.jurisdiction_paths}
             />
