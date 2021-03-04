@@ -70,6 +70,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     # Verify that the JSON response matches the original as FHIR
     assert_equal JSON.parse(@close_contact_1.as_fhir.to_json), json_response.except('id')
+
+    histories = History.where(patient: created_cc.patient_id)
+    assert_equal(1, histories.count)
+    assert_equal 'system-test-everything (API)', histories.first.created_by
+    assert_match(/close contact added.*API/, histories.first.comment)
   end
 
   test 'SYSTEM FLOW: should be unprocessable entity via create with invalid Patient reference' do
@@ -131,6 +136,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Verify that updated fields are updated
     assert_equal 'Some new notes', updated_cc.notes
     assert_equal 'FarContact1', updated_cc.first_name
+
+    histories = History.where(patient: updated_cc.patient_id)
+    assert_equal(1, histories.count)
+    assert_equal 'system-test-everything (API)', histories.first.created_by
+    assert_match(/Close contact edited.*API/, histories.first.comment)
   end
 
   test 'should update RelatedPerson via patch update' do
