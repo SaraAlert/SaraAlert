@@ -154,7 +154,8 @@ class Assessment < ApplicationRecord
 
   def custom_details(fields)
     assessment_details = {}
-    assessment_details[:id] = id if fields.include?(:id)
+    # assessment id is always included because it is needed to query symptoms, though it will not be added as a column if user chooses not to export it
+    assessment_details[:id] = id
     assessment_details[:patient_id] = patient_id if fields.include?(:patient_id)
     assessment_details[:symptomatic] = symptomatic || false if fields.include?(:symptomatic)
     assessment_details[:who_reported] = remove_formula_start(who_reported) if fields.include?(:who_reported)

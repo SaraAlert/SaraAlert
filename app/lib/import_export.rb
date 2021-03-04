@@ -328,37 +328,38 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Extract assessment data values given relevant fields
   def extract_assessments_details(patients_identifiers, assessments, fields)
-    include_symptoms = fields.include?(:symptoms)
+    assessments_details = assessments.map do |assessment|
+      assessment.custom_details(fields).merge(patients_identifiers[assessment.patient_id])
+    end
 
-    if include_symptoms
-      conditions_hash = Hash[assessments.joins(:reported_condition).pluck('conditions.id', :assessment_id)]
-                        .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
+    if fields.include?(:symptoms)
+      assessment_ids = assessments_details.map { |assessment_details| assessment_details[:id] }
+      symptoms = Hash[assessment_ids.map { |assessment_id| [assessment_id, {}] }]
+      ReportedCondition.where(assessment_id: assessment_ids)
+                       .joins(:symptoms)
+                       .pluck(:assessment_id, 'symptoms.name', 'symptoms.type', 'symptoms.bool_value', 'symptoms.int_value', 'symptoms.float_value')
+                       .each do |(assessment_id, name, type, bool_value, int_value, float_value)|
+                         case type
+                         when 'BoolSymptom'
+                           symptoms[assessment_id][name.to_sym] = bool_value
+                         when 'IntegerSymptom'
+                           symptoms[assessment_id][name.to_sym] = int_value
+                         when 'FloatSymptom'
+                           symptoms[assessment_id][name.to_sym] = float_value
+                         end
+                       end
 
-      # Pluck is used here because only a subset of symptom fields are needed, this saves memory and increases performance. An alternative solution of querying
-      # by each symptom type and plucking specific symptom values was also explored which saves more memory, but is noticeably slower due to having more queries
-      Symptom.where(condition_id: conditions_hash.keys)
-             .pluck(*%i[condition_id name type bool_value int_value float_value])
-             .each do |(condition_id, name, type, bool_value, int_value, float_value)|
-        case type
-        when 'BoolSymptom'
-          conditions_hash[condition_id][:symptoms][name.to_sym] = bool_value
-        when 'IntegerSymptom'
-          conditions_hash[condition_id][:symptoms][name.to_sym] = int_value
-        when 'FloatSymptom'
-          conditions_hash[condition_id][:symptoms][name.to_sym] = float_value
-        end
+      # conditions = ReportedCondition.where(assessment_id: assessment_ids).joins(:symptoms)
+      # conditions.where('symptoms.type = ?', 'BoolSymptom').pluck(:assessment_id, :name, :bool_value).each { |(id, name, v)| symptoms[id][name.to_sym] = v }
+      # conditions.where('symptoms.type = ?', 'IntegerSymptom').pluck(:assessment_id, :name, :int_value).each { |(id, name, v)| symptoms[id][name.to_sym] = v }
+      # conditions.where('symptoms.type = ?', 'FloatSymptom').pluck(:assessment_id, :name, :float_value).each { |(id, name, v)| symptoms[id][name.to_sym] = v }
+
+      assessments_details = assessments_details.map do |assessment_details|
+        assessment_details.merge(symptoms[assessment_details[:id]])
       end
-      assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
     end
 
-    # NOTE: calling map and custom_details is more performant in terms of speed and memory than using as_json and directly modifying hash
-    assessments.map do |assessment|
-      assessment_details = assessment.custom_details(fields).merge(patients_identifiers[assessment.patient_id])
-
-      # Add symptoms to assessments if included (nil check in case for some reason there were assessments with nil ReportedCondition)
-      assessment_details = assessment_details.merge(assessments_hash[assessment.id]) if include_symptoms && assessments_hash[assessment.id].present?
-      assessment_details
-    end
+    assessments_details
   end
 
   # Extract laboratory data values given relevant fields
