@@ -19,7 +19,7 @@ class PatientsController < ApplicationController
     @patient = current_user.get_patient(params.permit(:id)[:id])
 
     # If we failed to find a subject given the id, redirect to index
-    redirect_to(root_url) && return if @patient.nil?
+    redirect_to(action: 'unknown_patient') && return if @patient.nil?
 
     # If purged, redirect to index
     redirect_to(root_url) && return if @patient.purged
