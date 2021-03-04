@@ -100,7 +100,7 @@ class ChangeHOH extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button size="sm" className="my-2" onClick={this.toggleModal}>
+        <Button size="sm" className="my-2 mr-2" onClick={this.toggleModal}>
           <i className="fas fa-house-user"></i> Change Head of Household
         </Button>
         {this.state.showModal && this.createModal('Edit Head of Household', this.toggleModal, this.submit)}
