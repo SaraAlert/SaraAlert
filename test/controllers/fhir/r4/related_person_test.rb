@@ -20,7 +20,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       last_date_of_exposure: 20.days.ago,
       assigned_user: 8,
       notes: 'Only the educated are free.',
-      enrolled_id: 3
+      enrolled_id: 3,
+      updated_at: 33.days.ago,
+      created_at: 33.days.ago
     )
   end
   #----- show tests -----
@@ -71,7 +73,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     end
 
     # Verify that the JSON response matches the original as FHIR
-    assert_equal JSON.parse(@close_contact_1.as_fhir.to_json), json_response.except('id')
+    assert_equal JSON.parse(@close_contact_1.as_fhir.to_json).except('meta'), json_response.except('id', 'meta')
 
     histories = History.where(patient: created_cc.patient_id)
     assert_equal(1, histories.count)

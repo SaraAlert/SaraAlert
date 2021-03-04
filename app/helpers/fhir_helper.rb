@@ -2,6 +2,7 @@
 
 # Helper module for FHIR translations
 module FhirHelper # rubocop:todo Metrics/ModuleLength
+  SARA_BASE_URL = 'http://saraalert.org'
   # Returns a representative FHIR::Patient for an instance of a Sara Alert Patient. Uses US Core
   # extensions for sex, race, and ethnicity.
   # https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-patient.html
@@ -179,6 +180,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   def close_contact_as_fhir(close_contact)
     FHIR::RelatedPerson.new(
+      meta: FHIR::Meta.new(lastUpdated: close_contact.updated_at.strftime('%FT%T%:z')),
       id: close_contact.id,
       name: [FHIR::HumanName.new(given: [close_contact.first_name].reject(&:blank?), family: close_contact.last_name)],
       telecom: [
@@ -193,7 +195,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_date_extension(close_contact.last_date_of_exposure, 'last-date-of-exposure'),
         to_positive_integer_extension(close_contact.assigned_user, 'assigned-user'),
         to_positive_integer_extension(close_contact.contact_attempts, 'contact-attempts'),
-        to_string_extension(close_contact.notes, 'close-contact-notes'),
+        to_string_extension(close_contact.notes, 'notes'),
         to_reference_extension(close_contact.enrolled_id, 'Patient', 'enrolled-patient')
       ]
     )
@@ -207,7 +209,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       email: related_person&.telecom&.find { |t| t&.system == 'email' }&.value,
       last_date_of_exposure: from_date_extension(related_person, %w[last-date-of-exposure last-exposure-date]),
       assigned_user: from_positive_integer_extension(related_person, 'assigned-user'),
-      notes: from_string_extension(related_person, 'close-contact-notes'),
+      notes: from_string_extension(related_person, 'notes'),
       patient_id: related_person&.patient&.reference&.match(%r{^Patient/(\d+)$}).to_a[1],
       contact_attempts: from_positive_integer_extension(related_person, 'contact-attempts'),
       enrolled_id: from_reference_extension(related_person, 'enrolled-patient')&.reference&.match(%r{^Patient/(\d+)$}).to_a[1]
@@ -349,14 +351,14 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   def to_bool_extension(value, extension_id)
     value.nil? ? nil : FHIR::Extension.new(
-      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
+      url: "#{SARA_BASE_URL}/StructureDefinition/#{extension_id}",
       valueBoolean: value
     )
   end
 
   def to_date_extension(value, extension_id)
     value.nil? ? nil : FHIR::Extension.new(
-      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
+      url: "#{SARA_BASE_URL}/StructureDefinition/#{extension_id}",
       valueDate: value
     )
   end
@@ -373,7 +375,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   def to_string_extension(value, extension_id)
     value.nil? || value.empty? ? nil : FHIR::Extension.new(
-      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
+      url: "#{SARA_BASE_URL}/StructureDefinition/#{extension_id}",
       valueString: value
     )
   end
@@ -384,7 +386,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   def to_reference_extension(id, resource_type, extension_id)
     id.blank? ? nil : FHIR::Extension.new(
-      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
+      url: "#{SARA_BASE_URL}/StructureDefinition/#{extension_id}",
       valueReference: FHIR::Reference.new(reference: "#{resource_type}/#{id}")
     )
   end
@@ -395,7 +397,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   def to_positive_integer_extension(value, extension_id)
     value.nil? ? nil : FHIR::Extension.new(
-      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
+      url: "#{SARA_BASE_URL}/StructureDefinition/#{extension_id}",
       valuePositiveInt: value
     )
   end
@@ -426,11 +428,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def to_statelocal_identifier(statelocal_identifier)
-    FHIR::Identifier.new(value: statelocal_identifier, system: 'http://saraalert.org/SaraAlert/state-local-id') unless statelocal_identifier.blank?
+    FHIR::Identifier.new(value: statelocal_identifier, system: "#{SARA_BASE_URL}/SaraAlert/state-local-id") unless statelocal_identifier.blank?
   end
 
   def from_statelocal_id_extension(patient)
-    statelocal_id = patient&.identifier&.find { |i| i&.system == 'http://saraalert.org/SaraAlert/state-local-id' }
+    statelocal_id = patient&.identifier&.find { |i| i&.system == "#{SARA_BASE_URL}/SaraAlert/state-local-id" }
     statelocal_id&.value
   end
 
@@ -458,19 +460,19 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         country: patient.foreign_address_country,
         state: patient.foreign_address_state,
         postalCode: patient.foreign_address_zip,
-        extension: [FHIR::Extension.new(url: 'http://saraalert.org/StructureDefinition/address-type', valueString: 'Foreign')]
+        extension: [FHIR::Extension.new(url: "#{SARA_BASE_URL}/StructureDefinition/address-type", valueString: 'Foreign')]
       ) : nil
     end
   end
 
   def from_address_by_type_extension(patient, address_type)
     address = patient&.address&.find do |a|
-      a.extension&.any? { |e| e.url == 'http://saraalert.org/StructureDefinition/address-type' && e.valueString == address_type }
+      a.extension&.any? { |e| e.url == "#{SARA_BASE_URL}/StructureDefinition/address-type" && e.valueString == address_type }
     end
 
     if address.nil? && address_type == 'USA'
       address = patient&.address&.find do |a|
-        a.extension&.all? { |e| e.url != 'http://saraalert.org/StructureDefinition/address-type' }
+        a.extension&.all? { |e| e.url != "#{SARA_BASE_URL}/StructureDefinition/address-type" }
       end
     end
 
