@@ -139,6 +139,25 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_match(/0.*Enrolled ID.*API user/, errors[0])
   end
 
+  test 'should be unprocessable entity via RelatedPerson create with validation errors' do
+    @close_contact_1.assigned_user = 999_999_999
+    @close_contact_1.first_name = nil
+    @close_contact_1.last_name = nil
+    post(
+      '/fhir/r4/RelatedPerson',
+      params: @close_contact_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    msg = 'Expected validation error on '
+    assert_equal 2, errors.length
+    assert(errors.any?(/999999999.*Assigned User/), msg + 'Assigned User')
+    assert(errors.any?(/At least one.*First Name.*Last Name/), msg + 'Base')
+  end
+
   #----- update tests -----
 
   test 'should update RelatedPerson via update' do
@@ -296,6 +315,22 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal 1, errors.length
     assert_match(/0.*Enrolled ID.*API user/, errors[0])
+  end
+
+  test 'should be unprocessable entity via RelatedPerson update with validation errors' do
+    @close_contact_1.email = 'Not an email'
+    put(
+      '/fhir/r4/RelatedPerson/1',
+      params: @close_contact_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    msg = 'Expected validation error on '
+    assert_equal 1, errors.length
+    assert(errors.any?(/Not an email.*Email/), msg + 'Email')
   end
 
   #----- search tests -----
