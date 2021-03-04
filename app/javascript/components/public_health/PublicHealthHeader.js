@@ -152,12 +152,12 @@ class PublicHealthHeader extends React.Component {
             <Button variant="primary" className="ml-2 mb-4" href={this.props.workflow === 'exposure' ? '/patients/new' : '/patients/new?isolation=true'}>
               {this.props.workflow === 'exposure' && (
                 <span>
-                  <i className="fas fa-plus-square"></i> Enroll New Monitoree
+                  <i className="fas fa-user-plus"></i> Enroll New Monitoree
                 </span>
               )}
               {this.props.workflow === 'isolation' && (
                 <span>
-                  <i className="fas fa-plus-square"></i> Enroll New Case
+                  <i className="fas fa-user-plus"></i> Enroll New Case
                 </span>
               )}
             </Button>

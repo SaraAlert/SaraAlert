@@ -464,8 +464,8 @@ describe('Patient', () => {
     expect(wrapper.find('#no-household').exists()).toBeTruthy();
     expect(wrapper.find('#no-household').find(Row).at(1).text()).toEqual('This monitoree is not a member of a household:');
     expect(wrapper.find(MoveToHousehold).exists()).toBeTruthy();
+    expect(wrapper.find(AddHouseholdMember).exists()).toBeTruthy();
     expect(wrapper.find(ChangeHOH).exists()).toBeFalsy();
-    expect(wrapper.find(AddHouseholdMember).exists()).toBeFalsy();
     expect(wrapper.find(RemoveFromHousehold).exists()).toBeFalsy();
   });
 
