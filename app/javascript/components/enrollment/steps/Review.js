@@ -117,7 +117,6 @@ Review.propTypes = {
   previous: PropTypes.func,
   goto: PropTypes.func,
   submit: PropTypes.func,
-  parent_id: PropTypes.number,
   canAddGroup: PropTypes.bool,
   jurisdiction_paths: PropTypes.object,
 };
