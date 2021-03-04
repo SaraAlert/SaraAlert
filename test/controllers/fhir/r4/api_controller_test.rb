@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 require 'test_helper'
 require 'rspec/mocks/minitest_integration'
 
@@ -14,50 +15,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # https://github.com/fhir-crucible/fhir_models/blob/v4.1.0/lib/fhir_models/bootstrap/json.rb
     logger_double = double('logger_double', debug: nil, info: nil, warning: nil, error: nil)
     FHIR.logger = logger_double
-  end
-
-  # Sets up FHIR patients used for testing
-  def setup_patients
-    Patient.find_by(id: 1).update!(
-      assigned_user: '1234',
-      exposure_notes: 'exposure notes',
-      travel_related_notes: 'travel notes',
-      additional_planned_travel_related_notes: 'additional travel notes'
-    )
-    @patient_1 = Patient.find_by(id: 1).as_fhir
-
-    # Update Patient 2 before created FHIR resource from it
-    Patient.find_by(id: 2).update!(
-      preferred_contact_method: 'SMS Texted Weblink',
-      preferred_contact_time: 'Afternoon',
-      symptom_onset: 3.days.ago,
-      isolation: true,
-      primary_telephone: '+15555559999',
-      jurisdiction_id: 4,
-      monitoring_plan: 'Daily active monitoring',
-      assigned_user: '2345',
-      additional_planned_travel_start_date: 5.days.from_now,
-      port_of_origin: 'Tortuga',
-      date_of_departure: 2.days.ago,
-      flight_or_vessel_number: 'XYZ123',
-      flight_or_vessel_carrier: 'FunAirlines',
-      date_of_arrival: 2.days.from_now,
-      exposure_notes: 'exposure notes',
-      travel_related_notes: 'travel related notes',
-      additional_planned_travel_related_notes: 'additional travel related notes',
-      primary_telephone_type: 'Plain Cell',
-      secondary_telephone_type: 'Landline',
-      black_or_african_american: true,
-      asian: true,
-      continuous_exposure: true,
-      last_date_of_exposure: nil
-    )
-    @patient_2 = Patient.find_by(id: 2).as_fhir
-
-    # Update Patient 2 number to guarantee unique phone number
-    Patient.find_by(id: 2).update!(
-      primary_telephone: '+15555559998'
-    )
   end
 
   # Sets up applications registered for user flow
@@ -83,14 +40,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Create access tokens
     @user_patient_token_rw = Doorkeeper::AccessToken.create(
       resource_owner_id: @user.id,
-      application: @user_patient_read_write_app,
+      application_id: @user_patient_read_write_app.id,
       scopes: 'user/Patient.*'
     )
 
     # Create access tokens
     @user_everything_token = Doorkeeper::AccessToken.create(
       resource_owner_id: @user.id,
-      application: @user_everything_app,
+      application_id: @user_everything_app.id,
       scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read system/RelatedPerson.*'
     )
   end
@@ -130,6 +87,30 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       name: 'system-test-patient-w',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/Patient.write',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    @system_related_person_read_write_app = OauthApplication.create(
+      name: 'system-test-patient-rw',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/RelatedPerson.*',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    @system_related_person_read_app = OauthApplication.create(
+      name: 'system-test-patient-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/RelatedPerson.read',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    @system_related_person_write_app = OauthApplication.create(
+      name: 'system-test-patient-w',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/RelatedPerson.write',
       jurisdiction_id: 2,
       user_id: shadow_user.id
     )
@@ -195,6 +176,18 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       application: @system_patient_write_app,
       scopes: 'system/Patient.write'
     )
+    @system_related_person_token_rw = Doorkeeper::AccessToken.create(
+      application: @system_related_person_read_write_app,
+      scopes: 'system/RelatedPerson.*'
+    )
+    @system_related_person_token_r = Doorkeeper::AccessToken.create(
+      application: @system_related_person_read_app,
+      scopes: 'system/RelatedPerson.read'
+    )
+    @system_related_person_token_w = Doorkeeper::AccessToken.create(
+      application: @system_related_person_write_app,
+      scopes: 'system/RelatedPerson.write'
+    )
     @system_observation_token_r = Doorkeeper::AccessToken.create(
       application: @system_observation_read_app,
       scopes: 'system/Observation.read'
@@ -218,6 +211,50 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @system_everything_token = Doorkeeper::AccessToken.create(
       application: @system_everything_app,
       scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read system/RelatedPerson.*'
+    )
+  end
+
+  # Sets up FHIR patients used for testing
+  def setup_patients
+    Patient.find_by(id: 1).update!(
+      assigned_user: '1234',
+      exposure_notes: 'exposure notes',
+      travel_related_notes: 'travel notes',
+      additional_planned_travel_related_notes: 'additional travel notes'
+    )
+    @patient_1 = Patient.find_by(id: 1).as_fhir
+
+    # Update Patient 2 before created FHIR resource from it
+    Patient.find_by(id: 2).update!(
+      preferred_contact_method: 'SMS Texted Weblink',
+      preferred_contact_time: 'Afternoon',
+      symptom_onset: 3.days.ago,
+      isolation: true,
+      primary_telephone: '+15555559999',
+      jurisdiction_id: 4,
+      monitoring_plan: 'Daily active monitoring',
+      assigned_user: '2345',
+      additional_planned_travel_start_date: 5.days.from_now,
+      port_of_origin: 'Tortuga',
+      date_of_departure: 2.days.ago,
+      flight_or_vessel_number: 'XYZ123',
+      flight_or_vessel_carrier: 'FunAirlines',
+      date_of_arrival: 2.days.from_now,
+      exposure_notes: 'exposure notes',
+      travel_related_notes: 'travel related notes',
+      additional_planned_travel_related_notes: 'additional travel related notes',
+      primary_telephone_type: 'Plain Cell',
+      secondary_telephone_type: 'Landline',
+      black_or_african_american: true,
+      asian: true,
+      continuous_exposure: true,
+      last_date_of_exposure: nil
+    )
+    @patient_2 = Patient.find_by(id: 2).as_fhir
+
+    # Update Patient 2 number to guarantee unique phone number
+    Patient.find_by(id: 2).update!(
+      primary_telephone: '+15555559998'
     )
   end
 
@@ -318,6 +355,103 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search Patient resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient?_id=1',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to create RelatedPerson resource with RelatedPerson read scope' do
+    post(
+      '/fhir/r4/RelatedPerson',
+      headers: { 'Authorization': "Bearer #{@system_related_person_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to create RelatedPerson resource with Observation scope' do
+    post(
+      '/fhir/r4/RelatedPerson',
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to create RelatedPerson resource with QuestionnaireResponse scope' do
+    post(
+      '/fhir/r4/RelatedPerson',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to update RelatedPerson resource with RelatedPerson read scope' do
+    put(
+      '/fhir/r4/RelatedPerson/1',
+      headers: { 'Authorization': "Bearer #{@system_related_person_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to update RelatedPerson resource with Observation scope' do
+    put(
+      '/fhir/r4/RelatedPerson/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to update RelatedPerson resource with QuestionnaireResponse scope' do
+    put(
+      '/fhir/r4/RelatedPerson/1',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to read RelatedPerson resource with RelatedPerson write only scope' do
+    get(
+      '/fhir/r4/RelatedPerson/1',
+      headers: { 'Authorization': "Bearer #{@system_related_person_token_w.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to read RelatedPerson resource with Observation scope' do
+    get(
+      '/fhir/r4/RelatedPerson/1',
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to read RelatedPerson resource with QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/RelatedPerson/1',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to search RelatedPerson resource with RelatedPerson write only scope' do
+    get(
+      '/fhir/r4/RelatedPerson?_id=1',
+      headers: { 'Authorization': "Bearer #{@system_related_person_token_w.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to search RelatedPerson resource with Observation scope' do
+    get(
+      '/fhir/r4/RelatedPerson?_id=1',
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to search RelatedPerson resource with QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/RelatedPerson?_id=1',
       headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :forbidden
@@ -766,3 +900,4 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     ext && ext['valuePositiveInt']
   end
 end
+# rubocop:enable Metrics/ClassLength
