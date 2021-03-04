@@ -227,7 +227,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     h = History.where(patient_id: id)
     assert_not h.first.nil?
     assert_equal 1, h.count
-    assert_equal 'state1_epi@example.com', h.first.created_by
+    assert_equal 'state1_epi@example.com (API)', h.first.created_by
     assert_equal 'Patient', json_response['resourceType']
     assert_equal 3, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
