@@ -705,7 +705,7 @@ class Patient extends React.Component {
               </Row>
               <Row>
                 <ChangeHOH patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
-                {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.details.responder_id} />}
+                {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.details.responder_id} isHoh={true} />}
               </Row>
             </Col>
           </Row>
@@ -728,7 +728,7 @@ class Patient extends React.Component {
                 })}
                 <Row>
                   <MoveToHousehold patient={this.props?.details} authenticity_token={this.props.authenticity_token} />
-                  {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.details.responder_id} />}
+                  {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.details.responder_id} isHoh={false} />}
                 </Row>
               </Col>
             </Row>
