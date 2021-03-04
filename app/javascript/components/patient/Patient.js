@@ -728,6 +728,7 @@ class Patient extends React.Component {
                 })}
                 <Row>
                   <MoveToHousehold patient={this.props?.details} authenticity_token={this.props.authenticity_token} />
+                  {this.props.can_add_group && <AddHouseholdMember responderId={this.props.details.responder_id} />}
                 </Row>
               </Col>
             </Row>

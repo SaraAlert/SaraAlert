@@ -355,7 +355,7 @@ class MoveToHousehold extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button size="sm" className="my-2" aria-label="Move To Household button" onClick={this.toggleModal}>
+        <Button size="sm" className="my-2 mr-2" aria-label="Move To Household button" onClick={this.toggleModal}>
           <i className="fas fa-house-user"></i> Move To Household
         </Button>
         {this.state.showModal && this.createModal()}

@@ -7,7 +7,7 @@ class AddHouseholdMember extends React.Component {
     return (
       <React.Fragment>
         <Button href={window.BASE_PATH + '/patients/' + this.props.responderId + '/group'} size="sm" className="my-2">
-          <i className="fas fa-plus"></i> Add New Household Member
+          <i className="fas fa-user-plus"></i> Enroll Household Member
         </Button>
       </React.Fragment>
     );
