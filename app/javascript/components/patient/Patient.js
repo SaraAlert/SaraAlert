@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import BadgeHOH from '../util/BadgeHOH';
-import AddHouseholdMember from '../subject/household_actions/AddHouseholdMember';
+import EnrollHouseholdMember from '../subject/household_actions/EnrollHouseholdMember';
 import ChangeHOH from '../subject/ChangeHOH';
 import MoveToHousehold from '../subject/MoveToHousehold';
 import RemoveFromHousehold from '../subject/RemoveFromHousehold';
@@ -705,7 +705,7 @@ class Patient extends React.Component {
               </Row>
               <Row>
                 <ChangeHOH patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
-                {this.props.can_add_group && <AddHouseholdMember responderId={this.props.details.responder_id} />}
+                {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.details.responder_id} />}
               </Row>
             </Col>
           </Row>
@@ -728,7 +728,7 @@ class Patient extends React.Component {
                 })}
                 <Row>
                   <MoveToHousehold patient={this.props?.details} authenticity_token={this.props.authenticity_token} />
-                  {this.props.can_add_group && <AddHouseholdMember responderId={this.props.details.responder_id} />}
+                  {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.details.responder_id} />}
                 </Row>
               </Col>
             </Row>
