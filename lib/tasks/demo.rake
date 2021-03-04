@@ -2,6 +2,18 @@
 
 namespace :demo do
 desc 'Backup the database'
+  task counts: :environment do
+    puts "Patient.count: #{Patient.count}"
+    puts "ReportedCondition.count: #{ReportedCondition.count}"
+    puts "Symptom.count: #{Symptom.count}"
+    puts "Assessment.count: #{Assessment.count}"
+    puts "History.count: #{History.count}"
+    puts "Transfer.count: #{Transfer.count}"
+    puts "Laboratory.count: #{Laboratory.count}"
+    puts "CloseContact.count: #{CloseContact.count}"
+    puts "ContactAttempt.count: #{ContactAttempt.count}"
+  end
+
   task backup_database: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
     username = ActiveRecord::Base.configurations.configurations[1].config['username']
@@ -24,17 +36,41 @@ desc 'Backup the database'
   desc 'Generate N many more monitorees based on existing data'
   task create_bulk_data: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    
     num_patients = (ENV['COUNT'] || 100000).to_i
     num_threads = (ENV['THREADS'] || 8).to_i
 
-    duplicateable = Patient.where('responder_id = id').pluck(:id)
-    threads = []
-    (1..num_threads).each do |x|
-      threads << Thread.new do  (1..(num_patients/num_threads)).each {|x| deep_duplicate_patient(Patient.find(duplicateable.sample)) } end
+    patient_ids = Patient.where('patients.responder_id = patients.id').limit(num_patients).pluck(:id)
+
+    pids = []
+    
+    ::ActiveRecord::Base.clear_all_connections!
+    fork_num = 1
+    patient_ids.each_slice(patient_ids.size / num_threads).each do |slice_ids|
+      pids << fork do 
+        t1 = Time.now
+        ::ActiveRecord::Base.establish_connection
+
+        num_to_create = num_patients / num_threads
+        num_created = 0
+        
+        num_to_create.times do 
+          deep_duplicate_patient(Patient.find(slice_ids.sample))
+          num_created += 1
+          print "\r#{(num_created / (Time.now - t1)).truncate(2)} p/s"
+        end
+
+        elapsed = Time.now - t1
+        puts "\n\nFork #{fork_num} has created #{num_created} patients in #{elapsed} seconds. (#{(num_created / elapsed).truncate(2)} patients / sec)"
+      ensure
+        ::ActiveRecord::Base.clear_all_connections!
+        Process.exit! true
+      end
+      fork_num += 1
     end
 
-    threads.each(&:join)
-
+    pids.each { |pid| Process.waitpid(pid, 0)  }
+    puts "\nDone!"
   end
 
   desc 'Configure the users in the database for performance testing'
@@ -216,6 +252,7 @@ desc 'Backup the database'
     # Remove analytics that are created in admin:import_or_update_jurisdictions task
     Analytic.delete_all
 
+    limit = (ENV['LIMIT'] || 1_500_000).to_i
     days = (ENV['DAYS'] || 14).to_i
     num_patients_today = (ENV['COUNT'] || 25).to_i
     cache_analytics = (ENV['SKIP_ANALYTICS'] != 'true')
@@ -227,7 +264,13 @@ desc 'Backup the database'
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
 
+    created_patients = 0
+
     days.times do |day|
+      if limit - created_patients <= 0
+        puts "Patient limit of #{limit} has been reached!"
+        break
+      end
       today = Date.today - (days - (day + 1)).days
       # Create the patients for this day
       printf("Simulating day #{day + 1} (#{today}):\n")
@@ -236,10 +279,13 @@ desc 'Backup the database'
       days_ago = days - day
 
       # Populate patients, assessments, laboratories, transfers, histories, analytics
-      demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties)
+      demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, cache_analytics, counties)
+      created_patients += num_patients_today
 
       # Cases increase 10-20% every day
       num_patients_today += (num_patients_today * (0.1 + (rand / 10))).round
+      # Protect from going over the patient limit
+      num_patients_today = limit - created_patients if limit - (created_patients + num_patients_today) <= 0
 
       printf("\n")
     end
@@ -1190,25 +1236,36 @@ desc 'Backup the database'
   end
 
   # Duplicate patient and all nested relations and change last name
-  def deep_duplicate_patient(patient, responder_id = nil)
+  def deep_duplicate_patient(patient, responder: nil)
+
     new_patient = patient.dup
-    new_patient.responder_id = responder_id unless responder_id.nil?
-    new_patient.last_name = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
+    new_patient.responder = responder || new_patient
+    # new_patient.last_name = "#{new_patient.last_name}#{last_name_num}"
     new_patient.submission_token = new_patient.new_submission_token
+    # new_patient.submission_token = SecureRandom.urlsafe_base64[0, 10]
     duplicate_timestamps(patient, new_patient)
-    new_patient.save
-    new_patient.update(responder_id: new_patient.id) if responder_id.nil?
+    new_patient.save(validate: false)
+    # new_patient.update(responder_id: new_patient.id) if responder_id.nil?
     patient.dependents.each do |p|
       if p.id != p.responder_id
-         deep_duplicate_patient(p, new_patient.id)
+         deep_duplicate_patient(p, responder: new_patient)
       end
     end
-    patient.assessments.each do |assessment|
+    patient.assessments.each do |assessment| 
+        # Assessment
         new_assessment = assessment.dup
+        new_assessment.patient_id = new_patient.id
         duplicate_timestamps(assessment, new_assessment)
+        new_assessment.save(validate: false)
+
+        # Reported Condition
         rep_condition = assessment.reported_condition
         new_reported_condition = rep_condition.dup
-        new_reported_condition.save
+        new_reported_condition.assessment_id = new_assessment.id
+        duplicate_timestamps(rep_condition, new_reported_condition)
+        new_reported_condition.save(validate: false)
+
+        # Symptoms
         symptoms = []
         assessment.reported_condition.symptoms.each do |s|
             news = s.dup
@@ -1216,18 +1273,15 @@ desc 'Backup the database'
             news.condition_id = new_reported_condition.id
             symptoms << news
         end
-        Symptom.import symptoms
-        new_assessment.patient_id = new_patient.id
-        new_assessment.save
-        new_reported_condition.update(assessment_id: new_assessment.id, updated_at: rep_condition.updated_at, created_at: rep_condition.created_at)
+        Symptom.import symptoms, validate: false
     end
 
-
-    History.import duplicate_collection(patient.histories, patient, new_patient)
-    Transfer.import duplicate_collection(patient.transfers, patient, new_patient)
-    Laboratory.import duplicate_collection(patient.laboratories, patient, new_patient)
-    CloseContact.import duplicate_collection(patient.close_contacts, patient, new_patient)
-    ContactAttempt.import duplicate_collection(patient.contact_attempts, patient, new_patient)
+    # Just changing the ID and timestamps on these collections, so no need to validate
+    History.import duplicate_collection(patient.histories, patient, new_patient), validate: false
+    Transfer.import duplicate_collection(patient.transfers, patient, new_patient), validate: false
+    Laboratory.import duplicate_collection(patient.laboratories, patient, new_patient), validate: false
+    CloseContact.import duplicate_collection(patient.close_contacts, patient, new_patient), validate: false
+    ContactAttempt.import duplicate_collection(patient.contact_attempts, patient, new_patient), validate: false
   end
 
 end

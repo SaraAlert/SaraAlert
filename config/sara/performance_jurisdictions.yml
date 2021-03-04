@@ -3433,6 +3433,7 @@
             children:
               'Bristol':
               'Kent':
+<<<<<<< HEAD
                 children:
                   'Warwick':
                     children:
@@ -3455,6 +3456,10 @@
                       'South':
                       'East':
                       'West':
+=======
+              'Newport':
+              'Providence':
+>>>>>>> Add RI counties to performance_jurisdictions.yml
               'Washington':
         'South Carolina':
             phone: '+13455555555'

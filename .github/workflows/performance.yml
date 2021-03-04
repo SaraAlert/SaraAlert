@@ -1,279 +1,4535 @@
-name: Performance
-
-on: [push]
-
-jobs:
-  close-patients-job-benchmark:
-    runs-on: ubuntu-18.04
-    services:
-      mysql:
-        image: ghcr.io/saraalert/saraalert-1m-database:latest
-        credentials:
-          username: ${{ secrets.GHCR_USER }}
-          password: ${{ secrets.GHCR_PASSWORD }}
-        env:
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-        - 3306
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7.2
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '13.x'
-      - name: Install Bundler
-        run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
-      - uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: ${{ runner.os }}-gems-
-      - name: Run Bundle Install
-        run: |
-          bundle config path vendor/bundle
-          bundle install
-      - name: Setup Test Database Configuration
-        run: |
-          cp config/github-ci/github-database.yml config/database.yml
-      - name: Migrate DB
-        run: bundle exec rails db:migrate
-        env:
-          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - name: Run close_patients_job Benchmark
-        run: bundle exec ruby performance/benchmarks/close_patients_job_benchmark.rb
-        env:
-          JOB_RUN_EMAIL: foobar@example.com
-          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-          APP_IN_CI: true
-          NO_MEMPROF: true
-      - uses: actions/upload-artifact@v2
-        with:
-          name: close-patients-job-benchmark
-          path: performance/benchmarks/output/
-
-  send-assessments-job-benchmark:
-    runs-on: ubuntu-18.04
-    services:
-      mysql:
-        image: ghcr.io/saraalert/saraalert-1m-database:latest
-        credentials:
-          username: ${{ secrets.GHCR_USER }}
-          password: ${{ secrets.GHCR_PASSWORD }}
-        env:
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-        - 3306
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7.2
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '13.x'
-      - name: Install Bundler
-        run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
-      - uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: ${{ runner.os }}-gems-
-      - name: Run Bundle Install
-        run: |
-          bundle config path vendor/bundle
-          bundle install
-      - name: Setup Test Database Configuration
-        run: |
-          cp config/github-ci/github-database.yml config/database.yml
-      - name: Migrate DB
-        run: bundle exec rails db:migrate
-        env:
-          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - name: Run send_assessments_job Benchmark
-        run: bundle exec ruby performance/benchmarks/send_assessments_job_benchmark.rb
-        env:
-          JOB_RUN_EMAIL: foobar@example.com
-          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-          APP_IN_CI: true
-          NO_MEMPROF: true
-      - uses: actions/upload-artifact@v2
-        with:
-          name: send-assessments-job-benchmark
-          path: performance/benchmarks/output/
-
-  micro-benchmarks:
-    runs-on: ubuntu-18.04
-    services:
-      mysql:
-        image: ghcr.io/saraalert/saraalert-1m-database:latest
-        credentials:
-          username: ${{ secrets.GHCR_USER }}
-          password: ${{ secrets.GHCR_PASSWORD }}
-        env:
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-        - 3306
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7.2
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '13.x'
-      - name: Install Bundler
-        run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
-      - uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: ${{ runner.os }}-gems-
-      - name: Run Bundle Install
-        run: |
-          bundle config path vendor/bundle
-          bundle install
-      - name: Setup Test Database Configuration
-        run: |
-          cp config/github-ci/github-database.yml config/database.yml
-      - name: Migrate DB
-        run: bundle exec rails db:migrate
-        env:
-          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - name: Run Micro Benchmarks
-        run: bundle exec ruby performance/benchmarks/micro_benchmarks.rb
-        env:
-          JOB_RUN_EMAIL: foobar@example.com
-          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-          APP_IN_CI: true
-          NO_MEMPROF: true
-      - uses: actions/upload-artifact@v2
-        with:
-          name: micro-benchmarks
-          path: performance/benchmarks/output/
-
-  jmeter-benchmark:
-    runs-on: ubuntu-18.04
-    services:
-      mysql:
-        image: ghcr.io/saraalert/saraalert-1m-database:latest
-        credentials:
-          username: ${{ secrets.GHCR_USER }}
-          password: ${{ secrets.GHCR_PASSWORD }}
-        env:
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-        - 3306
-    steps:
-      - uses: actions/checkout@v2
-      - name: install jmeter
-        run: |
-          wget 'https://mirror.olnevhost.net/pub/apache//jmeter/binaries/apache-jmeter-5.2.1.zip'
-          unzip 'apache-jmeter-5.2.1.zip'
-          sudo ln -s $(pwd)/apache-jmeter-5.2.1/bin/jmeter /usr/local/bin/jmeter
-          jmeter --version
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7.2
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '13.x'
-      - name: Install Bundler
-        run: gem install bundler
-      - name: Install Yarn
-        run: npm install yarn
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
-      - name: Run Yarn Install
-        run: yarn install --ignore-engines
-      - uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: ${{ runner.os }}-gems-
-      - name: Run Bundle Install
-        run: |
-          bundle config path vendor/bundle
-          bundle install
-      - uses: actions/cache@v2
-        with:
-          path: |
-            public/assets/
-            public/packs/
-            public/packs-test/
-          key: ${{ runner.os }}-precompile
-      - name: Precompile Assets
-        run: bundle exec rails assets:precompile
-      - name: Setup Test Database Configuration
-        run: |
-          cp config/github-ci/github-database.yml config/database.yml
-      - name: Migrate DB
-        run: bundle exec rails db:migrate
-        env:
-          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - name: Run jmeter Benchmark
-        run: ./performance/run_jmeter_tests.sh
-        env:
-          JOB_RUN_EMAIL: foobar@example.com
-          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-          APP_IN_CI: true
-          NO_MEMPROF: true
-      - uses: actions/upload-artifact@v2
-        with:
-          name: send-assessments-job-benchmark
-          path: performance/benchmarks/output/
+'USA':
+    symptoms:
+        'Cough':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'Difficulty Breathing':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'New Loss of Smell':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'New Loss of Taste':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'Shortness of Breath':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'Fever':
+            value: true
+            type: 'BoolSymptom'
+            notes: 'Feeling feverish or have a measured temperature at or above 100.4°F/38°C'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Used A Fever Reducer':
+            value: true
+            type: 'BoolSymptom'
+            notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
+            required: false
+            threshold_operator: 'Equal'
+            group: 2
+        'Chills':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Repeated Shaking with Chills':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Muscle Pain':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Headache':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Sore Throat':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Nausea or Vomiting':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Diarrhea':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Fatigue':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Congestion or Runny Nose':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Pulse Ox':
+            value: 90
+            threshold_operator: 'Less Than'
+            type: 'FloatSymptom'
+            required: true
+    children:
+        'Alabama':
+            phone: '+13455555555'
+            webpage: 'https://www.alabama.gov/'
+            email: 'contact-alabama@example.com'
+            message: 'This Is Alabama Custom Jurisdiction Message'
+            send_digest: true
+            children:
+              'Autauga':
+              'Baldwin':
+              'Barbour':
+              'Bibb':
+              'Blount':
+              'Bullock':
+              'Butler':
+              'Calhoun':
+              'Chambers':
+              'Cherokee':
+              'Chilton':
+              'Choctaw':
+              'Clarke':
+              'Clay':
+              'Cleburne':
+              'Coffee':
+              'Colbert':
+              'Conecuh':
+              'Coosa':
+              'Covington':
+              'Crenshaw':
+              'Cullman':
+              'Dale':
+              'Dallas':
+              'DeKalb':
+              'Elmore':
+              'Escambia':
+              'Etowah':
+              'Fayette':
+              'Franklin':
+              'Geneva':
+              'Greene':
+              'Hale':
+              'Henry':
+              'Houston':
+              'Jackson':
+              'Jefferson':
+                children:
+                  'Birmingham':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Lamar':
+              'Lauderdale':
+              'Lawrence':
+              'Lee':
+              'Limestone':
+              'Lowndes':
+              'Macon':
+              'Madison':
+              'Marengo':
+              'Marion':
+              'Marshall':
+              'Mobile':
+                children:
+                  'Mobile':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Monroe':
+              'Montgomery':
+                children:
+                  'Montgomery':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Morgan':
+              'Perry':
+              'Pickens':
+              'Pike':
+              'Randolph':
+              'Russell':
+              'Shelby':
+              'St. Clair':
+              'Sumter':
+              'Talladega':
+              'Tallapoosa':
+              'Tuscaloosa':
+              'Walker':
+              'Washington':
+              'Wilcox':
+              'Winston':
+        'Alaska':
+            phone: '+13455555555'
+            webpage: 'http://alaska.gov'
+            email: 'contact-alaska@example.com'
+            message: 'This Is Alaska Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Anchorage':
+                children:
+                  'Municipality of Anchorage':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Bethel':
+              'Bristol Bay':
+              'Dillingham':
+              'Fairbanks North Star':
+                children:
+                  'Fairbanks':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Haines':
+              'Juneau':
+                children:
+                  'City and Borough of Juneau':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Kenai Peninsula':
+              'Ketchikan Gateway':
+              'Kodiak Island':
+              'Matanuska-Susitna':
+              'Nome':
+              'North Slope':
+              'Sitka':
+              'Skagway-Hoonah-Angoon':
+              'Southeast Fairbanks':
+              'Valdez-Cordova':
+              'Wade Hampton':
+              'Wrangell-Petersburg':
+              'Yakutat':
+              'Yukon-Koyukuk':
+        'Arizona':
+            phone: '+13455555555'
+            webpage: 'https://az.gov'
+            email: 'contact-arizona@example.com'
+            message: 'This Is Arizona Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Apache':
+              'Cochise':
+              'Coconino':
+              'Gila':
+              'Graham':
+              'Greenlee':
+              'La Paz':
+              'Maricopa':
+                children:
+                  'Pheonix':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Mesa':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Mohave':
+              'Navajo':
+              'Pima':
+                children:
+                  'Tucson':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Pinal':
+              'Santa Cruz':
+              'Yavapai':
+              'Yuma':
+        'Arkansas':
+            phone: '+13455555555'
+            webpage: 'https://portal.arkansas.gov/'
+            email: 'contact-arkansas@example.com'
+            message: 'This Is Arkansas Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Arkansas':
+              'Ashley':
+              'Baxter':
+              'Benton':
+              'Boone':
+              'Bradley':
+              'Calhoun':
+              'Carroll':
+              'Chicot':
+              'Clark':
+              'Clay':
+              'Cleburne':
+              'Cleveland':
+              'Columbia':
+              'Conway':
+              'Craighead':
+              'Crawford':
+              'Crittenden':
+              'Cross':
+              'Dallas':
+              'Desha':
+              'Drew':
+              'Faulkner':
+              'Franklin':
+              'Fulton':
+              'Garland':
+              'Grant':
+              'Greene':
+              'Hempstead':
+              'Hot Spring':
+              'Howard':
+              'Independence':
+              'Izard':
+              'Jackson':
+              'Jefferson':
+              'Johnson':
+              'Lafayette':
+              'Lawrence':
+              'Lee':
+              'Lincoln':
+              'Little River':
+              'Logan':
+              'Lonoke':
+              'Madison':
+              'Marion':
+              'Miller':
+              'Mississippi':
+              'Monroe':
+              'Montgomery':
+              'Nevada':
+              'Newton':
+              'Ouachita':
+              'Perry':
+              'Phillips':
+              'Pike':
+              'Poinsett':
+              'Polk':
+              'Pope':
+              'Prairie':
+              'Pulaski':
+                children:
+                  'Little Rock':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Randolph':
+              'Saline':
+              'Scott':
+              'Searcy':
+              'Sebastian':
+                children:
+                  'Fort Smith':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Sevier':
+              'Sharp':
+              'St. Francis':
+              'Stone':
+              'Union':
+              'Van Buren':
+              'Washington':
+                children:
+                  'Fayetteville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'White':
+              'Woodruff':
+              'Yell':
+        'California':
+            phone: '+13455555555'
+            webpage: 'https://www.ca.gov'
+            email: 'contact-california@example.com'
+            message: 'This Is California Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Alameda':
+              'Alpine':
+              'Amador':
+              'Butte':
+              'Calaveras':
+              'Colusa':
+              'Contra Costa':
+              'Del Norte':
+              'El Dorado':
+              'Fresno':
+              'Glenn':
+              'Humboldt':
+              'Imperial':
+              'Inyo':
+              'Kern':
+              'Kings':
+              'Lake':
+              'Lassen':
+              'Los Angeles':
+                children:
+                  'Los Angeles':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Madera':
+              'Marin':
+              'Mariposa':
+              'Mendocino':
+              'Merced':
+              'Modoc':
+              'Mono':
+              'Monterey':
+              'Napa':
+              'Nevada':
+              'Orange':
+              'Placer':
+              'Plumas':
+              'Riverside':
+              'Sacramento':
+                children:
+                  'Sacremento':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'San Benito':
+              'San Bernardino':
+              'San Diego':
+                children:
+                  'San Diego':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'San Francisco':
+              'San Joaquin':
+              'San Luis Obispo':
+              'San Mateo':
+              'Santa Barbara':
+              'Santa Clara':
+              'Santa Cruz':
+              'Shasta':
+              'Sierra':
+              'Siskiyou':
+              'Solano':
+              'Sonoma':
+              'Stanislaus':
+              'Sutter':
+              'Tehama':
+              'Trinity':
+              'Tulare':
+              'Tuolumne':
+              'Ventura':
+              'Yolo':
+              'Yuba':
+        'Colorado':
+            phone: '+13455555555'
+            webpage: 'https://www.colorado.gov'
+            email: 'contact-colorado@example.com'
+            message: 'This Is Colorado Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adams':
+              'Alamosa':
+              'Arapahoe':
+                children:
+                  'Aurora':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Archuleta':
+              'Baca':
+              'Bent':
+              'Boulder':
+              'Broomfield':
+              'Chaffee':
+              'Cheyenne':
+              'Clear Creek':
+              'Conejos':
+              'Costilla':
+              'Crowley':
+              'Custer':
+              'Delta':
+              'Denver':
+                children:
+                  'Denver':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Dolores':
+              'Douglas':
+              'Eagle':
+              'El Paso':
+                children:
+                  'Colorado Springs':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Elbert':
+              'Fremont':
+              'Garfield':
+              'Gilpin':
+              'Grand':
+              'Gunnison':
+              'Hinsdale':
+              'Huerfano':
+              'Jackson':
+              'Jefferson':
+              'Kiowa':
+              'Kit Carson':
+              'La Plata':
+              'Lake':
+              'Larimer':
+              'Las Animas':
+              'Lincoln':
+              'Logan':
+              'Mesa':
+              'Mineral':
+              'Moffat':
+              'Montezuma':
+              'Montrose':
+              'Morgan':
+              'Otero':
+              'Ouray':
+              'Park':
+              'Phillips':
+              'Pitkin':
+              'Prowers':
+              'Pueblo':
+              'Rio Blanco':
+              'Rio Grande':
+              'Routt':
+              'Saguache':
+              'San Juan':
+              'San Miguel':
+              'Sedgwick':
+              'Summit':
+              'Teller':
+              'Washington':
+              'Weld':
+              'Yuma':
+        'Connecticut':
+            phone: '+13455555555'
+            webpage: 'https://portal.ct.gov'
+            email: 'contact-connecticut@example.com'
+            message: 'This Is Connecticut Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Fairfield':
+                children:
+                  'Bridgeport':
+                    'North':
+                    'South':
+                    'East':
+                    'West':
+              'Hartford':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
+              'Litchfield':
+              'Middlesex':
+              'New Haven':
+                children:
+                  'New Haven':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'New London':
+              'Tolland':
+              'Windham':
+        'Delaware':
+            phone: '+13455555555'
+            webpage: 'https://delaware.gov/'
+            email: 'contact-delaware@example.com'
+            message: 'This Is Delaware Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Kent':
+                children:
+                  'Dover':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'New Castle':
+                children:
+                  'Wilmington':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Newark':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Sussex':
+        'District of Columbia':
+            phone: '+13455555555'
+            webpage: 'https://dc.gov'
+            email: 'contact-district-of-columbia@example.com'
+            message: 'This Is District of Columbia Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Washington, D.C.':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
+        'Florida':
+            phone: '+13455555555'
+            webpage: 'https://www.myflorida.com/'
+            email: 'contact-florida@example.com'
+            message: 'This Is Florida Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Alachua':
+              'Baker':
+              'Bay':
+              'Bradford':
+              'Brevard':
+              'Broward':
+              'Calhoun':
+              'Charlotte':
+              'Citrus':
+              'Clay':
+              'Collier':
+              'Columbia':
+              'DeSoto':
+              'Dixie':
+              'Duval':
+                children:
+                  'Jacksonville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Escambia':
+              'Flagler':
+              'Franklin':
+              'Gadsden':
+              'Gilchrist':
+              'Glades':
+              'Gulf':
+              'Hamilton':
+              'Hardee':
+              'Hendry':
+              'Hernando':
+              'Highlands':
+              'Hillsborough':
+              'Holmes':
+              'Indian River':
+              'Jackson':
+              'Jefferson':
+              'Lafayette':
+              'Lake':
+              'Lee':
+              'Leon':
+                children:
+                  'Tallahassee':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Levy':
+              'Liberty':
+              'Madison':
+              'Manatee':
+              'Marion':
+              'Martin':
+              'Miami-Dade':
+                children:
+                  'Miami':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Monroe':
+              'Nassau':
+              'Okaloosa':
+              'Okeechobee':
+              'Orange':
+              'Osceola':
+              'Palm Beach':
+              'Pasco':
+              'Pinellas':
+              'Polk':
+              'Putnam':
+              'Santa Rosa':
+              'Sarasota':
+              'Seminole':
+              'St. Johns':
+              'St. Lucie':
+              'Sumter':
+              'Suwannee':
+              'Taylor':
+              'Union':
+              'Volusia':
+              'Wakulla':
+              'Walton':
+              'Washington':
+        'Georgia':
+            phone: '+13455555555'
+            webpage: 'https://georgia.gov'
+            email: 'contact-georgia@example.com'
+            message: 'This Is Georgia Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Appling':
+              'Atkinson':
+              'Bacon':
+              'Baker':
+              'Baldwin':
+              'Banks':
+              'Barrow':
+              'Bartow':
+              'Ben Hill':
+              'Berrien':
+              'Bibb':
+              'Bleckley':
+              'Brantley':
+              'Brooks':
+              'Bryan':
+              'Bulloch':
+              'Burke':
+              'Butts':
+              'Calhoun':
+              'Camden':
+              'Candler':
+              'Carroll':
+              'Catoosa':
+              'Charlton':
+              'Chatham':
+              'Chattahoochee':
+              'Chattooga':
+              'Cherokee':
+              'Clarke':
+              'Clay':
+              'Clayton':
+              'Clinch':
+              'Cobb':
+              'Coffee':
+              'Colquitt':
+              'Columbia':
+              'Cook':
+              'Coweta':
+              'Crawford':
+              'Crisp':
+              'Dade':
+              'Dawson':
+              'Decatur':
+              'DeKalb':
+              'Dodge':
+              'Dooly':
+              'Dougherty':
+              'Douglas':
+              'Early':
+              'Echols':
+              'Effingham':
+              'Elbert':
+              'Emanuel':
+              'Evans':
+              'Fannin':
+              'Fayette':
+              'Floyd':
+              'Forsyth':
+              'Franklin':
+              'Fulton':
+                children:
+                  'Atlanta':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Gilmer':
+              'Glascock':
+              'Glynn':
+              'Gordon':
+              'Grady':
+              'Greene':
+              'Gwinnett':
+              'Habersham':
+              'Hall':
+              'Hancock':
+              'Haralson':
+              'Harris':
+              'Hart':
+              'Heard':
+              'Henry':
+              'Houston':
+              'Irwin':
+              'Jackson':
+              'Jasper':
+              'Jeff Davis':
+              'Jefferson':
+              'Jenkins':
+              'Johnson':
+              'Jones':
+              'Lamar':
+              'Lanier':
+              'Laurens':
+              'Lee':
+              'Liberty':
+              'Lincoln':
+              'Long':
+              'Lowndes':
+              'Lumpkin':
+              'Macon':
+              'Madison':
+              'Marion':
+              'McDuffie':
+              'McIntosh':
+              'Meriwether':
+              'Miller':
+              'Mitchell':
+              'Monroe':
+              'Montgomery':
+              'Morgan':
+              'Murray':
+              'Muscogee':
+                children:
+                  'Columbus':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Newton':
+              'Oconee':
+              'Oglethorpe':
+              'Paulding':
+              'Peach':
+              'Pickens':
+              'Pierce':
+              'Pike':
+              'Polk':
+              'Pulaski':
+              'Putnam':
+              'Quitman':
+              'Rabun':
+              'Randolph':
+              'Richmond':
+                children:
+                  'Augusta':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Rockdale':
+              'Schley':
+              'Screven':
+              'Seminole':
+              'Spalding':
+              'Stephens':
+              'Stewart':
+              'Sumter':
+              'Talbot':
+              'Taliaferro':
+              'Tattnall':
+              'Taylor':
+              'Telfair':
+              'Terrell':
+              'Thomas':
+              'Tift':
+              'Toombs':
+              'Towns':
+              'Treutlen':
+              'Troup':
+              'Turner':
+              'Twiggs':
+              'Union':
+              'Upson':
+              'Walker':
+              'Walton':
+              'Ware':
+              'Warren':
+              'Washington':
+              'Wayne':
+              'Webster':
+              'Wheeler':
+              'White':
+              'Whitfield':
+              'Wilcox':
+              'Wilkes':
+              'Wilkinson':
+              'Worth':
+        'Hawaii':
+            phone: '+13455555555'
+            webpage: 'https://portal.ehawaii.gov'
+            email: 'contact-hawaii@example.com'
+            message: 'This Is Hawaii Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Hawaii':
+              'Honolulu':
+                children:
+                  'Honolulu':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'East Honolulu':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Pearl City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Kalawao':
+              'Kauai':
+              'Maui':
+        'Idaho':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact-idaho@example.com'
+            message: 'This Is Idaho Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Ada':
+                children:
+                  'Meridian':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Adams':
+              'Bannock':
+              'Bear Lake':
+              'Benewah':
+              'Bingham':
+              'Blaine':
+              'Boise':
+                children:
+                  'Boise':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Bonner':
+              'Bonneville':
+              'Boundary':
+              'Butte':
+              'Camas':
+              'Canyon':
+                children:
+                  'Nampa':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Caribou':
+              'Cassia':
+              'Clark':
+              'Clearwater':
+              'Custer':
+              'Elmore':
+              'Franklin':
+              'Fremont':
+              'Gem':
+              'Gooding':
+              'Idaho':
+              'Jefferson':
+              'Jerome':
+              'Kootenai':
+              'Latah':
+              'Lemhi':
+              'Lewis':
+              'Lincoln':
+              'Madison':
+              'Minidoka':
+              'Nez Perce':
+              'Oneida':
+              'Owyhee':
+              'Payette':
+              'Power':
+              'Shoshone':
+              'Teton':
+              'Twin Falls':
+              'Valley':
+              'Washington':
+        'Illinois':
+            phone: '+13455555555'
+            webpage: 'https://www2.illinois.gov/'
+            email: 'contact-illinois@example.com'
+            message: 'This Is Illinois Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adams':
+              'Alexander':
+              'Bond':
+              'Boone':
+              'Brown':
+              'Bureau':
+              'Calhoun':
+              'Carroll':
+              'Cass':
+              'Champaign':
+              'Christian':
+              'Clark':
+              'Clay':
+              'Clinton':
+              'Coles':
+              'Cook':
+                children:
+                  'Chicago':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Crawford':
+              'Cumberland':
+              'De Witt':
+              'DeKalb':
+              'Douglas':
+              'DuPage':
+                children:
+                  'Aurora':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Edgar':
+              'Edwards':
+              'Effingham':
+              'Fayette':
+              'Ford':
+              'Franklin':
+              'Fulton':
+              'Gallatin':
+              'Greene':
+              'Grundy':
+              'Hamilton':
+              'Hancock':
+              'Hardin':
+              'Henderson':
+              'Henry':
+              'Iroquois':
+              'Jackson':
+              'Jasper':
+              'Jefferson':
+              'Jersey':
+              'Jo Daviess':
+              'Johnson':
+              'Kane':
+              'Kankakee':
+              'Kendall':
+              'Knox':
+              'La Salle':
+              'Lake':
+              'Lawrence':
+              'Lee':
+              'Livingston':
+              'Logan':
+              'Macon':
+              'Macoupin':
+              'Madison':
+              'Marion':
+              'Marshall':
+              'Mason':
+              'Massac':
+              'McDonough':
+              'McHenry':
+              'McLean':
+              'Menard':
+              'Mercer':
+              'Monroe':
+              'Montgomery':
+              'Morgan':
+              'Moultrie':
+              'Ogle':
+              'Peoria':
+              'Perry':
+              'Piatt':
+              'Pike':
+              'Pope':
+              'Pulaski':
+              'Putnam':
+              'Randolph':
+              'Richland':
+              'Rock Island':
+              'Saline':
+              'Sangamon':
+                children:
+                  'Springfield':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Schuyler':
+              'Scott':
+              'Shelby':
+              'St. Clair':
+              'Stark':
+              'Stephenson':
+              'Tazewell':
+              'Union':
+              'Vermilion':
+              'Wabash':
+              'Warren':
+              'Washington':
+              'Wayne':
+              'White':
+              'Whiteside':
+              'Will':
+              'Williamson':
+              'Winnebago':
+              'Woodford':
+        'Indiana':
+            phone: '+13455555555'
+            webpage: 'https://www.in.gov'
+            email: 'contact-indiana@example.com'
+            message: 'This Is Indiana Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adams':
+              'Allen':
+                children:
+                  'Fort Wayne':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Bartholomew':
+              'Benton':
+              'Blackford':
+              'Boone':
+              'Brown':
+              'Carroll':
+              'Cass':
+              'Clark':
+              'Clay':
+              'Clinton':
+              'Crawford':
+              'Daviess':
+              'De Kalb':
+              'Dearborn':
+              'Decatur':
+              'Delaware':
+              'Dubois':
+              'Elkhart':
+              'Fayette':
+              'Floyd':
+              'Fountain':
+              'Franklin':
+              'Fulton':
+              'Gibson':
+              'Grant':
+              'Greene':
+              'Hamilton':
+              'Hancock':
+              'Harrison':
+              'Hendricks':
+              'Henry':
+              'Howard':
+              'Huntington':
+              'Jackson':
+              'Jasper':
+              'Jay':
+              'Jefferson':
+              'Jennings':
+              'Johnson':
+              'Knox':
+              'Kosciusko':
+              'La Porte':
+              'Lagrange':
+              'Lake':
+              'Lawrence':
+              'Madison':
+              'Marion':
+                children:
+                  'Indianapolis':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Marshall':
+              'Martin':
+              'Miami':
+              'Monroe':
+              'Montgomery':
+              'Morgan':
+              'Newton':
+              'Noble':
+              'Ohio':
+              'Orange':
+              'Owen':
+              'Parke':
+              'Perry':
+              'Pike':
+              'Porter':
+              'Posey':
+              'Pulaski':
+              'Putnam':
+              'Randolph':
+              'Ripley':
+              'Rush':
+              'Scott':
+              'Shelby':
+              'Spencer':
+              'St. Joseph':
+              'Starke':
+              'Steuben':
+              'Sullivan':
+              'Switzerland':
+              'Tippecanoe':
+              'Tipton':
+              'Union':
+              'Vanderburgh':
+                children:
+                  'Evansville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Vermillion':
+              'Vigo':
+              'Wabash':
+              'Warren':
+              'Warrick':
+              'Washington':
+              'Wayne':
+              'Wells':
+              'White':
+              'Whitley':
+        'Iowa':
+            phone: '+13455555555'
+            webpage: 'https://www.iowa.gov'
+            email: 'contact-iowa@example.com'
+            message: 'This Is Iowa Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adair':
+              'Adams':
+              'Allamakee':
+              'Appanoose':
+              'Audubon':
+              'Benton':
+              'Black Hawk':
+              'Boone':
+              'Bremer':
+              'Buchanan':
+              'Buena Vista':
+              'Butler':
+              'Calhoun':
+              'Carroll':
+              'Cass':
+              'Cedar':
+              'Cerro Gordo':
+              'Cherokee':
+              'Chickasaw':
+              'Clarke':
+              'Clay':
+              'Clayton':
+              'Clinton':
+              'Crawford':
+              'Dallas':
+              'Davis':
+              'Decatur':
+              'Delaware':
+              'Des Moines':
+              'Dickinson':
+              'Dubuque':
+              'Emmet':
+              'Fayette':
+              'Floyd':
+              'Franklin':
+              'Fremont':
+              'Greene':
+              'Grundy':
+              'Guthrie':
+              'Hamilton':
+              'Hancock':
+              'Hardin':
+              'Harrison':
+              'Henry':
+              'Howard':
+              'Humboldt':
+              'Ida':
+              'Iowa':
+              'Jackson':
+              'Jasper':
+              'Jefferson':
+              'Johnson':
+              'Jones':
+              'Keokuk':
+              'Kossuth':
+              'Lee':
+              'Linn':
+                children:
+                  'Cedar Rapids':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Louisa':
+              'Lucas':
+              'Lyon':
+              'Madison':
+              'Mahaska':
+              'Marion':
+              'Marshall':
+              'Mills':
+              'Mitchell':
+              'Monona':
+              'Monroe':
+              'Montgomery':
+              'Muscatine':
+              'O Brien':
+              'Osceola':
+              'Page':
+              'Palo Alto':
+              'Plymouth':
+              'Pocahontas':
+              'Polk':
+                children:
+                  'Des Moines':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Pottawattamie':
+              'Poweshiek':
+              'Ringgold':
+              'Sac':
+              'Scott':
+                children:
+                  'Davenport':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Shelby':
+              'Sioux':
+              'Story':
+              'Tama':
+              'Taylor':
+              'Union':
+              'Van Buren':
+              'Wapello':
+              'Warren':
+              'Washington':
+              'Wayne':
+              'Webster':
+              'Winnebago':
+              'Winneshiek':
+              'Woodbury':
+              'Worth':
+              'Wright':
+        'Kansas':
+            phone: '+13455555555'
+            webpage: 'https://www.kansas.gov'
+            email: 'contact-kansas@example.com'
+            message: 'This Is Kansas Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Allen':
+              'Anderson':
+              'Atchison':
+              'Barber':
+              'Barton':
+              'Bourbon':
+              'Brown':
+              'Butler':
+              'Chase':
+              'Chautauqua':
+              'Cherokee':
+              'Cheyenne':
+              'Clark':
+              'Clay':
+              'Cloud':
+              'Coffey':
+              'Comanche':
+              'Cowley':
+              'Crawford':
+              'Decatur':
+              'Dickinson':
+              'Doniphan':
+              'Douglas':
+              'Edwards':
+              'Elk':
+              'Ellis':
+              'Ellsworth':
+              'Finney':
+              'Ford':
+              'Franklin':
+              'Geary':
+              'Gove':
+              'Graham':
+              'Grant':
+              'Gray':
+              'Greeley':
+              'Greenwood':
+              'Hamilton':
+              'Harper':
+              'Harvey':
+              'Haskell':
+              'Hodgeman':
+              'Jackson':
+              'Jefferson':
+              'Jewell':
+              'Johnson':
+                children:
+                  'Overland Park':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Kearny':
+              'Kingman':
+              'Kiowa':
+              'Labette':
+              'Lane':
+              'Leavenworth':
+              'Lincoln':
+              'Linn':
+              'Logan':
+              'Lyon':
+              'Marion':
+              'Marshall':
+              'McPherson':
+              'Meade':
+              'Miami':
+              'Mitchell':
+              'Montgomery':
+              'Morris':
+              'Morton':
+              'Nemaha':
+              'Neosho':
+              'Ness':
+              'Norton':
+              'Osage':
+              'Osborne':
+              'Ottawa':
+              'Pawnee':
+              'Phillips':
+              'Pottawatomie':
+              'Pratt':
+              'Rawlins':
+              'Reno':
+              'Republic':
+              'Rice':
+              'Riley':
+              'Rooks':
+              'Rush':
+              'Russell':
+              'Saline':
+              'Scott':
+              'Sedgwick':
+                children:
+                  'Wichita':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Seward':
+              'Shawnee':
+                children:
+                  'Topeka':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Sheridan':
+              'Sherman':
+              'Smith':
+              'Stafford':
+              'Stanton':
+              'Stevens':
+              'Sumner':
+              'Thomas':
+              'Trego':
+              'Wabaunsee':
+              'Wallace':
+              'Washington':
+              'Wichita':
+              'Wilson':
+              'Woodson':
+              'Wyandotte':
+        'Kentucky':
+            phone: '+13455555555'
+            webpage: 'https://kentucky.gov'
+            email: 'contact-kentucky@example.com'
+            message: 'This Is Kentucky Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adair':
+              'Allen':
+              'Anderson':
+              'Ballard':
+              'Barren':
+              'Bath':
+              'Bell':
+              'Boone':
+              'Bourbon':
+              'Boyd':
+              'Boyle':
+              'Bracken':
+              'Breathitt':
+              'Breckenridge':
+              'Bullitt':
+              'Butler':
+              'Caldwell':
+              'Calloway':
+              'Campbell':
+              'Carlisle':
+              'Carroll':
+              'Carter':
+              'Casey':
+              'Christian':
+              'Clark':
+              'Clay':
+              'Clinton':
+              'Crittenden':
+              'Cumberland':
+              'Daviess':
+              'Edmonson':
+              'Elliott':
+              'Estill':
+              'Fayette':
+                children:
+                  'Lexington':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Fleming':
+              'Floyd':
+              'Franklin':
+                children:
+                  'Frankfort':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Fulton':
+              'Gallatin':
+              'Garrard':
+              'Grant':
+              'Graves':
+              'Grayson':
+              'Green':
+              'Greenup':
+              'Hancock':
+              'Hardin':
+              'Harlan':
+              'Harrison':
+              'Hart':
+              'Henderson':
+              'Henry':
+              'Hickman':
+              'Hopkins':
+              'Jackson':
+              'Jefferson':
+                children:
+                  'Louisville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Jessamine':
+              'Johnson':
+              'Kenton':
+              'Knott':
+              'Knox':
+              'Larue':
+              'Laurel':
+              'Lawrence':
+              'Lee':
+              'Leslie':
+              'Letcher':
+              'Lewis':
+              'Lincoln':
+              'Livingston':
+              'Logan':
+              'Lyon':
+              'Madison':
+              'Magoffin':
+              'Marion':
+              'Marshall':
+              'Martin':
+              'Mason':
+              'McCracken':
+              'McCreary':
+              'McLean':
+              'Meade':
+              'Menifee':
+              'Mercer':
+              'Metcalfe':
+              'Monroe':
+              'Montgomery':
+              'Morgan':
+              'Muhlenberg':
+              'Nelson':
+              'Nicholas':
+              'Ohio':
+              'Oldham':
+              'Owen':
+              'Owsley':
+              'Pendleton':
+              'Perry':
+              'Pike':
+              'Powell':
+              'Pulaski':
+              'Robertson':
+              'Rockcastle':
+              'Rowan':
+              'Russell':
+              'Scott':
+              'Shelby':
+              'Simpson':
+              'Spencer':
+              'Taylor':
+              'Todd':
+              'Trigg':
+              'Trimble':
+              'Union':
+              'Warren':
+              'Washington':
+              'Wayne':
+              'Webster':
+              'Whitley':
+              'Wolfe':
+              'Woodford':
+        'Louisiana':
+            phone: '+13455555555'
+            webpage: 'https://www.louisiana.gov'
+            email: 'contact-louisiana@example.com'
+            message: 'This Is Louisana Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Acadia Parish':
+              'Allen Parish':
+              'Ascension Parish':
+              'Assumption Parish':
+              'Avoyelles Parish':
+              'Beauregard Parish':
+              'Bienville Parish':
+              'Bossier Parish':
+              'Caddo Parish':
+                children:
+                  'Shreveport':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Calcasieu Parish':
+              'Caldwell Parish':
+              'Cameron Parish':
+              'Catahoula Parish':
+              'Claiborne Parish':
+              'Concordia Parish':
+              'De Soto Parish':
+              'East Baton Rouge Parish':
+                children:
+                  'Baton Rouge':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'East Carroll Parish':
+              'East Feliciana Parish':
+              'Evangeline Parish':
+              'Franklin Parish':
+              'Grant Parish':
+              'Iberia Parish':
+              'Iberville Parish':
+              'Jackson Parish':
+              'Jefferson Davis Parish':
+              'Jefferson Parish':
+              'La Salle Parish':
+              'Lafayette Parish':
+              'Lafourche Parish':
+              'Lincoln Parish':
+              'Livingston Parish':
+              'Madison Parish':
+              'Morehouse Parish':
+              'Natchitoches Parish':
+              'Orleans Parish':
+                children:
+                  'New Orleans':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Ouachita Parish':
+              'Plaquemines Parish':
+              'Pointe Coupee Parish':
+              'Rapides Parish':
+              'Red River Parish':
+              'Richland Parish':
+              'Sabine Parish':
+              'St. Bernard Parish':
+              'St. Charles Parish':
+              'St. Helena Parish':
+              'St. James Parish':
+              'St. John the Baptist Parish':
+              'St. Landry Parish':
+              'St. Martin Parish':
+              'St. Mary Parish':
+              'St. Tammany Parish':
+              'Tangipahoa Parish':
+              'Tensas Parish':
+              'Terrebonne Parish':
+              'Union Parish':
+              'Vermilion Parish':
+              'Vernon Parish':
+              'Washington Parish':
+              'Webster Parish':
+              'West Baton Rouge Parish':
+              'West Carroll Parish':
+              'West Feliciana Parish':
+              'Winn Parish':
+        'Maine':
+            phone: '+13455555555'
+            webpage: 'https://www.maine.gov/portal/index.html'
+            email: 'contact-maine@example.com'
+            message: 'This Is Maine Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Androscoggin':
+                children:
+                  'Lewiston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Aroostook':
+              'Cumberland':
+                children:
+                  'Portland':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Franklin':
+              'Hancock':
+              'Kennebec':
+                children:
+                  'Augusta':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Knox':
+              'Lincoln':
+              'Oxford':
+              'Penobscot':
+              'Piscataquis':
+              'Sagadahoc':
+              'Somerset':
+              'Waldo':
+              'Washington':
+              'York':
+        'Maryland':
+            phone: '+13455555555'
+            webpage: 'https://www.maryland.gov/Pages/default.aspx'
+            email: 'contact-maryland@example.com'
+            message: 'This Is Maryland Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Allegany':
+              'Anne Arundel':
+                children:
+                  'Annapolis':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Baltimore City':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
+              'Baltimore':
+              'Calvert':
+              'Caroline':
+              'Carroll':
+              'Cecil':
+              'Charles':
+              'Dorchester':
+              'Frederick':
+                children:
+                  'Frederick':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Garrett':
+              'Harford':
+              'Howard':
+              'Kent':
+              'Montgomery':
+              'Prince Georges':
+              'Queen Annes':
+              'Somerset':
+              'St. Marys':
+              'Talbot':
+              'Washington':
+              'Wicomico':
+              'Worcester':
+        'Massachusetts':
+            phone: '+13455555555'
+            webpage: 'https://www.mass.gov'
+            email: 'contact-massachusetts@example.com'
+            message: 'This Is Massachusetts Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Barnstable':
+              'Berkshire':
+              'Bristol':
+              'Dukes':
+              'Essex':
+              'Franklin':
+              'Hampden':
+                children:
+                  'Springfield':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Hampshire':
+              'Middlesex':
+              'Nantucket':
+              'Norfolk':
+              'Plymouth':
+              'Suffolk':
+                children:
+                  'Boston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Worcester':
+                children:
+                  'Worcester':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+        'Michigan':
+            phone: '+13455555555'
+            webpage: 'https://www.michigan.gov'
+            email: 'contact-michigan@example.com'
+            message: 'This Is Michigan Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Alcona':
+              'Alger':
+              'Allegan':
+              'Alpena':
+              'Antrim':
+              'Arenac':
+              'Baraga':
+              'Barry':
+              'Bay':
+              'Benzie':
+              'Berrien':
+              'Branch':
+              'Calhoun':
+              'Cass':
+              'Charlevoix':
+              'Cheboygan':
+              'Chippewa':
+              'Clare':
+              'Clinton':
+              'Crawford':
+              'Delta':
+              'Dickinson':
+              'Eaton':
+              'Emmet':
+              'Genesee':
+              'Gladwin':
+              'Gogebic':
+              'Grand Traverse':
+              'Gratiot':
+              'Hillsdale':
+              'Houghton':
+              'Huron':
+              'Ingham':
+                children:
+                  'Lansing':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Ionia':
+              'Iosco':
+              'Iron':
+              'Isabella':
+              'Jackson':
+              'Kalamazoo':
+              'Kalkaska':
+              'Kent':
+                children:
+                  'Grand Rapids':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Keweenaw':
+              'Lake':
+              'Lapeer':
+              'Leelanau':
+              'Lenawee':
+              'Livingston':
+              'Luce':
+              'Mackinac':
+              'Macomb':
+              'Manistee':
+              'Marquette':
+              'Mason':
+              'Mecosta':
+              'Menominee':
+              'Midland':
+              'Missaukee':
+              'Monroe':
+              'Montcalm':
+              'Montmorency':
+              'Muskegon':
+              'Newaygo':
+              'Oakland':
+              'Oceana':
+              'Ogemaw':
+              'Ontonagon':
+              'Osceola':
+              'Oscoda':
+              'Otsego':
+              'Ottawa':
+              'Presque Isle':
+              'Roscommon':
+              'Saginaw':
+              'Sanilac':
+              'Schoolcraft':
+              'Shiawassee':
+              'St. Clair':
+              'St. Joseph':
+              'Tuscola':
+              'Van Buren':
+              'Washtenaw':
+              'Wayne':
+                children:
+                  'Detroit':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Wexford':
+        'Minnesota':
+            phone: '+13455555555'
+            webpage: 'mn.gov/portal/'
+            email: 'contact-minnesota@example.com'
+            message: 'This Is Minnesota Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Aitkin':
+              'Anoka':
+              'Becker':
+              'Beltrami':
+              'Benton':
+              'Big Stone':
+              'Blue Earth':
+              'Brown':
+              'Carlton':
+              'Carver':
+              'Cass':
+              'Chippewa':
+              'Chisago':
+              'Clay':
+              'Clearwater':
+              'Cook':
+              'Cottonwood':
+              'Crow Wing':
+              'Dakota':
+              'Dodge':
+              'Douglas':
+              'Faribault':
+              'Fillmore':
+              'Freeborn':
+              'Goodhue':
+              'Grant':
+              'Hennepin':
+              'Houston':
+              'Hubbard':
+              'Isanti':
+              'Itasca':
+              'Jackson':
+              'Kanabec':
+              'Kandiyohi':
+              'Kittson':
+              'Koochiching':
+              'Lac qui Parle':
+              'Lake of the Woods':
+              'Lake':
+              'Le Sueur':
+              'Lincoln':
+              'Lyon':
+              'Mahnomen':
+              'Marshall':
+              'Martin':
+              'McLeod':
+              'Meeker':
+              'Mille Lacs':
+              'Morrison':
+              'Mower':
+              'Murray':
+              'Nicollet':
+              'Nobles':
+              'Norman':
+              'Olmsted':
+              'Otter Tail':
+              'Pennington':
+              'Pine':
+              'Pipestone':
+              'Polk':
+              'Pope':
+              'Ramsey':
+              'Red Lake':
+              'Redwood':
+              'Renville':
+              'Rice':
+              'Rock':
+              'Roseau':
+              'Scott':
+              'Sherburne':
+              'Sibley':
+              'St. Louis':
+              'Stearns':
+              'Steele':
+              'Stevens':
+              'Swift':
+              'Todd':
+              'Traverse':
+              'Wabasha':
+              'Wadena':
+              'Waseca':
+              'Washington':
+              'Watonwan':
+              'Wilkin':
+              'Winona':
+              'Wright':
+              'Yellow Medicine':
+        'Mississippi':
+            phone: '+13455555555'
+            webpage: 'https://www.mississippi.gov/home'
+            email: 'contact-mississippi@example.com'
+            message: 'This Is Mississippi Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adams':
+              'Alcorn':
+              'Amite':
+              'Attala':
+              'Benton':
+              'Bolivar':
+              'Calhoun':
+              'Carroll':
+              'Chickasaw':
+              'Choctaw':
+              'Claiborne':
+              'Clarke':
+              'Clay':
+              'Coahoma':
+              'Copiah':
+              'Covington':
+              'DeSoto':
+                children:
+                  'Southaven':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Forrest':
+              'Franklin':
+              'George':
+              'Greene':
+              'Grenada':
+              'Hancock':
+              'Harrison':
+                children:
+                  'Gulfport':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Hinds':
+                children:
+                  'Jackson':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Holmes':
+              'Humphreys':
+              'Issaquena':
+              'Itawamba':
+              'Jackson':
+              'Jasper':
+              'Jefferson':
+              'Jefferson Davis':
+              'Jones':
+              'Kemper':
+              'Lafayette':
+              'Lamar':
+              'Lauderdale':
+              'Lawrence':
+              'Leake':
+              'Lee':
+              'Leflore':
+              'Lincoln':
+              'Lowndes':
+              'Madison':
+              'Marion':
+              'Marshall':
+              'Monroe':
+              'Montgomery':
+              'Neshoba':
+              'Newton':
+              'Noxubee':
+              'Oktibbeha':
+              'Panola':
+              'Pearl River':
+              'Perry':
+              'Pike':
+              'Pontotoc':
+              'Prentiss':
+              'Quitman':
+              'Rankin':
+              'Scott':
+              'Sharkey':
+              'Simpson':
+              'Smith':
+              'Stone':
+              'Sunflower':
+              'Tallahatchie':
+              'Tate':
+              'Tippah':
+              'Tishomingo':
+              'Tunica':
+              'Union':
+              'Walthall':
+              'Warren':
+              'Washington':
+              'Wayne':
+              'Webster':
+              'Wilkinson':
+              'Winston':
+              'Yalobusha':
+              'Yazoo':
+        'Missouri':
+            phone: '+13455555555'
+            webpage: 'https://www.mo.gov'
+            email: 'contact-missouri@example.com'
+            message: 'This Is Missouri Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adair':
+              'Andrew':
+              'Atchison':
+              'Audrain':
+              'Barry':
+              'Barton':
+              'Bates':
+              'Benton':
+              'Bollinger':
+              'Boone':
+              'Buchanan':
+              'Butler':
+              'Caldwell':
+              'Callaway':
+              'Camden':
+              'Cape Girardeau':
+              'Carroll':
+              'Carter':
+              'Cass':
+              'Cedar':
+              'Chariton':
+              'Christian':
+              'Clark':
+              'Clay':
+              'Clinton':
+              'Cole':
+              'Cooper':
+              'Crawford':
+              'Dade':
+              'Dallas':
+              'Daviess':
+              'Dent':
+              'DeKalb':
+              'Douglas':
+              'Dunklin':
+              'Franklin':
+              'Gasconade':
+              'Gentry':
+              'Greene':
+                children:
+                  'Springfield':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Grundy':
+              'Harrison':
+              'Henry':
+              'Hickory':
+              'Holt':
+              'Howard':
+              'Howell':
+              'Iron':
+              'Jackson':
+                children:
+                  'Kansas City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Jasper':
+              'Jefferson':
+              'Johnson':
+              'Knox':
+              'Laclede':
+              'Lafayette':
+              'Lawrence':
+              'Lewis':
+              'Lincoln':
+              'Linn':
+              'Livingston':
+              'Macon':
+              'Madison':
+              'Maries':
+              'Marion':
+              'McDonald':
+              'Mercer':
+              'Miller':
+              'Mississippi':
+              'Moniteau':
+              'Monroe':
+              'Montgomery':
+              'Morgan':
+              'New Madrid':
+              'Newton':
+              'Nodaway':
+              'Oregon':
+              'Osage':
+              'Ozark':
+              'Pemiscot':
+              'Perry':
+              'Pettis':
+              'Phelps':
+              'Pike':
+              'Platte':
+              'Polk':
+              'Pulaski':
+              'Putnam':
+              'Ralls':
+              'Randolph':
+              'Ray':
+              'Reynolds':
+              'Ripley':
+              'Saline':
+              'Schuyler':
+              'Scotland':
+              'Scott':
+              'Shannon':
+              'Shelby':
+              'St. Charles':
+              'St. Clair':
+              'St. Francois':
+              'St. Louis city':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
+              'St. Louis':
+              'Ste. Genevieve':
+              'Stoddard':
+              'Stone':
+              'Sullivan':
+              'Taney':
+              'Texas':
+              'Vernon':
+              'Warren':
+              'Washington':
+              'Wayne':
+              'Webster':
+              'Worth':
+              'Wright':
+        'Montana':
+            phone: '+13455555555'
+            webpage: 'https://mt.gov'
+            email: 'contact-montana@example.com'
+            message: 'This Is Montana Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Beaverhead':
+              'Big Horn':
+              'Blaine':
+              'Broadwater':
+              'Carbon':
+              'Carter':
+              'Cascade':
+              'Chouteau':
+              'Custer':
+              'Daniels':
+              'Dawson':
+              'Deer Lodge':
+              'Fallon':
+              'Fergus':
+              'Flathead':
+              'Gallatin':
+              'Garfield':
+              'Glacier':
+              'Golden Valley':
+              'Granite':
+              'Hill':
+              'Jefferson':
+              'Judith Basin':
+              'Lake':
+              'Lewis and Clark':
+                children:
+                  'Helena':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Liberty':
+              'Lincoln':
+              'Madison':
+              'McCone':
+              'Meagher':
+              'Mineral':
+              'Missoula':
+                children:
+                  'Missoula':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Musselshell':
+              'Park':
+              'Petroleum':
+              'Phillips':
+              'Pondera':
+              'Powder River':
+              'Powell':
+              'Prairie':
+              'Ravalli':
+              'Richland':
+              'Roosevelt':
+              'Rosebud':
+              'Sanders':
+              'Sheridan':
+              'Silver Bow':
+              'Stillwater':
+              'Sweet Grass':
+              'Teton':
+              'Toole':
+              'Treasure':
+              'Valley':
+              'Wheatland':
+              'Wibaux':
+              'Yellowstone':
+                children:
+                  'Billings':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+        'Nebraska':
+            phone: '+13455555555'
+            webpage: 'https://www.nebraska.gov'
+            email: 'contact-nebraska@example.com'
+            message: 'This Is Nebraska Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adams':
+              'Antelope':
+              'Arthur':
+              'Banner':
+              'Blaine':
+              'Boone':
+              'Box Butte':
+              'Boyd':
+              'Brown':
+              'Buffalo':
+              'Burt':
+              'Butler':
+              'Cass':
+              'Cedar':
+              'Chase':
+              'Cherry':
+              'Cheyenne':
+              'Clay':
+              'Colfax':
+              'Cuming':
+              'Custer':
+              'Dakota':
+              'Dawes':
+              'Dawson':
+              'Deuel':
+              'Dixon':
+              'Dodge':
+              'Douglas':
+                children:
+                  'Omaha':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Dundy':
+              'Fillmore':
+              'Franklin':
+              'Frontier':
+              'Furnas':
+              'Gage':
+              'Garden':
+              'Garfield':
+              'Gosper':
+              'Grant':
+              'Greeley':
+              'Hall':
+              'Hamilton':
+              'Harlan':
+              'Hayes':
+              'Hitchcock':
+              'Holt':
+              'Hooker':
+              'Howard':
+              'Jefferson':
+              'Johnson':
+              'Kearney':
+              'Keith':
+              'Keya Paha':
+              'Kimball':
+              'Knox':
+              'Lancaster':
+                children:
+                  'Lincoln':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Lincoln':
+              'Logan':
+              'Loup':
+              'Madison':
+              'McPherson':
+              'Merrick':
+              'Morrill':
+              'Nance':
+              'Nemaha':
+              'Nuckolls':
+              'Otoe':
+              'Pawnee':
+              'Perkins':
+              'Phelps':
+              'Pierce':
+              'Platte':
+              'Polk':
+              'Red Willow':
+              'Richardson':
+              'Rock':
+              'Saline':
+              'Sarpy':
+                children:
+                  'Bellevue':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Saunders':
+              'Scotts Bluff':
+              'Seward':
+              'Sheridan':
+              'Sherman':
+              'Sioux':
+              'Stanton':
+              'Thayer':
+              'Thomas':
+              'Thurston':
+              'Valley':
+              'Washington':
+              'Wayne':
+              'Webster':
+              'Wheeler':
+              'York':
+        'Nevada':
+            phone: '+13455555555'
+            webpage: 'https://nv.gov'
+            email: 'contact-nevada@example.com'
+            message: 'This Is Nevada Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Carson city':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
+              'Churchill':
+              'Clark':
+                children:
+                  'Las Vegas':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Henderson':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Douglas':
+              'Elko':
+              'Esmeralda':
+              'Eureka':
+              'Humboldt':
+              'Lander':
+              'Lincoln':
+              'Lyon':
+              'Mineral':
+              'Nye':
+              'Pershing':
+              'Storey':
+              'Washoe':
+              'White Pine':
+        'New Hampshire':
+            phone: '+13455555555'
+            webpage: 'https://www.nh.gov/index.htm'
+            email: 'contact-new-hampshire@example.com'
+            message: 'This Is New Hampshire Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Belknap':
+              'Carroll':
+              'Cheshire':
+              'Coos':
+              'Grafton':
+              'Hillsborough':
+                children:
+                  'Manchester':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Nashua':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Merrimack':
+                children:
+                  'Concord':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Rockingham':
+              'Strafford':
+              'Sullivan':
+        'New Jersey':
+            phone: '+13455555555'
+            webpage: 'https://nj.gov'
+            email: 'contact-new-jersey@example.com'
+            message: 'This Is New Jersey Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Atlantic':
+              'Bergen':
+              'Burlington':
+              'Camden':
+              'Cape May':
+              'Cumberland':
+              'Essex':
+                children:
+                  'Newark':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Gloucester':
+              'Hudson':
+                children:
+                  'Jersey City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Hunterdon':
+              'Mercer':
+                children:
+                  'Trenton':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Middlesex':
+              'Monmouth':
+              'Morris':
+              'Ocean':
+              'Passaic':
+              'Salem':
+              'Somerset':
+              'Sussex':
+              'Union':
+              'Warren':
+        'New Mexico':
+            phone: '+13455555555'
+            webpage: 'https://www.newmexico.gov'
+            email: 'contact-new-mexico@example.com'
+            message: 'This Is New Mexico Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Bernalillo':
+                children:
+                  'Albuquerque':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Catron':
+              'Chaves':
+              'Cibola':
+              'Colfax':
+              'Curry':
+              'DeBaca':
+              'Doña Ana':
+                children:
+                  'Las Cruces':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Eddy':
+              'Grant':
+              'Guadalupe':
+              'Harding':
+              'Hidalgo':
+              'Lea':
+              'Lincoln':
+              'Los Alamos':
+              'Luna':
+              'McKinley':
+              'Mora':
+              'Otero':
+              'Quay':
+              'Rio Arriba':
+              'Roosevelt':
+              'San Juan':
+              'San Miguel':
+              'Sandoval':
+              'Santa Fe':
+                children:
+                  'Santa Fe':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Sierra':
+              'Socorro':
+              'Taos':
+              'Torrance':
+              'Union':
+              'Valencia':
+        'New York':
+            phone: '+13455555555'
+            webpage: 'https://ny.gov'
+            email: 'contact-new-york@example.com'
+            message: 'This Is New York Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Albany':
+                children:
+                  'Albany':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Allegany':
+              'Bronx':
+              'Broome':
+              'Cattaraugus':
+              'Cayuga':
+              'Chautauqua':
+              'Chemung':
+              'Chenango':
+              'Clinton':
+              'Columbia':
+              'Cortland':
+              'Delaware':
+              'Dutchess':
+              'Erie':
+                children:
+                  'Buffalo':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Essex':
+              'Franklin':
+              'Fulton':
+              'Genesee':
+              'Greene':
+              'Hamilton':
+              'Herkimer':
+              'Jefferson':
+              'Kings':
+              'Lewis':
+              'Livingston':
+              'Madison':
+              'Monroe':
+              'Montgomery':
+              'Nassau':
+              'New York':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
+              'Niagara':
+              'Oneida':
+              'Onondaga':
+              'Ontario':
+              'Orange':
+              'Orleans':
+              'Oswego':
+              'Otsego':
+              'Putnam':
+              'Queens':
+              'Rensselaer':
+              'Richmond':
+              'Rockland':
+              'Saratoga':
+              'Schenectady':
+              'Schoharie':
+              'Schuyler':
+              'Seneca':
+              'St. Lawrence':
+              'Steuben':
+              'Suffolk':
+              'Sullivan':
+              'Tioga':
+              'Tompkins':
+              'Ulster':
+              'Warren':
+              'Washington':
+              'Wayne':
+              'Westchester':
+              'Wyoming':
+              'Yates':
+        'North Carolina':
+            phone: '+13455555555'
+            webpage: 'https://www.nc.gov'
+            email: 'contact-north-carolina@example.com'
+            message: 'This Is North Carolina Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Alamance':
+              'Alexander':
+              'Alleghany':
+              'Anson':
+              'Ashe':
+              'Avery':
+              'Beaufort':
+              'Bertie':
+              'Bladen':
+              'Brunswick':
+              'Buncombe':
+              'Burke':
+              'Cabarrus':
+              'Caldwell':
+              'Camden':
+              'Carteret':
+              'Caswell':
+              'Catawba':
+              'Chatham':
+              'Cherokee':
+              'Chowan':
+              'Clay':
+              'Cleveland':
+              'Columbus':
+              'Craven':
+              'Cumberland':
+              'Currituck':
+              'Dare':
+              'Davidson':
+              'Davie':
+              'Duplin':
+              'Durham':
+              'Edgecombe':
+              'Forsyth':
+              'Franklin':
+              'Gaston':
+              'Gates':
+              'Graham':
+              'Granville':
+              'Greene':
+              'Guilford':
+                children:
+                  'Greensboro':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Halifax':
+              'Harnett':
+              'Haywood':
+              'Henderson':
+              'Hertford':
+              'Hoke':
+              'Hyde':
+              'Iredell':
+              'Jackson':
+              'Johnston':
+              'Jones':
+              'Lee':
+              'Lenoir':
+              'Lincoln':
+              'Macon':
+              'Madison':
+              'Martin':
+              'McDowell':
+              'Mecklenburg':
+                children:
+                  'Charlotte':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Mitchell':
+              'Montgomery':
+              'Moore':
+              'Nash':
+              'New Hanover':
+              'Northampton':
+              'Onslow':
+              'Orange':
+              'Pamlico':
+              'Pasquotank':
+              'Pender':
+              'Perquimans':
+              'Person':
+              'Pitt':
+              'Polk':
+              'Randolph':
+              'Richmond':
+              'Robeson':
+              'Rockingham':
+              'Rowan':
+              'Rutherford':
+              'Sampson':
+              'Scotland':
+              'Stanly':
+              'Stokes':
+              'Surry':
+              'Swain':
+              'Transylvania':
+              'Tyrrell':
+              'Union':
+              'Vance':
+              'Wake':
+                children:
+                  'Raleigh':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Warren':
+              'Washington':
+              'Watauga':
+              'Wayne':
+              'Wilkes':
+              'Wilson':
+              'Yadkin':
+              'Yancey':
+        'North Dakota':
+            phone: '+13455555555'
+            webpage: 'https://www.nd.gov/'
+            email: 'contact-north-dakota@example.com'
+            message: 'This Is North Dakota Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adams':
+              'Barnes':
+              'Benson':
+              'Billings':
+              'Bottineau':
+              'Bowman':
+              'Burke':
+              'Burleigh':
+                children:
+                  'Bismarck':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Cass':
+                children:
+                  'Fargo':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Cavalier':
+              'Dickey':
+              'Divide':
+              'Dunn':
+              'Eddy':
+              'Emmons':
+              'Foster':
+              'Golden Valley':
+              'Grand Forks':
+                children:
+                  'Grand Forks':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Grant':
+              'Griggs':
+              'Hettinger':
+              'Kidder':
+              'LaMoure':
+              'Logan':
+              'McHenry':
+              'McIntosh':
+              'McKenzie':
+              'McLean':
+              'Mercer':
+              'Morton':
+              'Mountrail':
+              'Nelson':
+              'Oliver':
+              'Pembina':
+              'Pierce':
+              'Ramsey':
+              'Ransom':
+              'Renville':
+              'Richland':
+              'Rolette':
+              'Sargent':
+              'Sheridan':
+              'Sioux':
+              'Slope':
+              'Stark':
+              'Steele':
+              'Stutsman':
+              'Towner':
+              'Traill':
+              'Walsh':
+              'Ward':
+              'Wells':
+              'Williams':
+        'Ohio':
+            phone: '+13455555555'
+            webpage: 'https://ohio.gov/wps/portal/gov/site/home/'
+            email: 'contact-ohio@example.com'
+            message: 'This Is Ohio Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adams':
+              'Allen':
+              'Ashland':
+              'Ashtabula':
+              'Athens':
+              'Auglaize':
+              'Belmont':
+              'Brown':
+              'Butler':
+              'Carroll':
+              'Champaign':
+              'Clark':
+              'Clermont':
+              'Clinton':
+              'Columbiana':
+              'Coshocton':
+              'Crawford':
+              'Cuyahoga':
+                children:
+                  'Cleveland':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Darke':
+              'Defiance':
+              'Delaware':
+              'Erie':
+              'Fairfield':
+              'Fayette':
+              'Franklin':
+                children:
+                  'Columbus':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Fulton':
+              'Gallia':
+              'Geauga':
+              'Greene':
+              'Guernsey':
+              'Hamilton':
+                children:
+                  'Cincinnati':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Hancock':
+              'Hardin':
+              'Harrison':
+              'Henry':
+              'Highland':
+              'Hocking':
+              'Holmes':
+              'Huron':
+              'Jackson':
+              'Jefferson':
+              'Knox':
+              'Lake':
+              'Lawrence':
+              'Licking':
+              'Logan':
+              'Lorain':
+              'Lucas':
+              'Madison':
+              'Mahoning':
+              'Marion':
+              'Medina':
+              'Meigs':
+              'Mercer':
+              'Miami':
+              'Monroe':
+              'Montgomery':
+              'Morgan':
+              'Morrow':
+              'Muskingum':
+              'Noble':
+              'Ottawa':
+              'Paulding':
+              'Perry':
+              'Pickaway':
+              'Pike':
+              'Portage':
+              'Preble':
+              'Putnam':
+              'Richland':
+              'Ross':
+              'Sandusky':
+              'Scioto':
+              'Seneca':
+              'Shelby':
+              'Stark':
+              'Summit':
+              'Trumbull':
+              'Tuscarawas':
+              'Union':
+              'Van Wert':
+              'Vinton':
+              'Warren':
+              'Washington':
+              'Wayne':
+              'Williams':
+              'Wood':
+              'Wyandot':
+        'Oklahoma':
+            phone: '+13455555555'
+            webpage: 'https://oklahoma.gov'
+            email: 'contact-oklahoma@example.com'
+            message: 'This Is Oklahoma Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adair':
+              'Alfalfa':
+              'Atoka':
+              'Beaver':
+              'Beckham':
+              'Blaine':
+              'Bryan':
+              'Caddo':
+              'Canadian':
+              'Carter':
+              'Cherokee':
+              'Choctaw':
+              'Cimarron':
+              'Cleveland':
+              'Coal':
+              'Comanche':
+              'Cotton':
+              'Craig':
+              'Creek':
+              'Custer':
+              'Delaware':
+              'Dewey':
+              'Ellis':
+              'Garfield':
+              'Garvin':
+              'Grady':
+              'Grant':
+              'Greer':
+              'Harmon':
+              'Harper':
+              'Haskell':
+              'Hughes':
+              'Jackson':
+              'Jefferson':
+              'Johnston':
+              'Kay':
+              'Kingfisher':
+              'Kiowa':
+              'Latimer':
+              'Le Flore':
+              'Lincoln':
+              'Logan':
+              'Love':
+              'Major':
+              'Marshall':
+              'Mayes':
+              'McClain':
+              'McCurtain':
+              'McIntosh':
+              'Murray':
+              'Muskogee':
+              'Noble':
+              'Nowata':
+              'Okfuskee':
+              'Oklahoma':
+              'Okmulgee':
+              'Osage':
+              'Ottawa':
+              'Pawnee':
+              'Payne':
+              'Pittsburg':
+              'Pontotoc':
+              'Pottawatomie':
+              'Pushmataha':
+              'Roger Mills':
+              'Rogers':
+              'Seminole':
+              'Sequoyah':
+              'Stephens':
+              'Texas':
+              'Tillman':
+              'Tulsa':
+              'Wagoner':
+              'Washington':
+              'Washita':
+              'Woods':
+              'Woodward':
+        'Oregon':
+            phone: '+13455555555'
+            webpage: 'https://www.oregon.gov'
+            email: 'contact-oregon@example.com'
+            message: 'This Is Oregon Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Baker':
+              'Benton':
+              'Clackamas':
+              'Clatsop':
+              'Columbia':
+              'Coos':
+              'Crook':
+              'Curry':
+              'Deschutes':
+              'Douglas':
+              'Gilliam':
+              'Grant':
+              'Harney':
+              'Hood River':
+              'Jackson':
+              'Jefferson':
+              'Josephine':
+              'Klamath':
+              'Lake':
+              'Lane':
+                children:
+                  'Eugene':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Lincoln':
+              'Linn':
+              'Malheur':
+              'Marion':
+                children:
+                  'Salem':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Morrow':
+              'Multnomah':
+                children:
+                  'Portland':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Polk':
+              'Sherman':
+              'Tillamook':
+              'Umatilla':
+              'Union':
+              'Wallowa':
+              'Wasco':
+              'Washington':
+              'Wheeler':
+              'Yamhill':
+        'Pennsylvania':
+            phone: '+13455555555'
+            webpage: 'https://www.pa.gov'
+            email: 'contact-pennsylvania@example.com'
+            message: 'This Is Pennsylvania Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adams':
+              'Allegheny':
+                children:
+                  'Pittsburgh':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Armstrong':
+              'Beaver':
+              'Bedford':
+              'Berks':
+              'Blair':
+              'Bradford':
+              'Bucks':
+              'Butler':
+              'Cambria':
+              'Cameron':
+              'Carbon':
+              'Centre':
+              'Chester':
+              'Clarion':
+              'Clearfield':
+              'Clinton':
+              'Columbia':
+              'Crawford':
+              'Cumberland':
+              'Dauphin':
+                children:
+                  'Harrisburg':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Delaware':
+              'Elk':
+              'Erie':
+              'Fayette':
+              'Forest':
+              'Franklin':
+              'Fulton':
+              'Greene':
+              'Huntingdon':
+              'Indiana':
+              'Jefferson':
+              'Juniata':
+              'Lackawanna':
+              'Lancaster':
+              'Lawrence':
+              'Lebanon':
+              'Lehigh':
+              'Luzerne':
+              'Lycoming':
+              'McKean':
+              'Mercer':
+              'Mifflin':
+              'Monroe':
+              'Montgomery':
+              'Montour':
+              'Northampton':
+              'Northumberland':
+              'Perry':
+              'Philadelphia':
+                children:
+                  'Philadelphia':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Pike':
+              'Potter':
+              'Schuylkill':
+              'Snyder':
+              'Somerset':
+              'Sullivan':
+              'Susquehanna':
+              'Tioga':
+              'Union':
+              'Venango':
+              'Warren':
+              'Washington':
+              'Wayne':
+              'Westmoreland':
+              'Wyoming':
+              'York':
+        'Rhode Island':
+            phone: '+13455555555'
+            webpage: 'www.ri.gov'
+            email: 'contact-rhode-island@example.com'
+            message: 'This Is Rhode Island Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Bristol':
+              'Kent':
+                children:
+                  'Warwick':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Newport':
+              'Providence':
+                children:
+                  'Cranston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Providence':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Washington':
+        'South Carolina':
+            phone: '+13455555555'
+            webpage: 'https://sc.gov/'
+            email: 'contact-south-carolina@example.com'
+            message: 'This Is South Carolina Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Abbeville':
+              'Aiken':
+              'Allendale':
+              'Anderson':
+              'Bamberg':
+              'Barnwell':
+              'Beaufort':
+              'Berkeley':
+              'Calhoun':
+              'Charleston':
+                children:
+                  'North Charleston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Charleston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Cherokee':
+              'Chester':
+              'Chesterfield':
+              'Clarendon':
+              'Colleton':
+              'Darlington':
+              'Dillon':
+              'Dorchester':
+              'Edgefield':
+              'Fairfield':
+              'Florence':
+              'Georgetown':
+              'Greenville':
+              'Greenwood':
+              'Hampton':
+              'Horry':
+              'Jasper':
+              'Kershaw':
+              'Lancaster':
+              'Laurens':
+              'Lee':
+              'Lexington':
+              'Marion':
+              'Marlboro':
+              'McCormick':
+              'Newberry':
+              'Oconee':
+              'Orangeburg':
+              'Pickens':
+              'Richland':
+                children:
+                  'Columbia':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Saluda':
+              'Spartanburg':
+              'Sumter':
+              'Union':
+              'Williamsburg':
+              'York':
+        'South Dakota':
+            phone: '+13455555555'
+            webpage: 'https://sd.gov'
+            email: 'contact-south-dakota@example.com'
+            message: 'This Is South Dakota Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Aurora':
+              'Beadle':
+              'Bennett':
+              'Bon Homme':
+              'Brookings':
+              'Brown':
+              'Brule':
+              'Buffalo':
+              'Butte':
+              'Campbell':
+              'Charles Mix':
+              'Clark':
+              'Clay':
+              'Codington':
+              'Corson':
+              'Custer':
+              'Davison':
+              'Day':
+              'Deuel':
+              'Dewey':
+              'Douglas':
+              'Edmunds':
+              'Fall River':
+              'Faulk':
+              'Grant':
+              'Gregory':
+              'Haakon':
+              'Hamlin':
+              'Hand':
+              'Hanson':
+              'Harding':
+              'Hughes':
+                children:
+                  'Pierre':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Hutchinson':
+              'Hyde':
+              'Jackson':
+              'Jerauld':
+              'Jones':
+              'Kingsbury':
+              'Lake':
+              'Lawrence':
+              'Lincoln':
+              'Lyman':
+              'Marshall':
+              'McCook':
+              'McPherson':
+              'Meade':
+              'Mellette':
+              'Miner':
+              'Minnehaha':
+                children:
+                  'Sioux Falls':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Moody':
+              'Pennington':
+                children:
+                  'Rapid City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Perkins':
+              'Potter':
+              'Roberts':
+              'Sanborn':
+              'Shannon':
+              'Spink':
+              'Stanley':
+              'Sully':
+              'Todd':
+              'Tripp':
+              'Turner':
+              'Union':
+              'Walworth':
+              'Yankton':
+              'Ziebach':
+        'Tennessee':
+            phone: '+13455555555'
+            webpage: 'https://www.tn.gov'
+            email: 'contact-tennessee@example.com'
+            message: 'This Is Tennessee Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Anderson':
+              'Bedford':
+              'Benton':
+              'Bledsoe':
+              'Blount':
+              'Bradley':
+              'Campbell':
+              'Cannon':
+              'Carroll':
+              'Carter':
+              'Cheatham':
+              'Chester':
+              'Claiborne':
+              'Clay':
+              'Cocke':
+              'Coffee':
+              'Crockett':
+              'Cumberland':
+              'Davidson':
+                children:
+                  'Nashville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Decatur':
+              'DeKalb':
+              'Dickson':
+              'Dyer':
+              'Fayette':
+              'Fentress':
+              'Franklin':
+              'Gibson':
+              'Giles':
+              'Grainger':
+              'Greene':
+              'Grundy':
+              'Hamblen':
+              'Hamilton':
+              'Hancock':
+              'Hardeman':
+              'Hardin':
+              'Hawkins':
+              'Haywood':
+              'Henderson':
+              'Henry':
+              'Hickman':
+              'Houston':
+              'Humphreys':
+              'Jackson':
+              'Jefferson':
+              'Johnson':
+              'Knox':
+                children:
+                  'Knoxville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Lake':
+              'Lauderdale':
+              'Lawrence':
+              'Lewis':
+              'Lincoln':
+              'Loudon':
+              'Macon':
+              'Madison':
+              'Marion':
+              'Marshall':
+              'Maury':
+              'McMinn':
+              'McNairy':
+              'Meigs':
+              'Monroe':
+              'Montgomery':
+              'Moore':
+              'Morgan':
+              'Obion':
+              'Overton':
+              'Perry':
+              'Pickett':
+              'Polk':
+              'Putnam':
+              'Rhea':
+              'Roane':
+              'Robertson':
+              'Rutherford':
+              'Scott':
+              'Sequatchie':
+              'Sevier':
+              'Shelby':
+                children:
+                  'Memphis':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Smith':
+              'Stewart':
+              'Sullivan':
+              'Sumner':
+              'Tipton':
+              'Trousdale':
+              'Unicoi':
+              'Union':
+              'Van Buren':
+              'Warren':
+              'Washington':
+              'Wayne':
+              'Weakley':
+              'White':
+              'Williamson':
+              'Wilson':
+        'Texas':
+            phone: '+13455555555'
+            webpage: 'https://www.texas.gov'
+            email: 'contact-texas@example.com'
+            message: 'This Is Texas Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Anderson':
+              'Andrews':
+              'Angelina':
+              'Aransas':
+              'Archer':
+              'Armstrong':
+              'Atascosa':
+              'Austin':
+              'Bailey':
+              'Bandera':
+              'Bastrop':
+              'Baylor':
+              'Bee':
+              'Bell':
+              'Bexar':
+                children:
+                  'San Antonio':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Blanco':
+              'Borden':
+              'Bosque':
+              'Bowie':
+              'Brazoria':
+              'Brazos':
+              'Brewster':
+              'Briscoe':
+              'Brooks':
+              'Brown':
+              'Burleson':
+              'Burnet':
+              'Caldwell':
+              'Calhoun':
+              'Callahan':
+              'Cameron':
+              'Camp':
+              'Carson':
+              'Cass':
+              'Castro':
+              'Chambers':
+              'Cherokee':
+              'Childress':
+              'Clay':
+              'Cochran':
+              'Coke':
+              'Coleman':
+              'Collin':
+              'Collingsworth':
+              'Colorado':
+              'Comal':
+              'Comanche':
+              'Concho':
+              'Cooke':
+              'Coryell':
+              'Cottle':
+              'Crane':
+              'Crockett':
+              'Crosby':
+              'Culberson':
+              'Dallam':
+              'Dallas':
+              'Dawson':
+              'Deaf Smith':
+              'Delta':
+              'Denton':
+              'DeWitt':
+              'Dickens':
+              'Dimmit':
+              'Donley':
+              'Duval':
+              'Eastland':
+              'Ector':
+              'Edwards':
+              'El Paso':
+              'Ellis':
+              'Erath':
+              'Falls':
+              'Fannin':
+              'Fayette':
+              'Fisher':
+              'Floyd':
+              'Foard':
+              'Fort Bend':
+              'Franklin':
+              'Freestone':
+              'Frio':
+              'Gaines':
+              'Galveston':
+              'Garza':
+              'Gillespie':
+              'Glasscock':
+              'Goliad':
+              'Gonzales':
+              'Gray':
+              'Grayson':
+              'Gregg':
+              'Grimes':
+              'Guadalupe':
+              'Hale':
+              'Hall':
+              'Hamilton':
+              'Hansford':
+              'Hardeman':
+              'Hardin':
+              'Harris':
+                children:
+                  'Houston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Harrison':
+              'Hartley':
+              'Haskell':
+              'Hays':
+              'Hemphill':
+              'Henderson':
+              'Hidalgo':
+              'Hill':
+              'Hockley':
+              'Hood':
+              'Hopkins':
+              'Houston':
+              'Howard':
+              'Hudspeth':
+              'Hunt':
+              'Hutchinson':
+              'Irion':
+              'Jack':
+              'Jackson':
+              'Jasper':
+              'Jeff Davis':
+              'Jefferson':
+              'Jim Hogg':
+              'Jim Wells':
+              'Johnson':
+              'Jones':
+              'Karnes':
+              'Kaufman':
+              'Kendall':
+              'Kenedy':
+              'Kent':
+              'Kerr':
+              'Kimble':
+              'King':
+              'Kinney':
+              'Kleberg':
+              'Knox':
+              'La Salle':
+              'Lamar':
+              'Lamb':
+              'Lampasas':
+              'Lavaca':
+              'Lee':
+              'Leon':
+              'Liberty':
+              'Limestone':
+              'Lipscomb':
+              'Live Oak':
+              'Llano':
+              'Loving':
+              'Lubbock':
+              'Lynn':
+              'Madison':
+              'Marion':
+              'Martin':
+              'Mason':
+              'Matagorda':
+              'Maverick':
+              'McCulloch':
+              'McLennan':
+              'McMullen':
+              'Medina':
+              'Menard':
+              'Midland':
+              'Milam':
+              'Mills':
+              'Mitchell':
+              'Montague':
+              'Montgomery':
+              'Moore':
+              'Morris':
+              'Motley':
+              'Nacogdoches':
+              'Navarro':
+              'Newton':
+              'Nolan':
+              'Nueces':
+              'Ochiltree':
+              'Oldham':
+              'Orange':
+              'Palo Pinto':
+              'Panola':
+              'Parker':
+              'Parmer':
+              'Pecos':
+              'Polk':
+              'Potter':
+              'Presidio':
+              'Rains':
+              'Randall':
+              'Reagan':
+              'Real':
+              'Red River':
+              'Reeves':
+              'Refugio':
+              'Roberts':
+              'Robertson':
+              'Rockwall':
+              'Runnels':
+              'Rusk':
+              'Sabine':
+              'San Augustine':
+              'San Jacinto':
+              'San Patricio':
+              'San Saba':
+              'Schleicher':
+              'Scurry':
+              'Shackelford':
+              'Shelby':
+              'Sherman':
+              'Smith':
+              'Somervell':
+              'Starr':
+              'Stephens':
+              'Sterling':
+              'Stonewall':
+              'Sutton':
+              'Swisher':
+              'Tarrant':
+              'Taylor':
+              'Terrell':
+              'Terry':
+              'Throckmorton':
+              'Titus':
+              'Tom Green':
+              'Travis':
+                children:
+                  'Austin':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Trinity':
+              'Tyler':
+              'Upshur':
+              'Upton':
+              'Uvalde':
+              'Val Verde':
+              'Van Zandt':
+              'Victoria':
+              'Walker':
+              'Waller':
+              'Ward':
+              'Washington':
+              'Webb':
+              'Wharton':
+              'Wheeler':
+              'Wichita':
+              'Wilbarger':
+              'Willacy':
+              'Williamson':
+              'Wilson':
+              'Winkler':
+              'Wise':
+              'Wood':
+              'Yoakum':
+              'Young':
+              'Zapata':
+              'Zavala':
+        'Utah':
+            phone: '+13455555555'
+            webpage: 'https://www.utah.gov'
+            email: 'contact-utah@example.com'
+            message: 'This Is Utah Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Beaver':
+              'Box Elder':
+              'Cache':
+              'Carbon':
+              'Daggett':
+              'Davis':
+              'Duchesne':
+              'Emery':
+              'Garfield':
+              'Grand':
+              'Iron':
+              'Juab':
+              'Kane':
+              'Millard':
+              'Morgan':
+              'Piute':
+              'Rich':
+              'Salt Lake':
+                children:
+                  'West Valley City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Salt Lake City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'San Juan':
+              'Sanpete':
+              'Sevier':
+              'Summit':
+              'Tooele':
+              'Uintah':
+              'Utah':
+                children:
+                  'Provo':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Wasatch':
+              'Washington':
+              'Wayne':
+              'Weber':
+        'Vermont':
+            phone: '+13455555555'
+            webpage: 'www.example.com'
+            email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Addison':
+              'Bennington':
+              'Caledonia':
+              'Chittenden':
+                children:
+                  'South Burlington':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Burlington':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Essex':
+              'Franklin':
+              'Grand Isle':
+              'Lamoille':
+              'Orange':
+              'Orleans':
+              'Rutland':
+              'Washington':
+                children:
+                  'Montpelier':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Windham':
+              'Windsor':
+        'Virginia':
+            phone: '+13455555555'
+            webpage: 'https://www.virginia.gov'
+            email: 'contact-virginia@example.com'
+            message: 'This Is Virginia Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Accomack':
+              'Albemarle':
+              'Alleghany':
+              'Amelia':
+              'Amherst':
+              'Appomattox':
+              'Arlington':
+              'Augusta':
+              'Bath':
+              'Bedford':
+              'Bland':
+              'Botetourt':
+              'Brunswick':
+              'Buchanan':
+              'Buckingham':
+              'Campbell':
+              'Caroline':
+              'Carroll':
+              'Charles City':
+              'Charlotte':
+              'Chesterfield':
+              'Clarke':
+              'Craig':
+              'Culpeper':
+              'Cumberland':
+              'Dickenson':
+              'Dinwiddie':
+              'Essex':
+              'Fairfax':
+              'Fauquier':
+              'Floyd':
+              'Fluvanna':
+              'Franklin':
+              'Frederick':
+              'Giles':
+              'Gloucester':
+              'Goochland':
+              'Grayson':
+              'Greene':
+              'Greensville':
+              'Halifax':
+              'Hanover':
+              'Henrico':
+              'Henry':
+              'Highland':
+              'Isle of Wight':
+              'James City':
+              'King and Queen':
+              'King George':
+              'King William':
+              'Lancaster':
+              'Lee':
+              'Loudoun':
+              'Louisa':
+              'Lunenburg':
+              'Madison':
+              'Mathews':
+              'Mecklenburg':
+              'Middlesex':
+              'Montgomery':
+              'Nelson':
+              'New Kent':
+              'Northampton':
+              'Northumberland':
+              'Nottoway':
+              'Orange':
+              'Page':
+              'Patrick':
+              'Pittsylvania':
+              'Powhatan':
+              'Prince Edward':
+              'Prince George':
+              'Prince William':
+              'Pulaski':
+              'Rappahannock':
+              'Richmond':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
+              'Roanoke':
+              'Rockbridge':
+              'Rockingham':
+              'Russell':
+              'Scott':
+              'Shenandoah':
+              'Smyth':
+              'Southampton':
+              'Spotsylvania':
+              'Stafford':
+              'Surry':
+              'Sussex':
+              'Tazewell':
+              'Warren':
+              'Washington':
+              'Westmoreland':
+              'Wise':
+              'Wythe':
+              'York':
+        'Washington':
+            phone: '+13455555555'
+            webpage: 'https://access.wa.gov'
+            email: 'contact-washington@example.com'
+            message: 'This Is Washington Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adams':
+              'Asotin':
+              'Benton':
+              'Chelan':
+              'Clallam':
+              'Clark':
+              'Columbia':
+              'Cowlitz':
+              'Douglas':
+              'Ferry':
+              'Franklin':
+              'Garfield':
+              'Grant':
+              'Grays Harbor':
+              'Island':
+              'Jefferson':
+              'King':
+                children:
+                  'Seattle':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Kitsap':
+              'Kittitas':
+              'Klickitat':
+              'Lewis':
+              'Lincoln':
+              'Mason':
+              'Okanogan':
+              'Pacific':
+              'Pend Oreille':
+              'Pierce':
+              'San Juan':
+              'Skagit':
+              'Skamania':
+              'Snohomish':
+              'Spokane':
+                children:
+                  'Spokane':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Stevens':
+              'Thurston':
+                children:
+                  'Olympia':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Wahkiakum':
+              'Walla Walla':
+              'Whatcom':
+              'Whitman':
+              'Yakima':
+        'West Virginia':
+            phone: '+13455555555'
+            webpage: 'https://www.wv.gov'
+            email: 'contact-west-virginia@example.com'
+            message: 'This Is West Virginia Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Barbour':
+              'Berkeley':
+              'Boone':
+              'Braxton':
+              'Brooke':
+              'Cabell':
+                children:
+                  'Huntington':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Calhoun':
+              'Clay':
+              'Doddridge':
+              'Fayette':
+              'Gilmer':
+              'Grant':
+              'Greenbrier':
+              'Hampshire':
+              'Hancock':
+              'Hardy':
+              'Harrison':
+              'Jackson':
+              'Jefferson':
+              'Kanawha':
+                children:
+                  'Charleston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Lewis':
+              'Lincoln':
+              'Logan':
+              'Marion':
+              'Marshall':
+              'Mason':
+              'McDowell':
+              'Mercer':
+              'Mineral':
+              'Mingo':
+              'Monongalia':
+                children:
+                  'Morgantown':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Monroe':
+              'Morgan':
+              'Nicholas':
+              'Ohio':
+              'Pendleton':
+              'Pleasants':
+              'Pocahontas':
+              'Preston':
+              'Putnam':
+              'Raleigh':
+              'Randolph':
+              'Ritchie':
+              'Roane':
+              'Summers':
+              'Taylor':
+              'Tucker':
+              'Tyler':
+              'Upshur':
+              'Wayne':
+              'Webster':
+              'Wetzel':
+              'Wirt':
+              'Wood':
+              'Wyoming':
+        'Wisconsin':
+            phone: '+13455555555'
+            webpage: 'https://www.wisconsin.gov'
+            email: 'contact-wisconsin@example.com'
+            message: 'This Is Wisconsin Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Adams':
+              'Ashland':
+              'Barron':
+              'Bayfield':
+              'Brown':
+                children:
+                  'Green Bay':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Buffalo':
+              'Burnett':
+              'Calumet':
+              'Chippewa':
+              'Clark':
+              'Columbia':
+              'Crawford':
+              'Dane':
+                children:
+                  'Madison':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Dodge':
+              'Door':
+              'Douglas':
+              'Dunn':
+              'Eau Claire':
+              'Florence':
+              'Fond du Lac':
+              'Forest':
+              'Grant':
+              'Green':
+              'Green Lake':
+              'Iowa':
+              'Iron':
+              'Jackson':
+              'Jefferson':
+              'Juneau':
+              'Kenosha':
+              'Kewaunee':
+              'La Crosse':
+              'Lafayette':
+              'Langlade':
+              'Lincoln':
+              'Manitowoc':
+              'Marathon':
+              'Marinette':
+              'Marquette':
+              'Menominee':
+              'Milwaukee':
+                children:
+                  'Milwaukee':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Monroe':
+              'Oconto':
+              'Oneida':
+              'Outagamie':
+              'Ozaukee':
+              'Pepin':
+              'Pierce':
+              'Polk':
+              'Portage':
+              'Price':
+              'Racine':
+              'Richland':
+              'Rock':
+              'Rusk':
+              'Sauk':
+              'Sawyer':
+              'Shawano':
+              'Sheboygan':
+              'St. Croix':
+              'Taylor':
+              'Trempealeau':
+              'Vernon':
+              'Vilas':
+              'Walworth':
+              'Washburn':
+              'Washington':
+              'Waukesha':
+              'Waupaca':
+              'Waushara':
+              'Winnebago':
+              'Wood':
+        'Wyoming':
+            phone: '+13455555555'
+            webpage: 'www.wyo.gov'
+            email: 'contact-wyoming@example.com'
+            message: 'This Is Wyoming Custom Jurisdiction Message'
+            send_digest: false
+            children:
+              'Albany':
+                children:
+                  'Laramie':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Big Horn':
+              'Campbell':
+              'Carbon':
+              'Converse':
+              'Crook':
+              'Fremont':
+              'Goshen':
+              'Hot Springs':
+              'Johnson':
+              'Laramie':
+                children:
+                  'Cheyenne':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Lincoln':
+              'Natrona':
+                children:
+                  'Casper':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+              'Niobrara':
+              'Park':
+              'Platte':
+              'Sheridan':
+              'Sublette':
+              'Sweetwater':
+              'Teton':
+              'Uinta':
+              'Washakie':
+              'Weston':
