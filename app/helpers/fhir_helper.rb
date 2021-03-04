@@ -193,7 +193,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_date_extension(close_contact.last_date_of_exposure, 'last-date-of-exposure'),
         to_positive_integer_extension(close_contact.assigned_user, 'assigned-user'),
         to_positive_integer_extension(close_contact.contact_attempts, 'contact-attempts'),
-        to_string_extension(close_contact.notes, 'close-contact-notes')
+        to_string_extension(close_contact.notes, 'close-contact-notes'),
+        to_reference_extension(close_contact.enrolled_id, 'Patient', 'enrolled-patient')
       ]
     )
   end
@@ -208,7 +209,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       assigned_user: from_positive_integer_extension(related_person, 'assigned-user'),
       notes: from_string_extension(related_person, 'close-contact-notes'),
       patient_id: related_person&.patient&.reference&.match(%r{^Patient/(\d+)$}).to_a[1],
-      contact_attempts: from_positive_integer_extension(related_person, 'contact-attempts')
+      contact_attempts: from_positive_integer_extension(related_person, 'contact-attempts'),
+      enrolled_id: from_reference_extension(related_person, 'enrolled-patient')&.reference&.match(%r{^Patient/(\d+)$}).to_a[1]
     }
   end
 
@@ -378,6 +380,17 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   def from_string_extension(element, extension_id)
     element&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueString
+  end
+
+  def to_reference_extension(id, resource_type, extension_id)
+    id.blank? ? nil : FHIR::Extension.new(
+      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
+      valueReference: FHIR::Reference.new(reference: "#{resource_type}/#{id}")
+    )
+  end
+
+  def from_reference_extension(element, extension_id)
+    element&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueReference
   end
 
   def to_positive_integer_extension(value, extension_id)

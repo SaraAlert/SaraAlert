@@ -11,6 +11,7 @@ close_contact_1:
   notes: 'Close and contacted'
   assigned_user: 1
   patient_id: 1
+  enrolled_id: 2
 close_contact_2:
   id: 2
   created_at: <%= 33.days.ago %>
