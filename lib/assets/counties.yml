@@ -185,7 +185,7 @@ Arkansas:
   - White
   - Woodruff
   - Yell
-  
+
 California:
   - Alameda
   - Alpine
@@ -321,7 +321,7 @@ Connecticut:
   - New London
   - Tolland
   - Windham
-  
+
 Delaware:
   - Kent
   - New Castle
@@ -1137,7 +1137,7 @@ Kentucky:
   - Whitley
   - Wolfe
   - Woodford
-  
+
 Louisiana:
   - Acadia Parish
   - Allen Parish
@@ -2101,7 +2101,7 @@ North Dakota:
   - Wells
   - Williams
 
-Ohio: 
+Ohio:
   - Adams
   - Allen
   - Ashland
@@ -2376,6 +2376,13 @@ Pennsylvania:
   - Westmoreland
   - Wyoming
   - York
+
+Rhode Island:
+  - Bristol
+  - Kent
+  - Newport
+  - Providence
+  - Washington
 
 South Carolina:
   - Abbeville
