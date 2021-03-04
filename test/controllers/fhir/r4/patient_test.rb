@@ -4,56 +4,7 @@ require 'test_helper'
 require 'rspec/mocks/minitest_integration'
 require 'controllers/fhir/r4/api_controller_test'
 
-# rubocop:disable Metrics/ClassLength
 class ApiControllerTest < ActionDispatch::IntegrationTest
-  setup do
-    setup_patients
-  end
-
-  # Sets up FHIR patients used for testing
-  def setup_patients
-    Patient.find_by(id: 1).update!(
-      assigned_user: '1234',
-      exposure_notes: 'exposure notes',
-      travel_related_notes: 'travel notes',
-      additional_planned_travel_related_notes: 'additional travel notes'
-    )
-    @patient_1 = Patient.find_by(id: 1).as_fhir
-
-    # Update Patient 2 before created FHIR resource from it
-    Patient.find_by(id: 2).update!(
-      preferred_contact_method: 'SMS Texted Weblink',
-      preferred_contact_time: 'Afternoon',
-      symptom_onset: 3.days.ago,
-      isolation: true,
-      primary_telephone: '+15555559999',
-      jurisdiction_id: 4,
-      monitoring_plan: 'Daily active monitoring',
-      assigned_user: '2345',
-      additional_planned_travel_start_date: 5.days.from_now,
-      port_of_origin: 'Tortuga',
-      date_of_departure: 2.days.ago,
-      flight_or_vessel_number: 'XYZ123',
-      flight_or_vessel_carrier: 'FunAirlines',
-      date_of_arrival: 2.days.from_now,
-      exposure_notes: 'exposure notes',
-      travel_related_notes: 'travel related notes',
-      additional_planned_travel_related_notes: 'additional travel related notes',
-      primary_telephone_type: 'Plain Cell',
-      secondary_telephone_type: 'Landline',
-      black_or_african_american: true,
-      asian: true,
-      continuous_exposure: true,
-      last_date_of_exposure: nil
-    )
-    @patient_2 = Patient.find_by(id: 2).as_fhir
-
-    # Update Patient 2 number to guarantee unique phone number
-    Patient.find_by(id: 2).update!(
-      primary_telephone: '+15555559998'
-    )
-  end
-
   #----- show tests -----
 
   test 'should get patient via show' do
@@ -871,4 +822,3 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_nil json_response['link']
   end
 end
-# rubocop:enable Metrics/ClassLength

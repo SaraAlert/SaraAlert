@@ -90,7 +90,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Update a resource given a type and an id.
   #
-  # Supports (updating): Patient
+  # Supports (updating): Patient, RelatedPerson
   #
   # PUT /fhir/r4/[:resource_type]/[:id]
   def update
@@ -102,7 +102,7 @@ class Fhir::R4::ApiController < ActionController::API
     else
       status_unsupported_media_type && return unless content_type_header?('application/fhir+json')
 
-      # Parse in the FHIR::Patient
+      # Parse in the FHIR
       contents = FHIR.from_contents(request.body.string)
       errors = contents&.validate
       status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
@@ -160,6 +160,42 @@ class Fhir::R4::ApiController < ActionController::API
       end
 
       status_ok(patient.as_fhir) && return
+    when 'relatedperson'
+      return if doorkeeper_authorize!(
+        :'user/RelatedPerson.write',
+        :'user/RelatedPerson.*',
+        :'system/RelatedPerson.write',
+        :'system/RelatedPerson.*'
+      )
+
+      # Get the CloseContact that needs to be updated
+      close_contact = get_close_contact(params.permit(:id)[:id])
+      status_forbidden && return if close_contact.nil?
+
+      # Get the contents from applying a patch, if needed
+      if request.patch? && !close_contact.nil?
+        begin
+          contents = apply_patch(close_contact, patch)
+        rescue StandardError => e
+          status_bad_request([['Unable to apply patch', e&.message].compact.join(': ')]) && return
+        end
+      end
+
+      request_updates = close_contact_from_fhir(contents)
+      status_unprocessable_entity && return if request_updates.nil?
+
+      # Assign any remaining updates to the close_contact
+      close_contact.assign_attributes(request_updates)
+
+      # Wrap updates to the CloseContact and History creation in a transaction
+      ActiveRecord::Base.transaction do
+        unless referenced_patient_valid_for_client?(close_contact) && close_contact.save(context: :api)
+          status_unprocessable_entity(format_model_validation_errors(close_contact)) && return
+        end
+
+        # Create history items here
+      end
+      status_ok(close_contact.as_fhir) && return
     else
       status_not_found && return
     end
