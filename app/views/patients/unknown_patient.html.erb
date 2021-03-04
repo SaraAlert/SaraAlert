@@ -1,0 +1,19 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-24 d-flex flex-column justify-content-center">
+      <%= render partial: 'errors/logo' %>
+      <div class="row">
+        <div class="mx-auto">
+          <h2>Monitoree Unavailable</h2>
+          <h3>The Monitoree with ID <%= params[:id] %> is not available. This may be because: </h3>
+          <ul>
+          <li>The Monitoree has been removed from SaraAlert</li>
+          <li>The Monitoree has completed monitoring and is no longer active in SaraAlert</li>
+          <li>The Monitoree has been transferred to a jurisdiction which you do not have permission to view</li>
+          </ul>
+        </div>
+      </div>
+      <%= render partial: 'errors/return_home' %>
+    </div>
+  </div>
+</div>
