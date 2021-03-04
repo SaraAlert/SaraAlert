@@ -2684,16 +2684,11 @@
             message: 'This Is a Custom Jurisdiction Message'
             send_digest: false
             children:
-                'Rhode Island County 1':
-                  phone: '+13455555555'
-                  webpage: 'www.example.com'
-                  email: 'contact@example.com'
-                  message: 'This Is a Custom Jurisdiction Message'
-                'Rhode Island County 2':
-                  phone: '+13455555555'
-                  webpage: 'www.example.com'
-                  email: 'contact@example.com'
-                  message: 'This Is a Custom Jurisdiction Message'
+              'Bristol':
+              'Kent':
+              'Newport':
+              'Providence':
+              'Washington':
         'South Carolina':
             phone: '+13455555555'
             webpage: 'www.example.com'
