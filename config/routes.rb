@@ -87,6 +87,7 @@ Rails.application.routes.draw do
   get '/import/download_guidance', to: 'import#download_guidance'
 
   get '/patients/:id/household_removeable', to: 'patients#household_removeable'
+  get '/patients/:id/unknown_patient', to: 'patients#unknown_patient'
   post '/patients/head_of_household_options', to: 'patients#head_of_household_options'
   post '/patients/bulk_edit', to: 'patients#bulk_update'
   post '/patients/:id/status', to: 'patients#update_status'
