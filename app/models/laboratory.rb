@@ -3,7 +3,6 @@
 # Laboratory: represents a lab result
 class Laboratory < ApplicationRecord
   include ValidationHelper
-  include ImportExportConstants
 
   belongs_to :patient, touch: true
 
@@ -53,8 +52,14 @@ class Laboratory < ApplicationRecord
 
   def custom_details(fields)
     laboratory_details = {}
-    (fields & LABORATORY_FIELD_TYPES[:unfiltered]).each { |field| laboratory_details[field] = self[field] }
-    (fields & LABORATORY_FIELD_TYPES[:dates]).each { |field| laboratory_details[field] = self[field]&.strftime('%F') }
+    laboratory_details[:id] = id if fields.include?(:id)
+    laboratory_details[:patient_id] = patient_id if fields.include?(:patient_id)
+    laboratory_details[:lab_type] = lab_type if fields.include?(:lab_type)
+    laboratory_details[:specimen_collection] = specimen_collection&.strftime('%F') if fields.include?(:specimen_collection)
+    laboratory_details[:report] = report&.strftime('%F') if fields.include?(:report)
+    laboratory_details[:result] = result if fields.include?(:result)
+    laboratory_details[:created_at] = created_at if fields.include?(:created_at)
+    laboratory_details[:updated_at] = updated_at if fields.include?(:updated_at)
     laboratory_details
   end
 
