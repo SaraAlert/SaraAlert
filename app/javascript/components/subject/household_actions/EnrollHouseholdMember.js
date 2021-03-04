@@ -16,9 +16,9 @@ class EnrollHouseholdMember extends React.Component {
     this.setState({ showModal: !current });
   };
 
-  createModal(toggle) {
+  createModal() {
     return (
-      <Modal size="lg" show centered onHide={toggle}>
+      <Modal size="lg" show centered onHide={this.toggleModal}>
         <Modal.Header>
           <Modal.Title>Enroll Household Member</Modal.Title>
         </Modal.Header>
@@ -38,7 +38,7 @@ class EnrollHouseholdMember extends React.Component {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
+          <Button variant="secondary btn-square" onClick={this.toggleModal}>
             Cancel
           </Button>
           <Button
@@ -66,7 +66,7 @@ class EnrollHouseholdMember extends React.Component {
         <Button size="sm" className="my-2" onClick={this.toggleModal}>
           <i className="fas fa-user-plus"></i> Enroll Household Member
         </Button>
-        {this.state.showModal && this.createModal(this.toggleModal)}
+        {this.state.showModal && this.createModal()}
       </React.Fragment>
     );
   }
