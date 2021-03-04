@@ -192,4 +192,31 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, errors.length
     assert_match(/0.*Patient ID.*API user/, errors[0])
   end
+
+  #----- search tests -----
+
+  test 'should find RelatedPersons for a Patient via search' do
+    patient_1 = Patient.find_by_id(1)
+    get(
+      '/fhir/r4/RelatedPerson?patient=Patient/1',
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 'Bundle', json_response['resourceType']
+    assert_equal 'RelatedPerson', json_response['entry'].first['resource']['resourceType']
+    assert_equal patient_1.close_contacts.length, json_response['total']
+    assert_equal JSON.parse(patient_1.close_contacts.first.as_fhir.to_json), json_response['entry'].first['resource']
+  end
+
+  test 'should find no RelatedPersons for an invalid Patient via search' do
+    get(
+      '/fhir/r4/RelatedPerson?patient=Patient/blah',
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 'Bundle', json_response['resourceType']
+    assert_equal 0, json_response['total']
+  end
 end

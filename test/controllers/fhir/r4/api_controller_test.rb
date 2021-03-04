@@ -684,6 +684,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get Bundle via all' do
+    patient = Patient.find_by_id(1)
     get(
       '/fhir/r4/Patient/1/$everything',
       headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
@@ -691,10 +692,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     json_response = JSON.parse(response.body)
     assert_equal 'Bundle', json_response['resourceType']
-    assert_equal 5, json_response['total']
+    assert_equal patient.assessments.length + patient.laboratories.length + patient.close_contacts.length + 1, json_response['total']
     assert_equal 1, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Patient' }.count
-    assert_equal 2, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'QuestionnaireResponse' }.count
-    assert_equal 2, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Observation' }.count
+    assert_equal patient.assessments.length, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'QuestionnaireResponse' }.count
+    assert_equal patient.laboratories.length, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Observation' }.count
+    assert_equal patient.close_contacts.length, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'RelatedPerson' }.count
     assert_equal 'Patient/1', json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Observation' }.first['resource']['subject']['reference']
     assert_equal 1, json_response['entry'].first['resource']['id']
   end
