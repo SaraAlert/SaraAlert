@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import Patient from '../../components/patient/Patient.js'
 import BadgeHOH from '../../components/util/BadgeHOH';
-import AddHouseholdMember from '../../components/subject/household_actions/AddHouseholdMember.js'
+import EnrollHouseholdMember from '../../components/subject/household_actions/EnrollHouseholdMember.js'
 import ChangeHOH from '../../components/subject/ChangeHOH';
 import MoveToHousehold from '../../components/subject/MoveToHousehold';
 import RemoveFromHousehold from '../../components/subject/RemoveFromHousehold';
@@ -434,7 +434,7 @@ describe('Patient', () => {
     expect(wrapper.find('#head-of-household').find(Row).at(1).text())
       .toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
     expect(wrapper.find(ChangeHOH).exists()).toBeTruthy();
-    expect(wrapper.find(AddHouseholdMember).exists()).toBeTruthy();
+    expect(wrapper.find(EnrollHouseholdMember).exists()).toBeTruthy();
     expect(wrapper.find(RemoveFromHousehold).exists()).toBeFalsy();
     expect(wrapper.find(MoveToHousehold).exists()).toBeFalsy();
     hohTableHeaders.forEach(function(header, index) {
@@ -454,7 +454,7 @@ describe('Patient', () => {
     expect(wrapper.find(RemoveFromHousehold).exists()).toBeTruthy();
     expect(wrapper.find(MoveToHousehold).exists()).toBeFalsy();
     expect(wrapper.find(ChangeHOH).exists()).toBeFalsy();
-    expect(wrapper.find(AddHouseholdMember).exists()).toBeFalsy();
+    expect(wrapper.find(EnrollHouseholdMember).exists()).toBeFalsy();
   });
 
   it('Properly renders single member (not in household) section and name HoH badge', () => {
@@ -464,7 +464,7 @@ describe('Patient', () => {
     expect(wrapper.find('#no-household').exists()).toBeTruthy();
     expect(wrapper.find('#no-household').find(Row).at(1).text()).toEqual('This monitoree is not a member of a household:');
     expect(wrapper.find(MoveToHousehold).exists()).toBeTruthy();
-    expect(wrapper.find(AddHouseholdMember).exists()).toBeTruthy();
+    expect(wrapper.find(EnrollHouseholdMember).exists()).toBeTruthy();
     expect(wrapper.find(ChangeHOH).exists()).toBeFalsy();
     expect(wrapper.find(RemoveFromHousehold).exists()).toBeFalsy();
   });

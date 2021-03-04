@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button } from 'react-bootstrap';
 
-class AddHouseholdMember extends React.Component {
+class EnrollHouseholdMember extends React.Component {
   render() {
     return (
       <React.Fragment>
@@ -14,8 +14,8 @@ class AddHouseholdMember extends React.Component {
   }
 }
 
-AddHouseholdMember.propTypes = {
+EnrollHouseholdMember.propTypes = {
   responderId: PropTypes.number,
 };
 
-export default AddHouseholdMember;
+export default EnrollHouseholdMember;
