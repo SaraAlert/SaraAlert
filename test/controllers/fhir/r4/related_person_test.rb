@@ -39,8 +39,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :forbidden
-    # assert_equal JSON.parse(CloseContact.find_by_id(1).as_fhir.to_json), JSON.parse(response.body)
   end
+
+  #----- create tests -----
 
   test 'should create RelatedPerson via create' do
     post(
@@ -90,6 +91,97 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @close_contact_1.patient_id = 0
     post(
       '/fhir/r4/RelatedPerson',
+      params: @close_contact_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    assert_equal 1, errors.length
+    assert_match(/0.*Patient ID.*API user/, errors[0])
+  end
+
+  #----- update tests -----
+
+  test 'should update RelatedPerson via update' do
+    cc = CloseContact.find_by_id(1)
+    original_cc = cc.dup
+    cc.notes = 'Some new notes'
+    cc.first_name = 'FarContact1'
+    put(
+      '/fhir/r4/RelatedPerson/1',
+      params: cc.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    updated_cc = CloseContact.find_by_id(1)
+
+    # Verify that the created Close Contact matches the original outside of updated fields
+    %i[patient_id
+       last_name
+       primary_telephone
+       email
+       contact_attempts
+       last_date_of_exposure
+       assigned_user].each do |field|
+      assert_equal original_cc[field], updated_cc[field]
+    end
+
+    # Verify that updated fields are updated
+    assert_equal 'Some new notes', updated_cc.notes
+    assert_equal 'FarContact1', updated_cc.first_name
+  end
+
+  test 'should update RelatedPerson via patch update' do
+    cc = CloseContact.find_by_id(1)
+    original_cc = cc.dup
+    patch = [
+      { 'op': 'replace', 'path': '/name/0/given/0', 'value': 'FarContact1' }
+    ]
+    patch(
+      '/fhir/r4/RelatedPerson/1',
+      params: patch.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/json-patch+json' }
+    )
+    assert_response :ok
+    updated_cc = CloseContact.find_by_id(1)
+
+    # Verify that the created Close Contact matches the original outside of updated fields
+    %i[patient_id
+       last_name
+       primary_telephone
+       email
+       contact_attempts
+       last_date_of_exposure
+       assigned_user
+       notes].each do |field|
+      assert_equal original_cc[field], updated_cc[field]
+    end
+
+    # Verify that updated fields are updated
+    assert_equal 'FarContact1', updated_cc.first_name
+  end
+
+  test 'SYSTEM FLOW: should be unprocessable entity via update with invalid Patient reference' do
+    @close_contact_1.patient_id = 0
+    put(
+      '/fhir/r4/RelatedPerson/1',
+      params: @close_contact_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    assert_equal 1, errors.length
+    assert_match(/0.*Patient ID.*client application/, errors[0])
+  end
+
+  test 'USER FLOW: should be unprocessable entity via update with invalid Patient reference' do
+    @close_contact_1.patient_id = 0
+    put(
+      '/fhir/r4/RelatedPerson/1',
       params: @close_contact_1.as_fhir.to_json,
       headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
