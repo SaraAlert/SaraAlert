@@ -716,28 +716,28 @@ class PatientsController < ApplicationController
   def group_member_subset
     %i[
       address_line_1
-      address_line_2
       address_city
       address_state
+      address_line_2
       address_zip
       address_county
       monitored_address_line_1
-      monitored_address_line_2
       monitored_address_city
       monitored_address_state
+      monitored_address_line_2
       monitored_address_zip
       monitored_address_county
       foreign_address_line_1
-      foreign_address_line_2
-      foreign_address_line_3
       foreign_address_city
-      foreign_address_state
-      foreign_address_zip
       foreign_address_country
+      foreign_address_line_2
+      foreign_address_zip
+      foreign_address_line_3
+      foreign_address_state
       foreign_monitored_address_line_1
-      foreign_monitored_address_line_2
       foreign_monitored_address_city
       foreign_monitored_address_state
+      foreign_monitored_address_line_2
       foreign_monitored_address_zip
       foreign_monitored_address_county
       primary_telephone
