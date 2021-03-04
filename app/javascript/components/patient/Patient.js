@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import BadgeHOH from '../util/BadgeHOH';
+import AddHouseholdMember from '../subject/household_actions/AddHouseholdMember';
 import ChangeHOH from '../subject/ChangeHOH';
 import MoveToHousehold from '../subject/MoveToHousehold';
 import RemoveFromHousehold from '../subject/RemoveFromHousehold';
@@ -704,6 +705,7 @@ class Patient extends React.Component {
               </Row>
               <Row>
                 <ChangeHOH patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
+                {this.props.can_add_group && <AddHouseholdMember responderId={this.props.details.responder_id} />}
               </Row>
             </Col>
           </Row>
@@ -741,6 +743,7 @@ Patient.propTypes = {
   jurisdiction_path: PropTypes.string,
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
+  can_add_group: PropTypes.bool,
   hideBody: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };

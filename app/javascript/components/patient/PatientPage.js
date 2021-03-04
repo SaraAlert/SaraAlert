@@ -28,6 +28,7 @@ class PatientPage extends React.Component {
               dependents={this.props.dependents || []}
               details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
               hideBody={this.state.hideBody}
+              can_add_group={this.props.can_add_group}
               edit_mode={false}
               authenticity_token={this.props.authenticity_token}
             />
@@ -41,6 +42,7 @@ class PatientPage extends React.Component {
 PatientPage.propTypes = {
   patient_id: PropTypes.string,
   current_user: PropTypes.object,
+  can_add_group: PropTypes.bool,
   patient: PropTypes.object,
   dependents: PropTypes.array,
   dashboardUrl: PropTypes.string,

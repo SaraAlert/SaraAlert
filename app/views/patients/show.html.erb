@@ -9,6 +9,7 @@
 
 <%= react_component('patient/PatientPage', {
                       current_user: current_user,
+                      can_add_group: current_user.can_create_patient?,
                       patient: @patient,
                       dependents: @dependents_exclude_hoh,
                       patient_id: @patient.user_defined_id_statelocal || '',
