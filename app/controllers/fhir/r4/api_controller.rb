@@ -193,7 +193,9 @@ class Fhir::R4::ApiController < ActionController::API
           status_unprocessable_entity(format_model_validation_errors(close_contact)) && return
         end
 
-        # Create history items here
+        History.close_contact_edit(patient: close_contact.patient_id,
+                                   created_by: @current_actor_label,
+                                   comment: "Close contact edited via the API (ID: #{close_contact.id}).")
       end
       status_ok(close_contact.as_fhir) && return
     else
@@ -209,17 +211,15 @@ class Fhir::R4::ApiController < ActionController::API
   # patient_before - The Patient before updates were applied.
   # patient - The Patient after the updates have been applied.
   def update_all_patient_history(updates, patient_before, patient)
-    created_by_label = "#{@m2m_workflow ? current_client_application&.name : current_resource_owner&.email} (API)"
-
     # Handle History for monitoree details information updates
     # NOTE: "isolation" is a special case, because it is not a monitoring field, but it has side effects that are handled
     # alongside monitoring fields
     info_updates = updates.filter { |attr, _value| !PatientHelper.monitoring_fields.include?(attr) || attr == :isolation }
-    Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, created_by_label)
+    Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, @current_actor_label)
 
     # Handle History for monitoree monitoring information updates
     history_data = {
-      created_by: created_by_label,
+      created_by: @current_actor_label,
       patient_before: patient_before,
       patient: patient,
       updates: updates,
@@ -290,7 +290,7 @@ class Fhir::R4::ApiController < ActionController::API
       resource.send_enrollment_notification if resource.self_reporter_or_proxy?
 
       # Create a history for the enrollment
-      History.enrollment(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree enrolled via API.')
+      History.enrollment(patient: resource, created_by: @current_actor_label, comment: 'Monitoree enrolled via API.')
     when 'relatedperson'
       return if doorkeeper_authorize!(
         :'user/RelatedPerson.write',
@@ -305,7 +305,10 @@ class Fhir::R4::ApiController < ActionController::API
         status_unprocessable_entity(format_model_validation_errors(resource)) && return
       end
 
-      # Will need to add logs and history updates here
+      Rails.logger.info "Created Close Contact (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
+      History.close_contact(patient: resource.patient_id,
+                            created_by: @current_actor_label,
+                            comment: "New close contact added via API (ID: #{resource.id}).")
     else
       status_not_found && return
     end
@@ -582,6 +585,7 @@ class Fhir::R4::ApiController < ActionController::API
       if current_resource_owner.can_use_api?
         @user_workflow = true
         @current_actor = current_resource_owner
+        @current_actor_label = "#{current_resource_owner.email} (API)"
         nil
       else
         head :unauthorized
@@ -594,6 +598,7 @@ class Fhir::R4::ApiController < ActionController::API
       proxy_user = User.where(is_api_proxy: true).find_by(id: current_client_application.user_id)
       head :unauthorized if proxy_user.nil?
       @current_actor = proxy_user
+      @current_actor_label = "#{current_client_application.name} (API)"
     end
   end
 
