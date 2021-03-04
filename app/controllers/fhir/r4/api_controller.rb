@@ -189,7 +189,9 @@ class Fhir::R4::ApiController < ActionController::API
 
       # Wrap updates to the CloseContact and History creation in a transaction
       ActiveRecord::Base.transaction do
-        unless referenced_patient_valid_for_client?(close_contact) && close_contact.save(context: :api)
+        unless referenced_patient_valid_for_client?(close_contact, :patient_id) &&
+               (close_contact.enrolled_id.nil? || referenced_patient_valid_for_client?(close_contact, :enrolled_id)) &&
+               close_contact.save(context: :api)
           status_unprocessable_entity(format_model_validation_errors(close_contact)) && return
         end
 
@@ -301,7 +303,9 @@ class Fhir::R4::ApiController < ActionController::API
 
       resource = CloseContact.new(close_contact_from_fhir(contents))
 
-      unless referenced_patient_valid_for_client?(resource) && resource.save(context: :api)
+      unless referenced_patient_valid_for_client?(resource, :patient_id) &&
+             (resource.enrolled_id.nil? || referenced_patient_valid_for_client?(resource, :enrolled_id)) &&
+             resource.save(context: :api)
         status_unprocessable_entity(format_model_validation_errors(resource)) && return
       end
 
@@ -637,16 +641,16 @@ class Fhir::R4::ApiController < ActionController::API
     false
   end
 
-  # Determine if the patient referenced by a close_contact exists and is valid for the requesting application
-  def referenced_patient_valid_for_client?(close_contact)
-    referenced_patient = accessible_patients.find_by_id(close_contact.patient_id)
+  # Determine if the referenced patient is valid (accessible) for the client application
+  def referenced_patient_valid_for_client?(resource, id_field)
+    referenced_patient = accessible_patients.find_by_id(resource[id_field])
 
     return true unless referenced_patient.nil?
 
     if @user_workflow
-      close_contact.errors.add(:patient_id, 'does not refer to a Patient which is accessible to the API user')
+      resource.errors.add(id_field, 'does not refer to a Patient which is accessible to the API user')
     elsif @m2m_workflow
-      close_contact.errors.add(:patient_id, 'does not refer to a Patient which is accessible to the client application')
+      resource.errors.add(id_field, 'does not refer to a Patient which is accessible to the client application')
     end
 
     false
