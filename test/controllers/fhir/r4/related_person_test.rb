@@ -19,7 +19,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       contact_attempts: 3,
       last_date_of_exposure: 20.days.ago,
       assigned_user: 8,
-      notes: 'Only the educated are free.'
+      notes: 'Only the educated are free.',
+      enrolled_id: 3
     )
   end
   #----- show tests -----
@@ -64,7 +65,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
        contact_attempts
        last_date_of_exposure
        assigned_user
-       notes].each do |field|
+       notes
+       enrolled_id].each do |field|
       assert_equal @close_contact_1[field], created_cc[field]
     end
 
@@ -107,6 +109,36 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_match(/0.*Patient ID.*API user/, errors[0])
   end
 
+  test 'SYSTEM FLOW: should be unprocessable entity via create with invalid enrolled Patient reference' do
+    @close_contact_1.enrolled_id = 0
+    post(
+      '/fhir/r4/RelatedPerson',
+      params: @close_contact_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    assert_equal 1, errors.length
+    assert_match(/0.*Enrolled ID.*client application/, errors[0])
+  end
+
+  test 'USER FLOW: should be unprocessable entity via create with invalid enrolled Patient reference' do
+    @close_contact_1.enrolled_id = 0
+    post(
+      '/fhir/r4/RelatedPerson',
+      params: @close_contact_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    assert_equal 1, errors.length
+    assert_match(/0.*Enrolled ID.*API user/, errors[0])
+  end
+
   #----- update tests -----
 
   test 'should update RelatedPerson via update' do
@@ -129,13 +161,46 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
        email
        contact_attempts
        last_date_of_exposure
-       assigned_user].each do |field|
+       assigned_user
+       enrolled_id].each do |field|
       assert_equal original_cc[field], updated_cc[field]
     end
 
     # Verify that updated fields are updated
     assert_equal 'Some new notes', updated_cc.notes
     assert_equal 'FarContact1', updated_cc.first_name
+
+    histories = History.where(patient: updated_cc.patient_id)
+    assert_equal(1, histories.count)
+    assert_equal 'system-test-everything (API)', histories.first.created_by
+    assert_match(/Close contact edited.*API/, histories.first.comment)
+  end
+
+  test 'should allow nil enrolled_id when updating RelatedPerson via update' do
+    cc = CloseContact.find_by_id(1)
+    original_cc = cc.dup
+    cc.enrolled_id = nil
+    put(
+      '/fhir/r4/RelatedPerson/1',
+      params: cc.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    updated_cc = CloseContact.find_by_id(1)
+
+    # Verify that the created Close Contact matches the original outside of updated fields
+    %i[patient_id
+       last_name
+       primary_telephone
+       email
+       contact_attempts
+       last_date_of_exposure
+       assigned_user].each do |field|
+      assert_equal original_cc[field], updated_cc[field]
+    end
+
+    # Verify that updated fields are updated
+    assert_nil updated_cc.enrolled_id
 
     histories = History.where(patient: updated_cc.patient_id)
     assert_equal(1, histories.count)
@@ -201,6 +266,36 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal 1, errors.length
     assert_match(/0.*Patient ID.*API user/, errors[0])
+  end
+
+  test 'SYSTEM FLOW: should be unprocessable entity via update with invalid enrolled Patient reference' do
+    @close_contact_1.enrolled_id = 0
+    put(
+      '/fhir/r4/RelatedPerson/1',
+      params: @close_contact_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    assert_equal 1, errors.length
+    assert_match(/0.*Enrolled ID.*client application/, errors[0])
+  end
+
+  test 'USER FLOW: should be unprocessable entity via update with invalid enrolled Patient reference' do
+    @close_contact_1.enrolled_id = 0
+    put(
+      '/fhir/r4/RelatedPerson/1',
+      params: @close_contact_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    assert_equal 1, errors.length
+    assert_match(/0.*Enrolled ID.*API user/, errors[0])
   end
 
   #----- search tests -----
