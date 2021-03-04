@@ -398,7 +398,7 @@ class Fhir::R4::ApiController < ActionController::API
     status_ok(bundle) && return
   end
 
-  # Return a FHIR Bundle containing a monitoree and all their assessments, labe results,
+  # Return a FHIR Bundle containing a monitoree and all their assessments, lab results,
   # and close contacts
   #
   # GET /fhir/r4/Patient/[:id]/$everything
@@ -457,7 +457,7 @@ class Fhir::R4::ApiController < ActionController::API
     resource = FHIR::CapabilityStatement.new(
       status: 'active',
       kind: 'instance',
-      date: DateTime.parse('2020-05-28').strftime('%FT%T%:z'),
+      date: DateTime.parse('2021-03-04').strftime('%FT%T%:z'),
       software: FHIR::CapabilityStatement::Software.new(
         name: 'Sara Alert',
         version: ADMIN_OPTIONS['version']
@@ -505,6 +505,21 @@ class Fhir::R4::ApiController < ActionController::API
               FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: 'telecom', type: 'string'),
               FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: 'email', type: 'string'),
               FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: 'active', type: 'boolean'),
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_id', type: 'string'),
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_count', type: 'string')
+            ]
+          ),
+          FHIR::CapabilityStatement::Rest::Resource.new(
+            type: 'RelatedPerson',
+            interaction: [
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'read'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'update'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'patch'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'create'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'search-type')
+            ],
+            searchParam: [
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: 'patient', type: 'reference'),
               FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_id', type: 'string'),
               FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_count', type: 'string')
             ]
