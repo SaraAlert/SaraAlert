@@ -233,15 +233,17 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
   # Format validation errors from the model to be more human-readable
   def format_model_validation_errors(resource)
     resource.errors&.messages&.each_with_object([]) do |(attribute, errors), messages|
-      next unless VALIDATION.key?(attribute)
+      next unless VALIDATION.key?(attribute) || attribute == :base
 
       # NOTE: If the value is a date, the typecast value may not correspond to original user input, so get value_before_type_cast
-      value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
-      msg_header = (value ? "Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}'"
+      unless attribute == :base
+        value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
+        msg_header = (value ? "Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}' "
+      end
       errors.each do |error_message|
         # Exclude the actual value in logging to avoid PII/PHI
         Rails.logger.info "Validation Error on: #{attribute}"
-        messages << "#{msg_header} #{error_message}"
+        messages << "#{msg_header}#{error_message}"
       end
     end
   end
