@@ -6,6 +6,16 @@ class CloseContact < ApplicationRecord
   include ExcelSanitizer
   include FhirHelper
 
+  validates :primary_telephone, on: :api, phone_number: true
+  validates :email, on: :api, email: true
+  validates :assigned_user, on: :api, numericality: { only_integer: true,
+                                                      allow_nil: true,
+                                                      greater_than: 0,
+                                                      less_than_or_equal_to: 999_999,
+                                                      message: 'is not valid, acceptable values are numbers between 1-999999' }
+  validates :last_date_of_exposure, on: :api, date: true
+  validates_with CompleteCloseContactValidator, on: :api
+
   belongs_to :patient, touch: true
 
   def custom_details(fields, patient_identifiers)
