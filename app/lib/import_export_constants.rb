@@ -137,31 +137,6 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     lab_fields: %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result]
   }.freeze
 
-  ASSESSMENT_FIELD_TYPES = {
-    unfiltered: %i[id patient_id symptomatic who_reported created_at updated_at],
-    remove_formula_start: %i[who_reported]
-  }.freeze
-
-  LABORATORY_FIELD_TYPES = {
-    unfiltered: %i[id patient_id lab_type result created_at updated_at],
-    dates: %i[specimen_collection report]
-  }.freeze
-
-  CLOSE_CONTACT_FIELD_TYPES = {
-    unfiltered: %i[id patient_id contact_attempts last_date_of_exposure assigned_user enrolled_id created_at updated_at],
-    remove_formula_start: %i[first_name last_name email notes],
-    phones: %i[primary_telephone]
-  }.freeze
-
-  TRANSFER_FIELD_TYPES = {
-    unfiltered: %i[id patient_id created_at updated_at]
-  }.freeze
-
-  HISTORY_FIELD_TYPES = {
-    unfiltered: %i[id patient_id history_type created_at updated_at],
-    remove_formula_start: %i[created_by comment]
-  }.freeze
-
   PATIENT_FIELD_NAMES = {
     # Enrollment Info - Identification and Demographics - Identifiers
     id: 'Sara Alert ID',

@@ -2,8 +2,6 @@
 
 # Transfer: transfer model
 class Transfer < ApplicationRecord
-  include ImportExportConstants
-
   belongs_to :to_jurisdiction, class_name: 'Jurisdiction'
   belongs_to :from_jurisdiction, class_name: 'Jurisdiction'
   belongs_to :who, class_name: 'User'
@@ -54,10 +52,13 @@ class Transfer < ApplicationRecord
 
   def custom_details(fields, user_emails, jurisdiction_paths)
     transfer_details = {}
-    (fields & TRANSFER_FIELD_TYPES[:unfiltered].freeze).each { |field| transfer_details[field] = self[field] }
+    transfer_details[:id] = id if fields.include?(:id)
+    transfer_details[:patient_id] = patient_id if fields.include?(:patient_id)
     transfer_details[:who] = user_emails[who_id] if fields.include?(:who)
     transfer_details[:from_jurisdiction] = jurisdiction_paths[from_jurisdiction_id] if fields.include?(:from_jurisdiction)
     transfer_details[:to_jurisdiction] = jurisdiction_paths[to_jurisdiction_id] if fields.include?(:to_jurisdiction)
+    transfer_details[:created_at] = created_at if fields.include?(:created_at)
+    transfer_details[:updated_at] = updated_at if fields.include?(:updated_at)
     transfer_details
   end
 
