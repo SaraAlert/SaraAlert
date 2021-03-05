@@ -68,9 +68,16 @@ desc 'Backup the database'
       35.times do |phe_number|
         users << create_user("#{jurisdictions[index].unique_identifier}_#{phe_number}_epi_enroller", Roles::PUBLIC_HEALTH_ENROLLER, jurisdictions[index])
       end
+
+      # Insert users every 100 jurisdictions
+      if index % 100 == 0
+        User.import! users
+        users = []
+      end
+
       index += 1
     end
-    User.import! users
+
     # Api testing
     OauthApplication.create!(
       name: 'performance-test',
