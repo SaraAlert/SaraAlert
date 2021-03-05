@@ -30,7 +30,7 @@ namespace :admin do
       Jurisdiction.all.each do |jur|
         theshold_conditions_edit_count = 0
         jur.path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
-        puts jur.jurisdiction_path_string.ljust(80)  + "Edits: " + theshold_conditions_edit_count.to_s.ljust(5) + "Hash: " + jur.jurisdiction_path_threshold_hash[0..6]
+        puts jur.jurisdiction_path_string.ljust(80)  + "Edits: " + theshold_conditions_edit_count.to_s.ljust(5) + "Hash: " + jur.jurisdiction_path_threshold_hash[0..6] unless ENV['APP_IN_CI']
         combined_hash += jur.jurisdiction_path_threshold_hash
       end
 
