@@ -206,12 +206,27 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   # Gets all associated relevant data for patients group based on queries and fields
   def get_export_data(patients, data)
     exported_data = {}
-    patients_identifiers = Hash[patients.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
-                                        .map do |id, statelocal, cdc, nndss|
-                                          [id, { user_defined_id_statelocal: statelocal, user_defined_id_cdc: cdc, user_defined_id_nndss: nndss }]
-                                        end]
-
     exported_data[:patients] = extract_patients_details(patients, data[:patients][:checked]) if data.dig(:patients, :checked).present?
+
+    # extract patient identifiers for other data types if necessary
+    if data.dig(:assessments, :checked).present? || data.dig(:laboratories, :checked).present? || data.dig(:close_contacts, :checked).present? ||
+       data.dig(:transfers, :checked).present? || data.dig(:histories, :checked).present?
+      # extract patient identifiers from exported data if it already exists otherwise perform query to pluck those values
+      if exported_data[:patients].present? && (PATIENT_FIELD_TYPES[:alternative_identifiers] - data[:patients][:checked]).empty?
+        patients_identifiers = Hash[exported_data[:patients].map do |patient_details|
+                                      [patient_details[:id], {
+                                        user_defined_id_statelocal: patient_details[:user_defined_id_statelocal],
+                                        user_defined_id_cdc: patient_details[:user_defined_id_cdc],
+                                        user_defined_id_nndss: patient_details[:user_defined_id_nndss]
+                                      }]
+                                    end]
+      else
+        patients_identifiers = Hash[patients.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
+                                            .map do |id, statelocal, cdc, nndss|
+                                              [id, { user_defined_id_statelocal: statelocal, user_defined_id_cdc: cdc, user_defined_id_nndss: nndss }]
+                                            end]
+      end
+    end
 
     if data.dig(:assessments, :checked).present?
       assessments = assessments_by_patient_ids(patients_identifiers.keys)
