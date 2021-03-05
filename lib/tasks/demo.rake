@@ -318,7 +318,141 @@ desc 'Backup the database'
     demo_cache_analytics(today, cache_analytics)
   end
 
-  def demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties)
+  def performance_populate_patients(num_patients_today)
+    printf('Generating patients...')
+    patients = []
+    num_patients_today.times do |i|
+      patient = Patient.new()
+      patient[:sex] = 'Unknown'
+      patient[:gender_identity] = 'Chose not to disclose'
+      patient[:sexual_orientation] = 'Choose not to disclose'
+      patient[:first_name] = i.to_s
+      patient[:middle_name] = i.to_s
+      patient[:last_name] = i.to_s
+      patient[:age] = ((Date.today - patient[:date_of_birth]) / 365.25).round
+      patient[:date_of_birth] = Date.today - patient[:age].years
+      patient[:white] = true
+      patient[:black_or_african_american] = true
+      patient[:american_indian_or_alaska_native] = true
+      patient[:asian] = true
+      patient[:native_hawaiian_or_other_pacific_islander] = true
+      patient[:ethnicity] = nil
+      patient[:primary_language] = 'English'
+      patient[:secondary_language] = 'Spanish'
+      patient[:interpretation_required] = false
+      patient[:nationality] = 'American'
+      patient[:user_defined_id_statelocal] = "EX-#{i}"
+      patient[:user_defined_id_cdc] = i.to_s
+      patient[:user_defined_id_nndss] = i.to_s
+      # -------------------------------------------
+      patient[:preferred_contact_method] = ValidationHelper::VALID_PATIENT_ENUMS[:preferred_contact_method].sample
+      patient[:preferred_contact_time] = ValidationHelper::VALID_PATIENT_ENUMS[:preferred_contact_time].sample if patient[:preferred_contact_method] != 'E-mailed Web Link'
+      patient[:primary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:preferred_contact_method] != 'E-mailed Web Link'
+      patient[:primary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:primary_telephone_type].sample if patient[:primary_telephone]
+      patient[:secondary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:primary_telephone]
+      patient[:secondary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:secondary_telephone_type].sample if patient[:secondary_telephone]
+      patient[:email] = "#{i}fake@example.com" if patient[:preferred_contact_method] == 'E-mailed Web Link'
+      # -------------------------------------------
+      patient[:address_line_1] = 'Address line 1'
+      patient[:address_city] = 'Address city'
+      patient[:address_state] = counties.keys.sample
+      patient[:address_line_2] = 'Secondary address'
+      patient[:address_zip] = '12345'
+      patient[:address_county] = 'Address county'
+      patient[:monitored_address_line_1] = patient[:address_line_1]
+      patient[:monitored_address_city] = patient[:address_city]
+      patient[:monitored_address_state] = patient[:address_state]
+      patient[:monitored_address_line_2] = patient[:address_line_2]
+      patient[:monitored_address_zip] = patient[:address_zip]
+      patient[:monitored_address_county] = patient[:address_county]
+      patient[:monitored_address_line_1] = 'Monitored address line 1'
+      patient[:monitored_address_city] = 'Monitored address city'
+      patient[:monitored_address_state] = patient[:address_state]
+      patient[:monitored_address_line_2] = 'Monitored address line 2'
+      patient[:monitored_address_zip] = '12345'
+      patient[:monitored_address_county] = 'Monitored address county'
+      patient[:foreign_address_line_1] = 'Foreign address line 1'
+      patient[:foreign_address_city] = 'Foreign address city'
+      patient[:foreign_address_country] = 'Foreign address country'
+      patient[:foreign_address_line_2] = 'Foreign address line 2'
+      patient[:foreign_address_zip] = 'Foreign address zip'
+      patient[:foreign_address_line_3] = 'Foreign address line 3'
+      patient[:foreign_address_state] = 'Foreign address state'
+      patient[:foreign_monitored_address_line_1] = 'Foreign monitored address line 1'
+      patient[:foreign_monitored_address_city] = 'Foreign address city'
+      patient[:foreign_monitored_address_state] = 'Foreign monitored address state'
+      patient[:foreign_monitored_address_line_2] = 'Foreign monitored address line 2'
+      patient[:foreign_monitored_address_zip] = 'Foreign monitored address zip'
+      patient[:foreign_monitored_address_county] = 'Foreign monitored address county'
+      patient[:port_of_origin] = 'port of origin'
+      patient[:date_of_departure] = rand(2).days.ago
+      patient[:source_of_report] = 'Other'
+      patient[:source_of_report_specify] = 'Specify'
+      patient[:flight_or_vessel_number] = 'flight or vessel number'
+      patient[:flight_or_vessel_carrier] = 'flight or vessel carrier'
+      patient[:port_of_entry_into_usa] = 'Port of entry into usa'
+      patient[:date_of_arrival] = Date.today
+      patient[:travel_related_notes] = 'Travel notes'
+      patient[:additional_planned_travel_type] = 'Domestic'
+      patient[:additional_planned_travel_destination_state] = 'Planned travel state'
+      patient[:additional_planned_travel_destination] = 'Planned travel destination'
+      patient[:additional_planned_travel_port_of_departure] = 'Planned travel departure city'
+      patient[:additional_planned_travel_start_date] = rand(6).days.from_now
+      patient[:additional_planned_travel_end_date] = patient[:additional_planned_travel_start_date] + rand(10).days
+      patient[:additional_planned_travel_related_notes] = 'Planned travel notes'
+
+      # Potential Exposure Info
+      patient[:isolation] = days_ago > 10 ? rand < 0.9 : rand < 0.4
+      if patient[:isolation]
+        patient[:symptom_onset] = today - rand(10).days
+        patient[:user_defined_symptom_onset] = true
+      else
+        patient[:continuous_exposure] = rand < 0.3
+        patient[:last_date_of_exposure] = today - rand(5).days unless patient[:continuous_exposure]
+      end
+      patient[:potential_exposure_location] = 'Potential exposure location'
+      patient[:potential_exposure_country] = 'Potential exposure country'
+      patient[:exposure_notes] = 'Exposure notes'
+      patient[:contact_of_known_case] = true
+      patient[:contact_of_known_case_id] = '1'
+      patient[:member_of_a_common_exposure_cohort] = true
+      patient[:member_of_a_common_exposure_cohort_type] = 'Cohort type'
+      patient[:travel_to_affected_country_or_area] = true
+      patient[:laboratory_personnel] = true
+      patient[:laboratory_personnel_facility_name] = 'Laboratory facility name'
+      patient[:healthcare_personnel] = true
+      patient[:healthcare_personnel_facility_name] = 'Health care facility name'
+      patient[:crew_on_passenger_or_cargo_flight] = true
+      patient[:was_in_health_care_facility_with_known_cases] = true
+      patient[:was_in_health_care_facility_with_known_cases_facility_name] = 'Health care facility name'
+      # --------------------------------------------------
+      patient[:jurisdiction_id] = jurisdictions.sample[:id]
+      patient[:assigned_user] = rand(999_999)
+      patient[:exposure_risk_assessment] = ValidationHelper::VALID_PATIENT_ENUMS[:exposure_risk_assessment].sample
+      patient[:monitoring_plan] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_plan].sample
+      # ---------------------------------------------------
+      patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
+      patient[:creator_id] = User.all.select { |u| u.role?('enroller') }.sample[:id]
+      patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
+      patient_ts = create_fake_timestamp(today, today)
+      patient[:created_at] = patient_ts
+      patient[:updated_at] = patient_ts
+
+      # Update monitoring status
+      patient[:extended_isolation] = today + rand(10).days if patient[:isolation] && rand < 0.3
+      patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable'].sample : ['Suspect', 'Unknown', 'Not a Case', nil].sample
+      patient[:monitoring] = rand < 0.95
+      patient[:closed_at] = patient[:updated_at] unless patient[:monitoring]
+      patient[:monitoring_reason] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_reason].sample if patient[:monitoring].nil?
+      patient[:public_health_action] = patient[:isolation] || rand < 0.8 ? 'None' : ValidationHelper::VALID_PATIENT_ENUMS[:public_health_action].sample
+      patient[:pause_notifications] = rand < 0.1
+      patient[:last_assessment_reminder_sent] = rand(7).days.ago if rand < 0.3
+
+      patients << patient
+    end
+  end
+
+  def demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, counties)
     territory_names = ['American Samoa', 'District of Columbia', 'Federated States of Micronesia', 'Guam', 'Marshall Islands', 'Northern Mariana Islands',
                        'Palau', 'Puerto Rico', 'Virgin Islands'].freeze
 
