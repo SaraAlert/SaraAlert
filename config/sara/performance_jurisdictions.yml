@@ -106,9 +106,9 @@
     children:
         'Alabama':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.alabama.gov/'
+            email: 'contact-alabama@example.com'
+            message: 'This Is Alabama Custom Jurisdiction Message'
             send_digest: true
             children:
               'Autauga':
@@ -148,6 +148,13 @@
               'Houston':
               'Jackson':
               'Jefferson':
+                children:
+                  'Birmingham':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Lamar':
               'Lauderdale':
               'Lawrence':
@@ -160,8 +167,22 @@
               'Marion':
               'Marshall':
               'Mobile':
+                children:
+                  'Mobile':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Monroe':
               'Montgomery':
+                children:
+                  'Montgomery':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Morgan':
               'Perry':
               'Pickens':
@@ -180,18 +201,39 @@
               'Winston':
         'Alaska':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'http://alaska.gov'
+            email: 'contact-alaska@example.com'
+            message: 'This Is Alaska Custom Jurisdiction Message'
             send_digest: false
             children:
               'Anchorage':
+                children:
+                  'Municipality of Anchorage':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Bethel':
               'Bristol Bay':
               'Dillingham':
               'Fairbanks North Star':
+                children:
+                  'Fairbanks':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Haines':
               'Juneau':
+                children:
+                  'City and Borough of Juneau':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Kenai Peninsula':
               'Ketchikan Gateway':
               'Kodiak Island':
@@ -208,9 +250,9 @@
               'Yukon-Koyukuk':
         'Arizona':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://az.gov'
+            email: 'contact-arizona@example.com'
+            message: 'This Is Arizona Custom Jurisdiction Message'
             send_digest: false
             children:
               'Apache':
@@ -221,18 +263,38 @@
               'Greenlee':
               'La Paz':
               'Maricopa':
+                children:
+                  'Pheonix':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Mesa':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Mohave':
               'Navajo':
               'Pima':
+                children:
+                  'Tucson':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Pinal':
               'Santa Cruz':
               'Yavapai':
               'Yuma':
         'Arkansas':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://portal.arkansas.gov/'
+            email: 'contact-arkansas@example.com'
+            message: 'This Is Arkansas Custom Jurisdiction Message'
             send_digest: false
             children:
               'Arkansas':
@@ -295,11 +357,25 @@
               'Pope':
               'Prairie':
               'Pulaski':
+                children:
+                  'Little Rock':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Randolph':
               'Saline':
               'Scott':
               'Searcy':
               'Sebastian':
+                children:
+                  'Fort Smith':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Sevier':
               'Sharp':
               'St. Francis':
@@ -307,14 +383,21 @@
               'Union':
               'Van Buren':
               'Washington':
+                children:
+                  'Fayetteville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'White':
               'Woodruff':
               'Yell':
         'California':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.ca.gov'
+            email: 'contact-california@example.com'
+            message: 'This Is California Custom Jurisdiction Message'
             send_digest: false
             children:
               'Alameda':
@@ -336,6 +419,13 @@
               'Lake':
               'Lassen':
               'Los Angeles':
+                children:
+                  'Los Angeles':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Madera':
               'Marin':
               'Mariposa':
@@ -351,9 +441,23 @@
               'Plumas':
               'Riverside':
               'Sacramento':
+                children:
+                  'Sacremento':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'San Benito':
               'San Bernardino':
               'San Diego':
+                children:
+                  'San Diego':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'San Francisco':
               'San Joaquin':
               'San Luis Obispo':
@@ -377,14 +481,21 @@
               'Yuba':
         'Colorado':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.colorado.gov'
+            email: 'contact-colorado@example.com'
+            message: 'This Is Colorado Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adams':
               'Alamosa':
               'Arapahoe':
+                children:
+                  'Aurora':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Archuleta':
               'Baca':
               'Bent':
@@ -399,10 +510,24 @@
               'Custer':
               'Delta':
               'Denver':
+                children:
+                  'Denver':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Dolores':
               'Douglas':
               'Eagle':
               'El Paso':
+                children:
+                  'Colorado Springs':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Elbert':
               'Fremont':
               'Garfield':
@@ -448,40 +573,85 @@
               'Yuma':
         'Connecticut':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://portal.ct.gov'
+            email: 'contact-connecticut@example.com'
+            message: 'This Is Connecticut Custom Jurisdiction Message'
             send_digest: false
             children:
               'Fairfield':
+                children:
+                  'Bridgeport':
+                    'North':
+                    'South':
+                    'East':
+                    'West':
               'Hartford':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
               'Litchfield':
               'Middlesex':
               'New Haven':
+                children:
+                  'New Haven':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'New London':
               'Tolland':
               'Windham':
         'Delaware':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://delaware.gov/'
+            email: 'contact-delaware@example.com'
+            message: 'This Is Delaware Custom Jurisdiction Message'
             send_digest: false
             children:
               'Kent':
+                children:
+                  'Dover':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'New Castle':
+                children:
+                  'Wilmington':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Newark':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Sussex':
         'District of Columbia':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://dc.gov'
+            email: 'contact-district-of-columbia@example.com'
+            message: 'This Is District of Columbia Custom Jurisdiction Message'
             send_digest: false
+            children:
+              'Washington, D.C.':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
         'Florida':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.myflorida.com/'
+            email: 'contact-florida@example.com'
+            message: 'This Is Florida Custom Jurisdiction Message'
             send_digest: false
             children:
               'Alachua':
@@ -499,6 +669,13 @@
               'DeSoto':
               'Dixie':
               'Duval':
+                children:
+                  'Jacksonville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Escambia':
               'Flagler':
               'Franklin':
@@ -520,6 +697,13 @@
               'Lake':
               'Lee':
               'Leon':
+                children:
+                  'Tallahassee':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Levy':
               'Liberty':
               'Madison':
@@ -527,6 +711,13 @@
               'Marion':
               'Martin':
               'Miami-Dade':
+                children:
+                  'Miami':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Monroe':
               'Nassau':
               'Okaloosa':
@@ -553,9 +744,9 @@
               'Washington':
         'Georgia':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://georgia.gov'
+            email: 'contact-georgia@example.com'
+            message: 'This Is Georgia Custom Jurisdiction Message'
             send_digest: false
             children:
               'Appling':
@@ -618,6 +809,13 @@
               'Forsyth':
               'Franklin':
               'Fulton':
+                children:
+                  'Atlanta':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Gilmer':
               'Glascock':
               'Glynn':
@@ -664,6 +862,13 @@
               'Morgan':
               'Murray':
               'Muscogee':
+                children:
+                  'Columbus':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Newton':
               'Oconee':
               'Oglethorpe':
@@ -679,6 +884,13 @@
               'Rabun':
               'Randolph':
               'Richmond':
+                children:
+                  'Augusta':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Rockdale':
               'Schley':
               'Screven':
@@ -719,24 +931,50 @@
               'Worth':
         'Hawaii':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://portal.ehawaii.gov'
+            email: 'contact-hawaii@example.com'
+            message: 'This Is Hawaii Custom Jurisdiction Message'
             send_digest: false
             children:
               'Hawaii':
               'Honolulu':
+                children:
+                  'Honolulu':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'East Honolulu':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Pearl City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Kalawao':
               'Kauai':
               'Maui':
         'Idaho':
             phone: '+13455555555'
             webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            email: 'contact-idaho@example.com'
+            message: 'This Is Idaho Custom Jurisdiction Message'
             send_digest: false
             children:
               'Ada':
+                children:
+                  'Meridian':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Adams':
               'Bannock':
               'Bear Lake':
@@ -744,12 +982,26 @@
               'Bingham':
               'Blaine':
               'Boise':
+                children:
+                  'Boise':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Bonner':
               'Bonneville':
               'Boundary':
               'Butte':
               'Camas':
               'Canyon':
+                children:
+                  'Nampa':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Caribou':
               'Cassia':
               'Clark':
@@ -782,9 +1034,9 @@
               'Washington':
         'Illinois':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www2.illinois.gov/'
+            email: 'contact-illinois@example.com'
+            message: 'This Is Illinois Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adams':
@@ -803,12 +1055,26 @@
               'Clinton':
               'Coles':
               'Cook':
+                children:
+                  'Chicago':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Crawford':
               'Cumberland':
               'De Witt':
               'DeKalb':
               'Douglas':
               'DuPage':
+                children:
+                  'Aurora':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Edgar':
               'Edwards':
               'Effingham':
@@ -870,6 +1136,13 @@
               'Rock Island':
               'Saline':
               'Sangamon':
+                children:
+                  'Springfield':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Schuyler':
               'Scott':
               'Shelby':
@@ -891,13 +1164,20 @@
               'Woodford':
         'Indiana':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.in.gov'
+            email: 'contact-indiana@example.com'
+            message: 'This Is Indiana Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adams':
               'Allen':
+                children:
+                  'Fort Wayne':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Bartholomew':
               'Benton':
               'Blackford':
@@ -945,6 +1225,13 @@
               'Lawrence':
               'Madison':
               'Marion':
+                children:
+                  'Indianapolis':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Marshall':
               'Martin':
               'Miami':
@@ -978,6 +1265,13 @@
               'Tipton':
               'Union':
               'Vanderburgh':
+                children:
+                  'Evansville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Vermillion':
               'Vigo':
               'Wabash':
@@ -990,9 +1284,9 @@
               'Whitley':
         'Iowa':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.iowa.gov'
+            email: 'contact-iowa@example.com'
+            message: 'This Is Iowa Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adair':
@@ -1052,6 +1346,13 @@
               'Kossuth':
               'Lee':
               'Linn':
+                children:
+                  'Cedar Rapids':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Louisa':
               'Lucas':
               'Lyon':
@@ -1072,11 +1373,25 @@
               'Plymouth':
               'Pocahontas':
               'Polk':
+                children:
+                  'Des Moines':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Pottawattamie':
               'Poweshiek':
               'Ringgold':
               'Sac':
               'Scott':
+                children:
+                  'Davenport':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Shelby':
               'Sioux':
               'Story':
@@ -1096,9 +1411,9 @@
               'Wright':
         'Kansas':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.kansas.gov'
+            email: 'contact-kansas@example.com'
+            message: 'This Is Kansas Custom Jurisdiction Message'
             send_digest: false
             children:
               'Allen':
@@ -1147,6 +1462,13 @@
               'Jefferson':
               'Jewell':
               'Johnson':
+                children:
+                  'Overland Park':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Kearny':
               'Kingman':
               'Kiowa':
@@ -1188,8 +1510,22 @@
               'Saline':
               'Scott':
               'Sedgwick':
+                children:
+                  'Wichita':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Seward':
               'Shawnee':
+                children:
+                  'Topeka':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Sheridan':
               'Sherman':
               'Smith':
@@ -1208,9 +1544,9 @@
               'Wyandotte':
         'Kentucky':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://kentucky.gov'
+            email: 'contact-kentucky@example.com'
+            message: 'This Is Kentucky Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adair':
@@ -1247,9 +1583,23 @@
               'Elliott':
               'Estill':
               'Fayette':
+                children:
+                  'Lexington':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Fleming':
               'Floyd':
               'Franklin':
+                children:
+                  'Frankfort':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Fulton':
               'Gallatin':
               'Garrard':
@@ -1269,6 +1619,13 @@
               'Hopkins':
               'Jackson':
               'Jefferson':
+                children:
+                  'Louisville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Jessamine':
               'Johnson':
               'Kenton':
@@ -1333,11 +1690,11 @@
               'Whitley':
               'Wolfe':
               'Woodford':
-        'Lousiana':
+        'Louisiana':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.louisiana.gov'
+            email: 'contact-louisiana@example.com'
+            message: 'This Is Louisana Custom Jurisdiction Message'
             send_digest: false
             children:
               'Acadia Parish':
@@ -1349,6 +1706,13 @@
               'Bienville Parish':
               'Bossier Parish':
               'Caddo Parish':
+                children:
+                  'Shreveport':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Calcasieu Parish':
               'Caldwell Parish':
               'Cameron Parish':
@@ -1357,6 +1721,13 @@
               'Concordia Parish':
               'De Soto Parish':
               'East Baton Rouge Parish':
+                children:
+                  'Baton Rouge':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'East Carroll Parish':
               'East Feliciana Parish':
               'Evangeline Parish':
@@ -1376,6 +1747,13 @@
               'Morehouse Parish':
               'Natchitoches Parish':
               'Orleans Parish':
+                children:
+                  'New Orleans':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Ouachita Parish':
               'Plaquemines Parish':
               'Pointe Coupee Parish':
@@ -1406,17 +1784,38 @@
               'Winn Parish':
         'Maine':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.maine.gov/portal/index.html'
+            email: 'contact-maine@example.com'
+            message: 'This Is Maine Custom Jurisdiction Message'
             send_digest: false
             children:
               'Androscoggin':
+                children:
+                  'Lewiston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Aroostook':
               'Cumberland':
+                children:
+                  'Portland':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Franklin':
               'Hancock':
               'Kennebec':
+                children:
+                  'Augusta':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Knox':
               'Lincoln':
               'Oxford':
@@ -1429,14 +1828,26 @@
               'York':
         'Maryland':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.maryland.gov/Pages/default.aspx'
+            email: 'contact-maryland@example.com'
+            message: 'This Is Maryland Custom Jurisdiction Message'
             send_digest: false
             children:
               'Allegany':
               'Anne Arundel':
+                children:
+                  'Annapolis':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Baltimore City':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
               'Baltimore':
               'Calvert':
               'Caroline':
@@ -1445,6 +1856,13 @@
               'Charles':
               'Dorchester':
               'Frederick':
+                children:
+                  'Frederick':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Garrett':
               'Harford':
               'Howard':
@@ -1460,9 +1878,9 @@
               'Worcester':
         'Massachusetts':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.mass.gov'
+            email: 'contact-massachusetts@example.com'
+            message: 'This Is Massachusetts Custom Jurisdiction Message'
             send_digest: false
             children:
               'Barnstable':
@@ -1472,18 +1890,39 @@
               'Essex':
               'Franklin':
               'Hampden':
+                children:
+                  'Springfield':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Hampshire':
               'Middlesex':
               'Nantucket':
               'Norfolk':
               'Plymouth':
               'Suffolk':
+                children:
+                  'Boston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Worcester':
+                children:
+                  'Worcester':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
         'Michigan':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.michigan.gov'
+            email: 'contact-michigan@example.com'
+            message: 'This Is Michigan Custom Jurisdiction Message'
             send_digest: false
             children:
               'Alcona':
@@ -1519,6 +1958,13 @@
               'Houghton':
               'Huron':
               'Ingham':
+                children:
+                  'Lansing':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Ionia':
               'Iosco':
               'Iron':
@@ -1527,6 +1973,13 @@
               'Kalamazoo':
               'Kalkaska':
               'Kent':
+                children:
+                  'Grand Rapids':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Keweenaw':
               'Lake':
               'Lapeer':
@@ -1568,12 +2021,19 @@
               'Van Buren':
               'Washtenaw':
               'Wayne':
+                children:
+                  'Detroit':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Wexford':
         'Minnesota':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'mn.gov/portal/'
+            email: 'contact-minnesota@example.com'
+            message: 'This Is Minnesota Custom Jurisdiction Message'
             send_digest: false
             children:
               'Aitkin':
@@ -1665,9 +2125,9 @@
               'Yellow Medicine':
         'Mississippi':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.mississippi.gov/home'
+            email: 'contact-mississippi@example.com'
+            message: 'This Is Mississippi Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adams':
@@ -1687,6 +2147,13 @@
               'Copiah':
               'Covington':
               'DeSoto':
+                children:
+                  'Southaven':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Forrest':
               'Franklin':
               'George':
@@ -1694,7 +2161,21 @@
               'Grenada':
               'Hancock':
               'Harrison':
+                children:
+                  'Gulfport':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Hinds':
+                children:
+                  'Jackson':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Holmes':
               'Humphreys':
               'Issaquena':
@@ -1754,9 +2235,9 @@
               'Yazoo':
         'Missouri':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.mo.gov'
+            email: 'contact-missouri@example.com'
+            message: 'This Is Missouri Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adair':
@@ -1798,6 +2279,13 @@
               'Gasconade':
               'Gentry':
               'Greene':
+                children:
+                  'Springfield':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Grundy':
               'Harrison':
               'Henry':
@@ -1807,6 +2295,13 @@
               'Howell':
               'Iron':
               'Jackson':
+                children:
+                  'Kansas City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Jasper':
               'Jefferson':
               'Johnson':
@@ -1860,6 +2355,11 @@
               'St. Clair':
               'St. Francois':
               'St. Louis city':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
               'St. Louis':
               'Ste. Genevieve':
               'Stoddard':
@@ -1876,9 +2376,9 @@
               'Wright':
         'Montana':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://mt.gov'
+            email: 'contact-montana@example.com'
+            message: 'This Is Montana Custom Jurisdiction Message'
             send_digest: false
             children:
               'Beaverhead':
@@ -1906,6 +2406,13 @@
               'Judith Basin':
               'Lake':
               'Lewis and Clark':
+                children:
+                  'Helena':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Liberty':
               'Lincoln':
               'Madison':
@@ -1913,6 +2420,13 @@
               'Meagher':
               'Mineral':
               'Missoula':
+                children:
+                  'Missoula':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Musselshell':
               'Park':
               'Petroleum':
@@ -1937,11 +2451,18 @@
               'Wheatland':
               'Wibaux':
               'Yellowstone':
+                children:
+                  'Billings':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
         'Nebraska':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.nebraska.gov'
+            email: 'contact-nebraska@example.com'
+            message: 'This Is Nebraska Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adams':
@@ -1972,6 +2493,13 @@
               'Dixon':
               'Dodge':
               'Douglas':
+                children:
+                  'Omaha':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Dundy':
               'Fillmore':
               'Franklin':
@@ -1999,6 +2527,13 @@
               'Kimball':
               'Knox':
               'Lancaster':
+                children:
+                  'Lincoln':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Lincoln':
               'Logan':
               'Loup':
@@ -2021,6 +2556,13 @@
               'Rock':
               'Saline':
               'Sarpy':
+                children:
+                  'Bellevue':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Saunders':
               'Scotts Bluff':
               'Seward':
@@ -2039,13 +2581,32 @@
               'York':
         'Nevada':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://nv.gov'
+            email: 'contact-nevada@example.com'
+            message: 'This Is Nevada Custom Jurisdiction Message'
             send_digest: false
             children:
+              'Carson city':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
               'Churchill':
               'Clark':
+                children:
+                  'Las Vegas':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Henderson':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Douglas':
               'Elko':
               'Esmeralda':
@@ -2062,9 +2623,9 @@
               'White Pine':
         'New Hampshire':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.nh.gov/index.htm'
+            email: 'contact-new-hampshire@example.com'
+            message: 'This Is New Hampshire Custom Jurisdiction Message'
             send_digest: false
             children:
               'Belknap':
@@ -2072,16 +2633,36 @@
               'Cheshire':
               'Coos':
               'Grafton':
-              'Hillsboro':
+              'Hillsborough':
+                children:
+                  'Manchester':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Nashua':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Merrimack':
+                children:
+                  'Concord':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Rockingham':
               'Strafford':
               'Sullivan':
         'New Jersey':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://nj.gov'
+            email: 'contact-new-jersey@example.com'
+            message: 'This Is New Jersey Custom Jurisdiction Message'
             send_digest: false
             children:
               'Atlantic':
@@ -2091,10 +2672,31 @@
               'Cape May':
               'Cumberland':
               'Essex':
+                children:
+                  'Newark':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Gloucester':
               'Hudson':
+                children:
+                  'Jersey City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Hunterdon':
               'Mercer':
+                children:
+                  'Trenton':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Middlesex':
               'Monmouth':
               'Morris':
@@ -2107,19 +2709,33 @@
               'Warren':
         'New Mexico':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.newmexico.gov'
+            email: 'contact-new-mexico@example.com'
+            message: 'This Is New Mexico Custom Jurisdiction Message'
             send_digest: false
             children:
               'Bernalillo':
+                children:
+                  'Albuquerque':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Catron':
               'Chaves':
               'Cibola':
               'Colfax':
               'Curry':
               'DeBaca':
-              'Dona Ana':
+              'Doña Ana':
+                children:
+                  'Las Cruces':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Eddy':
               'Grant':
               'Guadalupe':
@@ -2139,6 +2755,13 @@
               'San Miguel':
               'Sandoval':
               'Santa Fe':
+                children:
+                  'Santa Fe':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Sierra':
               'Socorro':
               'Taos':
@@ -2147,12 +2770,19 @@
               'Valencia':
         'New York':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://ny.gov'
+            email: 'contact-new-york@example.com'
+            message: 'This Is New York Custom Jurisdiction Message'
             send_digest: false
             children:
               'Albany':
+                children:
+                  'Albany':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Allegany':
               'Bronx':
               'Broome':
@@ -2167,6 +2797,13 @@
               'Delaware':
               'Dutchess':
               'Erie':
+                children:
+                  'Buffalo':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Essex':
               'Franklin':
               'Fulton':
@@ -2183,6 +2820,11 @@
               'Montgomery':
               'Nassau':
               'New York':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
               'Niagara':
               'Oneida':
               'Onondaga':
@@ -2216,9 +2858,9 @@
               'Yates':
         'North Carolina':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.nc.gov'
+            email: 'contact-north-carolina@example.com'
+            message: 'This Is North Carolina Custom Jurisdiction Message'
             send_digest: false
             children:
               'Alamance':
@@ -2262,6 +2904,13 @@
               'Granville':
               'Greene':
               'Guilford':
+                children:
+                  'Greensboro':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Halifax':
               'Harnett':
               'Haywood':
@@ -2281,6 +2930,13 @@
               'Martin':
               'McDowell':
               'Mecklenburg':
+                children:
+                  'Charlotte':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Mitchell':
               'Montgomery':
               'Moore':
@@ -2313,6 +2969,13 @@
               'Union':
               'Vance':
               'Wake':
+                children:
+                  'Raleigh':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Warren':
               'Washington':
               'Watauga':
@@ -2323,9 +2986,9 @@
               'Yancey':
         'North Dakota':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.nd.gov/'
+            email: 'contact-north-dakota@example.com'
+            message: 'This Is North Dakota Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adams':
@@ -2336,7 +2999,21 @@
               'Bowman':
               'Burke':
               'Burleigh':
+                children:
+                  'Bismarck':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Cass':
+                children:
+                  'Fargo':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Cavalier':
               'Dickey':
               'Divide':
@@ -2346,6 +3023,13 @@
               'Foster':
               'Golden Valley':
               'Grand Forks':
+                children:
+                  'Grand Forks':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Grant':
               'Griggs':
               'Hettinger':
@@ -2383,9 +3067,9 @@
               'Williams':
         'Ohio':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://ohio.gov/wps/portal/gov/site/home/'
+            email: 'contact-ohio@example.com'
+            message: 'This Is Ohio Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adams':
@@ -2406,6 +3090,13 @@
               'Coshocton':
               'Crawford':
               'Cuyahoga':
+                children:
+                  'Cleveland':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Darke':
               'Defiance':
               'Delaware':
@@ -2413,12 +3104,26 @@
               'Fairfield':
               'Fayette':
               'Franklin':
+                children:
+                  'Columbus':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Fulton':
               'Gallia':
               'Geauga':
               'Greene':
               'Guernsey':
               'Hamilton':
+                children:
+                  'Cincinnati':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Hancock':
               'Hardin':
               'Harrison':
@@ -2478,9 +3183,9 @@
               'Wyandot':
         'Oklahoma':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://oklahoma.gov'
+            email: 'contact-oklahoma@example.com'
+            message: 'This Is Oklahoma Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adair':
@@ -2562,9 +3267,9 @@
               'Woodward':
         'Oregon':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.oregon.gov'
+            email: 'contact-oregon@example.com'
+            message: 'This Is Oregon Custom Jurisdiction Message'
             send_digest: false
             children:
               'Baker':
@@ -2587,12 +3292,33 @@
               'Klamath':
               'Lake':
               'Lane':
+                children:
+                  'Eugene':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Lincoln':
               'Linn':
               'Malheur':
               'Marion':
+                children:
+                  'Salem':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Morrow':
               'Multnomah':
+                children:
+                  'Portland':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Polk':
               'Sherman':
               'Tillamook':
@@ -2605,13 +3331,20 @@
               'Yamhill':
         'Pennsylvania':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.pa.gov'
+            email: 'contact-pennsylvania@example.com'
+            message: 'This Is Pennsylvania Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adams':
               'Allegheny':
+                children:
+                  'Pittsburgh':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Armstrong':
               'Beaver':
               'Bedford':
@@ -2632,6 +3365,13 @@
               'Crawford':
               'Cumberland':
               'Dauphin':
+                children:
+                  'Harrisburg':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Delaware':
               'Elk':
               'Erie':
@@ -2661,6 +3401,13 @@
               'Northumberland':
               'Perry':
               'Philadelphia':
+                children:
+                  'Philadelphia':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Pike':
               'Potter':
               'Schuylkill':
@@ -2679,21 +3426,41 @@
               'York':
         'Rhode Island':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'www.ri.gov'
+            email: 'contact-rhode-island@example.com'
+            message: 'This Is Rhode Island Custom Jurisdiction Message'
             send_digest: false
             children:
               'Bristol':
               'Kent':
+                children:
+                  'Warwick':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Newport':
               'Providence':
+                children:
+                  'Cranston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Providence':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Washington':
         'South Carolina':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://sc.gov/'
+            email: 'contact-south-carolina@example.com'
+            message: 'This Is South Carolina Custom Jurisdiction Message'
             send_digest: false
             children:
               'Abbeville':
@@ -2706,6 +3473,19 @@
               'Berkeley':
               'Calhoun':
               'Charleston':
+                children:
+                  'North Charleston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Charleston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Cherokee':
               'Chester':
               'Chesterfield':
@@ -2736,6 +3516,13 @@
               'Orangeburg':
               'Pickens':
               'Richland':
+                children:
+                  'Columbia':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Saluda':
               'Spartanburg':
               'Sumter':
@@ -2744,9 +3531,9 @@
               'York':
         'South Dakota':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://sd.gov'
+            email: 'contact-south-dakota@example.com'
+            message: 'This Is South Dakota Custom Jurisdiction Message'
             send_digest: false
             children:
               'Aurora':
@@ -2781,6 +3568,13 @@
               'Hanson':
               'Harding':
               'Hughes':
+                children:
+                  'Pierre':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Hutchinson':
               'Hyde':
               'Jackson':
@@ -2798,8 +3592,22 @@
               'Mellette':
               'Miner':
               'Minnehaha':
+                children:
+                  'Sioux Falls':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Moody':
               'Pennington':
+                children:
+                  'Rapid City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Perkins':
               'Potter':
               'Roberts':
@@ -2817,9 +3625,9 @@
               'Ziebach':
         'Tennessee':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.tn.gov'
+            email: 'contact-tennessee@example.com'
+            message: 'This Is Tennessee Custom Jurisdiction Message'
             send_digest: false
             children:
               'Anderson':
@@ -2841,6 +3649,13 @@
               'Crockett':
               'Cumberland':
               'Davidson':
+                children:
+                  'Nashville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Decatur':
               'DeKalb':
               'Dickson':
@@ -2869,6 +3684,13 @@
               'Jefferson':
               'Johnson':
               'Knox':
+                children:
+                  'Knoxville':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Lake':
               'Lauderdale':
               'Lawrence':
@@ -2901,6 +3723,13 @@
               'Sequatchie':
               'Sevier':
               'Shelby':
+                children:
+                  'Memphis':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Smith':
               'Stewart':
               'Sullivan':
@@ -2919,9 +3748,9 @@
               'Wilson':
         'Texas':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.texas.gov'
+            email: 'contact-texas@example.com'
+            message: 'This Is Texas Custom Jurisdiction Message'
             send_digest: false
             children:
               'Anderson':
@@ -2939,6 +3768,13 @@
               'Bee':
               'Bell':
               'Bexar':
+                children:
+                  'San Antonio':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Blanco':
               'Borden':
               'Bosque':
@@ -3025,6 +3861,13 @@
               'Hardeman':
               'Hardin':
               'Harris':
+                children:
+                  'Houston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Harrison':
               'Hartley':
               'Haskell':
@@ -3151,6 +3994,13 @@
               'Titus':
               'Tom Green':
               'Travis':
+                children:
+                  'Austin':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Trinity':
               'Tyler':
               'Upshur':
@@ -3180,9 +4030,9 @@
               'Zavala':
         'Utah':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.utah.gov'
+            email: 'contact-utah@example.com'
+            message: 'This Is Utah Custom Jurisdiction Message'
             send_digest: false
             children:
               'Beaver':
@@ -3203,6 +4053,19 @@
               'Piute':
               'Rich':
               'Salt Lake':
+                children:
+                  'West Valley City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Salt Lake City':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'San Juan':
               'Sanpete':
               'Sevier':
@@ -3210,6 +4073,13 @@
               'Tooele':
               'Uintah':
               'Utah':
+                children:
+                  'Provo':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Wasatch':
               'Washington':
               'Wayne':
@@ -3225,6 +4095,19 @@
               'Bennington':
               'Caledonia':
               'Chittenden':
+                children:
+                  'South Burlington':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
+                  'Burlington':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Essex':
               'Franklin':
               'Grand Isle':
@@ -3233,13 +4116,20 @@
               'Orleans':
               'Rutland':
               'Washington':
+                children:
+                  'Montpelier':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Windham':
               'Windsor':
         'Virginia':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.virginia.gov'
+            email: 'contact-virginia@example.com'
+            message: 'This Is Virginia Custom Jurisdiction Message'
             send_digest: false
             children:
               'Accomack':
@@ -3318,6 +4208,11 @@
               'Pulaski':
               'Rappahannock':
               'Richmond':
+                children:
+                  'North':
+                  'South':
+                  'East':
+                  'West':
               'Roanoke':
               'Rockbridge':
               'Rockingham':
@@ -3339,9 +4234,9 @@
               'York':
         'Washington':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://access.wa.gov'
+            email: 'contact-washington@example.com'
+            message: 'This Is Washington Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adams':
@@ -3361,6 +4256,13 @@
               'Island':
               'Jefferson':
               'King':
+                children:
+                  'Seattle':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Kitsap':
               'Kittitas':
               'Klickitat':
@@ -3376,8 +4278,22 @@
               'Skamania':
               'Snohomish':
               'Spokane':
+                children:
+                  'Spokane':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Stevens':
               'Thurston':
+                children:
+                  'Olympia':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Wahkiakum':
               'Walla Walla':
               'Whatcom':
@@ -3385,9 +4301,9 @@
               'Yakima':
         'West Virginia':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.wv.gov'
+            email: 'contact-west-virginia@example.com'
+            message: 'This Is West Virginia Custom Jurisdiction Message'
             send_digest: false
             children:
               'Barbour':
@@ -3396,6 +4312,13 @@
               'Braxton':
               'Brooke':
               'Cabell':
+                children:
+                  'Huntington':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Calhoun':
               'Clay':
               'Doddridge':
@@ -3410,6 +4333,13 @@
               'Jackson':
               'Jefferson':
               'Kanawha':
+                children:
+                  'Charleston':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Lewis':
               'Lincoln':
               'Logan':
@@ -3421,6 +4351,13 @@
               'Mineral':
               'Mingo':
               'Monongalia':
+                children:
+                  'Morgantown':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Monroe':
               'Morgan':
               'Nicholas':
@@ -3447,9 +4384,9 @@
               'Wyoming':
         'Wisconsin':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'https://www.wisconsin.gov'
+            email: 'contact-wisconsin@example.com'
+            message: 'This Is Wisconsin Custom Jurisdiction Message'
             send_digest: false
             children:
               'Adams':
@@ -3457,6 +4394,13 @@
               'Barron':
               'Bayfield':
               'Brown':
+                children:
+                  'Green Bay':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Buffalo':
               'Burnett':
               'Calumet':
@@ -3465,6 +4409,13 @@
               'Columbia':
               'Crawford':
               'Dane':
+                children:
+                  'Madison':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Dodge':
               'Door':
               'Douglas':
@@ -3493,6 +4444,13 @@
               'Marquette':
               'Menominee':
               'Milwaukee':
+                children:
+                  'Milwaukee':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Monroe':
               'Oconto':
               'Oneida':
@@ -3526,12 +4484,19 @@
               'Wood':
         'Wyoming':
             phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
+            webpage: 'www.wyo.gov'
+            email: 'contact-wyoming@example.com'
+            message: 'This Is Wyoming Custom Jurisdiction Message'
             send_digest: false
             children:
               'Albany':
+                children:
+                  'Laramie':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Big Horn':
               'Campbell':
               'Carbon':
@@ -3542,8 +4507,22 @@
               'Hot Springs':
               'Johnson':
               'Laramie':
+                children:
+                  'Cheyenne':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Lincoln':
               'Natrona':
+                children:
+                  'Casper':
+                    children:
+                      'North':
+                      'South':
+                      'East':
+                      'West':
               'Niobrara':
               'Park':
               'Platte':
