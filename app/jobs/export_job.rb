@@ -10,7 +10,7 @@ class ExportJob < ApplicationJob
   OUTER_BATCH_SIZE = ENV['EXPORT_OUTER_BATCH_SIZE']&.to_i || 10_000
 
   # Inner batch size limits number of Patient records details help in memory at once before writing to file.
-  INNER_BATCH_SIZE = ENV['EXPORT_INNER_BATCH_SIZE']&.to_i || 100
+  INNER_BATCH_SIZE = ENV['EXPORT_INNER_BATCH_SIZE']&.to_i || 500
 
   def perform(config)
     # Get user in order to query viewable patients
