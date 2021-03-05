@@ -332,28 +332,29 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       assessment.custom_details(fields).merge(patients_identifiers[assessment.patient_id])
     end
 
+    # query assessment symptoms if requested
     if fields.include?(:symptoms)
       assessment_ids = assessments_details.map { |assessment_details| assessment_details[:id] }
+
+      # initialize hash for mapping assessments to symptoms
       symptoms = Hash[assessment_ids.map { |assessment_id| [assessment_id, {}] }]
+
+      # compute symptom value directly in database by selecting the correct value field and casting it as a string for export for optimal performance
+      # NOTE: this prevents symptom type, bool_value, int_value, and float_value fields to need to be loaded into memory
+      #       while maintaining performance speed by fetching all symptom values in a single query
+      symptom_value = Arel.sql("CASE WHEN symptoms.type = 'BoolSymptom' THEN CASE WHEN symptoms.bool_value THEN 'true' ELSE 'false' END
+                                     WHEN symptoms.type = 'IntegerSymptom' THEN CAST(symptoms.int_value AS CHAR)
+                                     WHEN symptoms.type = 'FloatSymptom' THEN CAST(symptoms.float_value AS CHAR)
+                                     ELSE ''
+                                END")
+
+      # save symptom values to hash mapping assessments to symptoms
       ReportedCondition.where(assessment_id: assessment_ids)
                        .joins(:symptoms)
-                       .pluck(:assessment_id, 'symptoms.name', 'symptoms.type', 'symptoms.bool_value', 'symptoms.int_value', 'symptoms.float_value')
-                       .each do |(assessment_id, name, type, bool_value, int_value, float_value)|
-                         case type
-                         when 'BoolSymptom'
-                           symptoms[assessment_id][name.to_sym] = bool_value
-                         when 'IntegerSymptom'
-                           symptoms[assessment_id][name.to_sym] = int_value
-                         when 'FloatSymptom'
-                           symptoms[assessment_id][name.to_sym] = float_value
-                         end
-                       end
+                       .pluck(:assessment_id, :name, symptom_value)
+                       .each { |(id, name, value)| symptoms[id][name.to_sym] = value }
 
-      # conditions = ReportedCondition.where(assessment_id: assessment_ids).joins(:symptoms)
-      # conditions.where('symptoms.type = ?', 'BoolSymptom').pluck(:assessment_id, :name, :bool_value).each { |(id, name, v)| symptoms[id][name.to_sym] = v }
-      # conditions.where('symptoms.type = ?', 'IntegerSymptom').pluck(:assessment_id, :name, :int_value).each { |(id, name, v)| symptoms[id][name.to_sym] = v }
-      # conditions.where('symptoms.type = ?', 'FloatSymptom').pluck(:assessment_id, :name, :float_value).each { |(id, name, v)| symptoms[id][name.to_sym] = v }
-
+      # add symptoms to assessment details
       assessments_details = assessments_details.map do |assessment_details|
         assessment_details.merge(symptoms[assessment_details[:id]])
       end
