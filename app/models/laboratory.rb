@@ -50,19 +50,6 @@ class Laboratory < ApplicationRecord
     }
   end
 
-  def custom_details(fields)
-    laboratory_details = {}
-    laboratory_details[:id] = id if fields.include?(:id)
-    laboratory_details[:patient_id] = patient_id if fields.include?(:patient_id)
-    laboratory_details[:lab_type] = lab_type if fields.include?(:lab_type)
-    laboratory_details[:specimen_collection] = specimen_collection&.strftime('%F') if fields.include?(:specimen_collection)
-    laboratory_details[:report] = report&.strftime('%F') if fields.include?(:report)
-    laboratory_details[:result] = result if fields.include?(:result)
-    laboratory_details[:created_at] = created_at if fields.include?(:created_at)
-    laboratory_details[:updated_at] = updated_at if fields.include?(:updated_at)
-    laboratory_details
-  end
-
   private
 
   def update_patient_linelist_after_save

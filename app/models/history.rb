@@ -349,18 +349,6 @@ class History < ApplicationRecord
     }
   end
 
-  def custom_details(fields)
-    history_details = {}
-    history_details[:id] = id || '' if fields.include?(:id)
-    history_details[:patient_id] = patient_id || '' if fields.include?(:patient_id)
-    history_details[:created_by] = remove_formula_start(created_by) || '' if fields.include?(:created_by)
-    history_details[:history_type] = history_type || '' if fields.include?(:history_type)
-    history_details[:comment] = remove_formula_start(comment) || '' if fields.include?(:comment)
-    history_details[:created_at] = created_at || '' if fields.include?(:created_at)
-    history_details[:updated_at] = updated_at || '' if fields.include?(:updated_at)
-    history_details
-  end
-
   private_class_method def self.create_history(patient, created_by, type, comment)
     return if patient.nil?
 

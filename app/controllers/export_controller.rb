@@ -156,9 +156,15 @@ class ExportController < ApplicationController
     end
 
     # Get export data hashes for each data type from config and write data to each sheet
-    exported_data = get_export_data(patients, FULL_HISTORY_PATIENT_CONFIG[:data])
+    exported_data = get_export_data(patients, FULL_HISTORY_PATIENT_CONFIG[:data], field_data)
     FULL_HISTORY_PATIENT_CONFIG[:data].each_key do |data_type|
-      last_row_nums[data_type] = write_xlsx_rows(exported_data, data_type, sheets[data_type], field_data[data_type][:checked], last_row_nums[data_type])
+      exported_data[data_type]&.each do |record|
+        # fast_excel unfortunately does not provide a method to modify the @last_row_number class variable so it needs to be manually kept track of
+        last_row_nums[data_type] += 1
+        record.each_with_index do |value, col_index|
+          sheets[data_type].write_string(last_row_nums[data_type], col_index, value.to_s, nil)
+        end
+      end
     end
 
     # Send file
