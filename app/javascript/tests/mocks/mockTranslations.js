@@ -265,8 +265,8 @@ const mockTranslations = {
         'notes': ''
       },
       'general_health': {
-        'name': 'General Health',
-        'notes': 'How are you feeling on a scale of 1 (feeling great) to 10 (feeling very sickly)?'
+        'name': 'Salud general',
+        'notes': '¿Cómo se siente en una escala del 1 (sentirse bien) al 10 (sentirse muy enfermo)?'
       }
     },
     'threshold-op': {
@@ -439,8 +439,8 @@ const mockTranslations = {
         'notes': ''
       },
       'general_health': {
-        'name': 'General Health',
-        'notes': 'How are you feeling on a scale of 1 (feeling great) to 10 (feeling very sickly)?'
+        'name': 'Salud general',
+        'notes': '¿Cómo se siente en una escala del 1 (sentirse bien) al 10 (sentirse muy enfermo)?'
       }
     },
     'threshold-op': {
@@ -613,8 +613,8 @@ const mockTranslations = {
         'notes': ''
       },
       'general_health': {
-        'name': 'General Health',
-        'notes': 'How are you feeling on a scale of 1 (feeling great) to 10 (feeling very sickly)?'
+        'name': 'Santé générale',
+        'notes': 'Comment vous sentez-vous sur une échelle de 1 (se sentir bien) à 10 (se sentir très malade)?'
       }
     },
     'threshold_op': {
@@ -787,8 +787,8 @@ const mockTranslations = {
         'notes': ''
       },
       'general_health': {
-        'name': 'General Health',
-        'notes': 'How are you feeling on a scale of 1 (feeling great) to 10 (feeling very sickly)?'
+        'name': 'Caafimaadka guud',
+        'notes': 'Sidee kuula muuqataa miisaanka 1 (dareen weyn) ilaa 10 (aad dareemaysid jirro aad u daran)?'
       }
     },
     'threshold-op': {
