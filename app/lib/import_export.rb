@@ -31,7 +31,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
 
     # Get all of the field data based on the config
-    field_data = get_field_data(config, patients)
+    field_data, symptom_names = get_field_data(config, patients)
 
     # Declare variables in scope outside of batch loop
     csvs = nil
@@ -59,7 +59,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
-      exported_data = get_export_data(batch_group.order(:id), config[:data], field_data)
+      exported_data = get_export_data(batch_group.order(:id), config[:data], field_data, symptom_names)
       data_types.each do |data_type|
         exported_data[data_type]&.each { |record| csvs[data_type] << record }
       end
@@ -87,7 +87,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
 
     # Get all of the field data based on the config
-    field_data = get_field_data(config, patients)
+    field_data, symptom_names = get_field_data(config, patients)
 
     # Declare variables in scope outside of batch loop
     workbooks = nil if separate_files
@@ -120,7 +120,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
 
       # 2) Get export data in batches to decrease size of export data hash maintained in memory
-      exported_data = get_export_data(batch_group.order(:id), config[:data], field_data)
+      exported_data = get_export_data(batch_group.order(:id), config[:data], field_data, symptom_names)
       data_types.each do |data_type|
         exported_data[data_type]&.each do |record|
           # fast_excel unfortunately does not provide a method to modify the @last_row_number class variable so it needs to be manually kept track of
@@ -162,9 +162,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # Update the checked and header data for assessment symptoms
     # NOTE: this must be done after updating the general headers above
-    update_assessment_symptom_data(data, patients)
+    symptom_names = update_assessment_symptom_data(data, patients)
 
-    data
+    [data, symptom_names]
   end
 
   # Finds the race values that should be included if the Race (All Race Fields) option is checked in custom export
@@ -201,14 +201,16 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     symptom_names_and_labels = symptoms.distinct.order(:label).pluck(:name, :label).transpose
 
     # Empty symptoms check
-    return unless symptom_names_and_labels.present?
+    return [] unless symptom_names_and_labels.present?
 
     data[:assessments][:checked].concat(symptom_names_and_labels.first.map(&:to_sym))
     data[:assessments][:headers].concat(symptom_names_and_labels.second)
+
+    symptom_names_and_labels.first.map(&:to_sym)
   end
 
   # Gets all associated relevant data for patients group based on queries and fields
-  def get_export_data(patients, data, field_data)
+  def get_export_data(patients, data, field_data, symptom_names)
     exported_data = {}
     exported_data[:patients] = extract_patients_details(patients, field_data[:patients][:checked]) if data.dig(:patients, :checked).present?
 
@@ -353,41 +355,33 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Extract assessment data values given relevant fields
   def extract_assessments_details(patient_identifiers, assessments, fields, symptom_names)
-    # pluck requested inherent fields always including patient_id for mapping alternative identifiers and assessment_id for querying symptoms
-    plucked_fields = (%i[patient_id id] | fields) & Assessment.column_names.map(&:to_sym)
+    # pluck requested inherent fields always including patient_id for mapping alternative identifiers
+    plucked_fields = (%i[patient_id] | fields) & Assessment.column_names.map(&:to_sym)
     patient_id_index = plucked_fields.index(:patient_id)
-    assessments_details = assessments.pluck(*plucked_fields)
+
+    assessments_details = nil
 
     # query assessment symptoms if requested
     if fields.include?(:symptoms)
-      # retrieve assessment ids from assessment details for querying symptoms
-      assessment_id_index = plucked_fields.index(:id)
-      assessment_ids = assessments_details.map { |values| values[assessment_id_index] }
-
-      # initialize hash for mapping assessments to associated symptoms
-      symptoms = Hash[assessment_ids.map { |assessment_id| [assessment_id, {}] }]
-
       # compute symptom value directly in database by selecting the correct value field and casting it as a string for export for optimal performance
       # NOTE: this prevents symptom type, bool_value, int_value, and float_value fields to need to be loaded into memory
       #       while maintaining performance speed by fetching all symptom values in a single query
-      symptom_value = Arel.sql("CASE WHEN symptoms.type = 'BoolSymptom' THEN CASE WHEN symptoms.bool_value THEN 'true' ELSE 'false' END
-                                     WHEN symptoms.type = 'IntegerSymptom' THEN CAST(symptoms.int_value AS CHAR)
-                                     WHEN symptoms.type = 'FloatSymptom' THEN CAST(symptoms.float_value AS CHAR)
-                                     ELSE ''
-                                END")
+      string_value = ActiveRecord::Base.sanitize_sql(Arel.sql("CASE WHEN symptoms.type = 'BoolSymptom' THEN CASE WHEN bool_value THEN 'true' ELSE 'false' END
+                                                                    WHEN symptoms.type = 'IntegerSymptom' THEN CAST(int_value AS CHAR)
+                                                                    WHEN symptoms.type = 'FloatSymptom' THEN CAST(float_value AS CHAR)
+                                                                    ELSE '' END"))
 
-      # save symptom values to hash mapping assessments to symptoms
-      ReportedCondition.where(assessment_id: assessment_ids)
-                       .joins(:symptoms)
-                       .pluck(:assessment_id, :name, symptom_value)
-                       .each { |(id, name, value)| symptoms[id][name.to_sym] = value }
+      symptom_values = symptom_names.map do |name|
+        name = ActiveRecord::Base.sanitize_sql(name)
+        Arel.sql("MAX(CASE WHEN symptoms.name = '#{name}' THEN (#{string_value}) END) AS '#{name}'")
+      end
 
-      # add symptoms to assessments details
-      assessments_details = assessments_details.map { |values| values.concat(symptom_names.map { |name| symptoms[values[assessment_id_index]][name] }) }
+      assessments_details = assessments.joins(reported_condition: :symptoms)
+                                       .group(*(plucked_fields | [:assessment_id]))
+                                       .pluck(*plucked_fields, *symptom_values)
+    else
+      assessments_details = assessments.pluck(*plucked_fields)
     end
-
-    # remove assessment id from assessments details if not requested (patient_id is always plucked to map alternative identifiers from patient model)
-    assessments_details.each { |values| values.slice!(assessment_id_index) } unless fields.include?(:id)
 
     # insert any additional patient identifiers if requested (fields must come first in array below to maintain correct column order)
     (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).each do |field|
