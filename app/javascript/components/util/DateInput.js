@@ -3,34 +3,49 @@ import PropTypes from 'prop-types';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import MaskedInput from 'react-text-mask';
-
 import moment from 'moment';
 
 class DateInput extends React.Component {
   constructor(props) {
     super(props);
     this.datePickerRef = React.createRef();
-    this.handleRawChange = this.handleRawChange.bind(this);
-    this.handleDateChange = this.handleDateChange.bind(this);
-    this.clearDate = this.clearDate.bind(this);
+    this.state = {
+      lastValidDate: props.date || null,
+    };
   }
 
-  handleDateChange(date) {
-    this.props.onChange(date && moment(date).format('YYYY-MM-DD'));
+  handleDateChange = date => {
+    const momentDate = date && moment(date).format('YYYY-MM-DD');
+    this.props.onChange(momentDate);
     this.datePickerRef.current.setOpen(false);
-  }
+    if (this.validDate(momentDate)) {
+      this.setState({ lastValidDate: momentDate });
+    }
+  };
 
-  handleRawChange(event) {
+  handleRawChange = event => {
     if (event.target.value) {
       this.datePickerRef.current.setOpen(true);
     }
+  };
+
+  handleOnBlur = () => {
+    if (this.props.required) {
+      const date = this.state.lastValidDate || moment().format('YYYY-MM-DD');
+      this.props.onChange(date);
+    } else if (this.props.clearInvalid && !this.validDate(this.props.date)) {
+      this.clearDate();
+    }
+  };
+
+  validDate = date => {
+    return moment(date, 'YYYY-MM-DD').isValid();
   }
 
-  clearDate() {
-    event.preventDefault();
+  clearDate = () => {
     this.props.onChange(null);
     this.datePickerRef.current.setOpen(false);
-  }
+  };
 
   render() {
     return (
@@ -66,11 +81,12 @@ class DateInput extends React.Component {
               selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}
               minDate={this.props.minDate && moment(this.props.minDate, 'YYYY-MM-DD').toDate()}
               maxDate={this.props.maxDate && moment(this.props.maxDate, 'YYYY-MM-DD').toDate()}
-              onChange={this.handleDateChange}
               popperPlacement={this.props.placement || 'auto'}
               placeholderText="mm/dd/yyyy"
               ref={this.datePickerRef}
+              onChange={this.handleDateChange}
               onChangeRaw={this.handleRawChange}
+              onBlur={this.handleOnBlur}
               className={this.props.customClass}
               customInput={
                 <MaskedInput
@@ -116,6 +132,8 @@ DateInput.propTypes = {
   placement: PropTypes.oneOf(['top', 'bottom', 'left', 'right', 'auto']),
   isInvalid: PropTypes.bool,
   isClearable: PropTypes.bool,
+  required: PropTypes.bool,
+  clearInvalid: PropTypes.bool,
   customClass: PropTypes.string,
   ariaLabel: PropTypes.string,
   disabled: PropTypes.bool,
