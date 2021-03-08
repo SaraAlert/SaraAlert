@@ -1,8 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+import { formatDate } from '../../../utils/DateTime';
 import axios from 'axios';
-import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import BadgeHOH from '../../util/BadgeHOH';
@@ -18,7 +19,7 @@ class MoveToHousehold extends React.Component {
           { field: 'name', label: 'Monitoree', isSortable: true, tooltip: null, filter: this.renderPatientName },
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
           { field: 'jurisdiction', label: 'Jurisdiction', isSortable: true, tooltip: null },
-          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDate },
+          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: formatDate },
           { field: 'select', label: '', isSortable: false, tooltip: null, filter: this.createSelectButton, className: 'text-center', onClick: this.submit },
         ],
         rowData: [],
@@ -51,15 +52,6 @@ class MoveToHousehold extends React.Component {
       showModal: false,
       cancelToken: axios.CancelToken.source(),
     };
-  }
-
-  /**
-   * Formats a date value into consistent format.
-   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
-   */
-  formatDate(data) {
-    const date = data.value;
-    return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
   }
 
   /**

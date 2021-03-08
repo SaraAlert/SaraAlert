@@ -1,7 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card, Form, Col, Row } from 'react-bootstrap';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { Card, Col, Form, Row } from 'react-bootstrap';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+
+import { mapToChartFormat, parseOutFields } from '../../../utils/Analytics';
 import _ from 'lodash';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
@@ -23,25 +25,7 @@ class MonitoreesByEventDate extends React.Component {
     this.setTimeResolution('Day');
   }
 
-  parseOutFields = (masterList, categoryTypeName) =>
-    masterList
-      .map(ml =>
-        WORKFLOWS.map(
-          wf => this.props.stats.monitoree_counts.find(x => x.status === wf && x.category_type === categoryTypeName && x.category === ml)?.total || 0
-        )
-      )
-      .map(x => x.concat(_.sum(x)));
-
-  // This instance of mapToChartFormat is slightly different from its neighbor components due to this unique use case
-  mapToChartFormat = (masterList, values, workflow) =>
-    masterList.map((ml, index0) => {
-      let retVal = {};
-      retVal['name'] = ml;
-      retVal[`${workflow}`] = values[Number(index0)][WORKFLOWS.findIndex(x => x === workflow)];
-      return retVal;
-    });
-
-  setTimeResolution(timeRes) {
+  setTimeResolution = timeRes => {
     let dateRangeInQuestion;
     if (timeRes === 'Day') {
       dateRangeInQuestion = 'Last Exposure Date';
@@ -53,10 +37,18 @@ class MonitoreesByEventDate extends React.Component {
     DATES_OF_INTEREST = _.uniq(
       this.props.stats.monitoree_counts.filter(x => x.category_type === dateRangeInQuestion && x.category).map(x => x.category)
     ).sort();
+    let fd = mapToChartFormat(DATES_OF_INTEREST, parseOutFields(this.props.stats.monitoree_counts, DATES_OF_INTEREST, dateRangeInQuestion, WORKFLOWS));
+    // The formattedData from this function needs to be slightly split up by workflow for this use-case
+    let graphData = WORKFLOWS.map(workflow =>
+      fd.map(y => ({
+        name: y.name,
+        [`${workflow}`]: y[`${workflow}`],
+      }))
+    );
     this.setState({
-      graphData: WORKFLOWS.map(workflow => this.mapToChartFormat(DATES_OF_INTEREST, this.parseOutFields(DATES_OF_INTEREST, dateRangeInQuestion), workflow)),
+      graphData,
     });
-  }
+  };
 
   render() {
     return (
