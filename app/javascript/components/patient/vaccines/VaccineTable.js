@@ -347,7 +347,7 @@ class VaccineTable extends React.Component {
                 <Col>
                   <Button variant="primary" className="mr-2" onClick={this.handleAddVaccineClick}>
                     <i className="fas fa-plus fa-fw"></i>
-                    <span className="ml-2">Add New Vaccine</span>
+                    <span className="ml-2">Add New Vaccination</span>
                   </Button>
                 </Col>
                 <Col lg={5}>
