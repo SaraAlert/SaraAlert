@@ -314,6 +314,7 @@ class Identification extends React.Component {
                     onChange={date => this.handleDateChange('date_of_birth', date)}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_birth']}
+                    clearInvalid={true}
                     customClass="form-control-lg"
                     ariaLabel="Date of Birth Input"
                   />
