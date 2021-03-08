@@ -7,7 +7,7 @@ class VaccinesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    redirect_to(root_url) and return unless current_user&.can_view_patient_vaccines?
+    redirect_to(root_url) && return unless current_user&.can_view_patient_vaccines?
 
     # Validate params and handle errors if invalid
     begin

@@ -23,52 +23,33 @@ class VaccineModal extends React.Component {
       notes: this.props.currentVaccineData?.notes,
       // Sorting so that the blank option shows up at the top
       sorted_dose_number_options: this.props.dose_number_options ? this.props.dose_number_options.sort() : [],
-      isValid: false,
     };
   }
 
-  componentDidMount() {
-    this.checkIfValid();
-  }
-
   /**
-   * Data is valid and can be saved if there is both a group name and product name selected.
    */
-  checkIfValid = () => {
-    const isValid = this.state.group_name && this.state.product_name;
-    this.setState({ isValid });
-  };
+  checkIfValid = () => {};
 
   handleProductNameChange = data => {
-    this.setState({ product_name: data.value }, () => {
-      this.checkIfValid();
-    });
+    this.setState({ product_name: data.value });
   };
 
   handleGroupNameChange = data => {
     // Resets product name if selected because product name options are dependent on group name
-    this.setState({ group_name: data.value, product_name: null }, () => {
-      this.checkIfValid();
-    });
+    this.setState({ group_name: data.value, product_name: null });
   };
 
   handleAdministrationDateChange = newDate => {
-    this.setState({ administration_date: newDate }, () => {
-      this.checkIfValid();
-    });
+    this.setState({ administration_date: newDate });
   };
 
   handleDoseNumberChange = data => {
-    this.setState({ dose_number: data.value }, () => {
-      this.checkIfValid();
-    });
+    this.setState({ dose_number: data.value });
   };
 
   handleNotesChange = event => {
     const val = event.target.value;
-    this.setState({ notes: val }, () => {
-      this.checkIfValid();
-    });
+    this.setState({ notes: val });
   };
 
   /**
@@ -82,6 +63,10 @@ class VaccineModal extends React.Component {
 
   render() {
     const defaultGroupNameOption = this.props.group_name_options ? this.props.group_name_options[0] : '';
+
+    // Data is valid and can be saved if there is both a group name and product name selected.
+    const isValid = this.state.group_name && this.state.product_name;
+
     return (
       <Modal size="lg" show centered onHide={this.props.onClose}>
         <h1 className="sr-only">{this.props.title}</h1>
@@ -93,7 +78,7 @@ class VaccineModal extends React.Component {
             <Row>
               <Form.Group as={Col}>
                 <Form.Label htmlFor="group-name-select" className="nav-input-label">
-                  Vaccine Group
+                  Vaccine Group*
                 </Form.Label>
                 <Select
                   inputId="group-name-select"
@@ -120,7 +105,7 @@ class VaccineModal extends React.Component {
             <Row>
               <Form.Group as={Col}>
                 <Form.Label htmlFor="product-name-select" className="nav-input-label">
-                  Product Name
+                  Product Name*
                 </Form.Label>
                 <Select
                   inputId="product-name-select"
@@ -210,7 +195,7 @@ class VaccineModal extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disabled={!this.state.isValid} onClick={() => this.props.onSave(this.state)}>
+          <Button variant="primary btn-square" disabled={!isValid} onClick={() => this.props.onSave(this.state)}>
             <span data-for="submit-tooltip" data-tip="" className="ml-1">
               {this.props.isEditing ? 'Update' : 'Create'}
             </span>
