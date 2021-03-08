@@ -604,4 +604,39 @@ namespace :stats do
 
     package.serialize 'eval_queries.xlsx'
   end
+
+  task all_time_twilio_stats: :environment do
+    twilio_stats_since_date(Date.new(2020,3,1))
+  end
+
+  task month_twilio_stats: :environment do
+    twilio_stats_since_date(1.month.ago.to_date)
+  end
+
+  def twilio_stats_since_date(since_date)
+    client = Twilio::REST::Client.new(ENV['TWILLIO_API_ACCOUNT'], ENV['TWILLIO_API_KEY'])
+    sms_total = (client.usage.records.list(category: 'sms', start_date: since_date).collect do |record| record.count end)[0]
+    sms_inbound = (client.usage.records.list(category: 'sms-inbound', start_date: since_date).collect do |record| record.count end)[0]
+    sms_outbound = (client.usage.records.list(category: 'sms-outbound', start_date: since_date).collect do |record| record.count end)[0]
+    calls_total = (client.usage.records.list(category: 'calls', start_date: since_date).collect do |record| record.count end)[0]
+    calls_inbound = (client.usage.records.list(category: 'calls-inbound', start_date: since_date).collect do |record| record.count end)[0]
+    calls_outbound = (client.usage.records.list(category: 'calls-outbound', start_date: since_date).collect do |record| record.count end)[0]
+    authy_total = (client.usage.records.list(category: 'authy-authentications', start_date: since_date).collect do |record| record.count end)[0]
+    authy_calls = (client.usage.records.list(category: 'authy-calls-outbound', start_date: since_date).collect do |record| record.count end)[0]
+    authy_sms = (client.usage.records.list(category: 'authy-sms-outbound', start_date: since_date).collect do |record| record.count end)[0] 
+    authy_email = (client.usage.records.list(category: 'authy-outbound-email', start_date: since_date).collect do |record| record.count end)[0] 
+
+    puts "Twilio Stats Since #{since_date.to_s}"
+    puts "SMS Total: #{sms_total.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+    puts "\t SMS Inbound: #{sms_inbound.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+    puts "\t SMS Outound: #{sms_outbound.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+    puts "Calls Total: #{calls_total.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+    puts "\t Calls Inbound: #{calls_inbound.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+    puts "\t Calls Outound: #{calls_outbound.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+    puts "Authy Total: #{authy_total.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+    puts "\t Authy Calls: #{authy_calls.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+    puts "\t Authy SMS: #{authy_sms.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+    puts "\t Authy Emails: #{authy_email.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+  end
+
 end
