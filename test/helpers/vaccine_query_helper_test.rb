@@ -13,7 +13,8 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
           'name' => 'COVID-19',
           'vaccines' => [
             { 'product_name' => 'Moderna COVID-19 Vaccine' },
-            { 'product_name' => 'Pfizer-BioNTech COVID-19 Vaccine' }
+            { 'product_name' => 'Pfizer-BioNTech COVID-19 Vaccine' },
+            { 'product_name' => 'Janssen (J&J) COVID-19 Vaccine' }
           ]
         },
         'TestGroupTest' => {
