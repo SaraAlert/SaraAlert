@@ -1,11 +1,13 @@
 import React from 'react';
-import { Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Button, Modal } from 'react-bootstrap';
+
+import { formatTimestamp } from '../../utils/DateTime';
+import axios from 'axios';
+import _ from 'lodash';
+
 import CustomTable from '../layout/CustomTable';
 import reportError from '../util/ReportError';
-import axios from 'axios';
-import moment from 'moment-timezone';
-import _ from 'lodash';
 
 class AuditModal extends React.Component {
   constructor(props) {
@@ -15,7 +17,7 @@ class AuditModal extends React.Component {
         colData: [
           { label: 'Triggered by', field: 'user', className: 'wrap', isSortable: true, colWidth: '30%' },
           { label: 'Action', field: 'change', className: 'wrap', filter: this.formatChange, isSortable: false, colWidth: '60%' },
-          { label: 'Timestamp', field: 'timestamp', filter: this.formatTimestamp, isSortable: true, colWidth: '10%' },
+          { label: 'Timestamp', field: 'timestamp', filter: formatTimestamp, isSortable: true, colWidth: '10%' },
         ],
         rowData: [],
         totalRows: 0,
@@ -100,16 +102,6 @@ class AuditModal extends React.Component {
         }
       });
   }, 500);
-
-  /**
-   * Formats values in the timestamp column to be human readable
-   * @param {Object} data - Data about the cell this filter is called on.
-   */
-  formatTimestamp(data) {
-    const timestamp = data.value;
-    const ts = moment.tz(timestamp, 'UTC');
-    return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
-  }
 
   /**
    * Gets the all possible jurisdictions path via an axios GET request.
