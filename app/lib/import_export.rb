@@ -215,27 +215,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     exported_data[:patients] = extract_patients_details(patients, field_data[:patients][:checked]) if data.dig(:patients, :checked).present?
 
     # extract patient identifiers for other data types if necessary
-    if (data.dig(:assessments, :checked).present? && (PATIENT_FIELD_TYPES[:alternative_identifiers] - data[:assessments][:checked]).empty?) ||
-       (data.dig(:laboratories, :checked).present? && (PATIENT_FIELD_TYPES[:alternative_identifiers] - data[:laboratories][:checked]).empty?) ||
-       (data.dig(:close_contacts, :checked).present? && (PATIENT_FIELD_TYPES[:alternative_identifiers] - data[:close_contacts][:checked]).empty?) ||
-       (data.dig(:transfers, :checked).present? && (PATIENT_FIELD_TYPES[:alternative_identifiers] - data[:transfers][:checked]).empty?) ||
-       (data.dig(:histories, :checked).present? && (PATIENT_FIELD_TYPES[:alternative_identifiers] - data[:histories][:checked]).empty?)
-
-      # extract patient identifiers from exported data if it already exists otherwise perform query to pluck those values
-      if exported_data[:patients].present? && (PATIENT_FIELD_TYPES[:alternative_identifiers] - data[:patients][:checked]).empty?
-        # save indices to variables for performance since they will be used many times
-        id_index = field_data[:patients][:checked].index(:id)
-        id_statelocal_index = field_data[:patients][:checked].index(:user_defined_id_statelocal)
-        id_cdc_index = field_data[:patients][:checked].index(:user_defined_id_cdc)
-        id_nndss_index = field_data[:patients][:checked].index(:user_defined_id_nndss)
-        patient_identifiers = Hash[exported_data[:patients].map do |values|
-          [values[id_index], [values[id_statelocal_index], values[id_cdc_index], values[id_nndss_index]]]
-        end]
-      else
-        patient_identifiers = Hash[patients.pluck(:id, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss)
-                                           .map { |id, statelocal, cdc, nndss| [id, [statelocal, cdc, nndss]] }]
-      end
-    elsif exported_data[:patients].present? && data[:patients][:checked].include?(:id)
+    if exported_data[:patients].present? && data[:patients][:checked].include?(:id)
       id_index = field_data[:patients][:checked].index(:id)
       patient_ids = exported_data[:patients].map { |values| values[id_index] }
     else
@@ -243,29 +223,29 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     if data.dig(:assessments, :checked).present?
-      assessments = assessments_by_patient_ids(patient_identifiers&.keys || patient_ids)
+      assessments = assessments_by_patient_ids(patient_ids)
       symptom_names = field_data[:assessments][:checked] - data[:assessments][:checked]
-      exported_data[:assessments] = extract_assessments_details(patient_identifiers, assessments, data[:assessments][:checked], symptom_names)
+      exported_data[:assessments] = extract_assessments_details(assessments, data[:assessments][:checked], symptom_names)
     end
 
     if data.dig(:laboratories, :checked).present?
-      laboratories = laboratories_by_patient_ids(patient_identifiers&.keys || patient_ids)
-      exported_data[:laboratories] = extract_laboratories_details(patient_identifiers, laboratories, data[:laboratories][:checked])
+      laboratories = laboratories_by_patient_ids(patient_ids)
+      exported_data[:laboratories] = extract_laboratories_details(laboratories, data[:laboratories][:checked])
     end
 
     if data.dig(:close_contacts, :checked).present?
-      close_contacts = close_contacts_by_patient_ids(patient_identifiers&.keys || patient_ids)
-      exported_data[:close_contacts] = extract_close_contacts_details(patient_identifiers, close_contacts, data[:close_contacts][:checked])
+      close_contacts = close_contacts_by_patient_ids(patient_ids)
+      exported_data[:close_contacts] = extract_close_contacts_details(close_contacts, data[:close_contacts][:checked])
     end
 
     if data.dig(:transfers, :checked).present?
-      transfers = transfers_by_patient_ids(patient_identifiers&.keys || patient_ids)
-      exported_data[:transfers] = extract_transfers_details(patient_identifiers, transfers, data[:transfers][:checked])
+      transfers = transfers_by_patient_ids(patient_ids)
+      exported_data[:transfers] = extract_transfers_details(transfers, data[:transfers][:checked])
     end
 
     if data.dig(:histories, :checked).present?
-      histories = histories_by_patient_ids(patient_identifiers&.keys || patient_ids)
-      exported_data[:histories] = extract_histories_details(patient_identifiers, histories, data[:histories][:checked])
+      histories = histories_by_patient_ids(patient_ids)
+      exported_data[:histories] = extract_histories_details(histories, data[:histories][:checked])
     end
 
     exported_data
@@ -354,155 +334,113 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Extract assessment data values given relevant fields
-  def extract_assessments_details(patient_identifiers, assessments, fields, symptom_names)
-    # pluck requested inherent fields always including patient_id for mapping alternative identifiers
-    plucked_fields = (%i[patient_id] | fields) & Assessment.column_names.map(&:to_sym)
-    patient_id_index = plucked_fields.index(:patient_id)
+  def extract_assessments_details(assessments, fields, symptom_names)
+    # validate fields to be plucked and do not include 'symptoms' as it is not an actual field
+    plucked_fields = fields & (ASSESSMENT_FIELD_NAMES.keys - [:symptoms])
 
-    assessments_details = nil
-
-    # query assessment symptoms if requested
+    # modify query to include symptoms if selected
     if fields.include?(:symptoms)
-      # compute symptom value directly in database by selecting the correct value field and casting it as a string for export for optimal performance
-      # NOTE: this prevents symptom type, bool_value, int_value, and float_value fields to need to be loaded into memory
-      #       while maintaining performance speed by fetching all symptom values in a single query
+      # include necessary joins and group by plucked fields because all non aggregated fields in the select statement must also appear in the group by clause
+      # query must always include assessment_id in group by clause (since full history export does not include it)
+      assessments = assessments.joins(reported_condition: :symptoms).group(*(plucked_fields | [:assessment_id]))
+
+      # this sql statement casts symptom values into their string value so all symptom values can be represented in a single column
       string_value = ActiveRecord::Base.sanitize_sql(Arel.sql("CASE WHEN symptoms.type = 'BoolSymptom' THEN CASE WHEN bool_value THEN 'true' ELSE 'false' END
                                                                     WHEN symptoms.type = 'IntegerSymptom' THEN CAST(int_value AS CHAR)
                                                                     WHEN symptoms.type = 'FloatSymptom' THEN CAST(float_value AS CHAR)
                                                                     ELSE '' END"))
 
-      symptom_values = symptom_names.map do |name|
+      # add each unique symptom value to the list of fields to pluck
+      plucked_fields += symptom_names.map do |name|
         name = ActiveRecord::Base.sanitize_sql(name)
         Arel.sql("MAX(CASE WHEN symptoms.name = '#{name}' THEN (#{string_value}) END) AS '#{name}'")
       end
-
-      assessments_details = assessments.joins(reported_condition: :symptoms)
-                                       .group(*(plucked_fields | [:assessment_id]))
-                                       .pluck(*plucked_fields, *symptom_values)
-    else
-      assessments_details = assessments.pluck(*plucked_fields)
     end
 
-    # insert any additional patient identifiers if requested (fields must come first in array below to maintain correct column order)
-    (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).each do |field|
-      assessments_details = assessments_details.map do |values|
-        values.insert(fields.index(field), patient_identifiers[values[patient_id_index]][PATIENT_FIELD_TYPES[:alternative_identifiers].index(field)])
-      end
-    end
+    # join patients if any alternative identifiers are selected
+    assessments = assessments.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
-    # remove patient_id from assessments details if not requested
-    assessments_details.each { |values| values.slice!(patient_id_index) } unless fields.include?(:patient_id)
+    # pluck selected fields
+    records = assessments.pluck(*plucked_fields)
 
-    # perform any data transformations
-    remove_formula_start_field_indices = (%i[who_reported].map { |field| fields.index(field) }).reject(&:nil?)
-    assessments_details.each { |values| remove_formula_start_field_indices.each { |index| values[index] = remove_formula_start(values[index]) } }
+    # remove formula start for who_reported field
+    (fields & %i[who_reported]).map { |field| fields.index(field) }
+                               .each { |index| records.each { |values| values[index] = remove_formula_start(values[index]) } }
 
-    assessments_details
+    records
   end
 
   # Extract laboratory data values given relevant fields
-  def extract_laboratories_details(patient_identifiers, laboratories, fields)
-    # pluck requested inherent fields always including patient_id for mapping alternative identifiers
-    plucked_fields = ([:patient_id] | fields) & Laboratory.column_names.map(&:to_sym)
-    patient_id_index = plucked_fields.index(:patient_id)
-    laboratories_details = laboratories.pluck(*plucked_fields)
+  def extract_laboratories_details(laboratories, fields)
+    # join patients if any alternative identifiers are selected
+    laboratories = laboratories.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
-    # insert any additional patient identifiers if requested (fields must come first in array below to maintain correct column order)
-    (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).each do |field|
-      laboratories_details = laboratories_details.map do |values|
-        values.insert(fields.index(field), patient_identifiers[values[patient_id_index]][PATIENT_FIELD_TYPES[:alternative_identifiers].index(field)])
-      end
-    end
-
-    # remove patient_id from laboratories details if not requested (patient_id is always plucked to map alternative identifiers from patient model)
-    laboratories_details.each { |values| values.slice!(patient_id_index) } unless fields.include?(:patient_id)
-
-    laboratories_details
+    # validate and pluck selected fields
+    laboratories.pluck(*(fields & LABORATORY_FIELD_NAMES.keys))
   end
 
   # Extract close contact data values given relevant fields
-  def extract_close_contacts_details(patient_identifiers, close_contacts, fields)
-    # pluck requested inherent fields always including patient_id for mapping alternative identifiers
-    plucked_fields = ([:patient_id] | fields) & CloseContact.column_names.map(&:to_sym)
-    patient_id_index = plucked_fields.index(:patient_id)
-    close_contacts_details = close_contacts.pluck(*plucked_fields)
+  def extract_close_contacts_details(close_contacts, fields)
+    # join patients if any alternative identifiers are selected
+    close_contacts = close_contacts.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
-    # insert any additional patient identifiers if requested (fields must come first in array below to maintain correct column order)
-    (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).each do |field|
-      close_contacts_details = close_contacts_details.map do |values|
-        values.insert(fields.index(field), patient_identifiers[values[patient_id_index]][PATIENT_FIELD_TYPES[:alternative_identifiers].index(field)])
-      end
-    end
+    # validate and pluck selected fields
+    records = close_contacts.pluck(*(fields & CLOSE_CONTACT_FIELD_NAMES.keys))
 
-    # remove patient_id from close contact details if not requested (patient_id is always plucked to map alternative identifiers from patient model)
-    close_contacts_details.each { |values| values.slice!(patient_id_index) } unless fields.include?(:patient_id)
+    # remove formula start for 'created_by' and 'comment' fields
+    (fields & %i[first_name last_name email notes]).map { |field| fields.index(field) }
+                                                   .each { |index| records.each { |values| values[index] = remove_formula_start(values[index]) } }
 
-    # perform any data transformations
-    remove_formula_start_field_indices = (%i[first_name last_name email notes].map { |field| fields.index(field) }).reject(&:nil?)
-    close_contacts_details.each { |values| remove_formula_start_field_indices.each { |index| values[index] = remove_formula_start(values[index]) } }
+    # format phone numbers for 'primary_telephone' field
+    (fields & %i[primary_telephone]).map { |field| fields.index(field) }
+                                    .each { |index| records.each { |values| values[index] = format_phone_number(values[index]) } }
 
-    phone_field_indices = (%i[primary_telephone].map { |field| fields.index(field) }).reject(&:nil?)
-    close_contacts_details.each { |values| phone_field_indices.each { |index| values[index] = format_phone_number(values[index]) } }
-
-    close_contacts_details
+    records
   end
 
   # Extract transfer data values given relevant fields
-  def extract_transfers_details(patient_identifiers, transfers, fields)
-    # pluck requested fields
-    plucked_fields = ([:patient_id] | fields) & (Transfer.column_names.map(&:to_sym) | %i[who from_jurisdiction to_jurisdiction])
-    patient_id_index = plucked_fields.index(:patient_id)
+  def extract_transfers_details(transfers, fields)
+    # validate fields to be plucked
+    plucked_fields = fields & TRANSFER_FIELD_NAMES.keys
 
+    # join patients if any alternative identifiers are selected
+    transfers = transfers.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
+
+    # join users if 'who' is selected and replace field with user email
     if fields.include?(:who)
       transfers = transfers.joins('JOIN users ON transfers.who_id = users.id')
       plucked_fields[plucked_fields.index(:who)] = 'users.email'
     end
 
+    # join jurisdictions if 'from_jurisdiction' is selected and replace field with jurisdiction path
     if fields.include?(:from_jurisdiction)
       transfers = transfers.joins('JOIN jurisdictions j_from ON transfers.from_jurisdiction_id = j_from.id')
       plucked_fields[plucked_fields.index(:from_jurisdiction)] = 'j_from.path'
     end
 
+    # join jurisdictions if 'to_jurisdiction' is selected and replace field with jurisdiction path
     if fields.include?(:to_jurisdiction)
       transfers = transfers.joins('JOIN jurisdictions j_to ON transfers.to_jurisdiction_id = j_to.id')
       plucked_fields[plucked_fields.index(:to_jurisdiction)] = 'j_to.path'
     end
 
-    # pluck inherent transfer fields
-    transfers_details = transfers.pluck(*plucked_fields)
-
-    # insert any additional patient identifiers if requested (fields must come first in array below to maintain correct column order)
-    (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).each do |field|
-      transfers_details = transfers_details.map do |values|
-        values.insert(fields.index(field), patient_identifiers[values[patient_id_index]][PATIENT_FIELD_TYPES[:alternative_identifiers].index(field)])
-      end
-    end
-
-    # remove patient_id from close contact details if not requested (patient_id is always plucked to map alternative identifiers from patient model)
-    transfers_details.each { |values| values.slice!(patient_id_index) } unless fields.include?(:patient_id)
-
-    transfers_details
+    # pluck selected fields
+    transfers.pluck(*plucked_fields)
   end
 
   # Extract history data values given relevant fields
-  def extract_histories_details(patient_identifiers, histories, fields)
-    # pluck requested inherent fields always including patient_id for mapping alternative identifiers
-    plucked_fields = ([:patient_id] | fields) & History.column_names.map(&:to_sym)
-    patient_id_index = plucked_fields.index(:patient_id)
-    histories_details = histories.pluck(*plucked_fields)
+  def extract_histories_details(histories, fields)
+    # join patients if any alternative identifiers are selected
+    histories = histories.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
-    # insert any additional patient identifiers if requested (fields must come first in array below to maintain correct column order)
-    (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).each do |field|
-      histories_details = histories_details.map do |values|
-        values.insert(fields.index(field), patient_identifiers[values[patient_id_index]][PATIENT_FIELD_TYPES[:alternative_identifiers].index(field)])
-      end
-    end
+    # validate and pluck selected fields
+    records = histories.pluck(*(fields & HISTORY_FIELD_NAMES.keys))
 
-    # perform any data transformations
-    remove_formula_start_field_indices = (%i[created_by comment].map { |field| fields.index(field) }).reject(&:nil?)
-    histories_details.each { |values| remove_formula_start_field_indices.each { |index| values[index] = remove_formula_start(values[index]) } }
+    # remove formula start for 'created_by' and 'comment' fields
+    (fields & %i[created_by comment]).map { |field| fields.index(field) }
+                                     .each { |index| records.each { |values| values[index] = remove_formula_start(values[index]) } }
 
-    histories_details
+    records
   end
 
   # Builds a file name using the base name, index, date, and extension.
