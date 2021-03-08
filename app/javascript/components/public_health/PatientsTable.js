@@ -20,6 +20,7 @@ import {
 import { ToastContainer } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 
+import { formatDate, formatTimestamp } from '../../utils/DateTime';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
@@ -50,17 +51,17 @@ class PatientsTable extends React.Component {
           { field: 'transferred_to', label: 'To Jurisdiction', isSortable: true, tooltip: null },
           { field: 'assigned_user', label: 'Assigned User', isSortable: true, tooltip: null },
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
-          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDate },
+          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: formatDate },
           { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatEndOfMonitoring },
-          { field: 'extended_isolation', label: 'Extended Isolation To', isSortable: true, tooltip: 'extendedIsolation', filter: this.formatDate },
-          { field: 'symptom_onset', label: 'Symptom Onset', isSortable: true, tooltip: null, filter: this.formatDate },
+          { field: 'extended_isolation', label: 'Extended Isolation To', isSortable: true, tooltip: 'extendedIsolation', filter: formatDate },
+          { field: 'symptom_onset', label: 'Symptom Onset', isSortable: true, tooltip: null, filter: formatDate },
           { field: 'risk_level', label: 'Risk Level', isSortable: true, tooltip: null },
           { field: 'monitoring_plan', label: 'Monitoring Plan', isSortable: true, tooltip: null },
           { field: 'public_health_action', label: 'Latest Public Health Action', isSortable: true, tooltip: null },
-          { field: 'expected_purge_date', label: 'Eligible for Purge After', isSortable: true, tooltip: 'purgeDate', filter: this.formatTimestamp },
+          { field: 'expected_purge_date', label: 'Eligible for Purge After', isSortable: true, tooltip: 'purgeDate', filter: formatTimestamp },
           { field: 'reason_for_closure', label: 'Reason for Closure', isSortable: true, tooltip: null },
-          { field: 'closed_at', label: 'Closed At', isSortable: true, tooltip: null, filter: this.formatTimestamp },
-          { field: 'transferred_at', label: 'Transferred At', isSortable: true, tooltip: null, filter: this.formatTimestamp },
+          { field: 'closed_at', label: 'Closed At', isSortable: true, tooltip: null, filter: formatTimestamp },
+          { field: 'transferred_at', label: 'Transferred At', isSortable: true, tooltip: null, filter: formatTimestamp },
           { field: 'latest_report', label: 'Latest Report', isSortable: true, tooltip: null, filter: this.formatLatestReport },
           { field: 'status', label: 'Status', isSortable: false, tooltip: null },
           { field: 'report_eligibility', label: '', isSortable: false, tooltip: null, filter: this.createEligibilityTooltip, icon: 'far fa-comment' },
@@ -475,17 +476,6 @@ class PatientsTable extends React.Component {
     return <a href={`/patients/${rowData.id}`}>{name}</a>;
   };
 
-  formatTimestamp(data) {
-    const timestamp = Object.prototype.hasOwnProperty.call(data, 'value') ? data.value : data;
-    const ts = moment.tz(timestamp, 'UTC');
-    return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
-  }
-
-  formatDate(data) {
-    const date = data.value;
-    return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
-  }
-
   formatEndOfMonitoring(data) {
     const endOfMonitoring = data.value;
     if (endOfMonitoring === 'Continuous Exposure') {
@@ -508,7 +498,7 @@ class PatientsTable extends React.Component {
             </span>
           )}
         </Col>
-        <Col>{rowData.latest_report.timestamp && this.formatTimestamp(rowData.latest_report.timestamp)}</Col>
+        <Col>{rowData.latest_report.timestamp && formatTimestamp(rowData.latest_report.timestamp)}</Col>
       </Row>
     );
   };

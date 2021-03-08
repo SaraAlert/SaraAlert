@@ -1,9 +1,10 @@
 import React from 'react';
-import _ from 'lodash';
 import { PropTypes } from 'prop-types';
+import { Button, Card, Col, Dropdown, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+
+import { formatTimestamp } from '../../utils/DateTime';
 import axios from 'axios';
-import moment from 'moment-timezone';
-import { Card, Button, Row, Col, Dropdown, InputGroup, OverlayTrigger, Form, Tooltip } from 'react-bootstrap';
+import _ from 'lodash';
 
 import AddAssessmentNote from './steps/AddAssessmentNote';
 import ClearAssessments from './steps/ClearAssessments';
@@ -28,7 +29,7 @@ class AssessmentTable extends React.Component {
           // is initially loaded that removes this column data if the Patient is in the Isolation workflow.
           { label: 'Needs Review', field: 'symptomatic', isSortable: true, tooltip: 'exposureNeedsReviewColumn' },
           { label: 'Reporter', field: 'who_reported', isSortable: true },
-          { label: 'Created At', field: 'created_at', isSortable: true, filter: this.formatTimestamp },
+          { label: 'Created At', field: 'created_at', isSortable: true, filter: formatTimestamp },
         ],
         rowData: [],
         totalRows: 0,
@@ -269,16 +270,6 @@ class AssessmentTable extends React.Component {
       editRow: null,
     });
   };
-
-  /**
-   * Formats values in the timestamp column to be human readable
-   * @param {Object} data - Data about the cell this filter is called on.
-   */
-  formatTimestamp(data) {
-    const timestamp = data.value;
-    const ts = moment.tz(timestamp, 'UTC');
-    return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
-  }
 
   /**
    * Creates the action button & dropdown for each row in the table.

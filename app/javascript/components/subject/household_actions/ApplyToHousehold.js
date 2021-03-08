@@ -1,6 +1,8 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form } from 'react-bootstrap';
+
+import { formatDate } from '../../../utils/DateTime';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 
@@ -14,7 +16,7 @@ class ApplyToHousehold extends React.Component {
       table: {
         colData: [
           { field: 'name', label: 'Name', isSortable: true, tooltip: null, filter: this.formatPatientName },
-          { field: 'date_of_birth', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDate },
+          { field: 'date_of_birth', label: 'Date of Birth', isSortable: true, tooltip: null, filter: formatDate },
           { field: 'isolation', label: 'Workflow', isSortable: true, tooltip: null, options: { true: 'Isolation', false: 'Exposure' } },
           {
             field: 'monitoring',
@@ -290,15 +292,6 @@ class ApplyToHousehold extends React.Component {
       <div>{monitoreeName}</div>
     );
   };
-
-  /**
-   * Formats a date value into consistent format.
-   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
-   */
-  formatDate(data) {
-    const date = data.value;
-    return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
-  }
 
   render() {
     return (
