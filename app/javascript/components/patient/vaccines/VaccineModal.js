@@ -61,6 +61,17 @@ class VaccineModal extends React.Component {
     return product_names ? product_names.concat(this.props.additional_product_name_options) : [];
   };
 
+  /**
+   * Takes it an array of dropdown options and formats them as React Select requires.
+   * @param {String[]} options
+   */
+  getDropdownOptions = options => {
+    const formattedOptions = options?.map(option => {
+      return { label: option, value: option };
+    });
+    return formattedOptions;
+  };
+
   render() {
     const defaultGroupNameOption = this.props.group_name_options ? this.props.group_name_options[0] : '';
 
@@ -89,9 +100,7 @@ class VaccineModal extends React.Component {
                       : { label: defaultGroupNameOption, value: defaultGroupNameOption }
                   }
                   value={{ label: this.state.group_name, value: this.state.group_name }}
-                  options={this.props.group_name_options?.map(option => {
-                    return { label: option, value: option };
-                  })}
+                  options={this.getDropdownOptions(this.props.group_name_options)}
                   onChange={this.handleGroupNameChange}
                   placeholder=""
                   theme={theme => ({
@@ -116,9 +125,7 @@ class VaccineModal extends React.Component {
                       : ''
                   }
                   value={this.state.product_name ? { label: this.state.product_name, value: this.state.product_name } : ''}
-                  options={this.getProductNameOptions().map(option => {
-                    return { label: option, value: option };
-                  })}
+                  options={this.getDropdownOptions(this.getProductNameOptions())}
                   onChange={this.handleProductNameChange}
                   placeholder=""
                   theme={theme => ({
@@ -162,9 +169,7 @@ class VaccineModal extends React.Component {
                       : ''
                   }
                   value={this.state.dose_number ? { label: this.state.dose_number, value: this.state.dose_number } : ''}
-                  options={this.props.dose_number_options?.map(option => {
-                    return { label: option, value: option };
-                  })}
+                  options={this.getDropdownOptions(this.props.dose_number_options)}
                   onChange={this.handleDoseNumberChange}
                   placeholder=""
                   styles={{ menu: base => ({ ...base, zIndex: 9999 }), option: base => ({ ...base, minHeight: 30 }) }}
