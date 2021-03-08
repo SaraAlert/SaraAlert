@@ -50,7 +50,8 @@ class VaccineTest < ActiveSupport::TestCase
     assert_not vaccine.update(product_name: nil)
     assert_equal(2, vaccine.errors.messages[:product_name].length)
     assert_equal(
-      "value of '' is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: '#{Vaccine.product_name_options(vaccine[:group_name]).join("', '")}'",
+      "value of '' is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: "\
+      "'#{Vaccine.product_name_options(vaccine[:group_name]).join("', '")}'",
       vaccine.errors.messages[:product_name][0]
     )
     assert_equal('is required', vaccine.errors.messages[:product_name][1])
@@ -58,7 +59,8 @@ class VaccineTest < ActiveSupport::TestCase
     assert_not vaccine.update(product_name: '')
     assert_equal(2, vaccine.errors.messages[:product_name].length)
     assert_equal(
-      "value of '' is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: '#{Vaccine.product_name_options(vaccine[:group_name]).join("', '")}'",
+      "value of '' is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: "\
+      "'#{Vaccine.product_name_options(vaccine[:group_name]).join("', '")}'",
       vaccine.errors.messages[:product_name][0]
     )
     assert_equal('is required', vaccine.errors.messages[:product_name][1])
@@ -66,7 +68,8 @@ class VaccineTest < ActiveSupport::TestCase
     assert_not vaccine.update(product_name: 'test')
     assert_equal(1, vaccine.errors.messages[:product_name].length)
     assert_equal(
-      "value of 'test' is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: '#{Vaccine.product_name_options(vaccine[:group_name]).join("', '")}'",
+      "value of 'test' is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: "\
+      "'#{Vaccine.product_name_options(vaccine[:group_name]).join("', '")}'",
       vaccine.errors.messages[:product_name][0]
     )
 
