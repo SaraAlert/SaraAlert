@@ -151,11 +151,11 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:report_reminder], comment) unless patient&.preferred_contact_method.nil?
   end
 
-  def self.vaccination(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new vaccination to the monitoree record.')
+  def self.vaccination(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new vaccination.')
     create_history(patient, created_by, HISTORY_TYPES[:vaccination], comment)
   end
 
-  def self.vaccination_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a vaccination on the monitoree record.')
+  def self.vaccination_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a vaccination.')
     create_history(patient, created_by, HISTORY_TYPES[:vaccination_edit], comment)
   end
 
