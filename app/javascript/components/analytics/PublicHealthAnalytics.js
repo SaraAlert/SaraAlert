@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Button, Col, Row } from 'react-bootstrap';
+
 import moment from 'moment-timezone';
 import domtoimage from 'dom-to-image';
 import Switch from 'react-switch';

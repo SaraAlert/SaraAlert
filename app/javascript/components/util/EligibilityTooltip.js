@@ -1,16 +1,12 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
+
+import { formatTimestamp } from '../../utils/DateTime';
 import ReactTooltip from 'react-tooltip';
-import moment from 'moment-timezone';
 
 class EligibilityTooltip extends React.Component {
   constructor(props) {
     super(props);
-  }
-
-  formatTimestamp(timestamp) {
-    const ts = moment.tz(timestamp, 'UTC');
-    return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
   }
 
   formatEligibility(eligibility, id) {
@@ -70,7 +66,7 @@ class EligibilityTooltip extends React.Component {
                 {eligibility.messages.map((m, index) => (
                   <li className="mb-0" key={`rei${id}${index}`}>
                     {m.message}
-                    {m.datetime ? ` (${this.formatTimestamp(m.datetime)})` : ''}
+                    {m.datetime ? ` (${formatTimestamp(m.datetime)})` : ''}
                   </li>
                 ))}
               </ul>
@@ -96,7 +92,7 @@ class EligibilityTooltip extends React.Component {
                 {eligibility.messages.map((m, index) => (
                   <li className="mb-0" key={`rei${id}${index}`}>
                     {m.message}
-                    {m.datetime ? ` (${this.formatTimestamp(m.datetime)})` : ''}
+                    {m.datetime ? ` (${formatTimestamp(m.datetime)})` : ''}
                   </li>
                 ))}
               </ul>
@@ -122,7 +118,7 @@ class EligibilityTooltip extends React.Component {
                 {eligibility.messages.map((m, index) => (
                   <li className="mb-0" key={`rei${id}${index}`}>
                     {m.message}
-                    {m.datetime ? ` (${this.formatTimestamp(m.datetime)})` : ''}
+                    {m.datetime ? ` (${formatTimestamp(m.datetime)})` : ''}
                   </li>
                 ))}
               </ul>
