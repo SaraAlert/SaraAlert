@@ -1,9 +1,12 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card, Button, Row, Col } from 'react-bootstrap';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import CustomizedAxisTick from './CustomizedAxisTick';
+import { Button, Card, Col, Row } from 'react-bootstrap';
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+
+import { mapToChartFormat, parseOutFields } from '../../../utils/Analytics';
 import _ from 'lodash';
+
+import CustomizedAxisTick from './CustomizedAxisTick';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
 const RISKFACTORS = [
@@ -29,39 +32,20 @@ class ExposureSummary extends React.Component {
     });
     this.COUNTRY_HEADERS = this.allCountryData.sort((a, b) => b.total - a.total).map(x => x.country);
 
-    this.rfData = this.parseOutFields(RISKFACTORS, 'Risk Factor');
-    this.countryData = this.parseOutFields(this.COUNTRY_HEADERS, 'Exposure Country');
+    this.rfData = parseOutFields(this.props.stats.monitoree_counts, RISKFACTORS, 'Risk Factor');
+    this.countryData = parseOutFields(this.props.stats.monitoree_counts, this.COUNTRY_HEADERS, 'Exposure Country');
 
     this.fullCountryData = _.cloneDeep(this.countryData); // Get the full countryData object for exporting
     this.COUNTRY_HEADERS = this.COUNTRY_HEADERS.slice(0, NUM_COUNTRIES_TO_SHOW); // and trim the headers so it wont display all the countries
 
     // Map and translate all of the Tabular Data to the Chart Format
-    this.rfChartData = this.mapToChartFormat(RISKFACTORS, this.rfData);
-    this.countryChartData = this.mapToChartFormat(this.COUNTRY_HEADERS, this.countryData);
+    this.rfChartData = mapToChartFormat(RISKFACTORS, this.rfData);
+    this.countryChartData = mapToChartFormat(this.COUNTRY_HEADERS, this.countryData);
     this.barGraphData = [
       { title: 'Risk Factors', data: this.rfChartData },
       { title: 'Country of Exposure', data: this.countryChartData },
     ];
   }
-
-  parseOutFields = (masterList, categoryTypeName) =>
-    masterList
-      .map(ml =>
-        WORKFLOWS.map(
-          wf => this.props.stats.monitoree_counts.find(x => x.status === wf && x.category_type === categoryTypeName && x.category === ml)?.total || 0
-        )
-      )
-      .map(x => x.concat(_.sum(x)));
-
-  mapToChartFormat = (masterList, values) =>
-    masterList.map((ml, index0) => {
-      let retVal = {};
-      retVal['name'] = ml;
-      WORKFLOWS.map((workflow, index1) => {
-        retVal[`${workflow}`] = values[Number(index0)][Number(index1)];
-      });
-      return retVal;
-    });
 
   exportFullCountryData = () => {
     let topRow = ['\t', 'Exposure Workflow', 'Isolation Workflow', 'Total'];
