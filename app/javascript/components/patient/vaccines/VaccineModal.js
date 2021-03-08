@@ -145,9 +145,7 @@ class VaccineModal extends React.Component {
                   id="administration-date"
                   date={this.state.administration_date}
                   minDate={'1900-01-01'}
-                  maxDate={moment()
-                    .add(30, 'days')
-                    .format('YYYY-MM-DD')}
+                  maxDate={moment().format('YYYY-MM-DD')}
                   onChange={this.handleAdministrationDateChange}
                   placement="bottom"
                   customClass="form-control-lg"
