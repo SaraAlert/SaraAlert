@@ -547,11 +547,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
 
   test 'paginate: paginates data based on entries and page' do
     patient = create(:patient)
-    create(:vaccine, patient: patient)
-    create(:vaccine, patient: patient)
-    create(:vaccine, patient: patient)
-    create(:vaccine, patient: patient)
-    create(:vaccine, patient: patient)
+    5.times { create(:vaccine, patient: patient) }
 
     # Get a relation to pass to the function
     vaccines = Vaccine.where(patient_id: patient.id)
