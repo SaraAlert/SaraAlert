@@ -19,7 +19,7 @@ class VaccineTable extends React.Component {
           { label: 'ID', field: 'id', isSortable: true },
           { label: 'Vaccine Group', field: 'group_name', isSortable: true },
           { label: 'Product Name', field: 'product_name', isSortable: true },
-          { label: 'Administration Date', field: 'administration_date', isSortable: true },
+          { label: 'Administration Date', field: 'administration_date', isSortable: true, filter: this.formatDate },
           { label: 'Dose Number', field: 'dose_number', isSortable: true },
           { label: 'Notes', field: 'notes', isSortable: true },
         ],
@@ -294,13 +294,12 @@ class VaccineTable extends React.Component {
   };
 
   /**
-   * Formats values in the timestamp column to be human readable
+   * Formats values in a date column
    * @param {Object} data - Data about the cell this filter is called on.
    */
-  formatTimestamp(data) {
-    const timestamp = data.value;
-    const ts = moment.tz(timestamp, 'UTC');
-    return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
+  formatDate(data) {
+    const date = data.value;
+    return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
   }
 
   /**

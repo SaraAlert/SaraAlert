@@ -5,7 +5,7 @@ class Vaccine < ApplicationRecord
   belongs_to :patient
 
   VACCINE_STANDARDS = Rails.configuration.vaccine_standards.freeze
-  MAX_DOSE_NUMBER = 6
+  MAX_DOSE_NUMBER = 2
 
   # Additional allowed options for a selected product name aside from the configured official options
   ADDITIONAL_PRODUCT_NAME_OPTIONS = ['Unknown'].freeze

@@ -160,7 +160,7 @@ class VaccinesControllerTest < ActionController::TestCase
     post :create, params: {
       group_name: group_name,
       product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-1-12',
+      administration_date: '2021-01-12',
       dose_number: 'Unknown',
       notes: 'Test notes',
       patient_id: patient.id
@@ -183,14 +183,14 @@ class VaccinesControllerTest < ActionController::TestCase
     post :create, params: {
       group_name: group_name,
       product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-1-12',
+      administration_date: '2021-01-12',
       dose_number: 'Unknown',
       notes: 'Test notes',
       patient_id: 'test'
     }
 
     assert_response(:bad_request)
-    assert_equal("Vaccine cannot be created for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Vaccination cannot be created for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
     assert_equal(vaccine_count_before, Vaccine.count)
     assert_equal(history_count_before, History.count)
 
@@ -209,7 +209,7 @@ class VaccinesControllerTest < ActionController::TestCase
     post :create, params: {
       group_name: group_name,
       product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-1-12',
+      administration_date: '2021-01-12',
       dose_number: 'Unknown',
       notes: 'Test notes',
       patient_id: patient.id
@@ -230,7 +230,7 @@ class VaccinesControllerTest < ActionController::TestCase
     sign_in user
     group_name = Vaccine::VACCINE_STANDARDS.keys.sample
     product_name = Vaccine.product_name_options(group_name).sample
-    administration_date = '2021-1-12'
+    administration_date = '2021-01-12'
     dose_number = 'Unknown'
     notes = 'Test notes'
     post :create, params: {
@@ -254,9 +254,9 @@ class VaccinesControllerTest < ActionController::TestCase
     assert_equal(notes, vaccine[:notes])
 
     history = patient.histories.first
-    assert_equal(History::HISTORY_TYPES[:vaccine], history[:history_type])
+    assert_equal(History::HISTORY_TYPES[:vaccination], history[:history_type])
     assert_equal(user.email, history[:created_by])
-    assert_equal("User added a new vaccine to the monitoree (vaccine ID: #{vaccine.id}).", history[:comment])
+    assert_equal("User added a new vaccination (ID: #{vaccine.id}).", history[:comment])
 
     sign_out user
   end
@@ -268,7 +268,7 @@ class VaccinesControllerTest < ActionController::TestCase
     sign_in user
     group_name = Vaccine::VACCINE_STANDARDS.keys.sample
     product_name = 'test' # invalid product name
-    administration_date = '2021-1-12'
+    administration_date = '2021-01-12'
     dose_number = 'Unknown'
     notes = 'Test notes'
     post :create, params: {
@@ -281,7 +281,7 @@ class VaccinesControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal("Vaccine was unable to be created. Errors: Product name value of '#{product_name}' is not an acceptable value," \
+    assert_equal("Vaccination was unable to be created. Errors: Product name value of '#{product_name}' is not an acceptable value," \
       " acceptable values for vaccine group #{group_name} are: '#{Vaccine.product_name_options(group_name).join("', '")}'", JSON.parse(response.body)['error'])
     assert_equal(0, patient.vaccines.count)
     assert_equal(0, patient.histories.count)
@@ -303,7 +303,7 @@ class VaccinesControllerTest < ActionController::TestCase
       id: vaccine.id,
       group_name: group_name,
       product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-1-12',
+      administration_date: '2021-01-12',
       dose_number: 'Unknown',
       notes: 'Test notes',
       patient_id: patient.id
@@ -328,14 +328,14 @@ class VaccinesControllerTest < ActionController::TestCase
       id: vaccine.id,
       group_name: group_name,
       product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-1-12',
+      administration_date: '2021-01-12',
       dose_number: 'Unknown',
       notes: 'Test notes',
       patient_id: 'test'
     }
 
     assert_response(:bad_request)
-    assert_equal("Vaccine cannot be created for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Vaccination cannot be created for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
     assert_equal(last_updated, vaccine.updated_at) # assert not updated
     assert_equal(0, patient.histories.count)
 
@@ -356,7 +356,7 @@ class VaccinesControllerTest < ActionController::TestCase
       id: vaccine.id,
       group_name: group_name,
       product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-1-12',
+      administration_date: '2021-01-12',
       dose_number: 'Unknown',
       notes: 'Test notes',
       patient_id: patient.id
@@ -382,14 +382,14 @@ class VaccinesControllerTest < ActionController::TestCase
       id: 'test',
       group_name: group_name,
       product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-1-12',
+      administration_date: '2021-01-12',
       dose_number: 'Unknown',
       notes: 'Test notes',
       patient_id: patient.id
     }
 
     assert_response(:bad_request)
-    assert_equal("Vaccine with ID #{'test'.to_i} cannot be found.", JSON.parse(response.body)['error'])
+    assert_equal("Vaccination with ID #{'test'.to_i} cannot be found.", JSON.parse(response.body)['error'])
     assert_equal(last_updated, vaccine.updated_at) # assert not updated
     assert_equal(0, patient.histories.count)
 
@@ -404,7 +404,7 @@ class VaccinesControllerTest < ActionController::TestCase
     sign_in user
     group_name = Vaccine::VACCINE_STANDARDS.keys.sample
     product_name = Vaccine.product_name_options(group_name).sample
-    administration_date = '2021-1-12'
+    administration_date = '2021-01-12'
     dose_number = 'Unknown'
     notes = 'Test notes'
     put :update, params: {
@@ -430,9 +430,9 @@ class VaccinesControllerTest < ActionController::TestCase
     assert_equal(notes, vaccine[:notes])
 
     history = patient.histories.first
-    assert_equal(History::HISTORY_TYPES[:vaccine_edit], history[:history_type])
+    assert_equal(History::HISTORY_TYPES[:vaccination_edit], history[:history_type])
     assert_equal(user.email, history[:created_by])
-    assert_equal("User edited a vaccine on the monitoree (vaccine ID: #{vaccine.id}).", history[:comment])
+    assert_equal("User edited a vaccination (ID: #{vaccine.id}).", history[:comment])
 
     sign_out user
   end
@@ -446,7 +446,7 @@ class VaccinesControllerTest < ActionController::TestCase
     sign_in user
     group_name = Vaccine::VACCINE_STANDARDS.keys.sample
     product_name = 'test' # invalid product name
-    administration_date = '2021-1-12'
+    administration_date = '2021-01-12'
     dose_number = 'Unknown'
     notes = 'Test notes'
     put :update, params: {
@@ -460,7 +460,7 @@ class VaccinesControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal("Vaccine was unable to be updated. Errors: Product name value of '#{product_name}' is not an acceptable value," \
+    assert_equal("Vaccination was unable to be updated. Errors: Product name value of '#{product_name}' is not an acceptable value," \
       " acceptable values for vaccine group #{group_name} are: '#{Vaccine.product_name_options(group_name).join("', '")}'", JSON.parse(response.body)['error'])
     assert_equal(last_updated, vaccine.updated_at) # assert not updated
     assert_equal(0, patient.histories.count)
