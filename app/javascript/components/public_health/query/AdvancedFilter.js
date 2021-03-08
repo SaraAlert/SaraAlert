@@ -409,7 +409,7 @@ class AdvancedFilter extends React.Component {
     if (value === 'within') {
       defaultValue = {
         start: moment()
-          .add(-72, 'hours')
+          .subtract(3, 'days')
           .format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
       };
@@ -1049,6 +1049,7 @@ class AdvancedFilter extends React.Component {
                       maxDate={moment()
                         .add(2, 'years')
                         .format('YYYY-MM-DD')}
+                      required={true}
                     />
                   </div>
                 )}
@@ -1067,6 +1068,7 @@ class AdvancedFilter extends React.Component {
                         maxDate={moment()
                           .add(2, 'years')
                           .format('YYYY-MM-DD')}
+                        required={true}
                       />
                     </div>
                     <div className="text-center my-auto mx-4">
@@ -1085,6 +1087,7 @@ class AdvancedFilter extends React.Component {
                         maxDate={moment()
                           .add(2, 'years')
                           .format('YYYY-MM-DD')}
+                        required={true}
                       />
                     </div>
                   </React.Fragment>
