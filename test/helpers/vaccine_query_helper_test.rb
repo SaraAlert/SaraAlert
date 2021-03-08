@@ -7,7 +7,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
 
   def setup
     # Fake the vaccine config for testing
-    allow(Rails.application.config).to receive(:method_missing).with(:vaccine_standards).and_return(
+    allow(Rails.application.config).to receive(:vaccine_standards).and_return(
       {
         'COVID-19' => {
           'name' => 'COVID-19',
