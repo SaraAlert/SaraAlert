@@ -47,7 +47,7 @@ gem 'whenever', require: false
 gem 'chronic'
 
 # Store sessions in DB
-gem 'activerecord-session_store'
+gem 'activerecord-session_store', github: 'rails-lts/activerecord-session_store', branch: 'secure-session-store'
 
 # Useful db query helpers
 gem 'activerecord_where_assoc'
