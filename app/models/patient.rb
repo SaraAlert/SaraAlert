@@ -1332,5 +1332,14 @@ class Patient < ApplicationRecord
               end
     History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: comment)
   end
+
+  # Determine if the most recent assessment was symptomatic
+  def latest_assessment_symptomatic?
+    if !latest_assessment.nil?
+      latest_assessment.symptomatic
+    else
+      false
+    end
+  end
 end
 # rubocop:enable Metrics/ClassLength
