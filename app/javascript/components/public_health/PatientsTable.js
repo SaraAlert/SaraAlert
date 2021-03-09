@@ -18,6 +18,7 @@ import {
   Row,
 } from 'react-bootstrap';
 import { ToastContainer } from 'react-toastify';
+import ReactTooltip from 'react-tooltip';
 
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -60,7 +61,7 @@ class PatientsTable extends React.Component {
           { field: 'reason_for_closure', label: 'Reason for Closure', isSortable: true, tooltip: null },
           { field: 'closed_at', label: 'Closed At', isSortable: true, tooltip: null, filter: this.formatTimestamp },
           { field: 'transferred_at', label: 'Transferred At', isSortable: true, tooltip: null, filter: this.formatTimestamp },
-          { field: 'latest_report', label: 'Latest Report', isSortable: true, tooltip: null, filter: this.formatTimestamp },
+          { field: 'latest_report', label: 'Latest Report', isSortable: true, tooltip: null, filter: this.formatLatestReport },
           { field: 'status', label: 'Status', isSortable: false, tooltip: null },
           { field: 'report_eligibility', label: '', isSortable: false, tooltip: null, filter: this.createEligibilityTooltip, icon: 'far fa-comment' },
         ],
@@ -492,6 +493,31 @@ class PatientsTable extends React.Component {
     }
     return moment(endOfMonitoring, 'YYYY-MM-DD').format('MM/DD/YYYY');
   }
+
+  formatLatestReport = data => {
+    const rowData = data.rowData;
+    return (
+      <Row>
+        <Col xs="1">
+          {rowData.latest_report.symptomatic && (
+            <span data-for={`${rowData.id.toString()}-symptomatic-icon`} data-tip="">
+              <i className="fas fa-exclamation-triangle red-icon"></i>
+              <ReactTooltip
+                id={`${rowData.id.toString()}-symptomatic-icon`}
+                multiline={true}
+                place="right"
+                type="dark"
+                effect="solid"
+                className="tooltip-container">
+                <span>Monitoree&apos;s latest report was symptomatic</span>
+              </ReactTooltip>
+            </span>
+          )}
+        </Col>
+        <Col>{rowData.latest_report.timestamp && this.formatTimestamp(rowData.latest_report.timestamp)}</Col>
+      </Row>
+    );
+  };
 
   createEligibilityTooltip(data) {
     const reportEligibility = data.value;
