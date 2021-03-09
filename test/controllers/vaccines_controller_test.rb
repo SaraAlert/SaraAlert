@@ -129,15 +129,15 @@ class VaccinesControllerTest < ActionController::TestCase
     returned_data = { table_data: vaccines_relation, total: vaccines_relation.size }
 
     # Stub the responses from the helper methods
-    allow(@controller).to receive(:validate_table_query).and_return(validated_params)
+    allow(@controller).to receive(:validate_vaccines_query).and_return(validated_params)
     allow(@controller).to receive(:search).and_return(vaccines_relation)
     allow(@controller).to receive(:sort).and_return(vaccines_relation)
     allow(@controller).to receive(:paginate).and_return(vaccines_relation.paginate(per_page: 10, page: 1))
 
     # NOTE: Must be called BEFORE the actual request is made as it is expecting it in the future
     # The .ordered here ensures these are called in this exact order.
-    expect(@controller).to receive(:validate_table_query).with(ActionController::Parameters.new(params.merge({ controller: 'vaccines',
-                                                                                                               action: 'index' }))).ordered
+    expect(@controller).to receive(:validate_vaccines_query).with(ActionController::Parameters.new(params.merge({ controller: 'vaccines',
+                                                                                                                  action: 'index' }))).ordered
     expect(@controller).to receive(:search).with(vaccines_relation, params[:search]).ordered
     expect(@controller).to receive(:sort).with(vaccines_relation, '', '').ordered
     expect(@controller).to receive(:paginate).with(vaccines_relation, 10, 0).ordered

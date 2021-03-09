@@ -5,7 +5,9 @@ class Vaccine < ApplicationRecord
   belongs_to :patient
 
   VACCINE_STANDARDS = Rails.configuration.vaccine_standards.freeze
-  MAX_DOSE_NUMBER = 2
+
+  # Finds the highest number of doses required based on the number for each vaccine in the config.
+  MAX_DOSE_NUMBER = VACCINE_STANDARDS.values.collect { |group| group['vaccines'].collect { |vaccine| vaccine['num_doses'] } }.flatten.max
 
   # Additional allowed options for a selected product name aside from the configured official options
   ADDITIONAL_PRODUCT_NAME_OPTIONS = ['Unknown'].freeze

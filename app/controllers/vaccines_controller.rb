@@ -11,7 +11,7 @@ class VaccinesController < ApplicationController
 
     # Validate params and handle errors if invalid
     begin
-      data = validate_table_query(params)
+      data = validate_vaccines_query(params)
     rescue StandardError => e
       render(json: { error: e.message }, status: :bad_request) && return
     end

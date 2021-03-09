@@ -5,5 +5,8 @@
   name: 'COVID-19'
   vaccines:
     - product_name: 'Moderna COVID-19 Vaccine'
+      num_doses: 2
     - product_name: 'Pfizer-BioNTech COVID-19 Vaccine'
+      num_doses: 2
     - product_name: 'Janssen (J&J) COVID-19 Vaccine'
+      num_doses: 1
