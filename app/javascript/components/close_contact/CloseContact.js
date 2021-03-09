@@ -288,11 +288,9 @@ class CloseContact extends React.Component {
     return (
       <React.Fragment>
         {!this.props.close_contact.id && (
-          <div className="pl-2">
-            <Button onClick={this.toggleModal}>
-              <i className="fas fa-plus"></i> Add New Close Contact
-            </Button>
-          </div>
+          <Button onClick={this.toggleModal}>
+            <i className="fas fa-plus"></i> Add New Close Contact
+          </Button>
         )}
         {this.props.close_contact.id && (
           <div className="pl-2">
