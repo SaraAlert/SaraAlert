@@ -111,7 +111,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
 
   VALID_PATIENT_ENUMS = {
     gender_identity: ['Male (Identifies as male)', 'Female (Identifies as female)', 'Transgender Male (Female-to-Male [FTM])',
-                      'Transgender Female (Male-to-Female [MTF]', 'Genderqueer / gender nonconforming (neither exclusively male nor female)', 'Another',
+                      'Transgender Female (Male-to-Female [MTF])', 'Genderqueer / gender nonconforming (neither exclusively male nor female)', 'Another',
                       'Chose not to disclose'],
     sexual_orientation: ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'],
     ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino', 'Unknown', 'Refused to Answer', nil, ''],
