@@ -26,7 +26,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
             }
           ]
         },
-        'TestGroupTest' => {
+        'TestGroup' => {
           'name' => 'TestGroup',
           'vaccines' => [
             {
