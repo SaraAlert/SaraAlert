@@ -17,9 +17,10 @@ class Vaccine < ApplicationRecord
 
   # --- FIELD VALIDATION --- #
   validates :group_name, inclusion: {
-    in: VACCINE_STANDARDS.keys,
+    # This method syntax is necessary for the getter method to be in scope
+    in: ->(_vaccine) { group_name_options },
     message: lambda { |_vaccine, data|
-      "value of '#{data[:value]}' is not an acceptable value, acceptable values are: '#{VACCINE_STANDARDS.keys.join("', '")}'"
+      "value of '#{data[:value]}' is not an acceptable value, acceptable values are: '#{group_name_options.join("', '")}'"
     }
   }, presence: { message: 'is required' }
 

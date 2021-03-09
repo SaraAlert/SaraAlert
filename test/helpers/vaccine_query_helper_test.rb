@@ -6,40 +6,44 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
   include VaccineQueryHelper
 
   def setup
-    # Fake the vaccine config for testing
-    allow(Rails.application.config).to receive(:vaccine_standards).and_return(
-      {
-        'COVID-19' => {
-          'name' => 'COVID-19',
-          'vaccines' => [
-            {
-              'product_name' => 'Moderna COVID-19 Vaccine',
-              'num_doses' => 2
-            },
-            {
-              'product_name' => 'Pfizer-BioNTech COVID-19 Vaccine',
-              'num_doses' => 2
-            },
-            {
-              'product_name' => 'Janssen (J&J) COVID-19 Vaccine',
-              'num_doses' => 1
-            }
-          ]
-        },
-        'TestGroup' => {
-          'name' => 'TestGroup',
-          'vaccines' => [
-            {
-              'product_name' => 'TestVaccine',
-              'num_doses' => 2
-            }
-          ]
-        }
+    # Fake the vaccine config in the Vaccine class for testing with multiple groups
+    custom_config = {
+      'COVID-19' => {
+        'name' => 'COVID-19',
+        'vaccines' => [
+          {
+            'product_name' => 'Moderna COVID-19 Vaccine',
+            'num_doses' => 2
+          },
+          {
+            'product_name' => 'Pfizer-BioNTech COVID-19 Vaccine',
+            'num_doses' => 2
+          },
+          {
+            'product_name' => 'Janssen (J&J) COVID-19 Vaccine',
+            'num_doses' => 1
+          }
+        ]
+      },
+      'TestGroup' => {
+        'name' => 'TestGroup',
+        'vaccines' => [
+          {
+            'product_name' => 'TestVaccine',
+            'num_doses' => 2
+          }
+        ]
       }
-    )
+    }
+
+    # This will display some warnings that can be ignored
+    Vaccine.const_set('VACCINE_STANDARDS', custom_config.freeze)
   end
 
-  def teardown; end
+  def teardown
+    # This will display some warnings that can be ignored
+    Vaccine.const_set('VACCINE_STANDARDS', Rails.configuration.vaccine_standards.freeze)
+  end
 
   # --- validate_query_helper --- #
 
