@@ -426,6 +426,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     vaccine_2 = create(:vaccine, patient: patient, dose_number: '2')
     vaccine_3 = create(:vaccine, patient: patient, dose_number: 'Unknown')
     vaccine_4 = create(:vaccine, patient: patient, dose_number: nil)
+    vaccine_5 = create(:vaccine, patient: patient, dose_number: '')
 
     # Get a relation to pass to the function
     vaccines = Vaccine.where(patient_id: patient.id)
@@ -435,21 +436,23 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     sort_direction = 'desc'
     sorted_vaccines = sort(vaccines, sort_column, sort_direction)
 
-    assert_equal(4, sorted_vaccines.size)
+    assert_equal(5, sorted_vaccines.size)
     assert_equal(vaccine_3.id, sorted_vaccines.first.id)
     assert_equal(vaccine_2.id, sorted_vaccines.second.id)
     assert_equal(vaccine_1.id, sorted_vaccines.third.id)
-    assert_equal(vaccine_4.id, sorted_vaccines.fourth.id)
+    assert_equal(vaccine_5.id, sorted_vaccines.fourth.id)
+    assert_equal(vaccine_4.id, sorted_vaccines.fifth.id)
 
     # ASC
     sort_direction = 'asc'
     sorted_vaccines = sort(vaccines, sort_column, sort_direction)
 
-    assert_equal(4, sorted_vaccines.size)
+    assert_equal(5, sorted_vaccines.size)
     assert_equal(vaccine_1.id, sorted_vaccines.first.id)
     assert_equal(vaccine_2.id, sorted_vaccines.second.id)
     assert_equal(vaccine_3.id, sorted_vaccines.third.id)
-    assert_equal(vaccine_4.id, sorted_vaccines.fourth.id)
+    assert_equal(vaccine_5.id, sorted_vaccines.fourth.id)
+    assert_equal(vaccine_4.id, sorted_vaccines.fifth.id)
   end
 
   test 'sort: supports sort by notes' do
@@ -457,6 +460,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     vaccine_1 = create(:vaccine, patient: patient, notes: 'This is a note.')
     vaccine_2 = create(:vaccine, patient: patient, notes: 'Hey what a cool note!')
     vaccine_3 = create(:vaccine, patient: patient, notes: nil)
+    vaccine_4 = create(:vaccine, patient: patient, notes: '')
 
     # Get a relation to pass to the function
     vaccines = Vaccine.where(patient_id: patient.id)
@@ -466,19 +470,20 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     sort_direction = 'desc'
     sorted_vaccines = sort(vaccines, sort_column, sort_direction)
 
-    assert_equal(3, sorted_vaccines.size)
+    assert_equal(4, sorted_vaccines.size)
     assert_equal(vaccine_1.id, sorted_vaccines.first.id)
     assert_equal(vaccine_2.id, sorted_vaccines.second.id)
-    assert_equal(vaccine_3.id, sorted_vaccines.third.id)
+    assert_equal(vaccine_4.id, sorted_vaccines.third.id)
+    assert_equal(vaccine_3.id, sorted_vaccines.fourth.id)
 
     # ASC
     sort_direction = 'asc'
     sorted_vaccines = sort(vaccines, sort_column, sort_direction)
 
-    assert_equal(3, sorted_vaccines.size)
+    assert_equal(4, sorted_vaccines.size)
     assert_equal(vaccine_2.id, sorted_vaccines.first.id)
-    assert_equal(vaccine_1.id, sorted_vaccines.second.id)
-    assert_equal(vaccine_3.id, sorted_vaccines.third.id)
+    assert_equal(vaccine_4.id, sorted_vaccines.third.id)
+    assert_equal(vaccine_3.id, sorted_vaccines.fourth.id)
   end
 
   test 'sort: sorts by creation date if no sort order or no sort direction is specified' do
