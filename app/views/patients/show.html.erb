@@ -62,7 +62,7 @@
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
   </div>
   <div class="m-4">
-    <div class="pb-1">
+    <div class="pb-1 mb-3">
       <div class="btn-group" role="group">
         <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new }) %>
       </div>
@@ -121,7 +121,7 @@
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'closeContacts', location: 'right' }, { style: 'display:inline' }) %>
   </div>
   <div class="m-4">
-    <div class="pb-1">
+    <div class="pb-1 mb-3">
       <div class="btn-group" role="group">
         <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
       </div>
