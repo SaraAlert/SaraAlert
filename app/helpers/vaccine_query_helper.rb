@@ -3,7 +3,7 @@
 # Helper methods for vaccine-related queries
 module VaccineQueryHelper
   # Validates the request params for the index action
-  def validate_table_query(params)
+  def validate_vaccines_query(params)
     permitted_params = params.permit(:entries, :page, :search, :order, :direction)
 
     patient_id = params.require(:patient_id)&.to_i

@@ -671,7 +671,7 @@ desc 'Backup the database'
     patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
     patient_ids.each_with_index do |patient_id, index|
       printf("\rGenerating vaccine #{index+1} of #{patient_ids.length}...")
-      changes_ts = create_fake_timestamp(today, today)
+      vaccine_ts = create_fake_timestamp(today, today)
       group_name = Vaccine.group_name_options.sample
       notes = rand < 0.5 ? Faker::Games::LeagueOfLegends.quote : nil
       vaccines << Vaccine.new(
@@ -681,8 +681,8 @@ desc 'Backup the database'
         administration_date: create_fake_timestamp(1.week.ago, today),
         dose_number: Vaccine::DOSE_OPTIONS.sample,
         notes: notes,
-        created_at: changes_ts,
-        updated_at: changes_ts
+        created_at: vaccine_ts,
+        updated_at: vaccine_ts
       )
 
       histories << History.new(
@@ -690,8 +690,8 @@ desc 'Backup the database'
         created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
         comment: "User added a new vaccine.",
         history_type: History::HISTORY_TYPES[:vaccination],
-        created_at: changes_ts,
-        updated_at: changes_ts
+        created_at: vaccine_ts,
+        updated_at: vaccine_ts
       )
     end
     Vaccine.import! vaccines

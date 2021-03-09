@@ -26,10 +26,6 @@ class VaccineModal extends React.Component {
     };
   }
 
-  /**
-   */
-  checkIfValid = () => {};
-
   handleProductNameChange = data => {
     this.setState({ product_name: data.value });
   };
