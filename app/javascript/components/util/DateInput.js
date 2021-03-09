@@ -30,11 +30,16 @@ class DateInput extends React.Component {
   };
 
   handleOnBlur = () => {
-    if (this.props.required) {
-      const date = this.state.lastValidDate || moment().format('YYYY-MM-DD');
-      this.props.onChange(date);
-    } else if (this.props.clearInvalid && !this.validDate(this.props.date)) {
-      this.clearDate();
+    // if date is not valid when clicking out of the date input
+    if (!this.validDate(this.props.date)) {
+      // change back to the last valid date or today if the field is required
+      if (this.props.required) {
+        const date = this.state.lastValidDate || moment().format('YYYY-MM-DD');
+        this.props.onChange(date);
+      // clear the date if field should be empty on invalid
+      } else if (this.props.clearInvalid) {
+        this.clearDate();
+      }
     }
   };
 

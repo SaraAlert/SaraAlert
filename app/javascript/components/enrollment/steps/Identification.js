@@ -374,7 +374,7 @@ class Identification extends React.Component {
                     <option>Male (Identifies as male)</option>
                     <option>Female (Identifies as female)</option>
                     <option>Transgender Male (Female-to-Male [FTM])</option>
-                    <option>Transgender Female (Male-to-Female [MTF]</option>
+                    <option>Transgender Female (Male-to-Female [MTF])</option>
                     <option>Genderqueer / gender nonconforming (neither exclusively male nor female)</option>
                     <option>Another</option>
                     <option>Chose not to disclose</option>
