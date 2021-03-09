@@ -12,15 +12,27 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
         'COVID-19' => {
           'name' => 'COVID-19',
           'vaccines' => [
-            { 'product_name' => 'Moderna COVID-19 Vaccine' },
-            { 'product_name' => 'Pfizer-BioNTech COVID-19 Vaccine' },
-            { 'product_name' => 'Janssen (J&J) COVID-19 Vaccine' }
+            {
+              'product_name' => 'Moderna COVID-19 Vaccine',
+              'num_doses' => 2
+            },
+            {
+              'product_name' => 'Pfizer-BioNTech COVID-19 Vaccine',
+              'num_doses' => 2
+            },
+            {
+              'product_name' => 'Janssen (J&J) COVID-19 Vaccine',
+              'num_doses' => 1
+            }
           ]
         },
         'TestGroupTest' => {
           'name' => 'TestGroup',
           'vaccines' => [
-            { 'product_name' => 'TestVaccine' }
+            {
+              'product_name' => 'TestVaccine',
+              'num_doses' => 2
+            }
           ]
         }
       }
@@ -31,7 +43,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
 
   # --- validate_query_helper --- #
 
-  test 'validate_table_query: validates sort direction' do
+  test 'validate_vaccines_query: validates sort direction' do
     patient = create(:patient)
     create(:vaccine, patient: patient)
 
@@ -48,7 +60,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     }
     controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
-    error = assert_raise(StandardError) { validate_table_query(controller_params) }
+    error = assert_raise(StandardError) { validate_vaccines_query(controller_params) }
     assert_equal("Unable to sort column in specified direction in request: '#{params[:direction]}'", error.message)
 
     # VALID SORT DIRECTIONS
@@ -63,7 +75,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
       }
       controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
-      data = validate_table_query(controller_params)
+      data = validate_vaccines_query(controller_params)
       assert_equal(
         {
           patient_id: patient.id,
@@ -78,7 +90,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     end
   end
 
-  test 'validate_table_query: validates sort order' do
+  test 'validate_vaccines_query: validates sort order' do
     patient = create(:patient)
     create(:vaccine, patient: patient)
 
@@ -95,7 +107,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     }
     controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
-    error = assert_raise(StandardError) { validate_table_query(controller_params) }
+    error = assert_raise(StandardError) { validate_vaccines_query(controller_params) }
     assert_equal("Unable to sort by specified column in request: '#{params[:order]}'", error.message)
 
     # VALID SORT ORDERS
@@ -110,7 +122,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
       }
       controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
-      data = validate_table_query(controller_params)
+      data = validate_vaccines_query(controller_params)
       assert_equal(
         {
           patient_id: patient.id,
@@ -125,7 +137,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     end
   end
 
-  test 'validate_table_query: validates must have both or neither sort direction and sort order' do
+  test 'validate_vaccines_query: validates must have both or neither sort direction and sort order' do
     patient = create(:patient)
     create(:vaccine, patient: patient)
 
@@ -140,7 +152,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     }
     controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
-    error = assert_raise(StandardError) { validate_table_query(controller_params) }
+    error = assert_raise(StandardError) { validate_vaccines_query(controller_params) }
     assert_equal('Must have both a sort column and direction specified or neither specified. Requested column to sort: '\
       "'#{params[:order]}'', with specified direction: '#{params[:direction]}'", error.message)
 
@@ -155,12 +167,12 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     }
     controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
-    error = assert_raise(StandardError) { validate_table_query(controller_params) }
+    error = assert_raise(StandardError) { validate_vaccines_query(controller_params) }
     assert_equal('Must have both a sort column and direction specified or neither specified. Requested column to sort: '\
       "'#{params[:order]}'', with specified direction: '#{params[:direction]}'", error.message)
   end
 
-  test 'validate_table_query: validates pagination data' do
+  test 'validate_vaccines_query: validates pagination data' do
     patient = create(:patient)
     create(:vaccine, patient: patient)
 
@@ -175,7 +187,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     }
     controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
-    error = assert_raise(StandardError) { validate_table_query(controller_params) }
+    error = assert_raise(StandardError) { validate_vaccines_query(controller_params) }
     assert_equal("Invalid pagination options. Number of entries: #{params[:entries]}. Page: #{params[:page]}", error.message)
 
     # INVALID - NEGATIVE ENTRIES
@@ -189,11 +201,11 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     }
     controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
-    error = assert_raise(StandardError) { validate_table_query(controller_params) }
+    error = assert_raise(StandardError) { validate_vaccines_query(controller_params) }
     assert_equal("Invalid pagination options. Number of entries: #{params[:entries]}. Page: #{params[:page]}", error.message)
   end
 
-  test 'validate_table_query: assumes default pagination values if not provided' do
+  test 'validate_vaccines_query: assumes default pagination values if not provided' do
     patient = create(:patient)
     create(:vaccine, patient: patient)
 
@@ -206,7 +218,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     }
     controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
-    data = validate_table_query(controller_params)
+    data = validate_vaccines_query(controller_params)
     assert_equal(
       {
         patient_id: patient.id,
