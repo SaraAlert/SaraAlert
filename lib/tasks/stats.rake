@@ -613,30 +613,27 @@ namespace :stats do
     twilio_stats_since_date(1.month.ago.to_date)
   end
 
+  def twilio_stat(category, since_date, client=nil)
+    client = Twilio::REST::Client.new(ENV['TWILLIO_API_ACCOUNT'], ENV['TWILLIO_API_KEY']) if client.nil?
+    record = (client.usage.records.list(category: category, start_date: since_date).collect do |record| record end)[0]
+    entry = "#{record&.count&.reverse&.gsub(/...(?=.)/,'\&,')&.reverse} | " unless record&.count.nil?
+    "#{entry}$#{record.price&.to_i&.to_s&.reverse&.gsub(/...(?=.)/,'\&,')&.reverse}"
+  end
+
   def twilio_stats_since_date(since_date)
     client = Twilio::REST::Client.new(ENV['TWILLIO_API_ACCOUNT'], ENV['TWILLIO_API_KEY'])
-    sms_total = (client.usage.records.list(category: 'sms', start_date: since_date).collect do |record| record.count end)[0]
-    sms_inbound = (client.usage.records.list(category: 'sms-inbound', start_date: since_date).collect do |record| record.count end)[0]
-    sms_outbound = (client.usage.records.list(category: 'sms-outbound', start_date: since_date).collect do |record| record.count end)[0]
-    calls_total = (client.usage.records.list(category: 'calls', start_date: since_date).collect do |record| record.count end)[0]
-    calls_inbound = (client.usage.records.list(category: 'calls-inbound', start_date: since_date).collect do |record| record.count end)[0]
-    calls_outbound = (client.usage.records.list(category: 'calls-outbound', start_date: since_date).collect do |record| record.count end)[0]
-    authy_total = (client.usage.records.list(category: 'authy-authentications', start_date: since_date).collect do |record| record.count end)[0]
-    authy_calls = (client.usage.records.list(category: 'authy-calls-outbound', start_date: since_date).collect do |record| record.count end)[0]
-    authy_sms = (client.usage.records.list(category: 'authy-sms-outbound', start_date: since_date).collect do |record| record.count end)[0] 
-    authy_email = (client.usage.records.list(category: 'authy-outbound-email', start_date: since_date).collect do |record| record.count end)[0] 
-
     puts "Twilio Stats Since #{since_date.to_s}"
-    puts "SMS Total: #{sms_total.reverse.gsub(/...(?=.)/,'\&,').reverse}"
-    puts "\t SMS Inbound: #{sms_inbound.reverse.gsub(/...(?=.)/,'\&,').reverse}"
-    puts "\t SMS Outound: #{sms_outbound.reverse.gsub(/...(?=.)/,'\&,').reverse}"
-    puts "Calls Total: #{calls_total.reverse.gsub(/...(?=.)/,'\&,').reverse}"
-    puts "\t Calls Inbound: #{calls_inbound.reverse.gsub(/...(?=.)/,'\&,').reverse}"
-    puts "\t Calls Outound: #{calls_outbound.reverse.gsub(/...(?=.)/,'\&,').reverse}"
-    puts "Authy Total: #{authy_total.reverse.gsub(/...(?=.)/,'\&,').reverse}"
-    puts "\t Authy Calls: #{authy_calls.reverse.gsub(/...(?=.)/,'\&,').reverse}"
-    puts "\t Authy SMS: #{authy_sms.reverse.gsub(/...(?=.)/,'\&,').reverse}"
-    puts "\t Authy Emails: #{authy_email.reverse.gsub(/...(?=.)/,'\&,').reverse}"
+    puts "Total Price: #{twilio_stat('totalprice', since_date, client)}"
+    puts "SMS Total: #{twilio_stat('sms', since_date, client)}"
+    puts "\t SMS Inbound: #{twilio_stat('sms-inbound', since_date, client)}"
+    puts "\t SMS Outound: #{twilio_stat('sms-outbound', since_date, client)}"
+    puts "Calls Total: #{twilio_stat('calls', since_date, client)}"
+    puts "\t Calls Inbound: #{twilio_stat('calls-inbound', since_date, client)}"
+    puts "\t Calls Outound: #{twilio_stat('calls-outbound', since_date, client)}"
+    puts "Authy Authentications: #{twilio_stat('authy-authentications', since_date, client)}"
+    puts "\t Authy Calls: #{twilio_stat('authy-calls-outbound', since_date, client)}"
+    puts "\t Authy SMS: #{twilio_stat('authy-sms-outbound', since_date, client)}"
+    puts "\t Authy Emails: #{twilio_stat('authy-outbound-email', since_date, client)}"
   end
 
 end
