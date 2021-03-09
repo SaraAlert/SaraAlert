@@ -62,6 +62,11 @@
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
   </div>
   <div class="m-4">
+    <div class="pb-1">
+      <div class="btn-group" role="group">
+        <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new }) %>
+      </div>
+    </div>
     <table class="lab_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
       <thead>
         <tr>
@@ -93,11 +98,6 @@
     <% if @laboratories.empty? %>
       <div class="text-center mb-4">No data available in table.</div>
     <% end %>
-    <div class="pb-1">
-      <div class="btn-group" role="group">
-        <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new }) %>
-      </div>
-    </div>
   </div>
 </div>
 <% end %>
@@ -121,6 +121,11 @@
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'closeContacts', location: 'right' }, { style: 'display:inline' }) %>
   </div>
   <div class="m-4">
+    <div class="pb-1">
+      <div class="btn-group" role="group">
+        <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
+      </div>
+    </div>
     <table class="cc_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
       <thead>
         <tr>
@@ -160,11 +165,6 @@
     <% if @close_contacts.empty? %>
       <div class="text-center mb-4">No data available in table.</div>
     <% end %>
-    <div class="pb-1">
-      <div class="btn-group" role="group">
-        <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
-      </div>
-    </div>
   </div>
 </div>
 <% end %>
