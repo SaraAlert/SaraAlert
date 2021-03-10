@@ -51,7 +51,7 @@ patient_1:
   travel_to_affected_country_or_area: true
   symptom_onset: <%= 5.days.ago %>
   latest_assessment_at: <%= 36.days.ago %>
-  latest_positive_lab_at: <%= 5.days.ago %>
+  first_positive_lab_at: <%= 5.days.ago %>
   negative_lab_count: 1
 patient_2:
   id: 2
@@ -1331,7 +1331,7 @@ patient_66:
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   last_date_of_exposure: <%= 5.days.ago %>
-  latest_positive_lab_at: <%= 20.days.ago %>
+  first_positive_lab_at: <%= 20.days.ago %>
   latest_assessment_at: <%= 2.days.ago %>
 patient_67:
   id: 67
@@ -1355,7 +1355,7 @@ patient_67:
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   last_date_of_exposure: <%= 5.days.ago %>
-  latest_positive_lab_at: <%= 20.days.ago %>
+  first_positive_lab_at: <%= 20.days.ago %>
   latest_assessment_at: <%= 2.days.ago %>
 patient_68:
   id: 68
@@ -1379,5 +1379,5 @@ patient_68:
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   last_date_of_exposure: <%= 5.days.ago %>
-  latest_positive_lab_at: <%= 20.days.ago %>
+  first_positive_lab_at: <%= 20.days.ago %>
   latest_assessment_at: <%= 2.days.ago %>

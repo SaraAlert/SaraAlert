@@ -917,16 +917,16 @@ desc 'Backup the database'
       SET patients.latest_fever_or_fever_reducer_at = t.latest_fever_or_fever_reducer_at
     SQL
 
-    # populate :latest_positive_lab_at
+    # populate :first_positive_lab_at
     ActiveRecord::Base.connection.execute <<-SQL.squish
       UPDATE patients
       INNER JOIN (
-        SELECT patient_id, MAX(specimen_collection) AS latest_positive_lab_at
+        SELECT patient_id, MIN(specimen_collection) AS first_positive_lab_at
         FROM laboratories
         WHERE result = 'positive'
         GROUP BY patient_id
       ) t ON patients.id = t.patient_id
-      SET patients.latest_positive_lab_at = t.latest_positive_lab_at
+      SET patients.first_positive_lab_at = t.first_positive_lab_at
     SQL
 
     # populate :negative_lab_count

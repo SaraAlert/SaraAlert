@@ -798,7 +798,7 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal false, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
     assert_empty patient.assessments
-    assert_nil patient.latest_positive_lab_at
+    assert_nil patient.first_positive_lab_at
     assert patient.negative_lab_count.zero?
     assert_empty patient.laboratories
     assert_nil patient.latest_transfer_at
@@ -1009,6 +1009,15 @@ class PatientTest < ActiveSupport::TestCase
     laboratory.destroy
     assessment.destroy
 
+    # meets defiition: has positive test result more than 10 days ago and another positive test result less than 10 days ago
+    laboratory_1 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 11.days.ago)
+    laboratory_2 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 9.days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: false, created_at: 8.days.ago)
+    verify_patient_status(patient, :isolation_asymp_non_test_based)
+    assessment.destroy
+    laboratory_1.destroy
+    laboratory_2.destroy
+
     # does not meet definition: symptomatic before positive test result but not afterwards
     assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
     laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 11.days.ago)
@@ -1020,13 +1029,6 @@ class PatientTest < ActiveSupport::TestCase
     laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 8.days.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     laboratory.destroy
-
-    # does not meet defiition: has positive test result more than 10 days ago, but also has positive test result less than 10 days ago
-    laboratory_1 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 11.days.ago)
-    laboratory_2 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 9.days.ago)
-    verify_patient_status(patient, :isolation_non_reporting)
-    laboratory_1.destroy
-    laboratory_2.destroy
 
     # does not meet defiition: has negative test result more than 10 days ago, but also has positive test result less than 10 days ago
     laboratory_1 = create(:laboratory, patient: patient, result: 'negative', specimen_collection: 11.days.ago)

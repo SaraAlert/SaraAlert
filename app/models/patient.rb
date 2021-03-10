@@ -456,7 +456,7 @@ class Patient < ApplicationRecord
       .where(isolation: true)
       .where(symptom_onset: nil)
       .where.not(latest_assessment_at: nil)
-      .where('latest_positive_lab_at < ?', 10.days.ago)
+      .where('first_positive_lab_at < ?', 10.days.ago)
       .where('extended_isolation IS NULL OR extended_isolation < ?', Date.today)
   }
 
