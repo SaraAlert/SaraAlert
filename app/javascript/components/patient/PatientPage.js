@@ -26,7 +26,7 @@ class PatientPage extends React.Component {
             <Patient
               jurisdiction_path={this.props.jurisdiction_path}
               dependents={this.props.dependents || []}
-              details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
+              details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms, first_positive_lab: this.props.first_positive_lab }}
               hideBody={this.state.hideBody}
               can_add_group={this.props.can_add_group}
               edit_mode={false}
@@ -44,6 +44,7 @@ PatientPage.propTypes = {
   current_user: PropTypes.object,
   can_add_group: PropTypes.bool,
   patient: PropTypes.object,
+  first_positive_lab: PropTypes.object,
   dependents: PropTypes.array,
   dashboardUrl: PropTypes.string,
   authenticity_token: PropTypes.string,
