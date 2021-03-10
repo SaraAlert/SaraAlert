@@ -13,6 +13,10 @@ class CloseContact < ApplicationRecord
                                                       greater_than: 0,
                                                       less_than_or_equal_to: 999_999,
                                                       message: 'is not valid, acceptable values are numbers between 1-999999' }
+  validates :contact_attempts, on: :api, numericality: { only_integer: true,
+                                                         allow_nil: true,
+                                                         greater_than_or_equal_to: 0,
+                                                         message: 'is not valid, acceptable values are integers greater than or equal to 0' }
   validates :last_date_of_exposure, on: :api, date: true
   validates_with CompleteCloseContactValidator, on: :api
 
