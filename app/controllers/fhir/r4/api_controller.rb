@@ -189,12 +189,11 @@ class Fhir::R4::ApiController < ActionController::API
 
       # Wrap updates to the CloseContact and History creation in a transaction
       ActiveRecord::Base.transaction do
-        unless referenced_patient_valid_for_client?(close_contact, :patient_id) &&
-               (close_contact.enrolled_id.nil? || referenced_patient_valid_for_client?(close_contact, :enrolled_id)) &&
-               close_contact.save(context: :api)
+        unless referenced_patient_valid_for_client?(close_contact, :patient_id) && close_contact.save(context: :api)
           status_unprocessable_entity(format_model_validation_errors(close_contact)) && return
         end
 
+        Rails.logger.info "Updated Close Contact (ID: #{close_contact.id}) for Patient with ID: #{close_contact.patient_id}"
         History.close_contact_edit(patient: close_contact.patient_id,
                                    created_by: @current_actor_label,
                                    comment: "Close contact edited via the API (ID: #{close_contact.id}).")
@@ -303,9 +302,7 @@ class Fhir::R4::ApiController < ActionController::API
 
       resource = CloseContact.new(close_contact_from_fhir(contents))
 
-      unless referenced_patient_valid_for_client?(resource, :patient_id) &&
-             (resource.enrolled_id.nil? || referenced_patient_valid_for_client?(resource, :enrolled_id)) &&
-             resource.save(context: :api)
+      unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api)
         status_unprocessable_entity(format_model_validation_errors(resource)) && return
       end
 
@@ -571,11 +568,17 @@ class Fhir::R4::ApiController < ActionController::API
         'user/Patient.*',
         'user/Observation.read',
         'user/QuestionnaireResponse.read',
+        'user/RelatedPerson.read',
+        'user/RelatedPerson.write',
+        'user/RelatedPerson.*',
         'system/Patient.read',
         'system/Patient.write',
         'system/Patient.*',
         'system/Observation.read',
-        'system/QuestionnaireResponse.read'
+        'system/QuestionnaireResponse.read',
+        'system/RelatedPerson.read',
+        'system/RelatedPerson.write',
+        'system/RelatedPerson.*'
       ],
       capabilities: ['launch-standalone']
     }
@@ -872,7 +875,7 @@ class Fhir::R4::ApiController < ActionController::API
     Assessment.where(patient_id: accessible_patients).find_by(id: id)
   end
 
-  # Get an CloseContact by id
+  # Get a CloseContact by id
   def get_close_contact(id)
     CloseContact.where(patient_id: accessible_patients).find_by(id: id)
   end

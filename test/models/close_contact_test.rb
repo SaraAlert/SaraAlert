@@ -101,6 +101,23 @@ class CloseContactTest < ActiveSupport::TestCase
     assert cc.valid?
   end
 
+  test 'validates contact_attempts is valid in api context' do
+    cc = valid_cc
+
+    cc.contact_attempts = 0
+    assert cc.valid?(:api)
+
+    cc.contact_attempts = 1
+    assert cc.valid?(:api)
+
+    cc.contact_attempts = nil
+    assert cc.valid?(:api)
+
+    cc.contact_attempts = -1
+    assert_not cc.valid?(:api)
+    assert cc.valid?
+  end
+
   test 'validates last_date_of_exposure is a valid date in api context' do
     cc = valid_cc
 
