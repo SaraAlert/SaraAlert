@@ -207,7 +207,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     assigned_user: { label: 'Assigned User', checks: [] },
     continuous_exposure: { label: 'Continuous Exposure', checks: [:bool] },
     patient_id: { label: 'Patient ID', checks: [] },
-    enrolled_id: { label: 'Enrolled ID', checks: [] }
+    contact_attempts: { label: 'Contact Attempts', checks: [] }
   }.freeze
 
   # Validates if a given date value is between (inclusive) two dates.
