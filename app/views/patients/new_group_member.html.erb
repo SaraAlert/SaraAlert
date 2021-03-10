@@ -11,7 +11,8 @@
                       has_dependents: false,
                       jurisdiction_paths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path)],
                       assigned_users: @patient.jurisdiction.assigned_users,
-                      race_options: ValidationHelper::RACE_OPTIONS
+                      race_options: ValidationHelper::RACE_OPTIONS,
+                      first_positive_lab: nil
                     }) %>
 
 <div class="pb-4"></div>
