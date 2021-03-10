@@ -23,7 +23,13 @@ class Patient extends React.Component {
     };
   }
 
-  formatPhoneNumber(phone) {
+  formatName = () => {
+    return `${this.props.details.first_name ? this.props.details.first_name : ''}${
+      this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''
+    }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`;
+  }
+
+  formatPhoneNumber = phone => {
     const match = phone
       .replace('+1', '')
       .replace(/\D/g, '')
@@ -152,11 +158,7 @@ class Patient extends React.Component {
         <Row id="monitoree-details-header">
           <Col sm={12}>
             <h3>
-              <span className="pr-2">
-                {`${this.props.details.first_name ? this.props.details.first_name : ''}${
-                  this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''
-                }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}
-              </span>
+              <span aria-label={this.formatName()} className="pr-2">{this.formatName()}</span>
               {this.props?.dependents && this.props?.dependents?.length > 0 && <BadgeHOH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
           </Col>
