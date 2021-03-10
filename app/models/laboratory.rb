@@ -54,14 +54,14 @@ class Laboratory < ApplicationRecord
 
   def update_patient_linelist_after_save
     patient.update(
-      latest_positive_lab_at: patient.laboratories.where(result: 'positive').maximum(:specimen_collection),
+      first_positive_lab_at: patient.laboratories.where(result: 'positive').minimum(:specimen_collection),
       negative_lab_count: patient.laboratories.where(result: 'negative').size
     )
   end
 
   def update_patient_linelist_before_destroy
     patient.update(
-      latest_positive_lab_at: patient.laboratories.where.not(id: id).where(result: 'positive').maximum(:specimen_collection),
+      first_positive_lab_at: patient.laboratories.where.not(id: id).where(result: 'positive').minimum(:specimen_collection),
       negative_lab_count: patient.laboratories.where.not(id: id).where(result: 'negative').size
     )
   end
