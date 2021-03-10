@@ -609,7 +609,7 @@ Get a monitoree close contact via an id, e.g.:
   "extension": [
     {
       "url": "http://saraalert.org/StructureDefinition/contact-attempts",
-      "valuePositiveInt": 5
+      "valueUnsignedInt": 5
     },
     {
       "url": "http://saraalert.org/StructureDefinition/notes",
@@ -1361,7 +1361,7 @@ Use `http://saraalert.org/StructureDefinition/address-type` to specify the type 
 
 <a name="create-post-related"/>
 
-To create a new monitoree close contact, simply POST a FHIR RelatedPerson resource.
+To create a new monitoree close contact, simply POST a FHIR RelatedPerson resource that references the monitoree.
 
 **Request Body:**
 <details>
@@ -1373,7 +1373,7 @@ To create a new monitoree close contact, simply POST a FHIR RelatedPerson resour
   "extension": [
     {
       "url": "http://saraalert.org/StructureDefinition/contact-attempts",
-      "valuePositiveInt": 5
+      "valueUnsignedInt": 5
     },
     {
       "url": "http://saraalert.org/StructureDefinition/notes",
@@ -1442,11 +1442,11 @@ Use `http://saraalert.org/StructureDefinition/contact-attempts` to specify the n
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/contact-attempts",
-  "valuePositiveInt": 2
+  "valueUnsignedInt": 2
 }
 ```
 
-Use `http://saraalert.org/StructureDefinition/enrolled-patient` to reference the full Patient resource that corresponds to the close contact, if such a Patient exists.
+The `http://saraalert.org/StructureDefinition/enrolled-patient` extension is used to reference the full Patient resource that corresponds to the close contact, if such a Patient exists. Note that this extension is read-only. This field may only be updated by manually enrolling a new Patient for this close contact via the user interface.
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/enrolled-patient",
@@ -1740,7 +1740,7 @@ On success, the server will update the existing resource given the id.
   "extension": [
     {
       "url": "http://saraalert.org/StructureDefinition/contact-attempts",
-      "valuePositiveInt": 5
+      "valueUnsignedInt": 5
     },
     {
       "url": "http://saraalert.org/StructureDefinition/notes",
@@ -2360,7 +2360,7 @@ GET `[base]/RelatedPerson?patient=Patient/[:id]`
         "extension": [
           {
             "url": "http://saraalert.org/StructureDefinition/contact-attempts",
-            "valuePositiveInt": 5
+            "valueUnsignedInt": 5
           },
           {
             "url": "http://saraalert.org/StructureDefinition/notes",
