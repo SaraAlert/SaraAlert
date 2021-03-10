@@ -67,7 +67,7 @@ const blankMockPatient = {
   latest_assessment_at: null,
   latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
-  latest_positive_lab_at: null,
+  first_positive_lab_at: null,
   latest_transfer_at: null,
   latest_transfer_from: null,
   linelist: {
@@ -209,7 +209,7 @@ const mockPatient1 = {
   latest_assessment_at: '2020-09-15T20:59:36.000Z',
   latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
-  latest_positive_lab_at: null,
+  first_positive_lab_at: null,
   latest_transfer_at: null,
   latest_transfer_from: null,
   linelist: {
@@ -350,7 +350,7 @@ const mockPatient2 = {
   latest_assessment_at: '2020-09-15T20:59:36.000Z',
   latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
-  latest_positive_lab_at: null,
+  first_positive_lab_at: null,
   latest_transfer_at: null,
   latest_transfer_from: null,
   linelist: {
@@ -492,7 +492,7 @@ const mockPatient3 = {
   latest_assessment_at: '2020-09-15T20:59:36.000Z',
   latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
-  latest_positive_lab_at: null,
+  first_positive_lab_at: null,
   latest_transfer_at: null,
   latest_transfer_from: null,
   linelist: {
@@ -634,7 +634,7 @@ const mockPatient4 = {
   latest_assessment_at: '2020-09-15T20:59:36.000Z',
   latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
-  latest_positive_lab_at: null,
+  first_positive_lab_at: null,
   latest_transfer_at: null,
   latest_transfer_from: null,
   linelist: {
@@ -776,7 +776,7 @@ const mockPatient5 = {
   latest_assessment_at: '2020-09-18T20:59:36.000Z',
   latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
-  latest_positive_lab_at: null,
+  first_positive_lab_at: null,
   latest_transfer_at: null,
   latest_transfer_from: null,
   linelist: {

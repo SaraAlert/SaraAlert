@@ -16,7 +16,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       return :exposure_non_reporting
     end
 
-    return :isolation_asymp_non_test_based if !latest_assessment_at.nil? && !latest_positive_lab_at.nil? && latest_positive_lab_at < 10.days.ago &&
+    return :isolation_asymp_non_test_based if !latest_assessment_at.nil? && !first_positive_lab_at.nil? && first_positive_lab_at < 10.days.ago &&
                                               symptom_onset.nil? && (!extended_isolation || extended_isolation < Date.today)
     return :isolation_symp_non_test_based if (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 24.hours.ago) &&
                                              !symptom_onset.nil? && symptom_onset <= 10.days.ago && (!extended_isolation || extended_isolation < Date.today)
