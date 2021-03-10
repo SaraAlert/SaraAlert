@@ -33,6 +33,7 @@ class Enrollment extends React.Component {
         propagatedFields: {},
         isolation: !!props.patient.isolation,
         blocked_sms: props.blocked_sms,
+        first_positive_lab: props.first_positive_lab,
       },
     };
   }
@@ -51,6 +52,7 @@ class Enrollment extends React.Component {
         propagatedFields: { ...currentEnrollmentState.propagatedFields, ...enrollmentState.propagatedFields },
         isolation: Object.prototype.hasOwnProperty.call(enrollmentState, 'isolation') ? !!enrollmentState.isolation : currentEnrollmentState.isolation,
         blocked_sms: enrollmentState.blocked_sms,
+        first_positive_lab: enrollmentState.first_positive_lab,
       },
     });
   }, 1000);
@@ -110,6 +112,13 @@ class Enrollment extends React.Component {
     }
     if (data.patient.symptom_onset !== undefined && data.patient.symptom_onset !== null && data.patient.symptom_onset !== this.props.patient.symptom_onset) {
       data.patient.user_defined_symptom_onset = true;
+    }
+    if (this.state.enrollmentState.first_positive_lab) {
+      if (this.state.enrollmentState.first_positive_lab.id) {
+        // figure out how to update lab
+      } else {
+        data['patient']['laboratories_attributes'] = [this.state.enrollmentState.first_positive_lab];
+      }
     }
     data['bypass_duplicate'] = false;
     axios({
@@ -280,6 +289,7 @@ Enrollment.propTypes = {
   can_add_group: PropTypes.bool,
   has_dependents: PropTypes.bool,
   blocked_sms: PropTypes.bool,
+  first_positive_lab: PropTypes.object,
 };
 
 export default Enrollment;

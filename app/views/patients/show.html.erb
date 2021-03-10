@@ -1,5 +1,5 @@
 <% content_for :assets do %>
-  <%= javascript_packs_with_chunks_tag 'datatables', 'moment' %>
+<%= javascript_packs_with_chunks_tag 'datatables', 'moment' %>
 <% end %>
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Return to Exposure Dashboard', href: '/' }, { value: 'Monitoree Details', href: nil }], isolation: @patient&.isolation || false } %>
 
@@ -11,6 +11,7 @@
                       current_user: current_user,
                       can_add_group: current_user.can_create_patient?,
                       patient: @patient,
+                      first_positive_lab: @patient.laboratories.where(result: 'positive').order(:specimen_collection).first,
                       dependents: @dependents_exclude_hoh,
                       patient_id: @patient.user_defined_id_statelocal || '',
                       dashboardUrl: '/public_health',
@@ -37,22 +38,22 @@
 <% end %>
 
 <% if current_user.can_view_patient_assessments? %>
-  <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
-  <%= react_component('assessment/AssessmentTable', {
-                        patient: @patient,
-                        household_members: @household_members_exclude_self,
-                        report_eligibility: @patient.report_eligibility,
-                        patient_status: @patient.status,
-                        calculated_age: @patient.calc_current_age,
-                        patient_initials: @patient.initials,
-                        symptoms: reporting_condition.symptoms,
-                        threshold_condition_hash: reporting_condition.threshold_condition_hash,
-                        monitoring_period_days: ADMIN_OPTIONS['monitoring_period_days'].to_i,
-                        current_user: current_user,
-                        translations: Assessment.new.translations,
-                        authenticity_token: form_authenticity_token,
-                        jurisdiction_paths: @possible_jurisdiction_paths
-                      }) %>
+<%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
+<%= react_component('assessment/AssessmentTable', {
+                      patient: @patient,
+                      household_members: @household_members_exclude_self,
+                      report_eligibility: @patient.report_eligibility,
+                      patient_status: @patient.status,
+                      calculated_age: @patient.calc_current_age,
+                      patient_initials: @patient.initials,
+                      symptoms: reporting_condition.symptoms,
+                      threshold_condition_hash: reporting_condition.threshold_condition_hash,
+                      monitoring_period_days: ADMIN_OPTIONS['monitoring_period_days'].to_i,
+                      current_user: current_user,
+                      translations: Assessment.new.translations,
+                      authenticity_token: form_authenticity_token,
+                      jurisdiction_paths: @possible_jurisdiction_paths
+                    }) %>
 <% end %>
 
 <% if current_user.can_view_patient_laboratories? %>
@@ -96,7 +97,7 @@
       </tbody>
     </table>
     <% if @laboratories.empty? %>
-      <div class="text-center mb-4">No data available in table.</div>
+    <div class="text-center mb-4">No data available in table.</div>
     <% end %>
   </div>
 </div>
@@ -163,7 +164,7 @@
       </tbody>
     </table>
     <% if @close_contacts.empty? %>
-      <div class="text-center mb-4">No data available in table.</div>
+    <div class="text-center mb-4">No data available in table.</div>
     <% end %>
   </div>
 </div>
