@@ -33,15 +33,7 @@ class Vaccine < ApplicationRecord
     }
   }, presence: { message: 'is required' }
 
-  # Uses the custom DateValidator, and also validates the date range
-  # to be between 1/1/1900 and the current date.
-  validates :administration_date, date: true, inclusion: {
-    in: Date.parse('01-01-1900')..Date.today,
-    message: lambda { |_vaccine, data|
-      "value of '#{data[:value]}' is not an acceptable value, acceptable values are in range 1900-01-01 to the current date, or null"
-    },
-    allow_nil: true
-  }
+  validates :administration_date, date: true
 
   validates :dose_number, inclusion: {
     in: DOSE_OPTIONS,
