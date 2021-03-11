@@ -8,11 +8,6 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  if ENV['APP_IN_CI']
-    config.logger = Logger.new(nil)
-    config.log_level = :fatal
-  end
-
   config.cache_classes = false
 
   config.action_view.cache_template_loading = true
