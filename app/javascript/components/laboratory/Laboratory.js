@@ -165,7 +165,7 @@ class Laboratory extends React.Component {
       <React.Fragment>
         {!this.props.lab.id && (
           <Button onClick={this.toggleModal}>
-            <i className="fas fa-plus"></i> Add New Lab Result
+            <i className="fas fa-plus fa-fw"></i> Add New Lab Result
           </Button>
         )}
         {this.props.lab.id && (
