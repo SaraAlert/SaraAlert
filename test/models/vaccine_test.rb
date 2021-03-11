@@ -92,21 +92,6 @@ class VaccineTest < ActiveSupport::TestCase
     assert_equal(1, vaccine.errors.messages[:administration_date].length)
     assert_equal("is not a valid date, please use the 'YYYY-MM-DD' format", vaccine.errors.messages[:administration_date][0])
 
-    # Administration date must be between 1/1/1900 and current date
-    assert_not vaccine.update(administration_date: '1800-01-01')
-    assert_equal(1, vaccine.errors.messages[:administration_date].length)
-    assert_equal(
-      "value of '1800-01-01' is not an acceptable value, acceptable values are in range 1900-01-01 to the current date, or null",
-      vaccine.errors.messages[:administration_date][0]
-    )
-
-    assert_not vaccine.update(administration_date: Date.tomorrow)
-    assert_equal(1, vaccine.errors.messages[:administration_date].length)
-    assert_equal(
-      "value of '#{Date.tomorrow}' is not an acceptable value, acceptable values are in range 1900-01-01 to the current date, or null",
-      vaccine.errors.messages[:administration_date][0]
-    )
-
     # Allowed to be nil
     assert vaccine.update(administration_date: nil)
     assert vaccine.update(administration_date: DateTime.now)
