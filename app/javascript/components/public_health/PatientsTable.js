@@ -476,7 +476,7 @@ class PatientsTable extends React.Component {
   };
 
   formatTimestamp(data) {
-    const timestamp = data.value;
+    const timestamp = Object.prototype.hasOwnProperty.call(data, 'value') ? data.value : data;
     const ts = moment.tz(timestamp, 'UTC');
     return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
   }
