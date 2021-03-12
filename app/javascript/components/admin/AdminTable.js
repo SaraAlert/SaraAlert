@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, DropdownButton, Dropdown, InputGroup, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, DropdownButton, Dropdown, InputGroup, Form, OverlayTrigger, Tooltip, Row, Col } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import UserModal from './UserModal';
 import EmailModal from './EmailModal';
@@ -602,8 +602,8 @@ class AdminTable extends React.Component {
     return (
       <div className="mx-2">
         <h1 className="sr-only">Admin Dashboard</h1>
-        <div className="d-flex justify-content-between mb-2">
-          <div className="mb-1">
+        <Row className="mb-2">
+          <Col className="mb-1">
             <Button className="mr-1" size="md" onClick={this.handleAddUserClick}>
               <i className="fas fa-plus-circle"></i>
               &nbsp;Add User
@@ -619,8 +619,8 @@ class AdminTable extends React.Component {
               </Button>
             )}
             {this.state.csvData.length > 0 ? <CSVLink data={this.state.csvData} filename={'sara-accounts.csv'} ref={this.csvLink} /> : undefined}
-          </div>
-          <div>
+          </Col>
+          <Col lg={5}>
             <InputGroup size="md">
               <InputGroup.Prepend>
                 <OverlayTrigger overlay={<Tooltip>Search by id, email, or jurisdiction.</Tooltip>}>
@@ -659,8 +659,8 @@ class AdminTable extends React.Component {
                 </Dropdown.Item>
               </DropdownButton>
             </InputGroup>
-          </div>
-        </div>
+          </Col>
+        </Row>
         <CustomTable
           columnData={this.state.table.colData}
           rowData={this.state.table.rowData}
