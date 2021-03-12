@@ -5,6 +5,10 @@ parent: API
 nav_order: 1
 ---
 
+# 1.24.0
+* Support for Continuous Exposure
+
+***
 # 1.23.0
 * Support for Foreign Address (read/write)
 
