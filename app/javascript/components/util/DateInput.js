@@ -4,36 +4,58 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import MaskedInput from 'react-text-mask';
 import moment from 'moment';
+import _ from 'lodash';
 
 class DateInput extends React.Component {
   constructor(props) {
     super(props);
     this.datePickerRef = React.createRef();
     this.state = {
+      currentDate: props.date || null,
       lastValidDate: props.date || null,
     };
   }
 
+  /**
+   * Called only when date value is changed
+   */
   handleDateChange = date => {
     const momentDate = date && moment(date).format('YYYY-MM-DD');
     this.props.onChange(momentDate);
     this.datePickerRef.current.setOpen(false);
-    if (this.validDate(momentDate)) {
+    if (this.dateIsValidAndNotEmpty(momentDate)) {
       this.setState({ lastValidDate: momentDate });
     }
   };
 
+  /**
+   * Called when typing into the date input
+   */
   handleRawChange = event => {
-    if (event.target.value) {
-      this.datePickerRef.current.setOpen(true);
-    }
+    let value = event.target.value;
+    this.setState({ currentDate: value }, () => {
+      if (value) {
+        this.datePickerRef.current.setOpen(true);
+      }
+    });
   };
 
+  /**
+   * Called when day is clicked in the datepicker
+   */
+  handleSelect = date => {
+    this.setState({ currentDate: date && moment(date).format('YYYY-MM-DD') });
+  };
+
+  /**
+   * Called when the date input goes out of focus.
+   * This will happen when the user leaves the form input (i.e. clicks out of the datepicker)
+   */
   handleOnBlur = () => {
     // if date is not valid when clicking out of the date input
-    if (!this.validDate(this.props.date)) {
-      // change back to the last valid date or today if the field is required
-      if (this.props.required) {
+    if (!this.dateIsValidAndNotEmpty(this.state.currentDate)) {
+      // change back to the last valid date or today if the field should revert to the last valid date
+      if (this.props.replaceBlank) {
         const date = this.state.lastValidDate || moment().format('YYYY-MM-DD');
         this.props.onChange(date);
       // clear the date if field should be empty on invalid
@@ -43,13 +65,22 @@ class DateInput extends React.Component {
     }
   };
 
-  validDate = date => {
-    return moment(date, 'YYYY-MM-DD').isValid();
+  /**
+   * Returns false if date is null, undefined or invalid
+   * Returns true otherwise
+   */
+  dateIsValidAndNotEmpty = date => {
+    return !_.isNil(date) && moment(date, 'YYYY-MM-DD').isValid();
   }
 
+  /**
+   * Clears the selected date in parent component and closes the datepicker
+   */
   clearDate = () => {
-    this.props.onChange(null);
-    this.datePickerRef.current.setOpen(false);
+    this.setState({ currentDate: null }, () => {
+      this.props.onChange(null);
+      this.datePickerRef.current.setOpen(false);
+    });
   };
 
   render() {
@@ -91,6 +122,7 @@ class DateInput extends React.Component {
               ref={this.datePickerRef}
               onChange={this.handleDateChange}
               onChangeRaw={this.handleRawChange}
+              onSelect={this.handleSelect}
               onBlur={this.handleOnBlur}
               className={this.props.customClass}
               customInput={
@@ -137,7 +169,7 @@ DateInput.propTypes = {
   placement: PropTypes.oneOf(['top', 'bottom', 'left', 'right', 'auto']),
   isInvalid: PropTypes.bool,
   isClearable: PropTypes.bool,
-  required: PropTypes.bool,
+  replaceBlank: PropTypes.bool,
   clearInvalid: PropTypes.bool,
   customClass: PropTypes.string,
   ariaLabel: PropTypes.string,
