@@ -1049,7 +1049,7 @@ class AdvancedFilter extends React.Component {
                       maxDate={moment()
                         .add(2, 'years')
                         .format('YYYY-MM-DD')}
-                      required={true}
+                      replaceBlank={true}
                     />
                   </div>
                 )}
@@ -1068,7 +1068,7 @@ class AdvancedFilter extends React.Component {
                         maxDate={moment()
                           .add(2, 'years')
                           .format('YYYY-MM-DD')}
-                        required={true}
+                        replaceBlank={true}
                       />
                     </div>
                     <div className="text-center my-auto mx-4">
@@ -1087,7 +1087,7 @@ class AdvancedFilter extends React.Component {
                         maxDate={moment()
                           .add(2, 'years')
                           .format('YYYY-MM-DD')}
-                        required={true}
+                        replaceBlank={true}
                       />
                     </div>
                   </React.Fragment>
