@@ -18,6 +18,7 @@ class DateInput extends React.Component {
 
   /**
    * Called only when date value is changed
+   * This happens both when a date is clicked in the datepicker AND when the user types a complete valid date
    */
   handleDateChange = date => {
     const momentDate = date && moment(date).format('YYYY-MM-DD');
@@ -30,6 +31,7 @@ class DateInput extends React.Component {
 
   /**
    * Called when typing into the date input
+   * This fires everytime a character is added or deleted in the input
    */
   handleRawChange = event => {
     this.datePickerRef.current.setOpen(true);
@@ -77,10 +79,9 @@ class DateInput extends React.Component {
    * Clears the selected date in parent component and closes the datepicker
    */
   clearDate = () => {
-    this.setState({ currentDate: null }, () => {
-      this.props.onChange(null);
-      this.datePickerRef.current.setOpen(false);
-    });
+    this.props.onChange(null);
+    this.datePickerRef.current.setOpen(false);
+    this.setState({ currentDate: null });
   };
 
   render() {
