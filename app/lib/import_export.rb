@@ -7,6 +7,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   include PatientQueryHelper
   include AssessmentQueryHelper
   include LaboratoryQueryHelper
+  include VaccineQueryHelper
   include CloseContactQueryHelper
   include TransferQueryHelper
   include HistoryQueryHelper
@@ -233,6 +234,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       exported_data[:laboratories] = extract_laboratories_details(laboratories, data[:laboratories][:checked])
     end
 
+    if data.dig(:vaccines, :checked).present?
+      vaccines = vaccines_by_patient_ids(patient_ids)
+      exported_data[:vaccines] = extract_vaccines_details(vaccines, data[:vaccines][:checked])
+    end
+
     if data.dig(:close_contacts, :checked).present?
       close_contacts = close_contacts_by_patient_ids(patient_ids)
       exported_data[:close_contacts] = extract_close_contacts_details(close_contacts, data[:close_contacts][:checked])
@@ -377,6 +383,15 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # validate and pluck selected fields
     laboratories.pluck(*(fields & LABORATORY_FIELD_NAMES.keys))
+  end
+
+  # Extract vaccine data values given relevant fields
+  def extract_vaccines_details(vaccines, fields)
+    # join patients if any alternative identifiers are selected
+    vaccines = vaccines.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
+
+    # validate and pluck selected fields
+    vaccines.pluck(*(fields & VACCINE_FIELD_NAMES.keys))
   end
 
   # Extract close contact data values given relevant fields
