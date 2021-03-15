@@ -38,6 +38,7 @@ class AssessmentTest < ActiveSupport::TestCase
     assessment_1 = create(:assessment, patient: patient, symptomatic: false, created_at: timestamp_1)
     assert_nil patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_equal false, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 1 to be symptomatic
@@ -45,6 +46,7 @@ class AssessmentTest < ActiveSupport::TestCase
     assessment_1.update(symptomatic: true, created_at: timestamp_1)
     assert_equal timestamp_1.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Create assessment 2 as symptomatic
@@ -54,6 +56,7 @@ class AssessmentTest < ActiveSupport::TestCase
     symptom_2 = create(:symptom, condition_id: reported_condition_2.id, type: 'BoolSymptom', name: 'fever', bool_value: false)
     assert_equal timestamp_2.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 2 to include fever
@@ -71,12 +74,14 @@ class AssessmentTest < ActiveSupport::TestCase
     assessment_3 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_3)
     assert_equal timestamp_3.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 3 to be asymptomatic
     assessment_3.update(symptomatic: false)
     assert_equal timestamp_2.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Manually update symptom onset
@@ -88,12 +93,14 @@ class AssessmentTest < ActiveSupport::TestCase
     assessment_3.update(symptomatic: true, created_at: timestamp_3)
     assert_equal symptom_onset_timestamp.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 3 to be asymptomatic
     assessment_3.update(symptomatic: false)
     assert_equal symptom_onset_timestamp.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Turn off manual symptom onset override
@@ -104,12 +111,14 @@ class AssessmentTest < ActiveSupport::TestCase
     assessment_3.update(symptomatic: true, created_at: timestamp_3)
     assert_equal timestamp_3.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 3 to be asymptomatic
     assessment_3.update(symptomatic: false)
     assert_equal timestamp_2.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Destroy assessment 3
@@ -123,12 +132,19 @@ class AssessmentTest < ActiveSupport::TestCase
     assessment_2.update(created_at: timestamp_2)
     assert_equal timestamp_1.to_date, patient.symptom_onset
     assert_in_delta timestamp_2, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
+    # Update assessment 2 symptomatic
+    assessment_2.update(symptomatic: false)
+    assert_equal false, patient.latest_assessment_symptomatic
+    assessment_2.update(symptomatic: true)
+
     # Update assessment 1 to be asymptomatic
-    assessment_1.update!(symptomatic: false)
+    assessment_1.update(symptomatic: false)
     assert_equal timestamp_2.to_date, patient.symptom_onset
     assert_in_delta timestamp_2, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Destroy assessment 2
@@ -138,9 +154,10 @@ class AssessmentTest < ActiveSupport::TestCase
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 1 to be symptomatic
-    assessment_1.update!(symptomatic: true)
+    assessment_1.update(symptomatic: true)
     assert_equal timestamp_1.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Create assessment 4 with fever
@@ -150,6 +167,7 @@ class AssessmentTest < ActiveSupport::TestCase
     symptom_4 = create(:symptom, condition_id: reported_condition_4.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
     assert_equal timestamp_1.to_date, patient.symptom_onset
     assert_in_delta timestamp_4, patient.latest_assessment_at, 1
+    assert_equal true, patient.latest_assessment_symptomatic
     patient.reload.latest_fever_or_fever_reducer_at
     assert_in_delta timestamp_4, patient.latest_fever_or_fever_reducer_at, 1
 
@@ -163,6 +181,7 @@ class AssessmentTest < ActiveSupport::TestCase
     assessment_4.destroy
     assert_nil patient.symptom_onset
     assert_nil patient.latest_assessment_at
+    assert_nil patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
     assert_empty patient.assessments
   end

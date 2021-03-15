@@ -65,6 +65,7 @@ const blankMockPatient = {
   last_date_of_exposure: null,
   last_name: null,
   latest_assessment_at: null,
+  latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
   latest_positive_lab_at: null,
   latest_transfer_at: null,
@@ -206,6 +207,7 @@ const mockPatient1 = {
   last_date_of_exposure: '2020-09-13',
   last_name: 'Mouse',
   latest_assessment_at: '2020-09-15T20:59:36.000Z',
+  latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
   latest_positive_lab_at: null,
   latest_transfer_at: null,
@@ -230,7 +232,7 @@ const mockPatient1 = {
     status: 'reporting',
     transferred_at: '',
     transferred_from: '',
-    transferred_to: ''
+    transferred_to: '',
   },
   member_of_a_common_exposure_cohort: true,
   member_of_a_common_exposure_cohort_type: 'Dark Two-Face',
@@ -278,8 +280,8 @@ const mockPatient1 = {
   user_defined_symptom_onset: null,
   was_in_health_care_facility_with_known_cases: false,
   was_in_health_care_facility_with_known_cases_facility_name: null,
-  white: null
-}
+  white: null,
+};
 
 const mockPatient2 = {
   additional_planned_travel_destination: 'Kokomo',
@@ -346,6 +348,7 @@ const mockPatient2 = {
   last_date_of_exposure: '2020-09-13',
   last_name: 'Mouse',
   latest_assessment_at: '2020-09-15T20:59:36.000Z',
+  latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
   latest_positive_lab_at: null,
   latest_transfer_at: null,
@@ -370,7 +373,7 @@ const mockPatient2 = {
     status: 'reporting',
     transferred_at: '',
     transferred_from: '',
-    transferred_to: ''
+    transferred_to: '',
   },
   member_of_a_common_exposure_cohort: true,
   member_of_a_common_exposure_cohort_type: 'Dark Two-Face',
@@ -419,8 +422,8 @@ const mockPatient2 = {
   user_defined_symptom_onset: null,
   was_in_health_care_facility_with_known_cases: true,
   was_in_health_care_facility_with_known_cases_facility_name: 'ABC Care',
-  white: null
-}
+  white: null,
+};
 
 const mockPatient3 = {
   additional_planned_travel_destination: 'Kokomo',
@@ -487,6 +490,7 @@ const mockPatient3 = {
   last_date_of_exposure: '2020-09-13',
   last_name: 'Duck',
   latest_assessment_at: '2020-09-15T20:59:36.000Z',
+  latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
   latest_positive_lab_at: null,
   latest_transfer_at: null,
@@ -511,7 +515,7 @@ const mockPatient3 = {
     status: 'reporting',
     transferred_at: '',
     transferred_from: '',
-    transferred_to: ''
+    transferred_to: '',
   },
   member_of_a_common_exposure_cohort: true,
   member_of_a_common_exposure_cohort_type: 'Dark Two-Face',
@@ -560,8 +564,8 @@ const mockPatient3 = {
   user_defined_symptom_onset: null,
   was_in_health_care_facility_with_known_cases: true,
   was_in_health_care_facility_with_known_cases_facility_name: 'ABC Care',
-  white: null
-}
+  white: null,
+};
 
 const mockPatient4 = {
   additional_planned_travel_destination: 'Kokomo',
@@ -628,6 +632,7 @@ const mockPatient4 = {
   last_date_of_exposure: '2020-09-13',
   last_name: 'Dawg',
   latest_assessment_at: '2020-09-15T20:59:36.000Z',
+  latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
   latest_positive_lab_at: null,
   latest_transfer_at: null,
@@ -652,7 +657,7 @@ const mockPatient4 = {
     status: 'reporting',
     transferred_at: '',
     transferred_from: '',
-    transferred_to: ''
+    transferred_to: '',
   },
   member_of_a_common_exposure_cohort: true,
   member_of_a_common_exposure_cohort_type: 'Dark Two-Face',
@@ -701,8 +706,8 @@ const mockPatient4 = {
   user_defined_symptom_onset: null,
   was_in_health_care_facility_with_known_cases: true,
   was_in_health_care_facility_with_known_cases_facility_name: 'ABC Care',
-  white: null
-}
+  white: null,
+};
 
 const mockPatient5 = {
   additional_planned_travel_destination: 'Kokomo',
@@ -769,6 +774,7 @@ const mockPatient5 = {
   last_date_of_exposure: null,
   last_name: 'Dastardly',
   latest_assessment_at: '2020-09-18T20:59:36.000Z',
+  latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
   latest_positive_lab_at: null,
   latest_transfer_at: null,
@@ -793,7 +799,7 @@ const mockPatient5 = {
     status: 'reporting',
     transferred_at: '',
     transferred_from: '',
-    transferred_to: ''
+    transferred_to: '',
   },
   member_of_a_common_exposure_cohort: null,
   member_of_a_common_exposure_cohort_type: null,
@@ -842,8 +848,8 @@ const mockPatient5 = {
   user_defined_symptom_onset: null,
   was_in_health_care_facility_with_known_cases: null,
   was_in_health_care_facility_with_known_cases_facility_name: null,
-  white: null
-  }
+  white: null,
+};
 
 export {
   blankMockPatient,

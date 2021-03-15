@@ -113,7 +113,7 @@ class PurgeJobTest < ActiveSupport::TestCase
                                was_in_health_care_facility_with_known_cases: false, was_in_health_care_facility_with_known_cases_facility_name: 'a',
                                exposure_notes: 'a', isolation: false, closed_at: 1.month.ago, source_of_report_specify: 'a',
                                pause_notifications: false, symptom_onset: 1.month.ago, case_status: 'Suspect', assigned_user: 1,
-                               latest_assessment_at: 1.month.ago, latest_fever_or_fever_reducer_at: 1.month.ago,
+                               latest_assessment_at: 1.month.ago, latest_assessment_symptomatic: false, latest_fever_or_fever_reducer_at: 1.month.ago,
                                latest_positive_lab_at: 1.month.ago, negative_lab_count: 0, latest_transfer_at: 1.month.ago,
                                latest_transfer_from: 1, gender_identity: 'a', sexual_orientation: 'a', user_defined_symptom_onset: false)
     patient.update(close_contacts: [create(:close_contact, patient: patient)])
