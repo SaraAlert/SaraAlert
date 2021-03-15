@@ -379,6 +379,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     patients: PATIENT_FIELD_NAMES,
     assessments: ASSESSMENT_FIELD_NAMES,
     laboratories: LABORATORY_FIELD_NAMES,
+    vaccines: VACCINE_FIELD_NAMES,
     close_contacts: CLOSE_CONTACT_FIELD_NAMES,
     transfers: TRANSFER_FIELD_NAMES,
     histories: HISTORY_FIELD_NAMES
@@ -493,6 +494,12 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                                       specimen_collection report result created_at updated_at])]
   }.freeze
 
+  VACCINES_EXPORT_OPTIONS = {
+    label: 'Vaccinations',
+    nodes: [rct_node(:vaccines, 'Vaccinations', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id group_name
+                                                   product_name administration_date dose_number notes created_at updated_at])]
+  }.freeze
+
   CLOSE_CONTACTS_EXPORT_OPTIONS = {
     label: 'Close Contacts',
     nodes: [rct_node(:close_contacts, 'Close Contacts', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id first_name
@@ -516,6 +523,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     patients: PATIENTS_EXPORT_OPTIONS,
     assessments: ASSESSMENTS_EXPORT_OPTIONS,
     laboratories: LABORATORIES_EXPORT_OPTIONS,
+    vaccines: VACCINES_EXPORT_OPTIONS,
     close_contacts: CLOSE_CONTACTS_EXPORT_OPTIONS,
     transfers: TRANSFERS_EXPORT_OPTIONS,
     histories: HISTORIES_EXPORT_OPTIONS
