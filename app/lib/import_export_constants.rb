@@ -105,6 +105,11 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
 
   FULL_HISTORY_LABORATORIES_HEADERS = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result', 'Created At', 'Updated At'].freeze
 
+  FULL_HISTORY_VACCINES_FIELDS = %i[patient_id group_name product_name administration_date dose_number notes created_at updated_at].freeze
+
+  FULL_HISTORY_VACCINES_HEADERS = ['Patient ID', 'Vaccine Group', 'Product Name', 'Administration Date', 'Dose Number', 'Notes', 'Created At',
+                                   'Updated At'].freeze
+
   FULL_HISTORY_HISTORIES_FIELDS = %i[patient_id comment created_by history_type created_at updated_at].freeze
 
   FULL_HISTORY_HISTORIES_HEADERS = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At'].freeze
@@ -308,6 +313,21 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     result: 'Lab Result',
     created_at: 'Lab Report Created Date',
     updated_at: 'Lab Report Updated Date'
+  }.freeze
+
+  VACCINE_FIELD_NAMES = {
+    patient_id: 'Sara Alert ID',
+    user_defined_id_statelocal: 'State/Local ID',
+    user_defined_id_cdc: 'CDC ID',
+    user_defined_id_nndss: 'NNDSS ID',
+    id: 'Vaccination ID',
+    group_name: 'Vaccine Group',
+    product_name: 'Product Name',
+    administration_date: 'Administration Date',
+    dose_number: 'Dose Number',
+    notes: 'Notes',
+    created_at: 'Vaccination Created Date',
+    updated_at: 'Vaccination Updated Date'
   }.freeze
 
   CLOSE_CONTACT_FIELD_NAMES = {
@@ -519,6 +539,11 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
         checked: FULL_HISTORY_LABORATORIES_FIELDS,
         headers: FULL_HISTORY_LABORATORIES_HEADERS,
         tab: 'Lab Results'
+      },
+      vaccines: {
+        checked: FULL_HISTORY_VACCINES_FIELDS,
+        headers: FULL_HISTORY_VACCINES_HEADERS,
+        tab: 'Vaccinations'
       },
       histories: {
         checked: FULL_HISTORY_HISTORIES_FIELDS,
