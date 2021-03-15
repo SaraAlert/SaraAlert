@@ -784,10 +784,10 @@ class Fhir::R4::ApiController < ActionController::API
   def status_unprocessable_entity(resource, fhir_map, req_json)
     outcome = FHIR::OperationOutcome.new(issue: [])
 
-    resource&.errors&.messages&.each_with_object([]) do |(attribute, errors), messages|
-      next unless VALIDATION.key?(attribute)
+    resource&.errors&.messages&.each do |attribute, errors|
+      next unless VALIDATION.key?(attribute) || attribute == :base
 
-      fhir_path = fhir_map[attribute][:path]
+      fhir_path = fhir_map.dig(attribute, :path)
 
       # Extract the original value from the request body using FHIRPath
       if fhir_path&.present?
@@ -796,18 +796,17 @@ class Fhir::R4::ApiController < ActionController::API
         rescue StandardError
           # If the FHIRPath evaluation fails for some reason, just use the normalized value that failed validation
           # Note that there is a known issue in the FHIRPath lib where nested calls to extension() result in an error
-          value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
+          value = VALIDATION.dig(attribute, :checks)&.include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
         end
       else
-        value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
+        value = VALIDATION.dig(attribute, :checks)&.include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
       end
 
-      msg_header = (value&.present? ? "Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}'"
+      msg_header = (value&.present? ? "Value '#{value}' for " : '') + "'#{VALIDATION.dig(attribute, :label)}'" unless attribute == :base
       errors.each do |error_message|
         # Exclude the actual value in logging to avoid PII/PHI
         Rails.logger.info "Validation Error on: #{attribute}"
-        messages << "#{msg_header} #{error_message}"
-        outcome.issue << FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'processing', diagnostics: "#{msg_header} #{error_message}",
+        outcome.issue << FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'processing', diagnostics: "#{msg_header} #{error_message}".strip,
                                                            expression: fhir_path)
       end
     end
