@@ -33,7 +33,7 @@ Rails.application.config.filter_parameters += %i[password first_name middle_name
                                                  healthcare_personnel_facility_name crew_on_passenger_or_cargo_flight
                                                  was_in_health_care_facility_with_known_cases
                                                  was_in_health_care_facility_with_known_cases_facility_name
-                                                 exposure_notes symptom_onset continuous_exposure latest_assessment_at
+                                                 exposure_notes symptom_onset continuous_exposure latest_assessment_at latest_assessment_symptomatic
                                                  latest_fever_or_fever_reducer_at latest_positive_lab_at
                                                  negative_lab_count gender_identity sexual_orientation
                                                  extended_isolation isolation dob status user_defined_id_statelocal
