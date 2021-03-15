@@ -71,14 +71,14 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       xlsx_assessments = get_xlsx(build_export_filename(config, :assessments, index, true))
       xlsx_lab_results = get_xlsx(build_export_filename(config, :laboratories, index, true))
       xlsx_histories = get_xlsx(build_export_filename(config, :histories, index, true))
-      verify_full_history_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_histories, patients_group)
+      verify_full_history_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, nil, xlsx_histories, patients_group)
     end
   end
 
   def verify_full_history_patient(patient_id)
     xlsx_all = get_xlsx("Sara-Alert-Monitoree-Export-#{patient_id}-????-??-??T??_??_?????_??.xlsx")
     patients = Patient.where(id: patient_id)
-    verify_full_history_export(xlsx_all, xlsx_all, xlsx_all, xlsx_all, patients)
+    verify_full_history_export(xlsx_all, xlsx_all, xlsx_all, xlsx_all, xlsx_all, patients)
   end
 
   def verify_custom(user_label, settings)
@@ -172,7 +172,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_full_history_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_histories, patients)
+  def verify_full_history_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_vaccines, xlsx_histories, patients)
     monitorees_list = xlsx_monitorees.sheet('Monitorees List')
     assert_equal(patients.size, monitorees_list.last_row - 1, 'Number of patients in Monitorees List')
     FULL_HISTORY_PATIENTS_HEADERS.each_with_index do |header, col|
@@ -233,6 +233,21 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       details.keys.each_with_index do |field, col|
         cell_value = lab_results.cell(row + 2, col + 1)
         assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Lab Results")
+      end
+    end
+
+    exported_vaccines = xlsx_vaccines.sheet('Vaccinations')
+    vaccines = Vaccine.where(patient_id: patient_ids)
+    assert_equal(vaccines.size, exported_vaccines.last_row - 1, 'Number of results in Vaccinations')
+    vaccine_headers = ['Patient ID', 'Vaccine Group', 'Product Name', 'Administration Date', 'Dose Number', 'Notes', 'Created At', 'Updated At']
+    vaccine_headers.each_with_index do |header, col|
+      assert_equal(header, exported_vaccines.cell(1, col + 1), "For header: #{header} in Vaccinations")
+    end
+    vaccines.each_with_index do |vaccine, row|
+      details = vaccine.attributes.except('id')
+      details.keys.each_with_index do |field, col|
+        cell_value = exported_vaccines.cell(row + 2, col + 1)
+        assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Vaccinations")
       end
     end
 

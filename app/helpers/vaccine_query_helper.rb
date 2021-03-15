@@ -90,4 +90,9 @@ module VaccineQueryHelper
 
     vaccines.paginate(per_page: entries, page: page + 1)
   end
+
+  # Get vaccinations by patient_ids
+  def vaccines_by_patient_ids(patient_ids)
+    Vaccine.where(patient_id: patient_ids).order(:patient_id)
+  end
 end

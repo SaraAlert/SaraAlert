@@ -36,13 +36,11 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
       }
     }
 
-    # This will display some warnings that can be ignored
-    Vaccine.const_set('VACCINE_STANDARDS', custom_config.freeze)
+    redefine_constant(Vaccine, 'VACCINE_STANDARDS', custom_config)
   end
 
   def teardown
-    # This will display some warnings that can be ignored
-    Vaccine.const_set('VACCINE_STANDARDS', Rails.configuration.vaccine_standards.freeze)
+    redefine_constant(Vaccine, 'VACCINE_STANDARDS', Rails.configuration.vaccine_standards.freeze)
   end
 
   # --- validate_query_helper --- #
@@ -582,5 +580,11 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     # If paginated, will be able to access Paginator methods
     assert paginated_vaccines.respond_to?(:total_entries)
     assert_equal(5, paginated_vaccines.total_entries)
+  end
+
+  def redefine_constant(mod, constant, value)
+    # mod = mod.is_a?(Module) ? mod : mod.class
+    mod.send(:remove_const, constant) if mod.const_defined?(constant)
+    mod.const_set(constant, value)
   end
 end
