@@ -73,7 +73,7 @@ class Patient < ApplicationRecord
 
   validates :address_state,
             on: :api,
-            presence: { message: 'is required unless a "Foreign Address Country" is specified' },
+            presence: { message: "is required unless a 'Foreign Address Country' is specified" },
             unless: -> { foreign_address_country.present? }
 
   validates :symptom_onset,

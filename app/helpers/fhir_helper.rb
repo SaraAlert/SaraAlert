@@ -118,10 +118,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # }
   def patient_from_fhir(patient, default_jurisdiction_id)
     symptom_onset = from_date_extension(patient, ['symptom-onset-date'])
-    address = from_address_by_type_extension(patient, 'USA')
-    address_index = patient&.address&.index(address)
     foreign_address = from_address_by_type_extension(patient, 'Foreign')
     foreign_address_index = patient&.address&.index(foreign_address)
+    address = from_address_by_type_extension(patient, 'USA')
+    address_index = patient&.address&.index(address) || foreign_address_index || 0
     primary_phone = patient&.telecom&.find { |t| t&.system == 'phone' }
     secondary_phone = patient&.telecom&.select { |t| t&.system == 'phone' }&.second
     email = patient&.telecom&.find { |t| t&.system == 'email' }
@@ -136,6 +136,14 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       email: { value: email&.value, path: "Patient.telecom[#{patient&.telecom&.index(email)}].value" },
       date_of_birth: { value: patient&.birthDate, path: 'Patient.birthDate' },
       age: { value: Patient.calc_current_age_fhir(patient&.birthDate), path: 'Patient.birthDate' },
+      # foreign_address has to be mapped before address, because address_state has a validation rule that depends on foreign_address_country
+      foreign_address_line_1: { value: foreign_address&.line&.first, path: "Patient.address[#{foreign_address_index}].line[0]" },
+      foreign_address_line_2: { value: foreign_address&.line&.second, path: "Patient.address[#{foreign_address_index}].line[1]" },
+      foreign_address_line_3: { value: foreign_address&.line&.third, path: "Patient.address[#{foreign_address_index}].line[2]" },
+      foreign_address_city: { value: foreign_address&.city, path: "Patient.address[#{foreign_address_index}].city" },
+      foreign_address_state: { value: foreign_address&.state, path: "Patient.address[#{foreign_address_index}].state" },
+      foreign_address_zip: { value: foreign_address&.postalCode, path: "Patient.address[#{foreign_address_index}].postalCode" },
+      foreign_address_country: { value: foreign_address&.country, path: "Patient.address[#{foreign_address_index}].country" },
       address_line_1: { value: address&.line&.first, path: "Patient.address[#{address_index}].line[0]" },
       address_line_2: { value: address&.line&.second, path: "Patient.address[#{address_index}].line[1]" },
       address_city: { value: address&.city, path: "Patient.address[#{address_index}].city" },
@@ -148,13 +156,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       monitored_address_county: { value: address&.district, path: "Patient.address[#{address_index}].district" },
       monitored_address_state: { value: address&.state, path: "Patient.address[#{address_index}].state" },
       monitored_address_zip: { value: address&.postalCode, path: "Patient.address[#{address_index}].postalCode" },
-      foreign_address_line_1: { value: foreign_address&.line&.first, path: "Patient.address[#{foreign_address_index}].line[0]" },
-      foreign_address_line_2: { value: foreign_address&.line&.second, path: "Patient.address[#{foreign_address_index}].line[1]" },
-      foreign_address_line_3: { value: foreign_address&.line&.third, path: "Patient.address[#{foreign_address_index}].line[2]" },
-      foreign_address_city: { value: foreign_address&.city, path: "Patient.address[#{foreign_address_index}].city" },
-      foreign_address_state: { value: foreign_address&.state, path: "Patient.address[#{foreign_address_index}].state" },
-      foreign_address_zip: { value: foreign_address&.postalCode, path: "Patient.address[#{foreign_address_index}].postalCode" },
-      foreign_address_country: { value: foreign_address&.country, path: "Patient.address[#{foreign_address_index}].country" },
       primary_language: { value: patient&.communication&.first&.language&.coding&.first&.display, path: 'Patient.communication[0].language.coding[0].display' },
       interpretation_required: { value: patient&.communication&.first&.preferred, path: 'Patient.communication[0].preferred' },
       white: race_code?(patient, '2106-3', OMB_URL),
