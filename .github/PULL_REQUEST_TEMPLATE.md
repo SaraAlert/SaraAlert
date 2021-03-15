@@ -39,7 +39,15 @@ Please list important files (meaning substantial or integral to the PR) along wi
 - [ ] Test fixtures updated and documented as necessary
 
 
-**Reviewer 1:** <username>
+**Reviewer 1:**
+
+- [ ] Code is maintainable and reusable, reuses existing code and infrastructure where appropriate, and accomplishes the task’s purpose
+- [ ] The tests appropriately test the new code, including edge cases
+- [ ] You have tried to break the code
+- [ ] If applicable, you have tested changes against a large database, and considered possible performance regressions
+
+
+**Reviewer 2:**
 
 Name:
 - [ ] Code is maintainable and reusable, reuses existing code and infrastructure where appropriate, and accomplishes the task’s purpose
@@ -48,16 +56,7 @@ Name:
 - [ ] If applicable, you have tested changes against a large database, and considered possible performance regressions
 
 
-**Reviewer 2:** <username>
-
-Name:
-- [ ] Code is maintainable and reusable, reuses existing code and infrastructure where appropriate, and accomplishes the task’s purpose
-- [ ] The tests appropriately test the new code, including edge cases
-- [ ] You have tried to break the code
-- [ ] If applicable, you have tested changes against a large database, and considered possible performance regressions
-
-
-**Reviewer 3:** <username>
+**Reviewer 3:**
 
 Name:
 - [ ] Code is maintainable and reusable, reuses existing code and infrastructure where appropriate, and accomplishes the task’s purpose
