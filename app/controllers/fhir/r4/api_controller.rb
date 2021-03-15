@@ -796,10 +796,10 @@ class Fhir::R4::ApiController < ActionController::API
         rescue StandardError
           # If the FHIRPath evaluation fails for some reason, just use the normalized value that failed validation
           # Note that there is a known issue in the FHIRPath lib where nested calls to extension() result in an error
-          value = resource[attribute]
+          value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
         end
       else
-        value = resource[attribute]
+        value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
       end
 
       msg_header = (value&.present? ? "Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}'"
