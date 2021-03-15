@@ -740,20 +740,66 @@ class Patient < ApplicationRecord
   end
 
   # Check for potential duplicate records. Duplicate criteria is as follows:
-  # - matching first name, last name, sex, and DoB
+  # - matching values of first name and last name. Optionally sex and DoB can also match for more detailed messaging
+  # e.g. Jon Smith M null would be a duplicate of Jon Smith M 1/1/2000
   # OR
   # - matching state/local id
   def self.duplicate_data(first_name, last_name, sex, date_of_birth, user_defined_id_statelocal)
-    dup_info = where('first_name = ?', first_name)
-               .where('last_name = ?', last_name)
-               .where('sex = ?', sex)
-               .where('date_of_birth = ?', date_of_birth)
+    # if first_name or last_name is null skip duplicate detection
+    return false if first_name.nil? || last_name.nil?
 
-    dup_statelocal_id = where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.to_s&.strip)
+    # Track which matches have occurred
+    duplicate_field_data = []
 
     # Get fields that have matching values
-    duplicate_field_data = []
-    duplicate_field_data << { count: dup_info.count, fields: ['First Name', 'Last Name', 'Sex', 'Date of Birth'] } if dup_info.present?
+    fn_ln_match = where('first_name = ?', first_name)
+                  .where('last_name = ?', last_name)
+
+    # count the remaining matches
+    remaining_matches = fn_ln_match.count
+
+    # check for all 4 fields matching
+    if !date_of_birth.nil? && !sex.nil? && fn_ln_match.present?
+      all_match = fn_ln_match.where('date_of_birth = ?', date_of_birth)
+                             .where('sex = ?', sex)
+      remaining_matches -= all_match.count
+      duplicate_field_data << { count: all_match.count, fields: ['First Name', 'Last Name', 'Sex', 'Date of Birth'] } if all_match.present?
+    end
+
+    # check for FN LN and S matches
+    if !sex.nil? && fn_ln_match.present?
+      # if there is a DoB we only want to match with records that do not match the DoB or where the DoB is nil
+      fn_ln_s_match = if !date_of_birth.nil?
+                        fn_ln_match.where('sex = ?', sex)
+                                   .where.not('date_of_birth = ?', date_of_birth)
+                                   .or(fn_ln_match.where('sex = ?', sex).where(date_of_birth: nil))
+                      else
+                        fn_ln_match.where('sex = ?', sex)
+                      end
+      remaining_matches -= fn_ln_s_match.count
+      duplicate_field_data << { count: fn_ln_s_match.count, fields: ['First Name', 'Last Name', 'Sex'] } if fn_ln_s_match.present?
+
+    end
+
+    # check for FN LN and DoB matches
+    if !date_of_birth.nil? && fn_ln_match.present?
+      # if there is a sex we only want to match with records that do not match the sex or where the sex is nil
+      fn_ln_dob_match = if !sex.nil?
+                          fn_ln_match.where('date_of_birth = ?', date_of_birth)
+                                     .where.not('sex = ?', sex)
+                                     .or(fn_ln_match.where('date_of_birth = ?', date_of_birth).where(sex: nil))
+                        else
+                          fn_ln_match.where('date_of_birth = ?', date_of_birth)
+                        end
+      remaining_matches -= fn_ln_dob_match.count
+      duplicate_field_data << { count: fn_ln_dob_match.count, fields: ['First Name', 'Last Name', 'Date of Birth'] } if fn_ln_dob_match.present?
+
+    end
+    # put the remaining matches in
+    duplicate_field_data << { count: remaining_matches, fields: ['First Name', 'Last Name'] } if remaining_matches.positive?
+
+    # check for a duplicate state/local id
+    dup_statelocal_id = where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.to_s&.strip)
     duplicate_field_data << { count: dup_statelocal_id.count, fields: ['State/Local ID'] } if dup_statelocal_id.present?
 
     { is_duplicate: duplicate_field_data.length.positive?, duplicate_field_data: duplicate_field_data }
