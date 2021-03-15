@@ -172,6 +172,7 @@ class CustomExport extends React.Component {
       this.state.preset?.config?.data?.patients?.checked?.length > 0 ||
       this.state.preset?.config?.data?.assessments?.checked?.length > 0 ||
       this.state.preset?.config?.data?.laboratories?.checked?.length > 0 ||
+      this.state.preset?.config?.data?.vaccines?.checked?.length > 0 ||
       this.state.preset?.config?.data?.close_contacts?.checked?.length > 0 ||
       this.state.preset?.config?.data?.transfers?.checked?.length > 0 ||
       this.state.preset?.config?.data?.histories?.checked?.length > 0;
@@ -342,6 +343,20 @@ class CustomExport extends React.Component {
                     expanded={this.state.preset?.config?.data?.laboratories?.expanded}
                     onCheck={checked => this.handlePresetChange('config.data.laboratories.checked', checked)}
                     onExpand={expanded => this.handlePresetChange('config.data.laboratories.expanded', expanded)}
+                    showNodeIcon={false}
+                    icons={rctIcons}
+                  />
+                </Col>
+              </Row>
+              <Row className="mx-3 py-1 g-border-top">
+                <Col md={24} className="p-1">
+                  <CheckboxTree
+                    id="rct-vaccines-elements"
+                    nodes={this.props.options?.vaccines?.nodes}
+                    checked={this.state.preset?.config?.data?.vaccines?.checked}
+                    expanded={this.state.preset?.config?.data?.vaccines?.expanded}
+                    onCheck={checked => this.handlePresetChange('config.data.vaccines.checked', checked)}
+                    onExpand={expanded => this.handlePresetChange('config.data.vaccines.expanded', expanded)}
                     showNodeIcon={false}
                     icons={rctIcons}
                   />
