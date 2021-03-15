@@ -795,6 +795,7 @@ class PatientTest < ActiveSupport::TestCase
     assert patient = create(:patient)
     assert_nil patient.symptom_onset
     assert_nil patient.latest_assessment_at
+    assert_nil patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
     assert_empty patient.assessments
     assert_nil patient.latest_positive_lab_at
