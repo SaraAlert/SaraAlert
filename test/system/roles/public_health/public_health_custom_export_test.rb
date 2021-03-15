@@ -56,6 +56,12 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
     get_all_field_options(options_tree[:nodes])
   end
 
+  # Gets all the assessment field options for custom export.
+  def all_custom_export_vaccine_fields
+    options_tree = ImportExport::VACCINES_EXPORT_OPTIONS
+    get_all_field_options(options_tree[:nodes])
+  end
+
   # TODO: Tests for custom query option
   # TODO: Tests for some options not being checked
 
@@ -88,6 +94,10 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         laboratories: {
           selected: ['Lab Results']
+        },
+        vaccines: {
+          selected: ['Vaccinations'],
+          checked: all_custom_export_vaccine_fields
         },
         close_contacts: {
           selected: ['Close Contacts']
@@ -133,6 +143,10 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         laboratories: {
           selected: ['Lab Results']
         },
+        vaccines: {
+          selected: ['Vaccinations'],
+          checked: all_custom_export_vaccine_fields
+        },
         close_contacts: {
           selected: ['Close Contacts']
         },
@@ -174,6 +188,10 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         laboratories: {
           selected: ['Lab Results']
+        },
+        vaccines: {
+          selected: ['Vaccinations'],
+          checked: all_custom_export_vaccine_fields
         },
         close_contacts: {
           selected: ['Close Contacts']
@@ -225,6 +243,10 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         laboratories: {
           selected: ['Lab Results']
         },
+        vaccines: {
+          selected: ['Vaccinations'],
+          checked: all_custom_export_vaccine_fields
+        },
         close_contacts: {
           selected: ['Close Contacts']
         },
@@ -273,6 +295,10 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         laboratories: {
           selected: ['Lab Results']
         },
+        vaccines: {
+          selected: ['Vaccinations'],
+          checked: all_custom_export_vaccine_fields
+        },
         close_contacts: {
           selected: ['Close Contacts']
         },
@@ -318,6 +344,10 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         laboratories: {
           selected: ['Lab Results']
+        },
+        vaccines: {
+          selected: ['Vaccinations'],
+          checked: all_custom_export_vaccine_fields
         },
         close_contacts: {
           selected: ['Close Contacts']

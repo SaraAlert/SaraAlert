@@ -55,6 +55,9 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         laboratories: {
           name: 'Lab-Results'
         },
+        vaccines: {
+          name: 'Vaccinations'
+        },
         histories: {
           name: 'Histories'
         }
@@ -70,8 +73,9 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       xlsx_monitorees = get_xlsx(build_export_filename(config, :patients, index, true))
       xlsx_assessments = get_xlsx(build_export_filename(config, :assessments, index, true))
       xlsx_lab_results = get_xlsx(build_export_filename(config, :laboratories, index, true))
+      xlsx_vaccines = get_xlsx(build_export_filename(config, :vaccines, index, true))
       xlsx_histories = get_xlsx(build_export_filename(config, :histories, index, true))
-      verify_full_history_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, nil, xlsx_histories, patients_group)
+      verify_full_history_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_vaccines, xlsx_histories, patients_group)
     end
   end
 
@@ -237,7 +241,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     end
 
     exported_vaccines = xlsx_vaccines.sheet('Vaccinations')
-    vaccines = Vaccine.where(patient_id: patient_ids)
+    vaccines = Vaccine.where(patient_id: patient_ids).order(:patient_id)
     assert_equal(vaccines.size, exported_vaccines.last_row - 1, 'Number of results in Vaccinations')
     vaccine_headers = ['Patient ID', 'Vaccine Group', 'Product Name', 'Administration Date', 'Dose Number', 'Notes', 'Created At', 'Updated At']
     vaccine_headers.each_with_index do |header, col|
@@ -275,6 +279,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     validate_custom_export_monitoree_details(patients, data, settings, export_file) if settings.dig(:data, :patients, :checked)&.present?
 
     validate_custom_export_assessmemts(patients, data, settings, export_file) if settings.dig(:data, :assessments, :checked)&.present?
+
+    validate_custom_export_vaccines(patients, data, settings, export_file) if settings.dig(:data, :vaccines, :checked)&.present?
 
     if settings.dig(:data, :laboratories, :checked)&.present?
       laboratories = laboratories_by_patient_ids(patient_ids)
@@ -402,6 +408,41 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
           assert_equal(value.to_s, cell_value || '', "For field: #{headers[col]} in Reports")
         end
         assessment_row += 1
+      end
+    end
+  end
+
+  def validate_custom_export_vaccines(patients, data, _settings, export_file)
+    vaccines = vaccines_by_patient_ids(patients.pluck(:id))
+    vaccines_sheet = export_file.sheet('Vaccinations')
+    assert_equal(vaccines.size, vaccines_sheet.last_row - 1, 'Number of vaccines in Vaccinations List')
+
+    checked = data.dig(:vaccines, :checked)
+
+    # Validate vaccine headers
+    headers = checked.map { |field| ImportExport::VACCINE_FIELD_NAMES[field] }
+    headers.each_with_index do |header, col|
+      assert_equal(header, vaccines_sheet.cell(1, col + 1), "For header: #{header} in Vaccines")
+    end
+
+    # Validate vaccine cells
+    vaccine_row = 0
+    patients.find_each do |patient|
+      patient.vaccines.find_each do |vaccine|
+        # Get basic field data that is checked
+        vaccine_summary_arr = checked.map do |field|
+          if %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss].include?(field)
+            patient[field]
+          else
+            vaccine[field]
+          end
+        end
+
+        vaccine_summary_arr.each_with_index do |value, col|
+          cell_value = vaccines_sheet.cell(vaccine_row + 2, col + 1)
+          assert_equal(value.to_s, cell_value || '', "For field: #{headers[col]} in Vaccinations")
+        end
+        vaccine_row += 1
       end
     end
   end
