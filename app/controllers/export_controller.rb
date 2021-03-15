@@ -114,6 +114,12 @@ class ExportController < ApplicationController
           name: 'Lab-Results',
           tab: 'Lab Results'
         },
+        vaccines: {
+          checked: FULL_HISTORY_VACCINES_FIELDS,
+          headers: FULL_HISTORY_VACCINES_HEADERS,
+          name: 'Vaccinations',
+          tab: 'Vaccinations'
+        },
         histories: {
           checked: FULL_HISTORY_HISTORIES_FIELDS,
           headers: FULL_HISTORY_HISTORIES_HEADERS,
@@ -210,6 +216,9 @@ class ExportController < ApplicationController
         },
         laboratories: {
           checked: validate_checked_fields(data, :laboratories)
+        },
+        vaccines: {
+          checked: validate_checked_fields(data, :vaccines)
         },
         close_contacts: {
           checked: validate_checked_fields(data, :close_contacts)
