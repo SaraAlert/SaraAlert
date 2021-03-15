@@ -36,27 +36,30 @@ desc 'Backup the database'
   desc 'Generate N many more monitorees based on existing data'
   task create_bulk_data: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
-    
-    num_patients = (ENV['COUNT'] || 100000).to_i
-    num_threads = (ENV['THREADS'] || 8).to_i
 
-    patient_ids = Patient.where('patients.responder_id = patients.id').limit(num_patients).pluck(:id)
+    num_patients = (ENV['COUNT'] || 100000).to_i
+    num_threads = (ENV['FORKS'] || 8).to_i
+
+    # Found that forks were consistently performing drastically differently when id's were not shuffled
+    # i.e. fork 1 was always the slowest between 5 to 10 p/s and fork 8 was always the fastest between 20 to 25 p/s
+    # After shuffling, all forks end up at a much more similar 9 to 10 p/s
+    patient_ids = Patient.where('patients.responder_id = patients.id').limit(num_patients).pluck(:id).shuffle
 
     pids = []
-    
+
     ::ActiveRecord::Base.clear_all_connections!
     fork_num = 1
     patient_ids.each_slice(patient_ids.size / num_threads).each do |slice_ids|
-      pids << fork do 
+      pids << fork do
         t1 = Time.now
         ::ActiveRecord::Base.establish_connection
 
         num_to_create = num_patients / num_threads
         num_created = 0
-        
-        num_to_create.times do 
-          deep_duplicate_patient(Patient.find(slice_ids.sample))
-          num_created += 1
+
+        while num_created < num_to_create do
+          # deep_duplicate returns exactly how many patients were created (including duplicated dependents)
+          num_created += deep_duplicate_patient(Patient.find(slice_ids.sample))
           print "\r#{(num_created / (Time.now - t1)).truncate(2)} p/s"
         end
 
@@ -77,42 +80,79 @@ desc 'Backup the database'
   task setup_performance_test_users: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
-    jurisdictions = Jurisdiction.all
-    if !(jurisdictions.size > 50)
+    num_jurisdictions = Jurisdiction.count
+    if !(num_jurisdictions > 50)
       puts ' Jurisdictions were not found! Make sure to run `PERFORMANCE=true bundle exec rake admin:import_or_update_jurisdictions`'
       exit(1)
     end
 
+    num_users = User.count
+    unless num_users.zero?
+      puts 'This task should only be run when no users exist!'
+      puts "There are currently #{num_users} users."
+      exit(1)
+    end
     users = []
 
     # Super User at the USA level
-    users << create_user("#{jurisdictions.first.unique_identifier}_super_user", Roles::SUPER_USER, jurisdictions.first)
+    usa = Jurisdiction.find_by_name('USA')
+    usa_user = User.create!(
+      email: "#{usa.unique_identifier}_super_user@example.com",
+      password: '1234567ab!',
+      role: Roles::SUPER_USER,
+      jurisdiction_id: usa.id,
+      force_password_change: false,
+      authy_enabled: false,
+      authy_enforced: false
+    )
+
+    prototype_user = {
+      email: usa_user[:email],
+      encrypted_password: usa_user[:encrypted_password],
+      sign_in_count: usa_user[:sign_in_count],
+      current_sign_in_at: usa_user[:current_sign_in_at],
+      last_sign_in_at: usa_user[:last_sign_in_at],
+      current_sign_in_ip: usa_user[:current_sign_in_ip],
+      last_sign_in_ip: usa_user[:last_sign_in_ip],
+      failed_attempts: usa_user[:failed_attempts],
+      locked_at: usa_user[:locked_at],
+      force_password_change: usa_user[:force_password_change],
+      jurisdiction_id: usa_user[:jurisdiction_id],
+      password_changed_at: usa_user[:password_changed_at],
+      created_at: usa_user[:created_at],
+      updated_at: usa_user[:updated_at],
+      authy_id: usa_user[:authy_id],
+      last_sign_in_with_authy: usa_user[:last_sign_in_with_authy],
+      authy_enabled: usa_user[:authy_enabled],
+      authy_enforced: usa_user[:authy_enforced],
+      api_enabled: usa_user[:api_enabled],
+      role: usa_user[:role],
+      is_api_proxy: usa_user[:is_api_proxy]
+    }
 
     index = 0
-    length = jurisdictions.size
-    while index < length
+    puts "Need to create users for #{num_jurisdictions} jurisdictions\n"
+    Jurisdiction.all.pluck(:id, :unique_identifier).each do |id, unique_identifier|
       # Create one enroller, admin, public_health, contact_tracer per jurisdiction. Users with these roles are not a large percentage.
-      users << create_user("#{jurisdictions[index].unique_identifier}_enroller", Roles::ENROLLER, jurisdictions[index])
-      users << create_user("#{jurisdictions[index].unique_identifier}_admin", Roles::ADMIN, jurisdictions[index])
-      users << create_user("#{jurisdictions[index].unique_identifier}_epi", Roles::PUBLIC_HEALTH, jurisdictions[index])
-      users << create_user("#{jurisdictions[index].unique_identifier}_contact_tracer", Roles::CONTACT_TRACER, jurisdictions[index])
+      users << create_user(prototype_user, "#{unique_identifier}_enroller@example.com", Roles::ENROLLER, id)
+      users << create_user(prototype_user, "#{unique_identifier}_admin@example.com", Roles::ADMIN, id)
+      users << create_user(prototype_user, "#{unique_identifier}_epi@example.com", Roles::PUBLIC_HEALTH, id)
+      users << create_user(prototype_user, "#{unique_identifier}_contact_tracer@example.com", Roles::CONTACT_TRACER, id)
 
       # Very few analysts
-      users << create_user("#{jurisdictions[index].unique_identifier}_analyst", Roles::ANALYST, jurisdictions[index]) if index % 1 == 0
+      users << create_user(prototype_user, "#{unique_identifier}_analyst@example.com", Roles::ANALYST, id) if index % 1 == 10
 
       # Create 35-times that many public-health enrollers (based on production data)
       35.times do |phe_number|
-        users << create_user("#{jurisdictions[index].unique_identifier}_#{phe_number}_epi_enroller", Roles::PUBLIC_HEALTH_ENROLLER, jurisdictions[index])
-      end
-
-      # Insert users every 100 jurisdictions
-      if index % 100 == 0
-        User.import! users
-        users = []
+        users << create_user(prototype_user, "#{unique_identifier}_#{phe_number}_epi_enroller@example.com", Roles::PUBLIC_HEALTH_ENROLLER, id)
       end
 
       index += 1
+      print("\r#{index}")
     end
+
+    # Import all users
+    User.import users, validate: false
 
     # Api testing
     OauthApplication.create!(
@@ -121,19 +161,15 @@ desc 'Backup the database'
       scopes: 'user/Patient.* user/Observation.read user/QuestionnaireResponse.read',
       uid: 'performance-test-oauth-app-uid',
       secret: 'performance-test-oauth-app-secret'
-    )
+    ) if OauthApplication.find_by_uid('performance-test-oauth-app-uid').nil?
   end
 
-  def create_user(email, role, jurisdiction)
-    User.new(
-      email: "#{email}@example.com",
-      password: '1234567ab!',
+  def create_user(prototype_user, email, role, jurisdiction_id)
+    prototype_user.merge({
+      email: email,
       role: role,
-      jurisdiction: jurisdiction,
-      force_password_change: false,
-      authy_enabled: false,
-      authy_enforced: false
-    )
+      jurisdiction_id: jurisdiction_id
+    })
   end
 
   desc 'Configure the database for demo use'
@@ -367,6 +403,7 @@ desc 'Backup the database'
   def performance_populate_patients(num_patients_today)
     printf('Generating patients...')
     patients = []
+    public_health_ids = User.where(role: 'enroller').pluck(:id)
     num_patients_today.times do |i|
       patient = Patient.new()
       patient[:sex] = 'Unknown'
@@ -478,7 +515,7 @@ desc 'Backup the database'
       patient[:monitoring_plan] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_plan].sample
       # ---------------------------------------------------
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
-      patient[:creator_id] = User.all.select { |u| u.role?('enroller') }.sample[:id]
+      patient[:creator_id] = public_health_ids.sample
       patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
       patient_ts = create_fake_timestamp(today, today)
       patient[:created_at] = patient_ts
@@ -505,6 +542,8 @@ desc 'Backup the database'
     printf("Generating monitorees...")
     patients = []
     histories = []
+    enroller_ids = User.all.where(role: 'enroller').pluck(:id)
+    enroller_emails = User.all.where(role: 'enroller').pluck(:email)
     num_patients_today.times do |i|
       printf("\rGenerating monitoree #{i + 1} of #{num_patients_today}...") unless ENV['APP_IN_CI']
       patient = Patient.new()
@@ -648,7 +687,7 @@ desc 'Backup the database'
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
-      patient[:creator_id] = User.all.select { |u| u.role?('enroller') }.sample[:id]
+      patient[:creator_id] = enroller_ids.sample
       patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
       patient_ts = create_fake_timestamp(today, today)
       patient[:created_at] = patient_ts
@@ -666,12 +705,13 @@ desc 'Backup the database'
 
       patients << patient
     end
-
+    print ' importing monitorees...'
     Patient.import! patients
     new_patients = Patient.where('created_at >= ?', today)
     new_patients.update_all('responder_id = id')
 
     # 10-20% of patients are managed by a household member
+    print ' setting dependents...'
     new_children = new_patients.sample(new_patients.count * rand(10..20) / 100)
     new_parents = new_patients - new_children
     new_children_updates =  new_children.map { |new_child|
@@ -680,11 +720,13 @@ desc 'Backup the database'
     }
     Patient.update(new_children.map { |p| p[:id] }, new_children_updates)
 
-    new_patients.each do |patient|
+    puts "\n"
+    new_patients.each_with_index do |patient, i|
+      printf("\rGenerating histories for monitoree #{i + 1} of #{new_patients.size}...") unless ENV['APP_IN_CI']
       # enrollment
       histories << History.new(
         patient_id: patient[:id],
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: 'User enrolled monitoree.',
         history_type: 'Enrollment',
         created_at: patient[:created_at],
@@ -693,7 +735,7 @@ desc 'Backup the database'
       # monitoring status
       histories << History.new(
         patient_id: patient[:id],
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: "User changed monitoring status to \"Not Monitoring\". Reason: #{patient[:monitoring_reason]}",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -701,7 +743,7 @@ desc 'Backup the database'
       ) unless patient[:monitoring]
       # exposure risk assessment
       histories << History.new(
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: "User changed exposure risk assessment to \"#{patient[:exposure_risk_assessment]}\".",
         patient_id: patient[:id],
         history_type: 'Monitoring Change',
@@ -711,7 +753,7 @@ desc 'Backup the database'
       # case status
       histories << History.new(
         patient_id: patient[:id],
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: "User changed case status to \"#{patient[:case_status]}\", and chose to \"Continue Monitoring in Isolation Workflow\".",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -720,7 +762,7 @@ desc 'Backup the database'
       # public health action
       histories << History.new(
         patient_id: patient[:id],
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: "User changed latest public health action to \"#{patient[:public_health_action]}\".",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -729,7 +771,7 @@ desc 'Backup the database'
       # pause notifications
       histories << History.new(
         patient_id: patient[:id],
-        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
+        created_by: enroller_emails.sample,
         comment: "User paused notifications for this monitoree.",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -746,6 +788,7 @@ desc 'Backup the database'
     assessments = []
     assessment_receipts = []
     histories = []
+    public_health_emails = User.where(role: 'public_health').pluck(:email)
     patient_jur_ids_and_sub_tokens = existing_patients.pluck(:id, :jurisdiction_id, :submission_token).sample(existing_patients.count * rand(55..60) / 100)
     patient_jur_ids_and_sub_tokens.each_with_index do |(patient_id, jur_id, sub_token), index|
       printf("\rGenerating assessment #{index+1} of #{patient_jur_ids_and_sub_tokens.length}...") unless ENV['APP_IN_CI']
@@ -771,7 +814,7 @@ desc 'Backup the database'
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        created_by: public_health_emails.sample,
         comment: "User created a new report.",
         history_type: 'Report Created',
         created_at: assessment_ts,
@@ -895,7 +938,7 @@ desc 'Backup the database'
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        created_by: User.where(role: 'public_health').pluck(:email).sample,
         comment: "User added a new lab result.",
         history_type: 'Lab Result',
         created_at: lab_ts,
@@ -913,6 +956,7 @@ desc 'Backup the database'
     vaccines = []
     histories = []
     patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
+    public_health_emails = User.where(role: 'public_health').pluck(:email)
     patient_ids.each_with_index do |patient_id, index|
       printf("\rGenerating vaccine #{index+1} of #{patient_ids.length}...")
       vaccine_ts = create_fake_timestamp(today, today)
@@ -931,7 +975,7 @@ desc 'Backup the database'
 
       histories << History.new(
         patient_id: patient_id,
-        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        created_by: public_health_emails.sample,
         comment: "User added a new vaccine.",
         history_type: History::HISTORY_TYPES[:vaccination],
         created_at: vaccine_ts,
@@ -993,7 +1037,9 @@ desc 'Backup the database'
     transfers = []
     histories = []
     patient_updates = {}
-    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path)]
+    public_health_ids = User.where(role: 'public_health').pluck(:id)
+    public_health_emails = User.where(role: 'public_health').pluck(:email)
+    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map {|id, path| [id, path]}]
     patients_transfer = existing_patients.pluck(:id, :jurisdiction_id, :assigned_user).sample(existing_patients.count * rand(5..10) / 100)
     patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
       printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...") unless ENV['APP_IN_CI']
@@ -1007,13 +1053,13 @@ desc 'Backup the database'
         patient_id: patient_id,
         to_jurisdiction_id: to_jurisdiction,
         from_jurisdiction_id: jur_id,
-        who_id: User.all.select { |u| u.role?('public_health') }.sample[:id],
+        who_id: public_health_ids.sample,
         created_at: transfer_ts,
         updated_at: transfer_ts
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        created_by: public_health_emails.sample,
         comment: "User changed jurisdiction from \"#{jurisdiction_paths[jur_id]}\" to #{jurisdiction_paths[to_jurisdiction]}.",
         history_type: 'Monitoring Change',
         created_at: transfer_ts,
@@ -1032,6 +1078,7 @@ desc 'Backup the database'
     close_contacts = []
     histories = []
     patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
+    public_health_emails = User.where(role: 'public_health').pluck(:email)
     enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).pluck(:id).sample(existing_patients.count * rand(5..15) / 100)
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
@@ -1060,7 +1107,7 @@ desc 'Backup the database'
       close_contacts << close_contact
       histories << History.new(
         patient_id: patient_id,
-        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
+        created_by: public_health_emails.sample,
         comment: "User created a new close contact.",
         history_type: 'Close Contact',
         created_at: close_contact_ts,
@@ -1077,18 +1124,19 @@ desc 'Backup the database'
     printf("Generating contact attempts...")
     contact_attempts = []
     histories = []
+    public_health_users = User.where(role: 'public_health').pluck(:id, :email)
     patients_contact_attempts = existing_patients.pluck(:id).sample(existing_patients.count * rand(10..20) / 100)
     patients_contact_attempts.each_with_index do |patient_id, index|
       printf("\rGenerating contact attempt #{index+1} of #{patients_contact_attempts.length}...") unless ENV['APP_IN_CI']
       successful = rand < 0.45
       note = rand < 0.65 ? " #{Faker::TvShows::GameOfThrones.quote}" : ''
       contact_attempt_ts = create_fake_timestamp(today, today)
-      user = User.all.select { |u| u.role?('public_health') }.sample
       manual_attempt = rand < 0.7
+      user = public_health_users.sample
       if manual_attempt
         contact_attempts << ContactAttempt.new(
           patient_id: patient_id,
-          user_id: user[:id],
+          user_id: user[0],
           successful: successful,
           note: note,
           created_at: contact_attempt_ts,
@@ -1097,7 +1145,7 @@ desc 'Backup the database'
       end
       histories << History.new(
         patient_id: patient_id,
-        created_by: manual_attempt ? user[:email] : 'Sara Alert System',
+        created_by: manual_attempt ? user[1] : 'Sara Alert System',
         comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}",
         history_type: 'Contact Attempt',
         created_at: contact_attempt_ts,
@@ -1237,7 +1285,7 @@ desc 'Backup the database'
 
   # Duplicate patient and all nested relations and change last name
   def deep_duplicate_patient(patient, responder: nil)
-
+    patients_created = 1
     new_patient = patient.dup
     new_patient.responder = responder || new_patient
     # new_patient.last_name = "#{new_patient.last_name}#{last_name_num}"
@@ -1249,6 +1297,7 @@ desc 'Backup the database'
     patient.dependents.each do |p|
       if p.id != p.responder_id
          deep_duplicate_patient(p, responder: new_patient)
+         patients_created += 1
       end
     end
     patient.assessments.each do |assessment| 
@@ -1282,6 +1331,7 @@ desc 'Backup the database'
     Laboratory.import duplicate_collection(patient.laboratories, patient, new_patient), validate: false
     CloseContact.import duplicate_collection(patient.close_contacts, patient, new_patient), validate: false
     ContactAttempt.import duplicate_collection(patient.contact_attempts, patient, new_patient), validate: false
+    patients_created
   end
 
 end
