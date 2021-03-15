@@ -884,6 +884,18 @@ desc 'Backup the database'
       SET patients.latest_assessment_at = t.latest_assessment_at
     SQL
 
+    # populate :latest_assessment_symptomatic
+    ActiveRecord::Base.connection.execute <<-SQL.squish
+      UPDATE patients
+      INNER JOIN (
+        SELECT patient_id, MAX(created_at)
+        FROM assessments
+        WHERE symptomatic = TRUE
+        GROUP BY patient_id
+      ) t ON patients.id = t.patient_id
+      SET patients.latest_assessment_symptomatic = TRUE
+    SQL
+
     # populate :latest_fever_or_fever_reducer_at
     ActiveRecord::Base.connection.execute <<-SQL.squish
       UPDATE patients
