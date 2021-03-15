@@ -32,19 +32,15 @@ class DateInput extends React.Component {
    * Called when typing into the date input
    */
   handleRawChange = event => {
-    let value = event.target.value;
-    this.setState({ currentDate: value }, () => {
-      if (value) {
-        this.datePickerRef.current.setOpen(true);
-      }
-    });
+    this.datePickerRef.current.setOpen(true);
+    this.setState({ currentDate: event.target.value });
   };
 
   /**
    * Called when day is clicked in the datepicker
    */
   handleSelect = date => {
-    this.setState({ currentDate: date && moment(date).format('YYYY-MM-DD') });
+    this.setState({ currentDate: date });
   };
 
   /**
@@ -52,13 +48,14 @@ class DateInput extends React.Component {
    * This will happen when the user leaves the form input (i.e. clicks out of the datepicker)
    */
   handleOnBlur = () => {
+    const currentDate = this.state.currentDate && moment(this.state.currentDate).format('YYYY-MM-DD');
     // if date is not valid when clicking out of the date input
-    if (!this.dateIsValidAndNotEmpty(this.state.currentDate)) {
+    if (!this.dateIsValidAndNotEmpty(currentDate)) {
       // change back to the last valid date or today if the field should revert to the last valid date
       if (this.props.replaceBlank) {
         const date = this.state.lastValidDate || moment().format('YYYY-MM-DD');
         this.props.onChange(date);
-      // clear the date if field should be empty on invalid
+        // clear the date if field should be empty on invalid
       } else if (this.props.clearInvalid) {
         this.clearDate();
       }
@@ -66,12 +63,15 @@ class DateInput extends React.Component {
   };
 
   /**
-   * Returns false if date is null, undefined or invalid
+   * Returns false if date is null, undefined, invalid or falls outside the min/max date range
    * Returns true otherwise
    */
   dateIsValidAndNotEmpty = date => {
-    return !_.isNil(date) && moment(date, 'YYYY-MM-DD').isValid();
-  }
+    const isNotNull = !_.isNil(date);
+    const isValid = moment(date, 'YYYY-MM-DD').isValid();
+    const isInRange = moment(this.props.minDate).isBefore(date) && moment(this.props.maxDate).isAfter(date);
+    return isNotNull && isValid && isInRange;
+  };
 
   /**
    * Clears the selected date in parent component and closes the datepicker
