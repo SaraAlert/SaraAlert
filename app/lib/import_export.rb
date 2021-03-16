@@ -391,7 +391,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     vaccines = vaccines.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
     # validate and pluck selected fields
-    vaccines.pluck(*(fields & VACCINE_FIELD_NAMES.keys))
+    records = vaccines.pluck(*(fields & VACCINE_FIELD_NAMES.keys))
+
+    # remove formula start for 'notes' field
+    notes_index = fields.index(:notes)
+    records.each { |values| values[notes_index] = remove_formula_start(values[notes_index]) }
   end
 
   # Extract close contact data values given relevant fields
