@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Col, Row } from 'react-bootstrap';
 
+import { formatTimestamp } from '../../utils/DateTime';
 import moment from 'moment-timezone';
 import domtoimage from 'dom-to-image';
 import Switch from 'react-switch';
@@ -88,12 +89,7 @@ class PublicHealthAnalytics extends React.Component {
                     </div>
                   </ReactTooltip>
                 </div>
-                Last Updated At{' '}
-                {moment
-                  .tz(this.props.stats.last_updated_at, 'UTC')
-                  .tz(moment.tz.guess())
-                  .format('YYYY-MM-DD HH:mm z')}
-                .
+                Last Updated At {formatTimestamp(this.props.stats.last_updated_at)}.
               </div>
             </Col>
             <Col className="mx-2 px-0 text-right">
