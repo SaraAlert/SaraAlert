@@ -958,12 +958,7 @@ class PatientTest < ActiveSupport::TestCase
     patient.update!(
       updated_at: correct_dst_edge(patient, (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute)).minutes.ago)
     )
-    # If the patient was modified right before the warning, but that was on a DST boundary, the comparison to minutes before will be off by 1 hour.
-    if Time.use_zone('Eastern Time (US & Canada)') { (Time.now + 1.minute - 2.5.days).dst? }
-      assert_equal Patient.purge_eligible.count, 0
-    else
-      assert_equal Patient.purge_eligible.count, 1
-    end
+    assert_equal Patient.purge_eligible.count, 1
     # Anything less than the 2.5 days ago means the patient was modified between the warning and the purging and should not be purged
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
