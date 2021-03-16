@@ -105,7 +105,7 @@ class CustomTable extends React.Component {
           onChange={this.toggleSelectAll}
           disabled={this.props.disabledRows.length === this.props.rowData.length}
           checked={this.props.selectAll}
-          aria-label="Table Select All Rows"></input>
+          aria-label="Select All Rows"></input>
       </th>
     );
   };
@@ -125,7 +125,7 @@ class CustomTable extends React.Component {
           <input
             type="checkbox"
             disabled={this.props.disabledRows.includes(rowIndex)}
-            aria-label={`Table Select${rowData.name ? ` Monitoree: ${rowData.name}` : ''}${this.props.currentUser ? ` User: ${this.props.currentUser}` : ''}`}
+            aria-label={`Select ${this.props.getAriaLabelText(rowData)}`}
             checked={(this.props.selectAll && !this.props.disabledRows.includes(rowIndex)) || this.props.selectedRows.includes(rowIndex)}
             onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
         </span>
@@ -347,7 +347,7 @@ CustomTable.propTypes = {
   entryOptions: PropTypes.array,
   getRowClassName: PropTypes.func,
   getCustomTableClassName: PropTypes.func,
-  currentUser: PropTypes.string,
+  getAriaLabelText: PropTypes.func,
   orderBy: PropTypes.string,
   sortDirection: PropTypes.string,
 };
