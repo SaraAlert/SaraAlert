@@ -559,7 +559,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                                'patients.last_assessment_reminder_sent, patients.preferred_contact_time, patients.extended_isolation, '\
                                'patients.latest_fever_or_fever_reducer_at, patients.latest_positive_lab_at, patients.negative_lab_count, '\
                                'patients.head_of_household, jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path, '\
-                               'jurisdictions.id AS jurisdiction_id')
+                               'jurisdictions.id AS jurisdiction_id', 'patients.latest_assessment_symptomatic')
 
     # execute query and get total count
     total = patients.total_entries
@@ -589,7 +589,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       details[:reason_for_closure] = patient[:monitoring_reason] || '' if fields.include?(:reason_for_closure)
       details[:closed_at] = patient[:closed_at]&.rfc2822 || '' if fields.include?(:closed_at)
       details[:transferred_at] = patient[:latest_transfer_at]&.rfc2822 || '' if fields.include?(:transferred_at)
-      latest_report = { timestamp: patient[:latest_assessment_at]&.rfc2822, symptomatic: patient.latest_assessment_symptomatic? }
+      latest_report = { timestamp: patient[:latest_assessment_at]&.rfc2822, symptomatic: patient[:latest_assessment_symptomatic] }
       details[:latest_report] = latest_report || '' if fields.include?(:latest_report)
       details[:status] = patient.status.to_s.gsub('_', ' ').sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
       details[:report_eligibility] = patient.report_eligibility if fields.include?(:report_eligibility)
