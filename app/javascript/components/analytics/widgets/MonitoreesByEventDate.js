@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Card, Col, Form, Row } from 'react-bootstrap';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
+import { formatDate } from '../../../utils/DateTime';
 import { mapToChartFormat, parseOutFields } from '../../../utils/Analytics';
 import _ from 'lodash';
 
@@ -41,7 +42,7 @@ class MonitoreesByEventDate extends React.Component {
     // The formattedData from this function needs to be slightly split up by workflow for this use-case
     let graphData = WORKFLOWS.map(workflow =>
       fd.map(y => ({
-        name: y.name,
+        name: formatDate(y.name),
         [`${workflow}`]: y[`${workflow}`],
       }))
     );

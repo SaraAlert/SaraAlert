@@ -10,7 +10,7 @@ import ChangeHOH from '../../components/subject/household_actions/ChangeHOH';
 import MoveToHousehold from '../../components/subject/household_actions/MoveToHousehold';
 import RemoveFromHousehold from '../../components/subject/household_actions/RemoveFromHousehold';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankMockPatient } from '../mocks/mockPatients'
-import { nameFormatter, dateFormatter } from '../util.js'
+import { nameFormatter, formatDate } from '../util.js'
 
 const goToMock = jest.fn();
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
@@ -217,12 +217,12 @@ describe('Patient', () => {
     expect(departedColumn.find('b').at(0).text()).toEqual('Port of Origin:');
     expect(departedColumn.find('span').at(0).text()).toEqual(mockPatient1.port_of_origin);
     expect(departedColumn.find('b').at(1).text()).toEqual('Date of Departure:');
-    expect(departedColumn.find('span').at(1).text()).toEqual(dateFormatter(mockPatient1.date_of_departure));
+    expect(departedColumn.find('span').at(1).text()).toEqual(formatDate(mockPatient1.date_of_departure));
     expect(arrivalColumn.find('p').text()).toEqual('Arrival');
     expect(arrivalColumn.find('b').at(0).text()).toEqual('Port of Entry:');
     expect(arrivalColumn.find('span').at(0).text()).toEqual(mockPatient1.port_of_entry_into_usa);
     expect(arrivalColumn.find('b').at(1).text()).toEqual('Date of Arrival:');
-    expect(arrivalColumn.find('span').at(1).text()).toEqual(dateFormatter(mockPatient1.date_of_arrival));
+    expect(arrivalColumn.find('span').at(1).text()).toEqual(formatDate(mockPatient1.date_of_arrival));
     expect(transportationColumn.find('b').at(0).text()).toEqual('Carrier:');
     expect(transportationColumn.find('span').at(0).text()).toEqual(mockPatient1.flight_or_vessel_carrier);
     expect(transportationColumn.find('b').at(1).text()).toEqual('Flight or Vessel #:');
@@ -315,7 +315,7 @@ describe('Patient', () => {
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('.item-group').exists()).toBeTruthy();
     expect(section.find('.item-group').find('b').at(0).text()).toEqual('Last Date of Exposure:');
-    expect(section.find('.item-group').find('span').at(0).text()).toEqual(dateFormatter(mockPatient2.last_date_of_exposure));
+    expect(section.find('.item-group').find('span').at(0).text()).toEqual(formatDate(mockPatient2.last_date_of_exposure));
     expect(section.find('.item-group').find('b').at(1).text()).toEqual('Exposure Location:');
     expect(section.find('.item-group').find('span').at(1).text()).toEqual(mockPatient2.potential_exposure_location);
     expect(section.find('.item-group').find('b').at(2).text()).toEqual('Exposure Country:');
@@ -379,7 +379,7 @@ describe('Patient', () => {
     expect(section.find('h4').text()).toEqual('Case Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('b').at(0).text()).toEqual('Symptom Onset:');
-    expect(section.find('span').at(0).text()).toEqual(dateFormatter(mockPatient1.symptom_onset));
+    expect(section.find('span').at(0).text()).toEqual(formatDate(mockPatient1.symptom_onset));
     expect(section.find('b').at(1).text()).toEqual('Case Status:');
     expect(section.find('span').at(1).text()).toEqual(mockPatient1.case_status);
   });

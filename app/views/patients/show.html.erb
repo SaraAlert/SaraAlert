@@ -88,8 +88,8 @@
           </td>
           <td><%= lab.id %></td>
           <td><%= lab.lab_type %></td>
-          <td><%= lab.specimen_collection %></td>
-          <td><%= lab.report %></td>
+          <td><%= lab.specimen_collection&.strftime('%m/%d/%Y') %></td>
+          <td><%= lab.report&.strftime('%m/%d/%Y') %></td>
           <td><%= lab.result %></td>
         </tr>
         <% end -%>

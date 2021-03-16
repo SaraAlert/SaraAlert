@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { formatTimestamp, formatDate } from '../utils/DateTime'
 
 /** formats patient name as it is done when the field is displayed */
 function nameFormatter(patient) {
@@ -23,16 +24,6 @@ function addressLine2Formatter(patient) {
 /** formats full address as it is done when the field is displayed */
 function addressFullFormatter(patient) {
   return `${addressLine1Formatter(patient)} ${addressLine2Formatter(patient)}`;
-}
-
-/** formats date as it is done when the field is displayed (MM/DD/YYYY)  */
-function dateFormatter(date) {
-  return `${moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY')}`;
-}
-
-/** formats date as it is done on the analytics page (YYYY-MM-DD HH:mm z)  */
-function analyticsDateFormatter(date) {
-  return `${moment.tz(date, 'UTC').tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm z')}`;
 }
 
 /** sorts array of patients alphabetically by last name, then by first name  */
@@ -89,8 +80,8 @@ export {
   addressLine1Formatter,
   addressLine2Formatter,
   addressFullFormatter,
-  dateFormatter,
-  analyticsDateFormatter,
+  formatDate,
+  formatTimestamp,
   sortByNameAscending,
   sortByNameDescending,
   sortByDateAscending,
