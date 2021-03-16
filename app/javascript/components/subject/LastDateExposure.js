@@ -1,6 +1,8 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form, Row, Col, Button, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+
+import { formatDate } from '../../utils/DateTime';
 import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
@@ -95,6 +97,11 @@ class LastDateExposure extends React.Component {
       apply_to_household_ids: [],
       noMembersSelected: false,
     });
+  };
+
+  formatEndOfMonitoringDate = () => {
+    const eom = this.props.patient.linelist.end_of_monitoring;
+    return eom === 'Continuous Exposure' ? eom : formatDate(eom);
   };
 
   endOfMonitoringTooltipText = () => {
@@ -259,7 +266,7 @@ class LastDateExposure extends React.Component {
                 </Col>
               </Row>
               <Row>
-                <Col>{this.props.patient.linelist.end_of_monitoring}</Col>
+                <Col>{this.formatEndOfMonitoringDate()}</Col>
               </Row>
               <Row>
                 <Col></Col>
