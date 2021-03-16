@@ -449,10 +449,10 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
 
-    # Update LDE for patient and group members only in the exposure workflow with continuous exposure on
-    # NOTE: This is a possible option when changing monitoring status of HoH in isolation.
+    # Update LDE for patient and household members only in the exposure workflow with continuous exposure on
+    # NOTE: This is a possible option when changing monitoring status of HoH or dependent in isolation
     if params.permit(:apply_to_household_cm_exp_only)[:apply_to_household_cm_exp_only] && params[:apply_to_household_cm_exp_only_date].present?
-      # Only update dependents (not including the HoH) in exposure with continuous exposure is turned on
+      # Only update household members in the exposure workflow with continuous exposure is turned on
       (current_user.get_patient(patient.responder_id)&.household&.where(continuous_exposure: true, isolation: false) || []).uniq.each do |member|
         History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: "User updated Monitoring Status for another member in this
         monitoree's household and chose to update Last Date of Exposure for household members so System changed Last Date of Exposure from
