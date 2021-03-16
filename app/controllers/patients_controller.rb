@@ -453,7 +453,7 @@ class PatientsController < ApplicationController
     # NOTE: This is a possible option when changing monitoring status of HoH in isolation.
     if params.permit(:apply_to_household_cm_exp_only)[:apply_to_household_cm_exp_only] && params[:apply_to_household_cm_exp_only_date].present?
       # Only update dependents (not including the HoH) in exposure with continuous exposure is turned on
-      (current_user.get_patient(patient.responder_id)&.dependents_exclude_self&.where(continuous_exposure: true, isolation: false) || []).uniq.each do |member|
+      (current_user.get_patient(patient.responder_id)&.household&.where(continuous_exposure: true, isolation: false) || []).uniq.each do |member|
         History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: "User updated Monitoring Status for another member in this
         monitoree's household and chose to update Last Date of Exposure for household members so System changed Last Date of Exposure from
         #{member[:last_date_of_exposure] ? member[:last_date_of_exposure].to_date.strftime('%m/%d/%Y') : 'blank'} to
