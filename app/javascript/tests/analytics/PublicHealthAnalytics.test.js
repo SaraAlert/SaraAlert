@@ -12,7 +12,7 @@ import MonitoreesByEventDate from '../../components/analytics/widgets/Monitorees
 import GeographicSummary from '../../components/analytics/widgets/GeographicSummary';
 import { mockUser1 } from '../mocks/mockUsers'
 import mockAnalyticsData from '../mocks/mockAnalytics'
-import { analyticsDateFormatter } from '../util.js'
+import { formatTimestamp } from '../util.js'
 
 function getWrapper(stats) {
   return shallow(<PublicHealthAnalytics current_user={mockUser1} stats={stats} />);
@@ -25,7 +25,7 @@ describe('PublicHealthAnalytics', () => {
     expect(wrapper.find(Col).at(0).find('i').hasClass('fa-info-circle')).toBeTruthy();
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
     expect(wrapper.find(Col).at(0).text().includes('Last Updated At')).toBeTruthy();
-    expect(wrapper.find(Col).at(0).text().includes(analyticsDateFormatter(mockAnalyticsData.last_updated_at))).toBeTruthy();
+    expect(wrapper.find(Col).at(0).text().includes(formatTimestamp(mockAnalyticsData.last_updated_at))).toBeTruthy();
     expect(wrapper.find('.export-png').exists()).toBeTruthy();
     expect(wrapper.find('.export-png').find('i').hasClass('fa-download')).toBeTruthy();
     expect(wrapper.find('.export-png').text().includes('EXPORT ANALYSIS AS PNG')).toBeTruthy();

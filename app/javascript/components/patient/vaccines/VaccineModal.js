@@ -165,6 +165,10 @@ class VaccineModal extends React.Component {
                   value={this.state.dose_number ? { label: this.state.dose_number, value: this.state.dose_number } : ''}
                   options={this.getDropdownOptions(this.props.dose_number_options)}
                   onChange={this.handleDoseNumberChange}
+                  theme={theme => ({
+                    ...theme,
+                    borderRadius: 0,
+                  })}
                   placeholder=""
                   styles={{ menu: base => ({ ...base, zIndex: 9999 }), option: base => ({ ...base, minHeight: 30 }) }}
                 />
