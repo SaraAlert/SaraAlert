@@ -46,7 +46,7 @@ class ActiveSupport::TestCase
   end
 
   # Run tests in parallel with specified workers
-  parallelize(workers: 1)
+  parallelize(workers: 2)
 
   self.use_transactional_tests = true
 end
