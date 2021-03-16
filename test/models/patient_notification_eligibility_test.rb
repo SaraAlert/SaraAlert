@@ -515,14 +515,14 @@ end
 # Inheriting PatientNotificationEligibilityTest and overriding setup
 # allows us to run the same exact tests but change the Timecop time that
 # the tests are running at
-class PatientNotificationEligibilityTestTwo < PatientNotificationEligibilityTest
+class PatientNotificationEligibilityTestWhenDSTStarts < PatientNotificationEligibilityTest
   def setup
     super
     Timecop.freeze(Time.parse('2021-03-14T18:00:00Z'))
   end
 end
 
-class PatientNotificationEligibilityTestThree < PatientNotificationEligibilityTest
+class PatientNotificationEligibilityTestWhenDSTEnds < PatientNotificationEligibilityTest
   def setup
     super
     Timecop.freeze(Time.parse('2021-11-07T18:00:00Z'))
