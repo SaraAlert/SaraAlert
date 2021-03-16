@@ -387,6 +387,7 @@ ActiveRecord::Schema.define(version: 2021_03_15_134120) do
     t.boolean "continuous_exposure", default: false
     t.datetime "latest_assessment_at"
     t.datetime "latest_fever_or_fever_reducer_at"
+    t.date "latest_positive_lab_at"
     t.integer "negative_lab_count", default: 0
     t.datetime "latest_transfer_at"
     t.integer "latest_transfer_from"
@@ -399,7 +400,6 @@ ActiveRecord::Schema.define(version: 2021_03_15_134120) do
     t.boolean "race_other"
     t.boolean "race_unknown"
     t.boolean "race_refused_to_answer"
-    t.date "latest_positive_lab_at"
     t.boolean "latest_assessment_symptomatic", default: false
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
