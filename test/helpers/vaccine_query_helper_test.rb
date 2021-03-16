@@ -583,7 +583,6 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
   end
 
   def redefine_constant(mod, constant, value)
-    # mod = mod.is_a?(Module) ? mod : mod.class
     mod.send(:remove_const, constant) if mod.const_defined?(constant)
     mod.const_set(constant, value)
   end
