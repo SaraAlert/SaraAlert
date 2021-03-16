@@ -745,11 +745,15 @@ class Patient < ApplicationRecord
   # OR
   # - matching state/local id
   def self.duplicate_data(first_name, last_name, sex, date_of_birth, user_defined_id_statelocal)
-    # if first_name or last_name is null skip duplicate detection
-    return false if first_name.nil? || last_name.nil?
-
     # Track which matches have occurred
     duplicate_field_data = []
+
+    # check for a duplicate state/local id
+    dup_statelocal_id = where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.to_s&.strip)
+    duplicate_field_data << { count: dup_statelocal_id.count, fields: ['State/Local ID'] } if dup_statelocal_id.present?
+
+    # if first_name or last_name is null skip duplicate detection
+    return { is_duplicate: duplicate_field_data.length.positive?, duplicate_field_data: duplicate_field_data } if first_name.nil? || last_name.nil?
 
     # Get fields that have matching values
     fn_ln_match = where('first_name = ?', first_name)
@@ -797,10 +801,6 @@ class Patient < ApplicationRecord
     end
     # put the remaining matches in
     duplicate_field_data << { count: remaining_matches, fields: ['First Name', 'Last Name'] } if remaining_matches.positive?
-
-    # check for a duplicate state/local id
-    dup_statelocal_id = where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.to_s&.strip)
-    duplicate_field_data << { count: dup_statelocal_id.count, fields: ['State/Local ID'] } if dup_statelocal_id.present?
 
     { is_duplicate: duplicate_field_data.length.positive?, duplicate_field_data: duplicate_field_data }
   end
