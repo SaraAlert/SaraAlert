@@ -69,6 +69,10 @@ class AdminTable extends React.Component {
     );
   }
 
+  getAriaLabel(rowData) {
+    return `User: ${rowData.email}`;
+  }
+
   componentDidMount() {
     // Update table data on initial mount.
     this.getTableData(this.state.query);
@@ -715,16 +719,16 @@ class AdminTable extends React.Component {
           handleSelect={this.handleSelect}
           handleEdit={this.handleEditClick}
           handleEntriesChange={this.handleEntriesChange}
+          handlePageUpdate={this.handlePageUpdate}
+          getAriaLabelText={this.getAriaLabel}
           isSelectable={true}
           isEditable={true}
           isLoading={this.state.isLoading}
           page={this.state.query.page}
-          handlePageUpdate={this.handlePageUpdate}
           selectedRows={this.state.table.selectedRows}
           selectAll={this.state.table.selectAll}
           entryOptions={this.state.entryOptions}
           entries={this.state.query.entries}
-          currentUser={this.props.current_user_email}
         />
         {Object.keys(this.state.jurisdiction_paths).length && (this.state.showEditUserModal || this.state.showAddUserModal) && (
           <UserModal
@@ -764,7 +768,6 @@ class AdminTable extends React.Component {
 AdminTable.propTypes = {
   authenticity_token: PropTypes.string,
   role_types: PropTypes.array,
-  current_user_email: PropTypes.string,
   is_usa_admin: PropTypes.bool,
 };
 

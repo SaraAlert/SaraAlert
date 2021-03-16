@@ -503,6 +503,10 @@ class PatientsTable extends React.Component {
     );
   };
 
+  getAriaLabel(rowData) {
+    return `Monitoree ${rowData.name}`;
+  }
+
   createEligibilityTooltip(data) {
     const reportEligibility = data.value;
     const rowData = data.rowData;
@@ -634,11 +638,12 @@ class PatientsTable extends React.Component {
                 handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
                 handleSelect={this.handleSelect}
                 handleEntriesChange={this.handleEntriesChange}
+                handlePageUpdate={this.handlePageUpdate}
+                getAriaLabelText={this.getAriaLabel}
                 isSelectable={true}
                 isEditable={false}
                 isLoading={this.state.loading}
                 page={this.state.query.page}
-                handlePageUpdate={this.handlePageUpdate}
                 selectedRows={this.state.selectedPatients}
                 selectAll={this.state.selectAll}
                 entryOptions={this.state.entryOptions}
