@@ -955,7 +955,9 @@ class PatientTest < ActiveSupport::TestCase
     # However, if the email is going out in 1 minute and the patient was modified right before the warning (2.5 days ago), they should be purgeable
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
-    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute)).minutes.ago)
+    patient.update!(
+      updated_at: correct_dst_edge(patient, (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute)).minutes.ago)
+    )
     # If the patient was modified right before the warning, but that was on a DST boundary, the comparison to minutes before will be off by 1 hour.
     if Time.use_zone('Eastern Time (US & Canada)') { (Time.now + 1.minute - 2.5.days).dst? }
       assert_equal Patient.purge_eligible.count, 0
@@ -965,7 +967,12 @@ class PatientTest < ActiveSupport::TestCase
     # Anything less than the 2.5 days ago means the patient was modified between the warning and the purging and should not be purged
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
-    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute) - 2).minutes.ago)
+    patient.update!(
+      updated_at: correct_dst_edge(
+        patient,
+        (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute) - 2).minutes.ago
+      )
+    )
     assert Patient.purge_eligible.count.zero?
   end
 
@@ -2900,7 +2907,7 @@ class PatientTest < ActiveSupport::TestCase
 
         # Report on front edge of window (00:00:00)
         assessment_2.update(
-          created_at: assessment_2.created_at + 1.second
+          created_at: correct_dst_edge(patient, assessment_2.created_at + 1.second)
         )
         assessment_2.reload
         patient.reload
@@ -3127,8 +3134,12 @@ class PatientTest < ActiveSupport::TestCase
         assert_not_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
 
         # Report on right before start of window (23:59:59)
+        last_reminder = correct_dst_edge(
+          patient,
+          Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes
+        )
         patient.update(
-          last_assessment_reminder_sent: Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes
+          last_assessment_reminder_sent: last_reminder
         )
         patient.reload
         assert_not_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
@@ -3148,3 +3159,58 @@ class PatientTest < ActiveSupport::TestCase
   end
 end
 # rubocop:enable Metrics/ClassLength
+
+# Inheriting PatientTest and overriding setup
+# allows us to run the same exact tests but change the Timecop time that
+# the tests are running at
+class PatientTestTwo < PatientTest
+  def setup
+    super
+    Timecop.freeze(Time.parse('2021-03-14T18:00:00Z'))
+  end
+
+  def teardown
+    super
+    Timecop.return
+  end
+
+  # def setup
+  #   @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
+  #   @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
+  #   @default_weekly_purge_date = ADMIN_OPTIONS['weekly_purge_date']
+  #   Timecop.freeze(Time.parse("2021-03-14T18:00:00Z"))
+  # end
+
+  # def teardown
+  #   ADMIN_OPTIONS['purgeable_after'] = @default_purgeable_after
+  #   ADMIN_OPTIONS['weekly_purge_warning_date'] = @default_weekly_purge_warning_date
+  #   ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
+  #   Timecop.return
+  # end
+end
+
+class PatientTestThree < PatientTest
+  def setup
+    super
+    Timecop.freeze(Time.parse('2021-11-07T18:00:00Z'))
+  end
+
+  def teardown
+    super
+    Timecop.return
+  end
+
+  # def setup
+  #   @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
+  #   @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
+  #   @default_weekly_purge_date = ADMIN_OPTIONS['weekly_purge_date']
+  #   Timecop.freeze(Time.parse("2021-11-07T18:00:00Z"))
+  # end
+
+  # def teardown
+  #   ADMIN_OPTIONS['purgeable_after'] = @default_purgeable_after
+  #   ADMIN_OPTIONS['weekly_purge_warning_date'] = @default_weekly_purge_warning_date
+  #   ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
+  #   Timecop.return
+  # end
+end

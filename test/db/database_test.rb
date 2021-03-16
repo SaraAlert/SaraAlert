@@ -5,6 +5,34 @@ require 'test_case'
 class DatabaseTest < ActiveSupport::TestCase
   include PatientHelper
 
+  test 'hour time zone offsets are the same for DB and Ruby' do
+    # The intent of this test is not to check to make sure that db and ruby do
+    # not have the same offset across daylight savings time changes.
+    #
+    # It is just for ensuring that there are not core differences in how ruby
+    # calculates time zone offsets and how MySQL calculates time zone offsets.
+    #
+    # One reason why this may occur is if we are using different time zone
+    # libraries between the OS and MySQL.
+    [
+      Time.parse('2021-03-18T12:00:00Z'),
+      Time.parse('2021-11-12T12:00:00Z')
+    ].each do |t|
+      Timecop.freeze(t)
+      states_with_time_zone_data.each do |state, zone_hash|
+        utc_beginning_of_day = Time.now.getlocal('-00:00').beginning_of_day
+        time_zone = zone_hash[:zone_name]
+        query = ActiveRecord::Base.connection.raw_connection.prepare(
+          "SELECT CONVERT_TZ(?, 'UTC', ?);"
+        )
+        query_result = query.execute(utc_beginning_of_day, time_zone).first[0]
+        db_offset = ((query_result - utc_beginning_of_day) / 1.hour).to_i
+        ruby_offset = time_zone_offset_for_state(state)[0..2].to_i
+        assert_equal ruby_offset, db_offset
+      end
+    end
+  end
+
   test 'DATE_SUB and DATE_ADD work was expected' do
     [
       "SELECT '2021-01-03' = DATE(DATE_SUB(CONVERT_TZ('2021-01-04 00:00:00', 'UTC', 'UTC'), INTERVAL 1440 MINUTE))",
