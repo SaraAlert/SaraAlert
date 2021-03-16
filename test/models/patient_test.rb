@@ -3163,7 +3163,7 @@ end
 # Inheriting PatientTest and overriding setup
 # allows us to run the same exact tests but change the Timecop time that
 # the tests are running at
-class PatientTestTwo < PatientTest
+class PatientTestWhenDSTStarts < PatientTest
   def setup
     super
     Timecop.freeze(Time.parse('2021-03-14T18:00:00Z'))
@@ -3189,7 +3189,7 @@ class PatientTestTwo < PatientTest
   # end
 end
 
-class PatientTestThree < PatientTest
+class PatientTestWhenDSTEnds < PatientTest
   def setup
     super
     Timecop.freeze(Time.parse('2021-11-07T18:00:00Z'))
