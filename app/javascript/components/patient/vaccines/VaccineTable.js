@@ -1,9 +1,10 @@
 import React from 'react';
-import _ from 'lodash';
 import { PropTypes } from 'prop-types';
+import { Button, Card, Col, Dropdown, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+
+import { formatDate } from '../../../utils/DateTime';
 import axios from 'axios';
-import moment from 'moment-timezone';
-import { Card, Button, Row, Col, Dropdown, InputGroup, OverlayTrigger, Form, Tooltip } from 'react-bootstrap';
+import _ from 'lodash';
 
 import CustomTable from '../../layout/CustomTable';
 import reportError from '../../util/ReportError';
@@ -19,7 +20,7 @@ class VaccineTable extends React.Component {
           { label: 'ID', field: 'id', isSortable: true },
           { label: 'Vaccine Group', field: 'group_name', isSortable: true },
           { label: 'Product Name', field: 'product_name', isSortable: true },
-          { label: 'Administration Date', field: 'administration_date', isSortable: true, filter: this.formatDate },
+          { label: 'Administration Date', field: 'administration_date', isSortable: true, filter: formatDate },
           { label: 'Dose Number', field: 'dose_number', isSortable: true },
           { label: 'Notes', field: 'notes', isSortable: true },
         ],
@@ -292,15 +293,6 @@ class VaccineTable extends React.Component {
         reportError(err?.response?.data?.error ? err.response.data.error : err, false);
       });
   };
-
-  /**
-   * Formats values in a date column
-   * @param {Object} data - Data about the cell this filter is called on.
-   */
-  formatDate(data) {
-    const date = data.value;
-    return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
-  }
 
   /**
    * Creates the action button & dropdown for each row in the table.

@@ -69,7 +69,7 @@ describe('PublicHealthAction', () => {
   it('Properly renders modal and sets state correctly for monitorees in the isolation workflow', () => {
     const wrapper = getMountedWrapper(mockPatient1);
     wrapper.find('#public_health_action').at(1).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
-    
+
     // renders properly
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Title).text()).toEqual('Public Health Action');
@@ -97,7 +97,7 @@ describe('PublicHealthAction', () => {
   it('Properly renders modal and sets state correctly for monitorees in the exposure workflow', () => {
     const wrapper = getMountedWrapper(mockPatient2);
     wrapper.find('#public_health_action').at(1).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
-    
+
     // renders properly
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Title).text()).toEqual('Public Health Action');
@@ -124,7 +124,7 @@ describe('PublicHealthAction', () => {
   it('Toggling HoH radio buttons hides/shows household members table and updates state', () => {
     const wrapper = getMountedWrapper(mockPatient1);
     wrapper.find('#public_health_action').at(1).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
-    
+
     // initial radio button state
     expect(wrapper.find(ApplyToHousehold).exists()).toBeTruthy();
     expect(wrapper.find(CustomTable).exists()).toBeFalsy();

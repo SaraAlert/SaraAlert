@@ -8,7 +8,7 @@ import BadgeHOH from '../../../components/util/BadgeHOH';
 import { mockUser1 } from '../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
-import { nameFormatterAlt, dateFormatter, sortByNameAscending, sortByNameDescending, sortByDateAscending, sortByDateDescending, sortByAscending, sortByDescending } from '../../util.js';
+import { nameFormatterAlt, formatDate, sortByNameAscending, sortByNameDescending, sortByDateAscending, sortByDateDescending, sortByAscending, sortByDescending } from '../../util.js';
 
 const householdMembers = [ mockPatient1, mockPatient2, mockPatient3, mockPatient4 ];
 const handleApplyHouseholdChangeMock = jest.fn();
@@ -102,7 +102,7 @@ describe('ApplyToHousehold', () => {
       } else {
         expect(row.find('td').at(1).find(BadgeHOH).exists()).toBeFalsy();
       }
-      expect(row.find('td').at(2).text()).toEqual(dateFormatter(rowData[wrapper.state('table').colData[1].field]));
+      expect(row.find('td').at(2).text()).toEqual(formatDate(rowData[wrapper.state('table').colData[1].field]));
       expect(row.find('td').at(3).text()).toEqual(rowData[wrapper.state('table').colData[2].field] ? 'Isolation' : 'Exposure');
       expect(row.find('td').at(4).text()).toEqual(rowData[wrapper.state('table').colData[3].field] ? 'Actively Monitoring' : 'Not Monitoring');
       expect(row.find('td').at(5).text()).toEqual(rowData[wrapper.state('table').colData[4].field] ? 'Yes' : 'No');
@@ -258,7 +258,7 @@ describe('ApplyToHousehold', () => {
       expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
       expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[index]));
     });
-    
+
     // toggle apply to household and check that the table state is the same
     wrapper.find('#apply_to_household_no').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
     wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
@@ -280,7 +280,7 @@ describe('ApplyToHousehold', () => {
     let disabledIds = [ householdMembers[4].id ];
     const wrapper = mount(<ApplyToHousehold household_members={householdMembers} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths}
       handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
-    
+
     // initial load
     wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     selectedRows.forEach(rowId => {

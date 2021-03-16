@@ -17,7 +17,9 @@ function formatTimestamp(data) {
  * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
 */
 function formatDate(data) {
-  const date = data.value;
+  // Some components will call this with an object containing a value field containing a date
+  // Others will pass in a date value directly
+  const date = (Object.prototype.hasOwnProperty.call(data, 'value')) ? data.value : data
   return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
 }
 
