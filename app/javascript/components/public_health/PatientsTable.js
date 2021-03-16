@@ -497,8 +497,8 @@ class PatientsTable extends React.Component {
   formatLatestReport = data => {
     const rowData = data.rowData;
     return (
-      <Row>
-        <Col xs="1">
+      <Row className="pl-1">
+        <Col xs="1" className="align-self-center">
           {rowData.latest_report.symptomatic && (
             <span data-for={`${rowData.id.toString()}-symptomatic-icon`} data-tip="">
               <i className="fas fa-exclamation-triangle red-icon"></i>
