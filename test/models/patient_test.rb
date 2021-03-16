@@ -2898,7 +2898,8 @@ class PatientTest < ActiveSupport::TestCase
         assessment_2 = create(
           :assessment,
           patient: patient,
-          created_at: (
+          created_at: correct_dst_edge(
+            patient,
             Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes
           )
         )
@@ -2907,7 +2908,10 @@ class PatientTest < ActiveSupport::TestCase
 
         # Report on front edge of window (00:00:00)
         assessment_2.update(
-          created_at: correct_dst_edge(patient, assessment_2.created_at + 1.second)
+          created_at: correct_dst_edge(
+            patient,
+            Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes + 1.second
+          )
         )
         assessment_2.reload
         patient.reload
@@ -2997,13 +3001,15 @@ class PatientTest < ActiveSupport::TestCase
 
       # assessment is 11:59 PM day before
       yesterday_local = Time.now.getlocal(patient.address_timezone_offset) - 1.day
-      assessment.update(created_at: yesterday_local.change(hour: 23, minute: 59))
+      assessment.update(created_at: correct_dst_edge(patient, yesterday_local.change(hour: 23, minute: 59)))
       assessment.reload
       patient.reload
       assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 12:00 AM current day
-      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, minute: 0))
+      assessment.update(
+        created_at: correct_dst_edge(patient, Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, minute: 0))
+      )
       assessment.reload
       patient.reload
       assert_not_nil Patient.submitted_assessment_today.find_by(id: patient.id)
@@ -3145,7 +3151,7 @@ class PatientTest < ActiveSupport::TestCase
         assert_not_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
 
         # Report on front edge of window (00:00:00)
-        patient.update(last_assessment_reminder_sent: patient.last_assessment_reminder_sent + 1.second)
+        patient.update(last_assessment_reminder_sent: last_reminder + 1.second)
         patient.reload
         assert_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
 
@@ -3173,20 +3179,6 @@ class PatientTestWhenDSTStarts < PatientTest
     super
     Timecop.return
   end
-
-  # def setup
-  #   @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
-  #   @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
-  #   @default_weekly_purge_date = ADMIN_OPTIONS['weekly_purge_date']
-  #   Timecop.freeze(Time.parse("2021-03-14T18:00:00Z"))
-  # end
-
-  # def teardown
-  #   ADMIN_OPTIONS['purgeable_after'] = @default_purgeable_after
-  #   ADMIN_OPTIONS['weekly_purge_warning_date'] = @default_weekly_purge_warning_date
-  #   ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
-  #   Timecop.return
-  # end
 end
 
 class PatientTestWhenDSTEnds < PatientTest
@@ -3199,18 +3191,4 @@ class PatientTestWhenDSTEnds < PatientTest
     super
     Timecop.return
   end
-
-  # def setup
-  #   @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
-  #   @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
-  #   @default_weekly_purge_date = ADMIN_OPTIONS['weekly_purge_date']
-  #   Timecop.freeze(Time.parse("2021-11-07T18:00:00Z"))
-  # end
-
-  # def teardown
-  #   ADMIN_OPTIONS['purgeable_after'] = @default_purgeable_after
-  #   ADMIN_OPTIONS['weekly_purge_warning_date'] = @default_weekly_purge_warning_date
-  #   ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
-  #   Timecop.return
-  # end
 end
