@@ -293,6 +293,14 @@ class ApplyToHousehold extends React.Component {
     );
   };
 
+  /**
+   * Formats aria label for each table row checkbox.
+   * @param {Object} rowData - provided by CustomTable about the current row.
+   */
+  getAriaLabel(rowData) {
+    return `Monitoree ${rowData.last_name || ''}, ${rowData.first_name || ''} ${rowData.middle_name || ''}`;
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -321,12 +329,13 @@ class ApplyToHousehold extends React.Component {
             rowData={this.state.table.rowData}
             totalRows={this.state.table.totalRows}
             handleTableUpdate={this.handleTableSort}
+            handleSelect={this.handleSelect}
+            getAriaLabelText={this.getAriaLabel}
             isSelectable={true}
             showPagination={false}
             checkboxColumnLocation={'left'}
             selectedRows={this.state.table.selectedRows}
             selectAll={this.state.table.selectAll}
-            handleSelect={this.handleSelect}
             disabledRows={this.state.table.disabledRows}
             disabledTooltipText={'You cannot update this record since it is not within your assigned jurisdiction'}
           />
