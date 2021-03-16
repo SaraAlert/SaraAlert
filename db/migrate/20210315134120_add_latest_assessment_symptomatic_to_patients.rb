@@ -5,12 +5,19 @@ class AddLatestAssessmentSymptomaticToPatients < ActiveRecord::Migration[6.1]
     # populate :latest_assessment_symptomatic
     execute <<-SQL.squish
       UPDATE patients
-      INNER JOIN (
-        SELECT patient_id, MAX(created_at)
+      JOIN (
+        SELECT assessments.patient_id
         FROM assessments
-        WHERE symptomatic = TRUE
-        GROUP BY patient_id
-      ) t ON patients.id = t.patient_id
+        JOIN (
+          SELECT patient_id, MAX(created_at) AS latest_assessment_at
+          FROM assessments
+          GROUP BY patient_id
+        ) latest_assessments
+        ON assessments.patient_id = latest_assessments.patient_id
+        AND assessments.created_at = latest_assessments.latest_assessment_at
+        WHERE assessments.symptomatic = TRUE
+      ) latest_symptomatic_assessments
+      ON patients.id = latest_symptomatic_assessments.patient_id
       SET patients.latest_assessment_symptomatic = TRUE
     SQL
   end
