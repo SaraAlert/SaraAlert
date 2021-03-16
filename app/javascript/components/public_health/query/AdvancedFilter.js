@@ -220,6 +220,15 @@ class AdvancedFilter extends React.Component {
             'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom ' +
             'Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.',
         },
+        {
+          name: 'sms-blocked',
+          title: 'SMS Blocked (Boolean)',
+          description: 'Monitorees that have blocked SMS communications with Sara Alert',
+          type: 'boolean',
+          tooltip:
+            `This filter will return monitorees that have texted “STOP” in response to a Sara Alert text message and ` +
+            `cannot receive messages through SMS Preferred Reporting Methods until they text "START"`,
+        },
       ],
       savedFilters: [],
       activeFilter: null,
