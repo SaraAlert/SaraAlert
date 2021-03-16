@@ -105,4 +105,32 @@ class PatientQueryHelperTest < ActionView::TestCase
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4, patient_5, patient_6, patient_7, patient_8, patient_9, patient_10, patient_11]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
+
+  test 'advanced filter blocked sms properly filters those with blocked numbers' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user, primary_telephone: '1111111111')
+    patient_2 = create(:patient, creator: user, primary_telephone: '2222222222')
+    patient_3 = create(:patient, creator: user, primary_telephone: '3333333333')
+    BlockedNumber.destroy_all
+    BlockedNumber.create(phone_number: '1111111111')
+    BlockedNumber.create(phone_number: '2222222222')
+    patients = Patient.all
+
+    filters = [{ filterOption: {}, additionalFilterOption: nil, value: nil }]
+    filters[0][:filterOption]['name'] = 'sms-blocked'
+    tz_offset = 300
+
+    # Check for monitorees who have blocked the system
+    filters[0][:value] = true
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Check for monitorees who have NOT blocked the system
+    filters[0][:value] = false
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_3]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
 end

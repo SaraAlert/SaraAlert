@@ -252,6 +252,12 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = patients.where(monitoring: filter[:value].present? ? true : [nil, false])
       when 'preferred-contact-method'
         patients = patients.where(preferred_contact_method: filter[:value].blank? ? [nil, ''] : filter[:value])
+      when 'sms-blocked'
+        patients = if filter[:value]
+                     patients.where(primary_telephone: BlockedNumber.pluck(:phone_number))
+                   else
+                     patients.where.not(primary_telephone: BlockedNumber.pluck(:phone_number))
+                   end
       when 'hoh'
         patients = if filter[:value]
                      patients.where('patients.id = patients.responder_id')
