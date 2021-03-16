@@ -3145,7 +3145,7 @@ class PatientTest < ActiveSupport::TestCase
         assert_not_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
 
         # Report on front edge of window (00:00:00)
-        patient.update(last_assessment_reminder_sent: patient.last_assessment_reminder_sent + 1.second)
+        patient.update(last_assessment_reminder_sent: last_reminder + 1.second)
         patient.reload
         assert_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
 
@@ -3173,20 +3173,6 @@ class PatientTestWhenDSTStarts < PatientTest
     super
     Timecop.return
   end
-
-  # def setup
-  #   @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
-  #   @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
-  #   @default_weekly_purge_date = ADMIN_OPTIONS['weekly_purge_date']
-  #   Timecop.freeze(Time.parse("2021-03-14T18:00:00Z"))
-  # end
-
-  # def teardown
-  #   ADMIN_OPTIONS['purgeable_after'] = @default_purgeable_after
-  #   ADMIN_OPTIONS['weekly_purge_warning_date'] = @default_weekly_purge_warning_date
-  #   ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
-  #   Timecop.return
-  # end
 end
 
 class PatientTestWhenDSTEnds < PatientTest
@@ -3199,18 +3185,4 @@ class PatientTestWhenDSTEnds < PatientTest
     super
     Timecop.return
   end
-
-  # def setup
-  #   @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
-  #   @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
-  #   @default_weekly_purge_date = ADMIN_OPTIONS['weekly_purge_date']
-  #   Timecop.freeze(Time.parse("2021-11-07T18:00:00Z"))
-  # end
-
-  # def teardown
-  #   ADMIN_OPTIONS['purgeable_after'] = @default_purgeable_after
-  #   ADMIN_OPTIONS['weekly_purge_warning_date'] = @default_weekly_purge_warning_date
-  #   ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
-  #   Timecop.return
-  # end
 end
