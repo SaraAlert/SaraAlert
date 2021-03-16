@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'chronic'
-
 # Patient: patient model
 # rubocop:disable Metrics/ClassLength
 class Patient < ApplicationRecord
