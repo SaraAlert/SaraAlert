@@ -498,7 +498,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       end
       js_timezone_offsets.each do |offset|
         patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, offset, :seven_day)
-        assert_equal(patients.count, 1)
+        assert_equal(1, patients.count)
       end
     end
   end
