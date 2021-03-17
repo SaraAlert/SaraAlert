@@ -708,12 +708,14 @@ class AdvancedFilter extends React.Component {
         if (value.when === 'past') {
           after = moment()
             .subtract(value.number, value.unit)
+            .add(1, 'days')
             .format('MM/DD/YY');
           before = moment().format('MM/DD/YY');
         } else {
           after = moment().format('MM/DD/YY');
           before = moment()
             .add(value.number, value.unit)
+            .subtract(1, 'days')
             .format('MM/DD/YY');
         }
       }
@@ -722,10 +724,14 @@ class AdvancedFilter extends React.Component {
     statement += `The current setting of "${operatorValue} ${value.number} ${value.unit} in the ${value.when}" will return records with ${filterName} date`;
     if (value.operator === 'less-than') {
       const timestampString = filter.hasTimestamp ? 'the current time on ' : '';
-      if (value.when === 'past') {
-        statement += ` from ${timestampString}${after} through ${before}. `;
+      if (!filter.hasTimestamp && value.number === 1 && value.unit === 'days') {
+        statement += ' of today. ';
       } else {
-        statement += ` from ${after} through ${timestampString}${before}. `;
+        if (value.when === 'past') {
+          statement += ` from ${timestampString}${after} through ${before}. `;
+        } else {
+          statement += ` from ${after} through ${timestampString}${before}. `;
+        }
       }
     } else {
       const timestampString = filter.hasTimestamp ? 'the current time on ' : '';
