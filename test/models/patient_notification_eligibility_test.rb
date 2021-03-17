@@ -520,19 +520,11 @@ class PatientNotificationEligibilityTestWhenDSTStarts < PatientNotificationEligi
     super
     Timecop.freeze(Time.parse('2021-03-14T18:00:00Z'))
   end
-
-  def teardown
-    super
-  end
 end
 
 class PatientNotificationEligibilityTestWhenDSTEnds < PatientNotificationEligibilityTest
   def setup
     super
     Timecop.freeze(Time.parse('2021-11-07T18:00:00Z'))
-  end
-
-  def teardown
-    super
   end
 end
