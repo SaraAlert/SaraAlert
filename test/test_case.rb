@@ -36,21 +36,42 @@ class ActiveSupport::TestCase
   #
   # Returns: Time that has been corrected if necessary
   def correct_dst_edge(patient, time)
-    patient_in_dst = Time.now.getlocal(patient.address_timezone_offset).in_time_zone(patient.time_zone).dst?
-    patient_was_dst = time.in_time_zone(patient.time_zone).dst?
+    if dst_ended?(patient, time)
+      time - 1.hour
+    elsif dst_started?(patient, time)
+      time + 1.hour
+    else
+      time
+    end
+  end
 
-    time += 1.hour if patient_in_dst && !patient_was_dst
-    time -= 1.hour if !patient_in_dst && patient_was_dst
+  def dst_ended?(patient, time)
+    patient_dst_info = dst_info(patient, time)
 
-    time
+    !patient_dst_info[:patient_in_dst] && patient_dst_info[:patient_was_dst]
+  end
+
+  def dst_started?(patient, time)
+    patient_dst_info = dst_info(patient, time)
+
+    patient_dst_info[:patient_in_dst] && !patient_dst_info[:patient_was_dst]
   end
 
   # Run tests in parallel with specified workers
-  parallelize(workers: 2)
+  parallelize(workers: 1)
 
   self.use_transactional_tests = true
 end
 
 class ActionController::TestCase
   include Devise::Test::ControllerHelpers
+end
+
+private
+
+def dst_info(patient, time)
+  {
+    patient_in_dst: Time.now.getlocal(patient.address_timezone_offset).in_time_zone(patient.time_zone).dst?,
+    patient_was_dst: time.in_time_zone(patient.time_zone).dst?
+  }
 end
