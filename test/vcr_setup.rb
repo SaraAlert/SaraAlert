@@ -14,11 +14,11 @@ VCR.configure do |c|
   # be provided at every run of the rake tests, provide the following credentials
   # whenever you need to record a cassette that requires valid credentials
   # these should be stored in your local_env.yml file anyhow
-  ENV['TWILLIO_STUDIO_FLOW'] = 'test_studio_flow' unless ENV['TWILLIO_STUDIO_FLOW']
-  ENV['TWILLIO_MESSAGING_SERVICE_SID'] = 'test_msg_service' unless ENV['TWILLIO_MESSAGING_SERVICE_SID']
-  ENV['TWILLIO_SENDING_NUMBER'] = '+15555555555' unless ENV['TWILLIO_SENDING_NUMBER']
-  ENV['TWILLIO_API_ACCOUNT'] =  'test_api_account' unless ENV['TWILLIO_API_ACCOUNT']
-  ENV['TWILLIO_API_KEY'] = 'test_api_key' unless ENV['TWILLIO_API_KEY']
+  ENV['TWILLIO_STUDIO_FLOW'] |= 'test_studio_flow'
+  ENV['TWILLIO_MESSAGING_SERVICE_SID'] |= 'test_msg_service'
+  ENV['TWILLIO_SENDING_NUMBER'] |= '+15555555555'
+  ENV['TWILLIO_API_ACCOUNT'] |= 'test_api_account'
+  ENV['TWILLIO_API_KEY'] |= 'test_api_key'
 
   # Ensure plain text credentials do not show up during logging
   c.filter_sensitive_data('<TWILLIO_STUDIO_FLOW>') { ENV['TWILLIO_STUDIO_FLOW'] }
