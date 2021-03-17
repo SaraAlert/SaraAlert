@@ -134,11 +134,7 @@ class History < ApplicationRecord
         recipient = "this monitoree's head of household"
         responder = pat.responder
       end
-      details = if !error_message.nil?
-                  ' Error details: ' + error_message
-                else
-                  ''
-                end
+      details = error_message.present? ? ' Error details: ' + error_message : ''
       comment = if responder&.preferred_contact_method&.include?('SMS')
                   "Sara Alert attempted to send an SMS to #{recipient} at #{responder.primary_telephone}, but the message could not be delivered.#{details}"
                 else
