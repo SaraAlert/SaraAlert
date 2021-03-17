@@ -58,6 +58,12 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  race: (
+    <div>
+      “Unknown” and “Refused to Answer” cannot be selected in combination with any other value for <i>Race</i>.
+    </div>
+  ),
+
   // MONITORING ACTIONS
   monitoringStatus: (
     <div>
