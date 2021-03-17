@@ -523,7 +523,6 @@ class PatientNotificationEligibilityTestWhenDSTStarts < PatientNotificationEligi
 
   def teardown
     super
-    Timecop.return
   end
 end
 
@@ -535,6 +534,5 @@ class PatientNotificationEligibilityTestWhenDSTEnds < PatientNotificationEligibi
 
   def teardown
     super
-    Timecop.return
   end
 end
