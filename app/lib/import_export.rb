@@ -394,8 +394,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     records = vaccines.pluck(*(fields & VACCINE_FIELD_NAMES.keys))
 
     # remove formula start for 'notes' field
-    notes_index = fields.index(:notes)
-    records.each { |values| values[notes_index] = remove_formula_start(values[notes_index]) }
+    (fields & %i[notes]).map { |field| fields.index(field) }
+                        .each { |index| records.each { |values| values[index] = remove_formula_start(values[index]) } }
+
+    records
   end
 
   # Extract close contact data values given relevant fields

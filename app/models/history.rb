@@ -337,18 +337,6 @@ class History < ApplicationRecord
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  # Information about this history
-  def details
-    {
-      patient_id: patient_id || '',
-      comment: comment || '',
-      created_by: created_by || '',
-      history_type: history_type || '',
-      history_created_at: created_at || '',
-      history_updated_at: updated_at || ''
-    }
-  end
-
   private_class_method def self.create_history(patient, created_by, type, comment)
     return if patient.nil?
 

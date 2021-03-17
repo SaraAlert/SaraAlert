@@ -2,6 +2,11 @@
 
 # Helper methods for vaccine-related queries
 module VaccineQueryHelper
+  # Get vaccinations by patient_ids
+  def vaccines_by_patient_ids(patient_ids)
+    Vaccine.where(patient_id: patient_ids).order(:patient_id)
+  end
+
   # Validates the request params for the index action
   def validate_vaccines_query(params)
     permitted_params = params.permit(:entries, :page, :search, :order, :direction)
@@ -89,10 +94,5 @@ module VaccineQueryHelper
     return vaccines if entries.blank? || entries <= 0 || page.blank? || page.negative?
 
     vaccines.paginate(per_page: entries, page: page + 1)
-  end
-
-  # Get vaccinations by patient_ids
-  def vaccines_by_patient_ids(patient_ids)
-    Vaccine.where(patient_id: patient_ids).order(:patient_id)
   end
 end
