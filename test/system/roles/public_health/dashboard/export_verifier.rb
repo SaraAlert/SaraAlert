@@ -233,7 +233,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       assert_equal(header, lab_results.cell(1, col + 1), "For header: #{header} in Lab Results")
     end
     labs.each_with_index do |lab, row|
-      details = lab.details
+      details = lab.attributes.except('id')
       details.keys.each_with_index do |field, col|
         cell_value = lab_results.cell(row + 2, col + 1)
         assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Lab Results")
@@ -263,7 +263,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       assert_equal(header, edit_histories.cell(1, col + 1), "For header: #{header} in Edit Histories")
     end
     histories.each_with_index do |history, row|
-      details = history.details
+      details = history.attributes.except('id')
       details.keys.each_with_index do |field, col|
         cell_value = edit_histories.cell(row + 2, col + 1)
         assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Edit Histories")
@@ -389,7 +389,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       patient.assessments.find_each do |assessment|
         # Get basic field data that is checked
         assessment_summary_arr = checked.map do |field|
-          if %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss].include?(field)
+          if PATIENT_FIELD_TYPES[:alternative_identifiers].include?(field)
             patient[field]
           else
             assessment[field]
@@ -431,7 +431,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       patient.vaccines.find_each do |vaccine|
         # Get basic field data that is checked
         vaccine_summary_arr = checked.map do |field|
-          if %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss].include?(field)
+          if PATIENT_FIELD_TYPES[:alternative_identifiers].include?(field)
             patient[field]
           else
             vaccine[field]
