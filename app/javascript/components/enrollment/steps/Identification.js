@@ -407,7 +407,9 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} md="auto">
-                  <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    RACE (SELECT ALL THAT APPLY)<InfoTooltip tooltipTextKey="race" location="right"></InfoTooltip>
+                  </Form.Label>
                   {this.props.race_options.non_exclusive.map(option => {
                     return (
                       <Form.Check
