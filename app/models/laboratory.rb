@@ -37,19 +37,6 @@ class Laboratory < ApplicationRecord
     )
   end
 
-  # Information about this laboratory
-  def details
-    {
-      patient_id: patient_id || '',
-      lab_type: lab_type || '',
-      lab_specimen_collection: specimen_collection || '',
-      lab_report: report || '',
-      lab_result: result || '',
-      lab_created_at: created_at || '',
-      lab_updated_at: updated_at || ''
-    }
-  end
-
   private
 
   def update_patient_linelist_after_save
