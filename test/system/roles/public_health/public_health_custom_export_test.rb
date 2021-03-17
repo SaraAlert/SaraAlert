@@ -78,7 +78,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         assessments: {
           selected: ['Reports'],
-          checked: LABORATORY_FIELD_NAMES.keys
+          checked: ASSESSMENT_FIELD_NAMES.keys
         },
         laboratories: {
           selected: ['Lab Results']
@@ -126,7 +126,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         assessments: {
           selected: ['Reports'],
-          checked: LABORATORY_FIELD_NAMES.keys
+          checked: ASSESSMENT_FIELD_NAMES.keys
         },
         laboratories: {
           selected: ['Lab Results']
@@ -172,7 +172,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         assessments: {
           selected: ['Reports'],
-          checked: LABORATORY_FIELD_NAMES.keys
+          checked: ASSESSMENT_FIELD_NAMES.keys
         },
         laboratories: {
           selected: ['Lab Results']
@@ -226,7 +226,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         assessments: {
           selected: ['Reports'],
-          checked: LABORATORY_FIELD_NAMES.keys
+          checked: ASSESSMENT_FIELD_NAMES.keys
         },
         laboratories: {
           selected: ['Lab Results']
@@ -278,7 +278,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         assessments: {
           selected: ['Reports'],
-          checked: LABORATORY_FIELD_NAMES.keys
+          checked: ASSESSMENT_FIELD_NAMES.keys
         },
         laboratories: {
           selected: ['Lab Results']
@@ -328,7 +328,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         assessments: {
           selected: ['Reports'],
-          checked: LABORATORY_FIELD_NAMES.keys
+          checked: ASSESSMENT_FIELD_NAMES.keys
         },
         laboratories: {
           selected: ['Lab Results']
