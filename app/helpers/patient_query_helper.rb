@@ -492,11 +492,14 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
       case filter[:value][:operator]
       when 'less-than'
+        # subtract one day to the timespan if relative date field does not have have a timestamp
+        # the filter will then be strictly less than and not include the day of X days ago
+        timespan -= 1.day if filter[:filterOption][:hasTimestamp] == false
         timeframe = { after: timespan.ago - tz_diff, before: local_current_time } if filter[:value][:when] == 'past'
         timeframe = { after: local_current_time, before: timespan.from_now - tz_diff } if filter[:value][:when] == 'future'
       when 'more-than'
         # add one day to the timespan if relative date field does not have have a timestamp
-        # the filter then be strictly more than and not include the day of X days ago
+        # the filter will then be strictly more than and not include the day of X days ago
         timespan += 1.day if filter[:filterOption][:hasTimestamp] == false
         timeframe = { before: timespan.ago - tz_diff } if filter[:value][:when] == 'past'
         timeframe = { after: timespan.from_now - tz_diff } if filter[:value][:when] == 'future'
