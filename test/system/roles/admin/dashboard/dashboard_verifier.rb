@@ -33,6 +33,7 @@ class AdminDashboardVerifier < ApplicationSystemTestCase
   end
 
   def verify_lock_status(email, locked)
+    find('#admin-table-all-filter-btn').click
     if locked
       assert page.has_content?('Locked'), @@system_test_utils.get_err_msg('User info', 'status', 'Locked')
       assert_not_nil User.where(email: email).first.locked_at, @@system_test_utils.get_err_msg('Lock user', 'locked_at', 'not nil')
