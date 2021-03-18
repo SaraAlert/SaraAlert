@@ -503,7 +503,7 @@ class PatientsTable extends React.Component {
     );
   };
 
-  getAriaLabel(rowData) {
+  getRowCheckboxAriaLabel(rowData) {
     return `Monitoree ${rowData.name}`;
   }
 
@@ -639,7 +639,7 @@ class PatientsTable extends React.Component {
                 handleSelect={this.handleSelect}
                 handleEntriesChange={this.handleEntriesChange}
                 handlePageUpdate={this.handlePageUpdate}
-                getAriaLabelText={this.getAriaLabel}
+                getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
                 isSelectable={true}
                 isEditable={false}
                 isLoading={this.state.loading}
