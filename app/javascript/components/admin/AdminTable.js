@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, DropdownButton, Dropdown, InputGroup, Form, OverlayTrigger, Tooltip, Row, Col } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Dropdown, DropdownButton, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import UserModal from './UserModal';
 import EmailModal from './EmailModal';
 import AuditModal from './AuditModal';
 import confirmDialog from '../util/ConfirmDialog';
 import axios from 'axios';
+import _ from 'lodash';
 import { CSVLink } from 'react-csv';
 import CustomTable from '../layout/CustomTable';
 import { ToastContainer, toast } from 'react-toastify';
@@ -36,6 +37,7 @@ class AdminTable extends React.Component {
         page: 0,
         search: '',
         entries: 25,
+        locked: false,
       },
       entryOptions: [10, 15, 25, 50, 100],
       showEditUserModal: false,
@@ -424,6 +426,24 @@ class AdminTable extends React.Component {
   };
 
   /**
+   * Called when all/unlocked/locked buttoned are toggled.
+   * Updates state and then calls table update handler.
+   * @param Boolean locked - true if locked, false if unlocked, null if all
+   */
+  handleLockedChange = locked => {
+    this.setState(
+      state => {
+        return {
+          query: { ...state.query, locked, page: 0 },
+        };
+      },
+      () => {
+        this.getTableData(this.state.query);
+      }
+    );
+  };
+
+  /**
    * Called when Export to CSV button is clicked.
    * Fetches all user data for export to CSV and then updates state which triggers the CSVLink
    * component to be clicked via ref.
@@ -432,7 +452,7 @@ class AdminTable extends React.Component {
     const path = 'users';
 
     // Get all the users at once for a full export
-    const params = { entries: this.state.table.totalRows, page: 0 };
+    const params = {};
 
     const handleSuccess = response => {
       if (response && response.data && response.data.user_rows) {
@@ -602,8 +622,8 @@ class AdminTable extends React.Component {
     return (
       <div className="mx-2">
         <h1 className="sr-only">Admin Dashboard</h1>
-        <Row className="mb-2">
-          <Col className="mb-1">
+        <Row className="mb-1">
+          <Col xl={12} className="mb-2">
             <Button className="mr-1" size="md" onClick={this.handleAddUserClick}>
               <i className="fas fa-plus-circle"></i>
               &nbsp;Add User
@@ -620,8 +640,34 @@ class AdminTable extends React.Component {
             )}
             {this.state.csvData.length > 0 ? <CSVLink data={this.state.csvData} filename={'sara-accounts.csv'} ref={this.csvLink} /> : undefined}
           </Col>
-          <Col lg={5}>
-            <InputGroup size="md">
+          <Col xl={12} className="mb-2">
+            <InputGroup>
+              <ButtonGroup className="mr-2">
+                <Button
+                  id="admin-table-all-filter-btn"
+                  variant={_.isNil(this.state.query.locked) ? 'primary' : 'outline-primary'}
+                  onClick={() => {
+                    this.handleLockedChange(null);
+                  }}>
+                  All
+                </Button>
+                <Button
+                  id="admin-table-unlocked-filter-btn"
+                  variant={!_.isNil(this.state.query.locked) && !this.state.query.locked ? 'primary' : 'outline-primary'}
+                  onClick={() => {
+                    this.handleLockedChange(false);
+                  }}>
+                  Unlocked
+                </Button>
+                <Button
+                  id="admin-table-locked-filter-btn"
+                  variant={!_.isNil(this.state.query.locked) && this.state.query.locked ? 'primary' : 'outline-primary'}
+                  onClick={() => {
+                    this.handleLockedChange(true);
+                  }}>
+                  Locked
+                </Button>
+              </ButtonGroup>
               <InputGroup.Prepend>
                 <OverlayTrigger overlay={<Tooltip>Search by id, email, or jurisdiction.</Tooltip>}>
                   <InputGroup.Text className="rounded-0">
@@ -647,7 +693,7 @@ class AdminTable extends React.Component {
                     <i className="fas fa-tools"></i> Actions{' '}
                   </React.Fragment>
                 }
-                className="ml-3"
+                className="ml-2"
                 disabled={!this.state.actionsEnabled}>
                 <Dropdown.Item className="px-3" onClick={this.handleResetPasswordClick}>
                   <i className="fas fa-undo"></i>

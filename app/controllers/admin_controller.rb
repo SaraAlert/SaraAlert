@@ -12,10 +12,15 @@ class AdminController < ApplicationController
   def users
     redirect_to(root_url) && return unless current_user.can_access_admin_panel?
 
-    permitted_params = params.permit(:search, :entries, :page, :orderBy, :sortDirection)
+    permitted_params = params.permit(:search, :entries, :page, :orderBy, :sortDirection, :locked)
 
     # Validate search param
     search = permitted_params[:search]
+
+    # Validate locked param
+    locked = permitted_params[:locked].to_s == 'true' unless permitted_params[:locked].nil?
+    error_message = 'Invalid value for field: "locked", acceptable values are "true" or "false"'
+    return render json: { err: error_message }, status: :bad_request unless ['true', 'false', nil].include?(permitted_params[:locked])
 
     # Validate pagination params
     entries = permitted_params[:entries]&.to_i || 25
@@ -38,6 +43,9 @@ class AdminController < ApplicationController
 
     # Filter by search text
     users = filter(users, search)
+
+    # Filter by locked boolean
+    users = locked ? users.where.not(locked_at: nil) : users.where(locked_at: nil) unless locked.nil?
 
     # Sort
     users = sort(users, order_by, sort_direction)

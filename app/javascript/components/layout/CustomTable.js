@@ -246,7 +246,7 @@ class CustomTable extends React.Component {
               })}
               {!this.props.rowData?.length && (
                 <tr>
-                  <td colSpan={this.props.columnData?.length + (this.props.isEditable ? 0 : 1) + (this.props.isSelectable ? 0 : 1)} className="text-center">
+                  <td colSpan={this.props.columnData?.length + (this.props.isEditable ? 1 : 0) + (this.props.isSelectable ? 1 : 0)} className="text-center">
                     No data available in table.
                   </td>
                 </tr>
