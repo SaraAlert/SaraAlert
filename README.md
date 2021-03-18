@@ -86,9 +86,9 @@ Run the following commands from the root of the project directory to initialize 
 * `rails db:schema:load`
 * `bundle exec rake admin:import_or_update_jurisdictions`
 * `bundle exec rake demo:setup demo:populate` optional
-#### ActiveJob + Sidkiq + Redis + Whenever
+#### ActiveJob + Sidkiq + Redis
 
-ActiveJob will work with Sidekiq, Redis, and Whenever to manage the queueing and running of jobs (used to send emails, SMS, and other methods of notification).
+ActiveJob will work with Sidekiq, and Redis to manage the queueing and running of jobs (used to send emails, SMS, and other methods of notification).
 
 ##### Redis
 
@@ -115,16 +115,6 @@ Sidekiq is the queueing system that ActiveJob interfaces with. Sidekiq should be
 bundle exec sidekiq -q default -q mailers -q exports
 ```
 
-##### Whenever
-
-The [Whenever](https://github.com/javan/whenever) gem is used to help schedule jobs. This gem uses the contents of `config/schedule.rb` to generate a crontab file.
-
-You must update your crontab for these jobs to run periodically (defined in `config/schedule.rb`). To do so run:
-
-```
-bundle exec whenever --update-crontab
-```
-
 ##### Jobs
 
   The following jobs are configured to run continuously:
@@ -132,21 +122,30 @@ bundle exec whenever --update-crontab
       - Should always be running in order to be ready to consume assessments at any time.
       - Handles consuming assessments from the assessment container into the enrollment container.
 
-  The following jobs are configured to run periodically (their run timing parameters are specified in `config/schedule.rb`):
+  The following jobs are configured to run periodically:
   * `ClosePatientsJob`
       - Closes (stops active monitoring of) monitorees that meet duration/symptomatic conditions
+      - Recommend this be run every hour
   * `PurgeJob`
       - Purges eligible records
+      - Recommend this be run once every week
+      - Date/Time which the Job runs needs to match what is set in `config/sara.yml`: `weekly_purge_date`
   * `SendPurgeWarningsJob`
-      - Send warnings to users of upcoming PurgeJob
+      - Send warnings to users of upcoming `PurgeJob`
+      - Recommend this be run once every week before `PurgeJob`
+      - Date/Time which the Job runs needs to match what is set in `confi/sara.yml`: `weekly_purge_warning_date`
   * `SendPatientDigestJob`
-      - Send hourly reports on recently symptomatic patients to jurisdictions that opt in. 
+      - Send reports on recently symptomatic patients to jurisdictions that opt in.
+      - Recommend this be run once every hour
   * `CacheAnalyticsJob`
       - Caches analytics information for faster retrieval
+      - Recommend this be run once every 24 hours
   * `SendAssessmentsJob`
       - Send assessment reminders to monitorees
+      - Recommend this be run once every hour
   * `PurgeJwtIdentifiersJob`
       - Purge expired JWT Identifiers that are saved and validated when clients request access to the API.
+      - Recommend this be run once every 24 hours
 
 NOTE: In any production instance, these jobs should be handled outside of any of the containers (they should be scheduled and launched via crontab by the host).
 

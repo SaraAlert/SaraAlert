@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'chronic'
-
 # UserMailer: mailers for users
 class UserMailer < ApplicationMailer
   default from: 'notifications@saraalert.org'

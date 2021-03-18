@@ -818,8 +818,8 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'Monitoree is not currently being monitored'
 
-    patient = create(:patient, id: 100)
-    patient.update(responder_id: 42)
+    patient = create(:patient)
+    patient.update(responder: create(:patient))
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'household'
 
@@ -912,67 +912,37 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'purge eligible' do
-    jur = Jurisdiction.create
-    user = User.create!(
-      email: 'foobar@example.com',
-      password: '1234567ab!',
-      jurisdiction: jur,
-      force_password_change: true # Require user to change password on first login
-    )
     Patient.destroy_all
-    patient = Patient.new(creator: user, jurisdiction: jur)
-    patient.responder = patient
-    patient.save
-    assert Patient.count == 1
+    patient = create(:patient)
+
     # Updated at of today, still monitoring, should not be purgeable
-    assert Patient.purge_eligible.count.zero?
+    assert_equal 0, Patient.purge_eligible.count
     patient.update!(monitoring: false)
-    # Updated at of today, not monitoring, should not be purgeable
-    assert Patient.purge_eligible.count.zero?
-    # Updated at of 2x purgeable_after, not monitoring, should obviously be purgeable regardless of weekly_purge_date and weekly_purge_warning_date
+
+    # Updated as of today, not monitoring, should not be purgeable
+    assert_equal 0, Patient.purge_eligible.count
+
+    # Updated 2x before purgeable_after, not monitoring, should obviously be purgeable regardless of weekly_purge_date and weekly_purge_warning_date
     patient.update!(updated_at: (2 * ADMIN_OPTIONS['purgeable_after']).minutes.ago)
-    assert Patient.purge_eligible.count == 1
-    # ADMIN_OPTIONS['weekly_purge_warning_date'] is 2.5 days before ADMIN_OPTIONS['weekly_purge_date']
-    # Test if the email was going out in 1 minute and patient was updated purgeable_after minutes ago, patient should be purgeable
-    # These tests reset the weekly_purge_warning_date and weekly_purge_date, and set the times to 1 minute from Time.now to avoid timing issues
-    # caused by the duration of time it takes to run the test
+    assert_equal 1, Patient.purge_eligible.count
+
+    # If the patient was last updated within the purgeable_after timeframe, do not purge
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 2.5.days + 1.minute).strftime('%A %l:%M%p')
+    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes - 900.minutes).ago)
+    assert_equal 0, Patient.purge_eligible.count
+
+    # If the patient was last updated exactly at the purgeable_after timeframe, they should not be purgeable
+    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
+    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after']).minutes.ago)
-    assert Patient.purge_eligible.count == 1
-    # However, if the test email was going out in 1 minute from now and the patient was last updated purgeable_after - 2 minutes ago, no purge
-    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 2.5.days + 1.minute).strftime('%A %l:%M%p')
-    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] - 2).minutes.ago)
-    assert Patient.purge_eligible.count.zero?
-    # Now test the boundry conditions that exist between the purge_warning and the purging
-    # ADMIN_OPTIONS['weekly_purge_warning_date'] is 2.5 days before ADMIN_OPTIONS['weekly_purge_date']
-    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
-    # If the email is going out in 1 minute, and the patient was modified purgeable_after minutes ago, they should not be purgeable
-    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after']).minutes.ago)
-    assert Patient.purge_eligible.count.zero?
-    # However, if the email is going out in 1 minute and the patient was modified right before the warning (2.5 days ago), they should be purgeable
-    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
-    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute)).minutes.ago)
-    # If the patient was modified right before the warning, but that was on a DST boundary, the comparison to minutes before will be off by 1 hour.
-    if Time.use_zone('Eastern Time (US & Canada)') { (Time.now + 1.minute - 2.5.days).dst? }
-      assert_equal Patient.purge_eligible.count, 0
-    else
-      assert_equal Patient.purge_eligible.count, 1
-    end
-    # Anything less than the 2.5 days ago means the patient was modified between the warning and the purging and should not be purged
-    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
-    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute) - 2).minutes.ago)
-    assert Patient.purge_eligible.count.zero?
+    assert_equal 0, Patient.purge_eligible.count
   end
 
-  test 'purge eligible continuous_exposure' do
+  test 'continuous_exposure never purge eligible' do
     patient = create(:patient, purged: false, monitoring: false, continuous_exposure: true)
     patient.update!(updated_at: (2 * ADMIN_OPTIONS['purgeable_after']).minutes.ago)
-    assert Patient.purge_eligible.size == 1
+    assert_nil Patient.purge_eligible.find_by_id(patient.id)
   end
 
   test 'purged' do
@@ -2891,7 +2861,8 @@ class PatientTest < ActiveSupport::TestCase
         assessment_2 = create(
           :assessment,
           patient: patient,
-          created_at: (
+          created_at: correct_dst_edge(
+            patient,
             Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes
           )
         )
@@ -2900,7 +2871,10 @@ class PatientTest < ActiveSupport::TestCase
 
         # Report on front edge of window (00:00:00)
         assessment_2.update(
-          created_at: assessment_2.created_at + 1.second
+          created_at: correct_dst_edge(
+            patient,
+            Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes + 1.second
+          )
         )
         assessment_2.reload
         patient.reload
@@ -2990,13 +2964,15 @@ class PatientTest < ActiveSupport::TestCase
 
       # assessment is 11:59 PM day before
       yesterday_local = Time.now.getlocal(patient.address_timezone_offset) - 1.day
-      assessment.update(created_at: yesterday_local.change(hour: 23, minute: 59))
+      assessment.update(created_at: correct_dst_edge(patient, yesterday_local.change(hour: 23, minute: 59)))
       assessment.reload
       patient.reload
       assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 12:00 AM current day
-      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, minute: 0))
+      assessment.update(
+        created_at: correct_dst_edge(patient, Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, minute: 0))
+      )
       assessment.reload
       patient.reload
       assert_not_nil Patient.submitted_assessment_today.find_by(id: patient.id)
@@ -3127,14 +3103,18 @@ class PatientTest < ActiveSupport::TestCase
         assert_not_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
 
         # Report on right before start of window (23:59:59)
+        last_reminder = correct_dst_edge(
+          patient,
+          Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes
+        )
         patient.update(
-          last_assessment_reminder_sent: Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes
+          last_assessment_reminder_sent: last_reminder
         )
         patient.reload
         assert_not_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
 
         # Report on front edge of window (00:00:00)
-        patient.update(last_assessment_reminder_sent: patient.last_assessment_reminder_sent + 1.second)
+        patient.update(last_assessment_reminder_sent: last_reminder + 1.second)
         patient.reload
         assert_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
 
@@ -3148,3 +3128,30 @@ class PatientTest < ActiveSupport::TestCase
   end
 end
 # rubocop:enable Metrics/ClassLength
+
+# Inheriting PatientTest and overriding setup
+# allows us to run the same exact tests but change the Timecop time that
+# the tests are running at
+class PatientTestWhenDSTStarts < PatientTest
+  def setup
+    super
+    Timecop.freeze(Time.parse('2021-03-14T18:00:00Z'))
+  end
+
+  def teardown
+    super
+    Timecop.return
+  end
+end
+
+class PatientTestWhenDSTEnds < PatientTest
+  def setup
+    super
+    Timecop.freeze(Time.parse('2021-11-07T18:00:00Z'))
+  end
+
+  def teardown
+    super
+    Timecop.return
+  end
+end

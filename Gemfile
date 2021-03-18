@@ -40,11 +40,8 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # Allow generation of synthetic data for demonstration purposes
 gem 'faker'
 
-# Gem for scheduling ActiveJobs to run
-gem 'whenever', require: false
-
 # Time parser for managing scheduled jobs
-gem 'chronic'
+gem 'gitlab-chronic'
 
 # Store sessions in DB
 gem 'activerecord-session_store'

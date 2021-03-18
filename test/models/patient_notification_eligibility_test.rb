@@ -16,8 +16,11 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     Timecop.return
   end
 
-  def default_days_ago(days)
-    (Time.now.in_time_zone('Eastern Time (US & Canada)') - days.days)
+  def default_days_ago(days, patient = nil)
+    time = (Time.now.in_time_zone('America/New_York') - days.days)
+    patient ||= Patient.new(time_zone: 'America/New_York')
+    correct_dst_edge(patient, time)
+    time
   end
 
   def expected_eligibility(patient, exp_eligibility)
@@ -464,14 +467,14 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           :assessment,
           patient: patient,
           # converting to UTC because these DB times are assumed to be saved in UTC
-          created_at: Time.now.getlocal(patient.address_timezone_offset).yesterday.end_of_day.utc
+          created_at: correct_dst_edge(patient, Time.now.getlocal(patient.address_timezone_offset).yesterday.end_of_day.utc)
         )
         assert_eligible(patient)
         # assessment right after the start of the valid reporting period
         create(
           :assessment,
           patient: patient,
-          created_at: Time.now.getlocal(patient.address_timezone_offset).beginning_of_day.utc
+          created_at: correct_dst_edge(patient, Time.now.getlocal(patient.address_timezone_offset).beginning_of_day.utc)
         )
         assert_ineligible(patient)
       end
@@ -496,15 +499,32 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       :assessment,
       patient: patient,
       symptomatic: false,
-      created_at: (Time.now.getlocal(patient.address_timezone_offset) - 7.days).end_of_day
+      created_at: correct_dst_edge(patient, (Time.now.getlocal(patient.address_timezone_offset) - 7.days).end_of_day)
     )
     assert_eligible(patient)
     create(
       :assessment,
       patient: patient,
       symptomatic: false,
-      created_at: (Time.now.getlocal(patient.address_timezone_offset) - 6.days).beginning_of_day
+      created_at: correct_dst_edge(patient, (Time.now.getlocal(patient.address_timezone_offset) - 6.days).beginning_of_day)
     )
     assert_ineligible(patient)
+  end
+end
+
+# Inheriting PatientNotificationEligibilityTest and overriding setup
+# allows us to run the same exact tests but change the Timecop time that
+# the tests are running at
+class PatientNotificationEligibilityTestWhenDSTStarts < PatientNotificationEligibilityTest
+  def setup
+    super
+    Timecop.freeze(Time.parse('2021-03-14T18:00:00Z'))
+  end
+end
+
+class PatientNotificationEligibilityTestWhenDSTEnds < PatientNotificationEligibilityTest
+  def setup
+    super
+    Timecop.freeze(Time.parse('2021-11-07T18:00:00Z'))
   end
 end
