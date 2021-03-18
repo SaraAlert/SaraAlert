@@ -759,9 +759,9 @@ class Patient < ApplicationRecord
     fn_ln_sex_matches = 0
     fn_ln_dob_matches = 0
     fn_ln_matches = 0
-    potential_duplicates = where(first_name: first_name, last_name: last_name)
     return { is_duplicate: duplicate_field_data.any?, duplicate_field_data: duplicate_field_data } if first_name.nil? || last_name.nil?
 
+    potential_duplicates = where(first_name: first_name, last_name: last_name)
     potential_duplicates_count = potential_duplicates.size
 
     # Remove any records that don't match.
