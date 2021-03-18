@@ -525,17 +525,18 @@ class AdvancedFilter extends React.Component {
         if (this.props.updateStickySettings) {
           localStorage.removeItem(`SaraFilter`);
         }
-        this.setState({
-          show: false,
-          applied: false,
-          activeFilter: null,
-          activeFilterOptions: null,
-          savedFilters: [
-            ...self.state.savedFilters.filter(filter => {
-              return filter.id != id;
-            }),
-          ],
-        });
+        this.setState(
+          {
+            savedFilters: [
+              ...self.state.savedFilters.filter(filter => {
+                return filter.id != id;
+              }),
+            ],
+          },
+          () => {
+            this.clear();
+          }
+        );
       });
   };
 
