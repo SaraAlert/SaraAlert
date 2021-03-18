@@ -759,27 +759,14 @@ class Patient < ApplicationRecord
     fn_ln_sex_matches = 0
     fn_ln_dob_matches = 0
     fn_ln_matches = 0
-    return { is_duplicate: duplicate_field_data.any?, duplicate_field_data: duplicate_field_data } if first_name.nil? || last_name.nil?
-
     potential_duplicates = where(first_name: first_name, last_name: last_name)
-    potential_duplicates_count = potential_duplicates.size
-
-    # Remove any records that don't match.
-    if potential_duplicates.size.positive? && date_of_birth.present?
-      potential_duplicates.where.not(date_of_birth: nil).where.not('date_of_birth = ?', date_of_birth).destroy_all
-      potential_duplicates_count = potential_duplicates.size
-    end
-    if potential_duplicates.size.positive? && sex.present?
-      potential_duplicates.where.not(sex: nil).where.not('sex = ?', sex).destroy_all
-      potential_duplicates_count = potential_duplicates.size
-    end
-
-    # Return if we don't have any potential matches
-    return { is_duplicate: duplicate_field_data.any?, duplicate_field_data: duplicate_field_data } unless potential_duplicates_count.positive?
 
     # Determine which type of duplicate exists
     potential_duplicates.pluck(*%i[sex date_of_birth]).each do |p|
-      if sex.present? && sex == p[0] && date_of_birth.present? && !p[1].nil? && date_of_birth == p[1].strftime('%F')
+      # If the sex isn't nil and doesn't match it is not a duplicate. Same for DoB.
+      if (sex.present? && !p[0].nil? && sex != p[0]) || (date_of_birth.present? && !p[1].nil? && date_of_birth != p[1].strftime('%F'))
+      # this is not a duplicate
+      elsif sex.present? && sex == p[0] && date_of_birth.present? && !p[1].nil? && date_of_birth == p[1].strftime('%F')
         fn_ln_sex_dob_matches += 1
       elsif sex.present? && sex == p[0]
         fn_ln_sex_matches += 1
