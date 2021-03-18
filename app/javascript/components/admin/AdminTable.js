@@ -69,7 +69,7 @@ class AdminTable extends React.Component {
     );
   }
 
-  getAriaLabel(rowData) {
+  getRowCheckboxAriaLabel(rowData) {
     return `User: ${rowData.email}`;
   }
 
@@ -720,7 +720,7 @@ class AdminTable extends React.Component {
           handleEdit={this.handleEditClick}
           handleEntriesChange={this.handleEntriesChange}
           handlePageUpdate={this.handlePageUpdate}
-          getAriaLabelText={this.getAriaLabel}
+          getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
           isSelectable={true}
           isEditable={true}
           isLoading={this.state.isLoading}

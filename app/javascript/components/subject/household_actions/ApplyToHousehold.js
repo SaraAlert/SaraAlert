@@ -297,7 +297,7 @@ class ApplyToHousehold extends React.Component {
    * Formats aria label for each table row checkbox.
    * @param {Object} rowData - provided by CustomTable about the current row.
    */
-  getAriaLabel(rowData) {
+  getRowCheckboxAriaLabel(rowData) {
     return `Monitoree ${rowData.last_name || ''}, ${rowData.first_name || ''} ${rowData.middle_name || ''}`;
   }
 
@@ -330,7 +330,7 @@ class ApplyToHousehold extends React.Component {
             totalRows={this.state.table.totalRows}
             handleTableUpdate={this.handleTableSort}
             handleSelect={this.handleSelect}
-            getAriaLabelText={this.getAriaLabel}
+            getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
             isSelectable={true}
             showPagination={false}
             checkboxColumnLocation={'left'}
