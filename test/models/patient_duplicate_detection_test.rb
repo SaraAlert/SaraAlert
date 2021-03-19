@@ -24,7 +24,7 @@ class PatientDuplicateDetectionTest < ActiveSupport::TestCase
   end
 
   test 'duplicate_data finds duplicate with input of FN LN Sex DoB ID' do
-    patient_dup = {first_name: 'Deckard', last_name: 'Cain', date_of_birth: '1996-12-31', sex: 'Male', user_defined_id_statelocal: 'asdf123'}
+    patient_dup = { first_name: 'Deckard', last_name: 'Cain', date_of_birth: '1996-12-31', sex: 'Male', user_defined_id_statelocal: 'asdf123' }
 
     duplicate_data = Patient.duplicate_data(patient_dup[:first_name],
                                             patient_dup[:last_name],
@@ -58,7 +58,7 @@ class PatientDuplicateDetectionTest < ActiveSupport::TestCase
   end
 
   test 'duplicate_data finds duplicate with input of FN LN DoB' do
-    patient_dup = {first_name: 'Deckard', last_name: 'Cain', date_of_birth: '1996-12-31'}
+    patient_dup = { first_name: 'Deckard', last_name: 'Cain', date_of_birth: '1996-12-31' }
 
     duplicate_data = Patient.duplicate_data(patient_dup[:first_name],
                                             patient_dup[:last_name],
@@ -80,7 +80,7 @@ class PatientDuplicateDetectionTest < ActiveSupport::TestCase
   end
 
   test 'duplicate_data finds duplicate with input of FN LN Sex' do
-    patient_dup = {first_name: 'Deckard', last_name: 'Cain', sex: 'Male'}
+    patient_dup = { first_name: 'Deckard', last_name: 'Cain', sex: 'Male' }
 
     duplicate_data = Patient.duplicate_data(patient_dup[:first_name],
                                             patient_dup[:last_name],
@@ -102,7 +102,7 @@ class PatientDuplicateDetectionTest < ActiveSupport::TestCase
   end
 
   test 'duplicate_data finds duplicate with input of FN LN' do
-    patient_dup = {first_name: 'Deckard', last_name: 'Cain'}
+    patient_dup = { first_name: 'Deckard', last_name: 'Cain' }
 
     duplicate_data = Patient.duplicate_data(patient_dup[:first_name],
                                             patient_dup[:last_name],
@@ -120,7 +120,7 @@ class PatientDuplicateDetectionTest < ActiveSupport::TestCase
   end
 
   test 'duplicate_data finds duplicate with input of FN ID' do
-    patient_dup = {first_name: 'Deckard', user_defined_id_statelocal: 'asdf123'}
+    patient_dup = { first_name: 'Deckard', user_defined_id_statelocal: 'asdf123' }
 
     duplicate_data = Patient.duplicate_data(patient_dup[:first_name],
                                             patient_dup[:last_name],
@@ -138,7 +138,7 @@ class PatientDuplicateDetectionTest < ActiveSupport::TestCase
   end
 
   test 'duplicate_data finds duplicate with input of LN ID' do
-    patient_dup = {last_name: 'Cain',  user_defined_id_statelocal: 'asdf123'}
+    patient_dup = { last_name: 'Cain', user_defined_id_statelocal: 'asdf123' }
 
     duplicate_data = Patient.duplicate_data(patient_dup[:first_name],
                                             patient_dup[:last_name],
@@ -156,7 +156,7 @@ class PatientDuplicateDetectionTest < ActiveSupport::TestCase
   end
 
   test 'duplicate_data finds duplicate with input of ID' do
-    patient_dup = {user_defined_id_statelocal: 'asdf123'}
+    patient_dup = { user_defined_id_statelocal: 'asdf123' }
 
     duplicate_data = Patient.duplicate_data(patient_dup[:first_name],
                                             patient_dup[:last_name],
@@ -174,7 +174,7 @@ class PatientDuplicateDetectionTest < ActiveSupport::TestCase
   end
 
   test 'duplicate_data does NOT find duplicate with input of FN LN Sex DoB ID' do
-    patient_dup = {first_name: 'Cain', last_name: 'Deckard', date_of_birth: '1996-12-31', sex: 'Male', user_defined_id_statelocal: '123abc'}
+    patient_dup = { first_name: 'Cain', last_name: 'Deckard', date_of_birth: '1996-12-31', sex: 'Male', user_defined_id_statelocal: '123abc' }
     duplicate_data = Patient.duplicate_data(patient_dup[:first_name],
                                             patient_dup[:last_name],
                                             patient_dup[:sex],
