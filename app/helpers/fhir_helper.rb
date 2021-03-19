@@ -2,10 +2,10 @@
 
 # Helper module for FHIR translations
 module FhirHelper # rubocop:todo Metrics/ModuleLength
-  SA_EXT_BASE_URL = 'http://saraalert.org/StructureDefinition/'
-  DATA_ABSENT_URL = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
-  OMB_URL = 'ombCategory'
-  DETAILED_URL = 'detailed'
+  SA_EXT_BASE_URL = 'http://saraalert.org/StructureDefinition/'.freeze
+  DATA_ABSENT_URL = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'.freeze
+  OMB_URL = 'ombCategory'.freeze
+  DETAILED_URL = 'detailed'.freeze
 
   # Returns a representative FHIR::Patient for an instance of a Sara Alert Patient. Uses US Core
   # extensions for sex, race, and ethnicity.
