@@ -85,7 +85,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     raise InvalidQueryError.new(:order, order) unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user
                                                                                        state_local_id dob end_of_monitoring risk_level monitoring_plan
                                                                                        public_health_action expected_purge_date reason_for_closure closed_at
-                                                                                       transferred_at latest_report first_positive_lab symptom_onset
+                                                                                       transferred_at latest_report first_positive_lab_at symptom_onset
                                                                                        extended_isolation].include?(order)
 
     # Validate sorting direction
@@ -199,8 +199,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                                  CASE WHEN last_date_of_exposure IS NULL THEN patients.created_at ELSE last_date_of_exposure END ' + dir), id: dir)
     when 'extended_isolation'
       patients = patients.order(Arel.sql('CASE WHEN extended_isolation IS NULL THEN 1 ELSE 0 END, extended_isolation ' + dir), id: dir)
-    when 'first_positive_lab'
-      patients = patients.order(Arel.sql('CASE WHEN first_positive_lab IS NULL THEN 1 ELSE 0 END, first_positive_lab ' + dir), id: dir)
+    when 'first_positive_lab_at'
+      patients = patients.order(Arel.sql('CASE WHEN first_positive_lab_at IS NULL THEN 1 ELSE 0 END, first_positive_lab_at ' + dir), id: dir)
     when 'symptom_onset'
       patients = patients.order(Arel.sql('CASE WHEN symptom_onset IS NULL THEN 1 ELSE 0 END, symptom_onset ' + dir), id: dir)
     when 'risk_level'
@@ -558,24 +558,16 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                end
 
     # only select patient fields necessary to generate linelists
-    selected_fields = ['patients.id', 'patients.first_name', 'patients.last_name', 'patients.user_defined_id_statelocal', 'patients.symptom_onset',
-                       'patients.date_of_birth', 'patients.assigned_user', 'patients.exposure_risk_assessment', 'patients.monitoring_plan',
-                       'patients.public_health_action', 'patients.monitoring_reason', 'patients.closed_at', 'patients.last_date_of_exposure',
-                       'patients.created_at', 'patients.updated_at', 'patients.latest_assessment_at', 'patients.latest_assessment_symptomatic',
-                       'patients.latest_transfer_at', 'patients.continuous_exposure', 'patients.head_of_household', 'patients.purged', 'patients.monitoring',
-                       'patients.isolation', 'patients.responder_id', 'patients.pause_notifications', 'patients.preferred_contact_method',
-                       'patients.last_assessment_reminder_sent', 'patients.preferred_contact_time', 'patients.extended_isolation',
-                       'patients.latest_fever_or_fever_reducer_at', 'patients.first_positive_lab_at', 'patients.negative_lab_count',
-                       'patients.head_of_household', 'jurisdictions.name AS jurisdiction_name', 'jurisdictions.path AS jurisdiction_path',
-                       'jurisdictions.id AS jurisdiction_id']
-
-    if fields.include?(:first_positive_lab)
-      labs = Arel.sql('SELECT patient_id, MIN(specimen_collection) AS specimen_collection FROM laboratories WHERE result = "positive" GROUP BY patient_id')
-      patients = patients.joins("LEFT JOIN (#{ActiveRecord::Base.sanitize_sql(labs)}) AS first_positive_labs ON patients.id = first_positive_labs.patient_id")
-      selected_fields.append('first_positive_labs.specimen_collection AS first_positive_lab')
-    end
-
-    patients = patients.select(selected_fields.join(', '))
+    patients = patients.select('patients.id, patients.first_name, patients.last_name, patients.user_defined_id_statelocal, patients.symptom_onset, '\
+                               'patients.date_of_birth, patients.assigned_user, patients.exposure_risk_assessment, patients.monitoring_plan, '\
+                               'patients.public_health_action, patients.monitoring_reason, patients.closed_at, patients.last_date_of_exposure, '\
+                               'patients.created_at, patients.updated_at, patients.latest_assessment_at, patients.latest_assessment_symptomatic, '\
+                               'patients.latest_transfer_at, patients.continuous_exposure, patients.head_of_household, patients.purged, patients.monitoring, '\
+                               'patients.isolation, patients.responder_id, patients.pause_notifications, patients.preferred_contact_method, '\
+                               'patients.last_assessment_reminder_sent, patients.preferred_contact_time, patients.extended_isolation, '\
+                               'patients.latest_fever_or_fever_reducer_at, patients.first_positive_lab_at, patients.negative_lab_count, '\
+                               'patients.head_of_household, jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path, '\
+                               'jurisdictions.id AS jurisdiction_id')
 
     # execute query and get total count
     total = patients.total_entries
@@ -597,7 +589,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
       details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
       details[:extended_isolation] = patient[:extended_isolation] if fields.include?(:extended_isolation)
-      details[:first_positive_lab] = patient[:first_positive_lab] if fields.include?(:first_positive_lab)
+      details[:first_positive_lab_at] = patient[:first_positive_lab_at] if fields.include?(:first_positive_lab_at)
       details[:symptom_onset] = patient.symptom_onset if fields.include?(:symptom_onset)
       details[:risk_level] = patient[:exposure_risk_assessment] || '' if fields.include?(:risk_level)
       details[:monitoring_plan] = patient[:monitoring_plan] || '' if fields.include?(:monitoring_plan)
@@ -623,12 +615,12 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     if workflow == :isolation
       if tab == :all
-        return %i[jurisdiction assigned_user extended_isolation first_positive_lab symptom_onset monitoring_plan latest_report status report_eligibility]
+        return %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report status report_eligibility]
       end
       return %i[transferred_from monitoring_plan transferred_at] if tab == :transferred_in
       return %i[transferred_to monitoring_plan transferred_at] if tab == :transferred_out
 
-      return %i[jurisdiction assigned_user extended_isolation first_positive_lab symptom_onset monitoring_plan latest_report report_eligibility]
+      return %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
     end
 
     return %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility] if tab == :all
