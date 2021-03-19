@@ -54,7 +54,7 @@ class PatientsTable extends React.Component {
           { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: formatDate },
           { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatEndOfMonitoring },
           { field: 'extended_isolation', label: 'Extended Isolation To', isSortable: true, tooltip: 'extendedIsolation', filter: formatDate },
-          { field: 'first_positive_lab', label: 'First Positive Lab', isSortable: true, filter: this.formatDate },
+          { field: 'first_positive_lab_at', label: 'First Positive Lab', isSortable: true, filter: formatDate },
           { field: 'symptom_onset', label: 'Symptom Onset', isSortable: true, tooltip: null, filter: formatDate },
           { field: 'risk_level', label: 'Risk Level', isSortable: true, tooltip: null },
           { field: 'monitoring_plan', label: 'Monitoring Plan', isSortable: true, tooltip: null },
