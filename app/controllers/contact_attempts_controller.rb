@@ -22,7 +22,5 @@ class ContactAttemptsController < ApplicationController
                     created_by: current_user.email,
                     comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}",
                     history_type: 'Contact Attempt')
-
-    redirect_back fallback_location: root_path
   end
 end
