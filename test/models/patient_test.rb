@@ -1321,68 +1321,6 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.address_timezone_offset == formatted_tz_offset(Time.now.in_time_zone('Guam').utc_offset / 60 / 60)
   end
 
-  test 'duplicate_data finds duplicate that matches all criteria' do
-    patient_dup = Patient.first
-    duplicate_data = Patient.duplicate_data(patient_dup[:first_name],
-                                            patient_dup[:last_name],
-                                            patient_dup[:sex],
-                                            patient_dup[:date_of_birth],
-                                            patient_dup[:user_defined_id_statelocal])
-
-    assert duplicate_data[:is_duplicate]
-    assert_equal(duplicate_data[:duplicate_field_data], [
-                   {
-                     count: 1,
-                     fields: ['First Name', 'Last Name', 'Sex', 'Date of Birth']
-                   },
-                   {
-                     count: 1,
-                     fields: ['State/Local ID']
-                   }
-                 ])
-  end
-
-  test 'duplicate_data finds duplicate that matches basic info fields' do
-    patient_dup = Patient.first
-    duplicate_data = Patient.duplicate_data(patient_dup[:first_name],
-                                            patient_dup[:last_name],
-                                            patient_dup[:sex],
-                                            patient_dup[:date_of_birth],
-                                            'test state/local ID')
-
-    assert duplicate_data[:is_duplicate]
-    assert_equal(duplicate_data[:duplicate_field_data], [{
-                   count: 1,
-                   fields: ['First Name', 'Last Name', 'Sex', 'Date of Birth']
-                 }])
-  end
-
-  test 'duplicate_data finds duplicate that matches state/local id' do
-    patient_dup = Patient.first
-    duplicate_data = Patient.duplicate_data('test first name',
-                                            'test last name',
-                                            'test sex',
-                                            Time.now,
-                                            patient_dup[:user_defined_id_statelocal])
-
-    assert duplicate_data[:is_duplicate]
-    assert_equal(duplicate_data[:duplicate_field_data], [{
-                   count: 1,
-                   fields: ['State/Local ID']
-                 }])
-  end
-
-  test 'duplicate_data correctly finds no duplicates' do
-    duplicate_data = Patient.duplicate_data('test first name',
-                                            'test last name',
-                                            'test sex',
-                                            Time.now,
-                                            'test state/local ID')
-
-    assert !duplicate_data[:is_duplicate]
-    assert_equal(duplicate_data[:duplicate_field_data], [])
-  end
-
   def verify_patient_status(patient, status)
     patients = Patient.where(id: patient.id)
 
