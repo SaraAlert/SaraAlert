@@ -759,10 +759,9 @@ class Patient < ApplicationRecord
     fn_ln_sex_matches = 0
     fn_ln_dob_matches = 0
     fn_ln_matches = 0
-    potential_duplicates = where(first_name: first_name, last_name: last_name)
 
     # Determine which type of duplicate exists
-    potential_duplicates.pluck(*%i[sex date_of_birth]).each do |(s, dob)|
+    where(first_name: first_name, last_name: last_name).pluck(*%i[sex date_of_birth]).each do |(s, dob)|
       dob = dob&.strftime('%F')
       # If the sex isn't nil and doesn't match it is not a duplicate. Same for DoB.
       next if (sex.present? && s.present? && sex != s) || (date_of_birth.present? && dob.present? && date_of_birth != dob)
