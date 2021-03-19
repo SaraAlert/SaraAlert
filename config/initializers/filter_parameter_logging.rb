@@ -56,3 +56,6 @@ Rails.application.config.filter_parameters += %i[comment]
 
 # Vaccine filters
 Rails.application.config.filter_parameters += %i[group_name product_name administration_date dose_number notes]
+
+# ContactAttempt filters
+Rails.application.config.filter_parameters += %i[note]
