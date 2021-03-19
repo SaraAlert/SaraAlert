@@ -762,15 +762,17 @@ class Patient < ApplicationRecord
     potential_duplicates = where(first_name: first_name, last_name: last_name)
 
     # Determine which type of duplicate exists
-    potential_duplicates.pluck(*%i[sex date_of_birth]).each do |p|
+    potential_duplicates.pluck(*%i[sex date_of_birth]).each do |(s, dob)|
+      dob = dob&.strftime('%F')
       # If the sex isn't nil and doesn't match it is not a duplicate. Same for DoB.
-      if (sex.present? && !p[0].nil? && sex != p[0]) || (date_of_birth.present? && !p[1].nil? && date_of_birth != p[1].strftime('%F'))
-      # this is not a duplicate
-      elsif sex.present? && sex == p[0] && date_of_birth.present? && !p[1].nil? && date_of_birth == p[1].strftime('%F')
+      next if (sex.present? && s.present? && sex != s) || (date_of_birth.present? && dob.present? && date_of_birth != dob)
+
+      # Check for duplicates
+      if sex.present? && sex == s && date_of_birth.present? && date_of_birth == dob
         fn_ln_sex_dob_matches += 1
-      elsif sex.present? && sex == p[0]
+      elsif sex.present? && sex == s
         fn_ln_sex_matches += 1
-      elsif date_of_birth.present? && !p[1].nil? && date_of_birth == p[1].strftime('%F')
+      elsif date_of_birth.present? && date_of_birth == dob
         fn_ln_dob_matches += 1
       else
         fn_ln_matches += 1
