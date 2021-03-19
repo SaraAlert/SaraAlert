@@ -12,7 +12,5 @@ class HistoriesController < ApplicationController
                     created_by: current_user.email,
                     comment: params.permit(:comment)[:comment],
                     history_type: params.permit(:type)[:type] || 'Comment')
-
-    redirect_back fallback_location: root_path
   end
 end
