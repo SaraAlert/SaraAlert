@@ -135,8 +135,11 @@ class Fhir::R4::ApiController < ActionController::API
       patient_before = patient.dup
 
       # Get key value pairs from the update.
-      request_updates = patient_from_fhir(contents, default_patient_jurisdiction_id)
-      status_unprocessable_entity && return if request_updates.nil?
+      # fhir_map is of the form:
+      # { attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element> } }
+      fhir_map = patient_from_fhir(contents, default_patient_jurisdiction_id)
+      request_updates = fhir_map.transform_values { |v| v[:value] }
+      status_unprocessable_entity(nil, nil, nil) && return if request_updates.nil?
 
       # Assign any remaining updates to the patient
       # NOTE: The patient.update method does not allow a context to be passed, so first we assign the updates, then save
@@ -147,7 +150,8 @@ class Fhir::R4::ApiController < ActionController::API
       ActiveRecord::Base.transaction do
         # Verify that the updated jurisdiction and other updates are valid
         unless jurisdiction_valid_for_update?(patient) && patient.save(context: :api)
-          status_unprocessable_entity(format_model_validation_errors(patient)) && return
+          req_json = request.patch? ? patient.as_fhir.to_json : JSON.parse(request.body.string)
+          status_unprocessable_entity(patient, fhir_map, req_json) && return
         end
 
         # If the jurisdiction was changed, create a Transfer
@@ -254,7 +258,12 @@ class Fhir::R4::ApiController < ActionController::API
       )
 
       # Construct a Sara Alert Patient
-      resource = Patient.new(patient_from_fhir(contents, default_patient_jurisdiction_id))
+      # fhir_map is of the form:
+      # { attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element> } }
+      fhir_map = patient_from_fhir(contents, default_patient_jurisdiction_id)
+      vals = fhir_map.transform_values { |v| v[:value] }
+      resource = Patient.new(vals)
+
       # Responder is self
       resource.responder = resource
 
@@ -283,7 +292,8 @@ class Fhir::R4::ApiController < ActionController::API
 
       ActiveRecord::Base.transaction do
         unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
-          status_unprocessable_entity(format_model_validation_errors(resource)) && return
+          req_json = JSON.parse(request.body.string)
+          status_unprocessable_entity(resource, fhir_map, req_json) && return
         end
 
         Rails.logger.info "Created Patient with ID: #{resource.id}"
@@ -770,9 +780,40 @@ class Fhir::R4::ApiController < ActionController::API
     end
   end
 
-  def status_unprocessable_entity(errors = [])
+  # 422 response with specific validation errors.
+  def status_unprocessable_entity(resource, fhir_map, req_json)
+    outcome = FHIR::OperationOutcome.new(issue: [])
+
+    resource&.errors&.messages&.each_with_object([]) do |(attribute, errors), messages|
+      next unless VALIDATION.key?(attribute)
+
+      fhir_path = fhir_map[attribute][:path]
+
+      # Extract the original value from the request body using FHIRPath
+      if fhir_path&.present?
+        begin
+          value = FHIRPath.evaluate(fhir_path, req_json)
+        rescue StandardError
+          # If the FHIRPath evaluation fails for some reason, just use the normalized value that failed validation
+          # Note that there is a known issue in the FHIRPath lib where nested calls to extension() result in an error
+          value = resource[attribute]
+        end
+      else
+        value = resource[attribute]
+      end
+
+      msg_header = (value&.present? ? "Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}'"
+      errors.each do |error_message|
+        # Exclude the actual value in logging to avoid PII/PHI
+        Rails.logger.info "Validation Error on: #{attribute}"
+        messages << "#{msg_header} #{error_message}"
+        outcome.issue << FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'processing', diagnostics: "#{msg_header} #{error_message}",
+                                                           expression: fhir_path)
+      end
+    end
+
     respond_to do |format|
-      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :unprocessable_entity }
+      format.any { render json: outcome.issue.blank? ? operation_outcome_fatal.to_json : outcome.to_json, status: :unprocessable_entity }
     end
   end
 
