@@ -156,28 +156,28 @@ export const advancedFilterOptions = [
     name: 'monitoring-plan',
     title: 'Monitoring Plan (Select)',
     description: 'Monitoree monitoring plan',
-    type: 'option',
+    type: 'select',
     options: ['None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision', 'Self-observation', '']
   },
   {
     name: 'preferred-contact-method',
     title: 'Preferred Reporting Method (Select)',
     description: 'Monitorees preferred reporting method',
-    type: 'option',
+    type: 'select',
     options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', '']
   },
   {
     name: 'preferred-contact-time',
     title: 'Preferred Contact Time (Select)',
     description: 'Monitoree preferred contact time',
-    type: 'option',
+    type: 'select',
     options: ['Morning', 'Afternoon', 'Evening', '']
   },
   {
     name: 'primary-language',
     title: 'Primary Language (Select)',
     description: 'Monitoree primary language',
-    type: 'option',
+    type: 'select',
     options: supportedLanguages.languages
       .map(lang => {
         return lang.name;
@@ -188,7 +188,7 @@ export const advancedFilterOptions = [
     name: 'risk-exposure',
     title: 'Exposure Risk Assessment (Select)',
     description: 'Monitoree exposure risk assessment',
-    type: 'option',
+    type: 'select',
     options: ['High', 'Medium', 'Low', 'No Identified Risk', '']
   },
 
