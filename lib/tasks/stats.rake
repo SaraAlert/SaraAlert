@@ -114,13 +114,21 @@ namespace :stats do
         exposure: activity_exp.where(isolation: false, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:api_enrolled_last_24h).count,
         isolation: activity_iso.where(isolation: true, created_at: (24.hours.ago)..(DateTime.now)).where_assoc_exists(:histories, &:api_enrolled_last_24h).count
       }
-      results[title]['Total with activity today'] = {
+      results[title]['Total with activity today (user)'] = {
         exposure: activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.count,
         isolation: activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.count
       }
-      results[title]['Total with activity since start of evaluation'] = {
+      results[title]['Total with activity since start of evaluation (user)'] = {
         exposure: activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(start) }.count,
         isolation: activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(start) }.count
+      }
+      results[title]['Total with activity today (user & monitoree)'] = {
+        exposure: (activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.pluck(:id) + activity_exp.where(isolation: false).where_assoc_exists(:assessments) { created_since(24.hours.ago) }.pluck(:id) ).uniq.count,
+        isolation: (activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.pluck(:id) + activity_iso.where(isolation: true).where_assoc_exists(:assessments) { created_since(24.hours.ago) }.pluck(:id)).uniq.count
+      }
+      results[title]['Total with activity since start of evaluation (user & monitoree)'] = {
+        exposure: (activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(start) }.pluck(:id) + activity_exp.where(isolation: false).where_assoc_exists(:assessments) { created_since(start) }.pluck(:id) ).uniq.count,
+        isolation: (activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(start) }.pluck(:id) + activity_iso.where(isolation: true).where_assoc_exists(:assessments) { created_since(start) }.pluck(:id) ).uniq.count
       }
       results[title]['Closed today - Enrolled more than 14 days after last date of exposure (system)'] = {
         exposure: activity_exp.where(monitoring: false, monitoring_reason: 'Enrolled more than 14 days after last date of exposure (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
@@ -545,7 +553,7 @@ namespace :stats do
       title = 'USERS: Daily snapshots'
       results[title] = {}
       results[title]['Total'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where.not(role: [nil, '', 'none']).count, isolation: nil }
-      results[title]['Active'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(locked_at: nil).where.not(role: [nil, '', 'none']).count, isolation: nil }
+      results[title]['Unlocked'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(locked_at: nil).where.not(role: [nil, '', 'none']).count, isolation: nil }
       results[title]['Super User'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'super_user').count, isolation: nil }
       results[title]['Public Health Enroller'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'public_health_enroller').count, isolation: nil }
       results[title]['Contact Tracer'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'contact_tracer').count, isolation: nil }
