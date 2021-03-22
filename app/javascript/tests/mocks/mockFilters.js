@@ -35,7 +35,7 @@ const mockFilterOptionsOption = {
     name: 'preferred-contact-time',
     title: 'Preferred Contact Time (Select)',
     description: 'Monitoree preferred contact time',
-    type: 'option',
+    type: 'select',
     options: ['Morning', 'Afternoon', 'Evening', '']
   },
   numberOption: null,

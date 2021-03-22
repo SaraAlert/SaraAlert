@@ -62,7 +62,7 @@ export const advancedFilterOptions = [
     description: 'Monitorees that have blocked SMS communications with Sara Alert',
     type: 'boolean',
     tooltip:
-      'This filter will return monitorees that have texted “STOP” in response to a Sara Alert text message and cannot receive messages through SMS Preferred Reporting Methods until they text "START"'
+      'This filter will return monitorees that have texted “STOP” in response to a Sara Alert text message and cannot receive messages through SMS Preferred Reporting Methods until they text "START".'
   },
   {
     name: 'seven-day-quarantine',
