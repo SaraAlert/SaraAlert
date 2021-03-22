@@ -4,6 +4,7 @@ require 'test_helper'
 require 'rspec/mocks/minitest_integration'
 require 'controllers/fhir/r4/api_controller_test'
 
+# rubocop:disable Metrics/ClassLength
 class ApiControllerTest < ActionDispatch::IntegrationTest
   #----- show tests -----
 
@@ -864,3 +865,4 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_nil json_response['link']
   end
 end
+# rubocop:enable Metrics/ClassLength
