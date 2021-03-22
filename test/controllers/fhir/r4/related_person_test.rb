@@ -110,22 +110,24 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should be unprocessable entity via RelatedPerson create with validation errors' do
-    @close_contact_1.assigned_user = 999_999_999
+    inv_ass_usr = @close_contact_1.assigned_user = 999_999_999
     @close_contact_1.first_name = nil
     @close_contact_1.last_name = nil
+    related_person_json_str = @close_contact_1.as_fhir.to_json
+    related_person_json = JSON.parse(related_person_json_str)
     post(
       '/fhir/r4/RelatedPerson',
-      params: @close_contact_1.as_fhir.to_json,
+      params: related_person_json_str,
       headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    errors = json_response['issue'].map { |i| i['diagnostics'] }
+    issues = json_response['issue']
 
-    msg = 'Expected validation error on '
-    assert_equal 2, errors.length
-    assert(errors.any?(/999999999.*Assigned User/), msg + 'Assigned User')
-    assert(errors.any?(/At least one.*First Name.*Last Name/), msg + 'Base')
+    assert_equal 2, issues.length
+    assigned_usr_iss = issues.find { |i| /999999999.*Assigned User/.match(i['diagnostics']) }
+    assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, related_person_json) == inv_ass_usr)
+    assert(issues.any? { |i| /At least one.*First Name.*Last Name/.match(i['diagnostics']) })
   end
 
   #----- update tests -----
@@ -225,19 +227,21 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should be unprocessable entity via RelatedPerson update with validation errors' do
-    @close_contact_1.email = 'Not an email'
+    inv_email = @close_contact_1.email = 'Not an email'
+    related_person_json_str = @close_contact_1.as_fhir.to_json
+    related_person_json = JSON.parse(related_person_json_str)
     put(
       '/fhir/r4/RelatedPerson/1',
-      params: @close_contact_1.as_fhir.to_json,
+      params: related_person_json_str,
       headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    errors = json_response['issue'].map { |i| i['diagnostics'] }
+    issues = json_response['issue']
 
-    msg = 'Expected validation error on '
-    assert_equal 1, errors.length
-    assert(errors.any?(/Not an email.*Email/), msg + 'Email')
+    assert_equal 1, issues.length
+    iss = issues.find { |i| /Not an email.*Email/.match(i['diagnostics']) }
+    assert(FHIRPath.evaluate(iss['expression'].first, related_person_json) == inv_email)
   end
 
   #----- search tests -----

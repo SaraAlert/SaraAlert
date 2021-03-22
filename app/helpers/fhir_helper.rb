@@ -117,7 +117,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   #  attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element> }
   # }
   def patient_from_fhir(patient, default_jurisdiction_id)
-    symptom_onset = from_date_extension(patient, ['symptom-onset-date'])
+    symptom_onset = from_date_extension(patient, 'Patient', ['symptom-onset-date'])
     foreign_address = from_address_by_type_extension(patient, 'Foreign')
     foreign_address_index = patient&.address&.index(foreign_address)
     address = from_address_by_type_extension(patient, 'USA')
@@ -168,28 +168,28 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       race_refused_to_answer: race_code?(patient, 'asked-declined', DATA_ABSENT_URL),
       ethnicity: from_us_core_ethnicity(patient),
       sex: from_us_core_birthsex(patient),
-      preferred_contact_method: from_string_extension(patient, 'preferred-contact-method'),
-      preferred_contact_time: from_string_extension(patient, 'preferred-contact-time'),
+      preferred_contact_method: from_string_extension(patient, 'Patient', 'preferred-contact-method'),
+      preferred_contact_time: from_string_extension(patient, 'Patient', 'preferred-contact-time'),
       symptom_onset: symptom_onset,
-      user_defined_symptom_onset: { value: !symptom_onset[:value]&.nil?, path: patient_date_ext_path('symptom-onset-date') },
-      last_date_of_exposure: from_date_extension(patient, %w[last-date-of-exposure last-exposure-date]),
-      isolation: from_bool_extension_false_default(patient, 'isolation'),
-      jurisdiction_id: from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id),
-      monitoring_plan: from_string_extension(patient, 'monitoring-plan'),
-      assigned_user: from_positive_integer_extension(patient, 'assigned-user'),
-      additional_planned_travel_start_date: from_date_extension(patient, ['additional-planned-travel-start-date']),
-      port_of_origin: from_string_extension(patient, 'port-of-origin'),
-      date_of_departure: from_date_extension(patient, ['date-of-departure']),
-      flight_or_vessel_number: from_string_extension(patient, 'flight-or-vessel-number'),
-      flight_or_vessel_carrier: from_string_extension(patient, 'flight-or-vessel-carrier'),
-      date_of_arrival: from_date_extension(patient, ['date-of-arrival']),
-      exposure_notes: from_string_extension(patient, 'exposure-notes'),
-      travel_related_notes: from_string_extension(patient, 'travel-related-notes'),
-      additional_planned_travel_related_notes: from_string_extension(patient, 'additional-planned-travel-notes'),
-      primary_telephone_type: from_primary_phone_type_extension(patient),
-      secondary_telephone_type: from_secondary_phone_type_extension(patient),
-      user_defined_id_statelocal: from_statelocal_id_extension(patient),
-      continuous_exposure: from_bool_extension_false_default(patient, 'continuous-exposure')
+      user_defined_symptom_onset: { value: !symptom_onset[:value]&.nil?, path: date_ext_path('Patient', 'symptom-onset-date') },
+      last_date_of_exposure: from_date_extension(patient, 'Patient', %w[last-date-of-exposure last-exposure-date]),
+      isolation: from_bool_extension_false_default(patient, 'Patient', 'isolation'),
+      jurisdiction_id: from_full_assigned_jurisdiction_path_extension(patient, 'Patient', default_jurisdiction_id),
+      monitoring_plan: from_string_extension(patient, 'Patient', 'monitoring-plan'),
+      assigned_user: from_positive_integer_extension(patient, 'Patient', 'assigned-user'),
+      additional_planned_travel_start_date: from_date_extension(patient, 'Patient', ['additional-planned-travel-start-date']),
+      port_of_origin: from_string_extension(patient, 'Patient', 'port-of-origin'),
+      date_of_departure: from_date_extension(patient, 'Patient', ['date-of-departure']),
+      flight_or_vessel_number: from_string_extension(patient, 'Patient', 'flight-or-vessel-number'),
+      flight_or_vessel_carrier: from_string_extension(patient, 'Patient', 'flight-or-vessel-carrier'),
+      date_of_arrival: from_date_extension(patient, 'Patient', ['date-of-arrival']),
+      exposure_notes: from_string_extension(patient, 'Patient', 'exposure-notes'),
+      travel_related_notes: from_string_extension(patient, 'Patient', 'travel-related-notes'),
+      additional_planned_travel_related_notes: from_string_extension(patient, 'Patient', 'additional-planned-travel-notes'),
+      primary_telephone_type: from_primary_phone_type_extension(patient, 'Patient'),
+      secondary_telephone_type: from_secondary_phone_type_extension(patient, 'Patient'),
+      user_defined_id_statelocal: from_statelocal_id_extension(patient, 'Patient'),
+      continuous_exposure: from_bool_extension_false_default(patient, 'Patient', 'continuous-exposure')
     }
   end
 
@@ -217,16 +217,18 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def close_contact_from_fhir(related_person)
+    phone = related_person&.telecom&.find { |t| t&.system == 'phone' }
+    email = related_person&.telecom&.find { |t| t&.system == 'email' }
     {
-      first_name: related_person&.name&.first&.given&.first,
-      last_name: related_person&.name&.first&.family,
-      primary_telephone: from_fhir_phone_number(related_person&.telecom&.find { |t| t&.system == 'phone' }&.value),
-      email: related_person&.telecom&.find { |t| t&.system == 'email' }&.value,
-      last_date_of_exposure: from_date_extension(related_person, %w[last-date-of-exposure last-exposure-date]),
-      assigned_user: from_positive_integer_extension(related_person, 'assigned-user'),
-      notes: from_string_extension(related_person, 'notes'),
-      patient_id: related_person&.patient&.reference&.match(%r{^Patient/(\d+)$}).to_a[1],
-      contact_attempts: from_unsigned_integer_extension(related_person, 'contact-attempts') || 0
+      first_name: { value: related_person&.name&.first&.given&.first, path: 'RelatedPerson.name[0].given[0]' },
+      last_name: { value: related_person&.name&.first&.family, path: 'RelatedPerson.name[0].family' },
+      primary_telephone: { value: from_fhir_phone_number(phone&.value), path: "RelatedPerson.telecom[#{related_person&.telecom&.index(phone)}].value" },
+      email: { value: email&.value, path: "RelatedPerson.telecom[#{related_person&.telecom&.index(email)}].value" },
+      last_date_of_exposure: from_date_extension(related_person, 'RelatedPerson', %w[last-date-of-exposure last-exposure-date]),
+      assigned_user: from_positive_integer_extension(related_person, 'RelatedPerson', 'assigned-user'),
+      notes: from_string_extension(related_person, 'RelatedPerson', 'notes'),
+      patient_id: { value: related_person&.patient&.reference&.match(%r{^Patient/(\d+)$}).to_a[1], path: 'RelatedPerson.patient.reference' },
+      contact_attempts: from_unsigned_integer_extension_0_default(related_person, 'RelatedPerson', 'contact-attempts')
     }
   end
 
@@ -375,16 +377,16 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     PatientHelper.languages(language&.downcase) ? FHIR::Coding.new(**PatientHelper.languages(language&.downcase)) : nil
   end
 
-  # Convert from a boolean extension, treating omission (nil) as equal to false
-  def from_bool_extension_false_default(patient, extension_id)
-    { value: patient&.extension&.find { |e| e.url.include?(extension_id) }&.valueBoolean || false, path: patient_bool_ext_path(extension_id) }
-  end
-
   def to_bool_extension(value, extension_id)
     value.nil? ? nil : FHIR::Extension.new(
       url: SA_EXT_BASE_URL + extension_id,
       valueBoolean: value
     )
+  end
+
+  # Convert from a boolean extension, treating omission (nil) as equal to false
+  def from_bool_extension_false_default(element, base_path, extension_id)
+    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueBoolean || false, path: bool_ext_path(base_path, extension_id) }
   end
 
   def to_date_extension(value, extension_id)
@@ -395,7 +397,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   # Check for multiple extension IDs for the sake of backwards compatibility with IDs that have changed
-  def from_date_extension(element, extension_ids)
+  def from_date_extension(element, base_path, extension_ids)
     val = nil
     ext_id = nil
     extension_ids.each do |eid|
@@ -403,7 +405,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       ext_id = eid
       break unless val.nil?
     end
-    { value: val, path: patient_date_ext_path(ext_id) }
+    { value: val, path: date_ext_path(base_path, ext_id) }
   end
 
   def to_string_extension(value, extension_id)
@@ -413,8 +415,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def from_string_extension(patient, extension_id)
-    { value: patient&.extension&.find { |e| e.url.include?(extension_id) }&.valueString, path: patient_str_ext_path(extension_id) }
+  def from_string_extension(element, base_path, extension_id)
+    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueString, path: str_ext_path(base_path, extension_id) }
   end
 
   def to_reference_extension(id, resource_type, extension_id)
@@ -431,8 +433,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def from_positive_integer_extension(patient, extension_id)
-    { value: patient&.extension&.find { |e| e.url.include?(extension_id) }&.valuePositiveInt, path: patient_pos_int_ext_path(extension_id) }
+  def from_positive_integer_extension(element, base_path, extension_id)
+    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valuePositiveInt, path: pos_int_ext_path(base_path, extension_id) }
   end
 
   def to_unsigned_integer_extension(value, extension_id)
@@ -442,31 +444,33 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def from_unsigned_integer_extension(element, extension_id)
-    element&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueUnsignedInt
+  def from_unsigned_integer_extension_0_default(element, base_path, extension_id)
+    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueUnsignedInt || 0, path: unsigned_int_ext_path(base_path, extension_id) }
   end
 
   # Convert from FHIR extension for Full Assigned Jurisdiction Path.
   # Use the default if there is no path specified.
-  def from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id)
-    jurisdiction_path_hash = from_string_extension(patient, 'full-assigned-jurisdiction-path')
+  def from_full_assigned_jurisdiction_path_extension(element, base_path, default_jurisdiction_id)
+    jurisdiction_path_hash = from_string_extension(element, base_path, 'full-assigned-jurisdiction-path')
     jurisdiction_path_hash[:value] = Jurisdiction.find_by(path: jurisdiction_path_hash[:value])&.id || default_jurisdiction_id
     jurisdiction_path_hash
   end
 
-  def from_primary_phone_type_extension(patient)
-    phone_telecom = patient&.telecom&.find { |t| t&.system == 'phone' }
+  # element must be a FHIR element with a telecom array
+  def from_primary_phone_type_extension(element, base_path)
+    phone_telecom = element&.telecom&.find { |t| t&.system == 'phone' }
     {
       value: phone_telecom&.extension&.find { |e| e.url.include?('phone-type') }&.valueString,
-      path: "Patient.telecom[#{patient&.telecom&.index(phone_telecom)}].extension('#{SA_EXT_BASE_URL}phone-type').valueString"
+      path: str_ext_path("#{base_path}.telecom[#{element&.telecom&.index(phone_telecom)}]", 'phone-type')
     }
   end
 
-  def from_secondary_phone_type_extension(patient)
-    phone_telecom = patient&.telecom&.select { |t| t&.system == 'phone' }&.second
+  # element must be a FHIR element with a telecom array
+  def from_secondary_phone_type_extension(element, base_path)
+    phone_telecom = element&.telecom&.select { |t| t&.system == 'phone' }&.second
     {
       value: phone_telecom&.extension&.find { |e| e.url.include?('phone-type') }&.valueString,
-      path: "Patient.telecom[#{patient&.telecom&.index(phone_telecom)}].extension('#{SA_EXT_BASE_URL}phone-type').valueString"
+      path: str_ext_path("#{base_path}.telecom[#{element&.telecom&.index(phone_telecom)}]", 'phone-type')
     }
   end
 
@@ -478,9 +482,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     FHIR::Identifier.new(value: statelocal_identifier, system: 'http://saraalert.org/SaraAlert/state-local-id') unless statelocal_identifier.blank?
   end
 
-  def from_statelocal_id_extension(patient)
-    statelocal_id = patient&.identifier&.find { |i| i&.system == 'http://saraalert.org/SaraAlert/state-local-id' }
-    { value: statelocal_id&.value, path: "Patient.identifier[#{patient&.identifier&.index(statelocal_id)}].value" }
+  def from_statelocal_id_extension(element, base_path)
+    statelocal_id = element&.identifier&.find { |i| i&.system == 'http://saraalert.org/SaraAlert/state-local-id' }
+    { value: statelocal_id&.value, path: "#{base_path}.identifier[#{element&.identifier&.index(statelocal_id)}].value" }
   end
 
   def to_address_by_type_extension(patient, address_type)
@@ -512,13 +516,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     end
   end
 
-  def from_address_by_type_extension(patient, address_type)
-    address = patient&.address&.find do |a|
+  def from_address_by_type_extension(element, address_type)
+    address = element&.address&.find do |a|
       a.extension&.any? { |e| e.url == "#{SA_EXT_BASE_URL}address-type" && e.valueString == address_type }
     end
 
     if address.nil? && address_type == 'USA'
-      address = patient&.address&.find do |a|
+      address = element&.address&.find do |a|
         a.extension&.all? { |e| e.url != "#{SA_EXT_BASE_URL}address-type" }
       end
     end
@@ -526,19 +530,23 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     address
   end
 
-  def patient_str_ext_path(ext_id)
-    "Patient.extension('#{SA_EXT_BASE_URL + ext_id}').valueString"
+  def str_ext_path(base_path, ext_id)
+    "#{base_path}.extension('#{SA_EXT_BASE_URL + ext_id}').valueString"
   end
 
-  def patient_bool_ext_path(ext_id)
-    "Patient.extension('#{SA_EXT_BASE_URL + ext_id}').valueBoolean"
+  def bool_ext_path(base_path, ext_id)
+    "#{base_path}.extension('#{SA_EXT_BASE_URL + ext_id}').valueBoolean"
   end
 
-  def patient_pos_int_ext_path(ext_id)
-    "Patient.extension('#{SA_EXT_BASE_URL + ext_id}').valuePositiveInt"
+  def pos_int_ext_path(base_path, ext_id)
+    "#{base_path}.extension('#{SA_EXT_BASE_URL + ext_id}').valuePositiveInt"
   end
 
-  def patient_date_ext_path(ext_id)
-    "Patient.extension('#{SA_EXT_BASE_URL + ext_id}').valueDate"
+  def unsigned_int_ext_path(base_path, ext_id)
+    "#{base_path}.extension('#{SA_EXT_BASE_URL + ext_id}').valueUnsignedInt"
+  end
+
+  def date_ext_path(base_path, ext_id)
+    "#{base_path}.extension('#{SA_EXT_BASE_URL + ext_id}').valueDate"
   end
 end
