@@ -291,6 +291,11 @@ class AdvancedFilter extends React.Component {
     }));
   };
 
+  // TO DO: ADD ME
+  removeMultiStatement = index => {
+    console.log('removing multi statement row: ' + index);
+  };
+
   /**
    * Change the main filter option dropdown
    * @param {Number} index - Current filter index
@@ -548,10 +553,10 @@ class AdvancedFilter extends React.Component {
    * Renders remove statement button (minus button at far right of statement)
    * @param {Number} index - Filter index
    */
-  renderRemoveStatementButton = index => {
+  renderRemoveStatementButton = (index, remove) => {
     return (
-      <div className="float-right">
-        <Button className="remove-filter-row" variant="danger" onClick={() => this.removeStatement(index)} aria-label="Remove Advanced Filter Option">
+      <div>
+        <Button className="remove-filter-row" variant="danger" onClick={() => remove(index)} aria-label="Remove Advanced Filter Option">
           <i className="fas fa-minus"></i>
         </Button>
       </div>
@@ -606,7 +611,7 @@ class AdvancedFilter extends React.Component {
         }}
         placeholder="Select Field...."
         aria-label="Advanced Filter Options Dropdown"
-        className="advanced-filter-select"
+        className="advanced-filter-options-dropdown"
         styles={cursorPointerStyle}
         theme={theme => ({
           ...theme,
@@ -735,7 +740,7 @@ class AdvancedFilter extends React.Component {
         <Form.Control
           as="select"
           value={value}
-          className="advanced-filter-select-dropdown py-0 my-0"
+          className="advanced-filter-select py-0 my-0"
           aria-label="Advanced Filter Option Select"
           onChange={event => {
             this.changeValue(index, event.target.value);
@@ -977,6 +982,40 @@ class AdvancedFilter extends React.Component {
     );
   };
 
+  // TO DO ADD ME
+  renderMultiStatement = (filter, index, value) => {
+    console.log(value);
+    return (
+      <Row className="m-0">
+        <Col className="p-0">
+          <Form.Group className="form-group-inline py-0 my-0">
+            <Form.Control
+              as="select"
+              // value={dateOption}
+              className="advanced-filter-multi-options advanced-filter-select py-0 my-0"
+              aria-label="Advanced Filter Multi Select Options"
+              // onChange={event => {
+              //   this.changeFilterDateOption(index, event.target.value);
+              // }}
+            >
+              {filter.fields?.map((field, f_index) => {
+                return (
+                  <option key={f_index} value={field.name}>
+                    {field.title}
+                  </option>
+                );
+              })}
+            </Form.Control>
+          </Form.Group>
+        </Col>
+        <Col className="p-0" md="auto">
+          {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
+        </Col>
+        <Col md="auto">{this.renderRemoveStatementButton(index, this.removeMultiStatement)}</Col>
+      </Row>
+    );
+  };
+
   /**
    * Renders a single line "statement"
    * @param {Object} filterOption - Filter currently selected
@@ -1015,10 +1054,13 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'number' && this.renderNumberStatement(filterOption, index, value, numberOption, additionalFilterOption)}
             {filterOption?.type === 'date' && this.renderDateStatement(index, value, dateOption)}
             {filterOption?.type === 'relative' && this.renderRelativeDateStatement(filterOption, index, value, relativeOption)}
+            {filterOption?.type === 'multi' && this.renderMultiStatement(filterOption, index, value)}
           </Col>
-          <Col className="py-0" md="auto">
-            {this.renderRemoveStatementButton(index)}
-          </Col>
+          {filterOption?.type !== 'multi' && (
+            <Col className="py-0" md="auto">
+              {this.renderRemoveStatementButton(index, this.removeStatement)}
+            </Col>
+          )}
         </Row>
       </React.Fragment>
     );
