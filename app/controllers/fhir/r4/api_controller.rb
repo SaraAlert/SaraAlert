@@ -185,7 +185,8 @@ class Fhir::R4::ApiController < ActionController::API
         end
       end
 
-      request_updates = close_contact_from_fhir(contents)
+      fhir_map = close_contact_from_fhir(contents)
+      request_updates = fhir_map.transform_values { |v| v[:value] }
       status_unprocessable_entity && return if request_updates.nil?
 
       # Assign any remaining updates to the close_contact
@@ -194,7 +195,8 @@ class Fhir::R4::ApiController < ActionController::API
       # Wrap updates to the CloseContact and History creation in a transaction
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(close_contact, :patient_id) && close_contact.save(context: :api)
-          status_unprocessable_entity(format_model_validation_errors(close_contact)) && return
+          req_json = request.patch? ? patient.as_fhir.to_json : JSON.parse(request.body.string)
+          status_unprocessable_entity(close_contact, fhir_map, req_json) && return
         end
 
         Rails.logger.info "Updated Close Contact (ID: #{close_contact.id}) for Patient with ID: #{close_contact.patient_id}"
@@ -312,11 +314,14 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/RelatedPerson.*'
       )
 
-      resource = CloseContact.new(close_contact_from_fhir(contents))
+      fhir_map = close_contact_from_fhir(contents)
+      vals = fhir_map.transform_values { |v| v[:value] }
+      resource = CloseContact.new(vals)
 
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api)
-          status_unprocessable_entity(format_model_validation_errors(resource)) && return
+          req_json = JSON.parse(request.body.string)
+          status_unprocessable_entity(resource, fhir_map, req_json) && return
         end
 
         Rails.logger.info "Created Close Contact (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
@@ -787,7 +792,7 @@ class Fhir::R4::ApiController < ActionController::API
     resource&.errors&.messages&.each do |attribute, errors|
       next unless VALIDATION.key?(attribute) || attribute == :base
 
-      fhir_path = fhir_map.dig(attribute, :path)
+      fhir_path = fhir_map&.dig(attribute, :path)
 
       # Extract the original value from the request body using FHIRPath
       if fhir_path&.present?
