@@ -146,6 +146,8 @@ class Patient < ApplicationRecord
       .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       .where('last_assessment_reminder_sent <= ? OR last_assessment_reminder_sent IS NULL', 12.hours.ago)
       .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
+      .has_usable_preferred_contact_method
+      .within_preferred_contact_time
   }
 
   # Patients who are eligible for reminders
@@ -915,7 +917,7 @@ class Patient < ApplicationRecord
 
   # Send a daily assessment to this monitoree (if currently eligible). By setting send_now to true, an assessment
   # will be sent immediately without any consideration of the monitoree's preferred_contact_time.
-  def send_assessment(send_now: false)
+  def send_assessment()
     # Return UNLESS:
     # - in exposure: NOT closed AND within monitoring period OR
     # - in isolation: NOT closed (as patients on RRR linelist should receive notifications) OR
@@ -929,28 +931,6 @@ class Patient < ApplicationRecord
                   (monitoring && isolation) ||
                   (monitoring && continuous_exposure) ||
                   active_dependents_exclude_self.exists?
-
-    # Determine if it is yet an appropriate time to send this person a message.
-    unless send_now
-      # Local "hour" (defaults to eastern if timezone cannot be determined)
-      hour = Time.now.getlocal(address_timezone_offset).hour
-
-      # These are the hours that we consider to be morning, afternoon and evening
-      morning = (8..12)
-      afternoon = (12..16)
-      evening = (16..19)
-      case preferred_contact_time&.downcase
-      when 'morning'
-        return unless morning.include? hour
-      when 'afternoon'
-        return unless afternoon.include? hour
-      when 'evening'
-        return unless evening.include? hour
-      else
-        # Default to afternoon if preferred contact time is not specified
-        return unless (12..16).include? hour
-      end
-    end
 
     # Check last_assessment_reminder_sent before enqueueing to cover potential race condition of multiple reports
     # being sent out for the same monitoree.
