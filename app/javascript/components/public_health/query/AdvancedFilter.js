@@ -16,7 +16,6 @@ class AdvancedFilter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      filterOptions: advancedFilterOptions,
       activeFilter: null,
       activeFilterOptions: [],
       applied: false,
@@ -245,7 +244,7 @@ class AdvancedFilter extends React.Component {
    */
   changeFilterOption = (index, name) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
-    let filterOption = this.state.filterOptions.find(filterOption => {
+    let filterOption = advancedFilterOptions.find(filterOption => {
       return filterOption.name === name;
     });
 
@@ -509,7 +508,7 @@ class AdvancedFilter extends React.Component {
    * Format options for main select dropdown
    */
   getFormattedOptions = () => {
-    return this.state.filterOptions
+    return advancedFilterOptions
       .sort((a, b) => {
         if (a.type === 'blank') return -1;
         if (b.type === 'blank') return 1;
