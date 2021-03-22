@@ -2721,6 +2721,7 @@ class PatientTest < ActiveSupport::TestCase
     Timecop.freeze((Time.now.utc).change(hour: 23)) do
       assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
     end
+    Timecop.return
   end
 
   test 'within_preferred_contact_time scope' do
@@ -2830,6 +2831,7 @@ class PatientTest < ActiveSupport::TestCase
         assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
     end
+    Timecop.return
   end
 
   test 'has_not_reported_recently scope' do
