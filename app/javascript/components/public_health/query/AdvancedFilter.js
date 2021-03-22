@@ -31,7 +31,7 @@ class AdvancedFilter extends React.Component {
   componentDidMount() {
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
-      this.add();
+      this.addStatement();
     }
 
     // Set a timestamp to include in url to ensure browser cache is not re-used on page navigation
@@ -55,79 +55,17 @@ class AdvancedFilter extends React.Component {
     });
   }
 
-  // Add dummy active (default to first option which is a boolean type). User can then edit as needed.
-  add = () => {
-    this.setState(state => ({
-      activeFilterOptions: [...state.activeFilterOptions, { filterOption: null }],
-    }));
-  };
-
-  // Completely remove a statement from the active list
-  remove = index => {
-    this.setState(state => ({
-      activeFilterOptions: state.activeFilterOptions.slice(0, index).concat(state.activeFilterOptions.slice(index + 1, state.activeFilterOptions?.length)),
-    }));
-  };
-
-  // Reset state back to fresh start
-  reset = async () => {
-    if (await confirmDialog('Are you sure you want to reset this filter? Anything currently configured will be lost.')) {
-      this.newFilter();
-    }
-  };
-
-  // Apply the current filter
-  apply = keepStickySettings => {
-    const appliedFilter = {
-      activeFilter: this.state.activeFilter,
-      activeFilterOptions: _.cloneDeep(this.state.activeFilterOptions),
-    };
-    this.setState({ showAdvancedFilterModal: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
-      this.props.advancedFilterUpdate(this.state.activeFilterOptions, keepStickySettings);
-      if (this.props.updateStickySettings && this.state.activeFilter) {
-        localStorage.setItem(`SaraFilter`, this.state.activeFilter.id);
-      }
-    });
-  };
-
-  handleApplyClick = () => {
-    this.apply(false);
-  };
-
-  // Clear the current filter
-  clear = () => {
-    this.setState({ activeFilterOptions: [], show: false, activeFilter: null, applied: false }, () => {
-      this.add();
-      this.props.advancedFilterUpdate(this.state.activeFilter, false);
-      if (this.props.updateStickySettings) {
-        localStorage.setItem(`SaraFilter`, null);
-      }
-    });
-  };
-
-  // Reset modal when cancelled
-  cancel = () => {
-    const applied = this.state.applied;
-    const activeFilter = applied ? this.state.lastAppliedFilter.activeFilter : null;
-    const activeFilterOptions = applied ? this.state.lastAppliedFilter.activeFilterOptions : [];
-    this.setState({ showAdvancedFilterModal: false, applied, activeFilter, activeFilterOptions }, () => {
-      // if no filter was applied, start again with empty default
-      if (!applied) {
-        this.add();
-      }
-    });
-  };
-
-  // Start a new filter
+  /**
+   * Start a new filter
+   */
   newFilter = () => {
     this.setState({ activeFilterOptions: [], showAdvancedFilterModal: true, activeFilter: null, applied: false }, () => {
-      this.add();
+      this.addStatement();
     });
   };
 
   /**
    * Set the active filter
-   *
    * @param {Object} filter
    * @param {Bool} apply - only true when called from componentDidMount(), a flag to determine when the filter should be applied to the results
    *                         results & when other existing sticky settings/filter on the table should persist
@@ -142,175 +80,57 @@ class AdvancedFilter extends React.Component {
     }
   };
 
-  // Change an index filter option
-  changeFilterOption = (index, name) => {
-    let activeFilterOptions = [...this.state.activeFilterOptions];
-    let filterOption = this.state.filterOptions.find(filterOption => {
-      return filterOption.name === name;
+  /**
+   * Apply the current filter (updates the dashboard table)
+   * @param {Boolean} keepStickySettings - Update local storage with filter being applied
+   */
+  apply = keepStickySettings => {
+    const appliedFilter = {
+      activeFilter: this.state.activeFilter,
+      activeFilterOptions: _.cloneDeep(this.state.activeFilterOptions),
+    };
+    this.setState({ showAdvancedFilterModal: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
+      this.props.advancedFilterUpdate(this.state.activeFilterOptions, keepStickySettings);
+      if (this.props.updateStickySettings && this.state.activeFilter) {
+        localStorage.setItem(`SaraFilter`, this.state.activeFilter.id);
+      }
     });
-
-    // Figure out dummy value for the picked type
-    let value = null;
-    if (filterOption.type === 'boolean') {
-      value = true;
-    } else if (filterOption.type === 'option') {
-      value = filterOption.options[0];
-    } else if (filterOption.type === 'number') {
-      value = 0;
-    } else if (filterOption.type === 'date') {
-      // Default to "within" type
-      value = {
-        start: moment()
-          .add(-72, 'hours')
-          .format('YYYY-MM-DD'),
-        end: moment().format('YYYY-MM-DD'),
-      };
-    } else if (filterOption.type === 'relative') {
-      value = 'today';
-    } else if (filterOption.type === 'search') {
-      value = '';
-    }
-
-    activeFilterOptions[parseInt(index)] = {
-      filterOption,
-      value,
-      numberOption: filterOption.type === 'number' ? 'equal' : null,
-      dateOption: filterOption.type === 'date' ? 'within' : null,
-      relativeOption: filterOption.type === 'relative' ? 'today' : null,
-      additionalFilterOption: filterOption.type !== 'option' && filterOption.options ? filterOption.options[0] : null,
-    };
-    this.setState({ activeFilterOptions });
   };
 
-  // Change an index filter option for type number
-  changeFilterNumberOption = (index, prevNumberOption, newNumberOption, value, additionalFilterOption) => {
-    let activeFilterOptions = [...this.state.activeFilterOptions];
-    let newValue = value;
-    if (prevNumberOption === 'between' && newNumberOption !== 'between') {
-      newValue = 0;
-    } else if (prevNumberOption !== 'between' && newNumberOption === 'between') {
-      newValue = { firstBound: 0, secondBound: 0 };
-    }
-    activeFilterOptions[parseInt(index)] = {
-      filterOption: activeFilterOptions[parseInt(index)].filterOption,
-      value: newValue,
-      numberOption: newNumberOption,
-      additionalFilterOption,
-      dateOption: null,
-      relativeOption: null,
-    };
-    this.setState({ activeFilterOptions });
+  /**
+   * Reset main advanced filter modal when cancelled
+   * Reverts modal to initial state if there is not a filer applied or the last applied filter
+   */
+  cancel = () => {
+    const applied = this.state.applied;
+    const activeFilter = applied ? this.state.lastAppliedFilter.activeFilter : null;
+    const activeFilterOptions = applied ? this.state.lastAppliedFilter.activeFilterOptions : [];
+    this.setState({ showAdvancedFilterModal: false, applied, activeFilter, activeFilterOptions }, () => {
+      // if no filter was applied, start again with empty default
+      if (!applied) {
+        this.addStatement();
+      }
+    });
   };
 
-  // Change an index filter option for type date
-  changeFilterDateOption = (index, value) => {
-    let activeFilterOptions = [...this.state.activeFilterOptions];
-    let defaultValue = null;
-    if (value === 'within') {
-      defaultValue = {
-        start: moment()
-          .subtract(3, 'days')
-          .format('YYYY-MM-DD'),
-        end: moment().format('YYYY-MM-DD'),
-      };
-    } else {
-      defaultValue = moment().format('YYYY-MM-DD');
-    }
-    activeFilterOptions[parseInt(index)] = {
-      filterOption: activeFilterOptions[parseInt(index)].filterOption,
-      value: defaultValue,
-      dateOption: value,
-      numberOption: null,
-      relativeOption: null,
-      additionalFilterOption: null,
-    };
-    this.setState({ activeFilterOptions });
+  /**
+   * Clears the current applied filter (saved or unsaved)
+   * Resets the advanced filter modal and dashboard table
+   */
+  clear = () => {
+    this.setState({ activeFilterOptions: [], show: false, activeFilter: null, applied: false }, () => {
+      this.addStatement();
+      this.props.advancedFilterUpdate(this.state.activeFilter, false);
+      if (this.props.updateStickySettings) {
+        localStorage.setItem(`SaraFilter`, null);
+      }
+    });
   };
 
-  // Change the relative filter option for type relative date
-  changeFilterRelativeOption = (index, relativeOption) => {
-    let activeFilterOptions = [...this.state.activeFilterOptions];
-    let defaultValue = relativeOption === 'custom' ? { operator: 'less-than', number: 1, unit: 'days', when: 'past' } : relativeOption;
-    activeFilterOptions[parseInt(index)] = {
-      filterOption: activeFilterOptions[parseInt(index)].filterOption,
-      value: defaultValue,
-      relativeOption,
-      dateOption: null,
-      numberOption: null,
-      additionalFilterOption: null,
-    };
-    this.setState({ activeFilterOptions });
-  };
-
-  // Change the additional filter option supported for different types if provided
-  changeFilterAdditionalFilterOption = (index, additionalFilterOption, value, numberOption, dateOption, relativeOption) => {
-    let activeFilterOptions = [...this.state.activeFilterOptions];
-    // add all other options here
-    activeFilterOptions[parseInt(index)] = {
-      filterOption: activeFilterOptions[parseInt(index)].filterOption,
-      value,
-      additionalFilterOption,
-      numberOption,
-      dateOption,
-      relativeOption,
-    };
-    this.setState({ activeFilterOptions });
-  };
-
-  // Change an index value
-  changeValue = (index, value) => {
-    let activeFilterOptions = [...this.state.activeFilterOptions];
-    activeFilterOptions[parseInt(index)]['value'] = value;
-    this.setState({ activeFilterOptions });
-  };
-
-  // Save a new filter
-  save = () => {
-    let self = this;
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/user_filters', { activeFilterOptions: this.state.activeFilterOptions, name: this.state.filterName })
-      .catch(err => {
-        toast.error(err?.response?.data?.error ? err.response.data.error : 'Failed to save filter.', {
-          autoClose: 8000,
-        });
-      })
-      .then(response => {
-        if (response?.data) {
-          toast.success('Filter successfully saved.');
-          let data = { ...response?.data, contents: JSON.parse(response?.data?.contents) };
-          this.setState({ activeFilter: data, savedFilters: [...self.state.savedFilters, data] });
-        }
-      });
-  };
-
-  // Update an existing filter
-  update = () => {
-    let self = this;
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .put(window.BASE_PATH + '/user_filters/' + this.state.activeFilter.id, { activeFilterOptions: this.state.activeFilterOptions })
-      .catch(() => {
-        toast.error('Failed to update filter.');
-      })
-      .then(response => {
-        if (response?.data) {
-          toast.success('Filter successfully updated.');
-          let data = { ...response?.data, contents: JSON.parse(response?.data?.contents) };
-          this.setState({
-            activeFilter: data,
-            savedFilters: [
-              ...self.state.savedFilters.filter(filter => {
-                return filter.id != data.id;
-              }),
-              data,
-            ],
-          });
-        }
-      });
-  };
-
-  // Delete an existing filter
+  /**
+   * Delete an existing saved filter from the database
+   * Resets modal to initial state
+   */
   delete = () => {
     let self = this;
     const id = this.state.activeFilter.id;
@@ -340,7 +160,237 @@ class AdvancedFilter extends React.Component {
       });
   };
 
-  // TO DO: RE-ORDER ABOVE HERE
+  /**
+   * Resets modal to initial state
+   */
+  reset = async () => {
+    if (await confirmDialog('Are you sure you want to reset this filter? Anything currently configured will be lost.')) {
+      this.newFilter();
+    }
+  };
+
+  /**
+   * Saves a new filter to the database
+   */
+  save = () => {
+    let self = this;
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios
+      .post(window.BASE_PATH + '/user_filters', { activeFilterOptions: this.state.activeFilterOptions, name: this.state.filterName })
+      .catch(err => {
+        toast.error(err?.response?.data?.error ? err.response.data.error : 'Failed to save filter.', {
+          autoClose: 8000,
+        });
+      })
+      .then(response => {
+        if (response?.data) {
+          toast.success('Filter successfully saved.');
+          let data = { ...response?.data, contents: JSON.parse(response?.data?.contents) };
+          this.setState({ activeFilter: data, savedFilters: [...self.state.savedFilters, data] });
+        }
+      });
+  };
+
+  /**
+   * Updates an existing saved filter to the database
+   */
+  update = () => {
+    let self = this;
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios
+      .put(window.BASE_PATH + '/user_filters/' + this.state.activeFilter.id, { activeFilterOptions: this.state.activeFilterOptions })
+      .catch(() => {
+        toast.error('Failed to update filter.');
+      })
+      .then(response => {
+        if (response?.data) {
+          toast.success('Filter successfully updated.');
+          let data = { ...response?.data, contents: JSON.parse(response?.data?.contents) };
+          this.setState({
+            activeFilter: data,
+            savedFilters: [
+              ...self.state.savedFilters.filter(filter => {
+                return filter.id != data.id;
+              }),
+              data,
+            ],
+          });
+        }
+      });
+  };
+
+  /**
+   * Adds a new filter statement to the end of the existing list of current filter statements
+   */
+  addStatement = () => {
+    this.setState(state => ({
+      activeFilterOptions: [...state.activeFilterOptions, { filterOption: null }],
+    }));
+  };
+
+  /**
+   * Removes the filter statement at certain index
+   * @param {Number} index - Current filter index
+   */
+  removeStatement = index => {
+    this.setState(state => ({
+      activeFilterOptions: state.activeFilterOptions.slice(0, index).concat(state.activeFilterOptions.slice(index + 1, state.activeFilterOptions?.length)),
+    }));
+  };
+
+  /**
+   * Change the main filter option dropdown
+   * @param {Number} index - Current filter index
+   * @param {String} name - Current filter name
+   */
+  changeFilterOption = (index, name) => {
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    let filterOption = this.state.filterOptions.find(filterOption => {
+      return filterOption.name === name;
+    });
+
+    // Figure out dummy value for the picked type
+    let value = null;
+    if (filterOption.type === 'boolean') {
+      value = true;
+    } else if (filterOption.type === 'select') {
+      value = filterOption.options[0];
+    } else if (filterOption.type === 'number') {
+      value = 0;
+    } else if (filterOption.type === 'date') {
+      // Default to "within" type
+      value = {
+        start: moment()
+          .add(-72, 'hours')
+          .format('YYYY-MM-DD'),
+        end: moment().format('YYYY-MM-DD'),
+      };
+    } else if (filterOption.type === 'relative') {
+      value = 'today';
+    } else if (filterOption.type === 'search') {
+      value = '';
+    }
+
+    activeFilterOptions[parseInt(index)] = {
+      filterOption,
+      value,
+      numberOption: filterOption.type === 'number' ? 'equal' : null,
+      dateOption: filterOption.type === 'date' ? 'within' : null,
+      relativeOption: filterOption.type === 'relative' ? 'today' : null,
+      additionalFilterOption: filterOption.type !== 'select' && filterOption.options ? filterOption.options[0] : null,
+    };
+    this.setState({ activeFilterOptions });
+  };
+
+  /**
+   * Change the main number option for type number
+   * @param {Number} index - Current filter index
+   * @param {String} prevNumberOption - numberOption value from before change
+   * @param {String} newNumberOption - numberOption value from after change
+   * @param {String} value - Value of the current number type statement
+   * @param {String} additionalFilterOption - Current additionalFilterOption value
+   */
+  // Change an index filter option for type number
+  changeFilterNumberOption = (index, prevNumberOption, newNumberOption, value, additionalFilterOption) => {
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    let newValue = value;
+    if (prevNumberOption === 'between' && newNumberOption !== 'between') {
+      newValue = 0;
+    } else if (prevNumberOption !== 'between' && newNumberOption === 'between') {
+      newValue = { firstBound: 0, secondBound: 0 };
+    }
+    activeFilterOptions[parseInt(index)] = {
+      filterOption: activeFilterOptions[parseInt(index)].filterOption,
+      value: newValue,
+      numberOption: newNumberOption,
+      additionalFilterOption,
+      dateOption: null,
+      relativeOption: null,
+    };
+    this.setState({ activeFilterOptions });
+  };
+
+  /**
+   * Change the main date option for type date
+   * @param {Number} index - Current filter index
+   * @param {String} dateOption - Current dateOption value
+   */
+  changeFilterDateOption = (index, dateOption) => {
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    let defaultValue = null;
+    if (dateOption === 'within') {
+      defaultValue = {
+        start: moment()
+          .subtract(3, 'days')
+          .format('YYYY-MM-DD'),
+        end: moment().format('YYYY-MM-DD'),
+      };
+    } else {
+      defaultValue = moment().format('YYYY-MM-DD');
+    }
+    activeFilterOptions[parseInt(index)] = {
+      filterOption: activeFilterOptions[parseInt(index)].filterOption,
+      value: defaultValue,
+      dateOption,
+      numberOption: null,
+      relativeOption: null,
+      additionalFilterOption: null,
+    };
+    this.setState({ activeFilterOptions });
+  };
+
+  /**
+   * Change the main relative filter option for type relative date
+   * @param {Number} index - Current filter index
+   * @param {String} relativeOption - Current relativeOption value
+   */
+  changeFilterRelativeOption = (index, relativeOption) => {
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    let defaultValue = relativeOption === 'custom' ? { operator: 'less-than', number: 1, unit: 'days', when: 'past' } : relativeOption;
+    activeFilterOptions[parseInt(index)] = {
+      filterOption: activeFilterOptions[parseInt(index)].filterOption,
+      value: defaultValue,
+      relativeOption,
+      dateOption: null,
+      numberOption: null,
+      additionalFilterOption: null,
+    };
+    this.setState({ activeFilterOptions });
+  };
+
+  /**
+   * Change the additional filter option supported for different types if provided
+   * @param {Number} index - Current filter index
+   * @param {String} additionalFilterOption - Current additionalFilterOption value
+   * @param {*} value - Current filter value
+   * @param {String} numberOption - Current numberOption value (could be null depending on filter statement type)
+   * @param {String} dateOption - Current dateOption value (could be null depending on filter statement type)
+   * @param {String} relativeOption - Current relativeOption value (could be null depending on filter statement type)
+   */
+  changeFilterAdditionalFilterOption = (index, additionalFilterOption, value, numberOption, dateOption, relativeOption) => {
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    // add all other options here
+    activeFilterOptions[parseInt(index)] = {
+      filterOption: activeFilterOptions[parseInt(index)].filterOption,
+      value,
+      additionalFilterOption,
+      numberOption,
+      dateOption,
+      relativeOption,
+    };
+    this.setState({ activeFilterOptions });
+  };
+
+  /**
+   * Change value of a filter statement
+   * @param {Number} index - Current filter index
+   * @param {*} value - Current filter value
+   */
+  changeValue = (index, value) => {
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    activeFilterOptions[parseInt(index)]['value'] = value;
+    this.setState({ activeFilterOptions });
+  };
 
   /**
    * Gets the string inside the tooltip for relative date filter options.
@@ -424,8 +474,8 @@ class AdvancedFilter extends React.Component {
   /**
    * Renders a tooltip for a statement row
    * @param {Object} filter - Filter currently selected
-   * @param {Number} index  - Filter index
-   * @param {String} statement  - Tooltip text
+   * @param {Number} index - Filter index
+   * @param {String} statement - Tooltip text
    */
   renderStatementTooltip = (filter, index, statement) => {
     const tooltipId = `${filter.name}-${index}`;
@@ -445,12 +495,12 @@ class AdvancedFilter extends React.Component {
 
   /**
    * Renders remove statement button (minus button at far right of statement)
-   * @param {Number} index  - Filter index
+   * @param {Number} index - Filter index
    */
   renderRemoveStatementButton = index => {
     return (
       <div className="float-right">
-        <Button className="remove-filter-row" variant="danger" onClick={() => this.remove(index)} aria-label="Remove Advanced Filter Option">
+        <Button className="remove-filter-row" variant="danger" onClick={() => this.removeStatement(index)} aria-label="Remove Advanced Filter Option">
           <i className="fas fa-minus"></i>
         </Button>
       </div>
@@ -477,10 +527,10 @@ class AdvancedFilter extends React.Component {
       });
   };
 
-  // TO DO: update comment
   /**
    * Render the options for the select that represents fields to filter on
-   *
+   * @param {String} current - Name of currently selected filter
+   * @param {Number} index - Filter index
    */
   renderOptions = (current, index) => {
     const selectedValue = this.getFormattedOptions().find(option => {
@@ -514,10 +564,15 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // TO DO UPDATE
   /**
    * Renders additional filter option dropdown that is used in conjunction with other advanced filter types
-   *
+   * @param {String} current - Selected option from additional list of options (if provided)
+   * @param {Number} index - Filter index
+   * @param {String[]} options - List of additional options provided for the dropdown
+   * @param {*} value - Current value for the associated statement (could be any type)
+   * @param {String} numberOption - Selected option for number filters that is possibly associated with this statement
+   * @param {String} dateOption - Selected option for date filters that is possibly associated with this statement
+   * @param {String} relativeOption - Selected option for relative date filters that is possibly associated with this statement
    */
   renderAdditionalFilterOptions = (current, index, options, value, numberOption, dateOption, relativeOption) => {
     return (
@@ -538,10 +593,11 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // TO DO UPDATE
   /**
    * Renders boolean type line "statement"
-   *
+   * @param {Object} filterOption - Filter currently selected
+   * @param {Number} index - Filter index
+   * @param {Boolean} value - Current value selected in the toggle buttons
    */
   renderBooleanStatement = (filter, index, value) => {
     return (
@@ -582,10 +638,12 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // TO DO UPDATE
   /**
    * Renders search/text type line "statement"
-   *
+   * @param {Object} filterOption - Filter currently selected
+   * @param {Number} index - Filter index
+   * @param {String} value - Current text string in the input
+   * @param {String} additionalFilterOption - Selected option from additional list of options (if provided)
    */
   renderSearchStatement = (filter, index, value, additionalFilterOption) => {
     // compute tooltip for specific search case
@@ -621,10 +679,11 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // TO DO UPDATE
   /**
    * Renders dropdown select type line "statement"
-   *
+   * @param {Object} filterOption - Filter currently selected
+   * @param {Number} index - Filter index
+   * @param {String} value - Current value selected in the dropdown
    */
   renderSelectStatement = (filter, index, value) => {
     return (
@@ -654,10 +713,13 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // TO DO UPDATE
   /**
    * Renders number type line "statement"
-   *
+   * @param {Object} filterOption - Filter currently selected
+   * @param {Number} index - Filter index
+   * @param {*} value - Current value for this statement (could be an integer or object of integers)
+   * @param {String} numberOption - Selected option for number filters that determines what else is rendered in this statement
+   * @param {String} additionalFilterOption - Selected option from additional list of options (if provided)
    */
   renderNumberStatement = (filter, index, value, numberOption, additionalFilterOption) => {
     const betweenTooltipText = '"Between" is inclusive and will filter for values within the user-entered range, including the start and end values.';
@@ -721,10 +783,11 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // TO DO UPDATE
   /**
    * Renders date type line "statement"
-   *
+   * @param {Number} index - Filter index
+   * @param {*} value - Current value for this statement (could be a single date or object of dates)
+   * @param {String} dateOption - Selected option for date filters that determines what else is rendered in this statement
    */
   renderDateStatement = (index, value, dateOption) => {
     return (
@@ -809,10 +872,12 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // TO DO UPDATE
   /**
    * Renders relative date type line "statement"
-   *
+   * @param {Object} filter - Filter currently selected
+   * @param {Number} index - Filter index
+   * @param {*} value - Current value for relative date filter (Object containing number, unit, operator and when if custom and just the relativeOption if not)
+   * @param {String} relativeOption - Selected option for relative date filters that determines what else is rendered in this statement
    */
   renderRelativeDateStatement = (filter, index, value, relativeOption) => {
     return (
@@ -888,10 +953,16 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // TO DO UPDATE
   /**
    * Renders a single line "statement"
-   *
+   * @param {Object} filterOption - Filter currently selected
+   * @param {*} value - Current value for this statement (could be a string, bool, date or object)
+   * @param {Number} index - Filter index
+   * @param {Number} total - Total number of filters currently added
+   * @param {String} numberOption - Selected option for number filters that determines what else is rendered in the statement
+   * @param {String} dateOption - Selected option for date filters that determines what else is rendered in the statement
+   * @param {String} relativeOption - Selected option for relative date filters that determines what else is rendered in the statement
+   * @param {String} additionalFilterOption - Selected option from additional list of options (if provided)
    */
   renderStatement = (filterOption, value, index, total, numberOption, dateOption, relativeOption, additionalFilterOption) => {
     return (
@@ -908,14 +979,14 @@ class AdvancedFilter extends React.Component {
             {this.renderOptions(filterOption?.name, index)}
           </Col>
           {/* specific dropdown for filters with a type that requires additional options (not type option) */}
-          {filterOption?.type !== 'option' && filterOption?.options && (
+          {filterOption?.type !== 'select' && filterOption?.options && (
             <Col md={4}>
               {this.renderAdditionalFilterOptions(additionalFilterOption, index, filterOption.options, value, numberOption, dateOption, relativeOption)}
             </Col>
           )}
           {filterOption?.type === 'boolean' && this.renderBooleanStatement(filterOption, index, value)}
           {filterOption?.type === 'search' && this.renderSearchStatement(filterOption, index, value, additionalFilterOption)}
-          {filterOption?.type === 'option' && this.renderSelectStatement(filterOption, index, value)}
+          {filterOption?.type === 'select' && this.renderSelectStatement(filterOption, index, value)}
           {filterOption?.type === 'number' && this.renderNumberStatement(filterOption, index, value, numberOption, additionalFilterOption)}
           {filterOption?.type === 'date' && this.renderDateStatement(index, value, dateOption)}
           {filterOption?.type === 'relative' && this.renderRelativeDateStatement(filterOption, index, value, relativeOption)}
@@ -970,7 +1041,13 @@ class AdvancedFilter extends React.Component {
                 <Button id="advanced-filter-reset" variant="danger" onClick={this.reset}>
                   Reset
                 </Button>
-                <Button id="advanced-filter-apply" variant="primary" className="ml-2" onClick={this.handleApplyClick}>
+                <Button
+                  id="advanced-filter-apply"
+                  variant="primary"
+                  className="ml-2"
+                  onClick={() => {
+                    this.apply(false);
+                  }}>
                   Apply
                 </Button>
               </div>
@@ -999,7 +1076,7 @@ class AdvancedFilter extends React.Component {
                 id="add-filter-row"
                 variant="primary"
                 disabled={this.state.activeFilterOptions?.length > 4}
-                onClick={() => this.add()}
+                onClick={() => this.addStatement()}
                 aria-label="Add Advanced Filter Option">
                 <i className="fas fa-plus"></i>
               </Button>
