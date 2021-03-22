@@ -314,7 +314,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assigned_usr_iss = issues.find { |e| /10000.*Assigned User/.match(e['diagnostics']) }
     assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, json_patient) == 1_000_000)
     email_iss = issues.find { |e| /Email.*Primary Contact Method/.match(e['diagnostics']) }
-    assert_not_nil email_iss # Last name is omitted from the request, so don't eval the FHIRPath
+    assert_not_nil email_iss # Email is omitted from the request, so don't eval the FHIRPath
   end
 
   test 'should group Patients in households with matching phone numbers' do
@@ -665,7 +665,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assigned_usr_iss = issues.find { |e| /10000.*Assigned User/.match(e['diagnostics']) }
     assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, json_patient) == 1_000_000)
     email_iss = issues.find { |e| /Email.*Primary Contact Method/.match(e['diagnostics']) }
-    assert_not_nil email_iss # Last name is omitted from the request, so don't eval the FHIRPath
+    assert_not_nil email_iss # Email is omitted from the request, so don't eval the FHIRPath
   end
 
   test 'SYSTEM FLOW: should allow jurisdiction transfers when jurisdiction exists' do
