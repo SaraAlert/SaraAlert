@@ -100,8 +100,7 @@ export const advancedFilterOptions = [
     title: 'Close Contact with a Known Case ID (Text)',
     description: 'Monitorees with a known exposure to a probable or confirmed case ID',
     type: 'search',
-    options: ['Exact Match', 'Contains'],
-    tooltip: true // CHANGE ME
+    options: ['Exact Match', 'Contains']
   },
   {
     name: 'cohort',
