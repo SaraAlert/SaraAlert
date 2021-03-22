@@ -227,7 +227,7 @@ class AdvancedFilter extends React.Component {
           type: 'boolean',
           tooltip:
             `This filter will return monitorees that have texted “STOP” in response to a Sara Alert text message and ` +
-            `cannot receive messages through SMS Preferred Reporting Methods until they text "START"`,
+            `cannot receive messages through SMS Preferred Reporting Methods until they text "START".`,
         },
       ],
       savedFilters: [],
