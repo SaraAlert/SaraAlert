@@ -121,31 +121,39 @@ bundle exec sidekiq -q default -q mailers -q exports
   * `ConsumeAssessmentsJob`
       - Should always be running in order to be ready to consume assessments at any time.
       - Handles consuming assessments from the assessment container into the enrollment container.
+      - Run with `bin/bundle exec rake reports:receive_and_process_reports`
 
   The following jobs are configured to run periodically:
   * `ClosePatientsJob`
-      - Closes (stops active monitoring of) monitorees that meet duration/symptomatic conditions
+      - Closes (stops active monitoring of) Patients that meet duration/symptomatic conditions criteria
       - Recommend this be run every hour
+      - Run with `bin/bundle exec rake subjects:close_patients`
   * `PurgeJob`
       - Purges eligible records
       - Recommend this be run once every week
       - Date/Time which the Job runs needs to match what is set in `config/sara.yml`: `weekly_purge_date`
+      - Run with `bin/bundle exec rake admin:purge_job`
   * `SendPurgeWarningsJob`
       - Send warnings to users of upcoming `PurgeJob`
       - Recommend this be run once every week before `PurgeJob`
       - Date/Time which the Job runs needs to match what is set in `confi/sara.yml`: `weekly_purge_warning_date`
+      - Run with `bin/bundle exec rake mailers:send_purge_warning`
   * `SendPatientDigestJob`
-      - Send reports on recently symptomatic patients to jurisdictions that opt in.
+      - Send reports on recently symptomatic patients to jurisdictions that opt in with `send_digest: true` set in their jurisdiction's configuration in `jurisdictions.yml`
       - Recommend this be run once every hour
+      - Run with `bin/bundle exec rake mailers:send_patient_digest`
   * `CacheAnalyticsJob`
       - Caches analytics information for faster retrieval
       - Recommend this be run once every 24 hours
+      - Run with `bin/bundle exec rake analytics:cache_current_analytics`
   * `SendAssessmentsJob`
       - Send assessment reminders to monitorees
       - Recommend this be run once every hour
+      - Run with `bin/bundle exec rake mailers:send_assessments`
   * `PurgeJwtIdentifiersJob`
       - Purge expired JWT Identifiers that are saved and validated when clients request access to the API.
       - Recommend this be run once every 24 hours
+      - Run with `bin/bundle exec rake admin:purge_jwt_identifiers`
 
 NOTE: In any production instance, these jobs should be handled outside of any of the containers (they should be scheduled and launched via crontab by the host).
 
