@@ -2,6 +2,11 @@
 
 # Helper module for FHIR translations
 module FhirHelper # rubocop:todo Metrics/ModuleLength
+  SA_EXT_BASE_URL = 'http://saraalert.org/StructureDefinition/'
+  DATA_ABSENT_URL = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
+  OMB_URL = 'ombCategory'
+  DETAILED_URL = 'detailed'
+
   # Returns a representative FHIR::Patient for an instance of a Sara Alert Patient. Uses US Core
   # extensions for sex, race, and ethnicity.
   # https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-patient.html
@@ -107,57 +112,67 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   # Create a hash of atttributes that corresponds to a Sara Alert Patient (and can be used to
   # create new ones, or update existing ones), using the given FHIR::Patient.
+  # Hash is of the form:
+  # {
+  #  attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element> }
+  # }
   def patient_from_fhir(patient, default_jurisdiction_id)
     symptom_onset = from_date_extension(patient, ['symptom-onset-date'])
     address = from_address_by_type_extension(patient, 'USA')
+    address_index = patient&.address&.index(address)
     foreign_address = from_address_by_type_extension(patient, 'Foreign')
+    foreign_address_index = patient&.address&.index(foreign_address)
+    primary_phone = patient&.telecom&.find { |t| t&.system == 'phone' }
+    secondary_phone = patient&.telecom&.select { |t| t&.system == 'phone' }&.second
+    email = patient&.telecom&.find { |t| t&.system == 'email' }
     {
-      monitoring: patient&.active.nil? ? false : patient.active,
-      first_name: patient&.name&.first&.given&.first,
-      middle_name: patient&.name&.first&.given&.second,
-      last_name: patient&.name&.first&.family,
-      primary_telephone: from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.first&.value),
-      secondary_telephone: from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value),
-      email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
-      date_of_birth: patient&.birthDate,
-      age: Patient.calc_current_age_fhir(patient&.birthDate),
-      address_line_1: address&.line&.first,
-      address_line_2: address&.line&.second,
-      address_city: address&.city,
-      address_county: address&.district,
-      address_state: address&.state,
-      address_zip: address&.postalCode,
-      monitored_address_line_1: address&.line&.first,
-      monitored_address_line_2: address&.line&.second,
-      monitored_address_city: address&.city,
-      monitored_address_county: address&.district,
-      monitored_address_state: address&.state,
-      monitored_address_zip: address&.postalCode,
-      foreign_address_line_1: foreign_address&.line&.first,
-      foreign_address_line_2: foreign_address&.line&.second,
-      foreign_address_line_3: foreign_address&.line&.third,
-      foreign_address_city: foreign_address&.city,
-      foreign_address_state: foreign_address&.state,
-      foreign_address_zip: foreign_address&.postalCode,
-      foreign_address_country: foreign_address&.country,
-      primary_language: patient&.communication&.first&.language&.coding&.first&.display,
-      interpretation_required: patient&.communication&.first&.preferred,
-      white: race_code?(patient, '2106-3', 'ombCategory', false),
-      black_or_african_american: race_code?(patient, '2054-5', 'ombCategory', false),
-      american_indian_or_alaska_native: race_code?(patient, '1002-5', 'ombCategory', false),
-      asian: race_code?(patient, '2028-9', 'ombCategory', false),
-      native_hawaiian_or_other_pacific_islander: race_code?(patient, '2076-8', 'ombCategory', false),
-      race_other: race_code?(patient, '2131-1', 'detailed', false),
-      race_unknown: race_code?(patient, 'unknown', 'http://hl7.org/fhir/StructureDefinition/data-absent-reason', true),
-      race_refused_to_answer: race_code?(patient, 'asked-declined', 'http://hl7.org/fhir/StructureDefinition/data-absent-reason', true),
+      monitoring: { value: patient&.active.nil? ? false : patient.active, path: 'Patient.active' },
+      first_name: { value: patient&.name&.first&.given&.first, path: 'Patient.name[0].given[0]' },
+      middle_name: { value: patient&.name&.first&.given&.second, path: 'Patient.name[0].given[1]' },
+      last_name: { value: patient&.name&.first&.family, path: 'Patient.name[0].family' },
+      primary_telephone: { value: from_fhir_phone_number(primary_phone&.value), path: "Patient.telecom[#{patient&.telecom&.index(primary_phone)}].value" },
+      secondary_telephone: { value: from_fhir_phone_number(secondary_phone&.value),
+                             path: "Patient.telecom[#{patient&.telecom&.index(secondary_phone)}].value" },
+      email: { value: email&.value, path: "Patient.telecom[#{patient&.telecom&.index(email)}].value" },
+      date_of_birth: { value: patient&.birthDate, path: 'Patient.birthDate' },
+      age: { value: Patient.calc_current_age_fhir(patient&.birthDate), path: 'Patient.birthDate' },
+      address_line_1: { value: address&.line&.first, path: "Patient.address[#{address_index}].line[0]" },
+      address_line_2: { value: address&.line&.second, path: "Patient.address[#{address_index}].line[1]" },
+      address_city: { value: address&.city, path: "Patient.address[#{address_index}].city" },
+      address_county: { value: address&.district, path: "Patient.address[#{address_index}].district" },
+      address_state: { value: address&.state, path: "Patient.address[#{address_index}].state" },
+      address_zip: { value: address&.postalCode, path: "Patient.address[#{address_index}].postalCode" },
+      monitored_address_line_1: { value: address&.line&.first, path: "Patient.address[#{address_index}].line[0]" },
+      monitored_address_line_2: { value: address&.line&.second, path: "Patient.address[#{address_index}].line[1]" },
+      monitored_address_city: { value: address&.city, path: "Patient.address[#{address_index}].city" },
+      monitored_address_county: { value: address&.district, path: "Patient.address[#{address_index}].district" },
+      monitored_address_state: { value: address&.state, path: "Patient.address[#{address_index}].state" },
+      monitored_address_zip: { value: address&.postalCode, path: "Patient.address[#{address_index}].postalCode" },
+      foreign_address_line_1: { value: foreign_address&.line&.first, path: "Patient.address[#{foreign_address_index}].line[0]" },
+      foreign_address_line_2: { value: foreign_address&.line&.second, path: "Patient.address[#{foreign_address_index}].line[1]" },
+      foreign_address_line_3: { value: foreign_address&.line&.third, path: "Patient.address[#{foreign_address_index}].line[2]" },
+      foreign_address_city: { value: foreign_address&.city, path: "Patient.address[#{foreign_address_index}].city" },
+      foreign_address_state: { value: foreign_address&.state, path: "Patient.address[#{foreign_address_index}].state" },
+      foreign_address_zip: { value: foreign_address&.postalCode, path: "Patient.address[#{foreign_address_index}].postalCode" },
+      foreign_address_country: { value: foreign_address&.country, path: "Patient.address[#{foreign_address_index}].country" },
+      primary_language: { value: patient&.communication&.first&.language&.coding&.first&.display, path: 'Patient.communication[0].language.coding[0].display' },
+      interpretation_required: { value: patient&.communication&.first&.preferred, path: 'Patient.communication[0].preferred' },
+      white: race_code?(patient, '2106-3', OMB_URL),
+      black_or_african_american: race_code?(patient, '2054-5', OMB_URL),
+      american_indian_or_alaska_native: race_code?(patient, '1002-5', OMB_URL),
+      asian: race_code?(patient, '2028-9', OMB_URL),
+      native_hawaiian_or_other_pacific_islander: race_code?(patient, '2076-8', OMB_URL),
+      race_other: race_code?(patient, '2131-1', DETAILED_URL),
+      race_unknown: race_code?(patient, 'unknown', DATA_ABSENT_URL),
+      race_refused_to_answer: race_code?(patient, 'asked-declined', DATA_ABSENT_URL),
       ethnicity: from_us_core_ethnicity(patient),
       sex: from_us_core_birthsex(patient),
       preferred_contact_method: from_string_extension(patient, 'preferred-contact-method'),
       preferred_contact_time: from_string_extension(patient, 'preferred-contact-time'),
       symptom_onset: symptom_onset,
-      user_defined_symptom_onset: !symptom_onset.nil?,
+      user_defined_symptom_onset: { value: !symptom_onset[:value]&.nil?, path: nil },
       last_date_of_exposure: from_date_extension(patient, %w[last-date-of-exposure last-exposure-date]),
-      isolation: from_bool_extension(patient, 'isolation') || false,
+      isolation: from_bool_extension_false_default(patient, 'isolation'),
       jurisdiction_id: from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id),
       monitoring_plan: from_string_extension(patient, 'monitoring-plan'),
       assigned_user: from_positive_integer_extension(patient, 'assigned-user'),
@@ -173,7 +188,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       primary_telephone_type: from_primary_phone_type_extension(patient),
       secondary_telephone_type: from_secondary_phone_type_extension(patient),
       user_defined_id_statelocal: from_statelocal_id_extension(patient),
-      continuous_exposure: from_bool_extension(patient, 'continuous-exposure') || false
+      continuous_exposure: from_bool_extension_false_default(patient, 'continuous-exposure')
     }
   end
 
@@ -268,9 +283,20 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   # Return a boolean indicating if the given race code is present on the given FHIR::Patient.
-  def race_code?(patient, code, url, absent)
-    race_extension = patient&.extension&.select { |e| e&.url&.include?('us-core-race') }&.first&.extension
-    race_extension&.select { |e| e&.url == url }&.any? { |e| (absent ? e&.valueCode : e&.valueCoding&.code) == code }
+  def race_code?(patient, code, url)
+    race_url = 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race'
+    race_ext = patient&.extension&.find { |e| e.url == race_url }
+
+    case url
+    when OMB_URL, DETAILED_URL
+      value = race_ext&.extension&.find { |e| e.url == url && e.valueCoding&.code == code }&.valueCoding&.code
+      path_suffix = '.valueCoding.code'
+    when DATA_ABSENT_URL
+      value = race_ext&.extension&.find { |e| e.url == DATA_ABSENT_URL }&.valueCode
+      path_suffix = '.valueCode'
+    end
+
+    { value: value == code, path: "Patient.extension('#{race_url}').extension('#{url}')#{path_suffix}" }
   end
 
   # Build a FHIR US Core Ethnicity Extension given Sara Alert ethnicity information.
@@ -303,17 +329,23 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
                         ])
   end
 
-  # Return a string representing the ethnicity of the given FHIR::Patient
+  # Convert from FHIR ethnicity. Could be ombCategory or a data-absent-reason
   def from_us_core_ethnicity(patient)
-    urls = %w[ombCategory http://hl7.org/fhir/StructureDefinition/data-absent-reason]
-    ethnicity = patient&.extension&.select { |e| e.url.include?('us-core-ethnicity') }&.first&.extension&.select { |e| urls.include?(e.url) }&.first
-    code = ethnicity&.valueCoding&.code || ethnicity&.valueCode
-    return 'Hispanic or Latino' if code == '2135-2'
-    return 'Not Hispanic or Latino' if code == '2186-5'
-    return 'Unknown' if code == 'unknown'
-    return 'Refused to Answer' if code == 'asked-declined'
+    eth_url = 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity'
+    eth_ext = patient&.extension&.find { |e| e.url == eth_url }
+    omb_eth = eth_ext&.extension&.find { |e| e.url == OMB_URL }&.valueCoding&.code
+    absent_eth = eth_ext&.extension&.find { |e| e.url == DATA_ABSENT_URL }&.valueCode
+    if omb_eth
+      converted = 'Hispanic or Latino' if omb_eth == '2135-2'
+      converted = 'Not Hispanic or Latino' if omb_eth == '2186-5'
+      path_suffix = ".extension('#{OMB_URL}').valueCoding.code"
+    elsif absent_eth
+      converted = 'Unknown' if absent_eth == 'unknown'
+      converted = 'Refused to Answer' if absent_eth == 'asked-declined'
+      path_suffix = ".extension('#{DATA_ABSENT_URL}').valueCode"
+    end
 
-    code
+    { value: converted || omb_eth || absent_eth, path: "Patient.extension('#{eth_url}')#{path_suffix}" }
   end
 
   # Build a FHIR US Core BirthSex Extension given Sara Alert sex information.
@@ -330,11 +362,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   def from_us_core_birthsex(patient)
     url = 'us-core-birthsex'
     code = patient&.extension&.select { |e| e.url.include?(url) }&.first&.valueCode
-    return 'Male' if code == 'M'
-    return 'Female' if code == 'F'
-    return 'Unknown' if code == 'UNK'
+    converted = 'Male' if code == 'M'
+    converted = 'Female' if code == 'F'
+    converted = 'Unknown' if code == 'UNK'
 
-    code
+    { value: converted || code, path: "Patient.extension('http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex').valueCode" }
   end
 
   # Given a language string, try to find the corresponding BCP 47 code for it and construct a FHIR::Coding.
@@ -343,8 +375,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   # Helper to understand a boolean extension
-  def from_bool_extension(patient, extension_id)
-    patient&.extension&.find { |e| e.url.include?(extension_id) }&.valueBoolean
+  def from_bool_extension_false_default(patient, extension_id)
+    { value: patient&.extension&.find { |e| e.url.include?(extension_id) }&.valueBoolean || false, path: patient_bool_ext_path(extension_id) }
   end
 
   def to_bool_extension(value, extension_id)
@@ -364,11 +396,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # Check for multiple extension IDs for the sake of backwards compatibility with IDs that have changed
   def from_date_extension(element, extension_ids)
     val = nil
+    ext_id = nil
     extension_ids.each do |eid|
-      val = element&.extension&.select { |e| e.url.include?(eid) }&.first&.valueDate
+      val = element&.extension&.find { |e| e.url.include?(eid) }&.valueDate
+      ext_id = eid
       break unless val.nil?
     end
-    val
+    { value: val, path: patient_date_ext_path(ext_id) }
   end
 
   def to_string_extension(value, extension_id)
@@ -378,8 +412,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def from_string_extension(element, extension_id)
-    element&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueString
+  def from_string_extension(patient, extension_id)
+    { value: patient&.extension&.find { |e| e.url.include?(extension_id) }&.valueString, path: patient_str_ext_path(extension_id) }
   end
 
   def to_reference_extension(id, resource_type, extension_id)
@@ -396,8 +430,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def from_positive_integer_extension(element, extension_id)
-    element&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valuePositiveInt
+  def from_positive_integer_extension(patient, extension_id)
+    { value: patient&.extension&.find { |e| e.url.include?(extension_id) }&.valuePositiveInt, path: patient_pos_int_ext_path(extension_id) }
   end
 
   def to_unsigned_integer_extension(value, extension_id)
@@ -414,18 +448,25 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # Convert from FHIR extension for Full Assigned Jurisdiction Path.
   # Use the default if there is no path specified.
   def from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id)
-    jurisdiction_path = from_string_extension(patient, 'full-assigned-jurisdiction-path')
-    jurisdiction_path ? Jurisdiction.find_by(path: jurisdiction_path)&.id : default_jurisdiction_id
+    jurisdiction_path_hash = from_string_extension(patient, 'full-assigned-jurisdiction-path')
+    jurisdiction_path_hash[:value] = Jurisdiction.find_by(path: jurisdiction_path_hash[:value])&.id || default_jurisdiction_id
+    jurisdiction_path_hash
   end
 
   def from_primary_phone_type_extension(patient)
-    phone_telecom = patient&.telecom&.select { |t| t&.system == 'phone' }&.first
-    phone_telecom&.extension&.select { |e| e.url.include?('phone-type') }&.first&.valueString
+    phone_telecom = patient&.telecom&.find { |t| t&.system == 'phone' }
+    {
+      value: phone_telecom&.extension&.find { |e| e.url.include?('phone-type') }&.valueString,
+      path: "Patient.telecom[#{patient&.telecom&.index(phone_telecom)}].extension('http://saraalert.org/StructureDefinition/phone-type').valueString"
+    }
   end
 
   def from_secondary_phone_type_extension(patient)
     phone_telecom = patient&.telecom&.select { |t| t&.system == 'phone' }&.second
-    phone_telecom&.extension&.select { |e| e.url.include?('phone-type') }&.first&.valueString
+    {
+      value: phone_telecom&.extension&.find { |e| e.url.include?('phone-type') }&.valueString,
+      path: "Patient.telecom[#{patient&.telecom&.index(phone_telecom)}].extension('http://saraalert.org/StructureDefinition/phone-type').valueString"
+    }
   end
 
   def from_fhir_phone_number(value)
@@ -438,7 +479,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   def from_statelocal_id_extension(patient)
     statelocal_id = patient&.identifier&.find { |i| i&.system == 'http://saraalert.org/SaraAlert/state-local-id' }
-    statelocal_id&.value
+    { value: statelocal_id&.value, path: "Patient.identifier[#{patient&.identifier&.index(statelocal_id)}].valueString" }
   end
 
   def to_address_by_type_extension(patient, address_type)
@@ -482,5 +523,21 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     end
 
     address
+  end
+
+  def patient_str_ext_path(ext_id)
+    "Patient.extension('#{SA_EXT_BASE_URL + ext_id}').valueString"
+  end
+
+  def patient_bool_ext_path(ext_id)
+    "Patient.extension('#{SA_EXT_BASE_URL + ext_id}').valueBoolean"
+  end
+
+  def patient_pos_int_ext_path(ext_id)
+    "Patient.extension('#{SA_EXT_BASE_URL + ext_id}').valuePositiveInt"
+  end
+
+  def patient_date_ext_path(ext_id)
+    "Patient.extension('#{SA_EXT_BASE_URL + ext_id}').valueDate"
   end
 end
