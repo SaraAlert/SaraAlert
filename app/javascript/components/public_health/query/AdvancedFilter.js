@@ -23,7 +23,7 @@ class AdvancedFilter extends React.Component {
       filterName: null,
       lastAppliedFilter: null,
       savedFilters: [],
-      show: false, // change me
+      showAdvancedFilterModal: false,
       showFilterNameModal: false,
     };
   }
@@ -82,7 +82,7 @@ class AdvancedFilter extends React.Component {
       activeFilter: this.state.activeFilter,
       activeFilterOptions: _.cloneDeep(this.state.activeFilterOptions),
     };
-    this.setState({ show: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
+    this.setState({ showAdvancedFilterModal: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilterOptions, keepStickySettings);
       if (this.props.updateStickySettings && this.state.activeFilter) {
         localStorage.setItem(`SaraFilter`, this.state.activeFilter.id);
@@ -110,7 +110,7 @@ class AdvancedFilter extends React.Component {
     const applied = this.state.applied;
     const activeFilter = applied ? this.state.lastAppliedFilter.activeFilter : null;
     const activeFilterOptions = applied ? this.state.lastAppliedFilter.activeFilterOptions : [];
-    this.setState({ show: false, applied, activeFilter, activeFilterOptions }, () => {
+    this.setState({ showAdvancedFilterModal: false, applied, activeFilter, activeFilterOptions }, () => {
       // if no filter was applied, start again with empty default
       if (!applied) {
         this.add();
@@ -120,7 +120,7 @@ class AdvancedFilter extends React.Component {
 
   // Start a new filter
   newFilter = () => {
-    this.setState({ activeFilterOptions: [], show: true, activeFilter: null, applied: false }, () => {
+    this.setState({ activeFilterOptions: [], showAdvancedFilterModal: true, activeFilter: null, applied: false }, () => {
       this.add();
     });
   };
@@ -134,7 +134,7 @@ class AdvancedFilter extends React.Component {
    */
   setFilter = (filter, apply = false) => {
     if (filter) {
-      this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter?.contents || [] }, () => {
+      this.setState({ activeFilter: filter, showAdvancedFilterModal: true, activeFilterOptions: filter?.contents || [] }, () => {
         if (apply) {
           this.apply(true);
         }
@@ -340,137 +340,12 @@ class AdvancedFilter extends React.Component {
       });
   };
 
-  // Format options for select
-  getFormattedOptions = () => {
-    return this.state.filterOptions
-      .sort((a, b) => {
-        if (a.type === 'blank') return -1;
-        if (b.type === 'blank') return 1;
-        return a.title.localeCompare(b.title);
-      })
-      .map(option => {
-        return {
-          label: option.title,
-          subLabel: option.description,
-          value: option.name,
-          disabled: option.type === 'blank',
-        };
-      });
-  };
-
-  // Render the options for the select that represents fields to filter on
-  renderOptions = (current, index) => {
-    const selectedValue = this.getFormattedOptions().find(option => {
-      return option.value === current;
-    });
-    const Option = props => {
-      return (
-        <components.Option {...props}>
-          <div>{props.data.label}</div>
-          <div style={{ fontSize: 12 }}>{props.data.subLabel}</div>
-        </components.Option>
-      );
-    };
-    return (
-      <Select
-        options={this.getFormattedOptions()}
-        value={selectedValue || null}
-        isOptionDisabled={option => option.disabled}
-        components={{ Option }}
-        onChange={event => {
-          this.changeFilterOption(index, event?.value);
-        }}
-        placeholder="Select Field...."
-        aria-label="Advanced Filter Options Dropdown"
-        className="advanced-filter-select"
-        theme={theme => ({
-          ...theme,
-          borderRadius: 0,
-        })}
-      />
-    );
-  };
-
-  // Render number specific options
-  renderNumberOptions = (current, index, value, additionalFilterOption, includeBetween) => {
-    return (
-      <Form.Control
-        as="select"
-        value={current}
-        className="advanced-filter-number-options mr-4"
-        aria-label="Advanced Filter Number Select Options"
-        onChange={event => this.changeFilterNumberOption(index, current, event.target.value, value, additionalFilterOption)}>
-        <option value="less-than">less than</option>
-        <option value="less-than-equal">less than or equal to</option>
-        <option value="equal">equal to</option>
-        <option value="greater-than-equal">greater than or equal to</option>
-        <option value="greater-than">greater than</option>
-        {includeBetween && <option value="between">between</option>}
-      </Form.Control>
-    );
-  };
-
-  // Render date specific options
-  renderDateOptions = (current, index) => {
-    return (
-      <Form.Control
-        as="select"
-        value={current}
-        className="advanced-filter-date-options py-0 my-0 mr-4"
-        aria-label="Advanced Filter Date Select Options"
-        onChange={event => {
-          this.changeFilterDateOption(index, event.target.value);
-        }}>
-        <option value="within">within</option>
-        <option value="before">before</option>
-        <option value="after">after</option>
-      </Form.Control>
-    );
-  };
-
-  // Render relative date specific options
-  renderRelativeOptions = (current, index) => {
-    return (
-      <Form.Control
-        as="select"
-        value={current}
-        className="advanced-filter-relative-options py-0 my-0 mr-3"
-        aria-label="Advanced Filter Relative Date Select Options"
-        onChange={event => {
-          this.changeFilterRelativeOption(index, event.target.value);
-        }}>
-        <option value="today">today</option>
-        <option value="tomorrow">tomorrow</option>
-        <option value="yesterday">yesterday</option>
-        <option value="custom">custom</option>
-      </Form.Control>
-    );
-  };
-
-  // Render additional filter option dropdown that is used in conjunction with other types
-  renderAdditionalFilterOptions = (current, index, options, value, numberOption, dateOption, relativeOption) => {
-    return (
-      <Form.Control
-        as="select"
-        value={current}
-        className="advanced-filter-additional-filter-options py-0 my-0 mr-3"
-        aria-label="Advanced Filter Number Additional Options Input"
-        onChange={event => this.changeFilterAdditionalFilterOption(index, event.target.value, value, numberOption, dateOption, relativeOption)}>
-        {options.map((option, op_index) => {
-          return (
-            <option key={index + 'opkeyop-f' + op_index} value={option}>
-              {option}
-            </option>
-          );
-        })}
-      </Form.Control>
-    );
-  };
+  // TO DO: RE-ORDER ABOVE HERE
 
   /**
    * Gets the string inside the tooltip for relative date filter options.
    * @param {Object} filter - Filter currently selected
-   * @param {*} value - Filter value
+   * @param {Object} value - Filter value (object containing number, unit, operator and when)
    */
   getRelativeTooltipString(filter, value) {
     const filterName = filter.title.replace(' (Relative Date)', '');
@@ -547,39 +422,15 @@ class AdvancedFilter extends React.Component {
   }
 
   /**
-   * Renders a tooltip for the specific filter option/type.
+   * Renders a tooltip for a statement row
    * @param {Object} filter - Filter currently selected
-   * @param {*} value - Filter value
    * @param {Number} index  - Filter index
+   * @param {String} statement  - Tooltip text
    */
-  renderOptionTooltip = (filter, value, index, additionalFilterOption) => {
+  renderStatementTooltip = (filter, index, statement) => {
     const tooltipId = `${filter.name}-${index}`;
-    let statement;
-
-    // Relative dates all get a specific tooltip
-    // Filters of type number only get a tooltip if the numberOption is "between" (i.e. a range)
-    // NOTE: Right now because of how this is set up, relative dates can't have a tooltip in addition to the one that is shown
-    // here once "more" is selected.
-    if (filter.name === 'close-contact-with-known-case-id') {
-      if (additionalFilterOption === 'Exact Match') {
-        statement =
-          'Returns records with an exact match to one or more of the user-entered search values when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “45” or “45, 12”).';
-      } else if (additionalFilterOption === 'Contains') {
-        statement =
-          'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451).';
-      }
-    } else if (filter.type === 'relative') {
-      statement = this.getRelativeTooltipString(filter, value);
-    } else if (filter.type === 'number') {
-      statement = '"Between" is inclusive and will filter for values within the user-entered range, including the start and end values.';
-    } else {
-      // Otherwise base it on specific filter option
-      statement = filter.tooltip;
-    }
-
-    // Only render if there is a valid statement for this filter option.
-    if (statement) {
-      return (
+    return (
+      <span className="align-middle mx-3">
         <div style={{ display: 'inline' }}>
           <span data-for={tooltipId} data-tip="" className="ml-1 tooltip-af">
             <i className="fas fa-question-circle px-0"></i>
@@ -588,65 +439,499 @@ class AdvancedFilter extends React.Component {
             <span>{statement}</span>
           </ReactTooltip>
         </div>
-      );
-    }
-  };
-
-  // Modal to specify filter name
-  renderFilterNameModal = () => {
-    return (
-      <Modal
-        id="filter-name-modal"
-        show={this.state.showFilterNameModal}
-        centered
-        className="advanced-filter-modal-container"
-        onHide={() => {
-          this.setState({ showFilterNameModal: false });
-        }}>
-        <Modal.Header>
-          <Modal.Title>Filter Name</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Control
-            id="filter-name-input"
-            as="input"
-            value={this.state.filterName || ''}
-            className="py-0 my-0"
-            onChange={event => {
-              this.setState({ filterName: event.target.value });
-            }}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            id="filter-name-cancel"
-            variant="secondary btn-square"
-            onClick={() => {
-              this.setState({ showFilterNameModal: false, show: true, filterName: null });
-            }}>
-            Cancel
-          </Button>
-          <Button
-            id="filter-name-save"
-            variant="primary btn-square"
-            disabled={!this.state.filterName}
-            onClick={() => {
-              this.setState({ showFilterNameModal: false, show: true }, () => {
-                this.save();
-              });
-            }}>
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      </span>
     );
   };
 
+  /**
+   * Renders remove statement button (minus button at far right of statement)
+   * @param {Number} index  - Filter index
+   */
+  renderRemoveStatementButton = index => {
+    return (
+      <div className="float-right">
+        <Button className="remove-filter-row" variant="danger" onClick={() => this.remove(index)} aria-label="Remove Advanced Filter Option">
+          <i className="fas fa-minus"></i>
+        </Button>
+      </div>
+    );
+  };
+
+  /**
+   * Format options for main select dropdown
+   */
+  getFormattedOptions = () => {
+    return this.state.filterOptions
+      .sort((a, b) => {
+        if (a.type === 'blank') return -1;
+        if (b.type === 'blank') return 1;
+        return a.title.localeCompare(b.title);
+      })
+      .map(option => {
+        return {
+          label: option.title,
+          subLabel: option.description,
+          value: option.name,
+          disabled: option.type === 'blank',
+        };
+      });
+  };
+
+  // TO DO: update comment
+  /**
+   * Render the options for the select that represents fields to filter on
+   *
+   */
+  renderOptions = (current, index) => {
+    const selectedValue = this.getFormattedOptions().find(option => {
+      return option.value === current;
+    });
+    const Option = props => {
+      return (
+        <components.Option {...props}>
+          <div>{props.data.label}</div>
+          <div style={{ fontSize: 12 }}>{props.data.subLabel}</div>
+        </components.Option>
+      );
+    };
+    return (
+      <Select
+        options={this.getFormattedOptions()}
+        value={selectedValue || null}
+        isOptionDisabled={option => option.disabled}
+        components={{ Option }}
+        onChange={event => {
+          this.changeFilterOption(index, event?.value);
+        }}
+        placeholder="Select Field...."
+        aria-label="Advanced Filter Options Dropdown"
+        className="advanced-filter-select"
+        theme={theme => ({
+          ...theme,
+          borderRadius: 0,
+        })}
+      />
+    );
+  };
+
+  // TO DO UPDATE
+  /**
+   * Renders additional filter option dropdown that is used in conjunction with other advanced filter types
+   *
+   */
+  renderAdditionalFilterOptions = (current, index, options, value, numberOption, dateOption, relativeOption) => {
+    return (
+      <Form.Control
+        as="select"
+        value={current}
+        className="advanced-filter-additional-filter-options py-0 my-0 mr-3"
+        aria-label="Advanced Filter Number Additional Options Input"
+        onChange={event => this.changeFilterAdditionalFilterOption(index, event.target.value, value, numberOption, dateOption, relativeOption)}>
+        {options.map((option, op_index) => {
+          return (
+            <option key={index + 'opkeyop-f' + op_index} value={option}>
+              {option}
+            </option>
+          );
+        })}
+      </Form.Control>
+    );
+  };
+
+  // TO DO UPDATE
+  /**
+   * Renders boolean type line "statement"
+   *
+   */
+  renderBooleanStatement = (filter, index, value) => {
+    return (
+      <React.Fragment>
+        <Col className="p-0">
+          <ButtonGroup toggle>
+            <ToggleButton
+              type="checkbox"
+              className="advanced-filter-boolean-true"
+              aria-label="Advanced Filter Boolean True"
+              variant="outline-primary"
+              checked={value}
+              value="1"
+              onChange={() => {
+                this.changeValue(index, !value);
+              }}>
+              TRUE
+            </ToggleButton>
+            <ToggleButton
+              type="checkbox"
+              className="advanced-filter-boolean-false"
+              aria-label="Advanced Filter Boolean False"
+              variant="outline-primary"
+              checked={!value}
+              value="0"
+              onChange={() => {
+                this.changeValue(index, !value);
+              }}>
+              FALSE
+            </ToggleButton>
+          </ButtonGroup>
+        </Col>
+        <Col className="py-0" md="auto">
+          {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
+          {this.renderRemoveStatementButton()}
+        </Col>
+      </React.Fragment>
+    );
+  };
+
+  // TO DO UPDATE
+  /**
+   * Renders search/text type line "statement"
+   *
+   */
+  renderSearchStatement = (filter, index, value, additionalFilterOption) => {
+    // compute tooltip for specific search case
+    let tooltip;
+    if (filter.name === 'close-contact-with-known-case-id') {
+      if (additionalFilterOption === 'Exact Match') {
+        tooltip =
+          'Returns records with an exact match to one or more of the user-entered search values when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “45” or “45, 12”).';
+      } else if (additionalFilterOption === 'Contains') {
+        tooltip =
+          'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451).';
+      }
+    }
+
+    return (
+      <React.Fragment>
+        <Col className="p-0">
+          <Form.Control
+            as="input"
+            value={value}
+            className="advanced-filter-search-input py-0 my-0"
+            aria-label="Advanced Filter Search Text Input"
+            onChange={event => {
+              this.changeValue(index, event.target.value);
+            }}
+          />
+        </Col>
+        <Col className="py-0" md="auto">
+          {tooltip && this.renderStatementTooltip(filter.name, index, tooltip)}
+          {this.renderRemoveStatementButton()}
+        </Col>
+      </React.Fragment>
+    );
+  };
+
+  // TO DO UPDATE
+  /**
+   * Renders dropdown select type line "statement"
+   *
+   */
+  renderSelectStatement = (filter, index, value) => {
+    return (
+      <React.Fragment>
+        <Col className="p-0">
+          <Form.Control
+            as="select"
+            value={value}
+            className="py-0 my-0"
+            aria-label="Advanced Filter Option Select"
+            onChange={event => {
+              this.changeValue(index, event.target.value);
+            }}>
+            {filter.options.map((option, op_index) => {
+              return (
+                <option key={index + 'opkeyop-f' + op_index} value={option}>
+                  {option}
+                </option>
+              );
+            })}
+          </Form.Control>
+        </Col>
+        <Col className="py-0" md="auto">
+          {this.renderRemoveStatementButton()}
+        </Col>
+      </React.Fragment>
+    );
+  };
+
+  // TO DO UPDATE
+  /**
+   * Renders number type line "statement"
+   *
+   */
+  renderNumberStatement = (filter, index, value, numberOption, additionalFilterOption) => {
+    const betweenTooltipText = '"Between" is inclusive and will filter for values within the user-entered range, including the start and end values.';
+    return (
+      <React.Fragment>
+        <Col className="p-0">
+          <Form.Group className="form-group-inline py-0 my-0">
+            <Form.Control
+              as="select"
+              value={numberOption}
+              className="advanced-filter-number-options mr-4"
+              aria-label="Advanced Filter Number Select Options"
+              onChange={event => this.changeFilterNumberOption(index, numberOption, event.target.value, value, additionalFilterOption)}>
+              <option value="less-than">less than</option>
+              <option value="less-than-equal">less than or equal to</option>
+              <option value="equal">equal to</option>
+              <option value="greater-than-equal">greater than or equal to</option>
+              <option value="greater-than">greater than</option>
+              {filter.allowRange && <option value="between">between</option>}
+            </Form.Control>
+            {numberOption !== 'between' && (
+              <Form.Control
+                className="advanced-filter-number-input"
+                aria-label="Advanced Filter Number Input"
+                value={value}
+                type="number"
+                min="0"
+                onChange={event => this.changeValue(index, event?.target?.value)}
+              />
+            )}
+            {numberOption === 'between' && (
+              <React.Fragment>
+                <Form.Control
+                  className="advanced-filter-number-input"
+                  aria-label="Advanced Filter Number Input Bound 1"
+                  value={value.firstBound}
+                  type="number"
+                  min="0"
+                  onChange={event => this.changeValue(index, { firstBound: event?.target?.value, secondBound: value.secondBound })}
+                />
+                <div className="text-center my-auto mx-4">
+                  <b>AND</b>
+                </div>
+                <Form.Control
+                  className="advanced-filter-number-input"
+                  aria-label="Advanced Filter Number Input Bound 2"
+                  value={value.secondBound}
+                  type="number"
+                  min="0"
+                  onChange={event => this.changeValue(index, { firstBound: value.firstBound, secondBound: event?.target?.value })}
+                />
+              </React.Fragment>
+            )}
+          </Form.Group>
+        </Col>
+        <Col className="py-0" md="auto">
+          {numberOption === 'between' && this.renderStatementTooltip(filter.name, index, betweenTooltipText)}
+          {this.renderRemoveStatementButton()}
+        </Col>
+      </React.Fragment>
+    );
+  };
+
+  // TO DO UPDATE
+  /**
+   * Renders date type line "statement"
+   *
+   */
+  renderDateStatement = (index, value, dateOption) => {
+    return (
+      <React.Fragment>
+        <Col className="p-0">
+          <Form.Group className="form-group-inline py-0 my-0">
+            <Form.Control
+              as="select"
+              value={dateOption}
+              className="advanced-filter-date-options py-0 my-0 mr-4"
+              aria-label="Advanced Filter Date Select Options"
+              onChange={event => {
+                this.changeFilterDateOption(index, event.target.value);
+              }}>
+              <option value="within">within</option>
+              <option value="before">before</option>
+              <option value="after">after</option>
+            </Form.Control>
+            {dateOption !== 'within' && (
+              <div className="advanced-filter-date-input">
+                <DateInput
+                  date={value}
+                  onChange={date => {
+                    this.changeValue(index, date);
+                  }}
+                  placement="bottom"
+                  customClass="form-control-md"
+                  ariaLabel="Advanced Filter Date Input"
+                  minDate={'1900-01-01'}
+                  maxDate={moment()
+                    .add(2, 'years')
+                    .format('YYYY-MM-DD')}
+                  replaceBlank={true}
+                />
+              </div>
+            )}
+            {dateOption === 'within' && (
+              <React.Fragment>
+                <div className="advanced-filter-date-input">
+                  <DateInput
+                    date={value.start}
+                    onChange={date => {
+                      this.changeValue(index, { start: date, end: value.end });
+                    }}
+                    placement="bottom"
+                    customClass="form-control-md"
+                    ariaLabel="Advanced Filter Start Date Input"
+                    minDate={'1900-01-01'}
+                    maxDate={moment()
+                      .add(2, 'years')
+                      .format('YYYY-MM-DD')}
+                    replaceBlank={true}
+                  />
+                </div>
+                <div className="text-center my-auto mx-4">
+                  <b>TO</b>
+                </div>
+                <div className="advanced-filter-date-input">
+                  <DateInput
+                    date={value.end}
+                    onChange={date => {
+                      this.changeValue(index, { start: value.start, end: date });
+                    }}
+                    placement="bottom"
+                    customClass="form-control-md"
+                    ariaLabel="Advanced Filter End Date Input"
+                    minDate={'1900-01-01'}
+                    maxDate={moment()
+                      .add(2, 'years')
+                      .format('YYYY-MM-DD')}
+                    replaceBlank={true}
+                  />
+                </div>
+              </React.Fragment>
+            )}
+          </Form.Group>
+        </Col>
+        <Col className="py-0" md="auto">
+          {this.renderRemoveStatementButton()}
+        </Col>
+      </React.Fragment>
+    );
+  };
+
+  // TO DO UPDATE
+  /**
+   * Renders relative date type line "statement"
+   *
+   */
+  renderRelativeDateStatement = (filter, index, value, relativeOption) => {
+    return (
+      <React.Fragment>
+        <Col className="p-0">
+          <Form.Group className="form-group-inline py-0 my-0">
+            <Form.Control
+              as="select"
+              value={relativeOption}
+              className="advanced-filter-relative-options py-0 my-0 mr-3"
+              aria-label="Advanced Filter Relative Date Select Options"
+              onChange={event => {
+                this.changeFilterRelativeOption(index, event.target.value);
+              }}>
+              <option value="today">today</option>
+              <option value="tomorrow">tomorrow</option>
+              <option value="yesterday">yesterday</option>
+              <option value="custom">custom</option>
+            </Form.Control>
+            {relativeOption === 'custom' && (
+              <Row>
+                <Form.Control
+                  as="select"
+                  value={value.operator}
+                  className="advanced-filter-operator-input mx-3"
+                  aria-label="Advanced Filter Relative Date Operator Select"
+                  onChange={event => {
+                    this.changeValue(index, { operator: event.target.value, number: value.number, unit: value.unit, when: value.when });
+                  }}>
+                  <option value="less-than">less than</option>
+                  <option value="more-than">more than</option>
+                </Form.Control>
+                <Form.Control
+                  value={value.number}
+                  className="advanced-filter-number-input"
+                  aria-label="Advanced Filter Relative Date Number Select"
+                  type="number"
+                  min="1"
+                  onChange={event => this.changeValue(index, { operator: value.operator, number: event.target.value, unit: value.unit, when: value.when })}
+                />
+                <Form.Control
+                  as="select"
+                  value={value.unit}
+                  className="advanced-filter-unit-input mx-3"
+                  aria-label="Advanced Filter Relative Date Unit Select"
+                  onChange={event => {
+                    this.changeValue(index, { operator: value.operator, number: value.number, unit: event.target.value, when: value.when });
+                  }}>
+                  <option value="days">day(s)</option>
+                  <option value="weeks">week(s)</option>
+                  <option value="months">month(s)</option>
+                </Form.Control>
+                <Form.Control
+                  as="select"
+                  value={value.when}
+                  className="advanced-filter-when-input"
+                  aria-label="Advanced Filter Relative Date When Select"
+                  onChange={event => {
+                    this.changeValue(index, { operator: value.operator, number: value.number, unit: value.unit, when: event.target.value });
+                  }}>
+                  <option value="past">in the past</option>
+                  {!filter.hasTimestamp && <option value="future">in the future</option>}
+                </Form.Control>
+              </Row>
+            )}
+          </Form.Group>
+        </Col>
+        <Col className="py-0" md="auto">
+          {relativeOption === 'between' && this.renderStatementTooltip(filter.name, index, this.getRelativeTooltipString(filter, value))}
+          {this.renderRemoveStatementButton()}
+        </Col>
+      </React.Fragment>
+    );
+  };
+
+  // TO DO UPDATE
+  /**
+   * Renders a single line "statement"
+   *
+   */
+  renderStatement = (filterOption, value, index, total, numberOption, dateOption, relativeOption, additionalFilterOption) => {
+    return (
+      <React.Fragment key={'rowkey-filter-p' + index}>
+        {index > 0 && index < total && (
+          <Row key={'rowkey-filter-and' + index} className="and-row py-2">
+            <Col className="py-0">
+              <b>AND</b>
+            </Col>
+          </Row>
+        )}
+        <Row key={'rowkey-filter' + index} className="advanced-filter-statement pb-1 pt-1">
+          <Col className="py-0" md={8}>
+            {this.renderOptions(filterOption?.name, index)}
+          </Col>
+          {/* specific dropdown for filters with a type that requires additional options (not type option) */}
+          {filterOption?.type !== 'option' && filterOption?.options && (
+            <Col md={4}>
+              {this.renderAdditionalFilterOptions(additionalFilterOption, index, filterOption.options, value, numberOption, dateOption, relativeOption)}
+            </Col>
+          )}
+          {filterOption?.type === 'boolean' && this.renderBooleanStatement(filterOption, index, value)}
+          {filterOption?.type === 'search' && this.renderSearchStatement(filterOption, index, value, additionalFilterOption)}
+          {filterOption?.type === 'option' && this.renderSelectStatement(filterOption, index, value)}
+          {filterOption?.type === 'number' && this.renderNumberStatement(filterOption, index, value, numberOption, additionalFilterOption)}
+          {filterOption?.type === 'date' && this.renderDateStatement(index, value, dateOption)}
+          {filterOption?.type === 'relative' && this.renderRelativeDateStatement(filterOption, index, value, relativeOption)}
+        </Row>
+      </React.Fragment>
+    );
+  };
+
+  /**
+   * Renders main advanced filter modal
+   */
   renderAdvancedFilterModal = () => {
     return (
       <Modal
         id="advanced-filter-modal"
-        show={this.state.show}
+        show={this.state.showAdvancedFilterModal}
         centered
         dialogClassName="modal-af"
         className="advanced-filter-modal-container"
@@ -662,7 +947,7 @@ class AdvancedFilter extends React.Component {
                   id="advanced-filter-save"
                   variant="primary"
                   onClick={() => {
-                    this.setState({ showFilterNameModal: true, show: false });
+                    this.setState({ showFilterNameModal: true, showAdvancedFilterModal: false });
                   }}
                   className="mr-1">
                   <i className="fas fa-save"></i>
@@ -733,263 +1018,69 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // Render a single line "statement"
-  renderStatement = (filterOption, value, index, total, numberOption, dateOption, relativeOption, additionalFilterOption) => {
+  /**
+   * Renders modal to specify filter name (for saved filters)
+   */
+  renderFilterNameModal = () => {
     return (
-      <React.Fragment key={'rowkey-filter-p' + index}>
-        {index > 0 && index < total && (
-          <Row key={'rowkey-filter-and' + index} className="and-row py-2">
-            <Col className="py-0">
-              <b>AND</b>
-            </Col>
-          </Row>
-        )}
-        <Row key={'rowkey-filter' + index} className="advanced-filter-statement pb-1 pt-1">
-          <Col className="py-0" md={8}>
-            {this.renderOptions(filterOption?.name, index)}
-          </Col>
-          {/* specific dropdown for filters with a type that requires additional options (not type option) */}
-          {filterOption?.type !== 'option' && filterOption?.options && (
-            <Col md={4}>
-              {this.renderAdditionalFilterOptions(additionalFilterOption, index, filterOption.options, value, numberOption, dateOption, relativeOption)}
-            </Col>
-          )}
-          <Col className="p-0">
-            {filterOption?.type === 'boolean' && (
-              <ButtonGroup toggle>
-                <ToggleButton
-                  type="checkbox"
-                  className="advanced-filter-boolean-true"
-                  aria-label="Advanced Filter Boolean True"
-                  variant="outline-primary"
-                  checked={value}
-                  value="1"
-                  onChange={() => {
-                    this.changeValue(index, !value);
-                  }}>
-                  TRUE
-                </ToggleButton>
-                <ToggleButton
-                  type="checkbox"
-                  className="advanced-filter-boolean-false"
-                  aria-label="Advanced Filter Boolean False"
-                  variant="outline-primary"
-                  checked={!value}
-                  value="0"
-                  onChange={() => {
-                    this.changeValue(index, !value);
-                  }}>
-                  FALSE
-                </ToggleButton>
-              </ButtonGroup>
-            )}
-            {filterOption?.type === 'option' && (
-              <Form.Control
-                as="select"
-                value={value}
-                className="py-0 my-0"
-                aria-label="Advanced Filter Option Select"
-                onChange={event => {
-                  this.changeValue(index, event.target.value);
-                }}>
-                {filterOption.options.map((option, op_index) => {
-                  return (
-                    <option key={index + 'opkeyop-f' + op_index} value={option}>
-                      {option}
-                    </option>
-                  );
-                })}
-              </Form.Control>
-            )}
-            {filterOption?.type === 'number' && (
-              <Form.Group className="form-group-inline py-0 my-0">
-                {this.renderNumberOptions(numberOption, index, value, additionalFilterOption, filterOption.allowRange)}
-                {numberOption !== 'between' && (
-                  <Form.Control
-                    className="advanced-filter-number-input"
-                    aria-label="Advanced Filter Number Input"
-                    value={value}
-                    type="number"
-                    min="0"
-                    onChange={event => this.changeValue(index, event?.target?.value)}
-                  />
-                )}
-                {numberOption === 'between' && (
-                  <React.Fragment>
-                    <Form.Control
-                      className="advanced-filter-number-input"
-                      aria-label="Advanced Filter Number Input Bound 1"
-                      value={value.firstBound}
-                      type="number"
-                      min="0"
-                      onChange={event => this.changeValue(index, { firstBound: event?.target?.value, secondBound: value.secondBound })}
-                    />
-                    <div className="text-center my-auto mx-4">
-                      <b>AND</b>
-                    </div>
-                    <Form.Control
-                      className="advanced-filter-number-input"
-                      aria-label="Advanced Filter Number Input Bound 2"
-                      value={value.secondBound}
-                      type="number"
-                      min="0"
-                      onChange={event => this.changeValue(index, { firstBound: value.firstBound, secondBound: event?.target?.value })}
-                    />
-                  </React.Fragment>
-                )}
-              </Form.Group>
-            )}
-            {filterOption?.type === 'date' && (
-              <Form.Group className="form-group-inline py-0 my-0">
-                {this.renderDateOptions(dateOption, index)}
-                {dateOption !== 'within' && (
-                  <div className="advanced-filter-date-input">
-                    <DateInput
-                      date={value}
-                      onChange={date => {
-                        this.changeValue(index, date);
-                      }}
-                      placement="bottom"
-                      customClass="form-control-md"
-                      ariaLabel="Advanced Filter Date Input"
-                      minDate={'1900-01-01'}
-                      maxDate={moment()
-                        .add(2, 'years')
-                        .format('YYYY-MM-DD')}
-                      replaceBlank={true}
-                    />
-                  </div>
-                )}
-                {dateOption === 'within' && (
-                  <React.Fragment>
-                    <div className="advanced-filter-date-input">
-                      <DateInput
-                        date={value.start}
-                        onChange={date => {
-                          this.changeValue(index, { start: date, end: value.end });
-                        }}
-                        placement="bottom"
-                        customClass="form-control-md"
-                        ariaLabel="Advanced Filter Start Date Input"
-                        minDate={'1900-01-01'}
-                        maxDate={moment()
-                          .add(2, 'years')
-                          .format('YYYY-MM-DD')}
-                        replaceBlank={true}
-                      />
-                    </div>
-                    <div className="text-center my-auto mx-4">
-                      <b>TO</b>
-                    </div>
-                    <div className="advanced-filter-date-input">
-                      <DateInput
-                        date={value.end}
-                        onChange={date => {
-                          this.changeValue(index, { start: value.start, end: date });
-                        }}
-                        placement="bottom"
-                        customClass="form-control-md"
-                        ariaLabel="Advanced Filter End Date Input"
-                        minDate={'1900-01-01'}
-                        maxDate={moment()
-                          .add(2, 'years')
-                          .format('YYYY-MM-DD')}
-                        replaceBlank={true}
-                      />
-                    </div>
-                  </React.Fragment>
-                )}
-              </Form.Group>
-            )}
-            {filterOption?.type === 'relative' && (
-              <Form.Group className="form-group-inline py-0 my-0">
-                {this.renderRelativeOptions(relativeOption, index)}
-                {relativeOption === 'custom' && (
-                  <Row>
-                    <Form.Control
-                      as="select"
-                      value={value.operator}
-                      className="advanced-filter-operator-input mx-3"
-                      aria-label="Advanced Filter Relative Date Operator Select"
-                      onChange={event => {
-                        this.changeValue(index, { operator: event.target.value, number: value.number, unit: value.unit, when: value.when });
-                      }}>
-                      <option value="less-than">less than</option>
-                      <option value="more-than">more than</option>
-                    </Form.Control>
-                    <Form.Control
-                      value={value.number}
-                      className="advanced-filter-number-input"
-                      aria-label="Advanced Filter Relative Date Number Select"
-                      type="number"
-                      min="1"
-                      onChange={event => this.changeValue(index, { operator: value.operator, number: event.target.value, unit: value.unit, when: value.when })}
-                    />
-                    <Form.Control
-                      as="select"
-                      value={value.unit}
-                      className="advanced-filter-unit-input mx-3"
-                      aria-label="Advanced Filter Relative Date Unit Select"
-                      onChange={event => {
-                        this.changeValue(index, { operator: value.operator, number: value.number, unit: event.target.value, when: value.when });
-                      }}>
-                      <option value="days">day(s)</option>
-                      <option value="weeks">week(s)</option>
-                      <option value="months">month(s)</option>
-                    </Form.Control>
-                    <Form.Control
-                      as="select"
-                      value={value.when}
-                      className="advanced-filter-when-input"
-                      aria-label="Advanced Filter Relative Date When Select"
-                      onChange={event => {
-                        this.changeValue(index, { operator: value.operator, number: value.number, unit: value.unit, when: event.target.value });
-                      }}>
-                      <option value="past">in the past</option>
-                      {!filterOption.hasTimestamp && <option value="future">in the future</option>}
-                    </Form.Control>
-                  </Row>
-                )}
-              </Form.Group>
-            )}
-            {filterOption?.type === 'search' && (
-              <Form.Control
-                as="input"
-                value={value}
-                className="advanced-filter-search-input py-0 my-0"
-                aria-label="Advanced Filter Search Text Input"
-                onChange={event => {
-                  this.changeValue(index, event.target.value);
-                }}
-              />
-            )}
-          </Col>
-          <Col className="py-0" md="auto">
-            {filterOption && (filterOption.tooltip || numberOption === 'between' || relativeOption === 'custom') && (
-              <span className="align-middle mx-3">{this.renderOptionTooltip(filterOption, value, index, additionalFilterOption)}</span>
-            )}
-            <div className="float-right">
-              <Button className="remove-filter-row" variant="danger" onClick={() => this.remove(index)} aria-label="Remove Advanced Filter Option">
-                <i className="fas fa-minus"></i>
-              </Button>
-            </div>
-          </Col>
-        </Row>
-      </React.Fragment>
+      <Modal
+        id="filter-name-modal"
+        show={this.state.showFilterNameModal}
+        centered
+        className="advanced-filter-modal-container"
+        onHide={() => {
+          this.setState({ showFilterNameModal: false });
+        }}>
+        <Modal.Header>
+          <Modal.Title>Filter Name</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Control
+            id="filter-name-input"
+            as="input"
+            value={this.state.filterName || ''}
+            className="py-0 my-0"
+            onChange={event => {
+              this.setState({ filterName: event.target.value });
+            }}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            id="filter-name-cancel"
+            variant="secondary btn-square"
+            onClick={() => {
+              this.setState({ showFilterNameModal: false, showAdvancedFilterModal: true, filterName: null });
+            }}>
+            Cancel
+          </Button>
+          <Button
+            id="filter-name-save"
+            variant="primary btn-square"
+            disabled={!this.state.filterName}
+            onClick={() => {
+              this.setState({ showFilterNameModal: false, showAdvancedFilterModal: true }, () => {
+                this.save();
+              });
+            }}>
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
     );
   };
 
   render() {
     return (
       <React.Fragment>
-        {this.state.show && this.renderAdvancedFilterModal()}
+        {this.state.showAdvancedFilterModal && this.renderAdvancedFilterModal()}
         {this.state.showFilterNameModal && this.renderFilterNameModal()}
         <OverlayTrigger overlay={<Tooltip>Find monitorees that meet specified parameters within current workflow</Tooltip>}>
           <Button
             size="sm"
             className="ml-2"
             onClick={() => {
-              this.setState({ show: true });
+              this.setState({ showAdvancedFilterModal: true });
             }}>
             <i className="fas fa-microscope"></i>
             <span className="ml-1">Advanced Filter</span>
