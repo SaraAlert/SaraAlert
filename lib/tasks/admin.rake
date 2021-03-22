@@ -182,6 +182,11 @@ namespace :admin do
     PurgeJob.perform_later
   end
 
+  desc 'Run the purge JWT identifiers job'
+  task purge_jwt_identifiers: :environment do
+    PurgeJwtIdentifiersJob.perform_later
+  end
+
   desc 'Add API OAuth Application for Backend Services API Workflow'
   task create_oauth_app_for_backend_services_workflow: :environment do
     # Read from JSON file with needed information
