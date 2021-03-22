@@ -30,6 +30,7 @@ class DatabaseTest < ActiveSupport::TestCase
         ruby_offset = time_zone_offset_for_state(state)[0..2].to_i
         assert_equal ruby_offset, db_offset
       end
+      Timecop.return
     end
   end
 
