@@ -266,33 +266,54 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should be unprocessable entity via create with validation errors' do
+    patient = IO.read(file_fixture('fhir_invalid_patient.json'))
+    json_patient = JSON.parse(patient)
     post(
       '/fhir/r4/Patient',
-      params: IO.read(file_fixture('fhir_invalid_patient.json')),
+      params: patient,
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    errors = json_response['issue'].map { |i| i['diagnostics'] }
+    issues = json_response['issue']
 
-    msg = 'Expected validation error on '
-    assert_equal 18, errors.length
-    assert(errors.any?(/Invalid.*Monitoring Plan/), msg + 'Monitoring Plan')
-    assert(errors.any?(/Old York.*State/), msg + 'State')
-    assert(errors.any?(/0000.*Ethnicity/), msg + 'Ethnicity')
-    assert(errors.any?(/High noon.*Preferred Contact Time/), msg + 'Preferred Contact Time')
-    assert(errors.any?(/On FHIR.*Sex/), msg + 'Sex')
-    assert(errors.any?(/Dumbphone.*Telephone Type/), msg + 'Phone Type')
-    assert(errors.any?(/123.*Primary Telephone/), msg + 'Primary Telephone')
-    assert(errors.any?(/Date of Birth/), msg + 'Date of Birth')
-    assert(errors.any?(/Last Date of Exposure/), msg + 'Last Date of Exposure')
-    assert(errors.any?(/1492.*Symptom Onset/), msg + 'Symptom Onset')
-    assert(errors.any?(/1776.*Additional Planned Travel Start Date/), msg + 'Additional Planned Travel Start Date')
-    assert(errors.any?(/2020-01-32.*Date of Departure/), msg + 'Date of Departure')
-    assert(errors.any?(/9999-99-99.*Date of Arrival/), msg + 'Date of Arrival')
-    assert(errors.any?(/Last Name/), msg + 'Last Name')
-    assert(errors.any?(/10000.*Assigned User/), msg + 'Assigned User')
-    assert(errors.any?(/Email.*Primary Contact Method/), msg + 'Email')
+    assert_equal 18, issues.length
+    monitoring_plan_iss = issues.find { |e| /Invalid.*Monitoring Plan/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(monitoring_plan_iss['expression'].first, json_patient) == 'Invalid')
+    state_iss = issues.find { |e| /Old York.*State/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(state_iss['expression'].first, json_patient) == 'Old York')
+    eth_iss = issues.find { |e| /0000.*Ethnicity/.match(e['diagnostics']) }
+    assert_not_nil eth_iss
+    # FHIRPath lib errors on paths with nested extensions. The below assertion should work.
+    # assert(FHIRPath.evaluate(eth_iss['expression'].first, json_patient) == '0000')
+    pct_iss = issues.find { |e| /High noon.*Preferred Contact Time/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(pct_iss['expression'].first, json_patient) == 'High noon')
+    sex_iss = issues.find { |e| /On FHIR.*Sex/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(sex_iss['expression'].first, json_patient) == 'On FHIR')
+    phone_type_iss = issues.find { |e| /Dumbphone.*Telephone Type/.match(e['diagnostics']) }
+    assert_not_nil phone_type_iss
+    # FHIRPath lib errors on paths with nested extensions. The below assertion should work.
+    # assert(FHIRPath.evaluate(phone_type_iss['expression'].first, json_patient) == 'Dumbphone')
+    phone_iss = issues.find { |e| /123.*Primary Telephone/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(phone_iss['expression'].first, json_patient) == '123')
+    dob_iss = issues.find { |e| /Date of Birth/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(dob_iss['expression'].first, json_patient) == '2000')
+    lde_iss = issues.find { |e| /Last Date of Exposure/.match(e['diagnostics']) }
+    assert_not_nil lde_iss # LDE is omitted from the request, so don't eval the FHIRPath
+    sod_iss = issues.find { |e| /1492.*Symptom Onset/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(sod_iss['expression'].first, json_patient) == '1492')
+    add_travel_start_date_iss = issues.find { |e| /1776.*Additional Planned Travel Start Date/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(add_travel_start_date_iss['expression'].first, json_patient) == '1776')
+    dod_iss = issues.find { |e| /2020-01-32.*Date of Departure/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(dod_iss['expression'].first, json_patient) == '2020-01-32')
+    doa_iss = issues.find { |e| /9999-99-99.*Date of Arrival/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(doa_iss['expression'].first, json_patient) == '9999-99-99')
+    last_iss = issues.find { |e| /Last Name/.match(e['diagnostics']) }
+    assert_not_nil last_iss # Last name is omitted from the request, so don't eval the FHIRPath
+    assigned_usr_iss = issues.find { |e| /10000.*Assigned User/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, json_patient) == 1_000_000)
+    email_iss = issues.find { |e| /Email.*Primary Contact Method/.match(e['diagnostics']) }
+    assert_not_nil email_iss # Last name is omitted from the request, so don't eval the FHIRPath
   end
 
   test 'should group Patients in households with matching phone numbers' do
@@ -596,33 +617,54 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should be unprocessable entity via update with validation errors' do
+    patient = IO.read(file_fixture('fhir_invalid_patient.json'))
+    json_patient = JSON.parse(patient)
     put(
       '/fhir/r4/Patient/1',
-      params: IO.read(file_fixture('fhir_invalid_patient.json')),
+      params: patient,
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    errors = json_response['issue'].map { |i| i['diagnostics'] }
+    issues = json_response['issue']
 
-    msg = 'Expected validation error on '
-    assert_equal 18, errors.length
-    assert(errors.any?(/Invalid.*Monitoring Plan/), msg + 'Monitoring Plan')
-    assert(errors.any?(/Old York.*State/), msg + 'State')
-    assert(errors.any?(/0000.*Ethnicity/), msg + 'Ethnicity')
-    assert(errors.any?(/High noon.*Preferred Contact Time/), msg + 'Preferred Contact Time')
-    assert(errors.any?(/On FHIR.*Sex/), msg + 'Sex')
-    assert(errors.any?(/Dumbphone.*Telephone Type/), msg + 'Phone Type')
-    assert(errors.any?(/123.*Primary Telephone/), msg + 'Primary Telephone')
-    assert(errors.any?(/Date of Birth/), msg + 'Date of Birth')
-    assert(errors.any?(/Last Date of Exposure/), msg + 'Last Date of Exposure')
-    assert(errors.any?(/1492.*Symptom Onset/), msg + 'Symptom Onset')
-    assert(errors.any?(/1776.*Additional Planned Travel Start Date/), msg + 'Additional Planned Travel Start Date')
-    assert(errors.any?(/2020-01-32.*Date of Departure/), msg + 'Date of Departure')
-    assert(errors.any?(/9999-99-99.*Date of Arrival/), msg + 'Date of Arrival')
-    assert(errors.any?(/Last Name/), msg + 'Last Name')
-    assert(errors.any?(/10000.*Assigned User/), msg + 'Assigned User')
-    assert(errors.any?(/Email.*Primary Contact Method/), msg + 'Email')
+    assert_equal 18, issues.length
+    monitoring_plan_iss = issues.find { |e| /Invalid.*Monitoring Plan/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(monitoring_plan_iss['expression'].first, json_patient) == 'Invalid')
+    state_iss = issues.find { |e| /Old York.*State/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(state_iss['expression'].first, json_patient) == 'Old York')
+    eth_iss = issues.find { |e| /0000.*Ethnicity/.match(e['diagnostics']) }
+    assert_not_nil eth_iss
+    # FHIRPath lib errors on paths with nested extensions. The below assertion should work.
+    # assert(FHIRPath.evaluate(eth_iss['expression'].first, json_patient) == '0000')
+    pct_iss = issues.find { |e| /High noon.*Preferred Contact Time/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(pct_iss['expression'].first, json_patient) == 'High noon')
+    sex_iss = issues.find { |e| /On FHIR.*Sex/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(sex_iss['expression'].first, json_patient) == 'On FHIR')
+    phone_type_iss = issues.find { |e| /Dumbphone.*Telephone Type/.match(e['diagnostics']) }
+    assert_not_nil phone_type_iss
+    # FHIRPath lib errors on paths with nested extensions. The below assertion should work.
+    # assert(FHIRPath.evaluate(phone_type_iss['expression'].first, json_patient) == 'Dumbphone')
+    phone_iss = issues.find { |e| /123.*Primary Telephone/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(phone_iss['expression'].first, json_patient) == '123')
+    dob_iss = issues.find { |e| /Date of Birth/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(dob_iss['expression'].first, json_patient) == '2000')
+    lde_iss = issues.find { |e| /Last Date of Exposure/.match(e['diagnostics']) }
+    assert_not_nil lde_iss # LDE is omitted from the request, so don't eval the FHIRPath
+    sod_iss = issues.find { |e| /1492.*Symptom Onset/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(sod_iss['expression'].first, json_patient) == '1492')
+    add_travel_start_date_iss = issues.find { |e| /1776.*Additional Planned Travel Start Date/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(add_travel_start_date_iss['expression'].first, json_patient) == '1776')
+    dod_iss = issues.find { |e| /2020-01-32.*Date of Departure/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(dod_iss['expression'].first, json_patient) == '2020-01-32')
+    doa_iss = issues.find { |e| /9999-99-99.*Date of Arrival/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(doa_iss['expression'].first, json_patient) == '9999-99-99')
+    last_iss = issues.find { |e| /Last Name/.match(e['diagnostics']) }
+    assert_not_nil last_iss # Last name is omitted from the request, so don't eval the FHIRPath
+    assigned_usr_iss = issues.find { |e| /10000.*Assigned User/.match(e['diagnostics']) }
+    assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, json_patient) == 1_000_000)
+    email_iss = issues.find { |e| /Email.*Primary Contact Method/.match(e['diagnostics']) }
+    assert_not_nil email_iss # Last name is omitted from the request, so don't eval the FHIRPath
   end
 
   test 'SYSTEM FLOW: should allow jurisdiction transfers when jurisdiction exists' do
