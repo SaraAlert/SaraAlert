@@ -292,6 +292,11 @@ class AdvancedFilter extends React.Component {
   };
 
   // TO DO: ADD ME
+  addMultiStatement = index => {
+    console.log('add multi statement row: ' + index);
+  };
+
+  // TO DO: ADD ME
   removeMultiStatement = index => {
     console.log('removing multi statement row: ' + index);
   };
@@ -327,6 +332,8 @@ class AdvancedFilter extends React.Component {
       value = 'today';
     } else if (filterOption.type === 'search') {
       value = '';
+    } else if (filterOption.type === 'multi') {
+      value = this.getDefaultMultiValue(filterOption, filterOption.fields[0].name);
     }
 
     activeFilterOptions[parseInt(index)] = {
@@ -448,6 +455,35 @@ class AdvancedFilter extends React.Component {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     activeFilterOptions[parseInt(index)]['value'] = value;
     this.setState({ activeFilterOptions });
+  };
+
+  // TO DO ADD ME
+  changeMultiValue = (statementIndex, value) => {
+    // TO DO update value array here
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    activeFilterOptions[parseInt(statementIndex)]['value'] = value;
+    this.setState({ activeFilterOptions });
+  };
+
+  // TO DO ADD ME
+  getMultiFilter = (filter, name) => {
+    return filter.fields.find(field => field.name === name);
+  };
+
+  // TO DO ADD ME
+  getDefaultMultiValue = (filter, name) => {
+    const multiFilter = this.getMultiFilter(filter, name);
+    console.log(multiFilter);
+    let value = null;
+    if (multiFilter.type === 'select') {
+      value = { name: name, value: multiFilter.options[0] };
+    } else if (multiFilter.type === 'date') {
+      value = {
+        name: name,
+        value: { when: 'before', date: moment().format('YYYY-MM-DD') },
+      };
+    }
+    return value;
   };
 
   /**
@@ -983,21 +1019,20 @@ class AdvancedFilter extends React.Component {
   };
 
   // TO DO ADD ME
-  renderMultiStatement = (filter, index, value) => {
-    console.log(value);
+  renderMultiStatement = (filter, statementIndex, value) => {
+    // change value name?
     return (
       <Row className="m-0">
         <Col className="p-0">
           <Form.Group className="form-group-inline py-0 my-0">
             <Form.Control
               as="select"
-              // value={dateOption}
+              value={value.name}
               className="advanced-filter-multi-options advanced-filter-select py-0 my-0"
               aria-label="Advanced Filter Multi Select Options"
-              // onChange={event => {
-              //   this.changeFilterDateOption(index, event.target.value);
-              // }}
-            >
+              onChange={event => {
+                this.changeMultiValue(statementIndex, this.getDefaultMultiValue(filter, event.target.value));
+              }}>
               {filter.fields?.map((field, f_index) => {
                 return (
                   <option key={f_index} value={field.name}>
@@ -1006,12 +1041,58 @@ class AdvancedFilter extends React.Component {
                 );
               })}
             </Form.Control>
+            {this.getMultiFilter(filter, value.name).type === 'select' && (
+              <Form.Control
+                as="select"
+                value={value.value}
+                className="advanced-filter-multi-options advanced-filter-select my-0 mx-3 py-0"
+                aria-label="Advanced Filter Multi Select Options"
+                onChange={event => {
+                  this.changeMultiValue(statementIndex, { name: value.name, value: event.target.value });
+                }}>
+                {this.getMultiFilter(filter, value.name).options.map((option, o_index) => {
+                  return <option key={o_index}>{option}</option>;
+                })}
+              </Form.Control>
+            )}
+            {this.getMultiFilter(filter, value.name).type === 'date' && (
+              <React.Fragment>
+                <Form.Control
+                  as="select"
+                  value={value.value.when}
+                  className="advanced-filter-date-options py-0 my-0 mx-3"
+                  aria-label="Advanced Filter Date Select Options"
+                  onChange={event => {
+                    this.changeMultiValue(statementIndex, { name: value.name, value: { when: event.target.value, date: value.value.date } });
+                  }}>
+                  <option value="before">before</option>
+                  <option value="after">after</option>
+                </Form.Control>
+                <div className="advanced-filter-date-input">
+                  <DateInput
+                    date={value.value.date}
+                    onChange={date => {
+                      this.changeMultiValue(statementIndex, { name: value.name, value: { when: value.value.when, date: date } });
+                    }}
+                    placement="bottom"
+                    customClass="form-control-md"
+                    ariaLabel="Advanced Filter Date Input"
+                    minDate={'1900-01-01'}
+                    maxDate={moment()
+                      .add(2, 'years')
+                      .format('YYYY-MM-DD')}
+                    replaceBlank={true}
+                  />
+                </div>
+              </React.Fragment>
+            )}
+            {/* add plus button */}
           </Form.Group>
         </Col>
         <Col className="p-0" md="auto">
-          {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
+          {filter.tooltip && this.renderStatementTooltip(filter.name, statementIndex, filter.tooltip)}
         </Col>
-        <Col md="auto">{this.renderRemoveStatementButton(index, this.removeMultiStatement)}</Col>
+        <Col md="auto">{this.renderRemoveStatementButton(statementIndex, this.removeMultiStatement)}</Col>
       </Row>
     );
   };
