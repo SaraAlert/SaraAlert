@@ -333,7 +333,7 @@ class AdvancedFilter extends React.Component {
     } else if (filterOption.type === 'search') {
       value = '';
     } else if (filterOption.type === 'multi') {
-      value = this.getDefaultMultiValue(filterOption, filterOption.fields[0].name);
+      value = [this.getDefaultMultiValue(filterOption, filterOption.fields[0].name)];
     }
 
     activeFilterOptions[parseInt(index)] = {
@@ -458,11 +458,11 @@ class AdvancedFilter extends React.Component {
   };
 
   // TO DO ADD ME
-  changeMultiValue = (statementIndex, value) => {
-    // TO DO update value array here
-    let activeFilterOptions = [...this.state.activeFilterOptions];
-    activeFilterOptions[parseInt(statementIndex)]['value'] = value;
-    this.setState({ activeFilterOptions });
+  changeMultiValue = (statementIndex, multiIndex, value) => {
+    const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
+    const newValue = [...currentMultiFilter.value];
+    newValue[parseInt(multiIndex)] = value;
+    this.changeValue(statementIndex, newValue);
   };
 
   // TO DO ADD ME
@@ -473,7 +473,6 @@ class AdvancedFilter extends React.Component {
   // TO DO ADD ME
   getDefaultMultiValue = (filter, name) => {
     const multiFilter = this.getMultiFilter(filter, name);
-    console.log(multiFilter);
     let value = null;
     if (multiFilter.type === 'select') {
       value = { name: name, value: multiFilter.options[0] };
@@ -1019,10 +1018,10 @@ class AdvancedFilter extends React.Component {
   };
 
   // TO DO ADD ME
-  renderMultiStatement = (filter, statementIndex, value) => {
+  renderMultiStatement = (filter, statementIndex, multiIndex, value) => {
     // change value name?
     return (
-      <Row className="m-0">
+      <Row key={'rowkey-filter-m' + multiIndex} className="m-0">
         <Col className="p-0">
           <Form.Group className="form-group-inline py-0 my-0">
             <Form.Control
@@ -1031,7 +1030,7 @@ class AdvancedFilter extends React.Component {
               className="advanced-filter-multi-options advanced-filter-select py-0 my-0"
               aria-label="Advanced Filter Multi Select Options"
               onChange={event => {
-                this.changeMultiValue(statementIndex, this.getDefaultMultiValue(filter, event.target.value));
+                this.changeMultiValue(statementIndex, multiIndex, this.getDefaultMultiValue(filter, event.target.value));
               }}>
               {filter.fields?.map((field, f_index) => {
                 return (
@@ -1048,7 +1047,7 @@ class AdvancedFilter extends React.Component {
                 className="advanced-filter-multi-options advanced-filter-select my-0 mx-3 py-0"
                 aria-label="Advanced Filter Multi Select Options"
                 onChange={event => {
-                  this.changeMultiValue(statementIndex, { name: value.name, value: event.target.value });
+                  this.changeMultiValue(statementIndex, multiIndex, { name: value.name, value: event.target.value });
                 }}>
                 {this.getMultiFilter(filter, value.name).options.map((option, o_index) => {
                   return <option key={o_index}>{option}</option>;
@@ -1063,7 +1062,7 @@ class AdvancedFilter extends React.Component {
                   className="advanced-filter-date-options py-0 my-0 mx-3"
                   aria-label="Advanced Filter Date Select Options"
                   onChange={event => {
-                    this.changeMultiValue(statementIndex, { name: value.name, value: { when: event.target.value, date: value.value.date } });
+                    this.changeMultiValue(statementIndex, multiIndex, { name: value.name, value: { when: event.target.value, date: value.value.date } });
                   }}>
                   <option value="before">before</option>
                   <option value="after">after</option>
@@ -1072,7 +1071,7 @@ class AdvancedFilter extends React.Component {
                   <DateInput
                     date={value.value.date}
                     onChange={date => {
-                      this.changeMultiValue(statementIndex, { name: value.name, value: { when: value.value.when, date: date } });
+                      this.changeMultiValue(statementIndex, multiIndex, { name: value.name, value: { when: value.value.when, date: date } });
                     }}
                     placement="bottom"
                     customClass="form-control-md"
@@ -1135,7 +1134,13 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'number' && this.renderNumberStatement(filterOption, index, value, numberOption, additionalFilterOption)}
             {filterOption?.type === 'date' && this.renderDateStatement(index, value, dateOption)}
             {filterOption?.type === 'relative' && this.renderRelativeDateStatement(filterOption, index, value, relativeOption)}
-            {filterOption?.type === 'multi' && this.renderMultiStatement(filterOption, index, value)}
+            {filterOption?.type === 'multi' && (
+              <React.Fragment>
+                {value.map((value, m_index) => {
+                  return this.renderMultiStatement(filterOption, index, m_index, value);
+                })}
+              </React.Fragment>
+            )}
           </Col>
           {filterOption?.type !== 'multi' && (
             <Col className="py-0" md="auto">
