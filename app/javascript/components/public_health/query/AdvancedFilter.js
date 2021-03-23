@@ -299,8 +299,18 @@ class AdvancedFilter extends React.Component {
   };
 
   // TO DO: ADD ME
-  removeMultiStatement = index => {
-    console.log('removing multi statement row: ' + index);
+  removeMultiStatement = (statementIndex, multiIndex) => {
+    const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
+    let oldValue = [...currentMultiFilter.value];
+
+    // if removing the last multi statement, remove the whole filter
+    // otherwise just remove that multi statement
+    if (oldValue.length === 1) {
+      this.removeStatement(statementIndex);
+    } else {
+      const newValue = oldValue.slice(0, multiIndex).concat(oldValue.slice(multiIndex + 1, oldValue.length));
+      this.changeValue(statementIndex, newValue);
+    }
   };
 
   /**
@@ -590,9 +600,9 @@ class AdvancedFilter extends React.Component {
    * Renders remove statement button (minus button at far right of statement)
    * @param {Number} index - Filter index
    */
-  renderRemoveStatementButton = (index, remove) => {
+  renderRemoveStatementButton = (index, sub_index, remove) => {
     return (
-      <Button className="remove-filter-row" variant="danger" onClick={() => remove(index)} aria-label="Remove Advanced Filter Option">
+      <Button className="remove-filter-row" variant="danger" onClick={() => remove(index, sub_index)} aria-label="Remove Advanced Filter Option">
         <i className="fas fa-minus"></i>
       </Button>
     );
@@ -1113,7 +1123,7 @@ class AdvancedFilter extends React.Component {
           <Col className="p-0" md="auto">
             {multiIndex === 0 && filter.tooltip && this.renderStatementTooltip(filter.name, statementIndex, filter.tooltip)}
           </Col>
-          <Col md="auto">{this.renderRemoveStatementButton(statementIndex, this.removeMultiStatement)}</Col>
+          <Col md="auto">{this.renderRemoveStatementButton(statementIndex, multiIndex, this.removeMultiStatement)}</Col>
         </Row>
       </React.Fragment>
     );
@@ -1167,7 +1177,7 @@ class AdvancedFilter extends React.Component {
           </Col>
           {filterOption?.type !== 'multi' && (
             <Col className="py-0" md="auto">
-              {this.renderRemoveStatementButton(index, this.removeStatement)}
+              {this.renderRemoveStatementButton(index, null, this.removeStatement)}
             </Col>
           )}
         </Row>
