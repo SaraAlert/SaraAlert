@@ -797,7 +797,10 @@ class Fhir::R4::ApiController < ActionController::API
       # Extract the original value from the request body using FHIRPath
       if fhir_path&.present?
         begin
-          value = FHIRPath.evaluate(fhir_path, req_json)
+          value = nil
+          Rails.logger.silence do
+            value = FHIRPath.evaluate(fhir_path, req_json)
+          end
         rescue StandardError
           # If the FHIRPath evaluation fails for some reason, just use the normalized value that failed validation
           # Note that there is a known issue in the FHIRPath lib where nested calls to extension() result in an error
