@@ -6,6 +6,7 @@ import ReactTooltip from 'react-tooltip';
 import { Button, ButtonGroup, Dropdown, Form, Modal, OverlayTrigger, ToggleButton } from 'react-bootstrap';
 import AdvancedFilter from '../../../components/public_health/query/AdvancedFilter.js'
 import DateInput from '../../../components/util/DateInput.js'
+import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
 import {
   mockFilter1,
   mockFilter2,
@@ -135,7 +136,7 @@ describe('AdvancedFilter', () => {
 
   it('Properly renders option dropdown', () => {
     const wrapper = getWrapper();
-    const filterOptions = wrapper.state('filterOptions').sort((a, b) => {
+    const filterOptions = advancedFilterOptions.sort((a, b) => {
       return a?.title?.localeCompare(b?.title);
     });
     wrapper.find(Button).simulate('click');
