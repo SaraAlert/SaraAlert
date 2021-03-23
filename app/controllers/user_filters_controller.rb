@@ -19,7 +19,7 @@ class UserFiltersController < ApplicationController
 
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
-        filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :allowRange, options: []),
+        filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :allowRange, :tooltip, options: [], fields: [ :name, :title, :type, options: [] ]),
         value: filter.permit(:value)[:value] || filter.require(:value) || false,
         numberOption: filter.permit(:numberOption)[:numberOption],
         dateOption: filter.permit(:dateOption)[:dateOption],
@@ -34,7 +34,7 @@ class UserFiltersController < ApplicationController
   def update
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
-        filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :allowRange, options: []),
+        filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :allowRange, :tooltip, options: [], fields: [ :name, :title, :type, options: [] ]),
         value: filter.permit(:value)[:value] || filter.require(:value) || false,
         numberOption: filter.permit(:numberOption)[:numberOption],
         dateOption: filter.permit(:dateOption)[:dateOption],
