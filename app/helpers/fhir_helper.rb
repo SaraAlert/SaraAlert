@@ -305,7 +305,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # Build a FHIR US Core Ethnicity Extension given Sara Alert ethnicity information.
   def to_us_core_ethnicity(ethnicity)
     # Don't return an extension if no ethnicity specified
-    return nil unless ValidationHelper::VALID_PATIENT_ENUMS[:ethnicity].include?(ethnicity)
+    return nil if ethnicity.nil? || !ValidationHelper::VALID_PATIENT_ENUMS[:ethnicity].include?(ethnicity)
 
     # Build out extension based on what ethnicity was specified
     FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity', extension: [
