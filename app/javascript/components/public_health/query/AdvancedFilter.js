@@ -294,7 +294,11 @@ class AdvancedFilter extends React.Component {
   // TO DO: ADD ME
   addMultiStatement = (filter, statementIndex) => {
     const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
-    const newValue = [...currentMultiFilter.value, this.getDefaultMultiValue(filter, 'result')]; // change me
+    let possibleFields = currentMultiFilter.filterOption.fields;
+    currentMultiFilter.value.forEach(value => {
+      possibleFields = possibleFields.filter(field => field.name !== value.name);
+    });
+    const newValue = [...currentMultiFilter.value, this.getDefaultMultiValue(filter, possibleFields[0].name)];
     this.changeValue(statementIndex, newValue);
   };
 
@@ -475,6 +479,18 @@ class AdvancedFilter extends React.Component {
     const newValue = [...currentMultiFilter.value];
     newValue[parseInt(multiIndex)] = value;
     this.changeValue(statementIndex, newValue);
+  };
+
+  // TO DO ADD ME
+  multiFieldDisabled = (name, multiIndex, statementIndex) => {
+    const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
+    let disabled = false;
+    currentMultiFilter.value.forEach((value, index) => {
+      if (value.name === name && index !== multiIndex) {
+        disabled = true;
+      }
+    });
+    return disabled;
   };
 
   // TO DO ADD ME
@@ -1051,7 +1067,7 @@ class AdvancedFilter extends React.Component {
                 }}>
                 {filter.fields?.map((field, f_index) => {
                   return (
-                    <option key={f_index} value={field.name}>
+                    <option key={f_index} value={field.name} disabled={this.multiFieldDisabled(field.name, multiIndex, statementIndex)}>
                       {field.title}
                     </option>
                   );
