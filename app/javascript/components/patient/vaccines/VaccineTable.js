@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Dropdown, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { formatDate } from '../../../utils/DateTime';
+
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -16,13 +17,13 @@ class VaccineTable extends React.Component {
     this.state = {
       table: {
         colData: [
-          { label: 'Actions', field: '', isSortable: false, filter: this.createActionsButton },
+          { label: 'Actions', field: '', isSortable: false, className: 'text-center', filter: this.createActionsButton },
           { label: 'ID', field: 'id', isSortable: true },
           { label: 'Vaccine Group', field: 'group_name', isSortable: true },
           { label: 'Product Name', field: 'product_name', isSortable: true },
           { label: 'Administration Date', field: 'administration_date', isSortable: true, filter: formatDate },
           { label: 'Dose Number', field: 'dose_number', isSortable: true },
-          { label: 'Notes', field: 'notes', isSortable: true },
+          { label: 'Notes', field: 'notes', isSortable: true, filter: formatDate },
         ],
         rowData: [],
         totalRows: 0,
@@ -310,8 +311,8 @@ class VaccineTable extends React.Component {
         <Dropdown.Toggle id={`vaccine-action-button-${rowData.id}`} size="sm" variant="primary" aria-label={`vaccine-action-button-${rowData.id}`}>
           <i className="fas fa-cogs fw"></i>
         </Dropdown.Toggle>
-        <Dropdown.Menu className="test-class" drop={'up'}>
-          <Dropdown.Item className="px-4 hi" onClick={() => this.handleEditVaccineClick(rowIndex)}>
+        <Dropdown.Menu drop={'up'}>
+          <Dropdown.Item className="px-4" onClick={() => this.handleEditVaccineClick(rowIndex)}>
             <i className="fas fa-edit fa-fw"></i>
             <span className="ml-2">Edit</span>
           </Dropdown.Item>
@@ -341,8 +342,8 @@ class VaccineTable extends React.Component {
                     <span className="ml-2">Add New Vaccination</span>
                   </Button>
                 </Col>
-                <Col lg={5}>
-                  <InputGroup size="md">
+                <Col xl={6} lg={10} md={12}>
+                  <InputGroup size="md" className="mt-3 mt-lg-0 ">
                     <InputGroup.Prepend>
                       <OverlayTrigger overlay={<Tooltip>Search by ID, Group Name, or Product Name.</Tooltip>}>
                         <InputGroup.Text className="rounded-0">

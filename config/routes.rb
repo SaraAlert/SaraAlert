@@ -102,7 +102,9 @@ Rails.application.routes.draw do
   end
 
   resources :vaccines, only: [:index, :create, :update]
-  
+
+  resources :close_contacts, only: [:index, :create, :update]
+
   resources :user_filters, only: [:index, :create, :update, :destroy]
 
   resources :user_export_presets, only: [:index, :create, :update, :destroy]

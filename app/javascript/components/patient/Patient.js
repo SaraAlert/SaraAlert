@@ -4,6 +4,7 @@ import { Button, Col, Collapse, Form, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { formatPhoneNumber } from '../../utils/Phone';
 
 import BadgeHOH from '../util/BadgeHOH';
 import EnrollHouseholdMember from '../subject/household_actions/EnrollHouseholdMember';
@@ -27,14 +28,6 @@ class Patient extends React.Component {
     return `${this.props.details.first_name ? this.props.details.first_name : ''}${this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''}${
       this.props.details.last_name ? ' ' + this.props.details.last_name : ''
     }`;
-  };
-
-  formatPhoneNumber = phone => {
-    const match = phone
-      .replace('+1', '')
-      .replace(/\D/g, '')
-      .match(/^(\d{3})(\d{3})(\d{4})$/);
-    return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
   };
 
   formatRace = () => {
@@ -234,7 +227,7 @@ class Patient extends React.Component {
             </div>
             <div className="item-group">
               <div>
-                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${this.formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
+                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 {this.props.details.blocked_sms && (
                   <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
                     &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
