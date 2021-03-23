@@ -763,6 +763,10 @@ class Patient < ApplicationRecord
     # Determine which type of duplicate exists
     where(first_name: first_name, last_name: last_name).pluck(*%i[sex date_of_birth]).each do |(s, dob)|
       dob = dob&.strftime('%F')
+
+      # The EPI-X format sends this as a Date while Exposure sends it as a string
+      date_of_birth = date_of_birth&.strftime('%F') if date_of_birth.instance_of?(Date)
+
       # If the sex isn't nil and doesn't match it is not a duplicate. Same for DoB.
       next if (sex.present? && s.present? && sex != s) || (date_of_birth.present? && dob.present? && date_of_birth != dob)
 
