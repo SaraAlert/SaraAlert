@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Dropdown, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { formatDate } from '../../../utils/DateTime';
+
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -17,13 +18,13 @@ class VaccineTable extends React.Component {
     this.state = {
       table: {
         colData: [
-          { label: 'Actions', field: '', isSortable: false, filter: this.renderActionsDropdown },
+          { label: 'Actions', field: '', isSortable: false, className: 'text-center', filter: this.renderActionsDropdown },
           { label: 'ID', field: 'id', isSortable: true },
           { label: 'Vaccine Group', field: 'group_name', isSortable: true },
           { label: 'Product Name', field: 'product_name', isSortable: true },
           { label: 'Administration Date', field: 'administration_date', isSortable: true, filter: formatDate },
           { label: 'Dose Number', field: 'dose_number', isSortable: true },
-          { label: 'Notes', field: 'notes', isSortable: true },
+          { label: 'Notes', field: 'notes', isSortable: true, filter: formatDate },
         ],
         rowData: [],
         totalRows: 0,
@@ -322,7 +323,7 @@ class VaccineTable extends React.Component {
         <Dropdown.Toggle id={`vaccine-action-button-${rowData.id}`} size="sm" variant="primary" aria-label="Vaccine Action Dropdown">
           <i className="fas fa-cogs fw"></i>
         </Dropdown.Toggle>
-        <Dropdown.Menu className="test-class" drop={'up'}>
+        <Dropdown.Menu drop={'up'}>
           <Dropdown.Item className="px-4" onClick={() => this.toggleEditModal(rowIndex)}>
             <i className="fas fa-edit fa-fw"></i>
             <span className="ml-2">Edit</span>
