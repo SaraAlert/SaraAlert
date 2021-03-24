@@ -401,7 +401,7 @@ ActiveRecord::Schema.define(version: 2021_03_24_054307) do
     t.boolean "race_refused_to_answer"
     t.boolean "latest_assessment_symptomatic", default: false
     t.date "first_positive_lab_at"
-    t.boolean "no_symptom_history"
+    t.boolean "no_symptom_history", default: false
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
