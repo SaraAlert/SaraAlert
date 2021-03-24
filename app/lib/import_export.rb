@@ -369,6 +369,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     # pluck selected fields
     records = assessments.pluck(*plucked_fields)
 
+    # ensure that records is always a 2d array
+    records = records.map { |record| [record] } if plucked_fields.size == 1
+
     # remove formula start for who_reported field
     (fields & %i[who_reported]).map { |field| fields.index(field) }
                                .each { |index| records.each { |values| values[index] = remove_formula_start(values[index]) } }
@@ -382,7 +385,13 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     laboratories = laboratories.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
     # validate and pluck selected fields
-    laboratories.pluck(*(fields & LABORATORY_FIELD_NAMES.keys))
+    plucked_fields = fields & LABORATORY_FIELD_NAMES.keys
+    records = laboratories.pluck(*plucked_fields)
+
+    # ensure that records is always a 2d array
+    records = records.map { |record| [record] } if plucked_fields.size == 1
+
+    records
   end
 
   # Extract vaccine data values given relevant fields
@@ -391,7 +400,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     vaccines = vaccines.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
     # validate and pluck selected fields
-    records = vaccines.pluck(*(fields & VACCINE_FIELD_NAMES.keys))
+    plucked_fields = fields & VACCINE_FIELD_NAMES.keys
+    records = vaccines.pluck(*plucked_fields)
+
+    # ensure that records is always a 2d array
+    records = records.map { |record| [record] } if plucked_fields.size == 1
 
     # remove formula start for 'notes' field
     (fields & %i[notes]).map { |field| fields.index(field) }
@@ -406,7 +419,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     close_contacts = close_contacts.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
     # validate and pluck selected fields
-    records = close_contacts.pluck(*(fields & CLOSE_CONTACT_FIELD_NAMES.keys))
+    plucked_fields = fields & CLOSE_CONTACT_FIELD_NAMES.keys
+    records = close_contacts.pluck(*plucked_fields)
+
+    # ensure that records is always a 2d array
+    records = records.map { |record| [record] } if plucked_fields.size == 1
 
     # remove formula start for 'created_by' and 'comment' fields
     (fields & %i[first_name last_name email notes]).map { |field| fields.index(field) }
@@ -446,7 +463,12 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     # pluck selected fields
-    transfers.pluck(*plucked_fields)
+    records = transfers.pluck(*plucked_fields)
+
+    # ensure that records is always a 2d array
+    records = records.map { |record| [record] } if plucked_fields.size == 1
+
+    records
   end
 
   # Extract history data values given relevant fields
@@ -455,7 +477,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     histories = histories.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
     # validate and pluck selected fields
-    records = histories.pluck(*(fields & HISTORY_FIELD_NAMES.keys))
+    plucked_fields = fields & HISTORY_FIELD_NAMES.keys
+    records = histories.pluck(*plucked_fields)
+
+    # ensure that records is always a 2d array
+    records = records.map { |record| [record] } if plucked_fields.size == 1
 
     # remove formula start for 'created_by' and 'comment' fields
     (fields & %i[created_by comment]).map { |field| fields.index(field) }
