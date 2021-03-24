@@ -1015,15 +1015,6 @@ class AdvancedFilter extends React.Component {
                 <Button id="advanced-filter-reset" variant="danger" onClick={this.reset}>
                   Reset
                 </Button>
-                <Button
-                  id="advanced-filter-apply"
-                  variant="primary"
-                  className="ml-2"
-                  onClick={() => {
-                    this.apply(false);
-                  }}>
-                  Apply
-                </Button>
               </div>
             </Col>
           </Row>
@@ -1063,6 +1054,15 @@ class AdvancedFilter extends React.Component {
           </p>
           <Button id="advanced-filter-cancel" variant="secondary btn-square" onClick={this.cancel}>
             Cancel
+          </Button>
+          <Button
+            id="advanced-filter-apply"
+            variant="primary"
+            className="ml-2"
+            onClick={() => {
+              this.apply(false);
+            }}>
+            Apply
           </Button>
         </Modal.Footer>
       </Modal>
