@@ -204,43 +204,29 @@ desc 'Backup the database'
       # Patients created before today
       existing_patients = Patient.monitoring_open.where('created_at < ?', today)
 
-      # Histories to be created today
-      histories = []
-
       # Create patients
-      patient_histories = demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties)
-      histories = histories.concat(patient_histories)
+      demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties)
 
       # Create assessments
-      assessment_histories = demo_populate_assessments(today, days_ago, existing_patients, jurisdictions)
-      histories = histories.concat(assessment_histories)
+      demo_populate_assessments(today, days_ago, existing_patients, jurisdictions)
 
       # Create laboratories
-      laboratory_histories = demo_populate_laboratories(today, days_ago, existing_patients)
-      histories = histories.concat(laboratory_histories)
+      demo_populate_laboratories(today, days_ago, existing_patients)
 
       # Create vaccinations
-      vaccine_histories = demo_populate_vaccines(today, days_ago, existing_patients)
-      histories = histories.concat(vaccine_histories)
+      demo_populate_vaccines(today, days_ago, existing_patients)
 
       # Create close contacts
-      close_contacts_histories = demo_populate_close_contacts(today, days_ago, existing_patients)
-      histories = histories.concat(close_contacts_histories)
+      demo_populate_close_contacts(today, days_ago, existing_patients)
 
       # Create transfers
-      transfer_histories = demo_populate_transfers(today, existing_patients, jurisdictions, assigned_users)
-      histories = histories.concat(transfer_histories)
+      demo_populate_transfers(today, existing_patients, jurisdictions, assigned_users)
 
       # Create close contacts
-      close_contacts_histories = demo_populate_close_contacts(today, days_ago, existing_patients)
-      histories = histories.concat(close_contacts_histories)
+      demo_populate_close_contacts(today, days_ago, existing_patients)
 
       # Create contact attempts
-      contact_attempt_histories = demo_populate_contact_attempts(today, existing_patients)
-      histories = histories.concat(contact_attempt_histories)
-
-      # Create histories
-      demo_populate_histories(today, histories)
+      demo_populate_contact_attempts(today, existing_patients)
     end
 
     # Needs to be in a separate transaction
@@ -374,8 +360,12 @@ desc 'Backup the database'
       # Potential Exposure Info
       patient[:isolation] = days_ago > 10 ? rand < 0.9 : rand < 0.4
       if patient[:isolation]
-        patient[:symptom_onset] = today - rand(10).days
-        patient[:user_defined_symptom_onset] = true
+        if rand < 0.7
+          patient[:symptom_onset] = today - rand(10).days
+          patient[:user_defined_symptom_onset] = true
+        else
+          patient[:no_symptom_history] = true
+        end
       else
         patient[:continuous_exposure] = rand < 0.3
         patient[:last_date_of_exposure] = today - rand(5).days unless patient[:continuous_exposure]
@@ -427,14 +417,38 @@ desc 'Backup the database'
     new_patients = Patient.where('created_at >= ?', today)
     new_patients.update_all('responder_id = id')
 
-    # 10-20% of patients are managed by a household member
-    new_children = new_patients.sample(new_patients.count * rand(10..20) / 100)
+    # Create household members (10-20% of patients are managed by a HoH)
+    new_children = new_patients.limit(new_patients.count * rand(10..20) / 100).order('RAND()')
     new_parents = new_patients - new_children
     new_children_updates =  new_children.map { |new_child|
       parent = new_parents.sample
       { responder_id: parent[:id], jurisdiction_id: parent[:jurisdiction_id] }
     }
     Patient.update(new_children.map { |p| p[:id] }, new_children_updates)
+
+    # Create first positive lab for patients with no symptom history
+    laboratories = []
+    user_emails = Hash[User.where(id: new_patients.where(no_symptom_history: true).distinct.pluck(:creator_id)).pluck(:id, :email)]
+    new_patients.where(no_symptom_history: true).each do |patient|
+      laboratories << Laboratory.new(
+        patient_id: patient[:id],
+        lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
+        specimen_collection: create_fake_timestamp(1.week.ago, today),
+        report: create_fake_timestamp(today, today),
+        result: 'positive',
+        created_at: patient[:created_at],
+        updated_at: patient[:created_at]
+      )
+      histories << History.new(
+        patient_id: patient[:id],
+        created_by: user_emails[patient[:creator_id]],
+        comment: "User added a new lab result.",
+        history_type: 'Lab Result',
+        created_at: patient[:created_at],
+        updated_at: patient[:created_at]
+      )
+    end
+    Laboratory.import! laboratories
 
     new_patients.each do |patient|
       # enrollment
@@ -492,9 +506,9 @@ desc 'Backup the database'
         updated_at: patient[:updated_at],
       ) unless patient[:pause_notifications] == false
     end
-    printf(" done.\n")
+    History.import! histories
 
-    return histories
+    printf(" done.\n")
   end
 
   def demo_populate_assessments(today, days_ago, existing_patients, jurisdictions)
@@ -502,7 +516,7 @@ desc 'Backup the database'
     assessments = []
     assessment_receipts = []
     histories = []
-    patient_jur_ids_and_sub_tokens = existing_patients.pluck(:id, :jurisdiction_id, :submission_token).sample(existing_patients.count * rand(55..60) / 100)
+    patient_jur_ids_and_sub_tokens = existing_patients.limit(existing_patients.count * rand(55..60) / 100).order('RAND()').pluck(:id, :jurisdiction_id, :submission_token)
     patient_jur_ids_and_sub_tokens.each_with_index do |(patient_id, jur_id, sub_token), index|
       printf("\rGenerating assessment #{index+1} of #{patient_jur_ids_and_sub_tokens.length}...")
       assessment_ts = create_fake_timestamp(today, today)
@@ -567,11 +581,10 @@ desc 'Backup the database'
     printf(" done.\n")
 
     # Create earlier symptom onset dates to meet isolation symptomatic non test based requirement
-    if days_ago > 10
-      symptomatic_assessments = new_assessments.where('patient_id % 4 <> 0').sample(new_assessments.count * rand(75..80) / 100)
-    else
-      symptomatic_assessments = new_assessments.where('patient_id % 4 <> 0').sample(new_assessments.count * rand(20..25) / 100)
-    end
+    symptomatic_assessments = new_assessments.where('patients.no_symptom_history IS NOT NULL')
+                                             .where('patient_id % 4 <> 0')
+                                             .limit(new_assessments.count * (days_ago > 10  ? rand(75..80) : rand(20..25)) / 100)
+                                             .order('RAND()')
 
     printf("Generating symptoms for assessments...")
     symptoms = []
@@ -615,9 +628,9 @@ desc 'Backup the database'
     end
     Assessment.update(assessment_symptomatic_statuses.keys, assessment_symptomatic_statuses.values)
     Patient.update(patient_symptom_onset_date_updates.keys, patient_symptom_onset_date_updates.values)
-    printf(" done.\n")
+    History.import! histories
 
-    return histories
+    printf(" done.\n")
   end
 
   def demo_populate_laboratories(today, days_ago, existing_patients)
@@ -626,9 +639,9 @@ desc 'Backup the database'
     histories = []
     isolation_patients = existing_patients.where(isolation: true)
     if days_ago > 10
-      patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(90..95) / 100)
+      patient_ids_lab = isolation_patients.limit(isolation_patients.count * rand(90..95) / 100).order('RAND()').pluck(:id)
     else
-      patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(20..30) / 100)
+      patient_ids_lab = isolation_patients.limit(isolation_patients.count * rand(20..30) / 100).order('RAND()').pluck(:id)
     end
     patient_ids_lab.each_with_index do |patient_id, index|
       printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
@@ -659,16 +672,16 @@ desc 'Backup the database'
       )
     end
     Laboratory.import! laboratories
-    printf(" done.\n")
+    History.import! histories
 
-    return histories
+    printf(" done.\n")
   end
 
   def demo_populate_vaccines(today, days_ago, existing_patients)
     printf("Generating vaccinations...")
     vaccines = []
     histories = []
-    patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
+    patient_ids = existing_patients.limit(existing_patients.count * rand(15..25) / 100).order('RAND()').pluck(:id)
     patient_ids.each_with_index do |patient_id, index|
       printf("\rGenerating vaccine #{index+1} of #{patient_ids.length}...")
       vaccine_ts = create_fake_timestamp(today, today)
@@ -695,17 +708,17 @@ desc 'Backup the database'
       )
     end
     Vaccine.import! vaccines
-    printf(" done.\n")
+    History.import! histories
 
-    return histories
+    printf(" done.\n")
   end
 
   def demo_populate_close_contacts(today, days_ago, existing_patients)
     printf("Generating close contacts...")
     close_contacts = []
     histories = []
-    patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
-    enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).pluck(:id).sample(existing_patients.count * rand(5..15) / 100)
+    patient_ids = existing_patients.limit(existing_patients.count * rand(15..25) / 100).order('RAND()').pluck(:id)
+    enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).limit(existing_patients.count * rand(5..15) / 100).order('RAND()').pluck(:id)
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
       printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
@@ -739,9 +752,9 @@ desc 'Backup the database'
       )
     end
     CloseContact.import! close_contacts
-    printf(" done.\n")
+    History.import! histories
 
-    return histories
+    printf(" done.\n")
   end
 
   def demo_populate_transfers(today, existing_patients, jurisdictions, assigned_users)
@@ -750,7 +763,7 @@ desc 'Backup the database'
     histories = []
     patient_updates = {}
     jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path)]
-    patients_transfer = existing_patients.pluck(:id, :jurisdiction_id, :assigned_user).sample(existing_patients.count * rand(5..10) / 100)
+    patients_transfer = existing_patients.limit(existing_patients.count * rand(5..10) / 100).order('RAND()').pluck(:id, :jurisdiction_id, :assigned_user)
     patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
       printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
       transfer_ts = create_fake_timestamp(today, today)
@@ -778,17 +791,17 @@ desc 'Backup the database'
     end
     Patient.update(patient_updates.keys, patient_updates.values)
     Transfer.import! transfers
-    printf(" done.\n")
+    History.import! histories
 
-    return histories
+    printf(" done.\n")
   end
 
   def demo_populate_close_contacts(today, days_ago, existing_patients)
     printf("Generating close contacts...")
     close_contacts = []
     histories = []
-    patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
-    enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).pluck(:id).sample(existing_patients.count * rand(5..15) / 100)
+    patient_ids = existing_patients.limit(existing_patients.count * rand(15..25) / 100).order('RAND()').pluck(:id)
+    enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).limit(existing_patients.count * rand(5..15) / 100).order('RAND()').pluck(:id)
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
       printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
@@ -824,16 +837,16 @@ desc 'Backup the database'
       )
     end
     CloseContact.import! close_contacts
-    printf(" done.\n")
+    History.import! histories
 
-    return histories
+    printf(" done.\n")
   end
 
   def demo_populate_contact_attempts(today, existing_patients)
     printf("Generating contact attempts...")
     contact_attempts = []
     histories = []
-    patients_contact_attempts = existing_patients.pluck(:id).sample(existing_patients.count * rand(10..20) / 100)
+    patients_contact_attempts = existing_patients.limit(existing_patients.count * rand(10..20) / 100).order('RAND()').pluck(:id)
     patients_contact_attempts.each_with_index do |patient_id, index|
       printf("\rGenerating contact attempt #{index+1} of #{patients_contact_attempts.length}...")
       successful = rand < 0.45
@@ -861,14 +874,8 @@ desc 'Backup the database'
       )
     end
     ContactAttempt.import! contact_attempts
-    printf(" done.\n")
-
-    return histories
-  end
-
-  def demo_populate_histories(today, histories)
-    printf("Writing histories...")
     History.import! histories
+
     printf(" done.\n")
   end
 
