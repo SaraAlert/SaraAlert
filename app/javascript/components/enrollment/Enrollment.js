@@ -254,6 +254,8 @@ class Enrollment extends React.Component {
               has_dependents={this.props.has_dependents}
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
+              first_positive_lab={this.props.first_positive_lab}
+              symptomatic_assessments_exist={this.props.symptomatic_assessments_exist}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
@@ -290,6 +292,7 @@ Enrollment.propTypes = {
   has_dependents: PropTypes.bool,
   blocked_sms: PropTypes.bool,
   first_positive_lab: PropTypes.object,
+  symptomatic_assessments_exist: PropTypes.bool,
 };
 
 export default Enrollment;
