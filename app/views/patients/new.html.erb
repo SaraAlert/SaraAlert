@@ -12,7 +12,8 @@
                       assigned_users: @patient.jurisdiction.assigned_users,
                       race_options: ValidationHelper::RACE_OPTIONS,
                       cc_id: @close_contact&.id,
-                      first_positive_lab: nil
+                      first_positive_lab: nil,
+                      symptomatic_assessments_exist: false
                     }) %>
 
 <div class="pb-4"></div>

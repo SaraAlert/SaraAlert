@@ -171,7 +171,8 @@ class Assessment < ApplicationRecord
     if patient.user_defined_symptom_onset.present? && !patient.symptom_onset.nil?
       patient.update(
         latest_assessment_at: latest_assessment&.created_at,
-        latest_assessment_symptomatic: latest_assessment&.symptomatic
+        latest_assessment_symptomatic: latest_assessment&.symptomatic,
+        no_symptom_history: patient.no_symptom_history && !latest_assessment&.symptomatic
       )
     else
       new_symptom_onset = patient.assessments.where(symptomatic: true).minimum(:created_at)&.to_date
@@ -191,17 +192,20 @@ class Assessment < ApplicationRecord
       patient.update(
         latest_assessment_at: latest_assessment&.created_at,
         latest_assessment_symptomatic: latest_assessment&.symptomatic,
-        symptom_onset: new_symptom_onset
+        symptom_onset: new_symptom_onset,
+        no_symptom_history: patient.no_symptom_history && !latest_assessment&.symptomatic
       )
     end
   end
 
   def update_patient_linelist_after_destroy
     latest_assessment = patient.assessments.where.not(id: id).order(:created_at).last
+    no_symptom_history = patient.assessments.where(symptomatic: true).empty?
 
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
     if patient.user_defined_symptom_onset.present? && !patient.symptom_onset.nil?
       patient.update(
+        no_symptom_history: no_symptom_history,
         latest_assessment_at: latest_assessment&.created_at,
         latest_assessment_symptomatic: latest_assessment&.symptomatic,
         latest_fever_or_fever_reducer_at: patient.assessments
@@ -217,6 +221,7 @@ class Assessment < ApplicationRecord
       end
       patient.update(
         symptom_onset: new_symptom_onset,
+        no_symptom_history: no_symptom_history,
         latest_assessment_at: latest_assessment&.created_at,
         latest_assessment_symptomatic: latest_assessment&.symptomatic,
         latest_fever_or_fever_reducer_at: patient.assessments

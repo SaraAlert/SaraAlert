@@ -112,7 +112,12 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  noSymptomHistory: <div>You must enter the lab result that provides evidence that this monitoree is a case.</div>,
+  noSymptomHistory: (
+    <div>
+      Allows a user to indicate that the monitoree is an asymptomatic or pre-symptomatic case. If checked, the monitoree will only be eligible to meet an
+      Asymptomatic recovery definition (unless they develop symptoms later on)
+    </div>
+  ),
 
   latestPublicHealthActionInExposure: (
     <div>

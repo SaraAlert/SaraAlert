@@ -68,13 +68,7 @@ class Review extends React.Component {
               goto={this.props.goto}
               edit_mode={true}
               jurisdiction_path={this.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id]}
-              details={
-                {
-                  ...this.props.currentState.patient,
-                  blocked_sms: this.props.currentState.blocked_sms,
-                  first_positive_lab: this.props.currentState.first_positive_lab,
-                } || {}
-              }
+              details={{ ...this.props.currentState.patient, blocked_sms: this.props.currentState.blocked_sms } || {}}
             />
             <div className="pb-4"></div>
             {this.props.previous && (

@@ -13,5 +13,6 @@
                       assigned_users: @patient.jurisdiction.assigned_users,
                       race_options: ValidationHelper::RACE_OPTIONS,
                       blocked_sms: @patient.blocked_sms,
-                      first_positive_lab: @patient.laboratories.where(result: 'positive').order(:specimen_collection).first
+                      first_positive_lab: @patient.laboratories.where(result: 'positive').order(:specimen_collection).first,
+                      symptomatic_assessments_exist: @patient.assessments.where(symptomatic: true).any?
                     }) %>

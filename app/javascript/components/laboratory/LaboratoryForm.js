@@ -67,7 +67,7 @@ class LaboratoryForm extends React.Component {
             <Row>
               <Form.Group as={Col}>
                 <Form.Label htmlFor="specimen_collection" className="nav-input-label">
-                  Specimen Collection Date
+                  Specimen Collection Date {this.props.specimenCollectionRequired && '*'}
                 </Form.Label>
                 <DateInput
                   id="specimen_collection"
@@ -104,7 +104,7 @@ class LaboratoryForm extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col} controlId="result">
-                <Form.Label className="nav-input-label">Result</Form.Label>
+                <Form.Label className="nav-input-label">Result {this.props.onlyPositiveResult && '*'}</Form.Label>
                 <Form.Control as="select" className="form-control-lg" onChange={this.handleChange} value={this.state.result}>
                   {this.props.onlyPositiveResult ? (
                     <option>positive</option>
@@ -126,7 +126,10 @@ class LaboratoryForm extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.cancel}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disabled={this.props.loading || this.state.reportInvalid} onClick={this.submit}>
+          <Button
+            variant="primary btn-square"
+            disabled={this.props.loading || this.state.reportInvalid || (this.props.specimenCollectionRequired && !this.state.specimen_collection)}
+            onClick={this.submit}>
             {this.props.editMode ? 'Update' : 'Create'}
           </Button>
         </Modal.Footer>
@@ -137,6 +140,7 @@ class LaboratoryForm extends React.Component {
 
 LaboratoryForm.propTypes = {
   lab: PropTypes.object,
+  specimenCollectionRequired: PropTypes.bool,
   onlyPositiveResult: PropTypes.bool,
   submit: PropTypes.func,
   cancel: PropTypes.func,

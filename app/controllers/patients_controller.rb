@@ -709,6 +709,7 @@ class PatientsController < ApplicationController
       :gender_identity,
       :sexual_orientation,
       :user_defined_symptom_onset,
+      :no_symptom_history,
       laboratories_attributes: %i[
         lab_type
         specimen_collection
