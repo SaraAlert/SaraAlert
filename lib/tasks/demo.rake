@@ -581,7 +581,7 @@ desc 'Backup the database'
     printf(" done.\n")
 
     # Create earlier symptom onset dates to meet isolation symptomatic non test based requirement
-    symptomatic_assessments = new_assessments.where('patients.no_symptom_history IS NOT NULL')
+    symptomatic_assessments = new_assessments.where('patients.no_symptom_history = FALSE')
                                              .where('patient_id % 4 <> 0')
                                              .limit(new_assessments.count * (days_ago > 10  ? rand(75..80) : rand(20..25)) / 100)
                                              .order('RAND()')
