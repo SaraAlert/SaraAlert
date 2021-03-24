@@ -195,7 +195,7 @@ class Fhir::R4::ApiController < ActionController::API
       # Wrap updates to the CloseContact and History creation in a transaction
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(close_contact, :patient_id) && close_contact.save(context: :api)
-          req_json = request.patch? ? patient.as_fhir.to_json : JSON.parse(request.body.string)
+          req_json = request.patch? ? close_contact.as_fhir.to_json : JSON.parse(request.body.string)
           status_unprocessable_entity(close_contact, fhir_map, req_json) && return
         end
 
