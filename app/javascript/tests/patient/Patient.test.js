@@ -30,6 +30,10 @@ const riskFactors = [
   { key: 'Crew on Passenger or Cargo Flight', val: null },
 ];
 
+beforeEach(() => {
+  window.BASE_PATH = ""
+})
+
 describe('Patient', () => {
   it('Properly renders all main components when not in edit mode', () => {
     const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2 ]} hideBody={true} edit_mode={false}
@@ -450,7 +454,7 @@ describe('Patient', () => {
     expect(wrapper.find('#household-member-not-hoh').exists()).toBeTruthy();
     expect(wrapper.find('#household-member-not-hoh').find(Row).first().text())
       .toEqual('The reporting responsibility for this monitoree is handled by another monitoree. Click here to view that monitoree.');
-    expect(wrapper.find('#household-member-not-hoh a').prop('href')).toEqual('/patients/17');
+    expect(wrapper.find('#household-member-not-hoh a').prop('href')).toEqual(`${window.BASE_PATH}/patients/17`);
     expect(wrapper.find(RemoveFromHousehold).exists()).toBeTruthy();
     expect(wrapper.find(MoveToHousehold).exists()).toBeFalsy();
     expect(wrapper.find(ChangeHOH).exists()).toBeFalsy();
@@ -492,7 +496,7 @@ describe('Patient', () => {
     expect(wrapper.find('.edit-link').find('a').length).toEqual(7);
     wrapper.find('.edit-link').find('a').forEach(function(link, index) {
       expect(link.text()).toEqual('Edit');
-      expect(link.prop('href')).toEqual(`undefined/patients/${mockPatient1.id}/edit?step=${stepIds[index]}`);
+      expect(link.prop('href')).toEqual(`${window.BASE_PATH}/patients/${mockPatient1.id}/edit?step=${stepIds[index]}`);
     });
   });
 

@@ -51,7 +51,7 @@ class Contact extends React.Component {
       if (event.target.value.replace('_', '').length === 12) {
         axios({
           method: 'get',
-          url: '/patients/sms_eligibility_check',
+          url: `${window.BASE_PATH}/patients/sms_eligibility_check`,
           params: { phone_number: phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) },
         })
           .then(response => {

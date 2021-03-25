@@ -110,7 +110,7 @@ class AdminTable extends React.Component {
   axiosAdminPostRequest = (path, data, handleSuccess, handleError) => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post('/admin/' + path, data)
+      .post(window.BASE_PATH + '/admin/' + path, data)
       .then(handleSuccess)
       .catch(handleError);
   };
@@ -131,7 +131,7 @@ class AdminTable extends React.Component {
 
     this.setState({ cancelToken, isLoading }, () => {
       axios
-        .get('/admin/' + path, {
+        .get(window.BASE_PATH + '/admin/' + path, {
           params: params,
           cancelToken: this.state.cancelToken.token,
         })
@@ -155,7 +155,7 @@ class AdminTable extends React.Component {
    * Gets the jurisdictions path options via an axios GET request.
    */
   getJurisdictionPaths() {
-    axios.get('/jurisdictions/paths').then(response => {
+    axios.get(window.BASE_PATH + '/jurisdictions/paths').then(response => {
       const responseData = response.data.jurisdiction_paths;
 
       // Swap keys and values for ease of use

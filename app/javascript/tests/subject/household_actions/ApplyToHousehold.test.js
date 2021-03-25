@@ -24,6 +24,10 @@ function getMountedWrapper() {
     handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
 }
 
+beforeEach(() => {
+  window.BASE_PATH = ""
+})
+
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -95,7 +99,7 @@ describe('ApplyToHousehold', () => {
       expect(row.find('td').at(0).find('input').exists).toBeTruthy();
       expect(row.find('td').at(0).find('input').prop('checked')).toBeFalsy();
       expect(row.find('td').at(1).find('a').exists()).toBeTruthy();
-      expect(row.find('td').at(1).find('a').prop('href')).toEqual('/patients/' + rowData.id);
+      expect(row.find('td').at(1).find('a').prop('href')).toEqual(`${window.BASE_PATH}/patients/${rowData.id}`);
       expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(rowData));
       if (rowData.id === rowData.responder_id) {
         expect(row.find('td').at(1).find(BadgeHOH).exists()).toBeTruthy();

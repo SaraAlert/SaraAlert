@@ -17,7 +17,7 @@ class Workflow extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('/jurisdictions/paths').then(response => {
+    axios.get(`${window.BASE_PATH}/jurisdictions/paths`).then(response => {
       this.setState({ jurisdiction_paths: response.data.jurisdiction_paths });
     });
   }

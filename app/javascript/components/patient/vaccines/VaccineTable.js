@@ -71,7 +71,7 @@ class VaccineTable extends React.Component {
   queryServer = _.debounce(query => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .get('/vaccines', {
+      .get(`${window.BASE_PATH}/vaccines`, {
         params: {
           patient_id: this.props.patient.id,
           ...query,
@@ -213,7 +213,7 @@ class VaccineTable extends React.Component {
   addNewVaccine = newVaccineData => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post('/vaccines', {
+      .post(`${window.BASE_PATH}/vaccines`, {
         group_name: newVaccineData.group_name,
         product_name: newVaccineData.product_name,
         administration_date: newVaccineData.administration_date,
@@ -277,7 +277,7 @@ class VaccineTable extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
 
     axios
-      .put('/vaccines/' + currVaccineId, {
+      .put(`${window.BASE_PATH}/vaccines/${currVaccineId}`, {
         group_name: updatedVaccineData.group_name,
         product_name: updatedVaccineData.product_name,
         administration_date: updatedVaccineData.administration_date,

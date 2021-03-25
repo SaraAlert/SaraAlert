@@ -24,7 +24,7 @@ class PatientsFilters extends React.Component {
   // Update Assigned Users datalist
   updateAssignedUsers = () => {
     axios
-      .post('/jurisdictions/assigned_users', {
+      .post(`${window.BASE_PATH}/jurisdictions/assigned_users`, {
         query: {
           jurisdiction: this.props.query?.jurisdiction || this.props.jurisdiction?.id,
           scope: this.props.query?.scope || 'all',

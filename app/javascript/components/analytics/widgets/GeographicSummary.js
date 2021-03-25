@@ -266,7 +266,7 @@ class GeographicSummary extends React.Component {
 
   loadJurisdictionData = async (jurisdictionFileName, callback) => {
     callback({
-      mapObject: await axios.get(`${window.location.origin}/county_level_maps/${jurisdictionFileName}`).then(res => res.data),
+      mapObject: await axios.get(`${window.BASE_PATH}/county_level_maps/${jurisdictionFileName}`).then(res => res.data),
     });
   };
 
