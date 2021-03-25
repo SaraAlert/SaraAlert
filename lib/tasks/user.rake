@@ -48,9 +48,9 @@ namespace :user do
       raise "PASSWORD or ROLE or JURISDICTION must be provided; ROLE must be one of one of #{roles}; JURISDICTION must be one of #{jurisdictions}"
     end
 
-    user.update_attributes!(password: password) if password
-    user.update_attributes!(role: role) if role
-    user.update_attributes!(jurisdiction: Jurisdiction.find_by_name(jurisdiction)) if jurisdiction
+    user.update!(password: password) if password
+    user.update!(role: role) if role
+    user.update!(jurisdiction: Jurisdiction.find_by_name(jurisdiction)) if jurisdiction
   end
 
   desc 'Delete a user account'
