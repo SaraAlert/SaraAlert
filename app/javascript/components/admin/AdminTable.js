@@ -626,52 +626,52 @@ class AdminTable extends React.Component {
     return (
       <div className="mx-2">
         <h1 className="sr-only">Admin Dashboard</h1>
-        <Row className="mb-1">
-          <Col xl={12} className="mb-2">
-            <Button className="mr-1" size="md" onClick={this.handleAddUserClick}>
+        <Row id="admin-table-header" className="mb-1">
+          <Col xl={24} className="col-xxl-14 px-1">
+            <Button className="mr-2 mb-2" size="md" onClick={this.handleAddUserClick}>
               <i className="fas fa-plus-circle"></i>
               &nbsp;Add User
             </Button>
-            <Button className="mx-1" size="md" onClick={this.getCSVData}>
+            <Button className="mr-2 mb-2" size="md" onClick={this.getCSVData}>
               <i className="fas fa-download"></i>
               &nbsp;Export All to CSV
             </Button>
             {this.props.is_usa_admin && (
-              <Button className="mx-1" size="md" onClick={this.handleEmailAllClick}>
+              <Button className="mr-2 mb-2" size="md" onClick={this.handleEmailAllClick}>
                 <i className="fas fa-envelope"></i>
                 &nbsp;Email All Unlocked Users
               </Button>
             )}
             {this.state.csvData.length > 0 ? <CSVLink data={this.state.csvData} filename={'sara-accounts.csv'} ref={this.csvLink} /> : undefined}
+            <ButtonGroup className="float-right mb-2">
+              <Button
+                id="admin-table-all-filter-btn"
+                variant={_.isNil(this.state.query.locked) ? 'primary' : 'outline-primary'}
+                onClick={() => {
+                  this.handleLockedChange(null);
+                }}>
+                All
+              </Button>
+              <Button
+                id="admin-table-unlocked-filter-btn"
+                variant={!_.isNil(this.state.query.locked) && !this.state.query.locked ? 'primary' : 'outline-primary'}
+                onClick={() => {
+                  this.handleLockedChange(false);
+                }}>
+                Unlocked
+              </Button>
+              <Button
+                id="admin-table-locked-filter-btn"
+                variant={!_.isNil(this.state.query.locked) && this.state.query.locked ? 'primary' : 'outline-primary'}
+                onClick={() => {
+                  this.handleLockedChange(true);
+                }}>
+                Locked
+              </Button>
+            </ButtonGroup>
           </Col>
-          <Col xl={12} className="mb-2">
+          <Col xl={24} className="col-xxl-10 mb-2 px-1">
             <InputGroup>
-              <ButtonGroup className="mr-2">
-                <Button
-                  id="admin-table-all-filter-btn"
-                  variant={_.isNil(this.state.query.locked) ? 'primary' : 'outline-primary'}
-                  onClick={() => {
-                    this.handleLockedChange(null);
-                  }}>
-                  All
-                </Button>
-                <Button
-                  id="admin-table-unlocked-filter-btn"
-                  variant={!_.isNil(this.state.query.locked) && !this.state.query.locked ? 'primary' : 'outline-primary'}
-                  onClick={() => {
-                    this.handleLockedChange(false);
-                  }}>
-                  Unlocked
-                </Button>
-                <Button
-                  id="admin-table-locked-filter-btn"
-                  variant={!_.isNil(this.state.query.locked) && this.state.query.locked ? 'primary' : 'outline-primary'}
-                  onClick={() => {
-                    this.handleLockedChange(true);
-                  }}>
-                  Locked
-                </Button>
-              </ButtonGroup>
               <InputGroup.Prepend>
                 <OverlayTrigger overlay={<Tooltip>Search by id, email, or jurisdiction.</Tooltip>}>
                   <InputGroup.Text className="rounded-0">
