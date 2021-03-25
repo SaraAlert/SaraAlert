@@ -281,17 +281,19 @@ class Fhir::R4::ApiController < ActionController::API
 
       status_bad_request && return if resource.nil?
 
-      unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
-        status_unprocessable_entity(format_model_validation_errors(resource)) && return
+      ActiveRecord::Base.transaction do
+        unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
+          status_unprocessable_entity(format_model_validation_errors(resource)) && return
+        end
+
+        Rails.logger.info "Created Patient with ID: #{resource.id}"
+
+        # Send enrollment notification only to responders
+        resource.send_enrollment_notification if resource.self_reporter_or_proxy?
+
+        # Create a history for the enrollment
+        History.enrollment(patient: resource, created_by: @current_actor_label, comment: 'Monitoree enrolled via API.')
       end
-
-      Rails.logger.info "Created Patient with ID: #{resource.id}"
-
-      # Send enrollment notification only to responders
-      resource.send_enrollment_notification if resource.self_reporter_or_proxy?
-
-      # Create a history for the enrollment
-      History.enrollment(patient: resource, created_by: @current_actor_label, comment: 'Monitoree enrolled via API.')
     when 'relatedperson'
       return if doorkeeper_authorize!(
         :'user/RelatedPerson.write',
@@ -302,14 +304,16 @@ class Fhir::R4::ApiController < ActionController::API
 
       resource = CloseContact.new(close_contact_from_fhir(contents))
 
-      unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api)
-        status_unprocessable_entity(format_model_validation_errors(resource)) && return
-      end
+      ActiveRecord::Base.transaction do
+        unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api)
+          status_unprocessable_entity(format_model_validation_errors(resource)) && return
+        end
 
-      Rails.logger.info "Created Close Contact (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
-      History.close_contact(patient: resource.patient_id,
-                            created_by: @current_actor_label,
-                            comment: "New close contact added via API (ID: #{resource.id}).")
+        Rails.logger.info "Created Close Contact (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
+        History.close_contact(patient: resource.patient_id,
+                              created_by: @current_actor_label,
+                              comment: "New close contact added via API (ID: #{resource.id}).")
+      end
     else
       status_not_found && return
     end
