@@ -87,7 +87,7 @@ class Patient extends React.Component {
     } else {
       return (
         <div className="edit-link">
-          <a href={window.BASE_PATH + '/patients/' + this.props.details.id + '/edit?step=' + enrollmentStep} id={sectionId} aria-label={`Edit ${section}`}>
+          <a href={`${window.BASE_PATH}/patients/${this.props.details.id}/edit?step=${enrollmentStep}`} id={sectionId} aria-label={`Edit ${section}`}>
             Edit
           </a>
         </div>
@@ -677,7 +677,7 @@ class Patient extends React.Component {
           <div id="household-member-not-hoh" className="household-info">
             <Row>
               The reporting responsibility for this monitoree is handled by another monitoree.&nbsp;
-              <a href={'/patients/' + this.props.details.responder_id}>Click here to view that monitoree</a>.
+              <a href={`${window.BASE_PATH}/patients/${this.props.details.responder_id}`}>Click here to view that monitoree</a>.
             </Row>
             <Row>
               <RemoveFromHousehold patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
@@ -703,7 +703,7 @@ class Patient extends React.Component {
                       return (
                         <tr key={`dl-${index}`}>
                           <td>
-                            <a href={'/patients/' + member.id}>
+                            <a href={`${window.BASE_PATH}/patients/${member.id}`}>
                               {member.last_name}, {member.first_name} {member.middle_name || ''}
                             </a>
                           </td>
@@ -733,7 +733,7 @@ class Patient extends React.Component {
                 {this.props?.dependents?.map((member, index) => {
                   return (
                     <Row key={'gm' + index}>
-                      <a href={'/patients/' + member.id}>
+                      <a href={`${window.BASE_PATH}/patients/${member.id}`}>
                         {member.last_name}, {member.first_name} {member.middle_name || ''}
                       </a>
                     </Row>

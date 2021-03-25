@@ -71,7 +71,7 @@ class AuditModal extends React.Component {
   queryServer = _.debounce(query => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post('/users/audits/' + this.props.user.id, {
+      .post(`${window.BASE_PATH}/users/audits/${this.props.user.id}`, {
         ...query,
         cancelToken: this.state.cancelToken.token,
       })
@@ -107,7 +107,7 @@ class AuditModal extends React.Component {
    * Gets the all possible jurisdictions path via an axios GET request.
    */
   getAllJurisdictionPaths() {
-    axios.get('/jurisdictions/allpaths').then(response => {
+    axios.get(`${window.BASE_PATH}/jurisdictions/allpaths`).then(response => {
       const responseData = response.data.all_jurisdiction_paths;
 
       // Swap keys and values for ease of use
