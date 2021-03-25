@@ -363,86 +363,28 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       end
     end
 
-    # join patients if any alternative identifiers are selected
-    assessments = assessments.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
-
-    # pluck selected fields
-    records = assessments.pluck(*plucked_fields)
-
-    # ensure that records is always a 2d array
-    records = records.map { |record| [record] } if plucked_fields.size == 1
-
-    # remove formula start for who_reported field
-    (fields & %i[who_reported]).map { |field| fields.index(field) }
-                               .each { |index| records.each { |values| values[index] = remove_formula_start(values[index]) } }
-
-    records
+    extract_fields(assessments, plucked_fields, { formulas: %i[who_reported] })
   end
 
   # Extract laboratory data values given relevant fields
   def extract_laboratories_details(laboratories, fields)
-    # join patients if any alternative identifiers are selected
-    laboratories = laboratories.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
-
-    # validate and pluck selected fields
-    plucked_fields = fields & LABORATORY_FIELD_NAMES.keys
-    records = laboratories.pluck(*plucked_fields)
-
-    # ensure that records is always a 2d array
-    records = records.map { |record| [record] } if plucked_fields.size == 1
-
-    records
+    extract_fields(laboratories, fields & LABORATORY_FIELD_NAMES.keys, {})
   end
 
   # Extract vaccine data values given relevant fields
   def extract_vaccines_details(vaccines, fields)
-    # join patients if any alternative identifiers are selected
-    vaccines = vaccines.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
-
-    # validate and pluck selected fields
-    plucked_fields = fields & VACCINE_FIELD_NAMES.keys
-    records = vaccines.pluck(*plucked_fields)
-
-    # ensure that records is always a 2d array
-    records = records.map { |record| [record] } if plucked_fields.size == 1
-
-    # remove formula start for 'notes' field
-    (fields & %i[notes]).map { |field| fields.index(field) }
-                        .each { |index| records.each { |values| values[index] = remove_formula_start(values[index]) } }
-
-    records
+    extract_fields(vaccines, fields & VACCINE_FIELD_NAMES.keys, { formulas: %i[notes] })
   end
 
   # Extract close contact data values given relevant fields
   def extract_close_contacts_details(close_contacts, fields)
-    # join patients if any alternative identifiers are selected
-    close_contacts = close_contacts.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
-
-    # validate and pluck selected fields
-    plucked_fields = fields & CLOSE_CONTACT_FIELD_NAMES.keys
-    records = close_contacts.pluck(*plucked_fields)
-
-    # ensure that records is always a 2d array
-    records = records.map { |record| [record] } if plucked_fields.size == 1
-
-    # remove formula start for 'created_by' and 'comment' fields
-    (fields & %i[first_name last_name email notes]).map { |field| fields.index(field) }
-                                                   .each { |index| records.each { |values| values[index] = remove_formula_start(values[index]) } }
-
-    # format phone numbers for 'primary_telephone' field
-    (fields & %i[primary_telephone]).map { |field| fields.index(field) }
-                                    .each { |index| records.each { |values| values[index] = format_phone_number(values[index]) } }
-
-    records
+    extract_fields(close_contacts, fields & CLOSE_CONTACT_FIELD_NAMES.keys, { formulas: %i[first_name last_name email notes], phones: %i[primary_telephone] })
   end
 
   # Extract transfer data values given relevant fields
   def extract_transfers_details(transfers, fields)
     # validate fields to be plucked
     plucked_fields = fields & TRANSFER_FIELD_NAMES.keys
-
-    # join patients if any alternative identifiers are selected
-    transfers = transfers.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
     # join users if 'who' is selected and replace field with user email
     if fields.include?(:who)
@@ -462,35 +404,41 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       plucked_fields[plucked_fields.index(:to_jurisdiction)] = 'j_to.path'
     end
 
-    # pluck selected fields
-    records = transfers.pluck(*plucked_fields)
-
-    # ensure that records is always a 2d array
-    records = records.map { |record| [record] } if plucked_fields.size == 1
-
-    records
+    extract_fields(transfers, plucked_fields, {})
   end
 
   # Extract history data values given relevant fields
   def extract_histories_details(histories, fields)
+    extract_fields(histories, fields & HISTORY_FIELD_NAMES.keys, { formulas: %i[created_by comment] })
+  end
+
+  # Extract fields from selected data
+  def extract_fields(data, plucked_fields, transformations)
     # join patients if any alternative identifiers are selected
-    histories = histories.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
+    data = data.joins(:patient) if (plucked_fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
-    # validate and pluck selected fields
-    plucked_fields = fields & HISTORY_FIELD_NAMES.keys
-    records = histories.pluck(*plucked_fields)
+    # pluck selected fields
+    records = data.pluck(*plucked_fields)
 
-    # ensure that records is always a 2d array
+    # ensure that the result of pluck is always a 2D array because pluck will return a 1D array if only a single field is selected
     records = records.map { |record| [record] } if plucked_fields.size == 1
 
-    # remove formula start for 'created_by' and 'comment' fields
-    (fields & %i[created_by comment]).map { |field| fields.index(field) }
-                                     .each { |index| records.each { |values| values[index] = remove_formula_start(values[index]) } }
+    # remove formula start for text fields
+    if transformations.key?(:formulas)
+      (plucked_fields & transformations[:formulas]).map { |field| plucked_fields.index(field) }
+                                                   .each { |index| records.each { |values| values[index] = remove_formula_start(values[index]) } }
+    end
+
+    # format phone numbers
+    if transformations.key?(:phones)
+      (plucked_fields & transformations[:phones]).map { |field| plucked_fields.index(field) }
+                                                 .each { |index| records.each { |values| values[index] = format_phone_number(values[index]) } }
+    end
 
     records
   end
 
-  # Builds a file name using the base name, index, date, and extension.
+  # Build file name using the base name, index, date, and extension.
   # Ex: "Sara-Alert-Linelist-Isolation-2020-09-01T14:15:05-04:00-1"
   def build_export_filename(config, data_type, index, glob)
     return unless config[:export_type].present? && EXPORT_TYPES.key?(config[:export_type])
