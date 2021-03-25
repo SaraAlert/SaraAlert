@@ -33,6 +33,8 @@ Ensure that [Git LFS](https://git-lfs.github.com/) is installed and initialized.
 
 Clone the project: `git clone https://github.com/SaraAlert/SaraAlert.git`
 
+Ensure mime type information is present on your machine (`brew install shared-mime-info`, `apt install shared-mime-info`, etc.)
+
 Run the following commands from the project's root directory to pull in both frontend and backend dependencies:
 
 * `bundle install`
