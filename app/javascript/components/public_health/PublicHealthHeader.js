@@ -19,7 +19,7 @@ class PublicHealthHeader extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('/public_health/patients/counts/workflow').then(response => {
+    axios.get(window.BASE_PATH + '/public_health/patients/counts/workflow').then(response => {
       if (response && response.data) {
         this.setState({ counts: response.data });
       }
@@ -37,7 +37,7 @@ class PublicHealthHeader extends React.Component {
         const config = { headers: { 'content-type': 'multipart/form-data' } };
         const formData = new FormData();
         formData.append('file', this.state.file);
-        const url = `/import/${this.props.workflow}/${this.state.fileType === 'epix' ? 'epix' : 'sara_alert_format'}`;
+        const url = `${window.BASE_PATH}/import/${this.props.workflow}/${this.state.fileType === 'epix' ? 'epix' : 'sara_alert_format'}`;
         axios.post(url, formData, config).then(response => {
           this.setState({
             uploading: false,
@@ -71,7 +71,7 @@ class PublicHealthHeader extends React.Component {
               additionalNote: 'Records imported prior to clicking "X" will not be deleted from the system.',
             };
             if (await confirmDialog(confirmText, options)) {
-              location.href = this.props.workflow === 'exposure' ? '/public_health' : '/public_health/isolation';
+              location.href = `${window.BASE_PATH}/public_health/${this.props.workflow === 'exposure' ? '' : 'isolation'}`;
             }
           } else {
             const confirmText = 'You are about to cancel the import process. Are you sure you want to do this?';
@@ -148,7 +148,10 @@ class PublicHealthHeader extends React.Component {
       <React.Fragment>
         <ButtonGroup>
           {this.props.abilities.enrollment && (
-            <Button variant="primary" className="ml-2 mb-4" href={this.props.workflow === 'exposure' ? '/patients/new' : '/patients/new?isolation=true'}>
+            <Button
+              variant="primary"
+              className="ml-2 mb-4"
+              href={`${window.BASE_PATH}/patients/new${this.props.workflow === 'exposure' ? '' : '?isolation=true'}`}>
               {this.props.workflow === 'exposure' && (
                 <span>
                   <i className="fas fa-user-plus"></i> Enroll New Monitoree
@@ -193,11 +196,11 @@ class PublicHealthHeader extends React.Component {
         </ButtonGroup>
 
         <ButtonGroup className="float-right mb-4 mr-2">
-          <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href="/public_health">
+          <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health`}>
             <i className="fas fa-people-arrows"></i> Exposure Monitoring{' '}
             {this.state.counts.exposure !== undefined && <span id="exposureCount">({this.state.counts.exposure})</span>}
           </Button>
-          <Button variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'} href="/public_health/isolation">
+          <Button variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/isolation`}>
             <i className="fas fa-house-user"></i> Isolation Monitoring{' '}
             {this.state.counts.isolation !== undefined && <span id="isolationCount">({this.state.counts.isolation})</span>}
           </Button>

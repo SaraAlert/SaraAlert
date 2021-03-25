@@ -80,7 +80,7 @@ class AssessmentTable extends React.Component {
   queryServer = _.debounce((query, isInitialLoad = false) => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .get('/patients/' + this.props.patient.submission_token + '/assessments', {
+      .get(window.BASE_PATH + '/patients/' + this.props.patient.submission_token + '/assessments', {
         params: {
           patient_id: this.props.patient.id,
           ...query,

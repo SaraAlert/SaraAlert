@@ -27,7 +27,7 @@ class UpdateCaseStatus extends React.Component {
 
   componentDidMount() {
     axios
-      .post('/patients/current_case_status/', {
+      .post(window.BASE_PATH + '/patients/current_case_status/', {
         patient_ids: this.props.patients.map(x => x.id),
       })
       .then(response => {

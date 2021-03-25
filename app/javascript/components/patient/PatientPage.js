@@ -12,7 +12,7 @@ class PatientPage extends React.Component {
 
   reloadHook = () => {
     // Optional reload, specifically for assessments
-    location.href = '/patients/' + this.props.patient.id;
+    location.href = `${window.BASE_PATH}/patients/${this.props.patient.id}`;
   };
 
   render() {
