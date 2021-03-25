@@ -163,7 +163,7 @@ class PatientsTable extends React.Component {
 
     // fetch workflow and tab counts
     Object.keys(this.props.tabs).forEach(tab => {
-      axios.get(`/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
+      axios.get(`${window.BASE_PATH}/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
         const count = {};
         count[`${tab}Count`] = response.data.total;
         this.setState(count);
@@ -361,7 +361,7 @@ class PatientsTable extends React.Component {
 
   queryServer = _.debounce(query => {
     axios
-      .post('/public_health/patients', { query, cancelToken: this.state.cancelToken.token })
+      .post(window.BASE_PATH + '/public_health/patients', { query, cancelToken: this.state.cancelToken.token })
       .catch(error => {
         if (!axios.isCancel(error)) {
           this.setState(state => {
@@ -450,7 +450,7 @@ class PatientsTable extends React.Component {
   updateAssignedUsers = query => {
     if (query.tab !== 'transferred_out') {
       axios
-        .post('/jurisdictions/assigned_users', {
+        .post(window.BASE_PATH + '/jurisdictions/assigned_users', {
           query: { jurisdiction: query.jurisdiction, scope: query.scope, workflow: query.workflow, tab: query.tab },
         })
         .then(response => {
@@ -469,11 +469,11 @@ class PatientsTable extends React.Component {
       return (
         <div>
           <BadgeHOH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
-          <a href={`/patients/${rowData.id}`}>{name}</a>
+          <a href={`${window.BASE_PATH}/patients/${rowData.id}`}>{name}</a>
         </div>
       );
     }
-    return <a href={`/patients/${rowData.id}`}>{name}</a>;
+    return <a href={`${window.BASE_PATH}/patients/${rowData.id}`}>{name}</a>;
   };
 
   formatEndOfMonitoring(data) {

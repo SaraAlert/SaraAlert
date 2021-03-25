@@ -52,20 +52,20 @@ class Breadcrumb extends React.Component {
             <ol className="breadcrumb">
               {this.props.crumbs?.map((crumb, index) => {
                 return (
-                  <li key={'bc' + index} className={'breadcrumb-item lead lead-bc ' + (crumb['href'] && 'active')}>
+                  <li key={'bc' + index} className={'breadcrumb-item lead lead-bc' + (crumb['href'] && 'active')}>
                     {crumb['href'] && (
                       <a
                         href="#"
                         onClick={() => {
                           if (this.renderWorkflowName(crumb['value']).includes('Isolation')) {
                             // Public Health "Return to Isolation Dashboard"
-                            location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/public_health/isolation');
+                            location.assign(`${window.BASE_PATH}/public_health/isolation`);
                           } else if (this.renderWorkflowName(crumb['value']).includes('Exposure')) {
                             // Public Health "Return to Exposure Dashboard"
-                            location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/public_health');
+                            location.assign(`${window.BASE_PATH}/public_health`);
                           } else if (this.renderWorkflowName(crumb['value']).includes('Dashboard')) {
                             // Enroller "Return to Dashboard"
-                            location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/patients');
+                            location.assign(`${window.BASE_PATH}/patients`);
                           } else {
                             this.goBack(this.props.crumbs.length - (index + 1));
                           }

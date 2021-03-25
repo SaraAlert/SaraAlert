@@ -26,7 +26,7 @@ class Header extends React.Component {
     return (
       <React.Fragment>
         <Navbar bg={this.props.show_demo_warning ? 'danger' : 'primary'} variant="dark" expand="lg" className={this.props.show_demo_warning ? '' : 'mb-3'}>
-          <Navbar.Brand className="header-brand-text" href={this.props.report_mode ? '/' : this.props.root}>
+          <Navbar.Brand className="header-brand-text" href={`${window.BASE_PATH}/${this.props.report_mode ? '' : this.props.root}`}>
             Sara Alert<small className="nav-version ml-1">{this.props.version}</small>
           </Navbar.Brand>
           {this.props.current_user && (
@@ -98,11 +98,11 @@ class Header extends React.Component {
                 <a className="white-border-right"></a>
                 {this.props.current_user?.is_usa_admin && (
                   <React.Fragment>
-                    <Nav.Link className="text-white py-0" href="/oauth/applications">
+                    <Nav.Link className="text-white py-0" href={`${window.BASE_PATH}/oauth/applications`}>
                       <i className="fas fa-share-alt fa-fw mr-2"></i>API
                     </Nav.Link>
                     <a className="white-border-right"></a>
-                    <Nav.Link className="text-white py-0" href="/sidekiq">
+                    <Nav.Link className="text-white py-0" href={`${window.BASE_PATH}/sidekiq`}>
                       <i className="fas fa-hourglass fa-fw mr-2"></i>Jobs
                     </Nav.Link>
                     <a className="white-border-right"></a>

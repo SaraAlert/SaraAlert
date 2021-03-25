@@ -275,7 +275,7 @@ class ApplyToHousehold extends React.Component {
         <div>
           <BadgeHOH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
           {this.validJurisdiction(rowData) ? (
-            <a href={`/patients/${rowData.id}`} rel="noreferrer" target="_blank">
+            <a href={`${window.BASE_PATH}/patients/${rowData.id}`} rel="noreferrer" target="_blank">
               {monitoreeName}
             </a>
           ) : (
@@ -285,7 +285,7 @@ class ApplyToHousehold extends React.Component {
       );
     }
     return this.validJurisdiction(rowData) ? (
-      <a href={`/patients/${rowData.id}`} rel="noreferrer" target="_blank">
+      <a href={`${window.BASE_PATH}/patients/${rowData.id}`} rel="noreferrer" target="_blank">
         {monitoreeName}
       </a>
     ) : (

@@ -43,7 +43,7 @@ class EnrollHouseholdMember extends React.Component {
           </Button>
           <Button
             variant="primary btn-square"
-            href={window.BASE_PATH + '/patients/' + this.props.responderId + '/group'}
+            href={`${window.BASE_PATH}/patients/${this.props.responderId}/group`}
             onClick={() => {
               this.setState({ loading: true });
             }}
