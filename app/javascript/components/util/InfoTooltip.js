@@ -147,7 +147,7 @@ const TOOLTIP_TEXT = {
   blockedSMS: (
     <div>
       The owner of this phone number has texted &quot;STOP&quot; in response to a Sara Alert text message. This means that this phone number cannot receive text
-      messages from Sara Alert and should not be assigned SMS Preferred Reporting Methods unless the <i>monitoree</i> replies &quot;START&quot; to a Sara Alert
+      messages from Sara Alert and should not be assigned SMS Preferred Reporting Methods unless the monitoree replies &quot;START&quot; to a Sara Alert
       message.
     </div>
   ),
