@@ -350,4 +350,54 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
     }
     @@public_health_test_helper.export_custom('state1_epi', settings)
   end
+
+  # ---- Test the same exports but with smaller batching so that the batching functionality can be tested ----
+
+  test 'export xlsx format with all monitorees with all data types with only some fields' do
+    settings = {
+      records: :all,
+      name: 'Excel export all',
+      format: :xlsx,
+      actions: %i[save export],
+      confirm: :start,
+      data: {
+        patients: {
+          selected: ['Monitoree Details'],
+          checked: all_custom_export_patient_fields,
+          query: {
+            workflow: 'all',
+            tab: 'all',
+            jurisdiction: 1,
+            scope: 'all',
+            user: nil,
+            search: '',
+            tz_offset: 300
+          }
+        },
+        assessments: {
+          expanded: ['Reports'],
+          selected: ['Sara Alert ID'],
+          checked: %i[patient_id]
+        },
+        laboratories: {
+          selected: ['Lab Results']
+        },
+        vaccines: {
+          expanded: ['Vaccinations'],
+          selected: ['Vaccination Created Date'],
+          checked: %i[created_at]
+        },
+        close_contacts: {
+          selected: ['Close Contacts']
+        },
+        transfers: {
+          selected: ['Transfers']
+        },
+        histories: {
+          selected: ['History']
+        }
+      }
+    }
+    @@public_health_test_helper.export_custom('state1_epi', settings)
+  end
 end
