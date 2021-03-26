@@ -34,7 +34,7 @@ class ThresholdConditionTest < ActiveSupport::TestCase
       if symptom.type == 'BoolSymptom'
         assert_not_equal(threshold_condition.symptoms[idx].value, symptom.value)
       else
-        assert_equal(0, symptom.value)
+        assert_equal(nil, symptom.value)
       end
       assert_equal(threshold_condition.symptoms[idx].name, symptom.name)
       assert_equal(threshold_condition.symptoms[idx].label, symptom.label)
