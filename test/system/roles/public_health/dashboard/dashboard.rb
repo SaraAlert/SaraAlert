@@ -69,10 +69,19 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     # Choose which records to export
     choose "select-monitoree-records-#{settings[:records]}" if settings[:records].present?
 
-    # Choose which elements to export
+    # Expand trees for selection
     settings[:data]&.each_value do |data_type|
-      data_type[:selected]&.each do |label|
-        find('span', class: 'rct-title', text: label).click
+      data_type[:expanded]&.each do |label|
+        find('span', class: 'rct-title', text: label).first(:xpath, '..//..//button').click
+      end
+    end
+
+    # Choose which elements to export
+    settings[:data]&.each do |data_type, config|
+      # only find headers under data type section to avoid ambiguous matches (ex: Sara Alert ID)
+      section = find('span', class: 'rct-title', text: ImportExportConstants::CUSTOM_EXPORT_OPTIONS[data_type][:nodes][0][:label]).first(:xpath, '..//..//..')
+      config[:selected]&.each do |label|
+        section.find('span', class: 'rct-title', text: label).click
       end
     end
 
