@@ -775,11 +775,11 @@ class Patient < ApplicationRecord
         end
 
         # Check for duplicates
-        if patient[:sex].present? && patient[:sex] == found.sex && patient[:date_of_birth].present? && date_of_birth == found.date_of_birth.to_s
+        if patient[:sex].present? && patient[:sex] == found.sex && date_of_birth.present? && date_of_birth == found.date_of_birth.to_s
           fn_ln_sex_dob_matches += 1
         elsif patient[:sex].present? && patient[:sex] == found.sex
           fn_ln_sex_matches += 1
-        elsif patient[:date_of_birth].present? && patient[:date_of_birth] == found.date_of_birth.to_s
+        elsif date_of_birth.present? && date_of_birth == found.date_of_birth.to_s
           fn_ln_dob_matches += 1
         else
           fn_ln_matches += 1
