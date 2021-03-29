@@ -798,6 +798,7 @@ class Fhir::R4::ApiController < ActionController::API
       if fhir_path&.present?
         begin
           value = nil
+          # FHIRPath has a lot debug logging we don't care about, so suppress it.
           Rails.logger.silence do
             value = FHIRPath.evaluate(fhir_path, req_json)
           end
