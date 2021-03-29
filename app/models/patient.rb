@@ -744,38 +744,41 @@ class Patient < ApplicationRecord
   # e.g. Jon Smith M null would be a duplicate of Jon Smith M 1/1/2000
   # OR
   # - matching state/local id
-  def self.duplicate_data(first_name, last_name, sex, date_of_birth, user_defined_id_statelocal)
+  def self.duplicate_data_detection(patient)
     # Track which matches have occurred
     duplicate_field_data = []
 
     # check for a duplicate state/local id
-    dup_statelocal_id = where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.to_s&.strip)
+    if patient[:user_defined_id_statelocal].present?
+      dup_statelocal_id = where('trim(user_defined_id_statelocal) = ?', patient[:user_defined_id_statelocal]&.to_s&.strip)
+    end
     duplicate_field_data << { count: dup_statelocal_id.size, fields: ['State/Local ID'] } if dup_statelocal_id.present?
 
     # if first_name or last_name is null skip duplicate detection
-    return { is_duplicate: duplicate_field_data.any?, duplicate_field_data: duplicate_field_data } if first_name.nil? || last_name.nil?
+    return { is_duplicate: duplicate_field_data.any?, duplicate_field_data: duplicate_field_data } if patient[:first_name].nil? || patient[:last_name].nil?
 
     fn_ln_sex_dob_matches = 0
     fn_ln_sex_matches = 0
     fn_ln_dob_matches = 0
     fn_ln_matches = 0
 
+    # The EPI-X format sends this as a Date while Exposure sends it as a string
+    date_of_birth = patient[:date_of_birth].instance_of?(Date) ? patient[:date_of_birth]&.strftime('%F') : patient[:date_of_birth]
+
     # Determine which type of duplicate exists
-    where(first_name: first_name, last_name: last_name).pluck(*%i[sex date_of_birth]).each do |(s, dob)|
+    where(first_name: patient[:first_name], last_name: patient[:last_name])
+      .select('sex', "DATE_FORMAT(date_of_birth, '%Y-%m-%d') date_of_birth").pluck(:sex, :date_of_birth).each do |(s, dob)|
       dob = dob&.strftime('%F')
 
-      # The EPI-X format sends this as a Date while Exposure sends it as a string
-      date_of_birth = date_of_birth&.strftime('%F') if date_of_birth.instance_of?(Date)
-
       # If the sex isn't nil and doesn't match it is not a duplicate. Same for DoB.
-      next if (sex.present? && s.present? && sex != s) || (date_of_birth.present? && dob.present? && date_of_birth != dob)
+      next if (patient[:sex].present? && s.present? && patient[:sex] != s) || (date_of_birth.present? && dob.present? && date_of_birth != dob)
 
       # Check for duplicates
-      if sex.present? && sex == s && date_of_birth.present? && date_of_birth == dob
+      if patient[:sex].present? && patient[:sex] == s && patient[:date_of_birth].present? && date_of_birth == dob
         fn_ln_sex_dob_matches += 1
-      elsif sex.present? && sex == s
+      elsif patient[:sex].present? && patient[:sex] == s
         fn_ln_sex_matches += 1
-      elsif date_of_birth.present? && date_of_birth == dob
+      elsif patient[:date_of_birth].present? && patient[:date_of_birth] == dob
         fn_ln_dob_matches += 1
       else
         fn_ln_matches += 1
@@ -783,10 +786,11 @@ class Patient < ApplicationRecord
     end
 
     # Return information about all the matches present
-    duplicate_field_data << { count: fn_ln_sex_dob_matches, fields: ['First Name', 'Last Name', 'Sex', 'Date of Birth'] } if fn_ln_sex_dob_matches.positive?
-    duplicate_field_data << { count: fn_ln_sex_matches, fields: ['First Name', 'Last Name', 'Sex'] } if fn_ln_sex_matches.positive?
-    duplicate_field_data << { count: fn_ln_dob_matches, fields: ['First Name', 'Last Name', 'Date of Birth'] } if fn_ln_dob_matches.positive?
-    duplicate_field_data << { count: fn_ln_matches, fields: ['First Name', 'Last Name'] } if fn_ln_matches.positive?
+    fn_ln = ['First Name', 'Last Name']
+    duplicate_field_data << { count: fn_ln_sex_dob_matches, fields: fn_ln + ['Sex', 'Date of Birth'] } if fn_ln_sex_dob_matches.positive?
+    duplicate_field_data << { count: fn_ln_sex_matches, fields: fn_ln + ['Sex'] } if fn_ln_sex_matches.positive?
+    duplicate_field_data << { count: fn_ln_dob_matches, fields: fn_ln + ['Date of Birth'] } if fn_ln_dob_matches.positive?
+    duplicate_field_data << { count: fn_ln_matches, fields: fn_ln } if fn_ln_matches.positive?
     { is_duplicate: duplicate_field_data.any?, duplicate_field_data: duplicate_field_data }
   end
 
