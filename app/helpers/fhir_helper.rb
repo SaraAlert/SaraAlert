@@ -232,6 +232,37 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     }
   end
 
+  def vaccine_as_fhir(vaccine)
+    FHIR::Immunization.new(
+      meta: FHIR::Meta.new(lastUpdated: vaccine.updated_at.strftime('%FT%T%:z')),
+      id: vaccine.id,
+      vaccineCode: [
+        FHIR::CodeableConcept.new(
+          text: vaccine.product_name,
+          coding: Vaccine.product_codes_by_name(vaccine.group_name, vaccine.product_name).map do |code|
+            FHIR::Coding.new(code: code['code'], system: code['system'])
+          end
+        )
+      ],
+      patient: FHIR::Reference.new(reference: "Patient/#{vaccine.patient_id}"),
+      occurrenceDateTime: vaccine.administration_date,
+      note: FHIR::Annotation.new(text: vaccine.notes),
+      protocolApplied: [
+        {
+          targetDisease: [
+            FHIR::CodeableConcept.new(
+              text: vaccine.group_name,
+              coding: Vaccine.group_codes_by_name(vaccine.group_name).map do |code|
+                FHIR::Coding.new(code: code['code'], system: code['system'])
+              end
+            )
+          ],
+          doseNumberPositiveInt: vaccine.dose_number
+        }
+      ]
+    )
+  end
+
   # Build a FHIR US Core Race Extension given Sara Alert race booleans.
   def to_us_core_race(races)
     # Don't return an extension if all race categories are false or nil

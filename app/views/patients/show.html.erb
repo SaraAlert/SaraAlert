@@ -109,7 +109,7 @@
                         authenticity_token: form_authenticity_token,
                         vaccine_mapping: Vaccine::VACCINE_STANDARDS,
                         group_name_options: Vaccine.group_name_options,
-                        additional_product_name_options: Vaccine::ADDITIONAL_PRODUCT_NAME_OPTIONS,
+                        additional_product_name_options: Vaccine::ADDITIONAL_PRODUCT_NAME_OPTIONS.map { |option| option['product_name'] },
                         dose_number_options: Vaccine::DOSE_OPTIONS.filter { |option| !option.nil? }
                       })%>
 <% end %>

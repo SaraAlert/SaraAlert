@@ -28,3 +28,12 @@ vaccine_3:
   notes: 'Note more'
   created_at: <%= 2.days.ago %>
   updated_at: <%= 2.days.ago %>
+vaccine_4:
+  id: 4
+  patient_id: 0
+  group_name: Group 2
+  product_name: Product 1
+  administration_date: <%= 3.days.ago %>
+  dose_number: 1
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= 2.days.ago %>
