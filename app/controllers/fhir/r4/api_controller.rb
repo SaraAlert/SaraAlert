@@ -24,12 +24,16 @@ class Fhir::R4::ApiController < ActionController::API
       :'user/Patient.*',
       :'user/RelatedPerson.read',
       :'user/RelatedPerson.*',
+      :'user/Immunization.read',
+      :'user/Immunization.*',
       :'user/Observation.read',
       :'user/QuestionnaireResponse.read',
       :'system/Patient.read',
       :'system/Patient.*',
       :'system/RelatedPerson.read',
       :'system/RelatedPerson.*',
+      :'system/Immunization.read',
+      :'system/Immunization.*',
       :'system/Observation.read',
       :'system/QuestionnaireResponse.read'
     )
@@ -79,6 +83,15 @@ class Fhir::R4::ApiController < ActionController::API
       )
 
       resource = get_close_contact(params.permit(:id)[:id])
+    when 'immunization'
+      return if doorkeeper_authorize!(
+        :'user/Immunization.read',
+        :'user/Immunization.*',
+        :'system/Immunization.read',
+        :'system/Immunization.*'
+      )
+
+      resource = get_vaccine(params.permit(:id)[:id])
     else
       status_not_found && return
     end
@@ -934,6 +947,11 @@ class Fhir::R4::ApiController < ActionController::API
   # Get a CloseContact by id
   def get_close_contact(id)
     CloseContact.where(patient_id: accessible_patients).find_by(id: id)
+  end
+
+  # Get a Vaccine by id
+  def get_vaccine(id)
+    Vaccine.where(patient_id: accessible_patients).find_by(id: id)
   end
 
   # Construct a full url via a request and resource

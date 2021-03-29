@@ -1,12 +1,23 @@
-
 # CONFIGURATION FOR SUPPORT VACCINES AND ASSOCIATED DATA IN SARA ALERT
 # Follows supported mappings as defined by CDC at: https://www2a.cdc.gov/vaccines/iis/iisstandards/vaccines.asp?rpt=vg
 'COVID-19':
   name: 'COVID-19'
+  codes:
+    - system: 'http://hl7.org/fhir/sid/cvx'
+      code: '213'
   vaccines:
     - product_name: 'Moderna COVID-19 Vaccine'
       num_doses: 2
+      product_codes:
+        - system: 'http://hl7.org/fhir/sid/cvx'
+          code: '207'
     - product_name: 'Pfizer-BioNTech COVID-19 Vaccine'
       num_doses: 2
+      product_codes:
+        - system: 'http://hl7.org/fhir/sid/cvx'
+          code: '208'
     - product_name: 'Janssen (J&J) COVID-19 Vaccine'
       num_doses: 1
+      product_codes:
+        - system: 'http://hl7.org/fhir/sid/cvx'
+          code: '212'
