@@ -54,6 +54,10 @@ class Symptom < ApplicationRecord
     end
   end
 
+  def negate
+    raise 'negation for this symptom type is not supported'
+  end
+
   private
 
   def update_patient_linelist_after_save
