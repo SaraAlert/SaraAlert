@@ -113,11 +113,7 @@ class ImportController < ApplicationController
           end
 
           # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
-          patient[:duplicate_data] = current_user.viewable_patients.duplicate_data(patient[:first_name],
-                                                                                   patient[:last_name],
-                                                                                   patient[:sex],
-                                                                                   patient[:date_of_birth],
-                                                                                   patient[:user_defined_id_statelocal])
+          patient[:duplicate_data] = current_user.viewable_patients.duplicate_data_detection(patient)
         rescue ValidationError => e
           @errors << e&.message || "Unknown error on row #{row_ind}"
         rescue StandardError => e
