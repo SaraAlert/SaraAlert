@@ -101,11 +101,7 @@ class PatientsController < ApplicationController
 
     # Check for potential duplicate
     unless params[:bypass_duplicate]
-      duplicate_data = current_user.viewable_patients.duplicate_data(allowed_params[:first_name],
-                                                                     allowed_params[:last_name],
-                                                                     allowed_params[:sex],
-                                                                     allowed_params[:date_of_birth],
-                                                                     allowed_params[:user_defined_id_statelocal])
+      duplicate_data = current_user.viewable_patients.duplicate_data_detection(allowed_params)
 
       render(json: duplicate_data) && return if duplicate_data[:is_duplicate]
     end
