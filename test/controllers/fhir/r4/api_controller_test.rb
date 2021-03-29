@@ -158,7 +158,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @system_everything_app = OauthApplication.create(
       name: 'system-test-everything',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read system/RelatedPerson.*',
+      scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read system/RelatedPerson.* system/Immunization.*',
       jurisdiction_id: 2,
       user_id: shadow_user.id
     )
@@ -210,7 +210,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     @system_everything_token = Doorkeeper::AccessToken.create(
       application: @system_everything_app,
-      scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read system/RelatedPerson.*'
+      scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read system/RelatedPerson.* system/Immunization.*'
     )
   end
 
