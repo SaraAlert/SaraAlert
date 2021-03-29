@@ -97,43 +97,43 @@ class PatientsTable extends React.Component {
     const query = {};
 
     // Set tab from local storage if it exists and is a valid tab
-    let tab = localStorage.getItem(`${this.props.workflow}Tab`);
+    let tab = this.getLocalStorage(`${this.props.workflow}Tab`);
     if (tab === null || !Object.keys(this.props.tabs).includes(tab)) {
       query.tab = this.state.query.tab;
-      localStorage.setItem(`${this.props.workflow}Tab`, query.tab);
+      this.setLocalStorage(`${this.props.workflow}Tab`, query.tab);
     } else {
       query.tab = tab;
     }
 
     // Set jurisdiction if it exists in local storage
-    let jurisdiction = localStorage.getItem('SaraJurisdiction');
+    let jurisdiction = this.getLocalStorage('SaraJurisdiction');
     if (jurisdiction) {
       query.jurisdiction = parseInt(jurisdiction);
     }
 
     // Set scope if it exists in local storage
-    let scope = localStorage.getItem('SaraScope');
+    let scope = this.getLocalStorage('SaraScope');
     if (scope) {
       query.scope = scope;
     }
 
     // Set assigned user if it exists in local storage
-    let assigned_user = localStorage.getItem('SaraAssignedUser');
+    let assigned_user = this.getLocalStorage('SaraAssignedUser');
     if (assigned_user) {
       query.user = assigned_user;
     }
 
     // Set search if it exists in local storage
-    let search = localStorage.getItem(`SaraSearch`);
+    let search = this.getLocalStorage(`SaraSearch`);
     if (search) {
       query.search = search;
     }
 
     // Set page & sort settings if they exist in local storage & user is in the same workflow as before
-    let priorWorkflow = localStorage.getItem(`Workflow`);
-    let page = localStorage.getItem(`SaraPage`);
-    let sortField = localStorage.getItem(`SaraSortField`);
-    let sortDirection = localStorage.getItem(`SaraSortDirection`);
+    let priorWorkflow = this.getLocalStorage(`Workflow`);
+    let page = this.getLocalStorage(`SaraPage`);
+    let sortField = this.getLocalStorage(`SaraSortField`);
+    let sortDirection = this.getLocalStorage(`SaraSortDirection`);
     if (priorWorkflow && this.props.workflow === priorWorkflow) {
       if (parseInt(page)) {
         query.page = parseInt(page);
@@ -143,16 +143,16 @@ class PatientsTable extends React.Component {
         query.direction = sortDirection === 'asc' ? 'asc' : 'desc';
       }
     } else {
-      localStorage.removeItem(`SaraPage`);
-      localStorage.removeItem(`SaraSortField`);
-      localStorage.removeItem(`SaraSortDirection`);
+      this.removeLocalStorage(`SaraPage`);
+      this.removeLocalStorage(`SaraSortField`);
+      this.removeLocalStorage(`SaraSortDirection`);
       // Update workflow local storage to be the current workflow
-      localStorage.setItem(`Workflow`, this.props.workflow);
+      this.setLocalStorage(`Workflow`, this.props.workflow);
       query.page = 0;
     }
 
     // Set entries if it exists in local storage
-    let entries = localStorage.getItem(`SaraEntries`);
+    let entries = this.getLocalStorage(`SaraEntries`);
     if (parseInt(entries)) {
       query.entries = parseInt(entries);
     }
@@ -173,15 +173,15 @@ class PatientsTable extends React.Component {
 
   clearAllFilters = async () => {
     if (await confirmDialog('Are you sure you want to clear all filters? All active filters and searches will be cleared.')) {
-      localStorage.removeItem(`SaraFilter`);
-      localStorage.removeItem(`SaraPage`);
-      localStorage.removeItem(`SaraEntries`);
-      localStorage.removeItem(`SaraSearch`);
-      localStorage.removeItem(`SaraJurisdiction`);
-      localStorage.removeItem(`SaraAssignedUser`);
-      localStorage.removeItem(`SaraScope`);
-      localStorage.removeItem(`SaraSortField`);
-      localStorage.removeItem(`SaraSortDirection`);
+      this.removeLocalStorage(`SaraFilter`);
+      this.removeLocalStorage(`SaraPage`);
+      this.removeLocalStorage(`SaraEntries`);
+      this.removeLocalStorage(`SaraSearch`);
+      this.removeLocalStorage(`SaraJurisdiction`);
+      this.removeLocalStorage(`SaraAssignedUser`);
+      this.removeLocalStorage(`SaraScope`);
+      this.removeLocalStorage(`SaraSortField`);
+      this.removeLocalStorage(`SaraSortDirection`);
       location.reload();
       this.setState(state => {
         const query = state.query;
@@ -192,7 +192,7 @@ class PatientsTable extends React.Component {
   };
 
   handleTabSelect = tab => {
-    localStorage.removeItem(`SaraPage`);
+    this.removeLocalStorage(`SaraPage`);
 
     const query = {};
     query.tab = tab;
@@ -200,19 +200,19 @@ class PatientsTable extends React.Component {
     // specifically grab jurisdiction & assigned user filter values when coming from the Transferred Out line list (cause they were hidden)
     if (this.state.query.tab === 'transferred_out') {
       // Set jurisdiction if it exists in local storage
-      let jurisdiction = localStorage.getItem('SaraJurisdiction');
+      let jurisdiction = this.getLocalStorage('SaraJurisdiction');
       if (jurisdiction) {
         query.jurisdiction = parseInt(jurisdiction);
       }
 
       // Set scope if it exists in local storage
-      let scope = localStorage.getItem('SaraScope');
+      let scope = this.getLocalStorage('SaraScope');
       if (scope) {
         query.scope = scope;
       }
 
       // Set assigned user if it exists in local storage
-      let assigned_user = localStorage.getItem('SaraAssignedUser');
+      let assigned_user = this.getLocalStorage('SaraAssignedUser');
       if (assigned_user) {
         query.user = assigned_user;
       }
@@ -224,7 +224,7 @@ class PatientsTable extends React.Component {
       () => {
         this.updateAssignedUsers(this.state.query);
         this.updateTable(this.state.query);
-        localStorage.setItem(`${this.props.workflow}Tab`, tab);
+        this.setLocalStorage(`${this.props.workflow}Tab`, tab);
       }
     );
   };
@@ -244,7 +244,7 @@ class PatientsTable extends React.Component {
       },
       () => {
         this.updateTable(this.state.query);
-        localStorage.setItem(`SaraPage`, page.selected);
+        this.setLocalStorage(`SaraPage`, page.selected);
       }
     );
   };
@@ -255,7 +255,7 @@ class PatientsTable extends React.Component {
    * @param {SyntheticEvent} event - Event when num entries changes
    */
   handleEntriesChange = event => {
-    localStorage.removeItem(`SaraPage`);
+    this.removeLocalStorage(`SaraPage`);
     const value = event?.target?.value || event;
     this.setState(
       state => {
@@ -265,7 +265,7 @@ class PatientsTable extends React.Component {
       },
       () => {
         this.updateTable(this.state.query);
-        localStorage.setItem(`SaraEntries`, value);
+        this.setLocalStorage(`SaraEntries`, value);
       }
     );
   };
@@ -274,8 +274,8 @@ class PatientsTable extends React.Component {
     if (jurisdiction !== this.state.query.jurisdiction) {
       this.updateAssignedUsers({ ...this.state.query, jurisdiction });
       this.updateTable({ ...this.state.query, jurisdiction, page: 0 });
-      localStorage.removeItem(`SaraPage`);
-      localStorage.setItem(`SaraJurisdiction`, jurisdiction);
+      this.removeLocalStorage(`SaraPage`);
+      this.setLocalStorage(`SaraJurisdiction`, jurisdiction);
     }
   };
 
@@ -283,27 +283,27 @@ class PatientsTable extends React.Component {
     if (scope !== this.state.query.scope) {
       this.updateAssignedUsers({ ...this.state.query, scope });
       this.updateTable({ ...this.state.query, scope, page: 0 });
-      localStorage.removeItem(`SaraPage`);
-      localStorage.setItem(`SaraScope`, scope);
+      this.removeLocalStorage(`SaraPage`);
+      this.setLocalStorage(`SaraScope`, scope);
     }
   };
 
   handleAssignedUserChange = user => {
     if (user !== this.state.query.user) {
       this.updateTable({ ...this.state.query, user, page: 0 });
-      localStorage.removeItem(`SaraPage`);
+      this.removeLocalStorage(`SaraPage`);
       if (user) {
-        localStorage.setItem(`SaraAssignedUser`, user);
+        this.setLocalStorage(`SaraAssignedUser`, user);
       } else {
-        localStorage.removeItem(`SaraAssignedUser`);
+        this.removeLocalStorage(`SaraAssignedUser`);
       }
     }
   };
 
   handleSearchChange = event => {
     this.updateTable({ ...this.state.query, search: event.target?.value, page: 0 });
-    localStorage.removeItem(`SaraPage`);
-    localStorage.setItem(`SaraSearch`, event.target.value);
+    this.removeLocalStorage(`SaraPage`);
+    this.setLocalStorage(`SaraSearch`, event.target.value);
   };
 
   handleKeyPress = event => {
@@ -342,8 +342,8 @@ class PatientsTable extends React.Component {
 
     // capture sticky setting for sorting when present
     if (query.order && query.direction) {
-      localStorage.setItem(`SaraSortField`, query.order);
-      localStorage.setItem(`SaraSortDirection`, query.direction);
+      this.setLocalStorage(`SaraSortField`, query.order);
+      this.setLocalStorage(`SaraSortDirection`, query.direction);
     }
 
     this.setState(
@@ -408,9 +408,9 @@ class PatientsTable extends React.Component {
    */
   advancedFilterUpdate = (filter, keepStickySettings) => {
     // When applicable, set the pagination & sort settings when the page is reloaded with a sticky advanced filter
-    const localStoragePage = localStorage.getItem('SaraPage');
-    const sortField = localStorage.getItem('SaraSortField');
-    const sortDirection = localStorage.getItem('SaraSortDirection');
+    const localStoragePage = this.getLocalStorage('SaraPage');
+    const sortField = this.getLocalStorage('SaraSortField');
+    const sortDirection = this.getLocalStorage('SaraSortDirection');
     let page = 0;
     let sort = false;
     if (keepStickySettings) {
@@ -421,9 +421,9 @@ class PatientsTable extends React.Component {
         sort = true;
       }
     } else {
-      localStorage.removeItem(`SaraPage`);
-      localStorage.removeItem(`SaraSortField`);
-      localStorage.removeItem(`SaraSortDirection`);
+      this.removeLocalStorage(`SaraPage`);
+      this.removeLocalStorage(`SaraSortField`);
+      this.removeLocalStorage(`SaraSortDirection`);
     }
 
     this.setState(
@@ -513,6 +513,34 @@ class PatientsTable extends React.Component {
     return <EligibilityTooltip id={rowData.id.toString()} report_eligibility={reportEligibility} inline={false} />;
   }
 
+  getLocalStorage = key => {
+    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  setLocalStorage = (key, value) => {
+    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  removeLocalStorage = key => {
+    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   render() {
     return (
       <div className="mx-2 pb-4">
@@ -600,6 +628,9 @@ class PatientsTable extends React.Component {
                     authenticity_token={this.props.authenticity_token}
                     workflow={this.props.workflow}
                     updateStickySettings={true}
+                    getLocalStorage={this.getLocalStorage}
+                    setLocalStorage={this.setLocalStorage}
+                    removeLocalStorage={this.removeLocalStorage}
                   />
                   {this.state.query.tab !== 'transferred_out' && (
                     <DropdownButton
