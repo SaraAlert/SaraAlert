@@ -3,6 +3,11 @@
 # Helper methods for the patient model
 module PatientHelper
   # This list contains all of the same states listed in app/javascript/components/data.js
+  $inverted_iso_lookup = {} # maintain a hash of display names to codes for fast lookups
+  PATIENT_HELPER_FILES[:languages].each_key do |lang_iso_code|
+    $inverted_iso_lookup[PATIENT_HELPER_FILES[:languages][lang_iso_code.to_sym][:display].to_s.downcase] = lang_iso_code
+  end
+
   def state_names
     PATIENT_HELPER_FILES[:state_names]
   end
@@ -26,6 +31,23 @@ module PatientHelper
 
   def normalize_and_get_state_name(name)
     state_names[normalize_name(name)] || nil
+  end
+
+  def normalize_and_get_language_name(lang)
+    return nil if lang.nil?
+    return lang if lang == 'spa-PR' # 'spa-PR' is the only case-sensitive language code
+    lang = lang.to_s.downcase
+    # tries to match lang to either a 3-letter iso code or a language name
+    # If able to match, returns the 3-letter iso code for that language
+    # If unable to match, returns nil
+
+    # first search in all 3-letter language codes
+    matched_language = nil
+    matched_language = PATIENT_HELPER_FILES[:languages][lang.to_sym][:code] if PATIENT_HELPER_FILES[:languages][lang.to_sym]
+    return matched_language unless matched_language.nil?
+
+    matched_language = $inverted_iso_lookup[lang] unless $inverted_iso_lookup[lang].nil?
+    matched_language
   end
 
   def time_zone_offset_for_state(name)

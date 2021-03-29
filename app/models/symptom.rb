@@ -24,7 +24,7 @@ class Symptom < ApplicationRecord
     where(['(name = ? OR name = ?) AND bool_value = ?', 'fever', 'used-a-fever-reducer', true])
   }
 
-  def bool_based_prompt(lang = :en)
+  def bool_based_prompt(lang = :eng)
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     case type
     when 'BoolSymptom'

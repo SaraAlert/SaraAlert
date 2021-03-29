@@ -16,7 +16,7 @@ class PatientMailerTest < ActionMailer::TestCase
     patient_submission_token = SecureRandom.urlsafe_base64[0, 10]
     @patient = create(:patient)
     @patient.update(email: patient_email,
-                    primary_language: 'en',
+                    primary_language: 'eng',
                     submission_token: patient_submission_token,
                     primary_telephone: '+15555550111',
                     preferred_contact_method: 'Telephone call')

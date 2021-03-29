@@ -141,15 +141,15 @@ if Rails.env.test? || Rails.env.development?
     # { <dictionary filename>: [<glob>, ..., <glob>], ... }
     locale_globs = {
       'en_US': [
-        'config/locales/*.en.yml',
-        'config/locales/en.yml'
+        'config/locales/*.eng.yml',
+        'config/locales/eng.yml'
       ],
       'es_PR': [
-        'config/locales/es-PR.yml',
-        'config/locales/es.yml'
+        'config/locales/spa-PR.yml',
+        'config/locales/spa.yml'
       ],
       'fr_FR': [
-        'config/locales/fr.yml'
+        'config/locales/fra.yml'
       ]
     }
     locale_globs.each do |dict_name, glob|

@@ -1000,8 +1000,8 @@ class Patient < ApplicationRecord
   # Determine the proper language for sending reports to this monitoree
   def select_language
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
-    lang = PatientHelper.languages(primary_language)&.dig(:code)&.to_sym || :en
-    lang = :en unless %i[en es es-PR so fr].include?(lang)
+    lang = PatientHelper.languages(primary_language)&.dig(:code)&.to_sym || :eng
+    lang = :eng unless %i[eng spa spa-PR som fra].include?(lang)
     lang
   end
 

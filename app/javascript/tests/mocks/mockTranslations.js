@@ -1,5 +1,5 @@
 const mockTranslations = {
-  'en': {
+  'eng': {
     'symptoms': {
       'cough': {
         'name': 'Cough',
@@ -173,7 +173,7 @@ const mockTranslations = {
       'daily4': ' Please reply with \'Yes\' or \'No\''
     }
   },
-  'es': {
+  'spa': {
     'symptoms': {
       'cough': {
         'name': 'Tos',
@@ -347,7 +347,7 @@ const mockTranslations = {
       'daily4': ' Responda con \'Sí\' o \'No\''
     }
   },
-  'es-PR': {
+  'spa-PR': {
     'symptoms': {
       'cough': {
         'name': 'Tos',
@@ -521,7 +521,7 @@ const mockTranslations = {
       'daily4': ' Responda con \'Sí\' o \'No\''
     }
   },
-  'fr': {
+  'fra': {
     'symptoms': {
       'cough': {
         'name': 'Toux',
@@ -695,7 +695,7 @@ const mockTranslations = {
       'daily4': ' Veuillez répondre par \'Oui\' ou par \'Non\''
     }
   },
-  'so': {
+  'som': {
     'symptoms': {
       'cough': {
         'name': 'Qufac',

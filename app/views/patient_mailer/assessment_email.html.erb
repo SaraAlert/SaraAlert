@@ -1,12 +1,12 @@
 <% content_for :preheader do %>
-  <%= t('assessments.email.reminder.header', locale: @lang || :en) %>
+  <%= t('assessments.email.reminder.header', locale: @lang || :eng) %>
 <% end %>
 
 <% content_for :body do %>
   <% @patients.each do |patient| %>
-    <p><%= t('assessments.email.reminder.dear', locale: @lang || :en) %> <%= patient[:patient]&.initials_age('-') %>,</p>
+    <p><%= t('assessments.email.reminder.dear', locale: @lang || :eng) %> <%= patient[:patient]&.initials_age('-') %>,</p>
 
-    <p><%= t('assessments.email.reminder.thank-you', locale: @lang || :en) %></p>
+    <p><%= t('assessments.email.reminder.thank-you', locale: @lang || :eng) %></p>
 
     <%= render partial: 'main_mailer/responsive_button', locals: {
           patient: patient,
@@ -14,13 +14,13 @@
                                                                       patient[:jurisdiction_unique_id],
                                                                       @lang&.to_s || 'en',
                                                                       patient[:patient]&.initials_age),
-          text: t('assessments.email.reminder.report', locale: @lang || :en)
+          text: t('assessments.email.reminder.report', locale: @lang || :eng)
         } %><br />
   <% end %>
 <% end %>
 
 <% content_for :footer do %>
   <p>
-    <%= t('assessments.email.reminder.footer', locale: @lang || :en) %>
+    <%= t('assessments.email.reminder.footer', locale: @lang || :eng) %>
   </p>
 <% end %>

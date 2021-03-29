@@ -7,11 +7,29 @@ import SymptomsAssessment from './steps/SymptomsAssessment';
 import AssessmentCompleted from './steps/AssessmentCompleted';
 import reportError from '../../util/ReportError';
 
+// For backwards-compatibility reasons, we still want to support the old 2-letter language codes
+// THIS SHOULDN'T BE NECESSARY AS WE TRANSLATE THIS ON THE BACK-END
+const LANGUAGE_MAPPINGS = {
+  en: 'eng',
+  es: 'spa',
+  'es-PR': 'spa-PR',
+  so: 'som',
+  fra: 'fra',
+};
+
 class Assessment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: 0, direction: null, lastIndex: null };
+    this.state = { index: 0, direction: null, lastIndex: null, lang: this.mapLanguage() };
   }
+
+  mapLanguage = () => {
+    if (Object.prototype.hasOwnProperty.call(LANGUAGE_MAPPINGS, this.props.lang)) {
+      return LANGUAGE_MAPPINGS[`${this.props.lang}`];
+    } else {
+      return this.props.lang;
+    }
+  };
 
   goto = targetIndex => {
     let index = this.state.index;
@@ -72,11 +90,11 @@ class Assessment extends React.Component {
               translations={this.props.translations}
               patient_initials={this.props.patient_initials}
               patient_age={this.props.patient_age}
-              lang={this.props.lang || 'en'}
+              lang={this.props.lang || 'eng'}
             />
           </Carousel.Item>
           <Carousel.Item>
-            <AssessmentCompleted translations={this.props.translations} lang={this.props.lang || 'en'} contact_info={this.props.contact_info || {}} />
+            <AssessmentCompleted translations={this.props.translations} lang={this.props.lang || 'eng'} contact_info={this.props.contact_info || {}} />
           </Carousel.Item>
         </Carousel>
       </React.Fragment>

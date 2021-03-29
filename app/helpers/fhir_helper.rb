@@ -441,6 +441,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   # Given a language string, try to find the corresponding BCP 47 code for it and construct a FHIR::Coding.
   def language_coding(language)
+    language = PATIENT_HELPER_FILES[:language][language.to_sym][:display]
+    # CORRECT THIS AT SOME POINT (OR AT LEAST VERIFY THIS WORKS)
     PatientHelper.languages(language&.downcase) ? FHIR::Coding.new(**PatientHelper.languages(language&.downcase)) : nil
   end
 

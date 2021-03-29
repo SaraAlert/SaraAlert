@@ -1,4 +1,4 @@
-es:
+spa-PR:
   assessments:
     symptoms:
       cough:
@@ -9,7 +9,7 @@ es:
         notes: ''
       fever:
         name: 'Fiebre'
-        notes: 'Si siente que tiene fiebre o tiene una temperatura igual o superior a 100.4°F/38°C'
+        notes: 'Se siente que tiene fiebre o tiene una temperatura igual o superior a 100.4°F/38°C'
       used-a-fever-reducer:
         name: 'Tomó medicina para reducir la fiebre'
         notes: 'En las últimas 24 horas, ¿ha tomado algún medicamento para reducir la fiebre?'
@@ -80,10 +80,10 @@ es:
       bool-title: 'Por favor, seleccione los síntomas que está sintiendo actualmente.'
       submit: 'Enviar'
       thank-you: '"¡Gracias por completar su informe diario!'
-      instruction1: 'Si Usted no reportó ningún síntoma, por favor siga las recomendaciones proveídas por su departamento de salud local.'
+      instruction1: 'Si Usted no reportó ningún síntoma, por favor siga las recomendaciones provistas por su departamento de salud local.'
       instruction2: 'Si Usted reportó algún síntoma, su departamento de salud local se comunicará pronto con Usted. Si tiene alguna inquietud inmediata, llame a su proveedor médico o al departamento de salud local. Evite el contacto cercano con otras personas y quédese en casa por favor.'
       instruction3: 'Si tiene una emergencia médica, por favor llame al 911 e infórmeles que el departamento de salud lo está monitoreando.'
-      instruction4: 'Por favor utilice la información de contacto a continuación para ponerse en contacto con un funcionario de salud pública que esté a cargo de su caso'
+      instruction4: 'Por favor utilice la información de contacto a continuación para ponerse en contacto con un funcionario de salud pública que esté a cargo de su caso.'
       email: 'Correo electrónico'
       phone: 'Teléfono'
       webpage: 'Página web'
@@ -94,7 +94,7 @@ es:
         dear: 'Estimado/a'
         thank-you: 'Gracias por participar en el programa de monitoreo de Sara Alert. Favor de completar su informe diario utilizando el siguiente enlace.'
         report: 'Reporte diario'
-        footer: 'No responda o reenvíe este correo electrónico, ni comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
+        footer: 'No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
       enrollment:
         subject: 'Inscripción de Sara Alert'
         header: 'Bienvenido al sistema Sara Alert'
@@ -102,13 +102,13 @@ es:
         info1: 'Usted ha sido inscrito en el sistema de monitoreo Sara Alert. Le pedimos que proporcione informes diarios de su estado de salud. Simplemente haga clic en el botón a continuación y siga las instrucciones en pantalla.'
         info2: 'Usted recibirá un recordatorio diario similar hasta que finalice su período de monitoreo. Si tiene alguna pregunta, por favor pónganse en contacto con el proveedor de atención médica que le ayudó a inscribirse.'
         report: 'Reporte diario'
-        footer: 'No responda o reenvíe este correo electrónico, ni comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
+        footer: 'No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
       closed:
         subject: 'Reporte de Sara Alert completo'
         header: 'Reporte de Sara Alert completo'
         dear: 'Estimado/a'
         thank-you: '¡Su reporte de Sara Alert está completo! Gracias por su participación.'
-        footer: 'No responda o reenvíe este correo electrónico, ni comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
+        footer: 'No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
     sms:
       prompt:
         intro1: 'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para'
@@ -117,7 +117,7 @@ es:
         daily1: 'Este es el informe diario de Sara Alert para: '
         daily2-p: ' ¿Esta alguna de estas personas '
         daily2-s: ' ¿Está usted '
-        daily3: 'sintiendo uno o mas de los siguientes síntomas hoy?: '
+        daily3: 'sintiendo uno o más de los siguientes síntomas hoy?: '
         daily4: ' Responda con "Sí" o "No"'
         try-again: "Lo siento, no entendí. Responda con \"Sí\" o \"No\""
         max_retries_message: "Lo siento, ha alcanzado el número máximo de intentos de respuesta. Si tiene una emergencia médica, llame al 911."
@@ -133,5 +133,5 @@ es:
       daily1: ' Este es el informe diario de Sara Alert para: '
       daily2-p: ' ¿Esta alguna de estas personas '
       daily2-s: ' ¿Está usted '
-      daily3: ' sintiendo uno o mas de los siguientes síntomas hoy? '
+      daily3: ' sintiendo uno o más de los siguientes síntomas hoy? '
       daily4: ' Responda con "Sí" o "No"'

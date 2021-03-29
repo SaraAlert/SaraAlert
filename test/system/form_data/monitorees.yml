@@ -33,8 +33,8 @@ monitoree_2:
     native_hawaiian_or_other_pacific_islander: true
     race_unknown: false
     ethnicity: 'Not Hispanic or Latino'
-    primary_language: 'English'
-    secondary_language: 'Spanish'
+    primary_language: 'eng'
+    secondary_language: 'spa'
     interpretation_required: true
     nationality: 'American'
     user_defined_id_statelocal: '123456'
@@ -184,7 +184,7 @@ monitoree_6:
     sex: 'Unknown'
     asian: true
     ethnicity: 'Not Hispanic or Latino'
-    primary_language: 'English'
+    primary_language: 'eng'
     secondary_language: 'Korean'
     interpretation_required: true
     nationality: 'Korean'
@@ -309,8 +309,8 @@ monitoree_12:
     asian: true
     native_hawaiian_or_other_pacific_islander: true
     ethnicity: 'Hispanic or Latino'
-    primary_language: 'English'
-    secondary_language: 'Spanish'
+    primary_language: 'eng'
+    secondary_language: 'spa'
     interpretation_required: true
     nationality: 'American'
     user_defined_id_statelocal: '123456'

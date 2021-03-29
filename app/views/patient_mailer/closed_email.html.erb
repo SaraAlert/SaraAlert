@@ -1,15 +1,15 @@
 <% content_for :preheader do %>
-  <%= t('assessments.email.closed.header', locale: @lang || :en) %>
+  <%= t('assessments.email.closed.header', locale: @lang || :eng) %>
 <% end %>
 
 <% content_for :body do %>
-  <p><%= t('assessments.email.closed.dear', locale: @lang || :en) %> <%= @patient&.initials_age('-') %>,</p>
+  <p><%= t('assessments.email.closed.dear', locale: @lang || :eng) %> <%= @patient&.initials_age('-') %>,</p>
 
-  <p><%= t('assessments.email.closed.thank-you', locale: @lang || :en) %></p>
+  <p><%= t('assessments.email.closed.thank-you', locale: @lang || :eng) %></p>
 <% end %>
 
 <% content_for :footer do %>
   <p>
-    <%= t('assessments.email.closed.footer', locale: @lang || :en) %>
+    <%= t('assessments.email.closed.footer', locale: @lang || :eng) %>
   </p>
 <% end %>

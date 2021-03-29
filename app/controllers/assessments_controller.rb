@@ -68,8 +68,20 @@ class AssessmentsController < ApplicationController
     @threshold_hash = jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash
     @translations = @assessment.translations
     @contact_info = jurisdiction.contact_info
-    @lang = permitted_params[:lang] if %w[en es es-PR so fr].include?(params[:lang])
-    @lang = 'en' if @lang.nil? # Default to english
+
+    # For backwards-compatibility reasons, we still want to support the old 2-letter language codes
+    legacy_language_mapping = {
+      'en': 'eng',
+      'es': 'spa',
+      'es-PR': 'spa-PR',
+      'so': 'som',
+      'fra': 'fra'
+    }
+    unless params[:lang].nil?
+      @lang = legacy_language_mapping.keys.include?(params[:lang].to_sym) ? legacy_language_mapping[params[:lang].to_sym] : params[:lang]
+    end
+    @lang = permitted_params[:lang] if %w[eng spa spa-PR som fra].include?(@lang)
+    @lang = 'eng' if @lang.nil? # Default to english
     @patient_initials = permitted_params[:initials_age]&.upcase&.gsub(/[^a-z]/i, '')
     @patient_age = permitted_params[:initials_age]&.gsub(/[^0-9]/, '')
   end

@@ -1,14 +1,18 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Form } from 'react-bootstrap';
+import Select from 'react-select';
+
+import _ from 'lodash';
 import * as yup from 'yup';
 import moment from 'moment-timezone';
-import Select from 'react-select';
 
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
-import supportedLanguages from '../../../data/supportedLanguages.json';
+import { getAllLanguages, supportedLanguages } from '../../../data/supportedLanguages.js';
 
+// save as a constant to avoid multiple calls to `getAllLanguages` (which is semi-expensive)
+const ALL_LANGUAGES = getAllLanguages();
 const WORKFLOW_OPTIONS = [
   { label: 'Exposure (contact)', value: 'exposure' },
   { label: 'Isolation (case)', value: 'isolation' },
@@ -22,7 +26,7 @@ class Identification extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
-      languageOptions: this.getLanguageOptions(),
+      formattedLanguageOptions: this.formatLanguageOptions(),
     };
   }
 
@@ -157,22 +161,38 @@ class Identification extends React.Component {
       });
   };
 
-  getLanguageOptions() {
-    const langOptions = supportedLanguages.languages.map(lang => {
+  formatLanguageOptions = () => {
+    const langOptions = ALL_LANGUAGES.map(lang => {
       const fullySupported = lang.supported.sms && lang.supported.email && lang.supported.phone;
       const langLabel = fullySupported ? lang.name : lang.name + '*';
       return { value: lang.name, label: langLabel };
     });
-    return langOptions;
-  }
 
-  getLanguageValue = language => {
-    return this.state.languageOptions.find(lang => lang.value === language);
+    // lodash's 'remove()' actually removes the values from the object
+    let supportedNames = supportedLanguages.map(sL => sL.name);
+    const supportedLangsFormatted = _.remove(langOptions, n => supportedNames.includes(n.value));
+    const unsupportedLangsFormatted = langOptions;
+
+    const groupedOptions = [
+      {
+        label: 'Supported Languages',
+        options: supportedLangsFormatted,
+      },
+      {
+        label: 'Unsupported Languages',
+        options: unsupportedLangsFormatted,
+      },
+    ];
+    return groupedOptions;
   };
 
-  renderPrimaryLanguageSupportMessage(selectedLanguage) {
+  getLanguageValue = language => {
+    return ALL_LANGUAGES.find(l => l.value === language);
+  };
+
+  renderPrimaryLanguageSupportMessage = selectedLanguage => {
     if (selectedLanguage) {
-      const languageJson = supportedLanguages.languages.find(l => l.name === selectedLanguage);
+      const languageJson = ALL_LANGUAGES.find(l => l.name === selectedLanguage);
 
       if (languageJson && languageJson.supported) {
         const sms = languageJson.supported.sms;
@@ -211,7 +231,34 @@ class Identification extends React.Component {
         }
       }
     }
-  }
+  };
+
+  formatGroupLabel = data => {
+    // This function styles the language counters we see in the Language Dropdowns
+    const groupStyles = {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    };
+    const groupBadgeStyles = {
+      backgroundColor: '#EBECF0',
+      borderRadius: '2px',
+      color: '#172B4D',
+      display: 'inline-block',
+      fontSize: 12,
+      fontWeight: 'normal',
+      lineHeight: '1',
+      minWidth: 1,
+      padding: '5px 8px',
+      textAlign: 'center',
+    };
+    return (
+      <div style={groupStyles}>
+        <span>{data.label}</span>
+        <span style={groupBadgeStyles}>{data.options.length}</span>
+      </div>
+    );
+  };
 
   render() {
     const cursorPointerStyle = {
@@ -436,12 +483,12 @@ class Identification extends React.Component {
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3 ml-0">
+              <Form.Row className="pt-3 ml-0 mb-0">
                 <div className="nav-input-label">LANGUAGE</div>
               </Form.Row>
               <Form.Row className="pb-3 ml-0">Languages that are not fully supported are indicated by a (*) in the below list.</Form.Row>
               <Form.Row>
-                <Form.Group as={Col} id="primary_language_wrapper">
+                <Form.Group as={Col} sm={24} md={12} id="primary_language_wrapper" className="pr-md-4 mb-2">
                   <Form.Label htmlFor="primary-language-select" className="nav-input-label">
                     PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="primaryLanguage" location="right"></InfoTooltip>
@@ -449,7 +496,8 @@ class Identification extends React.Component {
                   <Select
                     inputId="primary-language-select"
                     value={this.getLanguageValue(this.state.current.patient.primary_language)}
-                    options={this.state.languageOptions}
+                    options={this.state.formattedLanguageOptions}
+                    formatGroupLabel={this.formatGroupLabel}
                     onChange={e => this.handleLanguageChange('primary_language', e)}
                     placeholder=""
                     styles={cursorPointerStyle}
@@ -459,8 +507,7 @@ class Identification extends React.Component {
                     })}
                   />
                 </Form.Group>
-                <Form.Group as={Col} md="1"></Form.Group>
-                <Form.Group as={Col} id="secondary_language_wrapper">
+                <Form.Group as={Col} sm={24} md={12} id="secondary_language_wrapper" className="pl-md-4 mb-2">
                   <Form.Label htmlFor="secondary-language-select" className="nav-input-label">
                     SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="secondaryLanguage" location="right"></InfoTooltip>
@@ -468,7 +515,8 @@ class Identification extends React.Component {
                   <Select
                     inputId="secondary-language-select"
                     value={this.getLanguageValue(this.state.current.patient.secondary_language)}
-                    options={this.state.languageOptions}
+                    formatGroupLabel={this.formatGroupLabel}
+                    options={this.state.formattedLanguageOptions}
                     onChange={e => this.handleLanguageChange('secondary_language', e)}
                     placeholder=""
                     styles={cursorPointerStyle}
@@ -480,11 +528,10 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row>
-                <Form.Group as={Col} controlId="primary_language_support_message">
+                <Form.Group as={Col} sm={24} md={12} controlId="primary_language_support_message" className="pr-md-4 mb-0">
                   {this.renderPrimaryLanguageSupportMessage(this.state.current.patient.primary_language)}
                 </Form.Group>
-                <Form.Group as={Col} md="1"></Form.Group>
-                <Form.Group as={Col} controlId="secondary_language_support_message">
+                <Form.Group as={Col} sm={24} md={12} controlId="secondary_language_support_message" className="pl-md-4 mb-0">
                   {this.state.current.patient.secondary_language && (
                     <i>
                       <b>* Warning:</b> Not used to determine which language the system sends messages to the monitoree in.

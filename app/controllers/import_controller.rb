@@ -182,6 +182,7 @@ class ImportController < ApplicationController
     value = import_date_field(value) if VALIDATION[field][:checks].include?(:date)
     value = import_phone_field(value) if VALIDATION[field][:checks].include?(:phone)
     value = import_and_validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
+    value = import_and_validate_language_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:lang)
     value = import_sex_field(field, value) if VALIDATION[field][:checks].include?(:sex)
     value = import_email_field(value) if VALIDATION[field][:checks].include?(:email)
     value
@@ -229,6 +230,17 @@ class ImportController < ApplicationController
     # NOTE: Currently only import allows abbreviated state names. If that changes and we begin allowing abbreviations
     # via other controllers, it will probably make sense to move this error onto the Patient model
     err_msg = "'#{value}' is not a valid state for '#{VALIDATION[field][:label]}', please use the full state name or two letter abbreviation"
+    raise ValidationError.new(err_msg, row_ind)
+  end
+
+  def import_and_validate_language_field(field, value, row_ind)
+    return nil if value.blank?
+
+    val = normalize_and_get_language_name(value)
+    return val if val # val will the three-letter language code if value is matchable, else nil
+
+    err_msg = "'#{value}' is not a valid language for '#{VALIDATION[field][:label]}'. Please use the full language name or three letter ISO-639 abbreviation"
+    # VERIFY THAT THIS ALL WORKS WITH FHIR BCP LANGUAGE CODES (I DONT THINK IT DOES YET)
     raise ValidationError.new(err_msg, row_ind)
   end
 

@@ -104,6 +104,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     ]
   }.freeze
 
+  VALID_LANGUAGES = PATIENT_HELPER_FILES[:languages].stringify_keys().keys().freeze
+
   SYSTEM_SELECTABLE_MONITORING_REASONS = [
     'Enrolled more than 14 days after last date of exposure (system)', 'Enrolled more than 10 days after last date of exposure (system)',
     'Enrolled on last day of monitoring period (system)', 'Completed Monitoring (system)', '', nil
@@ -133,7 +135,9 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     public_health_action: ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing'],
     source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other'],
     foreign_monitored_address_state: [*VALID_STATES, nil, ''],
-    additional_planned_travel_destination_state: [*VALID_STATES, nil, '']
+    additional_planned_travel_destination_state: [*VALID_STATES, nil, ''],
+    primary_language: [*VALID_LANGUAGES, nil],
+    secondary_language: [*VALID_LANGUAGES, nil]
   }.freeze
 
   VALID_EXPOSURE_ENUMS = {
@@ -170,6 +174,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     race_unknown: { label: 'Race Unknown', checks: [:bool] },
     race_refused_to_answer: { label: 'Race Refused to Answer', checks: [:bool] },
     ethnicity: { label: 'Ethnicity', checks: [:enum] },
+    primary_language: { label: 'Primary Language', checks: [:lang] },
+    secondary_language: { label: 'Secondary Language', checks: [:lang] },
     interpretation_required: { label: 'Interpretation Required?', checks: [:bool] },
     address_state: { label: 'State', checks: %i[required state] },
     monitored_address_state: { label: 'Monitored Address State', checks: [:state] },
