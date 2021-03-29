@@ -234,6 +234,9 @@ Doorkeeper.configure do
     'user/RelatedPerson.read',
     'user/RelatedPerson.write',
     'user/RelatedPerson.*',
+    'user/Immunization.read',
+    'user/Immunization.write',
+    'user/Immunization.*',
     'user/Observation.read',
     'user/QuestionnaireResponse.read',
     'system/Patient.read',
@@ -243,7 +246,10 @@ Doorkeeper.configure do
     'system/RelatedPerson.write',
     'system/RelatedPerson.*',
     'system/Observation.read',
-    'system/QuestionnaireResponse.read'
+    'system/QuestionnaireResponse.read',
+    'system/Immunization.read',
+    'system/Immunization.write',
+    'system/Immunization.*',
   )
 
   # Allows to restrict only certain scopes for grant_type.
