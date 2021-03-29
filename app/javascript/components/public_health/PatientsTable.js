@@ -513,6 +513,10 @@ class PatientsTable extends React.Component {
     return <EligibilityTooltip id={rowData.id.toString()} report_eligibility={reportEligibility} inline={false} />;
   }
 
+  /**
+   * Get a local storage value
+   * @param {String} key - relevant local storage key
+   */
   getLocalStorage = key => {
     // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
     try {
@@ -523,6 +527,11 @@ class PatientsTable extends React.Component {
     }
   };
 
+  /**
+   * Set a local storage value
+   * @param {String} key - relevant local storage key
+   * @param {String} value - value to set
+   */
   setLocalStorage = (key, value) => {
     // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
     try {
@@ -532,6 +541,10 @@ class PatientsTable extends React.Component {
     }
   };
 
+  /**
+   * Remove a local storage value
+   * @param {String} key - relevant local storage key
+   */
   removeLocalStorage = key => {
     // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
     try {
@@ -628,9 +641,6 @@ class PatientsTable extends React.Component {
                     authenticity_token={this.props.authenticity_token}
                     workflow={this.props.workflow}
                     updateStickySettings={true}
-                    getLocalStorage={this.getLocalStorage}
-                    setLocalStorage={this.setLocalStorage}
-                    removeLocalStorage={this.removeLocalStorage}
                   />
                   {this.state.query.tab !== 'transferred_out' && (
                     <DropdownButton

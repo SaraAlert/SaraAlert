@@ -41,7 +41,7 @@ class AdvancedFilter extends React.Component {
     axios.get(window.BASE_PATH + '/user_filters' + timestamp).then(response => {
       this.setState({ savedFilters: response.data }, () => {
         // Apply filter if it exists in local storage
-        let sessionFilter = this.props.getLocalStorage(`SaraFilter`);
+        let sessionFilter = this.getLocalStorage(`SaraFilter`);
         if (this.props.updateStickySettings && parseInt(sessionFilter)) {
           this.setFilter(
             this.state.savedFilters.find(filter => {
@@ -91,7 +91,7 @@ class AdvancedFilter extends React.Component {
     this.setState({ showAdvancedFilterModal: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilterOptions, keepStickySettings);
       if (this.props.updateStickySettings && this.state.activeFilter) {
-        this.props.setLocalStorage(`SaraFilter`, this.state.activeFilter.id);
+        this.setLocalStorage(`SaraFilter`, this.state.activeFilter.id);
       }
     });
   };
@@ -121,7 +121,7 @@ class AdvancedFilter extends React.Component {
       this.addStatement();
       this.props.advancedFilterUpdate(this.state.activeFilter, false);
       if (this.props.updateStickySettings) {
-        this.props.setLocalStorage(`SaraFilter`, null);
+        this.setLocalStorage(`SaraFilter`, null);
       }
     });
   };
@@ -142,7 +142,7 @@ class AdvancedFilter extends React.Component {
       .then(() => {
         toast.success('Filter successfully deleted.');
         if (this.props.updateStickySettings) {
-          this.props.removeLocalStorage(`SaraFilter`);
+          this.removeLocalStorage(`SaraFilter`);
         }
         this.setState(
           {
@@ -1121,6 +1121,47 @@ class AdvancedFilter extends React.Component {
     );
   };
 
+  /**
+   * Get a local storage value
+   * @param {String} key - relevant local storage key
+   */
+  getLocalStorage = key => {
+    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  /**
+   * Set a local storage value
+   * @param {String} key - relevant local storage key
+   * @param {String} value - value to set
+   */
+  setLocalStorage = (key, value) => {
+    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  /**
+   * Remove a local storage value
+   * @param {String} key - relevant local storage key
+   */
+  removeLocalStorage = key => {
+    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -1176,9 +1217,6 @@ AdvancedFilter.propTypes = {
   advancedFilterUpdate: PropTypes.func,
   workflow: PropTypes.string,
   updateStickySettings: PropTypes.bool,
-  getLocalStorage: PropTypes.func,
-  setLocalStorage: PropTypes.func,
-  removeLocalStorage: PropTypes.func,
 };
 
 export default AdvancedFilter;
