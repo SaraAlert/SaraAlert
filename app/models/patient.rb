@@ -767,19 +767,19 @@ class Patient < ApplicationRecord
 
     # Determine which type of duplicate exists
     where(first_name: patient[:first_name], last_name: patient[:last_name])
-      .select('sex', "DATE_FORMAT(date_of_birth, '%Y-%m-%d') date_of_birth").each do |found|
+      .pluck(:sex, ActiveRecord::Base.sanitize_sql(Arel.sql('CAST(date_of_birth AS CHAR)'))).each do |(sex, dob)|
         # If the sex isn't nil and doesn't match it is not a duplicate. Same for DoB.
-        if (patient[:sex].present? && found.sex.present? && patient[:sex] != found.sex) ||
-           (date_of_birth.present? && found.date_of_birth.present? && date_of_birth != found.date_of_birth.to_s)
+        if (patient[:sex].present? && sex.present? && patient[:sex] != sex) ||
+           (date_of_birth.present? && dob.present? && date_of_birth != dob)
           next
         end
 
         # Check for duplicates
-        if patient[:sex].present? && patient[:sex] == found.sex && date_of_birth.present? && date_of_birth == found.date_of_birth.to_s
+        if patient[:sex].present? && patient[:sex] == sex && date_of_birth.present? && date_of_birth == dob
           fn_ln_sex_dob_matches += 1
-        elsif patient[:sex].present? && patient[:sex] == found.sex
+        elsif patient[:sex].present? && patient[:sex] == sex
           fn_ln_sex_matches += 1
-        elsif date_of_birth.present? && date_of_birth == found.date_of_birth.to_s
+        elsif date_of_birth.present? && date_of_birth == dob
           fn_ln_dob_matches += 1
         else
           fn_ln_matches += 1
