@@ -14,10 +14,6 @@ class IntegerSymptom < Symptom
     self.int_value = value
   end
 
-  def negate
-    self.int_value = 0
-  end
-
   def as_json(options = {})
     super(options).merge({
                            value: int_value
