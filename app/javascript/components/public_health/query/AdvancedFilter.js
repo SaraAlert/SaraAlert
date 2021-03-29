@@ -41,7 +41,7 @@ class AdvancedFilter extends React.Component {
     axios.get(window.BASE_PATH + '/user_filters' + timestamp).then(response => {
       this.setState({ savedFilters: response.data }, () => {
         // Apply filter if it exists in local storage
-        let sessionFilter = localStorage.getItem(`SaraFilter`);
+        let sessionFilter = this.props.getLocalStorage(`SaraFilter`);
         if (this.props.updateStickySettings && parseInt(sessionFilter)) {
           this.setFilter(
             this.state.savedFilters.find(filter => {
@@ -91,7 +91,7 @@ class AdvancedFilter extends React.Component {
     this.setState({ showAdvancedFilterModal: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilterOptions, keepStickySettings);
       if (this.props.updateStickySettings && this.state.activeFilter) {
-        localStorage.setItem(`SaraFilter`, this.state.activeFilter.id);
+        this.props.setLocalStorage(`SaraFilter`, this.state.activeFilter.id);
       }
     });
   };
@@ -121,7 +121,7 @@ class AdvancedFilter extends React.Component {
       this.addStatement();
       this.props.advancedFilterUpdate(this.state.activeFilter, false);
       if (this.props.updateStickySettings) {
-        localStorage.setItem(`SaraFilter`, null);
+        this.props.setLocalStorage(`SaraFilter`, null);
       }
     });
   };
@@ -142,7 +142,7 @@ class AdvancedFilter extends React.Component {
       .then(() => {
         toast.success('Filter successfully deleted.');
         if (this.props.updateStickySettings) {
-          localStorage.removeItem(`SaraFilter`);
+          this.props.removeLocalStorage(`SaraFilter`);
         }
         this.setState(
           {
@@ -1176,6 +1176,9 @@ AdvancedFilter.propTypes = {
   advancedFilterUpdate: PropTypes.func,
   workflow: PropTypes.string,
   updateStickySettings: PropTypes.bool,
+  getLocalStorage: PropTypes.func,
+  setLocalStorage: PropTypes.func,
+  removeLocalStorage: PropTypes.func,
 };
 
 export default AdvancedFilter;
