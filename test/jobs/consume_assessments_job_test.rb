@@ -88,17 +88,15 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
     end
 
     # Bypass latest assessment check
-    # This test will highlight a known bug in negating a Bool or Int symptom.
-    # To be fixed once PO team approves UI changes that are brought along with fixing the issue.
-    # @patient.update(assessments: [])
+    @patient.update(assessments: [])
 
-    # assert_difference '@patient.assessments.count', 1 do
-    #   @redis.publish('reports', @assessment_generator.generic_assessment(symptomatic: false))
-    #   ConsumeAssessmentsJob.perform_now
-    #   @patient.reload
-    #   assert_not @patient.assessments.first.symptomatic
-    #   assert_equal 'Monitoree', @patient.assessments.first.who_reported
-    # end
+    assert_difference '@patient.assessments.count', 1 do
+      @redis_queue.push @assessment_generator.generic_assessment(symptomatic: false)
+      ConsumeAssessmentsJob.perform_now
+      @patient.reload
+      assert_not @patient.assessments.first.symptomatic
+      assert_equal 'Monitoree', @patient.assessments.first.who_reported
+    end
   end
 
   test 'consume generic assessment with dependents' do
