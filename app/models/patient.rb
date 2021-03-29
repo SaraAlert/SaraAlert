@@ -767,23 +767,24 @@ class Patient < ApplicationRecord
 
     # Determine which type of duplicate exists
     where(first_name: patient[:first_name], last_name: patient[:last_name])
-      .select('sex', "DATE_FORMAT(date_of_birth, '%Y-%m-%d') date_of_birth").pluck(:sex, :date_of_birth).each do |(s, dob)|
-      dob = dob&.strftime('%F')
+      .select('sex', "DATE_FORMAT(date_of_birth, '%Y-%m-%d') date_of_birth").each do |found|
+        # If the sex isn't nil and doesn't match it is not a duplicate. Same for DoB.
+        if (patient[:sex].present? && found.sex.present? && patient[:sex] != found.sex) ||
+           (date_of_birth.present? && found.date_of_birth.present? && date_of_birth != found.date_of_birth.to_s)
+          next
+        end
 
-      # If the sex isn't nil and doesn't match it is not a duplicate. Same for DoB.
-      next if (patient[:sex].present? && s.present? && patient[:sex] != s) || (date_of_birth.present? && dob.present? && date_of_birth != dob)
-
-      # Check for duplicates
-      if patient[:sex].present? && patient[:sex] == s && patient[:date_of_birth].present? && date_of_birth == dob
-        fn_ln_sex_dob_matches += 1
-      elsif patient[:sex].present? && patient[:sex] == s
-        fn_ln_sex_matches += 1
-      elsif patient[:date_of_birth].present? && patient[:date_of_birth] == dob
-        fn_ln_dob_matches += 1
-      else
-        fn_ln_matches += 1
+        # Check for duplicates
+        if patient[:sex].present? && patient[:sex] == found.sex && patient[:date_of_birth].present? && date_of_birth == found.date_of_birth.to_s
+          fn_ln_sex_dob_matches += 1
+        elsif patient[:sex].present? && patient[:sex] == found.sex
+          fn_ln_sex_matches += 1
+        elsif patient[:date_of_birth].present? && patient[:date_of_birth] == found.date_of_birth.to_s
+          fn_ln_dob_matches += 1
+        else
+          fn_ln_matches += 1
+        end
       end
-    end
 
     # Return information about all the matches present
     fn_ln = ['First Name', 'Last Name']
