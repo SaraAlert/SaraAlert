@@ -256,7 +256,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = if filter[:value]
                      patients.where(primary_telephone: BlockedNumber.pluck(:phone_number))
                    else
-                     patients.where.not(primary_telephone: BlockedNumber.pluck(:phone_number))
+                     patients.where.not(primary_telephone: BlockedNumber.pluck(:phone_number)).or(patients.where(primary_telephone: nil))
                    end
       when 'hoh'
         patients = if filter[:value]
