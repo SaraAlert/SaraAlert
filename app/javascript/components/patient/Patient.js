@@ -644,7 +644,7 @@ class Patient extends React.Component {
                     </div>
                     {this.props.details.first_positive_lab_at && (
                       <div>
-                        <b>First Positive Lab: </b>
+                        <b>First Positive Lab Collected: </b>
                         <span>{moment(this.props.details.first_positive_lab_at, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
                       </div>
                     )}

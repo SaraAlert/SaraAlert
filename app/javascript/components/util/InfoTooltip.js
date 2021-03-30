@@ -119,6 +119,8 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  noSymptomHistoryDisabled: <div>No symptom history cannot be selected because this case has at least one symptomatic report</div>,
+
   latestPublicHealthActionInExposure: (
     <div>
       Selecting any option other than <i>none</i> moves record from the symptomatic line list to the Person Under Investigation (PUI) line list in the exposure
