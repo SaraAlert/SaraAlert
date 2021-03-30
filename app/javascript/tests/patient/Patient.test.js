@@ -382,10 +382,12 @@ describe('Patient', () => {
     const section = wrapper.find('#case-information');
     expect(section.find('h4').text()).toEqual('Case Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
-    expect(section.find('b').at(0).text()).toEqual('Symptom Onset:');
-    expect(section.find('span').at(0).text()).toEqual(formatDate(mockPatient1.symptom_onset));
-    expect(section.find('b').at(1).text()).toEqual('Case Status:');
-    expect(section.find('span').at(1).text()).toEqual(mockPatient1.case_status);
+    expect(section.find('b').at(0).text()).toEqual('Case Status: ');
+    expect(section.find('span').at(0).text()).toEqual(mockPatient1.case_status);
+    expect(section.find('b').at(1).text()).toEqual('First Positive Lab Collected: ');
+    expect(section.find('span').at(1).text()).toEqual(formatDate(mockPatient1.first_positive_lab_at));
+    expect(section.find('b').at(2).text()).toEqual('Symptom Onset: ');
+    expect(section.find('span').at(2).text()).toEqual(formatDate(mockPatient1.symptom_onset));
   });
 
   it('Hides case information section when monitoree is in the exposure workflow', () => {
