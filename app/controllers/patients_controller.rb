@@ -160,6 +160,11 @@ class PatientsController < ApplicationController
     # Create a history for the enrollment
     History.enrollment(patient: patient, created_by: current_user.email)
 
+    # Create a history for the first positive lab if presentt
+    if allowed_params[:laboratories_attributes].present?
+      History.lab_result(patient: patient.id, created_by: current_user.email, comment: "User added a new lab result (ID: #{patient.laboratories.first.id}).")
+    end
+
     if params[:cc_id].present?
       close_contact = CloseContact.where(patient_id: current_user.viewable_patients).where(id: params.permit(:cc_id)[:cc_id])&.first
       close_contact.update(enrolled_id: patient.id)
@@ -174,9 +179,22 @@ class PatientsController < ApplicationController
 
     content = params.require(:patient).permit(:id).merge!(allowed_params)
     patient = current_user.get_patient(content[:id])
-
+    laboratory = params.permit(laboratory: %i[id lab_type specimen_collection report result])[:laboratory]
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if patient.nil?
+
+    # Update first positive lab if present
+    if laboratory.present?
+      # If the laboratory id is not provided, redirect to index
+      redirect_to(root_url) && return unless laboratory.key?(:id)
+
+      # If we failed to find a laboratory given the id, redirect to index
+      first_positive_lab = patient.laboratories.find(laboratory[:id])
+      redirect_to(root_url) && return unless first_positive_lab.present?
+
+      first_positive_lab.update(laboratory)
+      History.lab_result(patient: patient, created_by: current_user.email, comment: "User edited a lab result (ID: #{laboratory[:id]}).")
+    end
 
     # Propagate desired fields to household except jurisdiction_id
     propagated_fields = params[:propagated_fields]

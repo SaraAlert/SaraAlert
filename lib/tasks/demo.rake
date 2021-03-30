@@ -433,7 +433,7 @@ desc 'Backup the database'
       laboratories << Laboratory.new(
         patient_id: patient[:id],
         lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
-        specimen_collection: create_fake_timestamp(1.week.ago, today),
+        specimen_collection: create_fake_timestamp(1.week.ago, today - 1.day.ago),
         report: create_fake_timestamp(today, today),
         result: 'positive',
         created_at: patient[:created_at],
@@ -656,7 +656,7 @@ desc 'Backup the database'
       laboratories << Laboratory.new(
         patient_id: patient_id,
         lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
-        specimen_collection: create_fake_timestamp(1.week.ago, today),
+        specimen_collection: create_fake_timestamp(1.week.ago, today - 1.day.ago),
         report: create_fake_timestamp(today, today),
         result: result,
         created_at: lab_ts,

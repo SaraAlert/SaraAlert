@@ -124,6 +124,11 @@ class Exposure extends React.Component {
         } else {
           modified = { patient: { no_symptom_history: false } };
         }
+        // only clear out first positive lab if it isn't saved already
+        if (!this.props.first_positive_lab) {
+          current.first_positive_lab = null;
+          modified.first_positive_lab = null;
+        }
       }
       this.updateSOandNSHValidations({ ...current.patient, [field]: date });
     }
@@ -397,98 +402,92 @@ class Exposure extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Row>
-          {this.props.symptomatic_assessments_exist ? (
-            <div className="mb-2"></div>
-          ) : (
-            <Form.Group as={Col} md="8" controlId="no_symptom_history" className="pl-1">
-              <Form.Check
-                size="lg"
-                label={`NO SYMPTOM HISTORY${schema?.fields?.no_symptom_history?._whitelist?.list?.has(true) ? ' *' : ''}`}
-                id="no_symptom_history"
-                className="ml-1 d-inline"
-                checked={!!this.state.current.patient.no_symptom_history}
-                onChange={this.handleChange}
-                disabled={this.props.symptomatic_assessments_exist}
-              />
-              <InfoTooltip tooltipTextKey="noSymptomHistory" location="right"></InfoTooltip>
-              {this.state.current.patient.no_symptom_history && (
-                <div className="py-1 pl-1">
-                  <span>You must enter the lab result that provides evidence that this monitoree is a case</span>
-                </div>
-              )}
-            </Form.Group>
-          )}
-          {this.state.current.patient.no_symptom_history && (
-            <Form.Group as={Col} md="16" controlId="">
-              {this.state.current.first_positive_lab ? (
-                <div>
-                  <div className="section-header">
-                    <Form.Label className="nav-input-label">FIRST POSITIVE LAB RESULT</Form.Label>
-                    {!this.props.first_positive_lab && (
-                      <div className="edit-link">
-                        <Button variant="link" id="edit-first_positive_lab" className="py-0" onClick={() => this.setState({ showLabModal: true })}>
-                          Edit
-                        </Button>
-                      </div>
-                    )}
+          <Form.Group as={Col} md="8" controlId="no_symptom_history" className="pl-1">
+            <Form.Check
+              size="lg"
+              label={`NO SYMPTOM HISTORY${schema?.fields?.no_symptom_history?._whitelist?.list?.has(true) ? ' *' : ''}`}
+              id="no_symptom_history"
+              className="ml-1 d-inline"
+              checked={!!this.state.current.patient.no_symptom_history}
+              onChange={this.handleChange}
+              disabled={this.props.symptomatic_assessments_exist}
+            />
+            <InfoTooltip
+              tooltipTextKey={this.props.symptomatic_assessments_exist ? 'noSymptomHistoryDisabled' : 'noSymptomHistory'}
+              location="right"></InfoTooltip>
+            {this.state.current.patient.no_symptom_history && (
+              <div className="py-1 pl-1">
+                <span>You must enter the lab result that provides evidence that this monitoree is a case</span>
+              </div>
+            )}
+          </Form.Group>
+          <Form.Group as={Col} md="16" controlId="">
+            {this.state.current.first_positive_lab ? (
+              <div className={this.state.current.patient.no_symptom_history ? '' : 'disabled-first-positive-lab'}>
+                <div className="section-header">
+                  <Form.Label className="nav-input-label">FIRST POSITIVE LAB RESULT</Form.Label>
+                  <div className="edit-link">
+                    <Button variant="link" id="edit-first_positive_lab" className="py-0" onClick={() => this.setState({ showLabModal: true })}>
+                      Edit
+                    </Button>
                   </div>
-                  <Row>
-                    <Col>
-                      <div>
-                        <b>Type: </b>
-                        <span>{this.state.current.first_positive_lab.lab_type || '--'}</span>
-                      </div>
-                      <div>
-                        <b>Specimen Collection Date: </b>
-                        <span>
-                          {this.state.current.first_positive_lab.specimen_collection
-                            ? moment(this.state.current.first_positive_lab.specimen_collection, 'YYYY-MM-DD').format('MM/DD/YYYY')
-                            : '--'}
-                        </span>
-                      </div>
-                      <div>
-                        <b>Report Date: </b>
-                        <span>
-                          {this.state.current.first_positive_lab.report
-                            ? moment(this.state.current.first_positive_lab.report, 'YYYY-MM-DD').format('MM/DD/YYYY')
-                            : '--'}
-                        </span>
-                      </div>
-                      <div>
-                        <b>Result: </b>
-                        <span>{this.state.current.first_positive_lab.result || '--'}</span>
-                      </div>
-                    </Col>
-                  </Row>
                 </div>
-              ) : (
-                <React.Fragment>
-                  <Button
-                    variant="primary"
-                    size="md"
-                    disabled={!this.state.current.patient.no_symptom_history}
-                    onClick={() => this.setState({ showLabModal: true })}>
-                    <i className="fas fa-plus-square mr-1"></i>
-                    Enter Lab Result
-                  </Button>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['first_positive_lab']}
-                  </Form.Control.Feedback>
-                </React.Fragment>
-              )}
-              {this.state.showLabModal && (
-                <LaboratoryForm
-                  lab={this.state.current.first_positive_lab}
-                  specimenCollectionRequired={true}
-                  onlyPositiveResult={true}
-                  submit={this.handleLabChange}
-                  cancel={() => this.setState({ showLabModal: false })}
-                  editMode={!!this.state.current.first_positive_lab}
-                  loading={false}
-                />
-              )}
-            </Form.Group>
-          )}
+                <Row>
+                  <Col>
+                    <div>
+                      <b>Type: </b>
+                      <span>{this.state.current.first_positive_lab.lab_type || '--'}</span>
+                    </div>
+                    <div>
+                      <b>Specimen Collection Date: </b>
+                      <span>
+                        {this.state.current.first_positive_lab.specimen_collection
+                          ? moment(this.state.current.first_positive_lab.specimen_collection, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                          : '--'}
+                      </span>
+                    </div>
+                    <div>
+                      <b>Report Date: </b>
+                      <span>
+                        {this.state.current.first_positive_lab.report
+                          ? moment(this.state.current.first_positive_lab.report, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                          : '--'}
+                      </span>
+                    </div>
+                    <div>
+                      <b>Result: </b>
+                      <span>{this.state.current.first_positive_lab.result || '--'}</span>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+            ) : (
+              <React.Fragment>
+                <Button
+                  variant="primary"
+                  size="md"
+                  disabled={!this.state.current.patient.no_symptom_history}
+                  onClick={() => this.setState({ showLabModal: true })}>
+                  <i className="fas fa-plus-square mr-1"></i>
+                  Enter Lab Result
+                </Button>
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['first_positive_lab']}
+                </Form.Control.Feedback>
+              </React.Fragment>
+            )}
+            {this.state.showLabModal && (
+              <LaboratoryForm
+                lab={this.state.current.first_positive_lab}
+                specimenCollectionRequired={true}
+                onlyPositiveResult={true}
+                submit={this.handleLabChange}
+                cancel={() => this.setState({ showLabModal: false })}
+                editMode={!!this.state.current.first_positive_lab}
+                loading={false}
+              />
+            )}
+          </Form.Group>
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} md="24" className="mb-2">
