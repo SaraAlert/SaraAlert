@@ -209,7 +209,7 @@ const mockPatient1 = {
   latest_assessment_at: '2020-09-15T20:59:36.000Z',
   latest_assessment_symptomatic: null,
   latest_fever_or_fever_reducer_at: null,
-  first_positive_lab_at: null,
+  first_positive_lab_at: '2020-09-25',
   latest_transfer_at: null,
   latest_transfer_from: null,
   linelist: {
