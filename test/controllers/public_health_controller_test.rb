@@ -175,7 +175,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       patients = user.viewable_patients.isolation_requiring_review
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
-      assert_equal common_fields + %w[jurisdiction assigned_user extended_isolation symptom_onset monitoring_plan
+      assert_equal common_fields + %w[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan
                                       latest_report report_eligibility], json_response['fields']
 
       post :patients, params: { query: { workflow: 'isolation', tab: 'non_reporting' } }, as: :json
@@ -183,7 +183,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       patients = user.viewable_patients.isolation_non_reporting
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
-      assert_equal common_fields + %w[jurisdiction assigned_user extended_isolation symptom_onset monitoring_plan
+      assert_equal common_fields + %w[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan
                                       latest_report report_eligibility], json_response['fields']
 
       post :patients, params: { query: { workflow: 'isolation', tab: 'reporting' } }, as: :json
@@ -191,7 +191,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       patients = user.viewable_patients.isolation_reporting
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
-      assert_equal common_fields + %w[jurisdiction assigned_user extended_isolation symptom_onset monitoring_plan
+      assert_equal common_fields + %w[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan
                                       latest_report report_eligibility], json_response['fields']
 
       post :patients, params: { query: { workflow: 'isolation', tab: 'closed' } }, as: :json
@@ -220,7 +220,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       patients = user.viewable_patients.where(isolation: true, purged: false)
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
-      assert_equal common_fields + %w[jurisdiction assigned_user extended_isolation symptom_onset monitoring_plan
+      assert_equal common_fields + %w[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan
                                       latest_report status report_eligibility], json_response['fields']
 
       post :patients, params: { query: { workflow: 'all', tab: 'closed' } }, as: :json
