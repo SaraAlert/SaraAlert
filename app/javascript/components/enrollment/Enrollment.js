@@ -114,8 +114,11 @@ class Enrollment extends React.Component {
       data.patient.user_defined_symptom_onset = true;
     }
     if (this.state.enrollmentState.first_positive_lab) {
-      if (this.state.enrollmentState.first_positive_lab.id) {
-        // figure out how to update lab
+      if (this.props.edit_mode) {
+        let diffKeysLab = Object.keys(this.state.enrollmentState.first_positive_lab).filter(
+          k => _.get(this.state.enrollmentState.first_positive_lab, k) !== _.get(this.props.first_positive_lab, k)
+        );
+        data['laboratory'] = { id: this.props.first_positive_lab.id, ..._.pick(this.state.enrollmentState.first_positive_lab, diffKeysLab) };
       } else {
         data['patient']['laboratories_attributes'] = [this.state.enrollmentState.first_positive_lab];
       }
