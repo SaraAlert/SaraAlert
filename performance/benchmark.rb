@@ -88,12 +88,12 @@ def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exi
   puts File.read(benchmark_file) if ENV['CAP_STDOUT']
 
   puts "\n\n"
-  puts "Acceptable real time threshold: #{format('%.3f', time_threshold).rjust(10, ' ')}"
-  puts "    Actual real time threshold: #{format('%.3f', benchmark_report.real).rjust(10, ' ')}"
+  puts "Acceptable total time threshold: #{format('%.3f', time_threshold).rjust(10, ' ')}"
+  puts "    Actual total time threshold: #{format('%.3f', benchmark_report.total).rjust(10, ' ')}"
 
   restore(ENV['MYSQL_PATH']) if ENV['APP_IN_CI'].nil?
 
-  if time_threshold < benchmark_report.real
+  if time_threshold < benchmark_report.total
     puts 'TEST FAILED'
     exit(1) unless no_exit
     false
