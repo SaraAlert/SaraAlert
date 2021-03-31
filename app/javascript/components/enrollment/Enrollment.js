@@ -259,6 +259,7 @@ class Enrollment extends React.Component {
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
               symptomatic_assessments_exist={this.props.symptomatic_assessments_exist}
+              edit_mode={this.props.edit_mode}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>

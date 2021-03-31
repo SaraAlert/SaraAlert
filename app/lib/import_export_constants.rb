@@ -133,7 +133,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
               symptom_onset extended_isolation],
     timestamps: %i[created_at updated_at closed_at latest_assessment_at latest_transfer_at last_assessment_reminder_sent],
     phones: %i[primary_telephone secondary_telephone],
-    booleans: %i[interpretation_required isolation continuous_exposure no_symptom_history contact_of_known_case travel_to_affected_country_or_area
+    booleans: %i[interpretation_required isolation continuous_exposure contact_of_known_case travel_to_affected_country_or_area
                  was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
                  member_of_a_common_exposure_cohort head_of_household pause_notifications],
     races: %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander race_other race_unknown

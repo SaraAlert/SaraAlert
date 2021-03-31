@@ -130,7 +130,7 @@ class LaboratoryForm extends React.Component {
             variant="primary btn-square"
             disabled={this.props.loading || this.state.reportInvalid || (this.props.specimenCollectionRequired && !this.state.specimen_collection)}
             onClick={this.submit}>
-            {this.props.editMode ? 'Update' : 'Create'}
+            {this.props.edit_mode ? 'Update' : 'Create'}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -144,7 +144,7 @@ LaboratoryForm.propTypes = {
   onlyPositiveResult: PropTypes.bool,
   submit: PropTypes.func,
   cancel: PropTypes.func,
-  editMode: PropTypes.bool,
+  edit_mode: PropTypes.bool,
   loading: PropTypes.bool,
 };
 

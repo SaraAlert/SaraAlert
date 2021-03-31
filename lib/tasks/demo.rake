@@ -368,7 +368,6 @@ desc 'Backup the database'
         patient[:continuous_exposure] = rand < 0.3
         patient[:last_date_of_exposure] = today - rand(5).days unless patient[:continuous_exposure]
       end
-      patient[:no_symptom_history] = patient[:symptom_onset].nil?
       patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
       patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
       patient[:exposure_notes] = Faker::Games::LeagueOfLegends.quote if rand < 0.5
@@ -427,8 +426,9 @@ desc 'Backup the database'
 
     # Create first positive lab for patients with no symptom history
     laboratories = []
-    user_emails = Hash[User.where(id: new_patients.where(no_symptom_history: true).distinct.pluck(:creator_id)).pluck(:id, :email)]
-    new_patients.where(no_symptom_history: true).each do |patient|
+    asymptomatic_cases =
+    user_emails = Hash[User.where(id: new_patients.where(isolation: true, symptom_onset: nil).distinct.pluck(:creator_id)).pluck(:id, :email)]
+    new_patients.where(isolation: true, symptom_onset: nil).each do |patient|
       laboratories << Laboratory.new(
         patient_id: patient[:id],
         lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
@@ -580,7 +580,7 @@ desc 'Backup the database'
     printf(" done.\n")
 
     # Create earlier symptom onset dates to meet isolation symptomatic non test based requirement
-    symptomatic_assessments = new_assessments.where('patients.no_symptom_history = FALSE')
+    symptomatic_assessments = new_assessments.where('patients.symptom_onset IS NOT NULL')
                                              .where('patient_id % 4 <> 0')
                                              .limit(new_assessments.count * (days_ago > 10  ? rand(75..80) : rand(20..25)) / 100)
                                              .order('RAND()')
