@@ -15,27 +15,35 @@ class SymptomOnset extends React.Component {
     super(props);
     this.state = {
       symptom_onset: this.props.patient.symptom_onset,
-      symptom_onset_old: this.props.patient.symptom_onset,
       loading: false,
     };
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.submit = this.submit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(event) {
-    this.setState({ symptom_onset_old: this.state.symptom_onset, [event.target.id]: event.target.value });
-  }
+  handleDateChange = date => {
+    this.setState({ symptom_onset: date }, () => {
+      if (date && this.props.patient.user_defined_symptom_onset) {
+        this.handleSubmit('Are you sure you want to manually update the symptom onset date?');
+      } else if (date && !this.props.patient.user_defined_symptom_onset) {
+        this.handleSubmit(
+          'Are you sure you want to manually update the symptom onset date? Doing so will result in the symptom onset date no longer being auto-populated by the system.'
+        );
+      } else {
+        this.handleSubmit(
+          'Are you sure you want to clear the symptom onset date? Doing so will result in the symptom onset date being auto-populated by the system.'
+        );
+      }
+    });
+  };
 
   handleSubmit = async confirmText => {
     if (await confirmDialog(confirmText)) {
       this.submit();
     } else {
-      this.setState({ symptom_onset: this.state.symptom_onset_old });
+      this.setState({ symptom_onset: this.props.patient.symptom_onset });
     }
   };
 
-  submit() {
+  submit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -51,7 +59,7 @@ class SymptomOnset extends React.Component {
           reportError(error);
         });
     });
-  }
+  };
 
   render() {
     return (
@@ -89,21 +97,7 @@ class SymptomOnset extends React.Component {
                 maxDate={moment()
                   .add(30, 'days')
                   .format('YYYY-MM-DD')}
-                onChange={date =>
-                  this.setState({ symptom_onset: date }, () => {
-                    if (date && this.props.patient.user_defined_symptom_onset) {
-                      this.handleSubmit('Are you sure you want to manually update the symptom onset date?');
-                    } else if (date && !this.props.patient.user_defined_symptom_onset) {
-                      this.handleSubmit(
-                        'Are you sure you want to manually update the symptom onset date? Doing so will result in the symptom onset date no longer being auto-populated by the system.'
-                      );
-                    } else {
-                      this.handleSubmit(
-                        'Are you sure you want to clear the symptom onset date? Doing so will result in the symptom onset date being auto-populated by the system.'
-                      );
-                    }
-                  })
-                }
+                onChange={this.handleDateChange}
                 placement="bottom"
                 isClearable={this.props.patient.user_defined_symptom_onset}
                 customClass="form-control-lg"

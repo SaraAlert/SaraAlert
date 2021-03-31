@@ -114,7 +114,7 @@ class Enrollment extends React.Component {
       data.patient.user_defined_symptom_onset = true;
     }
     if (this.state.enrollmentState.first_positive_lab) {
-      if (this.props.edit_mode) {
+      if (this.props.first_positive_lab) {
         let diffKeysLab = Object.keys(this.state.enrollmentState.first_positive_lab).filter(
           k => _.get(this.state.enrollmentState.first_positive_lab, k) !== _.get(this.props.first_positive_lab, k)
         );
