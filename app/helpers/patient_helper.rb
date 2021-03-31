@@ -63,7 +63,6 @@ module PatientHelper
       last_date_of_exposure
       continuous_exposure
       user_defined_symptom_onset
-      no_symptom_history
       extended_isolation
       jurisdiction_id
     ]
