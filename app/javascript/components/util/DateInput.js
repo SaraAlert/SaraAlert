@@ -65,6 +65,17 @@ class DateInput extends React.Component {
   };
 
   /**
+   * Called when any key on the key board is pressed.
+   * This will call the onBlur function only if the enter key is pressed
+   * This is to prevent entering an invalid date being overwritten by the user pressing the enter key
+   */
+  handleKeyDown = event => {
+    if (event.keyCode === 13) {
+      this.handleOnBlur();
+    }
+  };
+
+  /**
    * Returns false if date is null, undefined, invalid or falls outside the min/max date range
    * Returns true otherwise
    */
@@ -125,6 +136,7 @@ class DateInput extends React.Component {
               onChangeRaw={this.handleRawChange}
               onSelect={this.handleSelect}
               onBlur={this.handleOnBlur}
+              onKeyDown={this.handleKeyDown}
               className={this.props.customClass}
               customInput={
                 <MaskedInput
