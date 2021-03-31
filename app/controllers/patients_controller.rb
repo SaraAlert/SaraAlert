@@ -521,6 +521,12 @@ class PatientsController < ApplicationController
     # Transforming into hash with symbol keys for consistent parsing later on
     updates = params.require(:patient).permit(permitted_params).to_h.deep_symbolize_keys
 
+    # Update no symptom history if symptom onset is modified
+    if updates.key?(:symptom_onset)
+      # Only query assessments if symptom onset is nil
+      updates[:no_symptom_history] = updates[:symptom_onset].nil? && patient.assessments.where(symptomatic: true).empty?
+    end
+
     patient_before = patient.dup
 
     # Apply and save updates to the db
