@@ -16,7 +16,14 @@ class Exposure extends React.Component {
     super(props);
     this.state = {
       ...this.props,
-      current: { ...this.props.currentState },
+      current: {
+        ...this.props.currentState,
+        patient: {
+          ...this.props.currentState.patient,
+          no_symptom_history:
+            this.props.edit_mode && this.props.patient.isolation && !this.props.patient.symptom_onset && !this.props.symptomatic_assessments_exist,
+        },
+      },
       errors: {},
       modified: {},
       jurisdiction_path: this.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id],
@@ -108,22 +115,14 @@ class Exposure extends React.Component {
       // turn off CE if LDE is populated
       if (date) {
         current.patient.continuous_exposure = false;
-        if (modified.patient) {
-          modified.patient.continuous_exposure = false;
-        } else {
-          modified = { patient: { continuous_exposure: false } };
-        }
+        modified = { patient: { ...modified.patient, continuous_exposure: false } };
       }
       this.updateLDEandCEValidations({ ...current.patient, [field]: date });
     } else if (field === 'symptom_onset') {
       // turn off NSH if SO is populated
       if (date) {
         current.patient.no_symptom_history = false;
-        if (modified.patient) {
-          modified.patient.no_symptom_history = false;
-        } else {
-          modified = { patient: { no_symptom_history: false } };
-        }
+        modified = { patient: { ...modified.patient, no_symptom_history: false } };
         // only clear out first positive lab if it isn't saved already
         if (!this.props.first_positive_lab) {
           current.first_positive_lab = null;
@@ -175,7 +174,11 @@ class Exposure extends React.Component {
   updateStaticValidations = isolation => {
     // Update the Schema Validator based on workflow.
     if (isolation) {
-      this.updateSOandNSHValidations(this.props.patient);
+      this.updateSOandNSHValidations({
+        ...this.props.currentState.patient,
+        no_symptom_history:
+          this.props.edit_mode && this.props.patient.isolation && !this.props.patient.symptom_onset && !this.props.symptomatic_assessments_exist,
+      });
     } else {
       this.updateLDEandCEValidations(this.props.patient);
     }
@@ -483,7 +486,7 @@ class Exposure extends React.Component {
                 onlyPositiveResult={true}
                 submit={this.handleLabChange}
                 cancel={() => this.setState({ showLabModal: false })}
-                editMode={!!this.state.current.first_positive_lab}
+                edit_mode={!!this.state.current.first_positive_lab}
                 loading={false}
               />
             )}
@@ -1006,6 +1009,7 @@ Exposure.propTypes = {
   selected_jurisdiction: PropTypes.object,
   first_positive_lab: PropTypes.object,
   symptomatic_assessments_exist: PropTypes.bool,
+  edit_mode: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };
 
