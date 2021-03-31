@@ -363,13 +363,12 @@ desc 'Backup the database'
         if rand < 0.7
           patient[:symptom_onset] = today - rand(10).days
           patient[:user_defined_symptom_onset] = true
-        else
-          patient[:no_symptom_history] = true
         end
       else
         patient[:continuous_exposure] = rand < 0.3
         patient[:last_date_of_exposure] = today - rand(5).days unless patient[:continuous_exposure]
       end
+      patient[:no_symptom_history] = patient[:symptom_onset].nil?
       patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
       patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
       patient[:exposure_notes] = Faker::Games::LeagueOfLegends.quote if rand < 0.5
