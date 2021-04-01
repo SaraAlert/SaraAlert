@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import DateInput from '../util/DateInput';
 
-class LaboratoryForm extends React.Component {
+class LaboratoryModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -138,7 +138,7 @@ class LaboratoryForm extends React.Component {
   }
 }
 
-LaboratoryForm.propTypes = {
+LaboratoryModal.propTypes = {
   lab: PropTypes.object,
   specimenCollectionRequired: PropTypes.bool,
   onlyPositiveResult: PropTypes.bool,
@@ -148,4 +148,4 @@ LaboratoryForm.propTypes = {
   loading: PropTypes.bool,
 };
 
-export default LaboratoryForm;
+export default LaboratoryModal;
