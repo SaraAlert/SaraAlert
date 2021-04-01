@@ -281,7 +281,7 @@ class VaccinesControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal("Vaccination was unable to be created. Errors: Product name value of '#{product_name}' is not an acceptable value," \
+    assert_equal("Vaccination was unable to be created. Errors: Value '#{product_name}' for 'Product Name' is not an acceptable value," \
       " acceptable values for vaccine group #{group_name} are: '#{Vaccine.product_name_options(group_name).join("', '")}'", JSON.parse(response.body)['error'])
     assert_equal(0, patient.vaccines.count)
     assert_equal(0, patient.histories.count)
@@ -460,7 +460,7 @@ class VaccinesControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal("Vaccination was unable to be updated. Errors: Product name value of '#{product_name}' is not an acceptable value," \
+    assert_equal("Vaccination was unable to be updated. Errors: Value '#{product_name}' for 'Product Name' is not an acceptable value," \
       " acceptable values for vaccine group #{group_name} are: '#{Vaccine.product_name_options(group_name).join("', '")}'", JSON.parse(response.body)['error'])
     assert_equal(last_updated, vaccine.updated_at) # assert not updated
     assert_equal(0, patient.histories.count)
