@@ -29,20 +29,24 @@ Because the Sara Alert API follows the FHIR specification, there is a mapping be
 | Monitoree Lab Result      | [Observation](https://hl7.org/fhir/R4/observation.html)|
 | Monitoree Daily Report    | [QuestionnaireResponse](https://www.hl7.org/fhir/questionnaireresponse.html)|
 | Monitoree Close Contact   | [RelatedPerson](https://www.hl7.org/fhir/relatedperson.html)|
+| Monitoree Immunization    | [Immunization](https://www.hl7.org/fhir/immunization.html)|
 
 <a name="supported-scopes"/>
 
 ## Supported Scopes
 For applications following the [SMART-on-FHIR App Launch Framework "Standalone Launch" Workflow](#standalone-launch), these are the available scopes:
 
-* `user/Patient.read`,
-* `user/Patient.write`,
-* `user/Patient.*`, (for both read and write access to this resource)
-* `user/Observation.read`,
-* `user/QuestionnaireResponse.read`,
-* `user/RelatedPerson.read`,
-* `user/RelatedPerson.write`,
+* `user/Patient.read`
+* `user/Patient.write`
+* `user/Patient.*` (for both read and write access to this resource)
+* `user/Observation.read`
+* `user/QuestionnaireResponse.read`
+* `user/RelatedPerson.read`
+* `user/RelatedPerson.write`
 * `user/RelatedPerson.*`
+* `user/Immunization.read`
+* `user/Immunization.write`
+* `user/Immunization.*`
 
 For applications following the [SMART on FHIR Backend Services Workflow](#backend-services), these are the available scopes:
 
@@ -53,7 +57,10 @@ For applications following the [SMART on FHIR Backend Services Workflow](#backen
 * `system/QuestionnaireResponse.read`,
 * `system/RelatedPerson.read`,
 * `system/RelatedPerson.write`,
-* `system/RelatedPerson.*`
+* `system/RelatedPerson.*`,
+* `system/Immunization.read`,
+* `system/Immunization.write`,
+* `system/Immunization.*`
 
 Please note a given application and request for access token can have have multiple scopes, which must be space-separated. For example:
 ```
@@ -77,19 +84,17 @@ A capability statement is available at `[base]/metadata`:
 ```json
 {
   "status": "active",
-  "date": "2021-03-04T00:00:00+00:00",
+  "date": "2021-04-01T00:00:00+00:00",
   "kind": "instance",
   "software": {
     "name": "Sara Alert",
-    "version": "v1.25.0"
+    "version": "v1.27.0"
   },
   "implementation": {
     "description": "Sara Alert API"
   },
   "fhirVersion": "4.0.1",
-  "format": [
-    "json"
-  ],
+  "format": ["json"],
   "rest": [
     {
       "mode": "server",
@@ -216,6 +221,40 @@ A capability statement is available at `[base]/metadata`:
           ]
         },
         {
+          "type": "Immunization",
+          "interaction": [
+            {
+              "code": "read"
+            },
+            {
+              "code": "update"
+            },
+            {
+              "code": "patch"
+            },
+            {
+              "code": "create"
+            },
+            {
+              "code": "search-type"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "patient",
+              "type": "reference"
+            },
+            {
+              "name": "_id",
+              "type": "string"
+            },
+            {
+              "name": "_count",
+              "type": "string"
+            }
+          ]
+        },
+        {
           "type": "Observation",
           "interaction": [
             {
@@ -286,19 +325,39 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
 
 ```json
 {
-    "authorization_endpoint": "http://localhost:3000/oauth/authorize",
-    "token_endpoint": "http://localhost:3000/oauth/token",
-    "introspection_endpoint": "http://localhost:3000/oauth/introspect",
-    "revocation_endpoint": "http://localhost:3000/oauth/revoke",
-    "scopes_supported": [
-        "user/*.read",
-        "user/*.write",
-        "user/*.*"
-    ],
-    "capabilities": [
-        "launch-standalone"
-    ]
+  "authorization_endpoint": "http://localhost:3000/oauth/authorize",
+  "token_endpoint": "http://localhost:3000/oauth/token",
+  "token_endpoint_auth_methods_supported": ["client_secret_basic", "private_key_jwt"],
+  "token_endpoint_auth_signing_alg_values_supported": ["RS384"],
+  "introspection_endpoint": "http://localhost:3000/oauth/introspect",
+  "revocation_endpoint": "http://localhost:3000/oauth/revoke",
+  "scopes_supported": [
+    "user/Patient.read",
+    "user/Patient.write",
+    "user/Patient.*",
+    "user/Observation.read",
+    "user/QuestionnaireResponse.read",
+    "user/RelatedPerson.read",
+    "user/RelatedPerson.write",
+    "user/RelatedPerson.*",
+    "user/Immunization.read",
+    "user/Immunization.write",
+    "user/Immunization.*",
+    "system/Patient.read",
+    "system/Patient.write",
+    "system/Patient.*",
+    "system/Observation.read",
+    "system/QuestionnaireResponse.read",
+    "system/RelatedPerson.read",
+    "system/RelatedPerson.write",
+    "system/RelatedPerson.*",
+    "system/Immunization.read",
+    "system/Immunization.write",
+    "system/Immunization.*"
+  ],
+  "capabilities": ["launch-standalone"]
 }
+
 ```
   </div>
 </details>
@@ -307,7 +366,7 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
 
 ## Reading
 
-The API supports reading monitorees, monitoree lab results, monitoree daily reports, and monitoree close contacts.
+The API supports reading monitorees, monitoree lab results, monitoree daily reports, monitoree close contacts, and monitoree vaccinations.
 
 <a name="read-get-pat"/>
 
@@ -642,6 +701,68 @@ Get a monitoree close contact via an id, e.g.:
 ```
   </div>
 </details>
+
+
+<a name="read-get-immunization"/>
+
+### GET `[base]/Immunization/[:id]`
+
+Get a monitoree vaccination via an id, e.g.:
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "id": 32,
+  "meta": {
+    "lastUpdated": "2021-04-01T22:09:11+00:00"
+  },
+  "status": "completed",
+  "vaccineCode": [
+    {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/sid/cvx",
+          "code": "207"
+        }
+      ],
+      "text": "Moderna COVID-19 Vaccine"
+    }
+  ],
+  "patient": {
+    "reference": "Patient/1"
+  },
+  "occurrenceDateTime": "2021-03-30",
+  "note": [
+    {
+      "text": "Notes here"
+    }
+  ],
+  "protocolApplied": [
+    {
+      "targetDisease": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "213"
+            }
+          ],
+          "text": "COVID-19"
+        }
+      ],
+      "doseNumberString": "1"
+    }
+  ],
+  "resourceType": "Immunization"
+}
+```
+  </div>
+</details>
+
+
 
 
 <a name="read-get-all"/>
@@ -1456,6 +1577,66 @@ The `http://saraalert.org/StructureDefinition/enrolled-patient` extension is use
 }
 ```
 
+### POST `[base]/Immunization`
+
+<a name="create-post-immunization"/>
+
+To create a new monitoree vaccination, simply POST a FHIR Immunization resource that references the monitoree.
+
+**Request Body:**
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "id": 32,
+  "meta": {
+    "lastUpdated": "2021-04-01T22:09:11+00:00"
+  },
+  "status": "completed",
+  "vaccineCode": [
+    {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/sid/cvx",
+          "code": "207"
+        }
+      ],
+      "text": "Moderna COVID-19 Vaccine"
+    }
+  ],
+  "patient": {
+    "reference": "Patient/1"
+  },
+  "occurrenceDateTime": "2021-03-30",
+  "note": [
+    {
+      "text": "Notes here"
+    }
+  ],
+  "protocolApplied": [
+    {
+      "targetDisease": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "213"
+            }
+          ],
+          "text": "COVID-19"
+        }
+      ],
+      "doseNumberString": "1"
+    }
+  ],
+  "resourceType": "Immunization"
+}
+```
+  </div>
+</details>
+
 
 <a name="update"/>
 
@@ -1774,6 +1955,64 @@ On success, the server will update the existing resource given the id.
   </div>
 </details>
 
+<a name="update-put-immunization"/>
+
+### PUT `[base]/Immunization/[:id]`
+
+**Request Body:**
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "id": 32,
+  "meta": {
+    "lastUpdated": "2021-04-01T22:09:11+00:00"
+  },
+  "status": "completed",
+  "vaccineCode": [
+    {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/sid/cvx",
+          "code": "207"
+        }
+      ],
+      "text": "Moderna COVID-19 Vaccine"
+    }
+  ],
+  "patient": {
+    "reference": "Patient/1"
+  },
+  "occurrenceDateTime": "2021-03-30",
+  "note": [
+    {
+      "text": "Notes here"
+    }
+  ],
+  "protocolApplied": [
+    {
+      "targetDisease": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "213"
+            }
+          ],
+          "text": "COVID-19"
+        }
+      ],
+      "doseNumberString": "1"
+    }
+  ],
+  "resourceType": "Immunization"
+}
+```
+  </div>
+</details>
+
 <a name="update-patch-pat"/>
 
 ### PATCH `[base]/Patient/[:id]`
@@ -1942,6 +2181,32 @@ Content-Type: application/json-patch+json
 ```json
 [
   { "op": "remove", "path": "/name/0/family" },
+]
+```
+  </div>
+</details>
+
+<a name="update-patch-immunization"/>
+
+### PATCH `[base]/Immunization/[:id]`
+
+**NOTE:** See the [Patient PATCH documentation](#update-patch-pat) for a more complete explanation of PATCH.
+
+**Request Headers:**
+```
+Content-Type: application/json-patch+json
+```
+
+**Request Body:**
+
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+[
+  { "op": "replace", "path": "/note/0/text", "value": "Important notes" },
 ]
 ```
   </div>
@@ -2397,6 +2662,83 @@ GET `[base]/RelatedPerson?patient=Patient/[:id]`
 ```
   </div>
 </details>
+
+### GET `[base]/Immunization?patient=Patient/[:id]`
+
+You can also use search to find Monitoree vaccinations by using the `patient` parameter.
+
+<a name="search-immunization-patient"/>
+
+GET `[base]/Immunization?patient=Patient/[:id]`
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "id": "18dca7c0-692e-4819-b70b-2b342741567c",
+  "meta": {
+    "lastUpdated": "2021-04-01T18:17:29-04:00"
+  },
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Immunization/35",
+      "resource": {
+        "id": 35,
+        "meta": {
+          "lastUpdated": "2021-04-01T22:17:14+00:00"
+        },
+        "status": "completed",
+        "vaccineCode": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/sid/cvx",
+                "code": "207"
+              }
+            ],
+            "text": "Moderna COVID-19 Vaccine"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/111"
+        },
+        "occurrenceDateTime": "2021-03-30",
+        "note": [
+          {
+            "text": "Notes here"
+          }
+        ],
+        "protocolApplied": [
+          {
+            "targetDisease": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/sid/cvx",
+                    "code": "213"
+                  }
+                ],
+                "text": "COVID-19"
+              }
+            ],
+            "doseNumberString": "1"
+          }
+        ],
+        "resourceType": "Immunization"
+      }
+    }
+  ],
+  "resourceType": "Bundle"
+}
+
+```
+  </div>
+</details>
+
 ### GET `[base]/Patient`
 
 By not specifying any search parameters, you can request all resources of the specified type.
