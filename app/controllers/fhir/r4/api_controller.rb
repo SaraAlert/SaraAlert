@@ -71,14 +71,14 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/Observation.read'
       )
 
-      resource = get_laboratory(params.permit(:id)[:id])
+      resource = get_record(Laboratory, params.permit(:id)[:id])
     when 'questionnaireresponse'
       return if doorkeeper_authorize!(
         :'user/QuestionnaireResponse.read',
         :'system/QuestionnaireResponse.read'
       )
 
-      resource = get_assessment(params.permit(:id)[:id])
+      resource = get_record(Assessment, params.permit(:id)[:id])
     when 'relatedperson'
       return if doorkeeper_authorize!(
         :'user/RelatedPerson.read',
@@ -87,7 +87,7 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/RelatedPerson.*'
       )
 
-      resource = get_close_contact(params.permit(:id)[:id])
+      resource = get_record(CloseContact, params.permit(:id)[:id])
     when 'immunization'
       return if doorkeeper_authorize!(
         :'user/Immunization.read',
@@ -96,7 +96,7 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/Immunization.*'
       )
 
-      resource = get_vaccine(params.permit(:id)[:id])
+      resource = get_record(Vaccine, params.permit(:id)[:id])
     else
       status_not_found && return
     end
@@ -191,7 +191,7 @@ class Fhir::R4::ApiController < ActionController::API
       )
 
       # Get the CloseContact that needs to be updated
-      close_contact = get_close_contact(params.permit(:id)[:id])
+      close_contact = get_record(CloseContact, params.permit(:id)[:id])
       status_forbidden && return if close_contact.nil?
 
       # Get the contents from applying a patch, if needed
@@ -232,7 +232,7 @@ class Fhir::R4::ApiController < ActionController::API
       )
 
       # Get the Vaccine that needs to be updated
-      vaccine = get_vaccine(params.permit(:id)[:id])
+      vaccine = get_record(Vaccine, params.permit(:id)[:id])
       status_forbidden && return if vaccine.nil?
 
       # Get the contents from applying a patch, if needed
@@ -1066,24 +1066,8 @@ class Fhir::R4::ApiController < ActionController::API
     query
   end
 
-  # Get a lab result by id
-  def get_laboratory(id)
-    Laboratory.where(patient_id: accessible_patients).find_by(id: id)
-  end
-
-  # Get an assessment by id
-  def get_assessment(id)
-    Assessment.where(patient_id: accessible_patients).find_by(id: id)
-  end
-
-  # Get a CloseContact by id
-  def get_close_contact(id)
-    CloseContact.where(patient_id: accessible_patients).find_by(id: id)
-  end
-
-  # Get a Vaccine by id
-  def get_vaccine(id)
-    Vaccine.where(patient_id: accessible_patients).find_by(id: id)
+  def get_record(model, id)
+    model.where(patient_id: accessible_patients).find_by(id: id)
   end
 
   # Construct a full url via a request and resource
