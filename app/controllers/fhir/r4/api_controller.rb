@@ -574,7 +574,7 @@ class Fhir::R4::ApiController < ActionController::API
     resource = FHIR::CapabilityStatement.new(
       status: 'active',
       kind: 'instance',
-      date: DateTime.parse('2021-03-04').strftime('%FT%T%:z'),
+      date: DateTime.parse('2021-04-01').strftime('%FT%T%:z'),
       software: FHIR::CapabilityStatement::Software.new(
         name: 'Sara Alert',
         version: ADMIN_OPTIONS['version']
