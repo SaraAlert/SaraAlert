@@ -235,4 +235,33 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     dose_number_iss = issues.find { |i| /-1.*Dose Number/.match(i['diagnostics']) }
     assert(FHIRPath.evaluate(dose_number_iss['expression'].first, immunization_json) == inv_dose)
   end
+
+  #----- search tests -----
+
+  test 'should find Immunizations for a Patient via search' do
+    @vaccine_1.patient_id = 2
+    @vaccine_1.save
+    patient = Patient.find_by_id(@vaccine_1.patient_id)
+    get(
+      "/fhir/r4/Immunization?patient=Patient/#{@vaccine_1.patient_id}",
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 'Bundle', json_response['resourceType']
+    assert_equal 'Immunization', json_response['entry'].first['resource']['resourceType']
+    assert_equal patient.vaccines.length, json_response['total']
+    assert_equal JSON.parse(patient.vaccines.first.as_fhir.to_json), json_response['entry'].first['resource']
+  end
+
+  test 'should find no Immunizations for an invalid Patient via search' do
+    get(
+      '/fhir/r4/Immunization?patient=Patient/blah',
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 'Bundle', json_response['resourceType']
+    assert_equal 0, json_response['total']
+  end
 end

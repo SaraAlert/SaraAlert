@@ -465,6 +465,16 @@ class Fhir::R4::ApiController < ActionController::API
 
       resources = search_close_contacts(search_params) || []
       resource_type = 'RelatedPerson'
+    when 'immunization'
+      return if doorkeeper_authorize!(
+        :'user/Immunization.read',
+        :'user/Immunization.*',
+        :'system/Immunization.read',
+        :'system/Immunization.*'
+      )
+
+      resources = search_vaccines(search_params) || []
+      resource_type = 'Immunization'
     else
       status_not_found && return
     end
@@ -995,6 +1005,22 @@ class Fhir::R4::ApiController < ActionController::API
   # Search for CloseContacts
   def search_close_contacts(options)
     query = CloseContact.where(patient: accessible_patients)
+    options.each do |option, search|
+      next unless search.present?
+
+      case option
+      when 'patient'
+        query = query.where(patient_id: search.match(%r{^Patient/(\d+)$}).to_a[1])
+      when '_id'
+        query = query.where(id: search)
+      end
+    end
+    query
+  end
+
+  # Search for Vaccines
+  def search_vaccines(options)
+    query = Vaccine.where(patient: accessible_patients)
     options.each do |option, search|
       next unless search.present?
 
