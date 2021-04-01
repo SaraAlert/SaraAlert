@@ -27,7 +27,7 @@ class SendAssessmentsJob < ApplicationJob
   private
 
   def perform_batch(patient_batch)
-    sent = Hash.new(0)
+    sent = []
     not_sent = []
     Patient.select(
       :id,
@@ -44,10 +44,7 @@ class SendAssessmentsJob < ApplicationJob
       :continuous_exposure
     ).where(id: patient_batch).find_in_batches(batch_size: 15_000) do |group|
       group.each do |patient|
-        if patient.send_assessment
-          sent[:count] += 1
-          sent[patient.preferred_contact_method] += 1
-        end
+        sent << { id: patient.id, method: patient.preferred_contact_method } if patient.send_assessment
       rescue StandardError => e
         not_sent << { id: patient.id, method: patient.preferred_contact_method, reason: e.message }
       end
@@ -60,13 +57,11 @@ class SendAssessmentsJob < ApplicationJob
 
   def combine_batch_results(batch_results)
     results = {
-      sent: Hash.new(0),
+      sent: [],
       not_sent: []
     }
     batch_results.each do |batch_result|
-      batch_result[:sent].each do |key, value|
-        results[:sent][key] += value
-      end
+      results[:sent] += batch_result[:sent]
       results[:not_sent] += batch_result[:not_sent]
     end
     results
