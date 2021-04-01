@@ -236,6 +236,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     FHIR::Immunization.new(
       meta: FHIR::Meta.new(lastUpdated: vaccine.updated_at.strftime('%FT%T%:z')),
       id: vaccine.id,
+      status: 'completed',
       vaccineCode: [
         FHIR::CodeableConcept.new(
           text: vaccine.product_name,
@@ -257,10 +258,35 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
               end
             )
           ],
-          doseNumberPositiveInt: vaccine.dose_number
+          doseNumberString: vaccine.dose_number
         }
       ]
     )
+  end
+
+  # Create a hash of atttributes that corresponds to a Sara Alert Patient (and can be used to
+  # create new ones, or update existing ones), using the given FHIR::Patient.
+  # Hash is of the form:
+  # {
+  #  attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element>, errors: <array-of-messages> }
+  # }
+  def vaccine_from_fhir(vaccine)
+    group_coding = vaccine&.protocolApplied&.first&.targetDisease&.first&.coding&.first
+    group = Vaccine.group_name_by_code(group_coding&.system, group_coding&.code)
+    group_errors = ['not in required ValueSet'] if group.nil? && !group_coding.nil?
+
+    product_name_coding = vaccine&.vaccineCode&.first&.coding&.first
+    product_name = Vaccine.product_name_by_code(group, product_name_coding&.system, product_name_coding&.code)
+    product_name_errors = ['not in required ValueSet'] if product_name.nil? && !product_name_coding.nil?
+
+    {
+      group_name: { value: group, path: 'Immunization.protocolApplied[0].targetDisease[0].coding[0]', errors: group_errors },
+      product_name: { value: product_name, path: 'Immunization.vaccineCode[0].coding[0]', errors: product_name_errors },
+      administration_date: { value: vaccine&.occurrenceDateTime, path: 'Immunization.occurrenceDateTime' },
+      dose_number: { value: vaccine&.protocolApplied&.first&.doseNumberString, path: 'Immunization.protocolApplied[0].doseNumberString' },
+      notes: { value: vaccine&.note&.first&.text, path: 'Immunization.note[0].text' },
+      patient_id: { value: vaccine&.patient&.reference&.match(%r{^Patient/(\d+)$}).to_a[1], path: 'Immunization.patient.reference' }
+    }
   end
 
   # Build a FHIR US Core Race Extension given Sara Alert race booleans.
