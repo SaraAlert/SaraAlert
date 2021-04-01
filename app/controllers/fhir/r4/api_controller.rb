@@ -104,7 +104,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Update a resource given a type and an id.
   #
-  # Supports (updating): Patient, RelatedPerson
+  # Supports (updating): Patient, RelatedPerson, Immunization
   #
   # PUT /fhir/r4/[:resource_type]/[:id]
   def update
@@ -219,6 +219,47 @@ class Fhir::R4::ApiController < ActionController::API
                                    comment: "Close contact edited via the API (ID: #{close_contact.id}).")
       end
       status_ok(close_contact.as_fhir) && return
+    when 'immunization'
+      return if doorkeeper_authorize!(
+        :'user/Immunization.write',
+        :'user/Immunization.*',
+        :'system/Immunization.write',
+        :'system/Immunization.*'
+      )
+
+      # Get the Vaccine that needs to be updated
+      vaccine = get_vaccine(params.permit(:id)[:id])
+      status_forbidden && return if vaccine.nil?
+
+      # Get the contents from applying a patch, if needed
+      if request.patch? && !vaccine.nil?
+        begin
+          contents = apply_patch(vaccine, patch)
+        rescue StandardError => e
+          status_bad_request([['Unable to apply patch', e&.message].compact.join(': ')]) && return
+        end
+      end
+
+      fhir_map = vaccine_from_fhir(contents)
+      request_updates = fhir_map.transform_values { |v| v[:value] }
+      status_unprocessable_entity && return if request_updates.nil?
+
+      # Assign any remaining updates to the vaccine
+      vaccine.assign_attributes(request_updates)
+
+      # Wrap updates to the Vaccine and History creation in a transaction
+      ActiveRecord::Base.transaction do
+        unless referenced_patient_valid_for_client?(vaccine, :patient_id) && vaccine.save
+          req_json = request.patch? ? vaccine.as_fhir.to_json : JSON.parse(request.body.string)
+          status_unprocessable_entity(vaccine, fhir_map, req_json) && return
+        end
+
+        Rails.logger.info "Updated Vaccination (ID: #{vaccine.id}) for Patient with ID: #{vaccine.patient_id}"
+        History.vaccination_edit(patient: vaccine.patient_id,
+                                 created_by: @current_actor_label,
+                                 comment: "Vaccination edited via the API (ID: #{vaccine.id}).")
+      end
+      status_ok(vaccine.as_fhir) && return
     else
       status_not_found && return
     end

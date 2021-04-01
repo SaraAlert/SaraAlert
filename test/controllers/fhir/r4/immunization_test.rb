@@ -10,11 +10,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   def setup_vaccines
+    group_name = Vaccine::VACCINE_STANDARDS.keys.sample
     @vaccine_1 = Vaccine.new(
-      id: 1,
       patient_id: 1,
-      group_name: 'COVID-19',
-      product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+      group_name: group_name,
+      product_name: Vaccine.product_name_options(group_name).sample,
       administration_date: 2.days.ago,
       dose_number: 1,
       notes: 'Foo',
@@ -45,11 +45,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   #----- create tests -----
 
   test 'should create Immunization via create' do
-    fhir_vaccine = @vaccine_1.as_fhir
-    fhir_vaccine.status = 'completed'
     post(
       '/fhir/r4/Immunization',
-      params: fhir_vaccine.to_json,
+      params: @vaccine_1.as_fhir.to_json,
       headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
 
@@ -80,11 +78,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'SYSTEM FLOW: should be unprocessable entity via Immunization create with invalid Patient reference' do
     @vaccine_1.patient_id = 0
-    fhir_vaccine = @vaccine_1.as_fhir
-    fhir_vaccine.status = 'completed'
     post(
       '/fhir/r4/Immunization',
-      params: fhir_vaccine.to_json,
+      params: @vaccine_1.as_fhir.to_json,
       headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
@@ -97,11 +93,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'USER FLOW: should be unprocessable entity via Immunization create with invalid Patient reference' do
     @vaccine_1.patient_id = 0
-    fhir_vaccine = @vaccine_1.as_fhir
-    fhir_vaccine.status = 'completed'
     post(
       '/fhir/r4/Immunization',
-      params: fhir_vaccine.to_json,
+      params: @vaccine_1.as_fhir.to_json,
       headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
@@ -114,13 +108,122 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'should be unprocessable entity via Immunization create with validation errors' do
     inv_dose = @vaccine_1.dose_number = '-1'
-    fhir_vaccine = @vaccine_1.as_fhir
-    fhir_vaccine.status = 'completed'
 
-    immunization_json_str = fhir_vaccine.to_json
+    immunization_json_str = @vaccine_1.as_fhir.to_json
     immunization_json = JSON.parse(immunization_json_str)
     post(
       '/fhir/r4/Immunization',
+      params: immunization_json_str,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    issues = json_response['issue']
+
+    assert_equal 1, issues.length
+    dose_number_iss = issues.find { |i| /-1.*Dose Number/.match(i['diagnostics']) }
+    assert(FHIRPath.evaluate(dose_number_iss['expression'].first, immunization_json) == inv_dose)
+  end
+
+  #----- update tests -----
+
+  test 'should update Immunization via update' do
+    @vaccine_1.save
+    original_v = @vaccine_1.dup
+    @vaccine_1.notes = 'Some new notes'
+    put(
+      "/fhir/r4/Immunization/#{@vaccine_1.id}",
+      params: @vaccine_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    updated_v = Vaccine.find_by_id(@vaccine_1.id)
+
+    # Verify that the updated Vaccine matches the original outside of updated fields
+    %i[patient_id
+       group_name
+       product_name
+       administration_date
+       dose_number].each do |field|
+      assert_equal original_v[field], updated_v[field]
+    end
+
+    # Verify that updated fields are updated
+    assert_equal 'Some new notes', updated_v.notes
+
+    histories = History.where(patient: updated_v.patient_id)
+    assert_equal(1, histories.count)
+    assert_equal 'system-test-everything (API)', histories.first.created_by
+    assert_match(/Vaccination edited.*API/, histories.first.comment)
+  end
+
+  test 'should update Immunization via patch update' do
+    @vaccine_1.save
+    original_v = @vaccine_1.dup
+    patch = [
+      { 'op': 'replace', 'path': '/protocolApplied/0/doseNumberString', 'value': 'Unknown' }
+    ]
+    patch(
+      "/fhir/r4/Immunization/#{@vaccine_1.id}",
+      params: patch.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/json-patch+json' }
+    )
+    assert_response :ok
+    updated_v = Vaccine.find_by_id(@vaccine_1.id)
+
+    # Verify that the updated Vaccine matches the original outside of updated fields
+    %i[patient_id
+       group_name
+       product_name
+       administration_date
+       notes].each do |field|
+      assert_equal original_v[field], updated_v[field]
+    end
+
+    # Verify that updated fields are updated
+    assert_equal 'Unknown', updated_v.dose_number
+  end
+
+  test 'SYSTEM FLOW: should be unprocessable entity via Immunization update with invalid Patient reference' do
+    @vaccine_1.save
+    @vaccine_1.patient_id = 0
+    put(
+      "/fhir/r4/Immunization/#{@vaccine_1.id}",
+      params: @vaccine_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    assert_equal 1, errors.length
+    assert_match(/0.*Patient ID.*client application/, errors[0])
+  end
+
+  test 'USER FLOW: should be unprocessable entity via Immunization update with invalid Patient reference' do
+    @vaccine_1.save
+    @vaccine_1.patient_id = 0
+    put(
+      "/fhir/r4/Immunization/#{@vaccine_1.id}",
+      params: @vaccine_1.as_fhir.to_json,
+      headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    assert_equal 1, errors.length
+    assert_match(/0.*Patient ID.*API user/, errors[0])
+  end
+
+  test 'should be unprocessable entity via Immunization update with validation errors' do
+    @vaccine_1.save
+    inv_dose = @vaccine_1.dose_number = '-1'
+
+    immunization_json_str = @vaccine_1.as_fhir.to_json
+    immunization_json = JSON.parse(immunization_json_str)
+    put(
+      "/fhir/r4/Immunization/#{@vaccine_1.id}",
       params: immunization_json_str,
       headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )

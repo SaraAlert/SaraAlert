@@ -77,7 +77,7 @@ class Vaccine < ApplicationRecord
     vaccine_group = VACCINE_STANDARDS[vaccine_group]
     return nil if vaccine_group.blank? || vaccine_group['vaccines'].blank?
 
-    vaccine_group['vaccines'].find do |vaccine|
+    (vaccine_group['vaccines'] + ADDITIONAL_PRODUCT_NAME_OPTIONS).find do |vaccine|
       vaccine['product_codes']&.any? { |code| code['system'] == product_system && code['code'] == product_code }
     end&.dig('product_name')
   end
