@@ -18,7 +18,7 @@ class VaccineTest < ActiveSupport::TestCase
     assert_not vaccine.update(group_name: nil)
     assert_equal(2, vaccine.errors.messages[:group_name].length)
     assert_equal(
-      "value of '' is not an acceptable value, acceptable values are: '#{Vaccine::VACCINE_STANDARDS.keys.join("', '")}'",
+      "is not an acceptable value, acceptable values are: '#{Vaccine::VACCINE_STANDARDS.keys.join("', '")}'",
       vaccine.errors.messages[:group_name][0]
     )
     assert_equal('is required', vaccine.errors.messages[:group_name][1])
@@ -26,7 +26,7 @@ class VaccineTest < ActiveSupport::TestCase
     assert_not vaccine.update(group_name: '')
     assert_equal(2, vaccine.errors.messages[:group_name].length)
     assert_equal(
-      "value of '' is not an acceptable value, acceptable values are: '#{Vaccine::VACCINE_STANDARDS.keys.join("', '")}'",
+      "is not an acceptable value, acceptable values are: '#{Vaccine::VACCINE_STANDARDS.keys.join("', '")}'",
       vaccine.errors.messages[:group_name][0]
     )
     assert_equal('is required', vaccine.errors.messages[:group_name][1])
@@ -34,7 +34,7 @@ class VaccineTest < ActiveSupport::TestCase
     assert_not vaccine.update(group_name: 'test')
     assert_equal(1, vaccine.errors.messages[:group_name].length)
     assert_equal(
-      "value of 'test' is not an acceptable value, acceptable values are: '#{Vaccine::VACCINE_STANDARDS.keys.join("', '")}'",
+      "is not an acceptable value, acceptable values are: '#{Vaccine::VACCINE_STANDARDS.keys.join("', '")}'",
       vaccine.errors.messages[:group_name][0]
     )
 
@@ -50,7 +50,7 @@ class VaccineTest < ActiveSupport::TestCase
     assert_not vaccine.update(product_name: nil)
     assert_equal(2, vaccine.errors.messages[:product_name].length)
     assert_equal(
-      "value of '' is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: "\
+      "is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: "\
       "'#{Vaccine.product_name_options(vaccine[:group_name]).join("', '")}'",
       vaccine.errors.messages[:product_name][0]
     )
@@ -59,7 +59,7 @@ class VaccineTest < ActiveSupport::TestCase
     assert_not vaccine.update(product_name: '')
     assert_equal(2, vaccine.errors.messages[:product_name].length)
     assert_equal(
-      "value of '' is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: "\
+      "is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: "\
       "'#{Vaccine.product_name_options(vaccine[:group_name]).join("', '")}'",
       vaccine.errors.messages[:product_name][0]
     )
@@ -68,7 +68,7 @@ class VaccineTest < ActiveSupport::TestCase
     assert_not vaccine.update(product_name: 'test')
     assert_equal(1, vaccine.errors.messages[:product_name].length)
     assert_equal(
-      "value of 'test' is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: "\
+      "is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: "\
       "'#{Vaccine.product_name_options(vaccine[:group_name]).join("', '")}'",
       vaccine.errors.messages[:product_name][0]
     )
@@ -104,21 +104,21 @@ class VaccineTest < ActiveSupport::TestCase
     assert_not vaccine.update(dose_number: '-1')
     assert_equal(1, vaccine.errors.messages[:dose_number].length)
     assert_equal(
-      "value of '-1' is not an acceptable value, acceptable values are: '#{Vaccine::DOSE_OPTIONS.join("', '")}'",
+      "is not an acceptable value, acceptable values are: '#{Vaccine::DOSE_OPTIONS.join("', '")}'",
       vaccine.errors.messages[:dose_number][0]
     )
 
     assert_not vaccine.update(dose_number: '0')
     assert_equal(1, vaccine.errors.messages[:dose_number].length)
     assert_equal(
-      "value of '0' is not an acceptable value, acceptable values are: '#{Vaccine::DOSE_OPTIONS.join("', '")}'",
+      "is not an acceptable value, acceptable values are: '#{Vaccine::DOSE_OPTIONS.join("', '")}'",
       vaccine.errors.messages[:dose_number][0]
     )
 
     assert_not vaccine.update(dose_number: (Vaccine::MAX_DOSE_NUMBER + 1).to_s)
     assert_equal(1, vaccine.errors.messages[:dose_number].length)
     assert_equal(
-      "value of '#{Vaccine::MAX_DOSE_NUMBER + 1}' is not an acceptable value, acceptable values are: '#{Vaccine::DOSE_OPTIONS.join("', '")}'",
+      "is not an acceptable value, acceptable values are: '#{Vaccine::DOSE_OPTIONS.join("', '")}'",
       vaccine.errors.messages[:dose_number][0]
     )
 

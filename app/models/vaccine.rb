@@ -22,16 +22,16 @@ class Vaccine < ApplicationRecord
   validates :group_name, inclusion: {
     # This method syntax is necessary for the getter method to be in scope
     in: ->(_vaccine) { group_name_options },
-    message: lambda { |_vaccine, data|
-      "value of '#{data[:value]}' is not an acceptable value, acceptable values are: '#{group_name_options.join("', '")}'"
+    message: lambda { |_vaccine, _data|
+      "is not an acceptable value, acceptable values are: '#{group_name_options.join("', '")}'"
     }
   }, presence: { message: 'is required' }
 
   # Product name valid options depend on the current group name
   validates :product_name, inclusion: {
     in: ->(vaccine) { product_name_options(vaccine[:group_name]) },
-    message: lambda { |vaccine, data|
-      "value of '#{data[:value]}' is not an acceptable value, acceptable values for vaccine " \
+    message: lambda { |vaccine, _data|
+      'is not an acceptable value, acceptable values for vaccine ' \
         "group #{vaccine[:group_name]} are: '#{product_name_options(vaccine[:group_name]).join("', '")}'"
     }
   }, presence: { message: 'is required' }
@@ -40,8 +40,8 @@ class Vaccine < ApplicationRecord
 
   validates :dose_number, inclusion: {
     in: DOSE_OPTIONS,
-    message: lambda { |_vaccine, data|
-      "value of '#{data[:value]}' is not an acceptable value, acceptable values are: '#{DOSE_OPTIONS.join("', '")}'"
+    message: lambda { |_vaccine, _data|
+      "is not an acceptable value, acceptable values are: '#{DOSE_OPTIONS.join("', '")}'"
     }
   }
   validates :notes, length: { maximum: 2000 }
@@ -73,10 +73,25 @@ class Vaccine < ApplicationRecord
     (vaccine_group['vaccines'] + ADDITIONAL_PRODUCT_NAME_OPTIONS).find { |vaccine| vaccine['product_name'] == product_name }&.dig('product_codes') || []
   end
 
+  def self.product_name_by_code(vaccine_group, product_system, product_code)
+    vaccine_group = VACCINE_STANDARDS[vaccine_group]
+    return nil if vaccine_group.blank? || vaccine_group['vaccines'].blank?
+
+    vaccine_group['vaccines'].find do |vaccine|
+      vaccine['product_codes']&.any? { |code| code['system'] == product_system && code['code'] == product_code }
+    end&.dig('product_name')
+  end
+
   def self.group_codes_by_name(vaccine_group)
     vaccine_group = VACCINE_STANDARDS[vaccine_group]
     return [] if vaccine_group.blank? || vaccine_group['codes'].blank?
 
     vaccine_group['codes']
+  end
+
+  def self.group_name_by_code(group_system, group_code)
+    VACCINE_STANDARDS.values.find do |value|
+      value['codes'].any? { |code| code['system'] == group_system && code['code'] == group_code }
+    end&.dig('name')
   end
 end
