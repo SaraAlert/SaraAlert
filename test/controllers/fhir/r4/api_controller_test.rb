@@ -11,6 +11,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     setup_patients
     setup_user_applications
     setup_system_applications
+    setup_system_tokens
     # Suppress logging calls originating from:
     # https://github.com/fhir-crucible/fhir_models/blob/v4.1.0/lib/fhir_models/bootstrap/json.rb
     logger_double = double('logger_double', debug: nil, info: nil, warning: nil, error: nil)
@@ -115,6 +116,30 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       user_id: shadow_user.id
     )
 
+    @system_immunization_read_write_app = OauthApplication.create(
+      name: 'system-test-patient-rw',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Immunization.*',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    @system_immunization_read_app = OauthApplication.create(
+      name: 'system-test-patient-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Immunization.read',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    @system_immunization_write_app = OauthApplication.create(
+      name: 'system-test-patient-w',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Immunization.write',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
     @system_observation_read_app = OauthApplication.create(
       name: 'system-test-observation-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
@@ -162,7 +187,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       jurisdiction_id: 2,
       user_id: shadow_user.id
     )
+  end
 
+  def setup_system_tokens
     # Create access tokens
     @system_patient_token_rw = Doorkeeper::AccessToken.create(
       application: @system_patient_read_write_app,
@@ -187,6 +214,18 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @system_related_person_token_w = Doorkeeper::AccessToken.create(
       application: @system_related_person_write_app,
       scopes: 'system/RelatedPerson.write'
+    )
+    @system_immunization_token_rw = Doorkeeper::AccessToken.create(
+      application: @system_immunization_read_write_app,
+      scopes: 'system/Immunization.*'
+    )
+    @system_immunization_token_r = Doorkeeper::AccessToken.create(
+      application: @system_immunization_read_app,
+      scopes: 'system/Immunization.read'
+    )
+    @system_immunization_token_w = Doorkeeper::AccessToken.create(
+      application: @system_immunization_write_app,
+      scopes: 'system/Immunization.write'
     )
     @system_observation_token_r = Doorkeeper::AccessToken.create(
       application: @system_observation_read_app,
@@ -452,6 +491,103 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search RelatedPerson resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/RelatedPerson?_id=1',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to create Immunization resource with Immunization read scope' do
+    post(
+      '/fhir/r4/Immunization',
+      headers: { 'Authorization': "Bearer #{@system_immunization_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to create Immunization resource with Observation scope' do
+    post(
+      '/fhir/r4/Immunization',
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to create Immunization resource with QuestionnaireResponse scope' do
+    post(
+      '/fhir/r4/Immunization',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to update Immunization resource with Immunization read scope' do
+    put(
+      '/fhir/r4/Immunization/1',
+      headers: { 'Authorization': "Bearer #{@system_immunization_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to update Immunization resource with Observation scope' do
+    put(
+      '/fhir/r4/Immunization/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to update Immunization resource with QuestionnaireResponse scope' do
+    put(
+      '/fhir/r4/Immunization/1',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to read Immunization resource with Immunization write only scope' do
+    get(
+      '/fhir/r4/Immunization/1',
+      headers: { 'Authorization': "Bearer #{@system_immunization_token_w.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to read Immunization resource with Observation scope' do
+    get(
+      '/fhir/r4/Immunization/1',
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to read Immunization resource with QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Immunization/1',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to search Immunization resource with Immunization write only scope' do
+    get(
+      '/fhir/r4/Immunization?_id=1',
+      headers: { 'Authorization': "Bearer #{@system_immunization_token_w.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to search Immunization resource with Observation scope' do
+    get(
+      '/fhir/r4/Immunization?_id=1',
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'should not be able to search Immunization resource with QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Immunization?_id=1',
       headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :forbidden
