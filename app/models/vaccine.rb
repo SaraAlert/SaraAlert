@@ -46,6 +46,7 @@ class Vaccine < ApplicationRecord
   }
   validates :notes, length: { maximum: 2000 }
 
+  # Return the vaccine as a FHIR Immunization
   def as_fhir
     vaccine_as_fhir(self)
   end
@@ -66,6 +67,11 @@ class Vaccine < ApplicationRecord
     vaccine_group['vaccines'].map { |vaccine| vaccine['product_name'] } + ADDITIONAL_PRODUCT_NAME_OPTIONS.map { |option| option['product_name'] }
   end
 
+  # Gets the codes relevant to a specified vaccine in a specified group.
+  # Returns: an array of hashes of the form {code: <string>, system: <string>}
+  # Params:
+  # - vaccine_group: Group that the vaccine is in
+  # - product_name: Name of the vaccine for which to return the codes
   def self.product_codes_by_name(vaccine_group, product_name)
     vaccine_group = VACCINE_STANDARDS[vaccine_group]
     return [] if vaccine_group.blank? || vaccine_group['vaccines'].blank?
@@ -73,6 +79,12 @@ class Vaccine < ApplicationRecord
     (vaccine_group['vaccines'] + ADDITIONAL_PRODUCT_NAME_OPTIONS).find { |vaccine| vaccine['product_name'] == product_name }&.dig('product_codes') || []
   end
 
+  # Gets the product_name for a vaccine given a group to look in, and a system and code which refer to the vaccine
+  # Returns: The name of the vaccine
+  # Params:
+  # - vaccine_group: The vaccine group to look in
+  # - product_system: The system of the code
+  # - product_code: The code within the system that refers to the desired vaccine
   def self.product_name_by_code(vaccine_group, product_system, product_code)
     vaccine_group = VACCINE_STANDARDS[vaccine_group]
     return nil if vaccine_group.blank? || vaccine_group['vaccines'].blank?
@@ -82,6 +94,10 @@ class Vaccine < ApplicationRecord
     end&.dig('product_name')
   end
 
+  # Gets the codes relevant to a specified group of vaccines.
+  # Returns: an array of hashes of the form {code: <string>, system: <string>}
+  # Params:
+  # - vaccine_group: The group to find the codes for
   def self.group_codes_by_name(vaccine_group)
     vaccine_group = VACCINE_STANDARDS[vaccine_group]
     return [] if vaccine_group.blank? || vaccine_group['codes'].blank?
@@ -89,6 +105,11 @@ class Vaccine < ApplicationRecord
     vaccine_group['codes']
   end
 
+  # Gets group_name for a vaccine given a code that refers to that group
+  # Returns: The name of the group
+  # Params:
+  # - group_system: The system of the code
+  # - group_code: The code within the system that refers to the desired vaccine group
   def self.group_name_by_code(group_system, group_code)
     VACCINE_STANDARDS.values.find do |value|
       value['codes'].any? { |code| code['system'] == group_system && code['code'] == group_code }

@@ -232,6 +232,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     }
   end
 
+  # Returns a representative FHIR::Immunization for an instance of a Sara Alert Vaccine.
+  # https://www.hl7.org/fhir/immunization.html
   def vaccine_as_fhir(vaccine)
     FHIR::Immunization.new(
       meta: FHIR::Meta.new(lastUpdated: vaccine.updated_at.strftime('%FT%T%:z')),

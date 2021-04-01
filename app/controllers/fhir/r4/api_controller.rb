@@ -248,7 +248,7 @@ class Fhir::R4::ApiController < ActionController::API
       request_updates = fhir_map.transform_values { |v| v[:value] }
       status_unprocessable_entity && return if request_updates.nil?
 
-      # Assign any remaining updates to the vaccine
+      # Assign any remaining updates to the Vaccine
       vaccine.assign_attributes(request_updates)
 
       # Wrap updates to the Vaccine and History creation in a transaction
@@ -547,7 +547,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     status_forbidden && return if patient.nil?
 
-    # Gather assessments and lab results
+    # Gather assessments, labs, close contacts, and vaccines
     assessments = patient.assessments || []
     laboratories = patient.laboratories || []
     close_contacts = patient.close_contacts || []
@@ -1066,6 +1066,7 @@ class Fhir::R4::ApiController < ActionController::API
     query
   end
 
+  # Get a record that has a "patient_id" field
   def get_record(model, id)
     model.where(patient_id: accessible_patients).find_by(id: id)
   end
