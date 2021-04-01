@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 # ApiController: API for interacting with Sara Alert
 class Fhir::R4::ApiController < ActionController::API
   include ValidationHelper
@@ -43,7 +44,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Return a resource given a type and an id.
   #
-  # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson
+  # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization
   #
   # GET /[:resource_type]/[:id]
   def show
@@ -251,7 +252,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Create a resource given a type.
   #
-  # Supports (writing): Patient, RelatedPerson
+  # Supports (writing): Patient, RelatedPerson, Immunization
   #
   # POST /fhir/r4/[:resource_type]
   def create
@@ -343,6 +344,29 @@ class Fhir::R4::ApiController < ActionController::API
         History.close_contact(patient: resource.patient_id,
                               created_by: @current_actor_label,
                               comment: "New close contact added via API (ID: #{resource.id}).")
+      end
+    when 'immunization'
+      return if doorkeeper_authorize!(
+        :'user/Immunization.write',
+        :'user/Immunization.*',
+        :'system/Immunization.write',
+        :'system/Immunization.*'
+      )
+
+      fhir_map = vaccine_from_fhir(contents)
+      vals = fhir_map.transform_values { |v| v[:value] }
+      resource = Vaccine.new(vals)
+
+      ActiveRecord::Base.transaction do
+        unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save
+          req_json = JSON.parse(request.body.string)
+          status_unprocessable_entity(resource, fhir_map, req_json) && return
+        end
+
+        Rails.logger.info "Created Vaccine (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
+        History.vaccination(patient: resource.patient_id,
+                            created_by: @current_actor_label,
+                            comment: "New vaccine added via API (ID: #{resource.id}).")
       end
     else
       status_not_found && return
@@ -804,6 +828,15 @@ class Fhir::R4::ApiController < ActionController::API
   def status_unprocessable_entity(resource, fhir_map, req_json)
     outcome = FHIR::OperationOutcome.new(issue: [])
 
+    # Add any errors that are tracked in the fhir_map
+    fhir_map.each do |attribute, value|
+      value[:errors]&.each do |error|
+        # Only track the error in fhir_map, since additional errors would have been further down in processing
+        resource.errors.delete(attribute)
+        resource.errors.add(attribute, error)
+      end
+    end
+
     resource&.errors&.messages&.each do |attribute, errors|
       next unless VALIDATION.key?(attribute) || attribute == :base
 
@@ -1015,3 +1048,4 @@ class Fhir::R4::ApiController < ActionController::API
     headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
   end
 end
+# rubocop:enable Metrics/ClassLength

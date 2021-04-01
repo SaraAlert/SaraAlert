@@ -3,6 +3,7 @@
 # VaccinesController: patient immunizations
 class VaccinesController < ApplicationController
   include VaccineQueryHelper
+  include ValidationHelper
 
   before_action :authenticate_user!
 
@@ -71,7 +72,7 @@ class VaccinesController < ApplicationController
     else
       # Handle case where vaccine create failed
       error_message = 'Vaccination was unable to be created.'
-      error_message += " Errors: #{vaccine.errors.full_messages.join(',')}" if vaccine&.errors
+      error_message += " Errors: #{format_model_validation_errors(vaccine).join(', ')}" if vaccine&.errors
       render(json: { error: error_message }, status: :bad_request) && return
     end
   end
@@ -127,7 +128,7 @@ class VaccinesController < ApplicationController
     else
       # Handle case where vaccine update failed
       error_message = 'Vaccination was unable to be updated. '
-      error_message += "Errors: #{vaccine.errors.full_messages.join(',')}" if vaccine&.errors
+      error_message += "Errors: #{format_model_validation_errors(vaccine).join(', ')}" if vaccine&.errors
       render(json: { error: error_message }, status: :bad_request) && return
     end
   end

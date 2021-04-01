@@ -207,7 +207,12 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     assigned_user: { label: 'Assigned User', checks: [] },
     continuous_exposure: { label: 'Continuous Exposure', checks: [:bool] },
     patient_id: { label: 'Patient ID', checks: [] },
-    contact_attempts: { label: 'Contact Attempts', checks: [] }
+    contact_attempts: { label: 'Contact Attempts', checks: [] },
+    administration_date: { label: 'Administration Date', checks: [] },
+    dose_number: { label: 'Dose Number', checks: [] },
+    notes: { label: 'Notes', checks: [] },
+    group_name: { label: 'Vaccine Group', checks: [] },
+    product_name: { label: 'Product Name', checks: [] }
   }.freeze
 
   # Validates if a given date value is between (inclusive) two dates.
@@ -237,7 +242,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
 
       # NOTE: If the value is a date, the typecast value may not correspond to original user input, so get value_before_type_cast
       unless attribute == :base
-        value = VALIDATION[attribute][:checks].include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
+        value = VALIDATION.dig(attribute, :checks)&.include?(:date) ? resource.public_send("#{attribute}_before_type_cast") : resource[attribute]
         msg_header = (value ? "Value '#{value}' for " : '') + "'#{VALIDATION[attribute][:label]}'"
       end
       errors.each do |error_message|
