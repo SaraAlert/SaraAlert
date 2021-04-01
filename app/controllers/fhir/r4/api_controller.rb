@@ -16,7 +16,11 @@ class Fhir::R4::ApiController < ActionController::API
       :'user/RelatedPerson.write',
       :'user/RelatedPerson.*',
       :'system/RelatedPerson.write',
-      :'system/RelatedPerson.*'
+      :'system/RelatedPerson.*',
+      :'user/Immunization.write',
+      :'user/Immunization.*',
+      :'system/Immunization.write',
+      :'system/Immunization.*'
     )
   end
   before_action only: %i[show search] do
@@ -638,6 +642,21 @@ class Fhir::R4::ApiController < ActionController::API
             ]
           ),
           FHIR::CapabilityStatement::Rest::Resource.new(
+            type: 'Immunization',
+            interaction: [
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'read'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'update'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'patch'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'create'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'search-type')
+            ],
+            searchParam: [
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: 'patient', type: 'reference'),
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_id', type: 'string'),
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_count', type: 'string')
+            ]
+          ),
+          FHIR::CapabilityStatement::Rest::Resource.new(
             type: 'Observation',
             interaction: [
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'read'),
@@ -687,6 +706,9 @@ class Fhir::R4::ApiController < ActionController::API
         'user/RelatedPerson.read',
         'user/RelatedPerson.write',
         'user/RelatedPerson.*',
+        'user/Immunization.read',
+        'user/Immunization.write',
+        'user/Immunization.*',
         'system/Patient.read',
         'system/Patient.write',
         'system/Patient.*',
@@ -694,7 +716,10 @@ class Fhir::R4::ApiController < ActionController::API
         'system/QuestionnaireResponse.read',
         'system/RelatedPerson.read',
         'system/RelatedPerson.write',
-        'system/RelatedPerson.*'
+        'system/RelatedPerson.*',
+        'system/Immunization.read',
+        'system/Immunization.write',
+        'system/Immunization.*'
       ],
       capabilities: ['launch-standalone']
     }
