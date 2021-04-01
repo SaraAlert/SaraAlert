@@ -7,19 +7,18 @@
 <br />
   Total eligible for notifications at runtime: <%= @eligible %>
 <br />
-Sent during this job run: <b><%= @sent[:count] %></b>
+Sent during this job run: <b><%= @sent.size %></b>
 <br />
-Not sent during this job run (due to exceptions): <b><%= @not_sent.count %></b>
+Not sent during this job run (due to exceptions): <b><%= @not_sent.size %></b>
 <br />
 <h2>
   Sent
 </h2>
 <br />
-Method, Count
+ID, Method
 <br />
-<% @sent.each do |method, count| %>
-  <% next if method == :count %>
-  <%= method %>, <%= count %>
+<% @sent.each do |s| %>
+  <%= s[:id] %>, <%= s[:method] %>
   <br />
 <% end %>
 <br />
