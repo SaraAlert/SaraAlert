@@ -962,11 +962,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     json_response = JSON.parse(response.body)
     assert_equal 'Bundle', json_response['resourceType']
-    assert_equal patient.assessments.length + patient.laboratories.length + patient.close_contacts.length + 1, json_response['total']
+    assert_equal patient.assessments.length + patient.laboratories.length + patient.close_contacts.length + patient.vaccines.length + 1, json_response['total']
     assert_equal 1, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Patient' }.count
     assert_equal patient.assessments.length, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'QuestionnaireResponse' }.count
     assert_equal patient.laboratories.length, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Observation' }.count
     assert_equal patient.close_contacts.length, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'RelatedPerson' }.count
+    assert_equal patient.vaccines.length, json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Immunization' }.count
     assert_equal 'Patient/1', json_response['entry'].filter { |e| e['resource']['resourceType'] == 'Observation' }.first['resource']['subject']['reference']
     assert_equal 1, json_response['entry'].first['resource']['id']
   end

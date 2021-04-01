@@ -419,7 +419,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Return a FHIR Bundle containing results that match the given query.
   #
-  # Supports (searching): Patient, Observation, QuestionnaireResponse, RelatedPerson
+  # Supports (searching): Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization
   #
   # GET /fhir/r4/[:resource_type]?parameter(s)
   def search
@@ -530,6 +530,12 @@ class Fhir::R4::ApiController < ActionController::API
       :'system/RelatedPerson.read',
       :'system/RelatedPerson.*'
     )
+    return if doorkeeper_authorize!(
+      :'user/Immunization.read',
+      :'user/Immunization.*',
+      :'system/Immunization.read',
+      :'system/Immunization.*'
+    )
 
     status_not_acceptable && return unless accept_header?
 
@@ -541,7 +547,8 @@ class Fhir::R4::ApiController < ActionController::API
     assessments = patient.assessments || []
     laboratories = patient.laboratories || []
     close_contacts = patient.close_contacts || []
-    all = [patient] + assessments.to_a + laboratories.to_a + close_contacts.to_a
+    vaccines = patient.vaccines || []
+    all = [patient] + assessments.to_a + laboratories.to_a + close_contacts.to_a + vaccines.to_a
     results = all.collect { |r| FHIR::Bundle::Entry.new(fullUrl: full_url_helper(r.as_fhir), resource: r.as_fhir) }
 
     # Construct bundle from monitoree and data
