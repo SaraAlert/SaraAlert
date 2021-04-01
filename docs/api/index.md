@@ -29,7 +29,7 @@ As indicated in the previous section, the API follows SMART on FHIR API standard
 
 The API exists to allow other software systems to **read** and **write** Sara Alert data. Reading can mean either requesting specific data, e.g. "give me Monitoree X's information", or it can mean searching data, e.g. "give me the Monitoree with the e-mail address jane@example<span></span>.com". Writing data can mean putting new data into the system, e.g. "enroll this person as a new Monitoree", or it can mean updating existing data, e.g. "change this Monitoree's preferred reporting method to Opt-Out".
 
-The examples above are in terms of Monitorees, but the API also supports reading and writing of Close Contacts, and reading of Symptom Reports and Lab Results
+The examples above are in terms of Monitorees, but the API also supports reading/writing of Close Contacts and Vaccinations, and reading of Symptom Reports and Lab Results.
 
 ### For Monitorees
 **A client can read and write the following data elements:**<br>Workflow, First Name, Middle Name, Last Name, Date of Birth, Sex, White, Black or African American, American Indian or Alaskan Native, Asian, Native Hawaiian or Other Pacific Islander, Ethnicity, Primary Language, Interpretation Requirement, Address 1, Address 2, Town/City, State, Zip, Country, Address 1 (Foreign), Address 2 (Foreign), Address 3 (Foreign), Town/City (Foreign), State/Province (Foreign), Postal Code (Foreign), Country (Foreign), Preferred Reporting Method, Preferred Contact Time, Primary Telephone Number, Secondary Telephone Number, E-mail Address, Last Date of Exposure, Symptom Onset Date, Monitoring Status, Assigned Jurisdiction, Monitoring Plan, Assigned User, Additional Planned Travel Start Date, Additional Planned Travel Notes, Port of Origin, Date of Departure, Flight or Vessel Number, Flight or Vessel Carrier, Date of Arrival, Travel Related Notes, Exposure Notes, Primary Telephone Type, Secondary Telephone Type, State/Local ID
@@ -38,6 +38,11 @@ The examples above are in terms of Monitorees, but the API also supports reading
 
 ### For Close Contacts
 **A client can read and write the following data elements:**<br>First Name, Last Name, Primary Telephone, Email, Notes, Enrolled ID, Contact Attempts, Last Date of Exposure, Assigned User, Patient ID
+
+**A client can search by the following data elements:**<br>ID, Patient ID
+
+### For Vaccinations
+**A client can read and write the following data elements:**<br>Vaccine Group, Product Name, Administration Date, Dose Number, Notes, Patient ID
 
 **A client can search by the following data elements:**<br>ID, Patient ID
 
