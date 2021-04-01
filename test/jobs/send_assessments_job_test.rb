@@ -29,7 +29,7 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
   test 'send assessments job to various patient configurations' do
     # Patients that should NOT be sent assessments or be counted in
     # any of the counts found in the summary email
-    [
+    ineligible_patients = [
       { purged: true },
       { pause_notifications: true },
       { preferred_contact_method: 'Unknown' },
@@ -38,7 +38,7 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
       { preferred_contact_method: nil },
       { monitoring: false },
       { last_assessment_reminder_sent: Time.now }
-    ].each do |ineligible_params|
+    ].map do |ineligible_params|
       create(
         :patient,
         {
@@ -102,5 +102,14 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
     assert_includes(email_body, "Total eligible for notifications at runtime: #{eligible_patients.size + scope_not_sent.size}")
     assert_includes(email_body, "Sent during this job run: #{eligible_patients.size}")
     assert_includes(email_body, 'Not sent during this job run (due to exceptions): 0')
+    eligible_patients.each do |patient|
+      assert_includes(email_body, "#{patient.id}, #{patient.preferred_contact_method}")
+    end
+    scope_not_sent.each do |patient|
+      assert_not_includes(email_body, "#{patient.id}, #{patient.preferred_contact_method}")
+    end
+    ineligible_patients.each do |patient|
+      assert_not_includes(email_body, "#{patient.id}, #{patient.preferred_contact_method}")
+    end
   end
 end
