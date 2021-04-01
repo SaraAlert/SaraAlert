@@ -93,7 +93,7 @@ class PatientsTable extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     // load local storage variables when present
     const query = {};
 
@@ -170,7 +170,7 @@ class PatientsTable extends React.Component {
         this.setState(count);
       });
     });
-  }
+  };
 
   clearAllFilters = async () => {
     if (await confirmDialog('Are you sure you want to clear all filters? All active filters and searches will be cleared.')) {
@@ -559,7 +559,7 @@ class PatientsTable extends React.Component {
     }
   };
 
-  render() {
+  render = () => {
     return (
       <div className="mx-2 pb-4">
         <Nav variant="tabs" activeKey={this.state.query.tab}>
@@ -731,7 +731,7 @@ class PatientsTable extends React.Component {
         <ToastContainer position="top-center" autoClose={2000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
       </div>
     );
-  }
+  };
 }
 
 PatientsTable.propTypes = {

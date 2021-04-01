@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
 
-import LaboratoryForm from './LaboratoryForm';
+import LaboratoryModal from './LaboratoryModal';
 import reportError from '../util/ReportError';
 
 class Laboratory extends React.Component {
@@ -59,7 +59,7 @@ class Laboratory extends React.Component {
           </Button>
         )}
         {this.state.showModal && (
-          <LaboratoryForm
+          <LaboratoryModal
             lab={this.props.lab}
             submit={this.submit}
             cancel={() => this.setState({ showModal: false, loading: false })}

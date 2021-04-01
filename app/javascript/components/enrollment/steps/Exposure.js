@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import axios from 'axios';
 import moment from 'moment';
 
-import LaboratoryForm from '../../laboratory/LaboratoryForm';
+import LaboratoryModal from '../../laboratory/LaboratoryModal';
 import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
@@ -480,7 +480,7 @@ class Exposure extends React.Component {
               </React.Fragment>
             )}
             {this.state.showLabModal && (
-              <LaboratoryForm
+              <LaboratoryModal
                 lab={this.state.current.first_positive_lab}
                 specimenCollectionRequired={true}
                 onlyPositiveResult={true}
