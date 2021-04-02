@@ -17,10 +17,9 @@ class ExtendedIsolation extends React.Component {
       reasoning: '',
       loading: false,
     };
-    this.submit = this.submit.bind(this);
   }
 
-  submit() {
+  submit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -36,7 +35,7 @@ class ExtendedIsolation extends React.Component {
           reportError(error);
         });
     });
-  }
+  };
 
   render() {
     return (

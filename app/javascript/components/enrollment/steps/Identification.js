@@ -139,7 +139,7 @@ class Identification extends React.Component {
     const self = this;
     schema
       .validate(this.state.current.patient, { abortEarly: false })
-      .then(function() {
+      .then(() => {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, () => {
           callback();

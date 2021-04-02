@@ -10,11 +10,9 @@ class Arrival extends React.Component {
   constructor(props) {
     super(props);
     this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
-    this.handleChange = this.handleChange.bind(this);
-    this.validate = this.validate.bind(this);
   }
 
-  handleChange(event) {
+  handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
@@ -27,9 +25,9 @@ class Arrival extends React.Component {
         this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
-  }
+  };
 
-  handleDateChange(field, date) {
+  handleDateChange = (field, date) => {
     let current = this.state.current;
     let modified = this.state.modified;
     this.setState(
@@ -41,13 +39,13 @@ class Arrival extends React.Component {
         this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
-  }
+  };
 
-  validate(callback) {
+  validate = callback => {
     let self = this;
     schema
       .validate(this.state.current.patient, { abortEarly: false })
-      .then(function() {
+      .then(() => {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, () => {
           callback();
@@ -63,7 +61,7 @@ class Arrival extends React.Component {
           self.setState({ errors: issues });
         }
       });
-  }
+  };
 
   render() {
     return (

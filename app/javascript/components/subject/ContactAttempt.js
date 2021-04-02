@@ -14,23 +14,20 @@ class ContactAttempt extends React.Component {
       attempt: 'Successful',
       loading: false,
     };
-    this.toggleContactAttemptModal = this.toggleContactAttemptModal.bind(this);
-    this.submit = this.submit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  toggleContactAttemptModal() {
+  toggleContactAttemptModal = () => {
     let current = this.state.showContactAttemptModal;
     this.setState({
       showContactAttemptModal: !current,
     });
-  }
+  };
 
-  handleChange(event) {
+  handleChange = event => {
     this.setState({ [event.target.id]: event.target.value });
-  }
+  };
 
-  submit() {
+  submit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -47,7 +44,7 @@ class ContactAttempt extends React.Component {
           reportError(error);
         });
     });
-  }
+  };
 
   createModal(title, toggle, submit) {
     return (
