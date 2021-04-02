@@ -129,11 +129,17 @@ class PatientMailerTest < ActionMailer::TestCase
     expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
                                                                                         from: 'test_messaging_sid',
                                                                                         parameters:
-                                                                                           { medium: 'SINGLE_SMS',
-                                                                                             patient_submission_token: @patient.submission_token,
-                                                                                             prompt: contents,
-                                                                                             threshold_hash:
-                                                                                             @patient.jurisdiction.jurisdiction_path_threshold_hash },
+                                                                                           {
+                                                                                             medium: 'SINGLE_SMS',
+                                                                                             messages_array: [
+                                                                                               {
+                                                                                                 patient_submission_token: @patient.submission_token,
+                                                                                                 prompt: contents,
+                                                                                                 threshold_hash:
+                                                                                               @patient.jurisdiction.jurisdiction_path_threshold_hash
+                                                                                               }
+                                                                                             ]
+                                                                                           },
                                                                                         to: '+15555550111'
                                                                                       ))
 
@@ -153,10 +159,12 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                         from: 'test',
                                                                                         parameters:
                                                                                            { medium: 'SINGLE_SMS',
-                                                                                             patient_submission_token: @patient.submission_token,
-                                                                                             prompt: contents,
-                                                                                             threshold_hash:
-                                                                                              @patient.jurisdiction.jurisdiction_path_threshold_hash },
+                                                                                             messages_array: [{
+                                                                                               patient_submission_token: @patient.submission_token,
+                                                                                               prompt: contents,
+                                                                                               threshold_hash:
+                                                                                              @patient.jurisdiction.jurisdiction_path_threshold_hash
+                                                                                             }] },
                                                                                         to: '+15555550111'
                                                                                       ))
 
@@ -171,12 +179,17 @@ class PatientMailerTest < ActionMailer::TestCase
     end)
     expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
                                                                                         from: 'test_messaging_sid',
-                                                                                        parameters:
-                                                                                           { medium: 'SINGLE_SMS',
-                                                                                             patient_submission_token: @patient.submission_token,
-                                                                                             prompt: contents,
-                                                                                             threshold_hash:
-                                                                                             @patient.jurisdiction.jurisdiction_path_threshold_hash },
+                                                                                        parameters: {
+                                                                                          medium: 'SINGLE_SMS',
+                                                                                          messages_array: [
+                                                                                            {
+                                                                                              patient_submission_token: @patient.submission_token,
+                                                                                              prompt: contents,
+                                                                                              threshold_hash:
+                                                                                              @patient.jurisdiction.jurisdiction_path_threshold_hash
+                                                                                            }
+                                                                                          ]
+                                                                                        },
                                                                                         to: '+15555550111'
                                                                                       ))
 
@@ -194,10 +207,12 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                         from: 'test',
                                                                                         parameters:
                                                                                            { medium: 'SINGLE_SMS',
-                                                                                             patient_submission_token: @patient.submission_token,
-                                                                                             prompt: contents,
-                                                                                             threshold_hash:
-                                                                                             @patient.jurisdiction.jurisdiction_path_threshold_hash },
+                                                                                             messages_array: [{
+                                                                                               patient_submission_token: @patient.submission_token,
+                                                                                               prompt: contents,
+                                                                                               threshold_hash:
+                                                                                             @patient.jurisdiction.jurisdiction_path_threshold_hash
+                                                                                             }] },
                                                                                         to: '+15555550111'
                                                                                       ))
 
@@ -219,10 +234,12 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                         from: 'test_messaging_sid',
                                                                                         parameters:
                                                                                            { medium: 'SINGLE_SMS',
-                                                                                             patient_submission_token: @patient.submission_token,
-                                                                                             prompt: contents,
-                                                                                             threshold_hash:
-                                                                                             @patient.jurisdiction.jurisdiction_path_threshold_hash },
+                                                                                             messages_array: [{
+                                                                                               patient_submission_token: @patient.submission_token,
+                                                                                               prompt: contents,
+                                                                                               threshold_hash:
+                                                                                             @patient.jurisdiction.jurisdiction_path_threshold_hash
+                                                                                             }] },
                                                                                         to: '+15555550111'
                                                                                       ))
 
@@ -246,10 +263,12 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                         from: 'test',
                                                                                         parameters:
                                                                                            { medium: 'SINGLE_SMS',
-                                                                                             patient_submission_token: @patient.submission_token,
-                                                                                             prompt: contents,
-                                                                                             threshold_hash:
-                                                                                             @patient.jurisdiction.jurisdiction_path_threshold_hash },
+                                                                                             messages_array: [{
+                                                                                               patient_submission_token: @patient.submission_token,
+                                                                                               prompt: contents,
+                                                                                               threshold_hash:
+                                                                                             @patient.jurisdiction.jurisdiction_path_threshold_hash
+                                                                                             }] },
                                                                                         to: '+15555550111'
                                                                                       ))
 
@@ -273,7 +292,8 @@ class PatientMailerTest < ActionMailer::TestCase
       true
     end)
     PatientMailer.assessment_sms_weblink(@patient).deliver_now
-    assert_equal create_count, 2
+    # 1 Assessment sms weblink will be posted, that post will contain the messages to be sent for the monitoree and their dependent
+    assert_equal create_count, 1
 
     # Assert that both the patient and dependent got history items added
     assert_equal patient_history_count + 1, @patient.histories.count
