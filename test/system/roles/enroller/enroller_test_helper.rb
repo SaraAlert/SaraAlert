@@ -17,9 +17,8 @@ class EnrollerTestHelper < ApplicationSystemTestCase
   @@enroller_patient_page_verifier = EnrollerPatientPageVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  MONITOREES = @@system_test_utils.monitorees
-  USERS = @@system_test_utils.users
-  PATIENTS = @@system_test_utils.patients
+  MONITOREES = SystemTestUtils::MONITOREES
+  PATIENTS = SystemTestUtils::PATIENTS
 
   def view_enrolled_monitorees(user_label)
     @@system_test_utils.login(user_label)
@@ -110,7 +109,7 @@ class EnrollerTestHelper < ApplicationSystemTestCase
   end
 
   def verify_patient_page_permissions(user_label)
-    user = User.find_by(email: USERS[user_label]['email'])
+    user = User.find_by(email: SystemTestUtils::USERS[user_label]['email'])
     monitoree = user.patients.first
 
     # Login and click on a monitoree

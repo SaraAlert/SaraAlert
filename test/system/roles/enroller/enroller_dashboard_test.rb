@@ -12,10 +12,7 @@ class EnrollerDashboardTest < ApplicationSystemTestCase
   test 'view enrolled monitorees' do
     @@enroller_test_helper.view_enrolled_monitorees('state1_epi_enroller')
     @@enroller_test_helper.view_enrolled_monitorees('locals1c1_enroller')
-    @@enroller_test_helper.view_enrolled_monitorees('locals1c2_enroller')
     @@enroller_test_helper.view_enrolled_monitorees('state2_enroller')
-    @@enroller_test_helper.view_enrolled_monitorees('locals2c3_enroller')
-    @@enroller_test_helper.view_enrolled_monitorees('locals2c4_enroller')
   end
 
   test 'view enrollment analytics' do
@@ -31,7 +28,7 @@ class EnrollerDashboardTest < ApplicationSystemTestCase
   end
 
   test 'input validation' do
-    @@enroller_test_helper.verify_input_validation('state2_enroller', 'monitoree_11')
+    @@enroller_test_helper.verify_input_validation('state1_enroller', 'monitoree_11')
   end
 
   test 'edit monitoree enrollment' do

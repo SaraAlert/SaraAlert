@@ -33,8 +33,7 @@ class WorkflowTest < ApplicationSystemTestCase
   @@public_health_patient_page_reports_verifier = PublicHealthPatientPageReportsVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  ASSESSMENTS = @@system_test_utils.assessments
-  MONITOREES = @@system_test_utils.monitorees
+  MONITOREES = SystemTestUtils::MONITOREES
 
   test 'epi enroll monitoree, complete assessment, update monitoring actions, jurisdiction, workflow' do
     # enroll monitoree, should be asymptomatic
@@ -46,7 +45,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@public_health_patient_page_reports_verifier.verify_current_status('asymptomatic')
 
     # add symptomatic report, should be symptomatic
-    @@public_health_patient_page_reports.add_report(epi_enroller_user_label, ASSESSMENTS['assessment_1'])
+    @@public_health_patient_page_reports.add_report(epi_enroller_user_label, SystemTestUtils::ASSESSMENTS['assessment_1'])
     @@public_health_patient_page_reports_verifier.verify_current_status('symptomatic')
     @@system_test_utils.return_to_dashboard('exposure')
     @@public_health_dashboard.search_for_and_view_monitoree('symptomatic', monitoree_label)
@@ -86,7 +85,7 @@ class WorkflowTest < ApplicationSystemTestCase
     visit '/'
     @@public_health_dashboard.search_for_and_view_monitoree('symptomatic', monitoree_label)
     @@public_health_patient_page_reports_verifier.verify_current_status('symptomatic')
-    @@public_health_patient_page_reports_verifier.verify_new_report(ASSESSMENTS['assessment_2'])
+    @@public_health_patient_page_reports_verifier.verify_new_report(SystemTestUtils::ASSESSMENTS['assessment_2'])
   end
 
   test 'epi enroll monitoree with group member, edit parent jurisdiction and verify propogation' do

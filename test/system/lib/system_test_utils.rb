@@ -114,24 +114,4 @@ class SystemTestUtils < ApplicationSystemTestCase
   def wait_for_modal_animation
     sleep(MODAL_ANIMATION_DELAY)
   end
-
-  def assessments
-    ASSESSMENTS
-  end
-
-  def monitorees
-    MONITOREES
-  end
-
-  def patients
-    PATIENTS
-  end
-
-  def users
-    USERS
-  end
-
-  def download_path
-    DOWNLOAD_PATH
-  end
 end

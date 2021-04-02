@@ -11,8 +11,6 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
   @@public_health_test_helper = PublicHealthTestHelper.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  ASSESSMENTS = @@system_test_utils.assessments
-
   test 'verify patient details and reports' do
     @@public_health_test_helper.view_patients_details_and_reports('state1_epi')
     @@public_health_test_helper.view_patients_details_and_reports('state2_epi')
@@ -91,11 +89,11 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
   end
 
   test 'add report' do
-    @@public_health_test_helper.add_report('locals1c1_epi', 'patient_4', 'asymptomatic', ASSESSMENTS['assessment_1'])
+    @@public_health_test_helper.add_report('locals1c1_epi', 'patient_4', 'asymptomatic', SystemTestUtils::ASSESSMENTS['assessment_1'])
   end
 
   test 'edit report' do
-    @@public_health_test_helper.edit_report('locals2c4_epi', 'patient_10', 'pui', 1017, ASSESSMENTS['assessment_2'])
+    @@public_health_test_helper.edit_report('locals2c4_epi', 'patient_10', 'pui', 1017, SystemTestUtils::ASSESSMENTS['assessment_2'])
   end
 
   test 'add note to report' do

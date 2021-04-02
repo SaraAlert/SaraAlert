@@ -13,6 +13,8 @@ patient_1:
   last_name: 'Boehm62'
   date_of_birth: <%= 25.years.ago %>
   sex: 'Male'
+  gender_identity: 'Another'
+  sexual_orientation: 'Another'
   american_indian_or_alaska_native: true
   ethnicity: 'Not Hispanic or Latino'
   primary_language: 'English'
@@ -69,6 +71,8 @@ patient_2:
   last_name: 'Kirlin44'
   date_of_birth: <%= 29.years.ago %>
   sex: 'Male'
+  gender_identity: 'Male (Identifies as male)'
+  sexual_orientation: 'Straight or Heterosexual'
   native_hawaiian_or_other_pacific_islander: true
   ethnicity: 'Hispanic or Latino'
   primary_language: 'English'

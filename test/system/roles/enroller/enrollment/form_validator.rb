@@ -91,9 +91,15 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
   def verify_input_validation_for_potential_exposure_information(potential_exposure_information)
     @@system_test_utils.go_to_next_page
     verify_text_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
-    fill_in 'last_date_of_exposure', with: rand(30).days.ago.strftime('%m/%d/%Y')
-    fill_in 'jurisdiction_id', with: ''
+    fill_in 'last_date_of_exposure', with: 5.days.ago.strftime('%m/%d/%Y')
+    fill_in 'jurisdiction_id', with: '' # clear out jurisdiction to so that there is at least one validation error
     click_on 'Next'
+    verify_text_not_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
+    fill_in 'last_date_of_exposure', with: ''
+    click_on 'Next'
+    verify_text_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
+    page.find('label', text: 'CONTINUOUS EXPOSURE').click
+    verify_text_not_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
     verify_text_displayed('Please enter a valid Assigned Jurisdiction')
     fill_in 'jurisdiction_id', with: 'fake jurisdiction'
     click_on 'Next'
@@ -111,7 +117,33 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     fill_in 'assigned_user', with: 'W(#*&R#(W&'
     assert_not_equal('W(#*&R#(W&', page.find_field('assigned_user').value)
     @@enrollment_form.populate_enrollment_step(:potential_exposure_information, potential_exposure_information)
+    click_on 'OK' # confirm jurisdiction change
     verify_text_not_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
+
+    # isolation fields
+    click_on 'edit-identification-btn'
+    page.find_by_id('workflow_wrapper').first(:xpath, './/div//div//div//div//div//input').set('Isolation (case)').send_keys(:enter)
+    click_on 'Next'
+    @@system_test_utils.wait_for_enrollment_page_transition
+    click_on 'edit-potential_exposure_information-btn'
+    click_on 'Next'
+    verify_text_displayed('Please enter a Symptom Onset Date OR select No Symptom History and enter a first positive lab result')
+    fill_in 'symptom_onset', with: 3.days.ago.strftime('%m/%d/%Y')
+    fill_in 'jurisdiction_id', with: '' # clear out jurisdiction to so that there is at least one validation error
+    click_on 'Next'
+    verify_text_not_displayed('Please enter a Symptom Onset Date OR select No Symptom History and enter a first positive lab result')
+    page.find('label', text: 'NO SYMPTOM HISTORY').click
+    click_on 'Next'
+    verify_text_not_displayed('Please enter a Symptom Onset Date OR select No Symptom History and enter a first positive lab result')
+    fill_in 'jurisdiction_id', with: 'USA, State 1, County 1'
+    click_on 'Next'
+    verify_text_displayed('Please enter a lab result')
+    click_on 'Enter Lab Result'
+    assert page.has_button?('Create', disabled: true)
+    fill_in 'specimen_collection', with: 2.days.ago.strftime('%m/%d/%Y')
+    click_on 'Create'
+    click_on 'Next'
+    verify_text_not_displayed('Please enter a lab result')
   end
 
   def verify_text_displayed(text)
