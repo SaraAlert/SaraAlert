@@ -15,7 +15,6 @@ class Contact extends React.Component {
   constructor(props) {
     super(props);
     this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, isEditMode: window.location.href.includes('edit') };
-    this.validate = this.validate.bind(this);
   }
 
   componentDidMount() {
@@ -195,11 +194,11 @@ class Contact extends React.Component {
     this.setState({ errors: {} });
   };
 
-  validate(callback) {
+  validate = callback => {
     let self = this;
     schema
       .validate(this.state.current.patient, { abortEarly: false })
-      .then(function() {
+      .then(() => {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, () => {
           callback();
@@ -215,7 +214,7 @@ class Contact extends React.Component {
           self.setState({ errors: issues });
         }
       });
-  }
+  };
 
   render() {
     return (

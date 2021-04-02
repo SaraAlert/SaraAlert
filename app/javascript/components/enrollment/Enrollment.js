@@ -39,7 +39,7 @@ class Enrollment extends React.Component {
   }
 
   componentDidMount() {
-    window.onbeforeunload = function() {
+    window.onbeforeunload = () => {
       return 'All progress will be lost. Are you sure?';
     };
   }
@@ -76,7 +76,7 @@ class Enrollment extends React.Component {
           reportError(err);
         });
     } else {
-      window.onbeforeunload = function() {
+      window.onbeforeunload = () => {
         return 'All progress will be lost. Are you sure?';
       };
       reenableSubmit();

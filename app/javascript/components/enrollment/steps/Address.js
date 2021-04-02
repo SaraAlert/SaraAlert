@@ -78,7 +78,7 @@ class Address extends React.Component {
     if (this.state.selectedTab === 'domestic') {
       schemaDomestic
         .validate(this.state.current.patient, { abortEarly: false })
-        .then(function() {
+        .then(() => {
           // No validation issues? Invoke callback (move to next step)
           self.setState({ errors: {} }, () => {
             callback();
@@ -97,7 +97,7 @@ class Address extends React.Component {
     } else if (this.state.selectedTab === 'foreign') {
       schemaForeign
         .validate(this.state.current.patient, { abortEarly: false })
-        .then(function() {
+        .then(() => {
           // No validation issues? Invoke callback (move to next step)
           self.setState({ errors: {} }, () => {
             callback();

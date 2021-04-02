@@ -4,7 +4,6 @@ import { PropTypes } from 'prop-types';
 class Breadcrumb extends React.Component {
   constructor(props) {
     super(props);
-    this.renderWorkflowName = this.renderWorkflowName.bind(this);
   }
 
   goBack(index) {
@@ -16,7 +15,7 @@ class Breadcrumb extends React.Component {
     window.history.go(0 - index);
   }
 
-  renderWorkflowName(name) {
+  renderWorkflowName = name => {
     if (this.props.enroller && name?.includes('Dashboard')) {
       return 'Return To Dashboard';
     }
@@ -42,7 +41,7 @@ class Breadcrumb extends React.Component {
       return name.replace('Exposure', 'Isolation');
     }
     return name;
-  }
+  };
 
   render() {
     return (

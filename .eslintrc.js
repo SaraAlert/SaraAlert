@@ -26,6 +26,10 @@ module.exports = {
         "security"
     ],
     "rules": {
+      "eol-last": 2,
+      "no-trailing-spaces": 2,
+      "prefer-arrow-callback": 2,
+      "semi": 2
     },
     "settings": {
         "react": {
