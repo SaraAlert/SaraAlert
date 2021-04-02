@@ -1,5 +1,6 @@
 monitoree_1:
   identification:
+    workflow: 'Isolation (case)'
     first_name: 'Herb52'
     last_name: 'Nraz91'
     date_of_birth: '03/25/1999'
@@ -14,7 +15,8 @@ monitoree_1:
     primary_telephone: '5555550111'
     primary_telephone_type: 'Plain Cell'
   potential_exposure_information:
-    last_date_of_exposure: '02/05/2020'
+    symptom_onset: 5
+    case_status: 'Probable'
     jurisdiction_id: 'USA, State 1, County 1'
     assigned_user: '5'
 monitoree_2:
@@ -78,7 +80,7 @@ monitoree_2:
     additional_planned_travel_end_date: '03/20/2020'
     additional_planned_travel_related_notes: 'more notes...'
   potential_exposure_information:
-    last_date_of_exposure: '02/25/2020'
+    last_date_of_exposure: 2
     potential_exposure_location: 'Phebestad'
     potential_exposure_country: 'Guatemala'
     contact_of_known_case: true
@@ -103,16 +105,15 @@ monitoree_3:
     last_name: 'Crist10'
     date_of_birth: '03/22/2008'
   address:
-    address_line_1: '2309 Hector Cliff'
-    address_city: 'East Yer'
-    address_state: 'Tennessee'
+    address_line_1: '1 Main St'
+    address_city: 'Portland'
+    address_state: 'Maine'
     address_zip: '43058'
   contact_information:
-    preferred_contact_method: 'E-mailed Web Link'
-    email: 'monitoree_3@example.com'
-    confirm_email: 'monitoree_3@example.com'
+    email: 'eddb@example.com'
+    confirm_email: 'eddb@example.com'
   potential_exposure_information:
-    last_date_of_exposure: '12/30/2019'
+    last_date_of_exposure: 3
 monitoree_4:
   identification:
     first_name: 'Jeanie24'
@@ -145,7 +146,7 @@ monitoree_4:
     additional_planned_travel_end_date: '05/30/2020'
     additional_planned_travel_related_notes: 'asdogihlawkefjionak'
   potential_exposure_information:
-    last_date_of_exposure: '12/30/2019'
+    last_date_of_exposure: 7
     assigned_user: '9429'
 monitoree_5:
   identification:
@@ -169,7 +170,7 @@ monitoree_5:
     primary_telephone: '5555550114'
     primary_telephone_type: 'Smartphone'
   potential_exposure_information:
-    last_date_of_exposure: '01/30/2020'
+    last_date_of_exposure: 1
     contact_of_known_case: true
     contact_of_known_case_id: '9BIHOS2819'
     travel_to_affected_country_or_area: true
@@ -222,7 +223,7 @@ monitoree_6:
     date_of_arrival: '03/02/2020'
     travel_related_notes: '938nasd fok3hf8oisdkm sfkl93hnk'
   potential_exposure_information:
-    last_date_of_exposure: '03/01/2020'
+    last_date_of_exposure: 10
     potential_exposure_location: 'Sporertown'
     potential_exposure_country: 'Kuwait'
     crew_on_passenger_or_cargo_flight: true
@@ -273,7 +274,7 @@ monitoree_10:
     primary_telephone: '5555550117'
     primary_telephone_type: 'Landline'
   potential_exposure_information:
-    last_date_of_exposure: '01/31/2020'
+    last_date_of_exposure: 11
 monitoree_11:
   identification:
     first_name: 'Julian'
@@ -292,7 +293,7 @@ monitoree_11:
     primary_telephone: '5555550118'
     primary_telephone_type: 'Landline'
   potential_exposure_information:
-    last_date_of_exposure: '01/31/2020'
+    last_date_of_exposure: 6
     exposure_risk_assessment: 'Low'
     monitoring_plan: 'Self-monitoring with public health supervision'
 monitoree_12:
@@ -368,7 +369,7 @@ monitoree_12:
     additional_planned_travel_end_date: '03/20/2020'
     additional_planned_travel_related_notes: 'more notes...'
   potential_exposure_information:
-    last_date_of_exposure: '02/25/2020'
+    last_date_of_exposure: 9
     potential_exposure_location: 'Phebestad'
     potential_exposure_country: 'Guatemala'
     contact_of_known_case: true
@@ -395,3 +396,46 @@ monitoree_16:
   potential_exposure_information:
     assigned_user: '6'
     update_group_member_assigned_user: true
+monitoree_17:
+  identification:
+    workflow: 'Isolation (case)'
+    first_name: 'Stoltenberg06'
+    last_name: 'Allena59'
+    date_of_birth: '03/22/1954'
+  address:
+    address_line_1: '1 Main St'
+    address_city: 'Portland'
+    address_state: 'Maine'
+    address_zip: '43058'
+  potential_exposure_information:
+    symptom_onset: 10
+monitoree_18:
+  identification:
+    workflow: 'Isolation (case)'
+    first_name: 'Stoltenberg06'
+    last_name: 'Allena59'
+    date_of_birth: '03/22/1954'
+  address:
+    address_line_1: '1 Main St'
+    address_city: 'Portland'
+    address_state: 'Maine'
+    address_zip: '43058'
+  potential_exposure_information:
+    no_symptom_history: true
+    first_positive_lab: true
+    lab_type: 'PCR'
+    specimen_collection: 4
+    report: 2
+    create_first_positive_lab: true
+monitoree_19:
+  identification:
+    first_name: 'Stoltenberg06'
+    last_name: 'Allena59'
+    date_of_birth: '03/22/1954'
+  address:
+    address_line_1: '1 Main St'
+    address_city: 'Portland'
+    address_state: 'Maine'
+    address_zip: '43058'
+  potential_exposure_information:
+    continuous_exposure: true

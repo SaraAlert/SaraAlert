@@ -10,7 +10,7 @@ class EnrollerPatientPageVerifier < ApplicationSystemTestCase
   @@enrollment_form_steps = EnrollmentFormSteps.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  PATIENTS = @@system_test_utils.patients
+  PATIENTS = SystemTestUtils::PATIENTS
 
   def verify_monitoree_info(monitoree, is_epi: false)
     find('#details-expander-link').click if is_epi
@@ -34,17 +34,17 @@ class EnrollerPatientPageVerifier < ApplicationSystemTestCase
 
     fields.each do |field|
       if data[field[:id]] && field[:info_page]
-        if %w[text select date].include?(field[:type])
+        if %i[text select date].include?(field[:type])
           assert page.has_content?(data[field[:id]]), @@system_test_utils.get_err_msg('Monitoree details', field[:id], data[field[:id]])
-        elsif field[:type] == 'phone'
+        elsif field[:type] == :phone
           phone = format_phone_number(data[field[:id]])
           assert page.has_content?(phone), @@system_test_utils.get_err_msg('Monitoree details', field[:id], phone)
-        elsif field[:type] == 'age'
+        elsif field[:type] == :age
           age = @@system_test_utils.calculate_age(data[field[:id]])
           assert page.has_content?(age), @@system_test_utils.get_err_msg('Monitoree details', field[:id], age)
-        elsif field[:type] == 'race'
+        elsif field[:type] == :race
           assert page.has_content?(field[:info_page]), @@system_test_utils.get_err_msg('Monitoree details', field[:info_page], 'present')
-        elsif field[:type] == 'checkbox' || field[:type] == 'risk_factor'
+        elsif field[:type] == :checkbox || field[:type] == :risk_factor
           assert page.has_content?(field[:label]), @@system_test_utils.get_err_msg('Monitoree details', field[:label], 'present')
         end
       end

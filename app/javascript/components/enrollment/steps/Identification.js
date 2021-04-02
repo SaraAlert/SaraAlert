@@ -229,7 +229,7 @@ class Identification extends React.Component {
           <Card.Body>
             <Form>
               <Form.Row>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} id="workflow_wrapper">
                   <Form.Label htmlFor="workflow-select" className="nav-input-label">
                     WORKFLOW *
                   </Form.Label>
