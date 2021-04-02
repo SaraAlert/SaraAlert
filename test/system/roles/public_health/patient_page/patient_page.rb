@@ -9,8 +9,7 @@ class PublicHealthPatientPage < ApplicationSystemTestCase
   @@public_health_patient_page_verifier = PublicHealthPatientPageVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  USERS = @@system_test_utils.users
-  PATIENTS = @@system_test_utils.patients
+  PATIENTS = SystemTestUtils::PATIENTS
 
   def view_patients_details_and_reports(jurisdiction_id)
     monitorees = Jurisdiction.find(jurisdiction_id).all_patients_excluding_purged

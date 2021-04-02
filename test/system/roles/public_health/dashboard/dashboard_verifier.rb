@@ -130,7 +130,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     return if patient_label.nil?
 
     @@public_health_dashboard.search_for_and_view_patient('all', patient_label)
-    patient = Patient.find(@@system_test_utils.patients[patient_label]['id'])
+    patient = Patient.find(SystemTestUtils::PATIENTS[patient_label]['id'])
     assertions.each do |field, value|
       assert_equal value, patient[field], @@system_test_utils.get_err_msg('Bulk edit', field, value)
     end

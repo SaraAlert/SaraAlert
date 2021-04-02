@@ -28,11 +28,11 @@ class EnrollmentFormVerifier < ApplicationSystemTestCase
       next unless data[field[:id]]
 
       click_on field[:tab] if field[:tab]
-      if %w[text select date].include?(field[:type])
+      if %i[text select date].include?(field[:type])
         assert_equal(data[field[:id]], find("##{field[:id]}")['value'], "#{field[:id]} mismatch")
       elsif field[:tab] == 'phone'
         assert_equal(data[field[:id]], Phonelib.parse(find("##{field[:id]}")['value']).full_e164, "#{field[:id]} mismatch")
-      elsif %w[checkbox race risk_factor].include?(field[:type])
+      elsif %i[checkbox race risk_factor].include?(field[:type])
         # figure out how to get value of checkbox input from DOM
       end
     end

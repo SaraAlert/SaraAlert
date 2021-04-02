@@ -9,26 +9,25 @@ class AssessmentForm < ApplicationSystemTestCase
   @@assessment_form_verifier = AssessmentFormVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  PATIENTS = @@system_test_utils.patients
-  ASSESSMENTS = @@system_test_utils.assessments
+  PATIENTS = SystemTestUtils::PATIENTS
 
   def complete_assessment(user_label, patient, assessment_label)
     @@system_test_utils.login(user_label) unless user_label.nil?
     visit "/patients/#{patient.submission_token}/assessments/new"
-    submit_assessment(ASSESSMENTS[assessment_label]['symptoms'])
+    submit_assessment(SystemTestUtils::ASSESSMENTS[assessment_label]['symptoms'])
     err_msg = @@system_test_utils.get_err_msg('Monitoree assessment', 'submission message', 'existent')
     assert page.has_content?('Thank You For Completing Your Self Report'), err_msg
-    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_label], patient.submission_token) unless user_label.nil?
+    @@assessment_form_verifier.verify_assessment(patient, SystemTestUtils::ASSESSMENTS[assessment_label], patient.submission_token) unless user_label.nil?
     @@system_test_utils.logout unless user_label.nil?
   end
 
   def complete_assessment_new_link(user_label, patient, assessment_label, initials_age)
     @@system_test_utils.login(user_label) unless user_label.nil?
     visit "/r/#{patient.submission_token}/#{patient.jurisdiction.unique_identifier}/en/#{initials_age ? patient.initials_age : ''}"
-    submit_assessment(ASSESSMENTS[assessment_label]['symptoms'])
+    submit_assessment(SystemTestUtils::ASSESSMENTS[assessment_label]['symptoms'])
     err_msg = @@system_test_utils.get_err_msg('Monitoree assessment', 'submission message', 'existent')
     assert page.has_content?('Thank You For Completing Your Self Report'), err_msg
-    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_label], patient.submission_token) unless user_label.nil?
+    @@assessment_form_verifier.verify_assessment(patient, SystemTestUtils::ASSESSMENTS[assessment_label], patient.submission_token) unless user_label.nil?
     @@system_test_utils.logout unless user_label.nil?
   end
 
@@ -37,10 +36,10 @@ class AssessmentForm < ApplicationSystemTestCase
     old_submission_token = PatientLookup.find_by(new_submission_token: patient.submission_token).old_submission_token
     old_unique_identifier = JurisdictionLookup.find_by(new_unique_identifier: patient.jurisdiction.unique_identifier).old_unique_identifier
     visit "/report/patients/#{old_submission_token}/en/#{old_unique_identifier}"
-    submit_assessment(ASSESSMENTS[assessment_label]['symptoms'])
+    submit_assessment(SystemTestUtils::ASSESSMENTS[assessment_label]['symptoms'])
     err_msg = @@system_test_utils.get_err_msg('Monitoree assessment', 'submission message', 'existent')
     assert page.has_content?('Thank You For Completing Your Self Report'), err_msg
-    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_label], old_submission_token) unless user_label.nil?
+    @@assessment_form_verifier.verify_assessment(patient, SystemTestUtils::ASSESSMENTS[assessment_label], old_submission_token) unless user_label.nil?
     @@system_test_utils.logout unless user_label.nil?
   end
 

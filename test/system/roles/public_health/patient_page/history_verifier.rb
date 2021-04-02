@@ -7,8 +7,6 @@ require_relative '../../../lib/system_test_utils'
 class PublicHealthPatientPageHistoryVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  USERS = @@system_test_utils.users
-
   def verify_monitoring_status(user_label, monitoring_status, monitoring_reason, reasoning)
     verify_historical_event(user_label, 'Monitoring Change', ['User changed Monitoring Status', monitoring_status, monitoring_reason, reasoning])
   end
@@ -66,7 +64,8 @@ class PublicHealthPatientPageHistoryVerifier < ApplicationSystemTestCase
   end
 
   def verify_historical_event(user_label, event_type, contents)
-    assert page.has_content?(USERS[user_label]['email']), @@system_test_utils.get_err_msg("History #{event_type}", 'user email', USERS[user_label]['email'])
+    email = SystemTestUtils::USERS[user_label]['email']
+    assert page.has_content?(email), @@system_test_utils.get_err_msg("History #{event_type}", 'user email', email)
     assert page.has_content?(event_type), @@system_test_utils.get_err_msg("History #{event_type}", 'event type', event_type)
     contents.each do |content|
       assert page.has_content?(content), @@system_test_utils.get_err_msg("History #{event_type}", 'content', content) unless content.nil?

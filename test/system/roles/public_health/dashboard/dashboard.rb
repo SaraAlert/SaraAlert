@@ -11,8 +11,8 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   @@public_health_import_verifier = PublicHealthMonitoringImportVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  PATIENTS = @@system_test_utils.patients
-  MONITOREES = @@system_test_utils.monitorees
+  PATIENTS = SystemTestUtils::PATIENTS
+  MONITOREES = SystemTestUtils::MONITOREES
 
   def search_for_and_view_patient(tab, patient_label)
     @@system_test_utils.go_to_tab(tab)

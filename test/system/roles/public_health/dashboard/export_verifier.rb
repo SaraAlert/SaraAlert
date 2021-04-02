@@ -464,8 +464,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
   def get_file_name(file_name_glob)
     Timeout.timeout(DOWNLOAD_TIMEOUT) do
-      sleep(DOWNLOAD_CHECK_INTERVAL) until Dir.glob(File.join(@@system_test_utils.download_path, file_name_glob)).any?
+      sleep(DOWNLOAD_CHECK_INTERVAL) until Dir.glob(File.join(SystemTestUtils::DOWNLOAD_PATH, file_name_glob)).any?
     end
-    Dir.glob(File.join(@@system_test_utils.download_path, file_name_glob))&.first
+    Dir.glob(File.join(SystemTestUtils::DOWNLOAD_PATH, file_name_glob))&.first
   end
 end

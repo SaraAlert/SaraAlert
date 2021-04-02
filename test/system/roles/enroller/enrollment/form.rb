@@ -33,20 +33,22 @@ class EnrollmentForm < ApplicationSystemTestCase
         next unless data[field[:id]]
 
         click_on field[:tab] if field[:tab]
-        if %w[text date phone].include?(field[:type])
+        if %i[text date phone].include?(field[:type])
           fill_in field[:id], with: data[field[:id]]
-        elsif field[:type] == 'select'
+        elsif field[:type] == :select
           select data[field[:id]], from: field[:id]
-        elsif field[:type] == 'checkbox' || field[:type] == 'race'
+        elsif field[:type] == :checkbox || field[:type] == :race
           page.find('label', text: field[:label]).click
-        elsif field[:type] == 'risk_factor'
+        elsif field[:type] == :risk_factor
           page.find('label', text: field[:label].upcase).click
-        elsif field[:type] == 'language'
+        elsif field[:type] == :react_select
           input_element = page.find_by_id("#{field[:id]}_wrapper").first(:xpath, './/div//div//div//div//div//input')
           input_element.set data[field[:id]]
           input_element.send_keys :enter
-        elsif field[:type] == 'current_date'
-          fill_in field[:id], with: rand(30).days.ago.strftime('%m/%d/%Y') if data[field[:id]]
+        elsif field[:type] == :recent_date && data[field[:id]]
+          fill_in field[:id], with: data[field[:id]].days.ago.strftime('%m/%d/%Y')
+        elsif field[:type] == :button
+          click_on field[:label]
         end
         jurisdiction_change = true if field[:id] == 'jurisdiction_id'
       end
