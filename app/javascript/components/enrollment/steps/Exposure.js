@@ -316,7 +316,7 @@ class Exposure extends React.Component {
     let self = this;
     schema
       .validate(this.state.current.patient, { abortEarly: false })
-      .then(function() {
+      .then(() => {
         if (self.state.current.patient.no_symptom_history && !self.state.current.first_positive_lab) {
           self.setState({ errors: { first_positive_lab: 'Please enter a lab result' } });
           return;

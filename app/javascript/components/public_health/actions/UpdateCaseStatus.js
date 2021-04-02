@@ -21,8 +21,6 @@ class UpdateCaseStatus extends React.Component {
       monitoring_reason: '',
       loading: false,
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.submit = this.submit.bind(this);
   }
 
   componentDidMount() {
@@ -58,7 +56,7 @@ class UpdateCaseStatus extends React.Component {
       });
   }
 
-  handleChange(event) {
+  handleChange = event => {
     event.persist();
     this.setState({ [event.target.id]: event.target.type === 'checkbox' ? event.target.checked : event.target.value }, () => {
       if (event.target.id === 'follow_up') {
@@ -89,9 +87,9 @@ class UpdateCaseStatus extends React.Component {
         });
       }
     });
-  }
+  };
 
-  submit() {
+  submit = () => {
     let idArray = this.props.patients.map(x => x['id']);
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
 
@@ -115,7 +113,7 @@ class UpdateCaseStatus extends React.Component {
           this.setState({ loading: false });
         });
     });
-  }
+  };
 
   render() {
     return (
