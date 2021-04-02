@@ -138,7 +138,6 @@ group :test do
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'simplecov-lcov'
-  gem 'timecop'
   gem 'vcr'
   gem 'webdrivers'
   gem 'webmock'
