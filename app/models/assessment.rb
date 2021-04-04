@@ -55,7 +55,7 @@ class Assessment < ApplicationRecord
       symptom_group_index = threshold_symptom&.group || 1
       # -1 to convert to 0-based ie: index 0 requires at least 1 true, index 1 requires at least 2 true...
       symptom_group_index -= 1
-      symptom_passes = symptom_passes_threshold(reported_symptom.name, threshold_symptom)
+      symptom_passes = symptom_passes_threshold(reported_symptom, threshold_symptom)
       symptom_groups[symptom_group_index] = 0 if symptom_groups[symptom_group_index].nil?
       symptom_groups[symptom_group_index] += 1 if symptom_passes
     end
@@ -66,12 +66,11 @@ class Assessment < ApplicationRecord
 
   # symptom_passes_threshold will return true if the REQUIRED symptom with the given name in the reported condition
   # meets the definition of symptomatic as defined in the assocated ThresholdCondition
-  def symptom_passes_threshold(symptom_name, threshold_symptom = nil)
-    reported_symptom = reported_condition&.symptoms&.find_by(name: symptom_name)
+  def symptom_passes_threshold(reported_symptom, threshold_symptom = nil)
     # This will be the case if a symptom is no longer being tracked and the assessments table is looking for its value
     return nil if reported_symptom.nil? || reported_symptom.value.nil?
 
-    threshold_symptom = get_threshold_symptom(symptom_name) if threshold_symptom.nil?
+    threshold_symptom = get_threshold_symptom(reported_symptom.name) if threshold_symptom.nil?
     return false unless threshold_symptom&.required?
 
     return nil if threshold_symptom.nil? || threshold_symptom.value.nil?
@@ -117,12 +116,12 @@ class Assessment < ApplicationRecord
   end
 
   # Gets all unique symptoms (based on name) for a given array of assessment IDs.
-  def self.get_unique_symptoms_for_assessments(assessment_ids)
-    threshold_cond_hashes = ReportedCondition.where(type: 'ReportedCondition', assessment_id: assessment_ids)&.pluck(:threshold_condition_hash)
+  def self.get_unique_threshold_symptoms(assessment_ids, selected_fields = %i[name label type required threshold_operator bool_value int_value float_value])
+    threshold_cond_hashes = ReportedCondition.where(assessment_id: assessment_ids).pluck(:threshold_condition_hash)
     return if threshold_cond_hashes.nil?
 
-    condition_ids = ThresholdCondition.where(type: 'ThresholdCondition', threshold_condition_hash: threshold_cond_hashes)
-    Symptom.where(condition_id: condition_ids)&.uniq(&:name)
+    condition_ids = ThresholdCondition.where(threshold_condition_hash: threshold_cond_hashes)
+    Symptom.where(condition_id: condition_ids).select([:name] | selected_fields)&.uniq(&:name)
   end
 
   def translations
