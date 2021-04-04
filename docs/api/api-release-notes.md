@@ -5,10 +5,17 @@ parent: API
 nav_order: 1
 ---
 
+# 1.26.0
+* Support for Close Contacts (read/write) via a FHIR RelatedPerson
+* Improved validation error messaging: validation messages will more clearly indicate what value caused the validation error, and where that value is in the JSON document
+
+***
+
 # 1.24.0
 * Support for Continuous Exposure
 
 ***
+
 # 1.23.0
 * Support for Foreign Address (read/write)
 
