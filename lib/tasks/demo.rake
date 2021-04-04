@@ -426,9 +426,9 @@ desc 'Backup the database'
 
     # Create first positive lab for patients with no symptom history
     laboratories = []
-    asymptomatic_cases =
-    user_emails = Hash[User.where(id: new_patients.where(isolation: true, symptom_onset: nil).distinct.pluck(:creator_id)).pluck(:id, :email)]
-    new_patients.where(isolation: true, symptom_onset: nil).each do |patient|
+    asymptomatic_cases = new_patients.where(isolation: true, symptom_onset: nil)
+    user_emails = Hash[User.where(id: asymptomatic_cases.distinct.pluck(:creator_id)).pluck(:id, :email)]
+    asymptomatic_cases.each do |patient|
       laboratories << Laboratory.new(
         patient_id: patient[:id],
         lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
@@ -581,6 +581,9 @@ desc 'Backup the database'
 
     # Create earlier symptom onset dates to meet isolation symptomatic non test based requirement
     symptomatic_assessments = new_assessments.where('patients.symptom_onset IS NOT NULL')
+                                             .or(
+                                               new_assessments.where('patients.isolation = ?', false)
+                                             )
                                              .where('patient_id % 4 <> 0')
                                              .limit(new_assessments.count * (days_ago > 10  ? rand(75..80) : rand(20..25)) / 100)
                                              .order('RAND()')
