@@ -34,7 +34,7 @@ module AssessmentQueryHelper
       assessments = assessments.order(created_at: dir)
     else
       # Verify this is a sort request for a symptom column.
-      symptom_columns = Assessment.get_unique_symptoms_for_assessments(assessments.pluck(:id)).pluck(:name)
+      symptom_columns = Assessment.get_unique_threshold_symptoms(assessments.pluck(:id), [:name])
       return assessments unless symptom_columns&.include?(order)
 
       # Find assessment IDs based on the value of the symptom in the specified column
@@ -69,35 +69,51 @@ module AssessmentQueryHelper
 
   # Formats assessments to be displayed on the frontend.
   def format_for_frontend(assessments)
-    table_data = []
-    symptoms = Assessment.get_unique_symptoms_for_assessments(assessments.pluck(:id))
+    # select relevant fields
+    assessments = assessments.select(%i[id symptomatic who_reported created_at])
+    assessment_ids = assessments.map(&:id)
 
+    # query relevant fields for corresponding threshold symptoms
+    threshold_symptoms = Hash[Assessment.get_unique_threshold_symptoms(assessment_ids).map { |symptom| [symptom[:name], symptom] }]
+
+    # query relevant fields for all associated reported conditions
+    reported_conditions = Hash[ReportedCondition.where(assessment_id: assessment_ids).pluck(:id, :assessment_id, :threshold_condition_hash)
+                                                .map { |(id, assessment_id, hash)| [assessment_id, { id: id, threshold_condition_hash: hash, symptoms: [] }] }]
+
+    # query relevant fields for all associated symptoms and include them in the reported conditions
+    Symptom.where(condition_id: reported_conditions.keys).select(%i[name condition_id type bool_value int_value float_value])
+           .each { |symptom| reported_conditions[symptom[:condition_id]][:symptoms].append(symptom) }
+
+    # construct table data
+    table_data = []
     assessments.each do |assessment|
-      reported_condition = assessment.reported_condition
       details = {
         id: assessment[:id],
-        symptomatic: assessment.symptomatic ? 'Yes' : 'No',
-        who_reported: assessment.who_reported,
-        created_at: assessment.created_at,
-        threshold_condition_hash: reported_condition&.threshold_condition&.threshold_condition_hash,
-        symptoms: reported_condition&.symptoms&.uniq(&:name)
+        symptomatic: assessment[:symptomatic] ? 'Yes' : 'No',
+        who_reported: assessment[:who_reported],
+        created_at: assessment[:created_at],
+        passes_threshold_data: {}
       }
 
-      passes_threshold_data = {}
-      symptoms&.pluck(:name)&.each do |symptom_name|
-        symptom = assessment.get_reported_symptom_by_name(symptom_name)
-        value = symptom&.value
-        # NOTE: We must check if the value is nil here before making this change.
-        # Otherwise, text responses of "Yes" will show "No" in each row because the value for each symptom is still empty, for example.
-        if symptom&.type == 'BoolSymptom' && !value.nil?
-          value = value == true ? 'Yes' : 'No'
+      reported_condition = reported_conditions[assessment[:id]]
+      unless reported_condition.nil?
+        details[:threshold_condition_hash] = reported_condition[:threshold_condition_hash]
+        details[:symptoms] = reported_condition[:symptoms]
+        details[:symptoms]&.each do |symptom|
+          value = symptom.value
+          # NOTE: We must check if the value is nil here before making this change.
+          # Otherwise, text responses of "Yes" will show "No" in each row because the value for each symptom is still empty, for example.
+          if symptom[:type] == 'BoolSymptom' && !value.nil?
+            value = value == true ? 'Yes' : 'No'
+          end
+          details[symptom[:name]] = value.nil? ? '' : value
+          details[:passes_threshold_data][symptom[:name]] = assessment.symptom_passes_threshold(symptom, threshold_symptoms[symptom[:name]])
         end
-        details[symptom_name] = value.nil? ? '' : value
-        passes_threshold_data[symptom_name] = assessment.symptom_passes_threshold(symptom_name)
       end
-      details[:passes_threshold_data] = passes_threshold_data
+
       table_data << details
     end
-    { table_data: table_data, symptoms: symptoms || [], total: assessments.total_entries }
+
+    { table_data: table_data, symptoms: threshold_symptoms.values || [], total: assessments.total_entries }
   end
 end
