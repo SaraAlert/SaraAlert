@@ -7,6 +7,8 @@ import { formatDate } from '../../../utils/DateTime';
 import { mapToChartFormat, parseOutFields } from '../../../utils/Analytics';
 import _ from 'lodash';
 
+import 'resize-observer-polyfill/dist/ResizeObserver.global';
+
 const WORKFLOWS = ['Exposure', 'Isolation'];
 const GRAPH_CONFIGS = [
   { dataKey: 'Exposure', fill: '#557385', legendText: 'Last Date of Exposure' },
