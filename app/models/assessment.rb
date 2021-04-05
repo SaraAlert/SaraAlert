@@ -31,9 +31,20 @@ class Assessment < ApplicationRecord
     where('created_at >= ?', since)
   }
 
+  # Assessments created by monitorees since the given time
+  scope :monitoree_created_since, lambda { |since|
+    where('created_at >= ?', since)
+      .where(who_reported: %w[Monitoree Proxy])
+  }
+
   # Assessments created by monitorees
   scope :created_by_monitoree, lambda {
     where(who_reported: %w[Monitoree Proxy])
+  }
+
+  # Assessments created by users
+  scope :created_by_user, lambda {
+    where.not(who_reported: %w[Monitoree Proxy])
   }
 
   def symptomatic?

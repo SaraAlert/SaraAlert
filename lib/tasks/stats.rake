@@ -122,6 +122,14 @@ namespace :stats do
         exposure: activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(start) }.count,
         isolation: activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(start) }.count
       }
+      results[title]['Total with activity today (monitoree)'] = {
+        exposure: activity_exp.where(isolation: false).where_assoc_exists(:assessments) { created_since(24.hours.ago) }.count,
+        isolation: activity_iso.where(isolation: true).where_assoc_exists(:assessments) { created_since(24.hours.ago) }.count
+      }
+      results[title]['Total with activity since start of evaluation (monitoree)'] = {
+        exposure: activity_exp.where(isolation: false).where_assoc_exists(:assessments) { monitoree_created_since(start) }.count,
+        isolation: activity_iso.where(isolation: true).where_assoc_exists(:assessments) { monitoree_created_since(start) }.count
+      }
       results[title]['Total with activity today (user & monitoree)'] = {
         exposure: (activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.pluck(:id) + activity_exp.where(isolation: false).where_assoc_exists(:assessments) { created_since(24.hours.ago) }.pluck(:id) ).uniq.count,
         isolation: (activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.pluck(:id) + activity_iso.where(isolation: true).where_assoc_exists(:assessments) { created_since(24.hours.ago) }.pluck(:id)).uniq.count
@@ -176,8 +184,12 @@ namespace :stats do
         exposure: active_exp.where_assoc_exists(:assessments) {created_since(24.hours.ago)}.count,
         isolation: active_iso.where_assoc_exists(:assessments) {created_since(24.hours.ago)}.count
       }
+
+      reporting_days_exp = []
+      reporting_days_responded_to_all_exp = []
       responded_to_all_reminders_self_exp = 0
       responded_to_all_reminders_self_and_user_exp = 0
+      responded_to_all_reminders_user_exp = 0
       not_respond_to_all_reminders_self_exp = 0
       not_respond_to_all_reminders_self_and_user_exp = 0
       days_no_response_self_exp = []
@@ -198,10 +210,14 @@ namespace :stats do
       enrollment_to_first_rep_exp = []
       active_exp.find_each do |patient|
         times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        reporting_days_exp << times_sent.count
         times_recv_self = patient.assessments.created_since(start).created_by_monitoree.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         times_recv_self_and_user = patient.assessments.created_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
-        responded_to_all_reminders_self_exp += 1 if times_sent.count == times_recv_self.count
-        responded_to_all_reminders_self_and_user_exp += 1 if times_sent.count == times_recv_self_and_user.count
+        times_recv_user = patient.assessments.created_since(start).created_by_user.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        responded_to_all_reminders_self_exp += 1 if times_sent.count <= times_recv_self.count
+        responded_to_all_reminders_self_and_user_exp += 1 if times_sent.count <= times_recv_self_and_user.count
+        responded_to_all_reminders_user_exp += 1 if times_sent.count <= times_recv_user.count
+        reporting_days_responded_to_all_exp << << times_sent.count if times_sent.count <= times_recv_self_and_user.count
         not_respond_to_all_reminders_self_exp += 1 unless times_sent.count == times_recv_self.count
         not_respond_to_all_reminders_self_and_user_exp += 1 unless times_sent.count == times_recv_self_and_user.count
         days_no_response_self_exp << times_sent.count - times_recv_self.count unless times_sent.count == times_recv_self.count
@@ -235,8 +251,12 @@ namespace :stats do
         overall_rates_count_exp += times_sent.count if !times_sent.empty?
         enrollment_to_first_rep_exp << (times_recv_self_and_user.first - patient.created_at.to_date).to_i unless times_recv_self_and_user.empty?
       end
+
+      reporting_days_iso = []
+      reporting_days_responded_to_all_iso = []
       responded_to_all_reminders_self_iso = 0
       responded_to_all_reminders_self_and_user_iso = 0
+      responded_to_all_reminders_user_iso = 0
       not_respond_to_all_reminders_self_iso = 0
       not_respond_to_all_reminders_self_and_user_iso = 0
       days_no_response_self_iso = []
@@ -256,10 +276,14 @@ namespace :stats do
       enrollment_to_first_rep_iso = []
       active_iso.find_each do |patient|
         times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        reporting_days_iso << times_sent.count
         times_recv_self = patient.assessments.created_since(start).created_by_monitoree.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         times_recv_self_and_user = patient.assessments.created_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
-        responded_to_all_reminders_self_iso += 1 if times_sent.count == times_recv_self.count
-        responded_to_all_reminders_self_and_user_iso += 1 if times_sent.count == times_recv_self_and_user.count
+        times_recv_user = patient.assessments.created_since(start).created_by_user.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        responded_to_all_reminders_self_iso += 1 if times_sent.count <= times_recv_self.count
+        responded_to_all_reminders_self_and_user_iso += 1 if times_sent.count <= times_recv_self_and_user.count
+        responded_to_all_reminders_user_iso += 1 if times_sent.count <= times_recv_user.count
+        reporting_days_responded_to_all_iso << << times_sent.count if times_sent.count <= times_recv_self_and_user.count
         not_respond_to_all_reminders_self_iso += 1 unless times_sent.count == times_recv_self.count
         not_respond_to_all_reminders_self_and_user_iso += 1 unless times_sent.count == times_recv_self_and_user.count
         days_no_response_self_iso << times_sent.count - times_recv_self.count unless times_sent.count == times_recv_self.count
@@ -292,6 +316,15 @@ namespace :stats do
         overall_rates_count_iso += times_sent.count if !times_sent.empty?
         enrollment_to_first_rep_iso << (times_recv_self_and_user.first - patient.created_at.to_date).to_i unless times_recv_self_and_user.empty?
       end
+
+      results[title]['Mean number of reporting days'] = {
+        exposure: reporting_days_exp.inject{ |sum, el| sum + el }.to_f / reporting_days_exp.size,
+        isolation: reporting_days_iso.inject{ |sum, el| sum + el }.to_f / reporting_days_iso.size,
+      }
+      results[title]['Mean number of reporting days for those responding to all'] = {
+        exposure: reporting_days_responded_to_all_exp.inject{ |sum, el| sum + el }.to_f / reporting_days_responded_to_all_exp.size,
+        isolation: reporting_days_responded_to_all_iso.inject{ |sum, el| sum + el }.to_f / reporting_days_responded_to_all_iso.size,
+      }
       results[title]['Number of monitorees responding to ALL automated messages (monitoree or proxy response only)'] = {
         exposure: responded_to_all_reminders_self_exp,
         isolation: responded_to_all_reminders_self_iso
@@ -299,6 +332,10 @@ namespace :stats do
       results[title]['Number of monitorees responding to ALL automated messages (any response documented, including by public health user)'] = {
         exposure: responded_to_all_reminders_self_and_user_exp,
         isolation: responded_to_all_reminders_self_and_user_iso
+      }
+      results[title]['Number of monitorees responding to ALL automated messages (public health user only)'] = {
+        exposure: responded_to_all_reminders_user_exp,
+        isolation: responded_to_all_reminders_user_iso
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all daily automated messages (monitoree or proxy response only)'] = {
         exposure: not_respond_to_all_reminders_self_exp,
@@ -384,6 +421,9 @@ namespace :stats do
         exposure: active_exp.where_assoc_exists(:histories) { user_generated_since(start) }.count,
         isolation: active_iso.where_assoc_exists(:histories) { user_generated_since(start) }.count
       }
+
+
+
 
       puts 'Step 4 of 6: demographics'
       title = "DEMOGRAPHICS: Cohort of active monitorees existing or added during 14 day period EXCLUDING Opt-out or Unknown reporting methods"
