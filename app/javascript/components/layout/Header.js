@@ -90,7 +90,7 @@ class Header extends React.Component {
                     <a className="dropdown-item" href="https://virtualcommunities.naccho.org/saraalertforum/home" target="_blank" rel="noreferrer">
                       <i className="fas fa-comments fa-fw"></i> User Forum
                     </a>
-                    <a className="dropdown-item" href="https://saraalert.org/contact/" target="_blank" rel="noreferrer">
+                    <a className="dropdown-item" href="https://saraalert.org/contact-us/" target="_blank" rel="noreferrer">
                       <i className="fas fa-envelope-open-text fa-fw"></i> Contact Us
                     </a>
                   </div>
