@@ -1,4 +1,4 @@
-import { getAllLanguages } from './supportedLanguages.js';
+import { LANGUAGES } from '../utils/Languages';
 
 export const advancedFilterOptions = [
 
@@ -178,7 +178,7 @@ export const advancedFilterOptions = [
     title: 'Primary Language (Select)',
     description: 'Monitoree primary language',
     type: 'select',
-    options: getAllLanguages().map(lang => lang.name).concat(['']),
+    options: LANGUAGES.map(lang => lang.d).concat(['']),
   },
   {
     name: 'risk-exposure',

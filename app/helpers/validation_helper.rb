@@ -104,7 +104,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     ]
   }.freeze
 
-  VALID_LANGUAGES = PATIENT_HELPER_FILES[:languages].stringify_keys().keys().freeze
+  VALID_LANGUAGES = PATIENT_HELPER_FILES[:languages].stringify_keys.keys.freeze
 
   SYSTEM_SELECTABLE_MONITORING_REASONS = [
     'Enrolled more than 14 days after last date of exposure (system)', 'Enrolled more than 10 days after last date of exposure (system)',

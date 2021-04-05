@@ -125,7 +125,7 @@ class PatientMailer < ApplicationMailer
     return unless patient.last_assessment_reminder_sent_eligible?
 
     lang = patient.select_language
-    lang = :eng if %i[so].include?(lang) # Some languages are not supported via voice
+    lang = :eng if %i[som].include?(lang) # Some languages are not supported via voice
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient_names = patient.active_dependents.uniq.collect do |dependent|
       "#{dependent&.first_name&.first || ''}, #{dependent&.last_name&.first || ''}, "\

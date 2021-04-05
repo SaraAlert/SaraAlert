@@ -24,7 +24,7 @@ desc 'Backup the database'
   desc 'Generate N many more monitorees based on existing data'
   task create_bulk_data: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
-    num_patients = (ENV['COUNT'] || 25).to_i
+    num_patients = (ENV['COUNT'] || 100000).to_i
     num_threads = (ENV['THREADS'] || 8).to_i
 
     duplicateable = Patient.where('responder_id = id').pluck(:id)
@@ -187,7 +187,7 @@ desc 'Backup the database'
   task update: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
-    num_patients_today = (10000 || ENV['COUNT'] || 25).to_i * 20
+    num_patients_today = (ENV['COUNT'] || 25).to_i * 20
     cache_analytics = (ENV['SKIP_ANALYTICS'] != 'true')
 
     jurisdictions = Jurisdiction.all
@@ -275,10 +275,8 @@ desc 'Backup the database'
         available_lang_codes << k
       end
 
-      # patient[:primary_language] = rand < 0.7 ? 'eng' : available_lang_codes[rand(0..available_lang_codes.length)]
-      patient[:primary_language] = rand < 0.5 ? 'English' : Faker::Address.city
-      # patient[:secondary_language] = available_lang_codes[rand(0..available_lang_codes.length)] if rand < 0.4
-      patient[:secondary_language] = rand < 0.5 ? 'Spanish' : Faker::Address.city
+      patient[:primary_language] = rand < 0.7 ? 'eng' : available_lang_codes[rand(0..available_lang_codes.length)]
+      patient[:secondary_language] = available_lang_codes[rand(0..available_lang_codes.length)] if rand < 0.4
       patient[:interpretation_required] = rand < 0.15
       patient[:nationality] = Faker::Nation.nationality if rand < 0.6
       patient[:user_defined_id_statelocal] = "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}" if rand < 0.7

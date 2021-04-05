@@ -75,7 +75,7 @@ class AssessmentsController < ApplicationController
       'es': 'spa',
       'es-PR': 'spa-PR',
       'so': 'som',
-      'fra': 'fra'
+      'fr': 'fra'
     }
     unless params[:lang].nil?
       @lang = legacy_language_mapping.keys.include?(params[:lang].to_sym) ? legacy_language_mapping[params[:lang].to_sym] : params[:lang]

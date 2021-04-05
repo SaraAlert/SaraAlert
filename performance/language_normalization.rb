@@ -3,7 +3,8 @@
 # rubocop:disable Metrics/BlockNesting
 # rubocop:disable Style/MutableConstant
 
-SCRIPT_MODE = 'DRY_RUN' # ["DRY_RUN", "LIVE"]
+# SCRIPT_MODE = 'DRY_RUN' # ["DRY_RUN", "LIVE"]
+SCRIPT_MODE = 'LIVE' # ["DRY_RUN", "LIVE"]
 
 EXPOSURE_NOTES_FIELD_MAX_LENGTH = 2000
 
@@ -39,7 +40,7 @@ def match_language(lang)
   # first search in all 3-letter language codes
   matched_language = nil
   # then search by language display name
-  matched_language = LANGUAGES[lang.to_sym][:code] if LANGUAGES[lang.to_sym]
+  matched_language = lang.to_sym if LANGUAGES[lang.to_sym]
   return matched_language unless matched_language.nil?
 
   matched_language = INVERTED_ISO_LOOKUP[lang] unless INVERTED_ISO_LOOKUP[lang].nil?
@@ -103,7 +104,7 @@ if SCRIPT_MODE == 'DRY_RUN'
   printf('Press anything to begin...')
   gets
 
-  Patient.find_each do |monitoree|
+  Patient.where(purged: false).find_each do |monitoree|
     unless monitoree[:primary_language].nil? # guarantees going forward that the primary_language exists
       currrent_language = monitoree[:primary_language].to_s.downcase
       if CUSTOM_TRANSLATIONS.keys.include?(currrent_language.to_sym)
@@ -148,7 +149,8 @@ if SCRIPT_MODE == 'DRY_RUN'
             printf("Enter '1' if you would like to change them all to '#{lang_iso_code || 'nil'}'\n")
             printf("Enter '2' if you would like to ONLY change this Monitoree to '#{lang_iso_code || 'nil'}'\n")
             printf("The System will ask what you want to do with the old language next.\n")
-            printf("Please note if select Option 1, the System will attempt to include the previous language in the exposure notes for all future monitorees with this language.\n")
+            printf("Please note if select Option 1, the System will attempt to include the previous language \
+in the exposure notes for all future monitorees with this language.\n")
             printf('Your Input (1 or 2): ')
             user_input = gets.chomp
             if user_input.to_s == '1'
@@ -235,7 +237,8 @@ if SCRIPT_MODE == 'DRY_RUN'
             printf("Enter '1' if you would like to change them all to '#{lang_iso_code || 'nil'}'\n")
             printf("Enter '2' if you would like to ONLY change this Monitoree to '#{lang_iso_code || 'nil'}'\n")
             printf("The System will ask what you want to do with the old language next.\n")
-            printf("Please note if select Option 1, the System will attempt to include the previous language in the exposure notes for all future monitorees with this language.\n")
+            printf("Please note if select Option 1, the System will attempt to include the previous language \
+in the exposure notes for all future monitorees with this language.\n")
             printf('Your Input (1 or 2): ')
             user_input = gets.chomp
             if user_input.to_s == '1'
@@ -285,23 +288,12 @@ if SCRIPT_MODE == 'DRY_RUN'
 end
 
 if SCRIPT_MODE == 'LIVE'
-
-  total_patient_count = Patient.all.length
-  total_primary_lang_count = Patient.where.not(primary_language: nil).length
-  unmatchable_primary_langs = get_all_unmamtchable_count('primary_language')
-  matchable_primary_langs = total_primary_lang_count - unmatchable_primary_langs
-
-  total_secondary_lang_count = Patient.where.not(secondary_language: nil).length
-
-  unmatchable_secondary_langs = get_all_unmamtchable_count('secondary_language')
-
-  matchable_secondary_langs = total_secondary_lang_count - unmatchable_secondary_langs
   printf("\n\nRunning in LIVE MODE mode (CHANGES WILL BE SAVED)\n")
   printf("\n")
   printf('Press anything to begin...')
   gets
 
-  Patient.find_each do |monitoree|
+  Patient.where(purged: false).find_each do |monitoree|
     unless monitoree[:primary_language].nil? # guarantees going forward that the primary_language exists
       currrent_language = monitoree[:primary_language].to_s.downcase
       if CUSTOM_TRANSLATIONS.keys.include?(currrent_language.to_sym)
@@ -346,7 +338,8 @@ if SCRIPT_MODE == 'LIVE'
             printf("Enter '1' if you would like to change them all to '#{lang_iso_code || 'nil'}'\n")
             printf("Enter '2' if you would like to ONLY change this Monitoree to '#{lang_iso_code || 'nil'}'\n")
             printf("The System will ask what you want to do with the old language next.\n")
-            printf("Please note if select Option 1, the System will attempt to include the previous language in the exposure notes for all future monitorees with this language.\n")
+            printf("Please note if select Option 1, the System will attempt to include the previous language \
+in the exposure notes for all future monitorees with this language.\n")
             printf('Your Input (1 or 2): ')
             user_input = gets.chomp
             if user_input.to_s == '1'
@@ -432,7 +425,8 @@ if SCRIPT_MODE == 'LIVE'
             printf("Enter '1' if you would like to change them all to '#{lang_iso_code || 'nil'}'\n")
             printf("Enter '2' if you would like to ONLY change this Monitoree to '#{lang_iso_code || 'nil'}'\n")
             printf("The System will ask what you want to do with the old language next.\n")
-            printf("Please note if select Option 1, the System will attempt to include the previous language in the exposure notes for all future monitorees with this language.\n")
+            printf("Please note if select Option 1, the System will attempt to include the previous language \
+in the exposure notes for all future monitorees with this language.\n")
             printf('Your Input (1 or 2): ')
             user_input = gets.chomp
             if user_input.to_s == '1'

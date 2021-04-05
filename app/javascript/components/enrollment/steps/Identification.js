@@ -3,16 +3,15 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Form } from 'react-bootstrap';
 import Select from 'react-select';
 
-import _ from 'lodash';
 import * as yup from 'yup';
 import moment from 'moment-timezone';
 
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
-import { getAllLanguages, supportedLanguages } from '../../../data/supportedLanguages.js';
+import { tryToMatchLanguage, getLanguageSupported, getLanguagesAsOptions } from '../../../utils/Languages';
 
-// save as a constant to avoid multiple calls to `getAllLanguages` (which is semi-expensive)
-const ALL_LANGUAGES = getAllLanguages();
+const languageOptions = getLanguagesAsOptions();
+
 const WORKFLOW_OPTIONS = [
   { label: 'Exposure (contact)', value: 'exposure' },
   { label: 'Isolation (case)', value: 'isolation' },
@@ -26,7 +25,11 @@ class Identification extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
-      formattedLanguageOptions: this.formatLanguageOptions(),
+      primaryLanguageMessage: this.getPrimaryLanguageSupportMessage(tryToMatchLanguage(this.props.currentState.patient.primary_language)),
+      // The dropdown for languages requires the selected values to be in a special format
+      // maintain these values in state to avoid unnecessary computation in `render`
+      selectedPrimaryLanguage: this.formatLanguageAsOption(tryToMatchLanguage(this.props.currentState.patient.primary_language)),
+      selectedSecondaryLanguage: this.formatLanguageAsOption(tryToMatchLanguage(this.props.currentState.patient.secondary_language)),
     };
   }
 
@@ -125,27 +128,30 @@ class Identification extends React.Component {
   };
 
   handleLanguageChange = (languageType, event) => {
+    const selectedLanguage = languageType === 'primary_language' ? 'selectedPrimaryLanguage' : 'selectedSecondaryLanguage';
     const value = event.value;
     const current = this.state.current;
     const modified = this.state.modified;
-    this.setState(
-      {
-        current: { ...current, patient: { ...current.patient, [languageType]: value } },
-        modified: { ...modified, patient: { ...modified.patient, [languageType]: value } },
-      },
-      () => {
-        this.props.setEnrollmentState({ ...this.state.modified });
-      }
-    );
+    let newState = {
+      current: { ...current, patient: { ...current.patient, [languageType]: value } },
+      modified: { ...modified, patient: { ...modified.patient, [languageType]: value } },
+      [selectedLanguage]: event,
+    };
+    if (languageType === 'primary_language') {
+      // Calculate a new primaryLanguageMessage if that value has changed
+      newState['primaryLanguageMessage'] = this.getPrimaryLanguageSupportMessage({ c: event.value, d: event.label });
+    }
+    this.setState(newState, () => {
+      this.props.setEnrollmentState({ ...this.state.modified });
+    });
   };
 
   validate = callback => {
-    const self = this;
     schema
       .validate(this.state.current.patient, { abortEarly: false })
       .then(() => {
         // No validation issues? Invoke callback (move to next step)
-        self.setState({ errors: {} }, () => {
+        this.setState({ errors: {} }, () => {
           callback();
         });
       })
@@ -156,52 +162,35 @@ class Identification extends React.Component {
           for (var issue of err.inner) {
             issues[issue['path']] = issue['errors'];
           }
-          self.setState({ errors: issues });
+          this.setState({ errors: issues });
         }
       });
   };
 
-  formatLanguageOptions = () => {
-    const langOptions = ALL_LANGUAGES.map(lang => {
-      const fullySupported = lang.supported.sms && lang.supported.email && lang.supported.phone;
-      const langLabel = fullySupported ? lang.name : lang.name + '*';
-      return { value: lang.name, label: langLabel };
-    });
+  /**
+   * Formats a language as {label: displayName, value: isoCode}
+   * Essentially just renames some object keys for the Select component
+   * @param {Object} lang - must be in the form of {c: isoCode, d: displayName}
+   * @return {Object}
+   */
+  formatLanguageAsOption = lang => ({ label: lang?.d, value: lang?.c });
 
-    // lodash's 'remove()' actually removes the values from the object
-    let supportedNames = supportedLanguages.map(sL => sL.name);
-    const supportedLangsFormatted = _.remove(langOptions, n => supportedNames.includes(n.value));
-    const unsupportedLangsFormatted = langOptions;
+  // language must be in the exact format
+  // { c: isoCode, d: displayName }
+  getPrimaryLanguageSupportMessage = language => {
+    let message = null;
+    if (language) {
+      // Don't include any trailing asterisks (*) from unsupported languages in the message
+      language.d = language.d.replace(/\*+$/, '');
 
-    const groupedOptions = [
-      {
-        label: 'Supported Languages',
-        options: supportedLangsFormatted,
-      },
-      {
-        label: 'Unsupported Languages',
-        options: unsupportedLangsFormatted,
-      },
-    ];
-    return groupedOptions;
-  };
-
-  getLanguageValue = language => {
-    return ALL_LANGUAGES.find(l => l.value === language);
-  };
-
-  renderPrimaryLanguageSupportMessage = selectedLanguage => {
-    if (selectedLanguage) {
-      const languageJson = ALL_LANGUAGES.find(l => l.name === selectedLanguage);
-
+      const languageJson = getLanguageSupported(language);
       if (languageJson && languageJson.supported) {
         const sms = languageJson.supported.sms;
         const email = languageJson.supported.email;
         const phone = languageJson.supported.phone;
         const fullySupported = sms && email && phone;
-
         if (!fullySupported) {
-          let message = languageJson.name;
+          message = languageJson.name;
           if (!sms && !email && !phone) {
             message += ' is not currently supported by Sara Alert. Any messages sent to this monitoree will be in English.';
           } else if (!sms && !email && phone) {
@@ -223,41 +212,10 @@ class Identification extends React.Component {
             message +=
               ' is supported for email and SMS text reporting methods only. If telephone call is selected as the preferred reporting method, the call will be in English.';
           }
-          return (
-            <i>
-              <b>* Warning:</b> {message}
-            </i>
-          );
         }
       }
     }
-  };
-
-  formatGroupLabel = data => {
-    // This function styles the language counters we see in the Language Dropdowns
-    const groupStyles = {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    };
-    const groupBadgeStyles = {
-      backgroundColor: '#EBECF0',
-      borderRadius: '2px',
-      color: '#172B4D',
-      display: 'inline-block',
-      fontSize: 12,
-      fontWeight: 'normal',
-      lineHeight: '1',
-      minWidth: 1,
-      padding: '5px 8px',
-      textAlign: 'center',
-    };
-    return (
-      <div style={groupStyles}>
-        <span>{data.label}</span>
-        <span style={groupBadgeStyles}>{data.options.length}</span>
-      </div>
-    );
+    return message;
   };
 
   render() {
@@ -495,9 +453,8 @@ class Identification extends React.Component {
                   </Form.Label>
                   <Select
                     inputId="primary-language-select"
-                    value={this.getLanguageValue(this.state.current.patient.primary_language)}
-                    options={this.state.formattedLanguageOptions}
-                    formatGroupLabel={this.formatGroupLabel}
+                    value={this.state.selectedPrimaryLanguage}
+                    options={languageOptions}
                     onChange={e => this.handleLanguageChange('primary_language', e)}
                     placeholder=""
                     styles={cursorPointerStyle}
@@ -514,9 +471,8 @@ class Identification extends React.Component {
                   </Form.Label>
                   <Select
                     inputId="secondary-language-select"
-                    value={this.getLanguageValue(this.state.current.patient.secondary_language)}
-                    formatGroupLabel={this.formatGroupLabel}
-                    options={this.state.formattedLanguageOptions}
+                    value={this.state.selectedSecondaryLanguage}
+                    options={languageOptions}
                     onChange={e => this.handleLanguageChange('secondary_language', e)}
                     placeholder=""
                     styles={cursorPointerStyle}
@@ -529,7 +485,11 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} sm={24} md={12} controlId="primary_language_support_message" className="pr-md-4 mb-0">
-                  {this.renderPrimaryLanguageSupportMessage(this.state.current.patient.primary_language)}
+                  {this.state.primaryLanguageMessage && (
+                    <i>
+                      <b>* Warning:</b> {this.state.primaryLanguageMessage}
+                    </i>
+                  )}
                 </Form.Group>
                 <Form.Group as={Col} sm={24} md={12} controlId="secondary_language_support_message" className="pl-md-4 mb-0">
                   {this.state.current.patient.secondary_language && (

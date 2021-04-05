@@ -4,6 +4,7 @@ import { Button, Col, Collapse, Form, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { convertLanguageCodeToName } from '../../utils/Languages';
 
 import BadgeHOH from './household/utils/BadgeHOH';
 import ChangeHOH from './household/actions/ChangeHOH';
@@ -193,7 +194,7 @@ class Patient extends React.Component {
                   <b>Age:</b> <span>{this.props.details.age || '--'}</span>
                 </div>
                 <div>
-                  <b>Language:</b> <span>{this.props.details.primary_language || '--'}</span>
+                  <b>Language:</b> <span>{convertLanguageCodeToName(this.props.details.primary_language) || '--'}</span>
                 </div>
                 <div>
                   <b>State/Local ID:</b> <span>{this.props.details.user_defined_id_statelocal || '--'}</span>

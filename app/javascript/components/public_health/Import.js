@@ -1,6 +1,8 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
+import { convertLanguageCodeToName } from '../../utils/Languages';
+
 import axios from 'axios';
 import moment from 'moment-timezone';
 import confirmDialog from '../util/ConfirmDialog';
@@ -249,7 +251,7 @@ class Import extends React.Component {
                         <br />
                         <b>DOB:</b> {patient.date_of_birth}
                         <br />
-                        <b>Language:</b> {patient.primary_language}
+                        <b>Language:</b> {convertLanguageCodeToName(patient.primary_language)}
                         <br />
                         <b>Flight or Vessel Number:</b> {patient.flight_or_vessel_number}
                       </Col>

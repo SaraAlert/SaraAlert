@@ -5,1846 +5,1850 @@
 # This ensures that there are no Extinct languages present
 
 # ANY CHANGES TO THIS FILE MUST BE MANUALLY INCLUDED IN `minifiedLanguages.js`
-
-:aar:
-  :code: 'aar'
-  :display: 'Afar'
-  :system: 'iso639-2'
-
-:abk:
-  :code: 'abk'
-  :display: 'Abkhazian'
-  :system: 'iso639-2'
-
-:ace:
-  :code: 'ace'
-  :display: 'Achinese'
-  :system: 'iso639-2'
-
-:ach:
-  :code: 'ach'
-  :display: 'Acoli'
-  :system: 'iso639-2'
-
-:ada:
-  :code: 'ada'
-  :display: 'Adangme'
-  :system: 'iso639-2'
-
-:ady:
-  :code: 'ady'
-  :display: 'Adyghe'
-  :system: 'iso639-2'
-
-:afr:
-  :code: 'afr'
-  :display: 'Afrikaans'
-  :system: 'iso639-2'
-
-:ain:
-  :code: 'ain'
-  :display: 'Ainu (Japan)'
-  :system: 'iso639-2'
-
-:aka:
-  :code: 'aka'
-  :display: 'Akan'
-  :system: 'iso639-2'
-
-:ale:
-  :code: 'ale'
-  :display: 'Aleut'
-  :system: 'iso639-2'
-
-:alt:
-  :code: 'alt'
-  :display: 'Southern Altai'
-  :system: 'iso639-2'
-
-:amh:
-  :code: 'amh'
-  :display: 'Amharic'
-  :system: 'iso639-2'
-
-:anp:
-  :code: 'anp'
-  :display: 'Angika'
-  :system: 'iso639-2'
-
-:ara:
-  :code: 'ara'
-  :display: 'Arabic'
-  :system: 'iso639-2'
-
-:arg:
-  :code: 'arg'
-  :display: 'Aragonese'
-  :system: 'iso639-2'
-
-:arn:
-  :code: 'arn'
-  :display: 'Mapudungun'
-  :system: 'iso639-2'
-
-:arp:
-  :code: 'arp'
-  :display: 'Arapaho'
-  :system: 'iso639-2'
-
-:arw:
-  :code: 'arw'
-  :display: 'Arawak'
-  :system: 'iso639-2'
-
-:asm:
-  :code: 'asm'
-  :display: 'Assamese'
-  :system: 'iso639-2'
-
-:ast:
-  :code: 'ast'
-  :display: 'Asturian'
-  :system: 'iso639-2'
-
-:ava:
-  :code: 'ava'
-  :display: 'Avaric'
-  :system: 'iso639-2'
-
-:awa:
-  :code: 'awa'
-  :display: 'Awadhi'
-  :system: 'iso639-2'
-
-:aym:
-  :code: 'aym'
-  :display: 'Aymara'
-  :system: 'iso639-2'
-
-:aze:
-  :code: 'aze'
-  :display: 'Azerbaijani'
-  :system: 'iso639-2'
-
-:bak:
-  :code: 'bak'
-  :display: 'Bashkir'
-  :system: 'iso639-2'
-
-:bal:
-  :code: 'bal'
-  :display: 'Baluchi'
-  :system: 'iso639-2'
-
-:bam:
-  :code: 'bam'
-  :display: 'Bambara'
-  :system: 'iso639-2'
-
-:ban:
-  :code: 'ban'
-  :display: 'Balinese'
-  :system: 'iso639-2'
-
-:bas:
-  :code: 'bas'
-  :display: 'Basa (Cameroon)'
-  :system: 'iso639-2'
-
-:bej:
-  :code: 'bej'
-  :display: 'Beja'
-  :system: 'iso639-2'
-
-:bel:
-  :code: 'bel'
-  :display: 'Belarusian'
-  :system: 'iso639-2'
-
-:bem:
-  :code: 'bem'
-  :display: 'Bemba (Zambia)'
-  :system: 'iso639-2'
-
-:ben:
-  :code: 'ben'
-  :display: 'Bengali'
-  :system: 'iso639-2'
-
-:bho:
-  :code: 'bho'
-  :display: 'Bhojpuri'
-  :system: 'iso639-2'
-
-:bik:
-  :code: 'bik'
-  :display: 'Bikol'
-  :system: 'iso639-2'
-
-:bin:
-  :code: 'bin'
-  :display: 'Bini'
-  :system: 'iso639-2'
-
-:bis:
-  :code: 'bis'
-  :display: 'Bislama'
-  :system: 'iso639-2'
-
-:bla:
-  :code: 'bla'
-  :display: 'Siksika'
-  :system: 'iso639-2'
-
-:bod:
-  :code: 'bod'
-  :display: 'Tibetan'
-  :system: 'iso639-2'
-
-:bos:
-  :code: 'bos'
-  :display: 'Bosnian'
-  :system: 'iso639-2'
-
-:bra:
-  :code: 'bra'
-  :display: 'Braj'
-  :system: 'iso639-2'
-
-:bre:
-  :code: 'bre'
-  :display: 'Breton'
-  :system: 'iso639-2'
-
-:bua:
-  :code: 'bua'
-  :display: 'Buriat'
-  :system: 'iso639-2'
-
-:bug:
-  :code: 'bug'
-  :display: 'Buginese'
-  :system: 'iso639-2'
-
-:bul:
-  :code: 'bul'
-  :display: 'Bulgarian'
-  :system: 'iso639-2'
-
-:byn:
-  :code: 'byn'
-  :display: 'Bilin'
-  :system: 'iso639-2'
-
-:cad:
-  :code: 'cad'
-  :display: 'Caddo'
-  :system: 'iso639-2'
-
-:car:
-  :code: 'car'
-  :display: 'Galibi Carib'
-  :system: 'iso639-2'
-
-:cat:
-  :code: 'cat'
-  :display: 'Catalan'
-  :system: 'iso639-2'
-
-:ceb:
-  :code: 'ceb'
-  :display: 'Cebuano'
-  :system: 'iso639-2'
-
-:ces:
-  :code: 'ces'
-  :display: 'Czech'
-  :system: 'iso639-2'
-
-:cha:
-  :code: 'cha'
-  :display: 'Chamorro'
-  :system: 'iso639-2'
-
-:che:
-  :code: 'che'
-  :display: 'Chechen'
-  :system: 'iso639-2'
-
-:chk:
-  :code: 'chk'
-  :display: 'Chuukese'
-  :system: 'iso639-2'
-
-:chm:
-  :code: 'chm'
-  :display: 'Mari (Russia)'
-  :system: 'iso639-2'
-
-:chn:
-  :code: 'chn'
-  :display: 'Chinook jargon'
-  :system: 'iso639-2'
-
-:cho:
-  :code: 'cho'
-  :display: 'Choctaw'
-  :system: 'iso639-2'
-
-:chp:
-  :code: 'chp'
-  :display: 'Chipewyan'
-  :system: 'iso639-2'
-
-:chr:
-  :code: 'chr'
-  :display: 'Cherokee'
-  :system: 'iso639-2'
-
-:chv:
-  :code: 'chv'
-  :display: 'Chuvash'
-  :system: 'iso639-2'
-
-:chy:
-  :code: 'chy'
-  :display: 'Cheyenne'
-  :system: 'iso639-2'
-
-:cnr:
-  :code: 'cnr'
-  :display: 'Montenegrin'
-  :system: 'iso639-2'
-
-:cor:
-  :code: 'cor'
-  :display: 'Cornish'
-  :system: 'iso639-2'
-
-:cos:
-  :code: 'cos'
-  :display: 'Corsican'
-  :system: 'iso639-2'
-
-:cre:
-  :code: 'cre'
-  :display: 'Cree'
-  :system: 'iso639-2'
-
-:crh:
-  :code: 'crh'
-  :display: 'Crimean Tatar'
-  :system: 'iso639-2'
-
-:csb:
-  :code: 'csb'
-  :display: 'Kashubian'
-  :system: 'iso639-2'
-
-:cym:
-  :code: 'cym'
-  :display: 'Welsh'
-  :system: 'iso639-2'
-
-:dak:
-  :code: 'dak'
-  :display: 'Dakota'
-  :system: 'iso639-2'
-
-:dan:
-  :code: 'dan'
-  :display: 'Danish'
-  :system: 'iso639-2'
-
-:dar:
-  :code: 'dar'
-  :display: 'Dargwa'
-  :system: 'iso639-2'
-
-:del:
-  :code: 'del'
-  :display: 'Delaware'
-  :system: 'iso639-2'
-
-:den:
-  :code: 'den'
-  :display: 'Slave (Athapascan)'
-  :system: 'iso639-2'
-
-:deu:
-  :code: 'deu'
-  :display: 'German'
-  :system: 'iso639-2'
-
-:dgr:
-  :code: 'dgr'
-  :display: 'Dogrib'
-  :system: 'iso639-2'
-
-:din:
-  :code: 'din'
-  :display: 'Dinka'
-  :system: 'iso639-2'
-
-:div:
-  :code: 'div'
-  :display: 'Dhivehi'
-  :system: 'iso639-2'
-
-:doi:
-  :code: 'doi'
-  :display: 'Dogri'
-  :system: 'iso639-2'
-
-:dsb:
-  :code: 'dsb'
-  :display: 'Lower Sorbian'
-  :system: 'iso639-2'
-
-:dua:
-  :code: 'dua'
-  :display: 'Duala'
-  :system: 'iso639-2'
-
-:dyu:
-  :code: 'dyu'
-  :display: 'Dyula'
-  :system: 'iso639-2'
-
-:dzo:
-  :code: 'dzo'
-  :display: 'Dzongkha'
-  :system: 'iso639-2'
-
-:efi:
-  :code: 'efi'
-  :display: 'Efik'
-  :system: 'iso639-2'
-
-:eka:
-  :code: 'eka'
-  :display: 'Ekajuk'
-  :system: 'iso639-2'
-
-:ell:
-  :code: 'ell'
-  :display: 'Greek'
-  :system: 'iso639-2'
-
+# The most common languages are listed first for faster lookups
+
+# The three-letter key (first value) is the accepted 3-letter iso-639-2t code that the application will use
+# In the interest of interoperability with other health systems, the tool will support and accept
+# iso-639-1 two-letter codes.
 :eng:
-  :code: 'eng'
   :display: 'English'
-  :system: 'iso639-2'
-
-:est:
-  :code: 'est'
-  :display: 'Estonian'
-  :system: 'iso639-2'
-
-:eus:
-  :code: 'eus'
-  :display: 'Basque'
-  :system: 'iso639-2'
-
-:ewe:
-  :code: 'ewe'
-  :display: 'Ewe'
-  :system: 'iso639-2'
-
-:ewo:
-  :code: 'ewo'
-  :display: 'Ewondo'
-  :system: 'iso639-2'
-
-:fan:
-  :code: 'fan'
-  :display: 'Fang (Equatorial Guinea)'
-  :system: 'iso639-2'
-
-:fao:
-  :code: 'fao'
-  :display: 'Faroese'
-  :system: 'iso639-2'
-
-:fas:
-  :code: 'fas'
-  :display: 'Persian'
-  :system: 'iso639-2'
-
-:fat:
-  :code: 'fat'
-  :display: 'Fanti'
-  :system: 'iso639-2'
-
-:fij:
-  :code: 'fij'
-  :display: 'Fijian'
-  :system: 'iso639-2'
-
-:fil:
-  :code: 'fil'
-  :display: 'Filipino'
-  :system: 'iso639-2'
-
-:fin:
-  :code: 'fin'
-  :display: 'Finnish'
-  :system: 'iso639-2'
-
-:fon:
-  :code: 'fon'
-  :display: 'Fon'
-  :system: 'iso639-2'
+  :iso6391code: "en"
+  :system: 'iso639-2t'
 
 :fra:
-  :code: 'fra'
   :display: 'French'
-  :system: 'iso639-2'
-
-:frr:
-  :code: 'frr'
-  :display: 'Northern Frisian'
-  :system: 'iso639-2'
-
-:frs:
-  :code: 'frs'
-  :display: 'Eastern Frisian'
-  :system: 'iso639-2'
-
-:fry:
-  :code: 'fry'
-  :display: 'Western Frisian'
-  :system: 'iso639-2'
-
-:ful:
-  :code: 'ful'
-  :display: 'Fulah'
-  :system: 'iso639-2'
-
-:fur:
-  :code: 'fur'
-  :display: 'Friulian'
-  :system: 'iso639-2'
-
-:gaa:
-  :code: 'gaa'
-  :display: 'Ga'
-  :system: 'iso639-2'
-
-:gay:
-  :code: 'gay'
-  :display: 'Gayo'
-  :system: 'iso639-2'
-
-:gba:
-  :code: 'gba'
-  :display: 'Gbaya (Central African Republic)'
-  :system: 'iso639-2'
-
-:gil:
-  :code: 'gil'
-  :display: 'Gilbertese'
-  :system: 'iso639-2'
-
-:gla:
-  :code: 'gla'
-  :display: 'Scottish Gaelic'
-  :system: 'iso639-2'
-
-:gle:
-  :code: 'gle'
-  :display: 'Irish'
-  :system: 'iso639-2'
-
-:glg:
-  :code: 'glg'
-  :display: 'Galician'
-  :system: 'iso639-2'
-
-:glv:
-  :code: 'glv'
-  :display: 'Manx'
-  :system: 'iso639-2'
-
-:gon:
-  :code: 'gon'
-  :display: 'Gondi'
-  :system: 'iso639-2'
-
-:gor:
-  :code: 'gor'
-  :display: 'Gorontalo'
-  :system: 'iso639-2'
-
-:grb:
-  :code: 'grb'
-  :display: 'Grebo'
-  :system: 'iso639-2'
-
-:grn:
-  :code: 'grn'
-  :display: 'Guarani'
-  :system: 'iso639-2'
-
-:gsw:
-  :code: 'gsw'
-  :display: 'Swiss German'
-  :system: 'iso639-2'
-
-:guj:
-  :code: 'guj'
-  :display: 'Gujarati'
-  :system: 'iso639-2'
-
-:gwi:
-  :code: 'gwi'
-  :display: "Gwich'in"
-  :system: 'iso639-2'
-
-:hai:
-  :code: 'hai'
-  :display: 'Haida'
-  :system: 'iso639-2'
-
-:hat:
-  :code: 'hat'
-  :display: 'Haitian'
-  :system: 'iso639-2'
-
-:hau:
-  :code: 'hau'
-  :display: 'Hausa'
-  :system: 'iso639-2'
-
-:haw:
-  :code: 'haw'
-  :display: 'Hawaiian'
-  :system: 'iso639-2'
-
-:heb:
-  :code: 'heb'
-  :display: 'Hebrew'
-  :system: 'iso639-2'
-
-:her:
-  :code: 'her'
-  :display: 'Herero'
-  :system: 'iso639-2'
-
-:hil:
-  :code: 'hil'
-  :display: 'Hiligaynon'
-  :system: 'iso639-2'
-
-:hin:
-  :code: 'hin'
-  :display: 'Hindi'
-  :system: 'iso639-2'
-
-:hmn:
-  :code: 'hmn'
-  :display: 'Hmong'
-  :system: 'iso639-2'
-
-:hmo:
-  :code: 'hmo'
-  :display: 'Hiri Motu'
-  :system: 'iso639-2'
-
-:hrv:
-  :code: 'hrv'
-  :display: 'Croatian'
-  :system: 'iso639-2'
-
-:hsb:
-  :code: 'hsb'
-  :display: 'Upper Sorbian'
-  :system: 'iso639-2'
-
-:hun:
-  :code: 'hun'
-  :display: 'Hungarian'
-  :system: 'iso639-2'
-
-:hup:
-  :code: 'hup'
-  :display: 'Hupa'
-  :system: 'iso639-2'
-
-:hye:
-  :code: 'hye'
-  :display: 'Armenian'
-  :system: 'iso639-2'
-
-:iba:
-  :code: 'iba'
-  :display: 'Iban'
-  :system: 'iso639-2'
-
-:ibo:
-  :code: 'ibo'
-  :display: 'Igbo'
-  :system: 'iso639-2'
-
-:iii:
-  :code: 'iii'
-  :display: 'Sichuan Yi'
-  :system: 'iso639-2'
-
-:iku:
-  :code: 'iku'
-  :display: 'Inuktitut'
-  :system: 'iso639-2'
-
-:ilo:
-  :code: 'ilo'
-  :display: 'Iloko'
-  :system: 'iso639-2'
-
-:ind:
-  :code: 'ind'
-  :display: 'Indonesian'
-  :system: 'iso639-2'
-
-:inh:
-  :code: 'inh'
-  :display: 'Ingush'
-  :system: 'iso639-2'
-
-:ipk:
-  :code: 'ipk'
-  :display: 'Inupiaq'
-  :system: 'iso639-2'
-
-:isl:
-  :code: 'isl'
-  :display: 'Icelandic'
-  :system: 'iso639-2'
-
-:ita:
-  :code: 'ita'
-  :display: 'Italian'
-  :system: 'iso639-2'
-
-:jav:
-  :code: 'jav'
-  :display: 'Javanese'
-  :system: 'iso639-2'
-
-:jpn:
-  :code: 'jpn'
-  :display: 'Japanese'
-  :system: 'iso639-2'
-
-:jpr:
-  :code: 'jpr'
-  :display: 'Judeo-Persian'
-  :system: 'iso639-2'
-
-:jrb:
-  :code: 'jrb'
-  :display: 'Judeo-Arabic'
-  :system: 'iso639-2'
-
-:kaa:
-  :code: 'kaa'
-  :display: 'Kara-Kalpak'
-  :system: 'iso639-2'
-
-:kab:
-  :code: 'kab'
-  :display: 'Kabyle'
-  :system: 'iso639-2'
-
-:kac:
-  :code: 'kac'
-  :display: 'Kachin'
-  :system: 'iso639-2'
-
-:kal:
-  :code: 'kal'
-  :display: 'Kalaallisut'
-  :system: 'iso639-2'
-
-:kam:
-  :code: 'kam'
-  :display: 'Kamba (Kenya)'
-  :system: 'iso639-2'
-
-:kan:
-  :code: 'kan'
-  :display: 'Kannada'
-  :system: 'iso639-2'
-
-:kas:
-  :code: 'kas'
-  :display: 'Kashmiri'
-  :system: 'iso639-2'
-
-:kat:
-  :code: 'kat'
-  :display: 'Georgian'
-  :system: 'iso639-2'
-
-:kau:
-  :code: 'kau'
-  :display: 'Kanuri'
-  :system: 'iso639-2'
-
-:kaz:
-  :code: 'kaz'
-  :display: 'Kazakh'
-  :system: 'iso639-2'
-
-:kbd:
-  :code: 'kbd'
-  :display: 'Kabardian'
-  :system: 'iso639-2'
-
-:kha:
-  :code: 'kha'
-  :display: 'Khasi'
-  :system: 'iso639-2'
-
-:khm:
-  :code: 'khm'
-  :display: 'Khmer'
-  :system: 'iso639-2'
-
-:kik:
-  :code: 'kik'
-  :display: 'Kikuyu'
-  :system: 'iso639-2'
-
-:kin:
-  :code: 'kin'
-  :display: 'Kinyarwanda'
-  :system: 'iso639-2'
-
-:kir:
-  :code: 'kir'
-  :display: 'Kirghiz'
-  :system: 'iso639-2'
-
-:kmb:
-  :code: 'kmb'
-  :display: 'Kimbundu'
-  :system: 'iso639-2'
-
-:kok:
-  :code: 'kok'
-  :display: 'Konkani'
-  :system: 'iso639-2'
-
-:kom:
-  :code: 'kom'
-  :display: 'Komi'
-  :system: 'iso639-2'
-
-:kon:
-  :code: 'kon'
-  :display: 'Kongo'
-  :system: 'iso639-2'
-
-:kor:
-  :code: 'kor'
-  :display: 'Korean'
-  :system: 'iso639-2'
-
-:kos:
-  :code: 'kos'
-  :display: 'Kosraean'
-  :system: 'iso639-2'
-
-:kpe:
-  :code: 'kpe'
-  :display: 'Kpelle'
-  :system: 'iso639-2'
-
-:krc:
-  :code: 'krc'
-  :display: 'Karachay-Balkar'
-  :system: 'iso639-2'
-
-:krl:
-  :code: 'krl'
-  :display: 'Karelian'
-  :system: 'iso639-2'
-
-:kru:
-  :code: 'kru'
-  :display: 'Kurukh'
-  :system: 'iso639-2'
-
-:kua:
-  :code: 'kua'
-  :display: 'Kuanyama'
-  :system: 'iso639-2'
-
-:kum:
-  :code: 'kum'
-  :display: 'Kumyk'
-  :system: 'iso639-2'
-
-:kur:
-  :code: 'kur'
-  :display: 'Kurdish'
-  :system: 'iso639-2'
-
-:kut:
-  :code: 'kut'
-  :display: 'Kutenai'
-  :system: 'iso639-2'
-
-:lad:
-  :code: 'lad'
-  :display: 'Ladino'
-  :system: 'iso639-2'
-
-:lah:
-  :code: 'lah'
-  :display: 'Lahnda'
-  :system: 'iso639-2'
-
-:lam:
-  :code: 'lam'
-  :display: 'Lamba'
-  :system: 'iso639-2'
-
-:lao:
-  :code: 'lao'
-  :display: 'Lao'
-  :system: 'iso639-2'
-
-:lav:
-  :code: 'lav'
-  :display: 'Latvian'
-  :system: 'iso639-2'
-
-:lez:
-  :code: 'lez'
-  :display: 'Lezghian'
-  :system: 'iso639-2'
-
-:lim:
-  :code: 'lim'
-  :display: 'Limburgan'
-  :system: 'iso639-2'
-
-:lin:
-  :code: 'lin'
-  :display: 'Lingala'
-  :system: 'iso639-2'
-
-:lit:
-  :code: 'lit'
-  :display: 'Lithuanian'
-  :system: 'iso639-2'
-
-:lol:
-  :code: 'lol'
-  :display: 'Mongo'
-  :system: 'iso639-2'
-
-:loz:
-  :code: 'loz'
-  :display: 'Lozi'
-  :system: 'iso639-2'
-
-:ltz:
-  :code: 'ltz'
-  :display: 'Luxembourgish'
-  :system: 'iso639-2'
-
-:lua:
-  :code: 'lua'
-  :display: 'Luba-Lulua'
-  :system: 'iso639-2'
-
-:lub:
-  :code: 'lub'
-  :display: 'Luba-Katanga'
-  :system: 'iso639-2'
-
-:lug:
-  :code: 'lug'
-  :display: 'Ganda'
-  :system: 'iso639-2'
-
-:lun:
-  :code: 'lun'
-  :display: 'Lunda'
-  :system: 'iso639-2'
-
-:luo:
-  :code: 'luo'
-  :display: 'Luo (Kenya and Tanzania)'
-  :system: 'iso639-2'
-
-:lus:
-  :code: 'lus'
-  :display: 'Lushai'
-  :system: 'iso639-2'
-
-:mad:
-  :code: 'mad'
-  :display: 'Madurese'
-  :system: 'iso639-2'
-
-:mag:
-  :code: 'mag'
-  :display: 'Magahi'
-  :system: 'iso639-2'
-
-:mah:
-  :code: 'mah'
-  :display: 'Marshallese'
-  :system: 'iso639-2'
-
-:mai:
-  :code: 'mai'
-  :display: 'Maithili'
-  :system: 'iso639-2'
-
-:mak:
-  :code: 'mak'
-  :display: 'Makasar'
-  :system: 'iso639-2'
-
-:mal:
-  :code: 'mal'
-  :display: 'Malayalam'
-  :system: 'iso639-2'
-
-:man:
-  :code: 'man'
-  :display: 'Mandingo'
-  :system: 'iso639-2'
-
-:mar:
-  :code: 'mar'
-  :display: 'Marathi'
-  :system: 'iso639-2'
-
-:mas:
-  :code: 'mas'
-  :display: 'Masai'
-  :system: 'iso639-2'
-
-:mdf:
-  :code: 'mdf'
-  :display: 'Moksha'
-  :system: 'iso639-2'
-
-:mdr:
-  :code: 'mdr'
-  :display: 'Mandar'
-  :system: 'iso639-2'
-
-:men:
-  :code: 'men'
-  :display: 'Mende (Sierra Leone)'
-  :system: 'iso639-2'
-
-:mic:
-  :code: 'mic'
-  :display: "Mi'kmaq"
-  :system: 'iso639-2'
-
-:min:
-  :code: 'min'
-  :display: 'Minangkabau'
-  :system: 'iso639-2'
-
-:mkd:
-  :code: 'mkd'
-  :display: 'Macedonian'
-  :system: 'iso639-2'
-
-:mlg:
-  :code: 'mlg'
-  :display: 'Malagasy'
-  :system: 'iso639-2'
-
-:mlt:
-  :code: 'mlt'
-  :display: 'Maltese'
-  :system: 'iso639-2'
-
-:mnc:
-  :code: 'mnc'
-  :display: 'Manchu'
-  :system: 'iso639-2'
-
-:mni:
-  :code: 'mni'
-  :display: 'Manipuri'
-  :system: 'iso639-2'
-
-:moh:
-  :code: 'moh'
-  :display: 'Mohawk'
-  :system: 'iso639-2'
-
-:mon:
-  :code: 'mon'
-  :display: 'Mongolian'
-  :system: 'iso639-2'
-
-:mos:
-  :code: 'mos'
-  :display: 'Mossi'
-  :system: 'iso639-2'
-
-:mri:
-  :code: 'mri'
-  :display: 'Maori'
-  :system: 'iso639-2'
-
-:msa:
-  :code: 'msa'
-  :display: 'Malay'
-  :system: 'iso639-2'
-
-:mus:
-  :code: 'mus'
-  :display: 'Creek'
-  :system: 'iso639-2'
-
-:mwl:
-  :code: 'mwl'
-  :display: 'Mirandese'
-  :system: 'iso639-2'
-
-:mwr:
-  :code: 'mwr'
-  :display: 'Marwari'
-  :system: 'iso639-2'
-
-:mya:
-  :code: 'mya'
-  :display: 'Burmese'
-  :system: 'iso639-2'
-
-:myv:
-  :code: 'myv'
-  :display: 'Erzya'
-  :system: 'iso639-2'
-
-:nap:
-  :code: 'nap'
-  :display: 'Neapolitan'
-  :system: 'iso639-2'
-
-:nau:
-  :code: 'nau'
-  :display: 'Nauru'
-  :system: 'iso639-2'
-
-:nav:
-  :code: 'nav'
-  :display: 'Navajo'
-  :system: 'iso639-2'
-
-:nbl:
-  :code: 'nbl'
-  :display: 'South Ndebele'
-  :system: 'iso639-2'
-
-:nde:
-  :code: 'nde'
-  :display: 'North Ndebele'
-  :system: 'iso639-2'
-
-:ndo:
-  :code: 'ndo'
-  :display: 'Ndonga'
-  :system: 'iso639-2'
-
-:nds:
-  :code: 'nds'
-  :display: 'Low German'
-  :system: 'iso639-2'
-
-:nep:
-  :code: 'nep'
-  :display: 'Nepali'
-  :system: 'iso639-2'
-
-:new:
-  :code: 'new'
-  :display: 'Newari'
-  :system: 'iso639-2'
-
-:nia:
-  :code: 'nia'
-  :display: 'Nias'
-  :system: 'iso639-2'
-
-:niu:
-  :code: 'niu'
-  :display: 'Niuean'
-  :system: 'iso639-2'
-
-:nld:
-  :code: 'nld'
-  :display: 'Dutch'
-  :system: 'iso639-2'
-
-:nno:
-  :code: 'nno'
-  :display: 'Norwegian Nynorsk'
-  :system: 'iso639-2'
-
-:nob:
-  :code: 'nob'
-  :display: 'Norwegian Bokmål'
-  :system: 'iso639-2'
-
-:nog:
-  :code: 'nog'
-  :display: 'Nogai'
-  :system: 'iso639-2'
-
-:nor:
-  :code: 'nor'
-  :display: 'Norwegian'
-  :system: 'iso639-2'
-
-:nqo:
-  :code: 'nqo'
-  :display: "N'Ko"
-  :system: 'iso639-2'
-
-:nso:
-  :code: 'nso'
-  :display: 'Pedi'
-  :system: 'iso639-2'
-
-:nya:
-  :code: 'nya'
-  :display: 'Nyanja'
-  :system: 'iso639-2'
-
-:nym:
-  :code: 'nym'
-  :display: 'Nyamwezi'
-  :system: 'iso639-2'
-
-:nyn:
-  :code: 'nyn'
-  :display: 'Nyankole'
-  :system: 'iso639-2'
-
-:nyo:
-  :code: 'nyo'
-  :display: 'Nyoro'
-  :system: 'iso639-2'
-
-:nzi:
-  :code: 'nzi'
-  :display: 'Nzima'
-  :system: 'iso639-2'
-
-:oci:
-  :code: 'oci'
-  :display: 'Occitan (post 1500)'
-  :system: 'iso639-2'
-
-:oji:
-  :code: 'oji'
-  :display: 'Ojibwa'
-  :system: 'iso639-2'
-
-:ori:
-  :code: 'ori'
-  :display: 'Oriya'
-  :system: 'iso639-2'
-
-:orm:
-  :code: 'orm'
-  :display: 'Oromo'
-  :system: 'iso639-2'
-
-:osa:
-  :code: 'osa'
-  :display: 'Osage'
-  :system: 'iso639-2'
-
-:oss:
-  :code: 'oss'
-  :display: 'Ossetian'
-  :system: 'iso639-2'
-
-:pag:
-  :code: 'pag'
-  :display: 'Pangasinan'
-  :system: 'iso639-2'
-
-:pam:
-  :code: 'pam'
-  :display: 'Pampanga'
-  :system: 'iso639-2'
-
-:pan:
-  :code: 'pan'
-  :display: 'Panjabi'
-  :system: 'iso639-2'
-
-:pap:
-  :code: 'pap'
-  :display: 'Papiamento'
-  :system: 'iso639-2'
-
-:pau:
-  :code: 'pau'
-  :display: 'Palauan'
-  :system: 'iso639-2'
-
-:pol:
-  :code: 'pol'
-  :display: 'Polish'
-  :system: 'iso639-2'
-
-:pon:
-  :code: 'pon'
-  :display: 'Pohnpeian'
-  :system: 'iso639-2'
-
-:por:
-  :code: 'por'
-  :display: 'Portuguese'
-  :system: 'iso639-2'
-
-:pus:
-  :code: 'pus'
-  :display: 'Pushto'
-  :system: 'iso639-2'
-
-:que:
-  :code: 'que'
-  :display: 'Quechua'
-  :system: 'iso639-2'
-
-:raj:
-  :code: 'raj'
-  :display: 'Rajasthani'
-  :system: 'iso639-2'
-
-:rap:
-  :code: 'rap'
-  :display: 'Rapanui'
-  :system: 'iso639-2'
-
-:rar:
-  :code: 'rar'
-  :display: 'Rarotongan'
-  :system: 'iso639-2'
-
-:roh:
-  :code: 'roh'
-  :display: 'Romansh'
-  :system: 'iso639-2'
-
-:rom:
-  :code: 'rom'
-  :display: 'Romany'
-  :system: 'iso639-2'
-
-:ron:
-  :code: 'ron'
-  :display: 'Romanian'
-  :system: 'iso639-2'
-
-:run:
-  :code: 'run'
-  :display: 'Rundi'
-  :system: 'iso639-2'
-
-:rup:
-  :code: 'rup'
-  :display: 'Macedo-Romanian'
-  :system: 'iso639-2'
-
-:rus:
-  :code: 'rus'
-  :display: 'Russian'
-  :system: 'iso639-2'
-
-:sad:
-  :code: 'sad'
-  :display: 'Sandawe'
-  :system: 'iso639-2'
-
-:sag:
-  :code: 'sag'
-  :display: 'Sango'
-  :system: 'iso639-2'
-
-:sah:
-  :code: 'sah'
-  :display: 'Yakut'
-  :system: 'iso639-2'
-
-:sas:
-  :code: 'sas'
-  :display: 'Sasak'
-  :system: 'iso639-2'
-
-:sat:
-  :code: 'sat'
-  :display: 'Santali'
-  :system: 'iso639-2'
-
-:scn:
-  :code: 'scn'
-  :display: 'Sicilian'
-  :system: 'iso639-2'
-
-:sco:
-  :code: 'sco'
-  :display: 'Scots'
-  :system: 'iso639-2'
-
-:sel:
-  :code: 'sel'
-  :display: 'Selkup'
-  :system: 'iso639-2'
-
-:shn:
-  :code: 'shn'
-  :display: 'Shan'
-  :system: 'iso639-2'
-
-:sid:
-  :code: 'sid'
-  :display: 'Sidamo'
-  :system: 'iso639-2'
-
-:sin:
-  :code: 'sin'
-  :display: 'Sinhala'
-  :system: 'iso639-2'
-
-:slk:
-  :code: 'slk'
-  :display: 'Slovak'
-  :system: 'iso639-2'
-
-:slv:
-  :code: 'slv'
-  :display: 'Slovenian'
-  :system: 'iso639-2'
-
-:sma:
-  :code: 'sma'
-  :display: 'Southern Sami'
-  :system: 'iso639-2'
-
-:sme:
-  :code: 'sme'
-  :display: 'Northern Sami'
-  :system: 'iso639-2'
-
-:smj:
-  :code: 'smj'
-  :display: 'Lule Sami'
-  :system: 'iso639-2'
-
-:smn:
-  :code: 'smn'
-  :display: 'Inari Sami'
-  :system: 'iso639-2'
-
-:smo:
-  :code: 'smo'
-  :display: 'Samoan'
-  :system: 'iso639-2'
-
-:sms:
-  :code: 'sms'
-  :display: 'Skolt Sami'
-  :system: 'iso639-2'
-
-:sna:
-  :code: 'sna'
-  :display: 'Shona'
-  :system: 'iso639-2'
-
-:snd:
-  :code: 'snd'
-  :display: 'Sindhi'
-  :system: 'iso639-2'
-
-:snk:
-  :code: 'snk'
-  :display: 'Soninke'
-  :system: 'iso639-2'
-
-:som:
-  :code: 'som'
-  :display: 'Somali'
-  :system: 'iso639-2'
-
-:sot:
-  :code: 'sot'
-  :display: 'Southern Sotho'
-  :system: 'iso639-2'
+  :iso6391code: "fr"
+  :system: 'iso639-2t'
 
 :spa:
-  :code: 'spa'
   :display: 'Spanish'
-  :system: 'iso639-2'
+  :iso6391code: "es"
+  :system: 'iso639-2t'
+
+# Despite not being an official iso-639 language, we want to include a specific dialect of Spanish for PR
+:spa-PR:
+  :display: 'Spanish (Puerto Rican)'
+  :iso6391code: "es-PR"
+  :system: ''
+
+:som:
+  :display: 'Somali'
+  :iso6391code: "so"
+  :system: 'iso639-2t'
+
+:aar:
+  :display: 'Afar'
+  :iso6391code: "aa"
+  :system: 'iso639-2t'
+
+:abk:
+  :display: 'Abkhazian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ace:
+  :display: 'Achinese'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ach:
+  :display: 'Acoli'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ada:
+  :display: 'Adangme'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ady:
+  :display: 'Adyghe'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:afr:
+  :display: 'Afrikaans'
+  :iso6391code: "af"
+  :system: 'iso639-2t'
+
+:ain:
+  :display: 'Ainu (Japan)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:aka:
+  :display: 'Akan'
+  :iso6391code: "ak"
+  :system: 'iso639-2t'
+
+:ale:
+  :display: 'Aleut'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:alt:
+  :display: 'Southern Altai'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:amh:
+  :display: 'Amharic'
+  :iso6391code: "am"
+  :system: 'iso639-2t'
+
+:anp:
+  :display: 'Angika'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ara:
+  :display: 'Arabic'
+  :iso6391code: "ar"
+  :system: 'iso639-2t'
+
+:arg:
+  :display: 'Aragonese'
+  :iso6391code: "an"
+  :system: 'iso639-2t'
+
+:arn:
+  :display: 'Mapudungun'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:arp:
+  :display: 'Arapaho'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:arw:
+  :display: 'Arawak'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:asm:
+  :display: 'Assamese'
+  :iso6391code: "as"
+  :system: 'iso639-2t'
+
+:ast:
+  :display: 'Asturian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ava:
+  :display: 'Avaric'
+  :iso6391code: "av"
+  :system: 'iso639-2t'
+
+:awa:
+  :display: 'Awadhi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:aym:
+  :display: 'Aymara'
+  :iso6391code: "ay"
+  :system: 'iso639-2t'
+
+:aze:
+  :display: 'Azerbaijani'
+  :iso6391code: "az"
+  :system: 'iso639-2t'
+
+:bak:
+  :display: 'Bashkir'
+  :iso6391code: "ba"
+  :system: 'iso639-2t'
+
+:bal:
+  :display: 'Baluchi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bam:
+  :display: 'Bambara'
+  :iso6391code: "bm"
+  :system: 'iso639-2t'
+
+:ban:
+  :display: 'Balinese'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bas:
+  :display: 'Basa (Cameroon)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bej:
+  :display: 'Beja'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bel:
+  :display: 'Belarusian'
+  :iso6391code: "be"
+  :system: 'iso639-2t'
+
+:bem:
+  :display: 'Bemba (Zambia)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ben:
+  :display: 'Bengali'
+  :iso6391code: "bn"
+  :system: 'iso639-2t'
+
+:bho:
+  :display: 'Bhojpuri'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bik:
+  :display: 'Bikol'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bin:
+  :display: 'Bini'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bis:
+  :display: 'Bislama'
+  :iso6391code: "bi"
+  :system: 'iso639-2t'
+
+:bla:
+  :display: 'Siksika'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bod:
+  :display: 'Tibetan'
+  :iso6391code: "bo"
+  :system: 'iso639-2t'
+
+:bos:
+  :display: 'Bosnian'
+  :iso6391code: "bs"
+  :system: 'iso639-2t'
+
+:bra:
+  :display: 'Braj'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bre:
+  :display: 'Breton'
+  :iso6391code: "br"
+  :system: 'iso639-2t'
+
+:bua:
+  :display: 'Buriat'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bug:
+  :display: 'Buginese'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:bul:
+  :display: 'Bulgarian'
+  :iso6391code: "bg"
+  :system: 'iso639-2t'
+
+:byn:
+  :display: 'Bilin'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:cad:
+  :display: 'Caddo'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:car:
+  :display: 'Galibi Carib'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:cat:
+  :display: 'Catalan'
+  :iso6391code: "ca"
+  :system: 'iso639-2t'
+
+:ceb:
+  :display: 'Cebuano'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ces:
+  :display: 'Czech'
+  :iso6391code: "cs"
+  :system: 'iso639-2t'
+
+:cha:
+  :display: 'Chamorro'
+  :iso6391code: "ch"
+  :system: 'iso639-2t'
+
+:che:
+  :display: 'Chechen'
+  :iso6391code: "ce"
+  :system: 'iso639-2t'
+
+:chk:
+  :display: 'Chuukese'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:chm:
+  :display: 'Mari (Russia)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:chn:
+  :display: 'Chinook jargon'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:cho:
+  :display: 'Choctaw'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:chp:
+  :display: 'Chipewyan'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:chr:
+  :display: 'Cherokee'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:chv:
+  :display: 'Chuvash'
+  :iso6391code: "cv"
+  :system: 'iso639-2t'
+
+:chy:
+  :display: 'Cheyenne'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:cnr:
+  :display: 'Montenegrin'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:cor:
+  :display: 'Cornish'
+  :iso6391code: "kw"
+  :system: 'iso639-2t'
+
+:cos:
+  :display: 'Corsican'
+  :iso6391code: "co"
+  :system: 'iso639-2t'
+
+:cre:
+  :display: 'Cree'
+  :iso6391code: "cr"
+  :system: 'iso639-2t'
+
+:crh:
+  :display: 'Crimean Tatar'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:csb:
+  :display: 'Kashubian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:cym:
+  :display: 'Welsh'
+  :iso6391code: "cy"
+  :system: 'iso639-2t'
+
+:dak:
+  :display: 'Dakota'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:dan:
+  :display: 'Danish'
+  :iso6391code: "da"
+  :system: 'iso639-2t'
+
+:dar:
+  :display: 'Dargwa'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:del:
+  :display: 'Delaware'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:den:
+  :display: 'Slave (Athapascan)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:deu:
+  :display: 'German'
+  :iso6391code: "de"
+  :system: 'iso639-2t'
+
+:dgr:
+  :display: 'Dogrib'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:din:
+  :display: 'Dinka'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:div:
+  :display: 'Dhivehi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:doi:
+  :display: 'Dogri'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:dsb:
+  :display: 'Lower Sorbian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:dua:
+  :display: 'Duala'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:dyu:
+  :display: 'Dyula'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:dzo:
+  :display: 'Dzongkha'
+  :iso6391code: "dz"
+  :system: 'iso639-2t'
+
+:efi:
+  :display: 'Efik'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:eka:
+  :display: 'Ekajuk'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ell:
+  :display: 'Greek'
+  :iso6391code: "el"
+  :system: 'iso639-2t'
+
+:est:
+  :display: 'Estonian'
+  :iso6391code: "et"
+  :system: 'iso639-2t'
+
+:eus:
+  :display: 'Basque'
+  :iso6391code: "eu"
+  :system: 'iso639-2t'
+
+:ewe:
+  :display: 'Ewe'
+  :iso6391code: "ee"
+  :system: 'iso639-2t'
+
+:ewo:
+  :display: 'Ewondo'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:fan:
+  :display: 'Fang (Equatorial Guinea)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:fao:
+  :display: 'Faroese'
+  :iso6391code: "fo"
+  :system: 'iso639-2t'
+
+:fas:
+  :display: 'Persian'
+  :iso6391code: "fa"
+  :system: 'iso639-2t'
+
+:fat:
+  :display: 'Fanti'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:fij:
+  :display: 'Fijian'
+  :iso6391code: "fj"
+  :system: 'iso639-2t'
+
+:fil:
+  :display: 'Filipino'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:fin:
+  :display: 'Finnish'
+  :iso6391code: "fi"
+  :system: 'iso639-2t'
+
+:fon:
+  :display: 'Fon'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:frr:
+  :display: 'Northern Frisian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:frs:
+  :display: 'Eastern Frisian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:fry:
+  :display: 'Western Frisian'
+  :iso6391code: "fy"
+  :system: 'iso639-2t'
+
+:ful:
+  :display: 'Fulah'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:fur:
+  :display: 'Friulian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:gaa:
+  :display: 'Ga'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:gay:
+  :display: 'Gayo'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:gba:
+  :display: 'Gbaya (Central African Republic)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:gil:
+  :display: 'Gilbertese'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:gla:
+  :display: 'Scottish Gaelic'
+  :iso6391code: "gd"
+  :system: 'iso639-2t'
+
+:gle:
+  :display: 'Irish'
+  :iso6391code: "ga"
+  :system: 'iso639-2t'
+
+:glg:
+  :display: 'Galician'
+  :iso6391code: "gl"
+  :system: 'iso639-2t'
+
+:glv:
+  :display: 'Manx'
+  :iso6391code: "gv"
+  :system: 'iso639-2t'
+
+:gon:
+  :display: 'Gondi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:gor:
+  :display: 'Gorontalo'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:grb:
+  :display: 'Grebo'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:grn:
+  :display: 'Guarani'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:gsw:
+  :display: 'Swiss German'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:guj:
+  :display: 'Gujarati'
+  :iso6391code: "gu"
+  :system: 'iso639-2t'
+
+:gwi:
+  :display: "Gwich'in"
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:hai:
+  :display: 'Haida'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:hat:
+  :display: 'Haitian'
+  :iso6391code: "ht"
+  :system: 'iso639-2t'
+
+:hau:
+  :display: 'Hausa'
+  :iso6391code: "ha"
+  :system: 'iso639-2t'
+
+:haw:
+  :display: 'Hawaiian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:heb:
+  :display: 'Hebrew'
+  :iso6391code: "he"
+  :system: 'iso639-2t'
+
+:her:
+  :display: 'Herero'
+  :iso6391code: "hz"
+  :system: 'iso639-2t'
+
+:hil:
+  :display: 'Hiligaynon'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:hin:
+  :display: 'Hindi'
+  :iso6391code: "hi"
+  :system: 'iso639-2t'
+
+:hmn:
+  :display: 'Hmong'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:hmo:
+  :display: 'Hiri Motu'
+  :iso6391code: "ho"
+  :system: 'iso639-2t'
+
+:hrv:
+  :display: 'Croatian'
+  :iso6391code: "hr"
+  :system: 'iso639-2t'
+
+:hsb:
+  :display: 'Upper Sorbian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:hun:
+  :display: 'Hungarian'
+  :iso6391code: "hu"
+  :system: 'iso639-2t'
+
+:hup:
+  :display: 'Hupa'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:hye:
+  :display: 'Armenian'
+  :iso6391code: "hy"
+  :system: 'iso639-2t'
+
+:iba:
+  :display: 'Iban'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ibo:
+  :display: 'Igbo'
+  :iso6391code: "ig"
+  :system: 'iso639-2t'
+
+:iii:
+  :display: 'Sichuan Yi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:iku:
+  :display: 'Inuktitut'
+  :iso6391code: "iu"
+  :system: 'iso639-2t'
+
+:ilo:
+  :display: 'Iloko'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ind:
+  :display: 'Indonesian'
+  :iso6391code: "id"
+  :system: 'iso639-2t'
+
+:inh:
+  :display: 'Ingush'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ipk:
+  :display: 'Inupiaq'
+  :iso6391code: "ik"
+  :system: 'iso639-2t'
+
+:isl:
+  :display: 'Icelandic'
+  :iso6391code: "is"
+  :system: 'iso639-2t'
+
+:ita:
+  :display: 'Italian'
+  :iso6391code: "it"
+  :system: 'iso639-2t'
+
+:jav:
+  :display: 'Javanese'
+  :iso6391code: "jv"
+  :system: 'iso639-2t'
+
+:jpn:
+  :display: 'Japanese'
+  :iso6391code: "ja"
+  :system: 'iso639-2t'
+
+:jpr:
+  :display: 'Judeo-Persian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:jrb:
+  :display: 'Judeo-Arabic'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kaa:
+  :display: 'Kara-Kalpak'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kab:
+  :display: 'Kabyle'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kac:
+  :display: 'Kachin'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kal:
+  :display: 'Kalaallisut'
+  :iso6391code: "kl"
+  :system: 'iso639-2t'
+
+:kam:
+  :display: 'Kamba (Kenya)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kan:
+  :display: 'Kannada'
+  :iso6391code: "kn"
+  :system: 'iso639-2t'
+
+:kas:
+  :display: 'Kashmiri'
+  :iso6391code: "ks"
+  :system: 'iso639-2t'
+
+:kat:
+  :display: 'Georgian'
+  :iso6391code: "ka"
+  :system: 'iso639-2t'
+
+:kau:
+  :display: 'Kanuri'
+  :iso6391code: "kr"
+  :system: 'iso639-2t'
+
+:kaz:
+  :display: 'Kazakh'
+  :iso6391code: "kk"
+  :system: 'iso639-2t'
+
+:kbd:
+  :display: 'Kabardian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kha:
+  :display: 'Khasi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:khm:
+  :display: 'Khmer'
+  :iso6391code: "km"
+  :system: 'iso639-2t'
+
+:kik:
+  :display: 'Kikuyu'
+  :iso6391code: "ki"
+  :system: 'iso639-2t'
+
+:kin:
+  :display: 'Kinyarwanda'
+  :iso6391code: "rw"
+  :system: 'iso639-2t'
+
+:kir:
+  :display: 'Kirghiz'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kmb:
+  :display: 'Kimbundu'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kok:
+  :display: 'Konkani'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kom:
+  :display: 'Komi'
+  :iso6391code: "kv"
+  :system: 'iso639-2t'
+
+:kon:
+  :display: 'Kongo'
+  :iso6391code: "kg"
+  :system: 'iso639-2t'
+
+:kor:
+  :display: 'Korean'
+  :iso6391code: "ko"
+  :system: 'iso639-2t'
+
+:kos:
+  :display: 'Kosraean'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kpe:
+  :display: 'Kpelle'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:krc:
+  :display: 'Karachay-Balkar'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:krl:
+  :display: 'Karelian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kru:
+  :display: 'Kurukh'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kua:
+  :display: 'Kuanyama'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kum:
+  :display: 'Kumyk'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:kur:
+  :display: 'Kurdish'
+  :iso6391code: "ku"
+  :system: 'iso639-2t'
+
+:kut:
+  :display: 'Kutenai'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:lad:
+  :display: 'Ladino'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:lah:
+  :display: 'Lahnda'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:lam:
+  :display: 'Lamba'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:lao:
+  :display: 'Lao'
+  :iso6391code: "lo"
+  :system: 'iso639-2t'
+
+:lav:
+  :display: 'Latvian'
+  :iso6391code: "lv"
+  :system: 'iso639-2t'
+
+:lez:
+  :display: 'Lezghian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:lim:
+  :display: 'Limburgan'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:lin:
+  :display: 'Lingala'
+  :iso6391code: "ln"
+  :system: 'iso639-2t'
+
+:lit:
+  :display: 'Lithuanian'
+  :iso6391code: "lt"
+  :system: 'iso639-2t'
+
+:lol:
+  :display: 'Mongo'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:loz:
+  :display: 'Lozi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ltz:
+  :display: 'Luxembourgish'
+  :iso6391code: "lb"
+  :system: 'iso639-2t'
+
+:lua:
+  :display: 'Luba-Lulua'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:lub:
+  :display: 'Luba-Katanga'
+  :iso6391code: "lu"
+  :system: 'iso639-2t'
+
+:lug:
+  :display: 'Ganda'
+  :iso6391code: "lg"
+  :system: 'iso639-2t'
+
+:lun:
+  :display: 'Lunda'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:luo:
+  :display: 'Luo (Kenya and Tanzania)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:lus:
+  :display: 'Lushai'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mad:
+  :display: 'Madurese'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mag:
+  :display: 'Magahi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mah:
+  :display: 'Marshallese'
+  :iso6391code: "mh"
+  :system: 'iso639-2t'
+
+:mai:
+  :display: 'Maithili'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mak:
+  :display: 'Makasar'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mal:
+  :display: 'Malayalam'
+  :iso6391code: "ml"
+  :system: 'iso639-2t'
+
+:man:
+  :display: 'Mandingo'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mar:
+  :display: 'Marathi'
+  :iso6391code: "mr"
+  :system: 'iso639-2t'
+
+:mas:
+  :display: 'Masai'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mdf:
+  :display: 'Moksha'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mdr:
+  :display: 'Mandar'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:men:
+  :display: 'Mende (Sierra Leone)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mic:
+  :display: "Mi'kmaq"
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:min:
+  :display: 'Minangkabau'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mkd:
+  :display: 'Macedonian'
+  :iso6391code: "mk"
+  :system: 'iso639-2t'
+
+:mlg:
+  :display: 'Malagasy'
+  :iso6391code: "mg"
+  :system: 'iso639-2t'
+
+:mlt:
+  :display: 'Maltese'
+  :iso6391code: "mt"
+  :system: 'iso639-2t'
+
+:mnc:
+  :display: 'Manchu'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mni:
+  :display: 'Manipuri'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:moh:
+  :display: 'Mohawk'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mon:
+  :display: 'Mongolian'
+  :iso6391code: "mn"
+  :system: 'iso639-2t'
+
+:mos:
+  :display: 'Mossi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mri:
+  :display: 'Maori'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:msa:
+  :display: 'Malay'
+  :iso6391code: "ms"
+  :system: 'iso639-2t'
+
+:mus:
+  :display: 'Creek'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mwl:
+  :display: 'Mirandese'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mwr:
+  :display: 'Marwari'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:mya:
+  :display: 'Burmese'
+  :iso6391code: "my"
+  :system: 'iso639-2t'
+
+:myv:
+  :display: 'Erzya'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nap:
+  :display: 'Neapolitan'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nau:
+  :display: 'Nauru'
+  :iso6391code: "na"
+  :system: 'iso639-2t'
+
+:nav:
+  :display: 'Navajo'
+  :iso6391code: "nv"
+  :system: 'iso639-2t'
+
+:nbl:
+  :display: 'South Ndebele'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nde:
+  :display: 'North Ndebele'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ndo:
+  :display: 'Ndonga'
+  :iso6391code: "ng"
+  :system: 'iso639-2t'
+
+:nds:
+  :display: 'Low German'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nep:
+  :display: 'Nepali'
+  :iso6391code: "ne"
+  :system: 'iso639-2t'
+
+:new:
+  :display: 'Newari'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nia:
+  :display: 'Nias'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:niu:
+  :display: 'Niuean'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nld:
+  :display: 'Dutch'
+  :iso6391code: "nl"
+  :system: 'iso639-2t'
+
+:nno:
+  :display: 'Norwegian Nynorsk'
+  :iso6391code: "nn"
+  :system: 'iso639-2t'
+
+:nob:
+  :display: 'Norwegian Bokmål'
+  :iso6391code: "nb"
+  :system: 'iso639-2t'
+
+:nog:
+  :display: 'Nogai'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nor:
+  :display: 'Norwegian'
+  :iso6391code: "no"
+  :system: 'iso639-2t'
+
+:nqo:
+  :display: "N'Ko"
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nso:
+  :display: 'Pedi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nya:
+  :display: 'Nyanja'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nym:
+  :display: 'Nyamwezi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nyn:
+  :display: 'Nyankole'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nyo:
+  :display: 'Nyoro'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:nzi:
+  :display: 'Nzima'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:oci:
+  :display: 'Occitan (post 1500)'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:oji:
+  :display: 'Ojibwa'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ori:
+  :display: 'Oriya'
+  :iso6391code: "or"
+  :system: 'iso639-2t'
+
+:orm:
+  :display: 'Oromo'
+  :iso6391code: "om"
+  :system: 'iso639-2t'
+
+:osa:
+  :display: 'Osage'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:oss:
+  :display: 'Ossetian'
+  :iso6391code: "os"
+  :system: 'iso639-2t'
+
+:pag:
+  :display: 'Pangasinan'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:pam:
+  :display: 'Pampanga'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:pan:
+  :display: 'Panjabi'
+  :iso6391code: "pa"
+  :system: 'iso639-2t'
+
+:pap:
+  :display: 'Papiamento'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:pau:
+  :display: 'Palauan'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:pol:
+  :display: 'Polish'
+  :iso6391code: "pl"
+  :system: 'iso639-2t'
+
+:pon:
+  :display: 'Pohnpeian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:por:
+  :display: 'Portuguese'
+  :iso6391code: "pt"
+  :system: 'iso639-2t'
+
+:pus:
+  :display: 'Pushto'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:que:
+  :display: 'Quechua'
+  :iso6391code: "qu"
+  :system: 'iso639-2t'
+
+:raj:
+  :display: 'Rajasthani'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:rap:
+  :display: 'Rapanui'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:rar:
+  :display: 'Rarotongan'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:roh:
+  :display: 'Romansh'
+  :iso6391code: "rm"
+  :system: 'iso639-2t'
+
+:rom:
+  :display: 'Romany'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:ron:
+  :display: 'Romanian'
+  :iso6391code: "ro"
+  :system: 'iso639-2t'
+
+:run:
+  :display: 'Rundi'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:rup:
+  :display: 'Macedo-Romanian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:rus:
+  :display: 'Russian'
+  :iso6391code: "ru"
+  :system: 'iso639-2t'
+
+:sad:
+  :display: 'Sandawe'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:sag:
+  :display: 'Sango'
+  :iso6391code: "sg"
+  :system: 'iso639-2t'
+
+:sah:
+  :display: 'Yakut'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:sas:
+  :display: 'Sasak'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:sat:
+  :display: 'Santali'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:scn:
+  :display: 'Sicilian'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:sco:
+  :display: 'Scots'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:sel:
+  :display: 'Selkup'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:shn:
+  :display: 'Shan'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:sid:
+  :display: 'Sidamo'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:sin:
+  :display: 'Sinhala'
+  :iso6391code: "si"
+  :system: 'iso639-2t'
+
+:slk:
+  :display: 'Slovak'
+  :iso6391code: "sk"
+  :system: 'iso639-2t'
+
+:slv:
+  :display: 'Slovenian'
+  :iso6391code: "sl"
+  :system: 'iso639-2t'
+
+:sma:
+  :display: 'Southern Sami'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:sme:
+  :display: 'Northern Sami'
+  :iso6391code: "se"
+  :system: 'iso639-2t'
+
+:smj:
+  :display: 'Lule Sami'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:smn:
+  :display: 'Inari Sami'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:smo:
+  :display: 'Samoan'
+  :iso6391code: "sm"
+  :system: 'iso639-2t'
+
+:sms:
+  :display: 'Skolt Sami'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:sna:
+  :display: 'Shona'
+  :iso6391code: "sn"
+  :system: 'iso639-2t'
+
+:snd:
+  :display: 'Sindhi'
+  :iso6391code: "sd"
+  :system: 'iso639-2t'
+
+:snk:
+  :display: 'Soninke'
+  :iso6391code: null
+  :system: 'iso639-2t'
+
+:sot:
+  :display: 'Southern Sotho'
+  :iso6391code: "st"
+  :system: 'iso639-2t'
 
 :sqi:
-  :code: 'sqi'
   :display: 'Albanian'
-  :system: 'iso639-2'
+  :iso6391code: "sq"
+  :system: 'iso639-2t'
 
 :srd:
-  :code: 'srd'
   :display: 'Sardinian'
-  :system: 'iso639-2'
+  :iso6391code: "sc"
+  :system: 'iso639-2t'
 
 :srn:
-  :code: 'srn'
   :display: 'Sranan Tongo'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :srp:
-  :code: 'srp'
   :display: 'Serbian'
-  :system: 'iso639-2'
+  :iso6391code: "sr"
+  :system: 'iso639-2t'
 
 :srr:
-  :code: 'srr'
   :display: 'Serer'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :ssw:
-  :code: 'ssw'
   :display: 'Swati'
-  :system: 'iso639-2'
+  :iso6391code: "ss"
+  :system: 'iso639-2t'
 
 :suk:
-  :code: 'suk'
   :display: 'Sukuma'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :sun:
-  :code: 'sun'
   :display: 'Sundanese'
-  :system: 'iso639-2'
+  :iso6391code: "su"
+  :system: 'iso639-2t'
 
 :sus:
-  :code: 'sus'
   :display: 'Susu'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :swa:
-  :code: 'swa'
   :display: 'Swahili'
-  :system: 'iso639-2'
+  :iso6391code: "sw"
+  :system: 'iso639-2t'
 
 :swe:
-  :code: 'swe'
   :display: 'Swedish'
-  :system: 'iso639-2'
+  :iso6391code: "sv"
+  :system: 'iso639-2t'
 
 :syr:
-  :code: 'syr'
   :display: 'Syriac'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tah:
-  :code: 'tah'
   :display: 'Tahitian'
-  :system: 'iso639-2'
+  :iso6391code: "ty"
+  :system: 'iso639-2t'
 
 :tam:
-  :code: 'tam'
   :display: 'Tamil'
-  :system: 'iso639-2'
+  :iso6391code: "ta"
+  :system: 'iso639-2t'
 
 :tat:
-  :code: 'tat'
   :display: 'Tatar'
-  :system: 'iso639-2'
+  :iso6391code: "tt"
+  :system: 'iso639-2t'
 
 :tel:
-  :code: 'tel'
   :display: 'Telugu'
-  :system: 'iso639-2'
+  :iso6391code: "te"
+  :system: 'iso639-2t'
 
 :tem:
-  :code: 'tem'
   :display: 'Timne'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :ter:
-  :code: 'ter'
   :display: 'Tereno'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tet:
-  :code: 'tet'
   :display: 'Tetum'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tgk:
-  :code: 'tgk'
   :display: 'Tajik'
-  :system: 'iso639-2'
+  :iso6391code: "tg"
+  :system: 'iso639-2t'
 
 :tgl:
-  :code: 'tgl'
   :display: 'Tagalog'
-  :system: 'iso639-2'
+  :iso6391code: "tl"
+  :system: 'iso639-2t'
 
 :tha:
-  :code: 'tha'
   :display: 'Thai'
-  :system: 'iso639-2'
+  :iso6391code: "th"
+  :system: 'iso639-2t'
 
 :tig:
-  :code: 'tig'
   :display: 'Tigre'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tir:
-  :code: 'tir'
   :display: 'Tigrinya'
-  :system: 'iso639-2'
+  :iso6391code: "ti"
+  :system: 'iso639-2t'
 
 :tiv:
-  :code: 'tiv'
   :display: 'Tiv'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tkl:
-  :code: 'tkl'
   :display: 'Tokelau'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tli:
-  :code: 'tli'
   :display: 'Tlingit'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tmh:
-  :code: 'tmh'
   :display: 'Tamashek'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tog:
-  :code: 'tog'
   :display: 'Tonga (Nyasa)'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :ton:
-  :code: 'ton'
   :display: 'Tonga (Tonga Islands)'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tpi:
-  :code: 'tpi'
   :display: 'Tok Pisin'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tsi:
-  :code: 'tsi'
   :display: 'Tsimshian'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tsn:
-  :code: 'tsn'
   :display: 'Tswana'
-  :system: 'iso639-2'
+  :iso6391code: "tn"
+  :system: 'iso639-2t'
 
 :tso:
-  :code: 'tso'
   :display: 'Tsonga'
-  :system: 'iso639-2'
+  :iso6391code: "ts"
+  :system: 'iso639-2t'
 
 :tuk:
-  :code: 'tuk'
   :display: 'Turkmen'
-  :system: 'iso639-2'
+  :iso6391code: "tk"
+  :system: 'iso639-2t'
 
 :tum:
-  :code: 'tum'
   :display: 'Tumbuka'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :tur:
-  :code: 'tur'
   :display: 'Turkish'
-  :system: 'iso639-2'
+  :iso6391code: "tr"
+  :system: 'iso639-2t'
 
 :tvl:
-  :code: 'tvl'
   :display: 'Tuvalu'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :twi:
-  :code: 'twi'
   :display: 'Twi'
-  :system: 'iso639-2'
+  :iso6391code: "tw"
+  :system: 'iso639-2t'
 
 :tyv:
-  :code: 'tyv'
   :display: 'Tuvinian'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :udm:
-  :code: 'udm'
   :display: 'Udmurt'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :uig:
-  :code: 'uig'
   :display: 'Uighur'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :ukr:
-  :code: 'ukr'
   :display: 'Ukrainian'
-  :system: 'iso639-2'
+  :iso6391code: "uk"
+  :system: 'iso639-2t'
 
 :umb:
-  :code: 'umb'
   :display: 'Umbundu'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :urd:
-  :code: 'urd'
   :display: 'Urdu'
-  :system: 'iso639-2'
+  :iso6391code: "ur"
+  :system: 'iso639-2t'
 
 :uzb:
-  :code: 'uzb'
   :display: 'Uzbek'
-  :system: 'iso639-2'
+  :iso6391code: "uz"
+  :system: 'iso639-2t'
 
 :vai:
-  :code: 'vai'
   :display: 'Vai'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :ven:
-  :code: 'ven'
   :display: 'Venda'
-  :system: 'iso639-2'
+  :iso6391code: "ve"
+  :system: 'iso639-2t'
 
 :vie:
-  :code: 'vie'
   :display: 'Vietnamese'
-  :system: 'iso639-2'
+  :iso6391code: "vi"
+  :system: 'iso639-2t'
 
 :vot:
-  :code: 'vot'
   :display: 'Votic'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :wal:
-  :code: 'wal'
   :display: 'Wolaytta'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :war:
-  :code: 'war'
   :display: 'Waray (Philippines)'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :was:
-  :code: 'was'
   :display: 'Washo'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :wln:
-  :code: 'wln'
   :display: 'Walloon'
-  :system: 'iso639-2'
+  :iso6391code: "wa"
+  :system: 'iso639-2t'
 
 :wol:
-  :code: 'wol'
   :display: 'Wolof'
-  :system: 'iso639-2'
+  :iso6391code: "wo"
+  :system: 'iso639-2t'
 
 :xal:
-  :code: 'xal'
   :display: 'Kalmyk'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :xho:
-  :code: 'xho'
   :display: 'Xhosa'
-  :system: 'iso639-2'
+  :iso6391code: "xh"
+  :system: 'iso639-2t'
 
 :yao:
-  :code: 'yao'
   :display: 'Yao'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :yap:
-  :code: 'yap'
   :display: 'Yapese'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :yid:
-  :code: 'yid'
   :display: 'Yiddish'
-  :system: 'iso639-2'
+  :iso6391code: "yi"
+  :system: 'iso639-2t'
 
 :yor:
-  :code: 'yor'
   :display: 'Yoruba'
-  :system: 'iso639-2'
+  :iso6391code: "yo"
+  :system: 'iso639-2t'
 
 :zap:
-  :code: 'zap'
   :display: 'Zapotec'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :zen:
-  :code: 'zen'
   :display: 'Zenaga'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :zgh:
-  :code: 'zgh'
   :display: 'Standard Moroccan Tamazight'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :zha:
-  :code: 'zha'
   :display: 'Zhuang'
-  :system: 'iso639-2'
+  :iso6391code: "za"
+  :system: 'iso639-2t'
 
 :zho:
-  :code: 'zho'
   :display: 'Chinese'
-  :system: 'iso639-2'
+  :iso6391code: "zh"
+  :system: 'iso639-2t'
 
 :zul:
-  :code: 'zul'
   :display: 'Zulu'
-  :system: 'iso639-2'
+  :iso6391code: "zu"
+  :system: 'iso639-2t'
 
 :zun:
-  :code: 'zun'
   :display: 'Zuni'
-  :system: 'iso639-2'
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 :zza:
-  :code: 'zza'
   :display: 'Zaza'
-  :system: 'iso639-2'
-
-# Puetro Rico pushed heavily for an inclusion of their dialect of Spanish
-:spa-PR:
-  :code: 'spa-PR'
-  :display: 'Spanish (Puerto Rican)'
-  :system: ''
+  :iso6391code: null
+  :system: 'iso639-2t'
 
 # ANY CHANGES TO THIS FILE MUST BE MANUALLY INCLUDED IN `minifiedLanguages.js`

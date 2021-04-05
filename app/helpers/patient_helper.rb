@@ -3,17 +3,16 @@
 # Helper methods for the patient model
 module PatientHelper
   # This list contains all of the same states listed in app/javascript/components/data.js
-  $inverted_iso_lookup = {} # maintain a hash of display names to codes for fast lookups
-  PATIENT_HELPER_FILES[:languages].each_key do |lang_iso_code|
-    $inverted_iso_lookup[PATIENT_HELPER_FILES[:languages][lang_iso_code.to_sym][:display].to_s.downcase] = lang_iso_code
-  end
-
   def state_names
     PATIENT_HELPER_FILES[:state_names]
   end
 
   def states_with_time_zone_data
     PATIENT_HELPER_FILES[:states_with_time_zone_data]
+  end
+
+  def all_languages
+    PATIENT_HELPER_FILES[:languages]
   end
 
   def normalize_state_names(pat)
@@ -33,20 +32,26 @@ module PatientHelper
     state_names[normalize_name(name)] || nil
   end
 
+  # This function will attempt to match the input to a language in the system
+  # PARAM: `lang` can be a three-letter iso-639-2t code, a two-letter iso-639-1 code, or the name (not case sensitive)
+  # PARAM EXAMPLES: 'eng', 'en', 'English', 'ENGLISH' <-- All will map to 'eng'
+  # RETURN VALUE: `nil` if unmatchable, else the three-letter iso code ('eng')
   def normalize_and_get_language_name(lang)
     return nil if lang.nil?
-    return lang if lang == 'spa-PR' # 'spa-PR' is the only case-sensitive language code
-    lang = lang.to_s.downcase
-    # tries to match lang to either a 3-letter iso code or a language name
-    # If able to match, returns the 3-letter iso code for that language
-    # If unable to match, returns nil
 
-    # first search in all 3-letter language codes
+    # spa-PR is the only iso-code that involves case. it will not be properly matched if
+    # we call downcase on the input
+    lang = lang.casecmp('spa-pr')&.zero? ? 'spa-PR' : lang.to_s
     matched_language = nil
-    matched_language = PATIENT_HELPER_FILES[:languages][lang.to_sym][:code] if PATIENT_HELPER_FILES[:languages][lang.to_sym]
+    matched_language = lang.to_sym if all_languages[lang.to_sym]
     return matched_language unless matched_language.nil?
 
-    matched_language = $inverted_iso_lookup[lang] unless $inverted_iso_lookup[lang].nil?
+    matched_language = all_languages.find { |_key, val| val[:display]&.casecmp(lang)&.zero? }
+    return matched_language[0] unless matched_language.nil?
+
+    matched_language = all_languages.find { |_key, val| val[:iso6391code]&.casecmp(lang)&.zero? }
+    return matched_language[0] unless matched_language.nil?
+
     matched_language
   end
 
@@ -58,11 +63,6 @@ module PatientHelper
 
   def time_zone_for_state(name)
     states_with_time_zone_data[normalize_name(name)][:zone_name]
-  end
-
-  def self.languages(language)
-    languages = PATIENT_HELPER_FILES[:languages]
-    languages[language&.downcase&.to_sym].present? ? languages[language&.downcase&.to_sym] : nil
   end
 
   # Calculated symptom onset date is based on latest symptomatic assessment.

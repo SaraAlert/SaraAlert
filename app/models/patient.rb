@@ -36,6 +36,8 @@ class Patient < ApplicationRecord
      monitored_address_state
      foreign_monitored_address_state
      additional_planned_travel_destination_state
+     primary_language
+     secondary_language
      ethnicity
      preferred_contact_method
      preferred_contact_time
@@ -998,11 +1000,9 @@ class Patient < ApplicationRecord
   end
 
   # Determine the proper language for sending reports to this monitoree
-  def select_language
+  def self.select_language
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
-    lang = PatientHelper.languages(primary_language)&.dig(:code)&.to_sym || :eng
-    lang = :eng unless %i[eng spa spa-PR som fra].include?(lang)
-    lang
+    %i[eng spa spa-PR som fra].include?(primary_language&.to_sym) ? primary_language&.to_sym : :eng
   end
 
   # Determine if this patient is eligible for receiving daily report messages; return

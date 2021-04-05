@@ -185,7 +185,7 @@ monitoree_6:
     asian: true
     ethnicity: 'Not Hispanic or Latino'
     primary_language: 'eng'
-    secondary_language: 'Korean'
+    secondary_language: 'kor'
     interpretation_required: true
     nationality: 'Korean'
     user_defined_id_statelocal: 'N93DM01'

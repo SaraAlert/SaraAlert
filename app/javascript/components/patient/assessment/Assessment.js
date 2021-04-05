@@ -14,7 +14,7 @@ const LANGUAGE_MAPPINGS = {
   es: 'spa',
   'es-PR': 'spa-PR',
   so: 'som',
-  fra: 'fra',
+  fr: 'fra',
 };
 
 class Assessment extends React.Component {
@@ -25,6 +25,8 @@ class Assessment extends React.Component {
 
   mapLanguage = () => {
     if (Object.prototype.hasOwnProperty.call(LANGUAGE_MAPPINGS, this.props.lang)) {
+      // If we make it through testing without this ever printing, i think it's safe to remove it.
+      console.error("I do not think this should ever print. If this prints, something is happening that we don't understand.");
       return LANGUAGE_MAPPINGS[`${this.props.lang}`];
     } else {
       return this.props.lang;
@@ -46,7 +48,6 @@ class Assessment extends React.Component {
 
   submit = submitData => {
     submitData.threshold_hash = this.props.threshold_hash;
-    var self = this;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
@@ -56,7 +57,7 @@ class Assessment extends React.Component {
       data: submitData,
     })
       .then(() => {
-        if (self.props.reload) {
+        if (this.props.reload) {
           location.reload(true);
         }
       })
