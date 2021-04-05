@@ -69,6 +69,14 @@ class History < ApplicationRecord
       .where.not(history_type: 'Enrollment')
   }
 
+  # Histories created between the given time range that are user driven (not system, or enrollment)
+  scope :user_generated_between, lambda { |start, finish|
+    where('created_at >= ?', start)
+      .where('created_at <= ?', finish)
+      .where.not(created_by: 'Sara Alert System')
+      .where.not(history_type: 'Enrollment')
+  }
+
   # Histories created in the last 24 hours that show the system closing a record
   scope :system_closed_last_24h, lambda {
     where('created_at >= ?', 24.hours.ago)

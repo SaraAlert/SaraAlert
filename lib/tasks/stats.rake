@@ -184,7 +184,10 @@ namespace :stats do
         exposure: active_exp.where_assoc_exists(:assessments) {created_since(24.hours.ago)}.count,
         isolation: active_iso.where_assoc_exists(:assessments) {created_since(24.hours.ago)}.count
       }
-
+      results[title]['Total number of monitorees in the system < 21 days'] = {
+        exposure: active_exp.where('created_at >= ?', 21.days.ago).count,
+        isolation: active_iso.where('created_at >= ?', 21.days.ago).count
+      }
       reporting_days_exp = []
       reporting_days_responded_to_all_exp = []
       responded_to_all_reminders_self_exp = 0
@@ -192,9 +195,12 @@ namespace :stats do
       responded_to_all_reminders_user_exp = 0
       not_respond_to_all_reminders_self_exp = 0
       not_respond_to_all_reminders_self_and_user_exp = 0
+      not_respond_to_all_reminders_user_exp = 0
       days_no_response_self_exp = []
       days_no_response_self_and_user_exp = []
+      days_no_response_user_exp = []
       cons_days_no_response_self_exp = []
+      cons_days_no_response_user_exp = []
       cons_days_no_response_self_and_user_exp = []
       emailed_rates_exp = []
       sms_weblink_rates_exp = []
@@ -208,6 +214,8 @@ namespace :stats do
       overall_rates_count_exp = 0
       enrollment_to_lde_exp = []
       enrollment_to_first_rep_exp = []
+      activity_first_24h_exp = 0
+      activity_first_48h_exp = 0
       active_exp.find_each do |patient|
         times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         reporting_days_exp << times_sent.count
@@ -217,12 +225,14 @@ namespace :stats do
         responded_to_all_reminders_self_exp += 1 if times_sent.count <= times_recv_self.count
         responded_to_all_reminders_self_and_user_exp += 1 if times_sent.count <= times_recv_self_and_user.count
         responded_to_all_reminders_user_exp += 1 if times_sent.count <= times_recv_user.count
-        reporting_days_responded_to_all_exp << << times_sent.count if times_sent.count <= times_recv_self_and_user.count
-        not_respond_to_all_reminders_self_exp += 1 unless times_sent.count == times_recv_self.count
-        not_respond_to_all_reminders_self_and_user_exp += 1 unless times_sent.count == times_recv_self_and_user.count
-        days_no_response_self_exp << times_sent.count - times_recv_self.count unless times_sent.count == times_recv_self.count
-        days_no_response_self_and_user_exp << times_sent.count - times_recv_self_and_user.count unless times_sent.count == times_recv_self_and_user.count
-        if times_sent.count != times_recv_self.count
+        reporting_days_responded_to_all_exp << times_sent.count if times_sent.count <= times_recv_self_and_user.count
+        not_respond_to_all_reminders_self_exp += 1 if times_sent.count > times_recv_self.count
+        not_respond_to_all_reminders_self_and_user_exp += 1 if times_sent.count > times_recv_self_and_user.count
+        not_respond_to_all_reminders_user_exp += 1 if times_sent.count > times_recv_user.count
+        days_no_response_self_exp << times_sent.count - times_recv_self.count if times_sent.count > times_recv_self.count
+        days_no_response_self_and_user_exp << times_sent.count - times_recv_self_and_user.count if times_sent.count > times_recv_self_and_user.count
+        days_no_response_user_exp << times_sent.count - times_recv_user.count if times_sent.count > times_recv_user.count
+        if times_sent.count > times_recv_self.count
           all_cons = []
           last_cons = 0
           missed_times = (times_sent - times_recv_self)
@@ -230,7 +240,15 @@ namespace :stats do
           all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
           cons_days_no_response_self_exp << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
         end
-        if times_sent.count != times_recv_self_and_user.count
+        if times_sent.count > times_recv_user.count
+          all_cons = []
+          last_cons = 0
+          missed_times = (times_sent - times_recv_user)
+          missed_times.each_cons(2) { |a, b| (b.mjd - a.mjd) == 1 ? last_cons += ( last_cons == 0 ? 2 : 1) : (all_cons << last_cons && last_cons = 0) }
+          all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
+          cons_days_no_response_user_exp << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
+        end
+        if times_sent.count > times_recv_self_and_user.count
           all_cons = []
           last_cons = 0
           missed_times = (times_sent - times_recv_self_and_user)
@@ -247,11 +265,12 @@ namespace :stats do
         emailed_rates_count_exp += times_sent.count if patient.preferred_contact_method == 'E-mailed Web Link' && !times_sent.empty?
         sms_weblink_rates_count_exp += times_sent.count if patient.preferred_contact_method == 'SMS Texted Weblink' && !times_sent.empty?
         phone_rates_count_exp += times_sent.count if patient.preferred_contact_method == 'Telephone call' && !times_sent.empty?
-        sms_text_rates_count_exp += times_sent.count patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
+        sms_text_rates_count_exp += times_sent.count if patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
         overall_rates_count_exp += times_sent.count if !times_sent.empty?
         enrollment_to_first_rep_exp << (times_recv_self_and_user.first - patient.created_at.to_date).to_i unless times_recv_self_and_user.empty?
+        activity_first_24h_exp += 1 if patient.histories.user_generated_between(patient.created_at, patient.created_at + 24.hours).count.positive?
+        activity_first_48h_exp += 1 if patient.histories.user_generated_between(patient.created_at, patient.created_at + 48.hours).count.positive?
       end
-
       reporting_days_iso = []
       reporting_days_responded_to_all_iso = []
       responded_to_all_reminders_self_iso = 0
@@ -259,9 +278,12 @@ namespace :stats do
       responded_to_all_reminders_user_iso = 0
       not_respond_to_all_reminders_self_iso = 0
       not_respond_to_all_reminders_self_and_user_iso = 0
+      not_respond_to_all_reminders_user_iso = 0
       days_no_response_self_iso = []
       days_no_response_self_and_user_iso = []
+      days_no_response_user_iso = []
       cons_days_no_response_self_iso = []
+      cons_days_no_response_user_iso = []
       cons_days_no_response_self_and_user_iso = []
       emailed_rates_iso = []
       sms_weblink_rates_iso = []
@@ -274,6 +296,8 @@ namespace :stats do
       sms_text_rates_count_iso = 0
       overall_rates_count_iso = 0
       enrollment_to_first_rep_iso = []
+      activity_first_24h_iso = 0
+      activity_first_48h_iso = 0
       active_iso.find_each do |patient|
         times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         reporting_days_iso << times_sent.count
@@ -283,12 +307,14 @@ namespace :stats do
         responded_to_all_reminders_self_iso += 1 if times_sent.count <= times_recv_self.count
         responded_to_all_reminders_self_and_user_iso += 1 if times_sent.count <= times_recv_self_and_user.count
         responded_to_all_reminders_user_iso += 1 if times_sent.count <= times_recv_user.count
-        reporting_days_responded_to_all_iso << << times_sent.count if times_sent.count <= times_recv_self_and_user.count
-        not_respond_to_all_reminders_self_iso += 1 unless times_sent.count == times_recv_self.count
-        not_respond_to_all_reminders_self_and_user_iso += 1 unless times_sent.count == times_recv_self_and_user.count
-        days_no_response_self_iso << times_sent.count - times_recv_self.count unless times_sent.count == times_recv_self.count
-        days_no_response_self_and_user_iso << times_sent.count - times_recv_self_and_user.count unless times_sent.count == times_recv_self_and_user.count
-        if times_sent.count != times_recv_self.count
+        reporting_days_responded_to_all_iso << times_sent.count if times_sent.count <= times_recv_self_and_user.count
+        not_respond_to_all_reminders_self_iso += 1 if times_sent.count > times_recv_self.count
+        not_respond_to_all_reminders_self_and_user_iso += 1 if times_sent.count > times_recv_self_and_user.count
+        not_respond_to_all_reminders_user_iso += 1 if times_sent.count > times_recv_user.count
+        days_no_response_self_iso << times_sent.count - times_recv_self.count if times_sent.count > times_recv_self.count
+        days_no_response_self_and_user_iso << times_sent.count - times_recv_self_and_user.count if times_sent.count > times_recv_self_and_user.count
+        days_no_response_user_iso << times_sent.count - times_recv_user.count if times_sent.count > times_recv_user.count
+        if times_sent.count > times_recv_self.count
           all_cons = []
           last_cons = 0
           missed_times = (times_sent - times_recv_self)
@@ -296,7 +322,15 @@ namespace :stats do
           all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
           cons_days_no_response_self_iso << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
         end
-        if times_sent.count != times_recv_self_and_user.count
+        if times_sent.count > times_recv_user.count
+          all_cons = []
+          last_cons = 0
+          missed_times = (times_sent - times_recv_user)
+          missed_times.each_cons(2) { |a, b| (b.mjd - a.mjd) == 1 ? last_cons += ( last_cons == 0 ? 2 : 1) : (all_cons << last_cons && last_cons = 0) }
+          all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
+          cons_days_no_response_user_iso << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
+        end
+        if times_sent.count > times_recv_self_and_user.count
           all_cons = []
           last_cons = 0
           missed_times = (times_sent - times_recv_self_and_user)
@@ -312,11 +346,12 @@ namespace :stats do
         emailed_rates_count_iso += times_sent.count if patient.preferred_contact_method == 'E-mailed Web Link' && !times_sent.empty?
         sms_weblink_rates_count_iso += times_sent.count if patient.preferred_contact_method == 'SMS Texted Weblink' && !times_sent.empty?
         phone_rates_count_iso += times_sent.count if patient.preferred_contact_method == 'Telephone call' && !times_sent.empty?
-        sms_text_rates_count_iso += times_sent.count patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
+        sms_text_rates_count_iso += times_sent.count if patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
         overall_rates_count_iso += times_sent.count if !times_sent.empty?
         enrollment_to_first_rep_iso << (times_recv_self_and_user.first - patient.created_at.to_date).to_i unless times_recv_self_and_user.empty?
+        activity_first_24h_iso += 1 if patient.histories.user_generated_between(patient.created_at, patient.created_at + 24.hours).count.positive?
+        activity_first_48h_iso += 1 if patient.histories.user_generated_between(patient.created_at, patient.created_at + 48.hours).count.positive?
       end
-
       results[title]['Mean number of reporting days'] = {
         exposure: reporting_days_exp.inject{ |sum, el| sum + el }.to_f / reporting_days_exp.size,
         isolation: reporting_days_iso.inject{ |sum, el| sum + el }.to_f / reporting_days_iso.size,
@@ -346,20 +381,32 @@ namespace :stats do
         isolation: days_no_response_self_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_self_iso.size
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all daily automated messages (monitoree or proxy response only) - Mean number of consecutive days with no response'] = {
-        exposure: days_no_response_self_and_user_exp.inject{ |sum, el| sum + el }.to_f / days_no_response_self_and_user_exp.size,
-        isolation: days_no_response_self_and_user_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_self_and_user_iso.size
+        exposure: cons_days_no_response_self_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_exp.size,
+        isolation: cons_days_no_response_self_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_iso.size
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (any response documented, including by public health user)'] = {
         exposure: not_respond_to_all_reminders_self_and_user_exp,
         isolation: not_respond_to_all_reminders_self_and_user_iso
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (any response documented, including by public health user) - Mean number of days with no response'] = {
-        exposure: cons_days_no_response_self_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_exp.size,
-        isolation: cons_days_no_response_self_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_iso.size
+        exposure: days_no_response_self_and_user_exp.inject{ |sum, el| sum + el }.to_f / days_no_response_self_and_user_exp.size,
+        isolation: days_no_response_self_and_user_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_self_and_user_iso.size
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (any response documented, including by public health user) - Mean number of consecutive days with no response'] = {
         exposure: cons_days_no_response_self_and_user_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_and_user_exp.size,
         isolation: cons_days_no_response_self_and_user_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_and_user_iso.size
+      }
+      results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (public health user only)'] = {
+        exposure: not_respond_to_all_reminders_user_exp,
+        isolation: not_respond_to_all_reminders_user_iso
+      }
+      results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (public health user only) - Mean number of days with no response'] = {
+        exposure: days_no_response_user_exp.inject{ |sum, el| sum + el }.to_f / days_no_response_user_exp.size,
+        isolation: days_no_response_user_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_user_iso.size
+      }
+      results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (public health user only) - Mean number of consecutive days with no response'] = {
+        exposure: cons_days_no_response_user_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_user_exp.size,
+        isolation: cons_days_no_response_user_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_user_iso.size
       }
       results[title]['Monitoree Response Rate - E-mailed Web Link'] = {
         exposure: emailed_rates_exp.inject{ |sum, el| sum + el }.to_f / emailed_rates_exp.size,
@@ -421,9 +468,18 @@ namespace :stats do
         exposure: active_exp.where_assoc_exists(:histories) { user_generated_since(start) }.count,
         isolation: active_iso.where_assoc_exists(:histories) { user_generated_since(start) }.count
       }
-
-
-
+      results[title]['Number of monitorees with any user-generated activity in their history after the first 24 hours'] = {
+        exposure: activity_first_24h_exp,
+        isolation: activity_first_24h_iso
+      }
+      results[title]['Number of monitorees with any user-generated activity in their history after the first 48 hours'] = {
+        exposure: activity_first_48h_exp,
+        isolation: activity_first_48h_iso
+      }
+      results[title]['Number of monitorees in continuous exposure'] = {
+        exposure: active_exp.where(continuous_exposure: true).count,
+        isolation: active_iso.where(continuous_exposure: true).count
+      }
 
       puts 'Step 4 of 6: demographics'
       title = "DEMOGRAPHICS: Cohort of active monitorees existing or added during 14 day period EXCLUDING Opt-out or Unknown reporting methods"
@@ -594,6 +650,7 @@ namespace :stats do
       results[title] = {}
       results[title]['Total'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where.not(role: [nil, '', 'none']).count, isolation: nil }
       results[title]['Unlocked'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(locked_at: nil).where.not(role: [nil, '', 'none']).count, isolation: nil }
+      results[title]['Logged in last 7 days'] = { exposure: jur.all_users.where('current_sign_in_at >= ?', 7.days.ago).count, isolation: nil }
       results[title]['Super User'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'super_user').count, isolation: nil }
       results[title]['Public Health Enroller'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'public_health_enroller').count, isolation: nil }
       results[title]['Contact Tracer'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'contact_tracer').count, isolation: nil }
