@@ -29,7 +29,7 @@ class PatientMailer < ApplicationMailer
     return if patient&.primary_telephone.blank?
 
     if patient.blocked_sms
-      handle_twilio_error_codes(patient, TwilioSender::TWILIO_ERROR_CODES[:blocked_number])
+      TwilioSender.handle_twilio_error_codes(patient, TwilioSender::TWILIO_ERROR_CODES[:blocked_number])
       return
     end
 
@@ -52,7 +52,7 @@ class PatientMailer < ApplicationMailer
       return
     end
     if patient.blocked_sms
-      handle_twilio_error_codes(patient, TwilioSender::TWILIO_ERROR_CODES[:blocked_number])
+      TwilioSender.handle_twilio_error_codes(patient, TwilioSender::TWILIO_ERROR_CODES[:blocked_number])
       return
     end
 
@@ -80,7 +80,7 @@ class PatientMailer < ApplicationMailer
       return
     end
     if patient.blocked_sms
-      handle_twilio_error_codes(patient, TwilioSender::TWILIO_ERROR_CODES[:blocked_number])
+      TwilioSender.handle_twilio_error_codes(patient, TwilioSender::TWILIO_ERROR_CODES[:blocked_number])
       return
     end
 
