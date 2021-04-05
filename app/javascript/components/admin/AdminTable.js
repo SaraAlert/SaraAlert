@@ -37,8 +37,9 @@ class AdminTable extends React.Component {
         page: 0,
         search: '',
         entries: 25,
-        locked: false,
+        locked: null,
       },
+      allUsersCount: null,
       entryOptions: [10, 15, 25, 50, 100],
       showEditUserModal: false,
       showAuditModal: false,
@@ -75,7 +76,7 @@ class AdminTable extends React.Component {
 
   componentDidMount() {
     // Update table data on initial mount.
-    this.getTableData(this.state.query);
+    this.getTableData(this.state.query, true);
 
     // Gets jurisdiction path options on initial mount.
     this.getJurisdictionPaths();
@@ -167,20 +168,28 @@ class AdminTable extends React.Component {
   /**
    * Queries the backend with passed in query data and updates the table data stored in local state.
    * @param {Object} query - Optional query data handled in route for determining the data returned.
+   * @param {Boolean} initialLoad - Only true when method is called from componentDidMount to store the total number of users (no filters applied)
    */
-  getTableData = query => {
+  getTableData = (query, initialLoad) => {
     const path = 'users';
     const params = { ...query };
     const handleSuccess = response => {
       if (response && response.data && response.data.user_rows) {
         // If there's a valid response, update state accordingly
-        this.setState(state => {
-          return {
-            table: { ...state.table, selectedRows: [], selectAll: false, rowData: response.data.user_rows, totalRows: response.data.total },
-            isLoading: false,
-            actionsEnabled: false,
-          };
-        });
+        this.setState(
+          state => {
+            return {
+              table: { ...state.table, selectedRows: [], selectAll: false, rowData: response.data.user_rows, totalRows: response.data.total },
+              isLoading: false,
+              actionsEnabled: false,
+            };
+          },
+          () => {
+            if (initialLoad) {
+              this.setState({ allUsersCount: response.data.total });
+            }
+          }
+        );
       } else {
         // If the response doesn't have the expected data, don't update table data
         this.setState(state => {
@@ -456,7 +465,7 @@ class AdminTable extends React.Component {
     const path = 'users';
 
     // Get all the users at once for a full export
-    const params = {};
+    const params = { entries: this.state.allUsersCount, page: 0 };
 
     const handleSuccess = response => {
       if (response && response.data && response.data.user_rows) {
