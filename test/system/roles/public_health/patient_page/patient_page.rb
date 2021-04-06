@@ -11,8 +11,8 @@ class PublicHealthPatientPage < ApplicationSystemTestCase
 
   PATIENTS = SystemTestUtils::PATIENTS
 
-  def view_patients_details(jurisdiction_id)
-    monitorees = Jurisdiction.find(jurisdiction_id).all_patients_excluding_purged
+  def view_patients_details(jurisdiction)
+    monitorees = jurisdiction.all_patients_excluding_purged
     click_on 'All Monitorees'
     monitorees.where(isolation: false).where(monitoring: true).each do |patient|
       @@public_health_patient_page_verifier.verify_patient_details(patient, 'exposure')

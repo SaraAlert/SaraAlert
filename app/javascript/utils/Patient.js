@@ -19,6 +19,8 @@ function formatNameAlt(patient) {
  * @param {String} phone - patient's phone number
  */
 function formatPhoneNumber(phone) {
+  if (phone === null || phone === undefined) return '';
+
   const match = phone
     .replace('+1', '')
     .replace(/\D/g, '')
