@@ -82,7 +82,7 @@ class DateInput extends React.Component {
   dateIsValidAndNotEmpty = date => {
     const isNotNull = !_.isNil(date);
     const isValid = moment(date, 'YYYY-MM-DD').isValid();
-    const isInRange = moment(this.props.minDate).isBefore(date) && moment(this.props.maxDate).isAfter(date);
+    const isInRange = moment(this.props.minDate).isSameOrBefore(date) && moment(this.props.maxDate).isSameOrAfter(date);
     return isNotNull && isValid && isInRange;
   };
 
