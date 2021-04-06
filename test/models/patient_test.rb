@@ -10,12 +10,15 @@ class PatientTest < ActiveSupport::TestCase
     @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
     @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
     @default_weekly_purge_date = ADMIN_OPTIONS['weekly_purge_date']
+    # Default time zone is Eastern, so 1800 UTC would be 1300 or 1400 Eastern
+    Timecop.freeze(Time.now.utc.change(hour: 18))
   end
 
   def teardown
     ADMIN_OPTIONS['purgeable_after'] = @default_purgeable_after
     ADMIN_OPTIONS['weekly_purge_warning_date'] = @default_weekly_purge_warning_date
     ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
+    Timecop.return
   end
 
   def formatted_tz_offset(offset)

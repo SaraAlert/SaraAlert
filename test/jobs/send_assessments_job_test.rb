@@ -4,13 +4,15 @@ require 'test_case'
 
 class SendAssessmentsJobTest < ActiveSupport::TestCase
   def setup
-    Timecop.freeze(Time.now.in_time_zone('Eastern Time (US & Canada)').change(hour: 10).utc)
+    Timecop.freeze(Time.now.utc.change(hour: 18))
     Patient.delete_all
     ADMIN_OPTIONS['job_run_email'] = 'test@test.com'
     ActionMailer::Base.deliveries.clear
   end
 
-  def teardown; end
+  def teardown
+    Timecop.return
+  end
 
   def default_days_ago(days)
     (Time.now.in_time_zone('Eastern Time (US & Canada)') - days.days)
@@ -45,7 +47,6 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
         {
           email: 'example@example.com',
           preferred_contact_method: 'E-mailed Web Link',
-          preferred_contact_time: 'Morning',
           last_date_of_exposure: 1.day.ago,
           submission_token: SecureRandom.urlsafe_base64[0, 10]
         }.merge(eligible_params)
@@ -74,15 +75,14 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
       { preferred_contact_method: 'Opt-out' },
       { preferred_contact_method: '' },
       { preferred_contact_method: nil },
-      { monitoring: false },
-      { last_assessment_reminder_sent: Time.now }
+      { last_assessment_reminder_sent: Time.now },
+      { preferred_contact_time: 'Morning' }
     ].map do |ineligible_params|
       create(
         :patient,
         {
           email: 'example@example.com',
           preferred_contact_method: 'E-mailed Web Link',
-          preferred_contact_time: 'Morning',
           last_date_of_exposure: 1.day.ago,
           submission_token: SecureRandom.urlsafe_base64[0, 10]
         }.merge(ineligible_params)
@@ -97,16 +97,13 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
     #       above as logic is pulled out of send_assessment and into reminder_eligible
     scope_not_sent = [
       { last_date_of_exposure: nil, created_at: 50.days.ago },
-      { last_date_of_exposure: 50.days.ago, created_at: 50.days.ago },
-      { latest_assessment_at: Time.now },
-      { preferred_contact_time: 'Evening' }
+      { last_date_of_exposure: 50.days.ago, created_at: 50.days.ago }
     ].map do |ineligible_params|
       create(
         :patient,
         {
           email: 'example@example.com',
           preferred_contact_method: 'E-mailed Web Link',
-          preferred_contact_time: 'Morning',
           last_date_of_exposure: 1.day.ago,
           submission_token: SecureRandom.urlsafe_base64[0, 10]
         }.merge(ineligible_params)
@@ -126,7 +123,6 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
         {
           email: 'example@example.com',
           preferred_contact_method: 'E-mailed Web Link',
-          preferred_contact_time: 'Morning',
           last_date_of_exposure: 1.day.ago,
           submission_token: SecureRandom.urlsafe_base64[0, 10]
         }.merge(eligible_params)
@@ -137,15 +133,19 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
 
     assert_not ActionMailer::Base.deliveries.empty?
+
     assert_includes(email_body, "Total eligible for notifications at runtime: #{eligible_patients.size + scope_not_sent.size}")
     assert_includes(email_body, "Sent during this job run: #{eligible_patients.size}")
     assert_includes(email_body, 'Not sent during this job run (due to exceptions): 0')
+
     eligible_patients.each do |patient|
       assert_includes(email_body, "#{patient.id}, #{patient.preferred_contact_method}")
     end
+
     scope_not_sent.each do |patient|
       assert_not_includes(email_body, "#{patient.id}, #{patient.preferred_contact_method}")
     end
+
     ineligible_patients.each do |patient|
       assert_not_includes(email_body, "#{patient.id}, #{patient.preferred_contact_method}")
     end
