@@ -143,7 +143,6 @@ class Patient < ApplicationRecord
     where(purged: false)
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
-      .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       .where('last_assessment_reminder_sent <= ? OR last_assessment_reminder_sent IS NULL', 12.hours.ago)
       .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
       .has_usable_preferred_contact_method
@@ -917,7 +916,7 @@ class Patient < ApplicationRecord
 
   # Send a daily assessment to this monitoree (if currently eligible). By setting send_now to true, an assessment
   # will be sent immediately without any consideration of the monitoree's preferred_contact_time.
-  def send_assessment()
+  def send_assessment
     # Return UNLESS:
     # - in exposure: NOT closed AND within monitoring period OR
     # - in isolation: NOT closed (as patients on RRR linelist should receive notifications) OR
