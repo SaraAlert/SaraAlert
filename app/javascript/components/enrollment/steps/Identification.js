@@ -30,7 +30,6 @@ class Identification extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    const self = this;
     event.persist();
     this.setState(
       {
@@ -38,7 +37,7 @@ class Identification extends React.Component {
         modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
       },
       () => {
-        self.props.setEnrollmentState({ ...self.state.modified });
+        this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
   };
@@ -51,8 +50,6 @@ class Identification extends React.Component {
     let modified_races = {};
     let current = this.state.current;
     let modified = this.state.modified;
-
-    const self = this;
     event.persist();
 
     if (value) {
@@ -60,7 +57,7 @@ class Identification extends React.Component {
       let races_to_reset = this.props.race_options.exclusive;
 
       // Reset all races if exclusive option is selected
-      if (self.props.race_options.exclusive.map(options => options.race).includes(event.target.id)) {
+      if (this.props.race_options.exclusive.map(options => options.race).includes(event.target.id)) {
         races_to_reset = races_to_reset.concat(this.props.race_options.non_exclusive);
       }
 
@@ -77,7 +74,7 @@ class Identification extends React.Component {
         modified: { ...modified, patient: { ...current.patient, ...modified_races } },
       },
       () => {
-        self.props.setEnrollmentState({ ...self.state.modified });
+        this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
   };
@@ -87,49 +84,38 @@ class Identification extends React.Component {
     const current = this.state.current;
     const modified = this.state.modified;
     const isIsolation = value === 'isolation';
-    const self = this;
     this.setState(
       {
         current: { ...current, isolation: isIsolation, patient: { ...current.patient, isolation: isIsolation } },
         modified: { ...modified, isolation: isIsolation, patient: { ...modified.patient, isolation: isIsolation } },
       },
       () => {
-        self.props.setEnrollmentState({ ...self.state.modified });
+        this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
   };
 
   getWorkflowValue = () => (this.state.current.isolation ? WORKFLOW_OPTIONS[1] : WORKFLOW_OPTIONS[0]);
 
-  handleDateChange = (field, date) => {
-    const self = this;
+  handleDOBChange = date => {
+    const date_of_birth = date;
+    let age;
+
+    // If date is undefined, age will stay undefined (which nulls out the age field)
+    if (date_of_birth) {
+      age = moment().diff(moment(date_of_birth), 'years');
+      age = age >= 0 ? age : this.state.age;
+    }
+
     this.setState(
       state => {
         return {
-          current: { ...state.current, patient: { ...state.current.patient, [field]: date } },
-          modified: { ...state.modified, patient: { ...state.modified.patient, [field]: date } },
+          current: { ...state.current, patient: { ...state.current.patient, date_of_birth, age } },
+          modified: { ...state.modified, patient: { ...state.modified.patient, date_of_birth, age } },
         };
       },
       () => {
-        // Automatically calculate age field once a date of birth is entered.
-        let age;
-        const dateOfBirth = self.state.current.patient.date_of_birth;
-        // If date is undefined, age will stay undefined (which nulls out the age field)
-        if (dateOfBirth) {
-          age = moment().diff(moment(dateOfBirth), 'years');
-          age = age >= 0 ? age : self.state.age;
-        }
-        self.setState(
-          state => {
-            return {
-              current: { ...state.current, patient: { ...state.current.patient, age } },
-              modified: { ...state.modified, patient: { ...state.modified.patient, age } },
-            };
-          },
-          () => {
-            self.props.setEnrollmentState({ ...self.state.modified });
-          }
-        );
+        this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
   };
@@ -138,14 +124,13 @@ class Identification extends React.Component {
     const value = event.value;
     const current = this.state.current;
     const modified = this.state.modified;
-    const self = this;
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [languageType]: value } },
         modified: { ...modified, patient: { ...modified.patient, [languageType]: value } },
       },
       () => {
-        self.props.setEnrollmentState({ ...self.state.modified });
+        this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
   };
@@ -311,7 +296,7 @@ class Identification extends React.Component {
                     date={this.state.current.patient.date_of_birth}
                     minDate={'1900-01-01'}
                     maxDate={moment().format('YYYY-MM-DD')}
-                    onChange={date => this.handleDateChange('date_of_birth', date)}
+                    onChange={this.handleDOBChange}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_birth']}
                     clearInvalid={true}
@@ -646,6 +631,7 @@ Identification.propTypes = {
   currentState: PropTypes.object,
   race_options: PropTypes.object,
   next: PropTypes.func,
+  setEnrollmentState: PropTypes.func,
 };
 
 export default Identification;

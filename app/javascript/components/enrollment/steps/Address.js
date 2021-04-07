@@ -9,7 +9,13 @@ import { stateOptions } from '../../../data/stateOptions';
 class Address extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, selectedTab: 'domestic' };
+    this.state = {
+      ...this.props,
+      current: { ...this.props.currentState },
+      errors: {},
+      modified: {},
+      selectedTab: 'domestic',
+    };
     if (typeof this.props.currentState.monitored_address_state !== 'undefined') {
       // When viewing existing patients, the `monitored_address_state` needs to be reverse mapped back to the abbreviation
       this.state.current.patient.monitored_address_state = stateOptions.find(state => state.name === this.props.currentState.monitored_address_state)?.abbrv;
@@ -31,8 +37,9 @@ class Address extends React.Component {
     );
   };
 
-  whereMonitoredSameAsHome = () => {
+  handleSameAsHomeClick = () => {
     let current = this.state.current;
+    let modified = this.state.modified;
     this.setState(
       {
         current: {
@@ -47,9 +54,21 @@ class Address extends React.Component {
             monitored_address_county: current.patient.address_county,
           },
         },
+        modified: {
+          ...modified,
+          patient: {
+            ...modified.patient,
+            monitored_address_line_1: current.patient.address_line_1,
+            monitored_address_city: current.patient.address_city,
+            monitored_address_state: current.patient.address_state,
+            monitored_address_line_2: current.patient.address_line_2,
+            monitored_address_zip: current.patient.address_zip,
+            monitored_address_county: current.patient.address_county,
+          },
+        },
       },
       () => {
-        this.props.setEnrollmentState({ ...this.state.current });
+        this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
   };
@@ -221,7 +240,7 @@ class Address extends React.Component {
                           size="md"
                           variant="outline-primary"
                           className="ml-4 btn-square px-3"
-                          onClick={this.whereMonitoredSameAsHome}>
+                          onClick={this.handleSameAsHomeClick}>
                           Copy from Home Address
                         </Button>
                       </div>
