@@ -28,6 +28,7 @@ Because the Sara Alert API follows the FHIR specification, there is a mapping be
 | Monitoree                 | [Patient](https://hl7.org/fhir/R4/patient.html)|
 | Monitoree Lab Result      | [Observation](https://hl7.org/fhir/R4/observation.html)|
 | Monitoree Daily Report    | [QuestionnaireResponse](https://www.hl7.org/fhir/questionnaireresponse.html)|
+| Monitoree Close Contact   | [RelatedPerson](https://www.hl7.org/fhir/relatedperson.html)|
 
 <a name="supported-scopes"/>
 
@@ -39,6 +40,9 @@ For applications following the [SMART-on-FHIR App Launch Framework "Standalone L
 * `user/Patient.*`, (for both read and write access to this resource)
 * `user/Observation.read`,
 * `user/QuestionnaireResponse.read`,
+* `user/RelatedPerson.read`,
+* `user/RelatedPerson.write`,
+* `user/RelatedPerson.*`
 
 For applications following the [SMART on FHIR Backend Services Workflow](#backend-services), these are the available scopes:
 
@@ -47,6 +51,9 @@ For applications following the [SMART on FHIR Backend Services Workflow](#backen
 * `system/Patient.*`, (for both read and write access to this resource)
 * `system/Observation.read`,
 * `system/QuestionnaireResponse.read`,
+* `system/RelatedPerson.read`,
+* `system/RelatedPerson.write`,
+* `system/RelatedPerson.*`
 
 Please note a given application and request for access token can have have multiple scopes, which must be space-separated. For example:
 ```
@@ -70,11 +77,11 @@ A capability statement is available at `[base]/metadata`:
 ```json
 {
   "status": "active",
-  "date": "2020-05-28T00:00:00+00:00",
+  "date": "2021-03-04T00:00:00+00:00",
   "kind": "instance",
   "software": {
     "name": "Sara Alert",
-    "version": "v1.4.1"
+    "version": "v1.25.0"
   },
   "implementation": {
     "description": "Sara Alert API"
@@ -119,7 +126,7 @@ A capability statement is available at `[base]/metadata`:
                 "code": "SMART-on-FHIR"
               }
             ],
-            "text": "OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org"
+            "text": "OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)"
           }
         ]
       },
@@ -163,6 +170,40 @@ A capability statement is available at `[base]/metadata`:
             {
               "name": "active",
               "type": "boolean"
+            },
+            {
+              "name": "_id",
+              "type": "string"
+            },
+            {
+              "name": "_count",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "type": "RelatedPerson",
+          "interaction": [
+            {
+              "code": "read"
+            },
+            {
+              "code": "update"
+            },
+            {
+              "code": "patch"
+            },
+            {
+              "code": "create"
+            },
+            {
+              "code": "search-type"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "patient",
+              "type": "reference"
             },
             {
               "name": "_id",
@@ -266,7 +307,7 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
 
 ## Reading
 
-The API supports reading monitorees, monitoree lab results, and monitoree daily reports.
+The API supports reading monitorees, monitoree lab results, monitoree daily reports, and monitoree close contacts.
 
 <a name="read-get-pat"/>
 
@@ -549,6 +590,59 @@ Get a monitoree daily report via an id, e.g.:
   </div>
 </details>
 
+<a name="read-get-related"/>
+
+### GET `[base]/RelatedPerson/[:id]`
+
+Get a monitoree close contact via an id, e.g.:
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "id": 950,
+  "meta": {
+    "lastUpdated": "2021-01-31T18:23:16+00:00"
+  },
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-attempts",
+      "valueUnsignedInt": 5
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/notes",
+      "valueString": "Parsing the panel won't do anything, we need to program the optical ib array!"
+    }
+  ],
+  "patient": {
+    "reference": "Patient/222"
+  },
+  "name": [
+    {
+      "family": "Pollich97",
+      "given": ["Nam32"]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+15555550104",
+      "rank": 1
+    },
+    {
+      "system": "email",
+      "value": "1845823000fake@example.com",
+      "rank": 1
+    }
+  ],
+  "resourceType": "RelatedPerson"
+}
+```
+  </div>
+</details>
+
 
 <a name="read-get-all"/>
 
@@ -809,197 +903,6 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
 ## Creating
 
 The API supports creating new monitorees.
-
-### Extensions
-
-<a name="create-ext"/>
-
-Along with supporting the US Core extensions for [race](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-race.html), [ethnicity](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-ethnicity.html), and [birthsex](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-birthsex.html), Sara Alert includes additional extensions for attributes specific to the Sara Alert workflows.
-
-Use `http://saraalert.org/StructureDefinition/preferred-contact-method` to specify the monitoree's Sara Alert preferred contact method (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, `SMS Text-message`, `Opt-out`, and `Unknown`).
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
-  "valueString": "E-mailed Web Link"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/preferred-contact-time` to specify the monitoree's Sara Alert preferred contact time (options are: `Morning`, `Afternoon`, and `Evening`).
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
-  "valueString": "Morning"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/symptom-onset-date` to specify when the monitoree's first symptoms appeared for use in the Sara Alert isolation workflow.
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
-  "valueDate": "2020-05-23"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/last-exposure-date` to specify when the monitoree's last exposure occurred for use in the Sara Alert exposure workflow.
-
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
-  "valueDate": "2020-05-18"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/isolation` to specify if the monitoree should be in the isolation workflow (omitting this extension defaults this value to false, leaving the monitoree in the exposure workflow).
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/isolation",
-  "valueBoolean": false
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path` to specify the monitoree's assigned jurisdiction.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
-  "valueString": "USA, State 1"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/monitoring-plan` to specify the monitoree's Sara Alert monitoring plan (options are: `None`, `Daily active monitoring`, `Self-monitoring with public health supervision`, `Self-monitoring with delegated supervision`, and `Self-observation`).
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
-  "valueString": "Daily active monitoring"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/assigned-user` to specify the monitoree's assigned user.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/assigned-user",
-  "valuePositiveInt": 123
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/additional-planned-travel-start-date` to specify when the monitoree is planning to begin their travel.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
-  "valueDate": "2020-06-15"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/port-of-origin` to specify the port that the monitoree traveled from.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/port-of-origin",
-  "valueString": "MSP Airport"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/date-of-departure` to specify when the monitoree departed from the port of origin.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/date-of-departure",
-  "valueDate": "2020-05-25"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/flight-or-vessel-number` to specify the plane, train, ship, or other vessel that the monitoree used to travel to their destination.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-number",
-  "valueString": "QQ1234"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/flight-or-vessel-carrier` to specify the carrier, operating company, or provider of the flight or vessel.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-carrier",
-  "valueString": "QQ Airways"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/date-of-arrival` to specify when the monitoree
-entered the United States after travel.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
-  "valueDate": "2020-05-28"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/exposure-notes` to specify additional notes about the monitoree's exposure history or case information history.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/exposure-notes",
-  "valueString": "Sample exposure notes."
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/travel-related-notes` to specify additional notes
-about the monitoree’s travel history.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
-  "valueString": "Sample travel notes."
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/additional-planned-travel-notes` to specify additional notes about the monitoree's planned travel.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
-  "valueString": "Sample planned travel notes."
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/phone-type` to specify the type of phone attached to the primary or secondary phone number (options are: `Smartphone`, `Plain Cell`, and `Landline`). Note that this extension should be placed on the first element in the `Patient.telecom` array to specify the monitoree's primary phone type, and the second element in the `Patient.telecom` array to specify the monitoree's secondary phone type.
-```json
-"telecom": [
-  {
-    "system": "phone",
-    "value": "(333) 333-3333",
-    "rank": 1,
-    "extension": {
-      "url": "http://saraalert.org/StructureDefinition/phone-type",
-      "valueString": "Smartphone"
-    }
-  }
-]
-```
-
-Use `http://saraalert.org/StructureDefinition/address-type` to specify the type of an address (options are: `USA` and `Foreign`). Note that this extension should be placed on an element in the `Patient.address` array. If this extension is not present on an address in the `Patient.address` array, the address is assumed to be a `USA` address.
-```json
-"address": [
-  {
-    "extension": [
-      {
-        "url": "http://saraalert.org/StructureDefinition/address-type",
-        "valueString": "Foreign"
-      }
-    ],
-    "line": ["24961 Linnie Inlet", "Apt. 497"],
-    "city": "Ottawa",
-    "state": "Ontario",
-    "country": "Canada",
-    "postalCode": "192387"
-  },
-  {
-    "line": ["35047 Van Light"],
-    "city": "New Tambra",
-    "state": "Mississippi",
-    "district": "Summer Square",
-    "postalCode": "05657",
-  }
-]
-```
 
 ### POST `[base]/Patient`
 
@@ -1262,6 +1165,296 @@ On success, the server will return the newly created resource with an id. This i
 ```
   </div>
 </details>
+
+#### Patient Extensions
+
+<a name="create-pat-ext"/>
+
+Along with supporting the US Core extensions for [race](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-race.html), [ethnicity](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-ethnicity.html), and [birthsex](https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-birthsex.html), Sara Alert includes additional extensions for attributes specific to the Sara Alert workflows.
+
+Use `http://saraalert.org/StructureDefinition/preferred-contact-method` to specify the monitoree's Sara Alert preferred contact method (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, `SMS Text-message`, `Opt-out`, and `Unknown`).
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
+  "valueString": "E-mailed Web Link"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/preferred-contact-time` to specify the monitoree's Sara Alert preferred contact time (options are: `Morning`, `Afternoon`, and `Evening`).
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+  "valueString": "Morning"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/symptom-onset-date` to specify when the monitoree's first symptoms appeared for use in the Sara Alert isolation workflow.
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
+  "valueDate": "2020-05-23"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/last-exposure-date` to specify when the monitoree's last exposure occurred for use in the Sara Alert exposure workflow.
+
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
+  "valueDate": "2020-05-18"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/isolation` to specify if the monitoree should be in the isolation workflow (omitting this extension defaults this value to false, leaving the monitoree in the exposure workflow).
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/isolation",
+  "valueBoolean": false
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path` to specify the monitoree's assigned jurisdiction.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+  "valueString": "USA, State 1"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/monitoring-plan` to specify the monitoree's Sara Alert monitoring plan (options are: `None`, `Daily active monitoring`, `Self-monitoring with public health supervision`, `Self-monitoring with delegated supervision`, and `Self-observation`).
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+  "valueString": "Daily active monitoring"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/assigned-user` to specify the monitoree's assigned user.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/assigned-user",
+  "valuePositiveInt": 123
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/additional-planned-travel-start-date` to specify when the monitoree is planning to begin their travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+  "valueDate": "2020-06-15"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/port-of-origin` to specify the port that the monitoree traveled from.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+  "valueString": "MSP Airport"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/date-of-departure` to specify when the monitoree departed from the port of origin.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+  "valueDate": "2020-05-25"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/flight-or-vessel-number` to specify the plane, train, ship, or other vessel that the monitoree used to travel to their destination.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-number",
+  "valueString": "QQ1234"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/flight-or-vessel-carrier` to specify the carrier, operating company, or provider of the flight or vessel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-carrier",
+  "valueString": "QQ Airways"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/date-of-arrival` to specify when the monitoree
+entered the United States after travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+  "valueDate": "2020-05-28"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/exposure-notes` to specify additional notes about the monitoree's exposure history or case information history.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+  "valueString": "Sample exposure notes."
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/travel-related-notes` to specify additional notes
+about the monitoree’s travel history.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+  "valueString": "Sample travel notes."
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/additional-planned-travel-notes` to specify additional notes about the monitoree's planned travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+  "valueString": "Sample planned travel notes."
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/phone-type` to specify the type of phone attached to the primary or secondary phone number (options are: `Smartphone`, `Plain Cell`, and `Landline`). Note that this extension should be placed on the first element in the `Patient.telecom` array to specify the monitoree's primary phone type, and the second element in the `Patient.telecom` array to specify the monitoree's secondary phone type.
+```json
+"telecom": [
+  {
+    "system": "phone",
+    "value": "(333) 333-3333",
+    "rank": 1,
+    "extension": {
+      "url": "http://saraalert.org/StructureDefinition/phone-type",
+      "valueString": "Smartphone"
+    }
+  }
+]
+```
+
+Use `http://saraalert.org/StructureDefinition/address-type` to specify the type of an address (options are: `USA` and `Foreign`). Note that this extension should be placed on an element in the `Patient.address` array. If this extension is not present on an address in the `Patient.address` array, the address is assumed to be a `USA` address.
+```json
+"address": [
+  {
+    "extension": [
+      {
+        "url": "http://saraalert.org/StructureDefinition/address-type",
+        "valueString": "Foreign"
+      }
+    ],
+    "line": ["24961 Linnie Inlet", "Apt. 497"],
+    "city": "Ottawa",
+    "state": "Ontario",
+    "country": "Canada",
+    "postalCode": "192387"
+  },
+  {
+    "line": ["35047 Van Light"],
+    "city": "New Tambra",
+    "state": "Mississippi",
+    "district": "Summer Square",
+    "postalCode": "05657",
+  }
+]
+```
+
+### POST `[base]/RelatedPerson`
+
+<a name="create-post-related"/>
+
+To create a new monitoree close contact, simply POST a FHIR RelatedPerson resource that references the monitoree.
+
+**Request Body:**
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-attempts",
+      "valueUnsignedInt": 5
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/notes",
+      "valueString": "Parsing the panel won't do anything, we need to program the optical ib array!"
+    }
+  ],
+  "patient": {
+    "reference": "Patient/222"
+  },
+  "name": [
+    {
+      "family": "Pollich97",
+      "given": ["Nam32"]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+15555550104",
+      "rank": 1
+    },
+    {
+      "system": "email",
+      "value": "1845823000fake@example.com",
+      "rank": 1
+    }
+  ],
+  "resourceType": "RelatedPerson"
+}
+```
+  </div>
+</details>
+
+#### RelatedPerson Extensions
+
+<a name="create-related-ext"/>
+
+Sara Alert includes additional extensions for attributes specific to a monitoree close contact.
+
+
+Use `http://saraalert.org/StructureDefinition/last-date-of-exposure` to specify when the close contact's last exposure occurred.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
+  "valueDate": "2020-05-18"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/assigned-user` to specify the close contacts's assigned user.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/assigned-user",
+  "valuePositiveInt": 123
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/notes` to specify additional notes about the close contacts's case.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/notes",
+  "valueString": "Sample notes."
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/contact-attempts` to specify the number of attempts made to contact the close contact.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/contact-attempts",
+  "valueUnsignedInt": 2
+}
+```
+
+The `http://saraalert.org/StructureDefinition/enrolled-patient` extension is used to reference the full Patient resource that corresponds to the close contact, if such a Patient exists. Note that this extension is read-only. This field may only be updated by manually enrolling a new Patient for this close contact via the user interface.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/enrolled-patient",
+  "valueReference": {
+    "reference": "Patient/567"
+  }
+}
+```
 
 
 <a name="update"/>
@@ -1533,6 +1726,54 @@ On success, the server will update the existing resource given the id.
   </div>
 </details>
 
+<a name="update-put-related"/>
+
+### PUT `[base]/RelatedPerson/[:id]`
+
+**Request Body:**
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-attempts",
+      "valueUnsignedInt": 5
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/notes",
+      "valueString": "Parsing the panel won't do anything, we need to program the optical ib array!"
+    }
+  ],
+  "patient": {
+    "reference": "Patient/222"
+  },
+  "name": [
+    {
+      "family": "Pollich97",
+      "given": ["Nam32"]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+15555550104",
+      "rank": 1
+    },
+    {
+      "system": "email",
+      "value": "1845823000fake@example.com",
+      "rank": 1
+    }
+  ],
+  "resourceType": "RelatedPerson"
+}
+```
+  </div>
+</details>
+
 <a name="update-patch-pat"/>
 
 ### PATCH `[base]/Patient/[:id]`
@@ -1676,6 +1917,32 @@ On success, the server will update the attributes indicated by the request.
   ],
   "resourceType": "Patient"
 }
+```
+  </div>
+</details>
+
+<a name="update-patch-related"/>
+
+### PATCH `[base]/RelatedPerson/[:id]`
+
+**NOTE:** See the [Patient PATCH documentation](#update-patch-pat) for a more complete explanation of PATCH.
+
+**Request Headers:**
+```
+Content-Type: application/json-patch+json
+```
+
+**Request Body:**
+
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+[
+  { "op": "remove", "path": "/name/0/family" },
+]
 ```
   </div>
 </details>
@@ -2062,6 +2329,74 @@ GET `[base]/Observation?subject=Patient/[:id]`
   </div>
 </details>
 
+### GET `[base]/RelatedPerson?patient=Patient/[:id]`
+
+You can also use search to find Monitoree close contacts by using the `patient` parameter.
+
+<a name="search-related-patient"/>
+
+GET `[base]/RelatedPerson?patient=Patient/[:id]`
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "id": "f37cc7ac-3543-4ded-8902-841d0076a9bd",
+  "meta": {
+    "lastUpdated": "2021-03-04T17:04:29-05:00"
+  },
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/RelatedPerson/950",
+      "resource": {
+        "id": 950,
+        "meta": {
+          "lastUpdated": "2021-01-31T18:23:16+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/contact-attempts",
+            "valueUnsignedInt": 5
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/notes",
+            "valueString": "Parsing the panel won't do anything, we need to program the optical ib array!"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/222"
+        },
+        "name": [
+          {
+            "family": "Pollich97",
+            "given": ["Nam32"]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+15555550104",
+            "rank": 1
+          },
+          {
+            "system": "email",
+            "value": "1845823000fake@example.com",
+            "rank": 1
+          }
+        ],
+        "resourceType": "RelatedPerson"
+      }
+    }
+  ],
+  "resourceType": "Bundle"
+}
+```
+  </div>
+</details>
 ### GET `[base]/Patient`
 
 By not specifying any search parameters, you can request all resources of the specified type.
