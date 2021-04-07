@@ -298,14 +298,16 @@ class Fhir::R4::ApiController < ActionController::API
           status_unprocessable_entity(resource, fhir_map, req_json) && return
         end
 
-        Rails.logger.info "Created Patient with ID: #{resource.id}"
-
-        # Send enrollment notification only to responders
-        resource.send_enrollment_notification if resource.self_reporter_or_proxy?
-
         # Create a history for the enrollment
         History.enrollment(patient: resource, created_by: @current_actor_label, comment: 'Monitoree enrolled via API.')
       end
+
+      # This is necessary since the transaction will swallow an ActiveRecord::Rollback error
+      raise(StandardError, 'Error when saving Patient to the database') if resource.id.nil?
+
+      Rails.logger.info "Created Patient with ID: #{resource.id}"
+      # Send enrollment notification only to responders
+      resource.send_enrollment_notification if resource.self_reporter_or_proxy?
     when 'relatedperson'
       return if doorkeeper_authorize!(
         :'user/RelatedPerson.write',
