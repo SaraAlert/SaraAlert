@@ -484,7 +484,7 @@ class PatientsTable extends React.Component {
   };
 
   formatSymptomOnset = data => {
-    return data?.value || 'None reported';
+    return data?.value ? formatDate(data.value) : 'None reported';
   };
 
   formatLatestReport = data => {
