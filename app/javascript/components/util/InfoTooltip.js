@@ -115,11 +115,11 @@ const TOOLTIP_TEXT = {
   noSymptomHistory: (
     <div>
       Allows a user to indicate that the monitoree is an asymptomatic or pre-symptomatic case. If checked, the monitoree will only be eligible to meet an
-      Asymptomatic recovery definition (unless they develop symptoms later on)
+      asymptomatic recovery definition (unless they develop symptoms later on).
     </div>
   ),
 
-  noSymptomHistoryDisabled: <div>No symptom history cannot be selected because this case has at least one symptomatic report</div>,
+  noSymptomHistoryDisabled: <div>No symptom history cannot be selected because this case has at least one symptomatic report.</div>,
 
   latestPublicHealthActionInExposure: (
     <div>
