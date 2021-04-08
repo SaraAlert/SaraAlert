@@ -127,6 +127,8 @@ class Exposure extends React.Component {
         if (!this.props.first_positive_lab) {
           current.first_positive_lab = null;
           modified.first_positive_lab = null;
+          current.patient.first_positive_lab_at = null;
+          modified = { patient: { ...modified.patient, first_positive_lab_at: null } };
         }
       }
       this.updateSOandNSHValidations({ ...current.patient, [field]: date });
