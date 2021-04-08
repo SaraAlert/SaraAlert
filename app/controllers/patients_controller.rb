@@ -20,10 +20,10 @@ class PatientsController < ApplicationController
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
-    
+
     # If purged, redirect to index
     redirect_to(root_url) && return if @patient.purged
-    
+
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
 
