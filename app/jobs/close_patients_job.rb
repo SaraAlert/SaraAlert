@@ -19,36 +19,52 @@ class ClosePatientsJob < ApplicationJob
     UserMailer.close_job_email(results[:closed], results[:not_closed], results[:count]).deliver_now
   end
 
-  def perform_batch(patients, monitoring_reason, completed_message: false)
+  def perform_batch(patient_batch, monitoring_reason, completed_message: false)
+    patient_batch_ids = patient_batch.pluck(:id)
+    return { closed: [], not_closed: [], count: 0 } if patient_batch_ids.empty?
+
     closed = []
     not_closed = []
-    count = 0
 
-    # Close patients who are past the monitoring period (and are actually closable from above logic)
-    patients.each do |patient|
-      count += 1
-      # Update related fields
-      patient[:monitoring] = false
-      patient[:closed_at] = DateTime.now
-      patient[:monitoring_reason] = monitoring_reason
-      patient.save!
-
-      # Send closed email to patient if they are a reporter
-      PatientMailer.closed_email(patient).deliver_later if completed_message && patient.email.present? && patient.self_reporter_or_proxy?
-
-      # History item for automatically closing the record
-      History.record_automatically_closed(patient: patient)
-
-      closed << { id: patient.id }
+    ActiveRecord::Base.transaction do
+      # Close records
+      patient_batch.update_all(
+        monitoring: false,
+        closed_at: DateTime.now,
+        updated_at: DateTime.now,
+        monitoring_reason: monitoring_reason,
+        continuous_exposure: false
+      )
+      # Create histories
+      History.import(
+        patient_batch_ids.map { |pid| History.record_automatically_closed(patient: pid, create: false) },
+        validate: false
+      )
+      # Update closed variable
+      closed = patient_batch_ids.map { |pid| { id: pid } }
     rescue StandardError => e
-      not_closed << { id: patient.id, reason: e.message }
-      next
+      not_closed = patient_batch_ids.map { |pid| { id: pid, reason: e.message } }
+    end
+
+    # Send emails to patients with an email in the system
+    if completed_message
+      patient_batch_ids.each_slice(10_000) do |ids|
+        Patient.where(id: ids)
+               .where('patients.id = patients.responder_id')
+               .where('patients.email IS NOT NULL AND patients.email != \'\'')
+               .select(:id)
+               .each do |patient|
+          PatientMailer.closed_email(patient).deliver_later
+        rescue StandardError => _e
+          next
+        end
+      end
     end
 
     {
       closed: closed,
       not_closed: not_closed,
-      count: count
+      count: closed.size + not_closed.size
     }
   end
 

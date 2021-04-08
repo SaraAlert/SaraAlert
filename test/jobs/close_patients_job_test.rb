@@ -109,6 +109,47 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     assert_equal(updated_patient.monitoring_reason, 'Enrolled on last day of monitoring period (system)')
   end
 
+  test 'sends closed email if closed record is a reporter' do
+    patient = create(:patient,
+                     first_name: 'John',
+                     last_name: 'Doe',
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago,
+                     date_of_birth: 30.years.ago,
+                     email: 'testpatient@example.com')
+
+    # Patient Fixture 4 (Lavern91 Ruecker20) is also returned in the job,
+    # BUT that patient fixute does not have an email associated with it,
+    # so that patietn will be closed but will NOT recieve an email.
+    ClosePatientsJob.perform_now
+    assert_not_nil(ActionMailer::Base.deliveries.find { |d| d.to.include? 'test@test.com' })
+    closed_email = ActionMailer::Base.deliveries.find { |d| d.to.include? 'testpatient@example.com' }
+    assert_not_nil closed_email
+    assert_includes(closed_email.to_s, 'Sara Alert Reporting Complete')
+    assert_equal(closed_email.to[0], patient.email)
+    assert_contains_history(patient, 'Monitoring Complete message was sent.')
+  end
+
+  test 'sends an admin email with all closed monitorees' do
+    patient = create(:patient,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
+    email = ClosePatientsJob.perform_now
+    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    assert_not ActionMailer::Base.deliveries.empty?
+    assert_includes(email_body, patient.id.to_s)
+  end
+
   test 'sends an admin email with all monitorees not closed due to an exception' do
     patient = create(:patient,
                      purged: false,
@@ -119,7 +160,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      latest_assessment_at: Time.now,
                      last_date_of_exposure: 20.days.ago)
 
-    allow_any_instance_of(Patient).to(receive(:save!) do
+    allow_any_instance_of(PatientMailer).to(receive(:closed_email) do
       raise StandardError, 'Test StandardError'
     end)
 
@@ -127,6 +168,5 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes(email_body, patient.id.to_s)
-    assert_includes(email_body, 'Test StandardError')
   end
 end
