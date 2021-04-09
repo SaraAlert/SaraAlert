@@ -250,7 +250,10 @@ class ExportController < ApplicationController
 
   def exported_recently?(export_type)
     exp_recently = current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 15.minutes.ago).exists?
-    render json: { message: 'You have already initiated an export of this type in the last 15 minutes. Please try again later.' }.to_json, status: 401 if exp_recently
+    if exp_recently
+      render json: { message: 'You have already initiated an export of this type in the last 15 minutes. Please try again later.' }.to_json,
+             status: 401
+    end
     exp_recently
   end
 
