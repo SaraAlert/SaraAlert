@@ -293,7 +293,16 @@ class AdminTable extends React.Component {
       toast.success('Successfully added new user.', {
         position: toast.POSITION.TOP_CENTER,
       });
-      this.getTableData(this.state.query);
+      this.setState(
+        state => {
+          return {
+            allUsersCount: state.allUsersCount + 1,
+          };
+        },
+        () => {
+          this.getTableData(this.state.query);
+        }
+      );
     };
 
     const handleError = error => {
