@@ -91,11 +91,11 @@ class Assessment extends React.Component {
               translations={this.props.translations}
               patient_initials={this.props.patient_initials}
               patient_age={this.props.patient_age}
-              lang={this.props.lang || 'eng'}
+              lang={this.state.lang || 'eng'}
             />
           </Carousel.Item>
           <Carousel.Item>
-            <AssessmentCompleted translations={this.props.translations} lang={this.props.lang || 'eng'} contact_info={this.props.contact_info || {}} />
+            <AssessmentCompleted translations={this.props.translations} lang={this.state.lang || 'eng'} contact_info={this.props.contact_info || {}} />
           </Carousel.Item>
         </Carousel>
       </React.Fragment>

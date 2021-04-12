@@ -1000,7 +1000,7 @@ class Patient < ApplicationRecord
   end
 
   # Determine the proper language for sending reports to this monitoree
-  def self.select_language
+  def select_language
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     %i[eng spa spa-PR som fra].include?(primary_language&.to_sym) ? primary_language&.to_sym : :eng
   end

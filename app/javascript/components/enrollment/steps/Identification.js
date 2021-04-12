@@ -17,6 +17,13 @@ const WORKFLOW_OPTIONS = [
   { label: 'Isolation (case)', value: 'isolation' },
 ];
 
+const cursorPointerStyle = {
+  option: provided => ({
+    ...provided,
+    cursor: 'pointer',
+  }),
+};
+
 class Identification extends React.Component {
   constructor(props) {
     super(props);
@@ -25,11 +32,7 @@ class Identification extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
-      primaryLanguageMessage: this.getPrimaryLanguageSupportMessage(tryToMatchLanguage(this.props.currentState.patient.primary_language)),
-      // The dropdown for languages requires the selected values to be in a special format
-      // maintain these values in state to avoid unnecessary computation in `render`
-      selectedPrimaryLanguage: this.formatLanguageAsOption(tryToMatchLanguage(this.props.currentState.patient.primary_language)),
-      selectedSecondaryLanguage: this.formatLanguageAsOption(tryToMatchLanguage(this.props.currentState.patient.secondary_language)),
+      primaryLanguageMessage: this.getPrimaryLanguageMessage(tryToMatchLanguage(this.props.currentState.patient.primary_language)),
     };
   }
 
@@ -127,19 +130,21 @@ class Identification extends React.Component {
     );
   };
 
-  handleLanguageChange = (languageType, event) => {
-    const selectedLanguage = languageType === 'primary_language' ? 'selectedPrimaryLanguage' : 'selectedSecondaryLanguage';
+  /**
+   * @param {Object} event - In the structure of {value: 'eng', label: 'English'}
+   * @param {String} languageType - 'primary_language' or 'secondary_language'
+   */
+  handleLanguageChange = (event, languageType) => {
     const value = event.value;
     const current = this.state.current;
     const modified = this.state.modified;
     let newState = {
       current: { ...current, patient: { ...current.patient, [languageType]: value } },
       modified: { ...modified, patient: { ...modified.patient, [languageType]: value } },
-      [selectedLanguage]: event,
     };
     if (languageType === 'primary_language') {
       // Calculate a new primaryLanguageMessage if that value has changed
-      newState['primaryLanguageMessage'] = this.getPrimaryLanguageSupportMessage({ c: event.value, d: event.label });
+      newState['primaryLanguageMessage'] = this.getPrimaryLanguageMessage({ c: event.value, d: event.label });
     }
     this.setState(newState, () => {
       this.props.setEnrollmentState({ ...this.state.modified });
@@ -168,16 +173,10 @@ class Identification extends React.Component {
   };
 
   /**
-   * Formats a language as {label: displayName, value: isoCode}
-   * Essentially just renames some object keys for the Select component
-   * @param {Object} lang - must be in the form of {c: isoCode, d: displayName}
-   * @return {Object}
+   * @param {Object} language - in the format of { c: isoCode, d: displayName }
+   * @returns {String} - the support message if the Primary Language has any limitations
    */
-  formatLanguageAsOption = lang => ({ label: lang?.d, value: lang?.c });
-
-  // language must be in the exact format
-  // { c: isoCode, d: displayName }
-  getPrimaryLanguageSupportMessage = language => {
+  getPrimaryLanguageMessage = language => {
     let message = null;
     if (language) {
       // Don't include any trailing asterisks (*) from unsupported languages in the message
@@ -218,13 +217,40 @@ class Identification extends React.Component {
     return message;
   };
 
+  /**
+   *
+   * @param {*} isPrimary - whether to render the primary or secondary language Select
+   */
+  renderLanguageSelect = isPrimary => {
+    let inputId, value, languageType, language;
+    if (isPrimary) {
+      inputId = 'primary-language-select';
+      languageType = 'primary_language';
+      language = tryToMatchLanguage(this.state.current.patient.primary_language);
+      value = { label: language?.d, value: language?.c };
+    } else {
+      inputId = 'secondary-language-select';
+      languageType = 'secondary_language';
+      language = tryToMatchLanguage(this.state.current.patient.secondary_language);
+      value = { label: language?.d, value: language?.c };
+    }
+    return (
+      <Select
+        inputId={inputId}
+        value={value}
+        options={languageOptions}
+        onChange={e => this.handleLanguageChange(e, languageType)}
+        placeholder=""
+        styles={cursorPointerStyle}
+        theme={theme => ({
+          ...theme,
+          borderRadius: 0,
+        })}
+      />
+    );
+  };
+
   render() {
-    const cursorPointerStyle = {
-      option: provided => ({
-        ...provided,
-        cursor: 'pointer',
-      }),
-    };
     const exclusive_race_selected = !!this.state.current.patient.race_unknown || !!this.state.current.patient.race_refused_to_answer;
     return (
       <React.Fragment>
@@ -451,36 +477,14 @@ class Identification extends React.Component {
                     PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="primaryLanguage" location="right"></InfoTooltip>
                   </Form.Label>
-                  <Select
-                    inputId="primary-language-select"
-                    value={this.state.selectedPrimaryLanguage}
-                    options={languageOptions}
-                    onChange={e => this.handleLanguageChange('primary_language', e)}
-                    placeholder=""
-                    styles={cursorPointerStyle}
-                    theme={theme => ({
-                      ...theme,
-                      borderRadius: 0,
-                    })}
-                  />
+                  {this.renderLanguageSelect(true)}
                 </Form.Group>
                 <Form.Group as={Col} sm={24} md={12} id="secondary_language_wrapper" className="pl-md-4 mb-2">
                   <Form.Label htmlFor="secondary-language-select" className="nav-input-label">
                     SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="secondaryLanguage" location="right"></InfoTooltip>
                   </Form.Label>
-                  <Select
-                    inputId="secondary-language-select"
-                    value={this.state.selectedSecondaryLanguage}
-                    options={languageOptions}
-                    onChange={e => this.handleLanguageChange('secondary_language', e)}
-                    placeholder=""
-                    styles={cursorPointerStyle}
-                    theme={theme => ({
-                      ...theme,
-                      borderRadius: 0,
-                    })}
-                  />
+                  {this.renderLanguageSelect(false)}
                 </Form.Group>
               </Form.Row>
               <Form.Row>
