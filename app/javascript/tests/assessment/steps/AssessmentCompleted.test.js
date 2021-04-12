@@ -1,6 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Card, Form } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AssessmentCompleted from '../../../components/assessment/steps/AssessmentCompleted.js'
 import { mockTranslations } from '../../mocks/mockTranslations'
 
@@ -116,5 +117,14 @@ describe('AssessmentCompleted', () => {
     expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[language]['web']['webpage'])).toBeFalsy();
     expect(wrapper.find(Card.Body).find(Form.Label).at(1).find('i').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find(Form.Label).at(1).find('a').exists()).toBeFalsy();
+  });
+
+  it('Properly renders success checkmark', () => {
+    const language = 'en';
+    const wrapper = getWrapper(language, contact);
+    expect(wrapper.find(Card.Body).find(FontAwesomeIcon).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(FontAwesomeIcon).prop('icon').iconName).toEqual('check-circle');
+    expect(wrapper.find(Card.Body).find(FontAwesomeIcon).prop('color')).toEqual('#28a745');
+    expect(wrapper.find(Card.Body).find(FontAwesomeIcon).prop('size')).toEqual('6x');
   });
 });
