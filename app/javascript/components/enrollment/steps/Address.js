@@ -53,6 +53,7 @@ class Address extends React.Component {
             monitored_address_zip: current.patient.address_zip,
             monitored_address_county: current.patient.address_county,
           },
+          first_positive_lab: this.props.currentState.first_positive_lab,
         },
         modified: {
           ...modified,
@@ -65,6 +66,7 @@ class Address extends React.Component {
             monitored_address_zip: current.patient.address_zip,
             monitored_address_county: current.patient.address_county,
           },
+          first_positive_lab: this.props.currentState.first_positive_lab,
         },
       },
       () => {
