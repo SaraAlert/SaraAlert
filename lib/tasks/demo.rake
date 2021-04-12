@@ -424,7 +424,7 @@ desc 'Backup the database'
     }
     Patient.update(new_children.map { |p| p[:id] }, new_children_updates)
 
-    # Create first positive lab for patients with no symptom history
+    # Create first positive lab for patients with no reported symptoms
     laboratories = []
     asymptomatic_cases = new_patients.where(isolation: true, symptom_onset: nil)
     user_emails = Hash[User.where(id: asymptomatic_cases.distinct.pluck(:creator_id)).pluck(:id, :email)]

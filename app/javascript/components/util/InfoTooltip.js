@@ -119,7 +119,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  noSymptomHistoryDisabled: <div>No symptom history cannot be selected because this case has at least one symptomatic report.</div>,
+  noSymptomHistoryDisabled: <div>NO REPORTED SYMPTOMS cannot be selected because this case has at least one symptomatic report.</div>,
 
   latestPublicHealthActionInExposure: (
     <div>

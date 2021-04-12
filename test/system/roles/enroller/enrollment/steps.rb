@@ -107,7 +107,7 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
         { id: 'member_of_a_common_exposure_cohort', type: :risk_factor, info_page: true, label: 'Member of a Common Exposure Cohort' },
         { id: 'member_of_a_common_exposure_cohort_type', type: :text, info_page: true },
         { id: 'symptom_onset', type: :recent_date, required: true, info_page: true },
-        { id: 'no_symptom_history', type: :checkbox, label: 'NO SYMPTOM HISTORY' },
+        { id: 'no_reported_symptoms', type: :checkbox, label: 'NO REPORTED SYMPTOMS' },
         { id: 'first_positive_lab', type: :button, label: 'Enter Lab Result' },
         { id: 'lab_type', type: :select },
         { id: 'specimen_collection', type: :recent_date, required: true, info_page: true },
