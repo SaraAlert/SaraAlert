@@ -1,6 +1,8 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card, Form } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 class AssessmentCompleted extends React.Component {
   constructor(props) {
@@ -53,7 +55,7 @@ class AssessmentCompleted extends React.Component {
             )}
           </Form.Label>
           <br />
-          <Form.Label className="fas fa-check fa-10x text-center pt-2"> </Form.Label>
+          <FontAwesomeIcon icon={faCheckCircle} color="#28a745" size="6x"></FontAwesomeIcon>
         </Card.Body>
       </Card>
     );
