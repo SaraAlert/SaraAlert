@@ -62,9 +62,7 @@ class User < ApplicationRecord
   def get_patient(id)
     if role?(Roles::ENROLLER)
       enrolled_patients.find_by_id(id)
-    elsif role?(Roles::PUBLIC_HEALTH)
-      viewable_patients.find_by_id(id)
-    elsif role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER)
+    elsif role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER)
       viewable_patients.find_by_id(id)
     elsif role?(Roles::ADMIN)
       nil
@@ -75,9 +73,7 @@ class User < ApplicationRecord
   def get_patients(ids)
     if role?(Roles::ENROLLER)
       enrolled_patients.find(ids)
-    elsif role?(Roles::PUBLIC_HEALTH)
-      viewable_patients.find(ids)
-    elsif role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER)
+    elsif role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER)
       viewable_patients.find(ids)
     elsif role?(Roles::ADMIN)
       nil
@@ -88,10 +84,10 @@ class User < ApplicationRecord
   def jurisdictions_for_transfer
     if can_transfer_patients?
       # Allow all jurisdictions as valid transfer options.
-      Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path)]
+      Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).to_h
     else
       # Otherwise, only show jurisdictions within hierarchy.
-      Hash[jurisdiction.subtree.pluck(:id, :path)]
+      jurisdiction.subtree.pluck(:id, :path).to_h
     end
   end
 

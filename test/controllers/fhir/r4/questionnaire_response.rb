@@ -10,7 +10,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should get QuestionnaireResponse via show' do
     get(
       '/fhir/r4/QuestionnaireResponse/1001',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -27,7 +27,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should find QuestionnaireResponses for a Patient via search' do
     get(
       '/fhir/r4/QuestionnaireResponse?subject=Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -38,7 +38,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should find no QuestionnaireResponses for an invalid Patient via search' do
     get(
       '/fhir/r4/QuestionnaireResponse?subject=Patient/blah',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)

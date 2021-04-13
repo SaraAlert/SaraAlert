@@ -29,7 +29,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should get RelatedPerson via show' do
     get(
       '/fhir/r4/RelatedPerson/1',
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     assert_equal JSON.parse(CloseContact.find_by_id(1).as_fhir.to_json), JSON.parse(response.body)
@@ -38,7 +38,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be forbidden via show for inaccessible RelatedPerson' do
     get(
       '/fhir/r4/RelatedPerson/2',
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -49,7 +49,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/RelatedPerson',
       params: @close_contact_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :created
     json_response = JSON.parse(response.body)
@@ -84,7 +84,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/RelatedPerson',
       params: @close_contact_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -99,7 +99,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/RelatedPerson',
       params: @close_contact_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -118,7 +118,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/RelatedPerson',
       params: related_person_json_str,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -140,7 +140,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/RelatedPerson/1',
       params: cc.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :ok
     updated_cc = CloseContact.find_by_id(1)
@@ -170,12 +170,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     cc = CloseContact.find_by_id(1)
     original_cc = cc.dup
     patch = [
-      { 'op': 'replace', 'path': '/name/0/given/0', 'value': 'FarContact1' }
+      { op: 'replace', path: '/name/0/given/0', value: 'FarContact1' }
     ]
     patch(
       '/fhir/r4/RelatedPerson/1',
       params: patch.to_json,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/json-patch+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/json-patch+json' }
     )
     assert_response :ok
     updated_cc = CloseContact.find_by_id(1)
@@ -201,7 +201,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/RelatedPerson/1',
       params: @close_contact_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -216,7 +216,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/RelatedPerson/1',
       params: @close_contact_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -233,7 +233,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/RelatedPerson/1',
       params: related_person_json_str,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -250,7 +250,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     patient_1 = Patient.find_by_id(1)
     get(
       '/fhir/r4/RelatedPerson?patient=Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -263,7 +263,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should find no RelatedPersons for an invalid Patient via search' do
     get(
       '/fhir/r4/RelatedPerson?patient=Patient/blah',
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
