@@ -1590,10 +1590,6 @@ To create a new monitoree vaccination, simply POST a FHIR Immunization resource 
 
 ```json
 {
-  "id": 32,
-  "meta": {
-    "lastUpdated": "2021-04-01T22:09:11+00:00"
-  },
   "status": "completed",
   "vaccineCode": [
     {
@@ -1966,10 +1962,6 @@ On success, the server will update the existing resource given the id.
 
 ```json
 {
-  "id": 32,
-  "meta": {
-    "lastUpdated": "2021-04-01T22:09:11+00:00"
-  },
   "status": "completed",
   "vaccineCode": [
     {
