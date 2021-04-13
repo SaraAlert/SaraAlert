@@ -263,14 +263,14 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     if (fields & %i[jurisdiction_path transferred_from transferred_to]).any?
       jur_ids = patients.pluck(:jurisdiction_id).uniq
       jur_ids = (jur_ids + patients.pluck(:latest_transfer_from)).uniq if fields.include?(:transferred_from)
-      jurisdiction_paths = Hash[Jurisdiction.find(jur_ids).pluck(:id, :path)]
+      jurisdiction_paths = Jurisdiction.find(jur_ids).pluck(:id, :path).to_h
     end
 
     # query jurisdiction names in bulk if requested
-    jurisdiction_names = Hash[Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :name)] if fields.include?(:jurisdiction_name)
+    jurisdiction_names = Jurisdiction.find(patients.pluck(:jurisdiction_id).uniq).pluck(:id, :name).to_h if fields.include?(:jurisdiction_name)
 
     # query user emails in bulk if requested
-    patients_creators = Hash[patients.joins('JOIN users ON patients.creator_id = users.id').pluck('users.id', 'users.email')] if fields.include?(:creator)
+    patients_creators = patients.joins('JOIN users ON patients.creator_id = users.id').pluck('users.id', 'users.email').to_h if fields.include?(:creator)
 
     # query patients laboratories in bulk if requested
     if (fields & PATIENT_FIELD_TYPES[:lab_fields]).any?

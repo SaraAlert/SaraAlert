@@ -75,7 +75,7 @@ class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
   end
 
   def get_distributions(text)
-    elements = text.split(' ')
+    elements = text.split
     if %w[Symptomatic Non-Reporting Asymptomatic].include? elements[0]
       get_distributions_with_percentages(elements)
     else
@@ -120,7 +120,7 @@ class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
 
   def err_msg_for_distribution_percentage(distribution, risk_level)
     @@system_test_utils.get_err_msg('Monitoree counts',
-                                    "#{distribution.fetch('category'.to_sym)} #{risk_level} risk level percentage",
+                                    "#{distribution.fetch(:category)} #{risk_level} risk level percentage",
                                     'less than or equal to 100')
   end
 end

@@ -93,7 +93,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return if @patient.nil?
 
     @dependents_exclude_hoh = @patient.dependents_exclude_self
-    @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
+    @propagated_fields = group_member_subset.collect { |field| [field, false] }.to_h
     @enrollment_step = params.permit(:step)[:step]&.to_i
   end
 
@@ -307,11 +307,7 @@ class PatientsController < ApplicationController
     # Update the record
     updated = current_patient.update(responder_id: new_hoh_id)
 
-    if !updated
-      error_message = 'Move to household action failed: monitoree was unable to be be updated.'
-      render(json: { error: error_message }, status: :bad_request) && return
-    else
-      # Create history item for new HoH
+    if updated
       comment = "User added monitoree with ID #{current_patient.id} to a household. This monitoree"\
                 ' will now be responsible for handling the reporting on their behalf.'
       History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
@@ -320,6 +316,10 @@ class PatientsController < ApplicationController
       comment = "User added monitoree to a household. Monitoree with ID #{new_hoh_id} will now be responsible"\
                 ' for handling the reporting on their behalf.'
       History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
+    else
+      # Create history item for new HoH
+      error_message = 'Move to household action failed: monitoree was unable to be be updated.'
+      render(json: { error: error_message }, status: :bad_request) && return
     end
   end
 
@@ -350,11 +350,7 @@ class PatientsController < ApplicationController
     # Update the record
     updated = current_patient.update(responder_id: current_patient.id)
 
-    if !updated
-      error_message = 'Remove from household action failed: monitoree was unable to be be updated.'
-      render(json: { error: error_message }, status: :bad_request) && return
-    else
-      # Create history item for old HoH
+    if updated
       comment = "User removed dependent monitoree with ID #{current_patient.id} from the household. This monitoree"\
                 ' will no longer be responsible for handling their reporting.'
       History.monitoring_change(patient: old_hoh, created_by: current_user.email, comment: comment)
@@ -363,6 +359,10 @@ class PatientsController < ApplicationController
       comment = "User removed monitoree from a household. Monitoree with ID #{old_hoh.id} will"\
                 ' no longer be responsible for handling their reporting.'
       History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
+    else
+      # Create history item for old HoH
+      error_message = 'Remove from household action failed: monitoree was unable to be be updated.'
+      render(json: { error: error_message }, status: :bad_request) && return
     end
   end
 

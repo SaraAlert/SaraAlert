@@ -3,11 +3,11 @@
 module SymptomTestHelper
   def self.create_symptom_as_hash(kname: 'Name', value: 1, type: 'IntegerSymptom', label: 'Label', notes: 'Notes')
     {
-      "name": kname,
-      "value": value,
-      "type": type,
-      "label": label,
-      "notes": notes
+      name: kname,
+      value: value,
+      type: type,
+      label: label,
+      notes: notes
     }
   end
 
