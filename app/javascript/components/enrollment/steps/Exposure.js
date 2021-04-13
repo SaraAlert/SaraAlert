@@ -432,11 +432,9 @@ class Exposure extends React.Component {
             controlId="first_positive_lab"
             className="mb-2">
             {this.state.current.first_positive_lab && (
-              <div className={`mx-1 mb-2 {this.state.current.patient.no_reported_symptoms ? '' : 'disabled-first-positive-lab'}`}>
-                <div className="section-header">
-                  <h4 className="section-title">
-                    <span>FIRST POSITIVE LAB RESULT</span>
-                  </h4>
+              <div className={`mb-2 {this.state.current.patient.no_reported_symptoms ? '' : 'first-positive-lab-disabled'}`}>
+                <div className="first-positive-lab-result-header">
+                  <div className="first-positive-lab-result-title">FIRST POSITIVE LAB RESULT</div>
                   <div className="edit-link">
                     <Button
                       variant="link"
@@ -449,11 +447,11 @@ class Exposure extends React.Component {
                   </div>
                 </div>
                 <div>
-                  <b>Type: </b>
+                  <span className="first-positive-lab-result-field-name">Type: </span>
                   <span>{this.state.current.first_positive_lab.lab_type || '--'}</span>
                 </div>
                 <div>
-                  <b>Specimen Collection Date: </b>
+                  <span className="first-positive-lab-result-field-name">Specimen Collection Date: </span>
                   <span>
                     {this.state.current.first_positive_lab.specimen_collection
                       ? moment(this.state.current.first_positive_lab.specimen_collection, 'YYYY-MM-DD').format('MM/DD/YYYY')
@@ -461,7 +459,7 @@ class Exposure extends React.Component {
                   </span>
                 </div>
                 <div>
-                  <b>Report Date: </b>
+                  <span className="first-positive-lab-result-field-name">Report Date: </span>
                   <span>
                     {this.state.current.first_positive_lab.report
                       ? moment(this.state.current.first_positive_lab.report, 'YYYY-MM-DD').format('MM/DD/YYYY')
@@ -469,7 +467,7 @@ class Exposure extends React.Component {
                   </span>
                 </div>
                 <div>
-                  <b>Result: </b>
+                  <span className="first-positive-lab-result-field-name">Result: </span>
                   <span>{this.state.current.first_positive_lab.result || '--'}</span>
                 </div>
               </div>
