@@ -17,13 +17,4 @@ class SendPurgeWarningsJobTest < ActiveSupport::TestCase
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes(email_body, 'Sara Alert Send Purge Warnings Job Results')
   end
-
-  test 'sends emails to each admin user not in the USA jurisdiction' do
-  end
-
-  test 'sends correct email when no purge eligible monitorees for user' do
-  end
-
-  test 'sends correct email when there are purge eligible monitorees for user' do
-  end
 end

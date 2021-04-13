@@ -215,7 +215,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
             .find_each do |patient|
               patient.assessments.find_each do |assessment|
                 assessment_summary_arr = %i[patient_id symptomatic who_reported created_at updated_at].map { |field| assessment[field] }
-                symptoms_hash = Hash[assessment.reported_condition.symptoms.map { |symptom| [symptom[:label], symptom.value] }]
+                symptoms_hash = assessment.reported_condition.symptoms.map { |symptom| [symptom[:label], symptom.value] }.to_h
                 symptoms_arr = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s || '' }
                 assessment_summary_arr.concat(symptoms_arr).each_with_index do |value, col|
                   cell_value = assessments.cell(assessment_row + 2, col + 1)
@@ -398,7 +398,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
         # Get symmptom data if checked
         if settings.dig(:data, :assessments, :checked).include?(:symptoms)
-          symptoms_hash = Hash[assessment.reported_condition.symptoms.map { |symptom| [symptom[:label], symptom.value] }]
+          symptoms_hash = assessment.reported_condition.symptoms.map { |symptom| [symptom[:label], symptom.value] }.to_h
           symptoms_arr = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s || '' }
           assessment_summary_arr.concat(symptoms_arr)
         end

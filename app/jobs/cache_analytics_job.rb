@@ -28,7 +28,7 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   WORKFLOWS = %w[Exposure Isolation].freeze
-  MONITORING_STATUSES ||= %w[Symptomatic Non-Reporting Asymptomatic].freeze
+  MONITORING_STATUSES = %w[Symptomatic Non-Reporting Asymptomatic].freeze
   LINELIST_STATUSES = [
     'Exposure Symptomatic',
     'Exposure Non-Reporting',
@@ -38,7 +38,7 @@ class CacheAnalyticsJob < ApplicationJob
     'Isolation Non-Reporting',
     'Isolation Reporting'
   ].freeze
-  RISK_FACTORS ||= {
+  RISK_FACTORS = {
     contact_of_known_case: 'Close Contact with Known Case',
     travel_to_affected_country_or_area: 'Travel from Affected Country or Area',
     was_in_health_care_facility_with_known_cases: 'Was in Healthcare Facility with Known Cases',
@@ -47,11 +47,11 @@ class CacheAnalyticsJob < ApplicationJob
     crew_on_passenger_or_cargo_flight: 'Crew on Passenger or Cargo Flight',
     laboratory_personnel: 'Laboratory Personnel'
   }.freeze
-  MONITOREE_SNAPSHOT_TIME_FRAMES ||= ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'].freeze
-  NUM_EXPOSURE_COUNTRIES ||= 5
-  NUM_PAST_DAYS ||= 28
-  NUM_PAST_WEEKS ||= 53
-  NUM_PAST_MONTHS ||= 13
+  MONITOREE_SNAPSHOT_TIME_FRAMES = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'].freeze
+  NUM_EXPOSURE_COUNTRIES = 5
+  NUM_PAST_DAYS = 28
+  NUM_PAST_WEEKS = 53
+  NUM_PAST_MONTHS = 13
 
   # Compute all monitoree counts
   def self.all_monitoree_counts(analytic_id, monitorees)

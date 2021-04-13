@@ -127,7 +127,7 @@ class AdminController < ApplicationController
     return head :bad_request if role.nil? || role.blank?
 
     # Parse back to format in records
-    role = role.split(' ').map(&:downcase).join('_')
+    role = role.split.map(&:downcase).join('_')
     return head :bad_request unless Roles.all_role_values.include?(role)
 
     jurisdiction = permitted_params[:jurisdiction]
@@ -178,7 +178,7 @@ class AdminController < ApplicationController
     return head :bad_request if role.nil? || role.blank?
 
     # Parse back to format in records
-    role = role.split(' ').map(&:downcase).join('_')
+    role = role.split.map(&:downcase).join('_')
     return head :bad_request unless Roles.all_role_values.include?(role)
 
     jurisdiction = permitted_params[:jurisdiction]
