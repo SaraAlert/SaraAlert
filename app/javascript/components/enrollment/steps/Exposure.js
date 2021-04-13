@@ -434,7 +434,9 @@ class Exposure extends React.Component {
             {this.state.current.first_positive_lab && (
               <div className={`mx-1 mb-2 {this.state.current.patient.no_reported_symptoms ? '' : 'disabled-first-positive-lab'}`}>
                 <div className="section-header">
-                  <Form.Label className="nav-input-label">FIRST POSITIVE LAB RESULT</Form.Label>
+                  <h4 className="section-title">
+                    <span>FIRST POSITIVE LAB RESULT</span>
+                  </h4>
                   <div className="edit-link">
                     <Button
                       variant="link"
