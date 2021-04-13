@@ -981,7 +981,12 @@ desc 'Backup the database'
   end
 
   def create_fake_timestamp(from, to)
-    Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
+    timestamp = Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
+    # Ensure the UTC timezone conversion of the returned timestamp is within the desired timeframe
+    while(timestamp.utc > to + 1)
+      timestamp = Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
+    end
+    timestamp
   end
 
   def duplicate_timestamps(from, to)
