@@ -1,3 +1,19 @@
-.disabled-first-positive-lab {
+$section-border: #ddd;
+
+.first-positive-lab-result-header {
+  margin-bottom: 8px;
+  border-bottom: 1px solid $section-border;
+}
+
+.first-positive-lab-result-title {
+  display: inline;
+  font-weight: 600;
+}
+
+.first-positive-lab-result-field-name {
+  font-weight: 600;
+}
+
+.first-positive-lab-disabled {
   color: #808080;
 }
