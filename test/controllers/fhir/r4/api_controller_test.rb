@@ -303,7 +303,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -312,7 +312,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -320,7 +320,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to create Patient resource with QuestionnaireResponse scope' do
     post(
       '/fhir/r4/Patient',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -329,7 +329,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -338,7 +338,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -346,7 +346,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to update Patient resource with QuestionnaireResponse scope' do
     put(
       '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -354,7 +354,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read Patient resource with Patient write only scope' do
     get(
       '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_w.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -362,7 +362,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read Patient resource with Observation scope' do
     get(
       '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -370,7 +370,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read Patient resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -378,7 +378,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search Patient resource with Patient write only scope' do
     get(
       '/fhir/r4/Patient?_id=1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_w.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -386,7 +386,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search Patient resource with Observation scope' do
     get(
       '/fhir/r4/Patient?_id=1',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -394,7 +394,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search Patient resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient?_id=1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -402,7 +402,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to create RelatedPerson resource with RelatedPerson read scope' do
     post(
       '/fhir/r4/RelatedPerson',
-      headers: { 'Authorization': "Bearer #{@system_related_person_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_related_person_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -410,7 +410,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to create RelatedPerson resource with Observation scope' do
     post(
       '/fhir/r4/RelatedPerson',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -418,7 +418,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to create RelatedPerson resource with QuestionnaireResponse scope' do
     post(
       '/fhir/r4/RelatedPerson',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -426,7 +426,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to update RelatedPerson resource with RelatedPerson read scope' do
     put(
       '/fhir/r4/RelatedPerson/1',
-      headers: { 'Authorization': "Bearer #{@system_related_person_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_related_person_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -435,7 +435,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/RelatedPerson/1',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -443,7 +443,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to update RelatedPerson resource with QuestionnaireResponse scope' do
     put(
       '/fhir/r4/RelatedPerson/1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -451,7 +451,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read RelatedPerson resource with RelatedPerson write only scope' do
     get(
       '/fhir/r4/RelatedPerson/1',
-      headers: { 'Authorization': "Bearer #{@system_related_person_token_w.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_related_person_token_w.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -459,7 +459,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read RelatedPerson resource with Observation scope' do
     get(
       '/fhir/r4/RelatedPerson/1',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -467,7 +467,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read RelatedPerson resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/RelatedPerson/1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -475,7 +475,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search RelatedPerson resource with RelatedPerson write only scope' do
     get(
       '/fhir/r4/RelatedPerson?_id=1',
-      headers: { 'Authorization': "Bearer #{@system_related_person_token_w.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_related_person_token_w.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -483,7 +483,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search RelatedPerson resource with Observation scope' do
     get(
       '/fhir/r4/RelatedPerson?_id=1',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -491,7 +491,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search RelatedPerson resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/RelatedPerson?_id=1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -596,7 +596,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read Observation resource with Patient scope' do
     get(
       '/fhir/r4/Observation/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -604,7 +604,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read Observation resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Observation/1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -612,7 +612,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read QuestionnaireResponse resource with Patient scope' do
     get(
       '/fhir/r4/QuestionnaireResponse/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -620,7 +620,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read QuestionnaireResponse resource with Observation scope' do
     get(
       '/fhir/r4/QuestionnaireResponse/1',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -628,7 +628,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to get everything with only Patient write only scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_w.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -636,7 +636,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to get everything with only Patient read only scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -644,7 +644,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to get everything with only Patient read and write scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -652,7 +652,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to get everything with only Observation scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -660,7 +660,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to get everything with only QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -668,7 +668,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to get everything with only Patient read and write scope and Observation scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_patient_rw_observation_r_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_rw_observation_r_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -676,7 +676,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to get everything with only Patient read and write scope and QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_patient_rw_response_r_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_rw_response_r_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -684,7 +684,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to get everything with only Observation scope and QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_observation_r_response_r_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_r_response_r_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -701,7 +701,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @system_patient_token_rw = Doorkeeper::AccessToken.create(application: @system_patient_read_write_app, scopes: 'system/*.read system/*.write')
     get(
       '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -711,7 +711,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @system_patient_token_rw = Doorkeeper::AccessToken.create(application: @system_patient_read_write_app, scopes: 'system/*.read system/*.write')
     get(
       '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -719,7 +719,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be 406 when bad accept header via show' do
     get(
       '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'foo/bar' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", Accept: 'foo/bar' }
     )
     assert_response :not_acceptable
   end
@@ -727,7 +727,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be 404 via show when requesting unsupported resource' do
     get(
       '/fhir/r4/FooBar/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", Accept: 'application/fhir+json' }
     )
     assert_response :not_found
   end
@@ -735,7 +735,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be forbidden via show' do
     get(
       '/fhir/r4/Patient/9',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -749,7 +749,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     get(
       '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@user_patient_token_rw.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -765,7 +765,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
     )
     assert_response :unsupported_media_type
   end
@@ -774,7 +774,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Patient',
       env: { 'RAW_POST_DATA' => '{ "foo", "bar" }' },
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
@@ -785,7 +785,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Patient',
       params: { foo: 'bar' }.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
   end
@@ -795,7 +795,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
@@ -808,7 +808,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
@@ -823,7 +823,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/FooBar',
       params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :not_found
   end
@@ -839,7 +839,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/Patient/1',
       env: { 'RAW_POST_DATA' => '{ "foo", "bar" }' },
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
@@ -850,7 +850,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/Patient/1',
       params: { foo: 'bar' }.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
   end
@@ -860,7 +860,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
@@ -873,7 +873,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
@@ -888,7 +888,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/FooBar/9',
       params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :not_found
   end
@@ -897,17 +897,17 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/Patient/9',
       params: @patient_2.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
 
   test 'should be bad request when patch update is invalid' do
-    patch = [{ 'op': 'replace', 'path': '/uh/oh/path', 'value': 'Foo' }]
+    patch = [{ op: 'replace', path: '/uh/oh/path', value: 'Foo' }]
     patch(
       '/fhir/r4/Patient/1',
       params: patch.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/json-patch+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/json-patch+json' }
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
@@ -918,7 +918,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     patch(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
+      headers: { Authorization: "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
     )
     assert_response :unsupported_media_type
   end
@@ -933,7 +933,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be unauthorized via search write only' do
     get(
       '/fhir/r4/Patient?family=Kirlin44',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_w.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -941,7 +941,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be 404 via search when requesting unsupported resource' do
     get(
       '/fhir/r4/FooBar?email=grazyna%40example.com',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", Accept: 'application/fhir+json' }
     )
     assert_response :not_found
   end
@@ -957,7 +957,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     patient = Patient.find_by_id(1)
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -977,7 +977,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should get CapabilityStatement unauthorized via capability_statement' do
     get(
       '/fhir/r4/metadata',
-      headers: { 'Accept': 'application/fhir+json' }
+      headers: { Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -987,7 +987,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should get CapabilityStatement authorized via capability_statement' do
     get(
       '/fhir/r4/metadata',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -999,7 +999,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should get well known statement unauthorized via well_known' do
     get(
       '/fhir/r4/.well-known/smart-configuration',
-      headers: { 'Accept': 'application/fhir+json' }
+      headers: { Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -1009,7 +1009,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should get well known statement authorized via well_known' do
     get(
       '/fhir/r4/.well-known/smart-configuration',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)

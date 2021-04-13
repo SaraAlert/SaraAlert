@@ -23,7 +23,7 @@ class PurgeJob < ApplicationJob
       attributes = Patient.new.attributes.keys
       attributes -= PurgeJob.attributes_to_keep
       # Set everything else to nil
-      mask = Hash[attributes.collect { |a| [a, nil] }].symbolize_keys
+      mask = attributes.collect { |a| [a, nil] }.to_h.symbolize_keys
       mask[:purged] = true
       monitoree.update!(mask)
       purged << { id: monitoree.id }
