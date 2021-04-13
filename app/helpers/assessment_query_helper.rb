@@ -78,7 +78,10 @@ module AssessmentQueryHelper
 
     # query relevant fields for all associated reported conditions
     reported_conditions = Hash[ReportedCondition.where(assessment_id: assessment_ids).pluck(:id, :assessment_id, :threshold_condition_hash)
-                                                .map { |(id, assessment_id, hash)| [assessment_id, { id: id, threshold_condition_hash: hash, symptoms: [] }] }]
+                                                .map { |(id, assessment_id, hash)| [id, { assessment_id: assessment_id, hash: hash, symptoms: [] }] }]
+
+    # create hash for condition id to assessment id lookup
+    reported_condition_ids_by_assessment_id = Hash[reported_conditions.map { |id, reported_condition| [reported_condition[:assessment_id], id] }]
 
     # query relevant fields for all associated symptoms and include them in the reported conditions
     Symptom.where(condition_id: reported_conditions.keys).select(%i[name condition_id type bool_value int_value float_value])
@@ -95,9 +98,9 @@ module AssessmentQueryHelper
         passes_threshold_data: {}
       }
 
-      reported_condition = reported_conditions[assessment[:id]]
+      reported_condition = reported_conditions[reported_condition_ids_by_assessment_id[assessment[:id]]]
       unless reported_condition.nil?
-        details[:threshold_condition_hash] = reported_condition[:threshold_condition_hash]
+        details[:threshold_condition_hash] = reported_condition[:hash]
         details[:symptoms] = reported_condition[:symptoms]
         details[:symptoms]&.each do |symptom|
           value = symptom.value
