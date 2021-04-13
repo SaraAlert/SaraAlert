@@ -107,7 +107,7 @@ som:
         subject: 'Warbixintu Sara Alert way dhammaystiran tahay'
         header: 'Warbixintu Sara Alert way dhammaystiran tahay!'
         dear: 'Gacaliye/Gacaliso'
-        thank-you: 'La socoshadaada Sara Alert hadda waa la dhammeystiray! Waad ku mahadsantahay ka qeyb qaadashadaada.'
+        thank-you: "Sara Alert muddada kormeerka for %{initials_age} soo gabagabeeyey %{completed_date}! Waad ku mahadsan tahay ka qayb galka"
         footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka. Xogta gaarka ah iyo macluumaad dheeri ah, booqo saraalert.org.'
       contact:
         info1: 'Haddii aad qabtid wax su’aalo ah, fadlan macluumaad hoos ku qoran u isticmaal si aad u gaadho hay’ad caafimaadka dadweynaha in caawisay kuu soo diiwaangelin:'
@@ -130,6 +130,8 @@ som:
         thanks: 'Waad ku mahadsan tahay dhammaystirka warbixin maalmeedkaaga!'
       weblink:
         intro: 'Fadlan u buuxi Warbixinta Maalinlaha ee Sara Alert ee'
+      closed:
+        thank-you: "Sara Alert muddada kormeerka for %{initials_age} soo gabagabeeyey %{completed_date}! Waad ku mahadsan tahay ka qayb galka"
     phone:
       intro: 'Waa salaaman tahay Sara Alert oo ugu yeeraysa warbixintaada maalinlaha ah.'
       try-again: "Waan ka xumahay, maan fahmin. Aan isku dayno markale."

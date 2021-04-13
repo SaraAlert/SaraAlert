@@ -113,6 +113,7 @@
             email: 'contact@example.com'
             message: 'This Is a Custom Jurisdiction Message'
             send_digest: true
+            send_close: true
             symptoms:
                 'Pulse Ox':
                     value: 90

@@ -107,7 +107,7 @@ spa-pr:
         subject: 'Reporte de Sara Alert completo'
         header: 'Reporte de Sara Alert completo'
         dear: 'Estimado/a'
-        thank-you: '¡Su reporte de Sara Alert está completo! Gracias por su participación.'
+        thank-you: "La supervisión de Sara Alert para %{initials_age} se completó el %{complete_date}. Gracias por su participación"
         footer: 'No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
       contact:
         info1: 'Si tiene alguna pregunta, por favor utilice la información de contacto a continuación para comunicarse con la organización de salud pública que le ayudó a inscribirse:'
@@ -130,6 +130,8 @@ spa-pr:
         thanks: '¡Gracias por completar su informe diario!'
       weblink:
         intro: 'Complete el Informe diario de Sara Alert para'
+      closed:
+        thank-you: "La supervisión de Sara Alert para %{initials_age} se completó el %{complete_date}. Gracias por su participación"
     phone:
       intro: 'Hola, soy Sara, la asistente de salud pública automatizada que solicita su informe diario.'
       try-again: "Lo siento, no entendí. Intentemoslo de nuevo."
