@@ -4,6 +4,8 @@ import { Button, Modal, InputGroup, Form } from 'react-bootstrap';
 import Select from 'react-select';
 import { cursorPointerStyle } from '../../packs/stylesheets/ReactSelectStyling';
 
+import { compareJurisdictionArrayElements } from '../../utils/Sorting';
+
 class UserModal extends React.Component {
   constructor(props) {
     super(props);
@@ -76,9 +78,11 @@ class UserModal extends React.Component {
                     ? { label: this.props.initialUserData.jurisdiction_path, value: this.props.initialUserData.jurisdiction_path }
                     : { label: this.props.jurisdiction_paths[0], value: this.props.jurisdiction_paths[0] }
                 }
-                options={this.props.jurisdiction_paths.map(path => {
-                  return { label: path, value: path };
-                })}
+                options={this.props.jurisdiction_paths
+                  .map(path => {
+                    return { label: path, value: path };
+                  })
+                  .sort(compareJurisdictionArrayElements)}
                 onChange={this.handleJurisdictionChange}
                 placeholder=""
                 styles={cursorPointerStyle}

@@ -9,6 +9,7 @@ import LaboratoryModal from '../../patient/laboratory/LaboratoryModal';
 import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
+import { compareJurisdictionObjectEntries } from '../../../utils/Sorting';
 import { countryOptions } from '../../../data/countryOptions';
 
 class Exposure extends React.Component {
@@ -846,13 +847,15 @@ class Exposure extends React.Component {
                         value={this.state.jurisdiction_path}
                       />
                       <datalist id="jurisdiction_paths">
-                        {Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
-                          return (
-                            <option value={path} key={id}>
-                              {path}
-                            </option>
-                          );
-                        })}
+                        {Object.entries(this.props.jurisdiction_paths)
+                          .map(([id, path]) => {
+                            return (
+                              <option value={path} key={id}>
+                                {path}
+                              </option>
+                            );
+                          })
+                          .sort(compareJurisdictionObjectEntries)}
                       </datalist>
                       <Form.Control.Feedback className="d-block" type="invalid">
                         {this.state.errors['jurisdiction_id']}

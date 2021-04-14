@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Form, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
+import { compareJurisdictionObjectEntries } from '../../../utils/Sorting';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class JurisdictionFilter extends React.Component {
@@ -44,13 +45,15 @@ class JurisdictionFilter extends React.Component {
           onChange={event => this.handleJurisdictionChange(event?.target?.value)}
         />
         <datalist id="jurisdiction_paths">
-          {Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
-            return (
-              <option value={path} key={id}>
-                {path}
-              </option>
-            );
-          })}
+          {Object.entries(this.props.jurisdiction_paths)
+            .map(([id, path]) => {
+              return (
+                <option value={path} key={id}>
+                  {path}
+                </option>
+              );
+            })
+            .sort(compareJurisdictionObjectEntries)}
         </datalist>
         <React.Fragment>
           <OverlayTrigger overlay={<Tooltip>Include Sub-Jurisdictions</Tooltip>}>

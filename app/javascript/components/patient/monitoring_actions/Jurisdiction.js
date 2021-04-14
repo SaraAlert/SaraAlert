@@ -8,6 +8,7 @@ import ReactTooltip from 'react-tooltip';
 import ApplyToHousehold from '../household/actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
+import { compareJurisdictionObjectEntries } from '../../../utils/Sorting';
 
 class Jurisdiction extends React.Component {
   constructor(props) {
@@ -176,13 +177,15 @@ class Jurisdiction extends React.Component {
               value={this.state.jurisdiction_path}
             />
             <datalist id="jurisdiction_paths">
-              {Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
-                return (
-                  <option value={path} key={id}>
-                    {path}
-                  </option>
-                );
-              })}
+              {Object.entries(this.props.jurisdiction_paths)
+                .map(([id, path]) => {
+                  return (
+                    <option value={path} key={id}>
+                      {path}
+                    </option>
+                  );
+                })
+                .sort(compareJurisdictionObjectEntries)}
             </datalist>
             <Button
               className="btn-lg btn-square text-nowrap ml-2"
