@@ -68,11 +68,11 @@ class PublicHealthPatientPageReports < ApplicationSystemTestCase
     find('#notifications_action').click
     if submit
       click_on 'OK'
-      @@public_health_patient_page_reports_verifier.verify_pause_notifications(!pause_notifications)
+      @@public_health_patient_page_reports_verifier.verify_notifications_button_text(!pause_notifications)
       @@public_health_patient_page_history_verifier.verify_pause_notifications(user_label, !pause_notifications)
     else
       click_on 'Cancel'
-      @@public_health_patient_page_reports_verifier.verify_pause_notifications(pause_notifications)
+      @@public_health_patient_page_reports_verifier.verify_notifications_button_text(pause_notifications)
     end
   end
 

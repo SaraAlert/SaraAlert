@@ -58,6 +58,10 @@ class SystemTestUtils < ApplicationSystemTestCase
     click_on 'Previous'
   end
 
+  def go_to_patient_page(patient_id)
+    visit "/patients/#{patient_id}"
+  end
+
   def verify_user_jurisdiction(user_label)
     jurisdiction = get_user(user_label).jurisdiction
     assert page.has_content?(jurisdiction.name), get_err_msg('Dashboard', 'user jurisdiction', jurisdiction.name) unless user_label.include?('admin')

@@ -766,6 +766,7 @@ class AdminTable extends React.Component {
           </Col>
         </Row>
         <CustomTable
+          dataType="users"
           columnData={this.state.table.colData}
           rowData={this.state.table.rowData}
           totalRows={this.state.table.totalRows}

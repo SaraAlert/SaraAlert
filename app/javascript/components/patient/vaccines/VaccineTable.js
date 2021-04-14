@@ -330,7 +330,7 @@ class VaccineTable extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Card id="vaccines-table" className="mx-2 mt-3 mb-4 card-square">
+        <Card id="vaccines" className="mx-2 mt-3 mb-4 card-square">
           <Card.Header className="h5">Vaccinations</Card.Header>
           <Card.Body>
             <div className="mt-4">
@@ -366,6 +366,7 @@ class VaccineTable extends React.Component {
               </Row>
               <div className="mb-4">
                 <CustomTable
+                  dataType="vaccines"
                   columnData={this.state.table.colData}
                   rowData={this.state.table.rowData}
                   totalRows={this.state.table.totalRows}

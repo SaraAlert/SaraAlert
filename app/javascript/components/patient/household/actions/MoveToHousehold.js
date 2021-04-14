@@ -316,6 +316,7 @@ class MoveToHousehold extends React.Component {
             </Row>
           </Form>
           <CustomTable
+            dataType="households"
             columnData={this.state.table.colData}
             rowData={this.state.table.rowData}
             totalRows={this.state.table.totalRows}

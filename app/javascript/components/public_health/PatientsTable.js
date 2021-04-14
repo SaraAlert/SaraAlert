@@ -678,6 +678,7 @@ class PatientsTable extends React.Component {
                 </InputGroup>
               </Form>
               <CustomTable
+                dataType="patients"
                 columnData={this.state.table.displayedColData}
                 rowData={this.state.table.rowData}
                 totalRows={this.state.table.totalRows}
