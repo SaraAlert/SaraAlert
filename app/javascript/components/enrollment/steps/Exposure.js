@@ -422,7 +422,7 @@ class Exposure extends React.Component {
               onChange={this.handleChange}
               disabled={this.props.symptomatic_assessments_exist}
             />
-            <InfoTooltip tooltipTextKey={this.props.symptomatic_assessments_exist ? 'noSymptomHistoryDisabled' : 'noSymptomHistory'} location="right" />
+            <InfoTooltip tooltipTextKey={this.props.symptomatic_assessments_exist ? 'noReportedSymptomsDisabled' : 'noReportedSymptoms'} location="right" />
           </Form.Group>
           <Form.Group
             as={Col}
