@@ -16,6 +16,7 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
   @@public_health_patient_page_actions = PublicHealthPatientPageActions.new(nil)
   @@public_health_patient_page_history = PublicHealthPatientPageHistory.new(nil)
   @@public_health_patient_page_reports = PublicHealthPatientPageReports.new(nil)
+  @@public_health_patient_page_reports_verifier = PublicHealthPatientPageReportsVerifier.new(nil)
   @@public_health_patient_page = PublicHealthPatientPage.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
@@ -25,9 +26,18 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def view_patients_details_and_reports(user_label)
+  def view_patients_details(user_label)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_patient_page.view_patients_details_and_reports(jurisdiction_id)
+    @@public_health_patient_page.view_patients_details(jurisdiction_id)
+    @@system_test_utils.logout
+  end
+
+  def view_reports(user_label, patient_ids)
+    @@system_test_utils.login(user_label)
+    patient_ids.each do |patient_id|
+      @@system_test_utils.go_to_patient_page(patient_id)
+      @@public_health_patient_page_reports_verifier.verify_reports(patient_id)
+    end
     @@system_test_utils.logout
   end
 

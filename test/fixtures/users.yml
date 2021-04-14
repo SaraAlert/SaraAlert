@@ -202,7 +202,7 @@ usa_super_user:
   sign_in_count: 12
   failed_attempts: 0
   force_password_change: false
-  jurisdiction_id: 2
+  jurisdiction_id: 1
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"

@@ -312,7 +312,7 @@ class AssessmentTable extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Card id="assessments-table" className="mx-2 mt-3 mb-4 card-square">
+        <Card id="reports" className="mx-2 mt-3 mb-4 card-square">
           <Card.Header className="h5">Reports</Card.Header>
           <Card.Body>
             <div className="mt-4">
@@ -345,6 +345,7 @@ class AssessmentTable extends React.Component {
               </Row>
               <div className="mb-4">
                 <CustomTable
+                  dataType="assessments"
                   columnData={this.state.table.colData}
                   rowData={this.state.table.rowData}
                   totalRows={this.state.table.totalRows}

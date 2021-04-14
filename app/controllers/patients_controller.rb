@@ -41,9 +41,6 @@ class PatientsController < ApplicationController
     @translations = Assessment.new.translations
 
     @history_types = History::HISTORY_TYPES
-
-    # If we failed to find a subject given the id, redirect to index
-    redirect_to(root_url) && return if @patient.nil?
   end
 
   # Returns a new (unsaved) subject, for creating a new subject

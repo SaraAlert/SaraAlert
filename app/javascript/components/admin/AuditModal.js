@@ -308,6 +308,7 @@ class AuditModal extends React.Component {
               <b>User:</b> {this.props.user.email}
             </span>
             <CustomTable
+              dataType="audits"
               columnData={this.state.table.colData}
               rowData={this.state.table.rowData}
               totalRows={this.state.table.totalRows}
