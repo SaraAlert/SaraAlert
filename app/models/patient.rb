@@ -938,13 +938,14 @@ class Patient < ApplicationRecord
     # being sent out for the same monitoree.
     return unless last_assessment_reminder_sent_eligible? || send_now
 
-    if preferred_contact_method&.downcase == 'sms text-message' && ADMIN_OPTIONS['enable_sms']
+    contact_method = preferred_contact_method&.downcase
+    if contact_method == 'sms text-message' && ADMIN_OPTIONS['enable_sms']
       PatientMailer.assessment_sms(self).deliver_later
-    elsif preferred_contact_method&.downcase == 'sms texted weblink' && ADMIN_OPTIONS['enable_sms']
+    elsif contact_method == 'sms texted weblink' && ADMIN_OPTIONS['enable_sms']
       PatientMailer.assessment_sms_weblink(self).deliver_later
-    elsif preferred_contact_method&.downcase == 'telephone call' && ADMIN_OPTIONS['enable_voice']
+    elsif contact_method == 'telephone call' && ADMIN_OPTIONS['enable_voice']
       PatientMailer.assessment_voice(self).deliver_later
-    elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email']
+    elsif contact_method == 'e-mailed web link' && ADMIN_OPTIONS['enable_email']
       PatientMailer.assessment_email(self).deliver_later if email.present?
     end
   end
