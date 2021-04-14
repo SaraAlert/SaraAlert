@@ -115,15 +115,6 @@ class Assessment < ApplicationRecord
     reported_condition&.symptoms&.find_by(name: symptom_name)
   end
 
-  # Gets all unique symptoms (based on name) for a given array of assessment IDs.
-  def self.get_unique_threshold_symptoms(assessment_ids, selected_fields = %i[name label type required threshold_operator bool_value int_value float_value])
-    threshold_cond_hashes = ReportedCondition.where(assessment_id: assessment_ids).pluck(:threshold_condition_hash)
-    return if threshold_cond_hashes.nil?
-
-    condition_ids = ThresholdCondition.where(threshold_condition_hash: threshold_cond_hashes)
-    Symptom.where(condition_id: condition_ids).select([:name] | selected_fields)&.uniq(&:name)
-  end
-
   def translations
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     {
