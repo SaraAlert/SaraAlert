@@ -34,7 +34,7 @@ module AssessmentQueryHelper
       assessments = assessments.order(created_at: dir)
     else
       # Verify this is a sort request for a symptom column.
-      symptom_columns = Assessment.get_unique_threshold_symptoms(assessments.pluck(:id), [:name])
+      symptom_columns = assessments.joins({ reported_condition: :symptoms }).distinct.pluck('symptoms.name')
       return assessments unless symptom_columns&.include?(order)
 
       # Find assessment IDs based on the value of the symptom in the specified column
@@ -69,25 +69,38 @@ module AssessmentQueryHelper
 
   # Formats assessments to be displayed on the frontend.
   def format_for_frontend(assessments)
-    # select relevant fields
+    # Select relevant fields
     assessments = assessments.select(%i[id symptomatic who_reported created_at])
+
+    # Call map instead of pluck here to prevent an additional query later when iterating over assessments
     assessment_ids = assessments.map(&:id)
 
-    # query relevant fields for corresponding threshold symptoms
-    threshold_symptoms = Hash[Assessment.get_unique_threshold_symptoms(assessment_ids).map { |symptom| [symptom[:name], symptom] }]
+    # Get distinct threshold conditions for these assessments
+    threshold_condition_hashes = ReportedCondition.where(assessment_id: assessment_ids).select(:threshold_condition_hash)
+    threshold_conditions = Hash[ThresholdCondition.where(threshold_condition_hash: threshold_condition_hashes)
+                                                  .pluck(:id, :threshold_condition_hash)].transform_values { |hash| { hash: hash, symptoms: {} } }
 
-    # query relevant fields for all associated reported conditions
+    # Get all threshold symptoms associated with the distinct threshold condition hashes
+    Symptom.where(condition_id: threshold_conditions.keys)
+           .select(%i[condition_id name label type required threshold_operator bool_value int_value float_value])
+           .each { |symptom| threshold_conditions[symptom[:condition_id]][:symptoms][symptom[:name]] = symptom }
+
+    # Enable threshold symptoms to be found by threshold_condition_hash
+    threshold_symptoms = threshold_conditions.transform_keys { |condition_id| threshold_conditions[condition_id][:hash] }
+
+    # Query relevant fields for all associated reported conditions
     reported_conditions = Hash[ReportedCondition.where(assessment_id: assessment_ids).pluck(:id, :assessment_id, :threshold_condition_hash)
                                                 .map { |(id, assessment_id, hash)| [id, { assessment_id: assessment_id, hash: hash, symptoms: [] }] }]
 
-    # create hash for condition id to assessment id lookup
+    # Create hash for condition id to assessment id lookup
     reported_condition_ids_by_assessment_id = Hash[reported_conditions.map { |id, reported_condition| [reported_condition[:assessment_id], id] }]
 
-    # query relevant fields for all associated symptoms and include them in the reported conditions
-    Symptom.where(condition_id: reported_conditions.keys).select(%i[name condition_id type bool_value int_value float_value])
+    # Query relevant fields for all associated symptoms and include them in the reported conditions
+    Symptom.where(condition_id: reported_conditions.keys)
+           .select(%i[name condition_id type bool_value int_value float_value])
            .each { |symptom| reported_conditions[symptom[:condition_id]][:symptoms].append(symptom) }
 
-    # construct table data
+    # Construct table data
     table_data = []
     assessments.each do |assessment|
       details = {
@@ -106,17 +119,27 @@ module AssessmentQueryHelper
           value = symptom.value
           # NOTE: We must check if the value is nil here before making this change.
           # Otherwise, text responses of "Yes" will show "No" in each row because the value for each symptom is still empty, for example.
-          if symptom[:type] == 'BoolSymptom' && !value.nil?
-            value = value == true ? 'Yes' : 'No'
-          end
+          value = value == true ? 'Yes' : 'No' if symptom[:type] == 'BoolSymptom' && !value.nil?
           details[symptom[:name]] = value.nil? ? '' : value
-          details[:passes_threshold_data][symptom[:name]] = assessment.symptom_passes_threshold(symptom, threshold_symptoms[symptom[:name]])
+
+          # Determine if reported symptom passes threshold based on threshold symptom by threshold_condition_hash and name
+          threshold_symptom = threshold_symptoms[reported_condition[:hash]][:symptoms][symptom[:name]]
+          details[:passes_threshold_data][symptom[:name]] = assessment.symptom_passes_threshold(symptom, threshold_symptom)
         end
       end
 
       table_data << details
     end
 
-    { table_data: table_data, symptoms: threshold_symptoms.values || [], total: assessments.total_entries }
+    { table_data: table_data, symptoms: threshold_symptoms.values.flat_map { |s| s[:symptoms]&.values } || [], total: assessments.total_entries }
+  end
+
+  # Gets all unique symptoms (based on name and threshold_condition_hash) for a given array of assessment IDs.
+  def get_unique_threshold_symptoms(assessment_ids)
+    # Get distinct threshold condition hashes for all assessments
+    threshold_condition_hashes = ReportedCondition.where(assessment_id: assessment_ids).distinct.pluck(:threshold_condition_hash)
+
+    # Get all threshold symptoms associated with the distinct threshold condition hashes
+    Symptom.where(condition_id: ThresholdCondition.where(threshold_condition_hash: threshold_condition_hashes))
   end
 end
