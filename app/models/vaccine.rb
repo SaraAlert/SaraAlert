@@ -56,6 +56,19 @@ class Vaccine < ApplicationRecord
     VACCINE_STANDARDS.keys
   end
 
+  # Gets the list of possible vaccine group codes from the vaccine config.
+  def self.group_code_options
+    VACCINE_STANDARDS.values.map { |v| v['codes'] }.flatten
+  end
+
+  # Gets the list of possible vaccine product codes from the vaccine config.
+  def self.product_code_options(group_name)
+    vaccine_group = VACCINE_STANDARDS[group_name]
+    return [] if vaccine_group.blank? || vaccine_group['vaccines'].blank?
+
+    (vaccine_group['vaccines'] + ADDITIONAL_PRODUCT_NAME_OPTIONS).map { |v| v['product_codes'] }.flatten
+  end
+
   # Gets the product names of the vaccines in the specified group from the vaccine config.
   # Returns an array of string values.
   # Params:
