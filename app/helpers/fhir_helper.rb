@@ -275,11 +275,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   def vaccine_from_fhir(vaccine)
     group_coding = vaccine&.protocolApplied&.first&.targetDisease&.first&.coding&.first
     group = Vaccine.group_name_by_code(group_coding&.system, group_coding&.code)
-    group_errors = ['not in required ValueSet'] if group.nil? && !group_coding.nil?
+    group_errors = ["is not an acceptable value, acceptable values are: #{Vaccine.group_code_options.join(', ')}"] if group.nil? && !group_coding.nil?
 
     product_name_coding = vaccine&.vaccineCode&.first&.coding&.first
     product_name = Vaccine.product_name_by_code(group, product_name_coding&.system, product_name_coding&.code)
-    product_name_errors = ['not in required ValueSet'] if product_name.nil? && !product_name_coding.nil?
+    if product_name.nil? && !product_name_coding.nil?
+      product_name_errors = ["is not an acceptable value, acceptable values are: #{Vaccine.product_code_options(group).join(', ')}"]
+    end
 
     {
       group_name: { value: group, path: 'Immunization.protocolApplied[0].targetDisease[0].coding[0]', errors: group_errors },
