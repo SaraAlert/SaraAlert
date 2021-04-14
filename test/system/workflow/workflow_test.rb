@@ -42,11 +42,11 @@ class WorkflowTest < ApplicationSystemTestCase
     @@enroller_test_helper.enroll_monitoree(epi_enroller_user_label, monitoree_label, is_epi: true)
     @@system_test_utils.login(epi_enroller_user_label)
     @@public_health_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_label)
-    @@public_health_patient_page_reports_verifier.verify_current_status('asymptomatic')
+    @@public_health_patient_page_reports_verifier.verify_status('asymptomatic')
 
     # add symptomatic report, should be symptomatic
     @@public_health_patient_page_reports.add_report(epi_enroller_user_label, SystemTestUtils::ASSESSMENTS['assessment_1'])
-    @@public_health_patient_page_reports_verifier.verify_current_status('symptomatic')
+    @@public_health_patient_page_reports_verifier.verify_status('symptomatic')
     @@system_test_utils.return_to_dashboard('exposure')
     @@public_health_dashboard.search_for_and_view_monitoree('symptomatic', monitoree_label)
 
@@ -80,11 +80,11 @@ class WorkflowTest < ApplicationSystemTestCase
     epi_user_label = 'state1_epi'
     @@system_test_utils.login(epi_user_label)
     @@public_health_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_label)
-    @@public_health_patient_page_reports_verifier.verify_current_status('asymptomatic')
+    @@public_health_patient_page_reports_verifier.verify_status('asymptomatic')
     @@assessment_form.complete_assessment(nil, Patient.order(created_at: :desc).first, 'assessment_2')
     visit '/'
     @@public_health_dashboard.search_for_and_view_monitoree('symptomatic', monitoree_label)
-    @@public_health_patient_page_reports_verifier.verify_current_status('symptomatic')
+    @@public_health_patient_page_reports_verifier.verify_status('symptomatic')
     @@public_health_patient_page_reports_verifier.verify_new_report(SystemTestUtils::ASSESSMENTS['assessment_2'])
   end
 

@@ -121,7 +121,7 @@ class CustomTable extends React.Component {
   renderRowCheckbox = (rowData, rowIndex) => {
     return (
       <td>
-        <span data-for={`table-row-${rowIndex}-tooltip`} data-tip="">
+        <span data-for={`${this.props.dataType}-table-row-${rowIndex}-tooltip`} data-tip="">
           <input
             type="checkbox"
             disabled={this.props.disabledRows.includes(rowIndex)}
@@ -130,7 +130,13 @@ class CustomTable extends React.Component {
             onChange={e => this.handleCheckboxChange(e, rowIndex)}></input>
         </span>
         {this.props.disabledRows.includes(rowIndex) && (
-          <ReactTooltip id={`table-row-${rowIndex}-tooltip`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+          <ReactTooltip
+            id={`${this.props.dataType}-table-row-${rowIndex}-tooltip`}
+            multiline={true}
+            place="right"
+            type="dark"
+            effect="solid"
+            className="tooltip-container">
             {this.props.disabledTooltipText}
           </ReactTooltip>
         )}
@@ -200,7 +206,7 @@ class CustomTable extends React.Component {
           className={
             this.props.getCustomTableClassName ? `table-responsive custom-table ${this.props.getCustomTableClassName()}` : 'table-responsive custom-table'
           }>
-          <Table striped bordered hover size="sm" className="opaque-table">
+          <Table striped bordered hover size="sm" id={`${this.props.dataType}-table`} className="opaque-table">
             <thead>
               <tr>
                 {this.props.isSelectable && this.props.checkboxColumnLocation === 'left' && this.renderSelectAllCheckbox()}
@@ -214,7 +220,10 @@ class CustomTable extends React.Component {
             <tbody>
               {this.props.rowData?.map((rowData, rowIndex) => {
                 return (
-                  <tr key={rowIndex} id={rowData.id ? rowData.id : rowIndex} className={this.props.getRowClassName ? this.props.getRowClassName(rowData) : ''}>
+                  <tr
+                    key={rowIndex}
+                    id={`${this.props.dataType}-${rowData.id ? rowData.id : `row-${rowIndex}`}`}
+                    className={this.props.getRowClassName ? this.props.getRowClassName(rowData) : ''}>
                     {this.props.isSelectable && this.props.checkboxColumnLocation === 'left' && this.renderRowCheckbox(rowData, rowIndex)}
                     {Object.values(this.props.columnData).map((colData, colIndex) => {
                       let value = rowData[colData.field];
@@ -227,7 +236,7 @@ class CustomTable extends React.Component {
                         value = colData.filter(filterData);
                       }
                       return (
-                        <td key={colIndex} className={colData.className ? colData.className : ''}>
+                        <td key={colIndex} id={`${this.props.dataType}-`} className={colData.className ? colData.className : ''}>
                           {colData.onClick && <span onClick={() => (colData.onClick(rowData.id.toString()) ? colData.onClick : null)}>{value}</span>}
                           {!colData.onClick && value}
                         </td>
@@ -324,6 +333,7 @@ class CustomTable extends React.Component {
 }
 
 CustomTable.propTypes = {
+  dataType: PropTypes.string.required,
   columnData: PropTypes.array,
   rowData: PropTypes.array,
   totalRows: PropTypes.number,

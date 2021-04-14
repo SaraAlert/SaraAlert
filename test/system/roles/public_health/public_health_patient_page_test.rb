@@ -11,9 +11,12 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
   @@public_health_test_helper = PublicHealthTestHelper.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  test 'verify patient details and reports' do
-    @@public_health_test_helper.view_patients_details_and_reports('state1_epi')
-    @@public_health_test_helper.view_patients_details_and_reports('state2_epi')
+  test 'verify patient details' do
+    @@public_health_test_helper.view_patients_details('state1_epi')
+  end
+
+  test 'verify reports' do
+    @@public_health_test_helper.view_reports('usa_super_user', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
   end
 
   test 'update monitoring status to not monitoring' do

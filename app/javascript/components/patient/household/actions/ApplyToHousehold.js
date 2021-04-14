@@ -324,6 +324,7 @@ class ApplyToHousehold extends React.Component {
         </Form.Group>
         {this.state.applyToHousehold && (
           <CustomTable
+            dataType="household-members"
             columnData={this.state.table.colData}
             rowData={this.state.table.rowData}
             totalRows={this.state.table.totalRows}

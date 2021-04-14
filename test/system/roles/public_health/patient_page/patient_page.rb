@@ -11,16 +11,16 @@ class PublicHealthPatientPage < ApplicationSystemTestCase
 
   PATIENTS = SystemTestUtils::PATIENTS
 
-  def view_patients_details_and_reports(jurisdiction_id)
+  def view_patients_details(jurisdiction_id)
     monitorees = Jurisdiction.find(jurisdiction_id).all_patients_excluding_purged
     click_on 'All Monitorees'
     monitorees.where(isolation: false).where(monitoring: true).each do |patient|
-      @@public_health_patient_page_verifier.verify_patient_details_and_reports(patient, 'exposure')
+      @@public_health_patient_page_verifier.verify_patient_details(patient, 'exposure')
     end
     @@system_test_utils.go_to_workflow('isolation')
     click_on 'All Cases'
     monitorees.where(isolation: true).where(monitoring: true).each do |patient|
-      @@public_health_patient_page_verifier.verify_patient_details_and_reports(patient, 'isolation')
+      @@public_health_patient_page_verifier.verify_patient_details(patient, 'isolation')
     end
   end
 
