@@ -49,8 +49,10 @@ class Assessment < ApplicationRecord
 
   def symptomatic?
     symptom_groups = []
+    threshold_symptoms = Hash[ThresholdCondition.find_by(threshold_condition_hash: reported_condition[:threshold_condition_hash]).symptoms
+                                                .map { |threshold_symptom| [threshold_symptom[:name], threshold_symptom] }]
     reported_condition.symptoms.each do |reported_symptom|
-      threshold_symptom = get_threshold_symptom(reported_symptom.name)
+      threshold_symptom = threshold_symptoms[reported_symptom.name]
       # Group represents how many have to be true in that group to be considered as symptomatic
       symptom_group_index = threshold_symptom&.group || 1
       # -1 to convert to 0-based ie: index 0 requires at least 1 true, index 1 requires at least 2 true...
