@@ -480,30 +480,31 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def advanced_filter_lab_result(patients, filter)
+    labs = patients.joins(:laboratories)
     filter[:value].each do |field|
       case field[:name]
+      when 'lab-type'
+        labs = labs.where('laboratories.lab_type = ?', field[:value])
       when 'result'
-        patients = patients.where(id: patients.joins(:laboratories).where('laboratories.result = ?', field[:value]))
-      when 'test-type'
-        patients = patients.where(id: patients.joins(:laboratories).where('laboratories.lab_type = ?', field[:value]))
-      when 'specimen-collection-date'
+        labs = labs.where('laboratories.result = ?', field[:value])
+      when 'specimen-collection'
         case field[:value][:when]
         when 'before'
-          patients = patients.where(id: patients.joins(:laboratories).where('laboratories.specimen_collection < ?', field[:value][:date]))
+          labs = labs.where('laboratories.specimen_collection < ?', field[:value][:date])
         when 'after'
-          patients = patients.where(id: patients.joins(:laboratories).where('laboratories.specimen_collection > ?', field[:value][:date]))
+          labs = labs.where('laboratories.specimen_collection > ?', field[:value][:date])
         end
-      when 'report-date'
+      when 'report'
         case field[:value][:when]
         when 'before'
-          patients = patients.where(id: patients.joins(:laboratories).where('laboratories.report < ?', field[:value][:date]))
+          labs = labs.where('laboratories.report < ?', field[:value][:date])
         when 'after'
-          patients = patients.where(id: patients.joins(:laboratories).where('laboratories.report > ?', field[:value][:date]))
+          labs = labs.where('laboratories.report > ?', field[:value][:date])
         end
       end
     end
 
-    patients
+    patients.where(id: labs)
   end
 
   # Filter patients by a set time range for the given field

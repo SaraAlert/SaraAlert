@@ -10,23 +10,24 @@ import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
 import {
   mockFilter1,
   mockFilter2,
-  mockFilterDefaultSearchOption,
-  mockFilterSearchOption,
-  mockFilterDefaultBoolOption,
-  mockFilterBoolOption,
-  mockFilterOptionsOption,
-  mockFilterDefaultNumberOption,
-  mockFilterNumberOption,
-  mockFilterDefaultDateOption,
-  mockFilterDateOption,
-  mockFilterDefaultRelativeOption,
-  mockFilterRelativeOption,
-  mockFilterDefaultCustomRelativeOption1,
-  mockFilterDefaultCustomRelativeOption2,
-  mockFilterCustomRelativeOption,
-  mockFilterDefaultAdditionalOption,
-  mockFilterAdditionalOption,
-  mockFilterIncludesTooltip,
+  mockFilterMonitoringStatusTrue,
+  mockFilterMonitoringStatusFalse,
+  mockFilterSevenDayQuarantine,
+  mockFilterPreferredContactTime,
+  mockFilterAgeEqual,
+  mockFilterAgeBetween,
+  mockFilterManualContactAttemptsEqual,
+  mockFilterManualContactAttemptsLessThan,
+  mockFilterEnrolledDateWithin,
+  mockFilterEnrolledDateBefore,
+  mockFilterLatestReportRelativeToday,
+  mockFilterLatestReportRelativeYesterday,
+  mockFilterLatestReportRelativeCustomPast,
+  mockFilterSymptomOnsetRelativeCustomPast,
+  mockFilterLatestReportRelativeCustomFuture,
+  mockFilterAddressForeignEmpty,
+  mockFilterAddressForeign,
+  mockFilterLabResults,
   mockSavedFilters
 } from '../../mocks/mockFilters';
 
@@ -35,6 +36,7 @@ const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEU
 const numberOptionValues = [ 'less-than', 'less-than-equal', 'equal', 'greater-than-equal', 'greater-than', 'between' ];
 const numberOptionValuesText = [ 'less than', 'less than or equal to', 'equal to', 'greater than or equal to', 'greater than', 'between' ];
 const dateOptionValues = [ 'within', 'before', 'after' ];
+const multiDateOptionValues = [ 'before', 'after' ];
 const relativeOptionValues = [ 'today', 'tomorrow', 'yesterday', 'custom' ];
 const relativeOptionOperatorValues = [ 'less-than', 'more-than' ];
 const relativeOptionUnitValues = [ 'day(s)', 'week(s)', 'month(s)' ];
@@ -80,7 +82,7 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(Dropdown.Divider).length).toEqual(1);
     expect(wrapper.find(Dropdown.Header).length).toEqual(1);
     expect(wrapper.find(Dropdown.Header).text()).toEqual('Saved Filters');
-    mockSavedFilters.forEach(function(filter, index) {
+    mockSavedFilters.forEach((filter, index) => {
       expect(wrapper.find(Dropdown.Item).at(index+1).text()).toEqual(filter.name);
     });
     expect(wrapper.find(Modal).exists()).toBeFalsy();
@@ -142,8 +144,8 @@ describe('AdvancedFilter', () => {
       return a?.title?.localeCompare(b?.title);
     });
     wrapper.find(Button).simulate('click');
-    expect(wrapper.find('.advanced-filter-select').prop('options').length).toEqual(filterOptions.length);
-    wrapper.find('.advanced-filter-select').prop('options').forEach(function(option, index) {
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('options').length).toEqual(filterOptions.length);
+    wrapper.find('.advanced-filter-options-dropdown').prop('options').forEach((option, index) => {
       expect(option.label).toEqual(filterOptions[index].title);
       expect(option.subLabel).toEqual(filterOptions[index].description);
       expect(option.value).toEqual(filterOptions[index].name);
@@ -195,10 +197,10 @@ describe('AdvancedFilter', () => {
     wrapper.setState({ savedFilters: mockSavedFilters });
     wrapper.find(Dropdown.Item).at(2).simulate('click');
     expect(wrapper.find('.advanced-filter-statement').length).toEqual(2);
-    expect(wrapper.find('.advanced-filter-select').at(0).prop('value').value).toEqual(mockFilter2.contents[0].filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(0).prop('value').value).toEqual(mockFilter2.contents[0].filterOption.name);
     expect(wrapper.find(ToggleButton).at(0).prop('checked')).toEqual(mockFilter2.contents[0].value);
     expect(wrapper.find(ToggleButton).at(1).prop('checked')).toEqual(!mockFilter2.contents[0].value);
-    expect(wrapper.find('.advanced-filter-select').at(1).prop('value').value).toEqual(mockFilter2.contents[1].filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(1).prop('value').value).toEqual(mockFilter2.contents[1].filterOption.name);
     expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(mockFilter2.contents[1].dateOption);
     expect(wrapper.find(DateInput).length).toEqual(1);
     expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilter2.contents[1].value);
@@ -265,44 +267,44 @@ describe('AdvancedFilter', () => {
     _.times(4, () => {
       wrapper.find('#add-filter-row').simulate('click');
     });
-    wrapper.find('.advanced-filter-select').at(0).simulate('change', { value: mockFilterDefaultBoolOption.filterOption.name });
-    wrapper.find('.advanced-filter-select').at(1).simulate('change', { value: mockFilterOptionsOption.filterOption.name });
-    wrapper.find('.advanced-filter-select').at(2).simulate('change', { value: mockFilterDefaultNumberOption.filterOption.name });
-    wrapper.find('.advanced-filter-select').at(3).simulate('change', { value: mockFilterDefaultSearchOption.filterOption.name });
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption, mockFilterOptionsOption, mockFilterDefaultNumberOption, mockFilterDefaultSearchOption, { filterOption: null } ]);
-    expect(wrapper.find('.advanced-filter-select').at(0).prop('value').value).toEqual(mockFilterDefaultBoolOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-select').at(1).prop('value').value).toEqual(mockFilterOptionsOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-select').at(2).prop('value').value).toEqual(mockFilterDefaultNumberOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-select').at(3).prop('value').value).toEqual(mockFilterDefaultSearchOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-select').at(4).prop('value')).toEqual(null);
+    wrapper.find('.advanced-filter-options-dropdown').at(0).simulate('change', { value: mockFilterMonitoringStatusTrue.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').at(1).simulate('change', { value: mockFilterPreferredContactTime.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').at(2).simulate('change', { value: mockFilterAgeEqual.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').at(3).simulate('change', { value: mockFilterAddressForeignEmpty.filterOption.name });
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusTrue, mockFilterPreferredContactTime, mockFilterAgeEqual, mockFilterAddressForeignEmpty, { filterOption: null } ]);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(0).prop('value').value).toEqual(mockFilterMonitoringStatusTrue.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(1).prop('value').value).toEqual(mockFilterPreferredContactTime.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(2).prop('value').value).toEqual(mockFilterAgeEqual.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(3).prop('value').value).toEqual(mockFilterAddressForeignEmpty.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(4).prop('value')).toEqual(null);
     wrapper.find('.remove-filter-row').at(3).simulate('click');
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption, mockFilterOptionsOption, mockFilterDefaultNumberOption, { filterOption: null } ]);
-    expect(wrapper.find('.advanced-filter-select').at(0).prop('value').value).toEqual(mockFilterDefaultBoolOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-select').at(1).prop('value').value).toEqual(mockFilterOptionsOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-select').at(2).prop('value').value).toEqual(mockFilterDefaultNumberOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-select').at(3).prop('value')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusTrue, mockFilterPreferredContactTime, mockFilterAgeEqual, { filterOption: null } ]);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(0).prop('value').value).toEqual(mockFilterMonitoringStatusTrue.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(1).prop('value').value).toEqual(mockFilterPreferredContactTime.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(2).prop('value').value).toEqual(mockFilterAgeEqual.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(3).prop('value')).toEqual(null);
     wrapper.find('.remove-filter-row').at(1).simulate('click');
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption, mockFilterDefaultNumberOption, { filterOption: null } ]);
-    expect(wrapper.find('.advanced-filter-select').at(0).prop('value').value).toEqual(mockFilterDefaultBoolOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-select').at(1).prop('value').value).toEqual(mockFilterDefaultNumberOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-select').at(2).prop('value')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusTrue, mockFilterAgeEqual, { filterOption: null } ]);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(0).prop('value').value).toEqual(mockFilterMonitoringStatusTrue.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(1).prop('value').value).toEqual(mockFilterAgeEqual.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(2).prop('value')).toEqual(null);
     wrapper.find('.remove-filter-row').at(1).simulate('click');
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption, { filterOption: null } ]);
-    expect(wrapper.find('.advanced-filter-select').at(0).prop('value').value).toEqual(mockFilterDefaultBoolOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-select').at(1).prop('value')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusTrue, { filterOption: null } ]);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(0).prop('value').value).toEqual(mockFilterMonitoringStatusTrue.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(1).prop('value')).toEqual(null);
     wrapper.find('.remove-filter-row').at(0).simulate('click');
     expect(wrapper.state('activeFilterOptions')).toEqual([ { filterOption: null } ]);
-    expect(wrapper.find('.advanced-filter-select').at(0).prop('value')).toEqual(null);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(0).prop('value')).toEqual(null);
     wrapper.find('.remove-filter-row').at(0).simulate('click');
     expect(wrapper.state('activeFilterOptions')).toEqual([ ]);
-    expect(wrapper.find('.advanced-filter-select').length).toEqual(0);
+    expect(wrapper.find('.advanced-filter-options-dropdown').length).toEqual(0);
   });
 
   it('Properly renders advanced filter boolean type statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterBoolOption.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterBoolOption.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterMonitoringStatusFalse.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterMonitoringStatusFalse.filterOption.name);
     expect(wrapper.find(ButtonGroup).exists()).toBeTruthy();
     expect(wrapper.find(ToggleButton).length).toEqual(2);
     expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBeTruthy();
@@ -314,12 +316,12 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter option type statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterOptionsOption.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterOptionsOption.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterPreferredContactTime.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterPreferredContactTime.filterOption.name);
     expect(wrapper.find(Form.Control).length).toEqual(1);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterOptionsOption.filterOption.options[0]);
-    expect(wrapper.find(Form.Control).find('option').length).toEqual(mockFilterOptionsOption.filterOption.options.length);
-    mockFilterOptionsOption.filterOption.options.forEach(function(option, index) {
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterPreferredContactTime.filterOption.options[0]);
+    expect(wrapper.find(Form.Control).find('option').length).toEqual(mockFilterPreferredContactTime.filterOption.options.length);
+    mockFilterPreferredContactTime.filterOption.options.forEach((option, index) => {
       expect(wrapper.find(Form.Control).find('option').at(index).text()).toEqual(option);
       expect(wrapper.find(Form.Control).find('option').at(index).prop('value')).toEqual(option);
     });
@@ -330,12 +332,12 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter number type statement with single number', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterNumberOption.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterNumberOption.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAgeBetween.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAgeBetween.filterOption.name);
     expect(wrapper.find(Form.Control).length).toEqual(2);
     expect(wrapper.find(Form.Control).at(0).prop('value')).toEqual('equal');
     expect(wrapper.find(Form.Control).find('option').length).toEqual(numberOptionValues.length);
-    numberOptionValues.forEach(function(value, index) {
+    numberOptionValues.forEach((value, index) => {
       expect(wrapper.find(Form.Control).at(0).find('option').at(index).text()).toEqual(numberOptionValuesText[index]);
       expect(wrapper.find(Form.Control).at(0).find('option').at(index).prop('value')).toEqual(value);
     });
@@ -347,13 +349,13 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter number type statement with number range', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterNumberOption.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterNumberOption.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAgeBetween.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAgeBetween.filterOption.name);
     wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: 'between' } });
     expect(wrapper.find(Form.Control).length).toEqual(3);
     expect(wrapper.find(Form.Control).at(0).prop('value')).toEqual('between');
     expect(wrapper.find(Form.Control).find('option').length).toEqual(numberOptionValues.length);
-    numberOptionValues.forEach(function(value, index) {
+    numberOptionValues.forEach((value, index) => {
       expect(wrapper.find(Form.Control).at(0).find('option').at(index).text()).toEqual(numberOptionValuesText[index]);
       expect(wrapper.find(Form.Control).at(0).find('option').at(index).prop('value')).toEqual(value);
     });
@@ -368,13 +370,13 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter date type statement with single date', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDateOption.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterDateOption.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEnrolledDateBefore.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterEnrolledDateBefore.filterOption.name);
     wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: 'before' } });
     expect(wrapper.find(Form.Control).length).toEqual(1);
     expect(wrapper.find(Form.Control).prop('value')).toEqual('before');
     expect(wrapper.find(Form.Control).find('option').length).toEqual(dateOptionValues.length);
-    dateOptionValues.forEach(function(value, index) {
+    dateOptionValues.forEach((value, index) => {
       expect(wrapper.find(Form.Control).find('option').at(index).text()).toEqual(value);
       expect(wrapper.find(Form.Control).find('option').at(index).prop('value')).toEqual(value);
     });
@@ -388,12 +390,12 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter date type statement with date range', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDateOption.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterDateOption.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEnrolledDateWithin.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterEnrolledDateWithin.filterOption.name);
     expect(wrapper.find(Form.Control).length).toEqual(1);
     expect(wrapper.find(Form.Control).prop('value')).toEqual('within');
     expect(wrapper.find(Form.Control).find('option').length).toEqual(dateOptionValues.length);
-    dateOptionValues.forEach(function(value, index) {
+    dateOptionValues.forEach((value, index) => {
       expect(wrapper.find(Form.Control).find('option').at(index).text()).toEqual(value);
       expect(wrapper.find(Form.Control).find('option').at(index).prop('value')).toEqual(value);
     });
@@ -408,13 +410,13 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter relative type statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultCustomRelativeOption1.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterDefaultCustomRelativeOption1.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLatestReportRelativeCustomPast.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterLatestReportRelativeCustomPast.filterOption.name);
     expect(wrapper.find(Form.Control).length).toEqual(1);
     expect(wrapper.find('.advanced-filter-relative-options').exists()).toBeTruthy();
     expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual('today');
     expect(wrapper.find('.advanced-filter-relative-options').find('option').length).toEqual(relativeOptionValues.length);
-    relativeOptionValues.forEach(function(value, index) {
+    relativeOptionValues.forEach((value, index) => {
       expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).text()).toEqual(value);
       expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).prop('value')).toEqual(value);
     });
@@ -429,37 +431,37 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter relative type custom statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultCustomRelativeOption2.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterDefaultCustomRelativeOption2.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterSymptomOnsetRelativeCustomPast.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterSymptomOnsetRelativeCustomPast.filterOption.name);
     wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: 'custom' } });
     expect(wrapper.find(Form.Control).length).toEqual(5);
     expect(wrapper.find('.advanced-filter-relative-options').exists()).toBeTruthy();
     expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual('custom');
     expect(wrapper.find('.advanced-filter-relative-options').find('option').length).toEqual(relativeOptionValues.length);
-    relativeOptionValues.forEach(function(value, index) {
+    relativeOptionValues.forEach((value, index) => {
       expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).text()).toEqual(value);
       expect(wrapper.find('.advanced-filter-relative-options').find('option').at(index).prop('value')).toEqual(value);
     });
     expect(wrapper.find('.advanced-filter-operator-input').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption2.value.operator);
+    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterSymptomOnsetRelativeCustomPast.value.operator);
     expect(wrapper.find('.advanced-filter-operator-input').find('option').length).toEqual(relativeOptionOperatorValues.length);
-    relativeOptionOperatorValues.forEach(function(value, index) {
+    relativeOptionOperatorValues.forEach((value, index) => {
       expect(wrapper.find('.advanced-filter-operator-input').find('option').at(index).text()).toEqual(value.replace('-', ' '));
       expect(wrapper.find('.advanced-filter-operator-input').find('option').at(index).prop('value')).toEqual(value);
     });
     expect(wrapper.find('.advanced-filter-number-input').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption2.value.number);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterSymptomOnsetRelativeCustomPast.value.number);
     expect(wrapper.find('.advanced-filter-unit-input').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption2.value.unit);
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterSymptomOnsetRelativeCustomPast.value.unit);
     expect(wrapper.find('.advanced-filter-unit-input').find('option').length).toEqual(relativeOptionUnitValues.length);
-    relativeOptionUnitValues.forEach(function(value, index) {
+    relativeOptionUnitValues.forEach((value, index) => {
       expect(wrapper.find('.advanced-filter-unit-input').find('option').at(index).text()).toEqual(value);
       expect(wrapper.find('.advanced-filter-unit-input').find('option').at(index).prop('value')).toEqual(value.replace('(', '').replace(')', ''));
     });
     expect(wrapper.find('.advanced-filter-when-input').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption2.value.when);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterSymptomOnsetRelativeCustomPast.value.when);
     expect(wrapper.find('.advanced-filter-when-input').find('option').length).toEqual(relativeOptionWhenValues.length);
-    relativeOptionWhenValues.forEach(function(value, index) {
+    relativeOptionWhenValues.forEach((value, index) => {
       expect(wrapper.find('.advanced-filter-when-input').find('option').at(index).text()).toEqual(`in the ${value}`);
       expect(wrapper.find('.advanced-filter-when-input').find('option').at(index).prop('value')).toEqual(value);
     });
@@ -470,8 +472,8 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter search type statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterSearchOption.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAddressForeign.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAddressForeign.filterOption.name);
     expect(wrapper.find(Form.Control).length).toEqual(1);
     expect(wrapper.find(Form.Control).hasClass('advanced-filter-search-input')).toBeTruthy();
     expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual('');
@@ -482,12 +484,12 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter type with additional dropdown options statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterAdditionalOption.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterAdditionalOption.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterManualContactAttemptsLessThan.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterManualContactAttemptsLessThan.filterOption.name);
     expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterAdditionalOption.filterOption.options[0]);
-    expect(wrapper.find('.advanced-filter-additional-filter-options').find('option').length).toEqual(mockFilterAdditionalOption.filterOption.options.length);
-    mockFilterAdditionalOption.filterOption.options.forEach(function(option, index) {
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterManualContactAttemptsLessThan.filterOption.options[0]);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').find('option').length).toEqual(mockFilterManualContactAttemptsLessThan.filterOption.options.length);
+    mockFilterManualContactAttemptsLessThan.filterOption.options.forEach((option, index) => {
       expect(wrapper.find('.advanced-filter-additional-filter-options').find('option').at(index).text()).toEqual(option);
       expect(wrapper.find('.advanced-filter-additional-filter-options').find('option').at(index).prop('value')).toEqual(option);
     });
@@ -497,10 +499,240 @@ describe('AdvancedFilter', () => {
   it('Properly renders tooltip when defined with advanced filter option', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterIncludesTooltip.filterOption.name });
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterIncludesTooltip.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterSevenDayQuarantine.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterSevenDayQuarantine.filterOption.name);
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterIncludesTooltip.filterOption.tooltip);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterSevenDayQuarantine.filterOption.tooltip);
+  });
+
+  it('Properly renders main components of advanced filter multi type statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterLabResults.filterOption.name);
+    expect(wrapper.find('.advanced-filter-multi-type-statement').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(1);
+    expect(wrapper.find('.advanced-filter-multi-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(mockFilterLabResults.filterOption.fields[0].name);
+    expect(wrapper.find('.advanced-filter-multi-options').find('option').length).toEqual(mockFilterLabResults.filterOption.fields.length);
+    mockFilterLabResults.filterOption.fields.forEach((field, index) => {
+      expect(wrapper.find('.advanced-filter-multi-options').find('option').at(index).text()).toEqual(field.title);
+      expect(wrapper.find('.advanced-filter-multi-options').find('option').at(index).prop('value')).toEqual(field.name);
+      expect(wrapper.find('.advanced-filter-multi-options').find('option').at(index).prop('disabled')).toBeFalsy();
+    });
+    expect(wrapper.find('.advanced-filter-multi-type-statement').find(Button).length).toEqual(2);
+    expect(wrapper.find('.advanced-filter-multi-type-statement').find(Button).at(0).find('i').hasClass('fa-plus')).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-multi-type-statement').find(Button).at(1).find('i').hasClass('fa-minus')).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterLabResults.filterOption.tooltip);
+  });
+
+  it('Properly renders select option of advanced filter multi type statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
+    expect(wrapper.find('.advanced-filter-multi-type-statement').find(Form.Control).length).toEqual(2);
+    expect(wrapper.find('.advanced-filter-multi-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-multi-select-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-date-options').exists()).toBeFalsy();
+    expect(wrapper.find(DateInput).exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-multi-select-options').prop('value')).toEqual(mockFilterLabResults.filterOption.fields[0].options[0]);
+    expect(wrapper.find('.advanced-filter-multi-select-options').find('option').length).toEqual(mockFilterLabResults.filterOption.fields[0].options.length);
+    mockFilterLabResults.filterOption.fields[0].options.forEach((option, index) => {
+      expect(wrapper.find('.advanced-filter-multi-select-options').find('option').at(index).text()).toEqual(option);
+      expect(wrapper.find('.advanced-filter-multi-select-options').find('option').at(index).prop('disabled')).toBeFalsy();
+    });
+  });
+
+  it('Properly renders date option of advanced filter multi type statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
+    wrapper.find('.advanced-filter-multi-options').simulate('change', { target: { value: 'report'} });
+    expect(wrapper.find('.advanced-filter-multi-type-statement').find(Form.Control).length).toEqual(2);
+    expect(wrapper.find('.advanced-filter-multi-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-multi-select-options').exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-date-options').exists()).toBeTruthy();
+    expect(wrapper.find(DateInput).exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(multiDateOptionValues[0]);
+    expect(wrapper.find('.advanced-filter-date-options').find('option').length).toEqual(multiDateOptionValues.length);
+    multiDateOptionValues.forEach((value, index) => {
+      expect(wrapper.find('.advanced-filter-date-options').find('option').at(index).text()).toEqual(value);
+      expect(wrapper.find('.advanced-filter-date-options').find('option').at(index).prop('disabled')).toBeFalsy();
+    });
+    expect(wrapper.find('.advanced-filter-multi-type-statement').find(DateInput).prop('date')).toEqual(moment().format('YYYY-MM-DD'));
+  });
+
+  it('Clicking the multi type "+" button adds another multi statement and displays "AND" row', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
+    _.times(mockFilterLabResults.filterOption.fields.length-1, (i) => {
+      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(i+1);
+      expect(wrapper.find('.and-row').length).toEqual(i);
+      wrapper.find('.btn-circle').simulate('click');
+    });
+    expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length);
+    expect(wrapper.find('.and-row').length).toEqual(mockFilterLabResults.filterOption.fields.length-1);
+  });
+
+  it('Adding additional fields to multi filter does not allow for repeats', () => {
+    const wrapper = getWrapper();
+    let activeMultiValues = [];
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
+    _.times(mockFilterLabResults.filterOption.fields.length, (i) => {
+      activeMultiValues.push(mockFilterLabResults.filterOption.fields[i].name);
+      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(i+1);
+      wrapper.find('.advanced-filter-multi-type-statement').forEach(statement => {
+        let statementValue = statement.find('.advanced-filter-multi-options').prop('value');
+        expect(activeMultiValues.filter((value) => (value === statementValue)).length).toEqual(1);
+        statement.find('.advanced-filter-multi-options').find('option').forEach(option => {
+          let optionValue = option.prop('value');
+          expect(option.prop('disabled')).toEqual(activeMultiValues.includes(optionValue) && optionValue !== statementValue);
+        });
+      });
+      if (i < mockFilterLabResults.filterOption.fields.length-1) {
+        wrapper.find('.btn-circle').simulate('click');
+      }
+    });
+    _.times(mockFilterLabResults.filterOption.fields.length-1, (i) => {
+      let random = _.random(0, wrapper.find('.remove-filter-row').length-1);
+      activeMultiValues = activeMultiValues.slice(0, random).concat(activeMultiValues.slice(random+1, activeMultiValues.length));
+      wrapper.find('.remove-filter-row').at(random).simulate('click');
+      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length-1-i);
+      wrapper.find('.advanced-filter-multi-type-statement').forEach(statement => {
+        let statementValue = statement.find('.advanced-filter-multi-options').prop('value');
+        expect(activeMultiValues.filter((value) => (value === statementValue)).length).toEqual(1);
+        statement.find('.advanced-filter-multi-options').find('option').forEach(option => {
+          let optionValue = option.prop('value');
+          expect(option.prop('disabled')).toEqual(activeMultiValues.includes(optionValue) && optionValue !== statementValue);
+        });
+      });
+    });
+  });
+
+  it('Removes the multi type "+" button when all the filter option fields are displayed', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
+    _.times(mockFilterLabResults.filterOption.fields.length-1, (i) => {
+      expect(wrapper.find('.advanced-filter-multi-type-statement').find('.btn-circle').exists()).toBeTruthy();
+      wrapper.find('.btn-circle').simulate('click');
+    });
+    expect(wrapper.find('.advanced-filter-multi-type-statement').find('.btn-circle').exists()).toBeFalsy();
+  });
+
+  it('Clicking the multi type "-" removes multi statements until there is one left, then removed the entire filter statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
+    _.times(mockFilterLabResults.filterOption.fields.length-1, (i) => {
+      wrapper.find('.btn-circle').simulate('click');
+    });
+    _.times(mockFilterLabResults.filterOption.fields.length, (i) => {
+      let random = _.random(0, wrapper.find('.remove-filter-row').length-1);
+      expect(wrapper.find('.advanced-filter-statement').length).toEqual(1);
+      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length-i);
+      wrapper.find('.remove-filter-row').at(random).simulate('click');
+    });
+    expect(wrapper.find('.advanced-filter-statement').exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-multi-type-statement').exists()).toBeFalsy();
+  });
+
+  it('Clicking the multi type "+" and "-" properly updates state and value', () => {
+    const wrapper = getWrapper();
+    let activeMultiValues = [];
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
+    _.times(mockFilterLabResults.filterOption.fields.length, (i) => {
+      let newField = mockFilterLabResults.filterOption.fields[i];
+      let newValue = newField.type === 'select' ? newField.options[0] : { when: 'before', date: moment().format('YYYY-MM-DD') };
+      activeMultiValues.push({ name: newField.name , value: newValue });
+      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(i+1);
+      expect(wrapper.state('activeFilterOptions')[0].value.length).toEqual(i+1);
+      expect(wrapper.state('activeFilterOptions')[0].value).toEqual(activeMultiValues);
+      wrapper.find('.advanced-filter-multi-type-statement').forEach((statement, index) => {
+        expect(statement.find('.advanced-filter-multi-options').prop('value')).toEqual(activeMultiValues[index].name);
+        if (mockFilterLabResults.filterOption.fields.filter((field) => (field.name === activeMultiValues[index].name)).type === 'select') {
+          expect(statement.find('.advanced-filter-multi-select-options').prop('value')).toEqual(activeMultiValues[index].value);
+        } else if (mockFilterLabResults.filterOption.fields.filter((field) => (field.name === activeMultiValues[index].name)).type === 'date') {
+          expect(statement.find('.advanced-filter-date-options').prop('value')).toEqual(activeMultiValues[index].value.when);
+          expect(statement.find(DateInput).prop('date')).toEqual(activeMultiValues[index].value.date);
+        }
+      });
+      if (i < mockFilterLabResults.filterOption.fields.length-1) {
+        wrapper.find('.btn-circle').simulate('click');
+      }
+    });
+    _.times(mockFilterLabResults.filterOption.fields.length-1, (i) => {
+      let random = _.random(0, wrapper.find('.remove-filter-row').length-1);
+      activeMultiValues = activeMultiValues.slice(0, random).concat(activeMultiValues.slice(random+1, activeMultiValues.length));
+      wrapper.find('.remove-filter-row').at(random).simulate('click');
+      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length-1-i);
+      expect(wrapper.state('activeFilterOptions')[0].value.length).toEqual(mockFilterLabResults.filterOption.fields.length-1-i);
+      expect(wrapper.state('activeFilterOptions')[0].value).toEqual(activeMultiValues);
+      wrapper.find('.advanced-filter-multi-type-statement').forEach((statement, index) => {
+        expect(statement.find('.advanced-filter-multi-options').prop('value')).toEqual(activeMultiValues[index].name);
+        if (mockFilterLabResults.filterOption.fields.filter((field) => (field.name === activeMultiValues[index].name)).type === 'select') {
+          expect(statement.find('.advanced-filter-multi-select-options').prop('value')).toEqual(activeMultiValues[index].value);
+        } else if (mockFilterLabResults.filterOption.fields.filter((field) => (field.name === activeMultiValues[index].name)).type === 'date') {
+          expect(statement.find('.advanced-filter-date-options').prop('value')).toEqual(activeMultiValues[index].value.when);
+          expect(statement.find(DateInput).prop('date')).toEqual(activeMultiValues[index].value.date);
+        }
+      });
+    });
+  });
+
+  it('Changing the multi type dropdowns and date inputs properly updates ', () => {
+    const wrapper = getWrapper();
+    const selectField = mockFilterLabResults.filterOption.fields.filter((field) => (field.type === 'select'))[0];
+    const dateField = mockFilterLabResults.filterOption.fields.filter((field) => (field.type === 'date'))[0];
+    const random = _.random(0, selectField.length-1);
+    const initialDate = moment().format('YYYY-MM-DD');
+    const newDate = moment(new Date()).subtract(14,'d').format('YYYY-MM-DD');
+
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
+    wrapper.find('.advanced-filter-multi-options').simulate('change', { target: { value: selectField.name } });
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: selectField.name, value: selectField.options[0] }]);
+    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(selectField.name);
+    expect(wrapper.find('.advanced-filter-multi-select-options').prop('value')).toEqual(selectField.options[0]);
+
+    wrapper.find('.advanced-filter-multi-select-options').simulate('change', { target: { value: selectField.options[random] } });
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: selectField.name, value: selectField.options[random] }]);
+    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(selectField.name);
+    expect(wrapper.find('.advanced-filter-multi-select-options').prop('value')).toEqual(selectField.options[random]);
+
+    wrapper.find('.advanced-filter-multi-options').simulate('change', { target: { value: dateField.name } });
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: multiDateOptionValues[0], date: initialDate } }]);
+    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(dateField.name);
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(multiDateOptionValues[0]);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(initialDate);
+
+    wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: multiDateOptionValues[1] } });
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: multiDateOptionValues[1], date: initialDate } }]);
+    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(dateField.name);
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(multiDateOptionValues[1]);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(initialDate);
+
+    wrapper.find(DateInput).simulate('change', newDate);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: multiDateOptionValues[1], date: newDate } }]);
+    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(dateField.name);
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(multiDateOptionValues[1]);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(newDate);
+
+    wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: multiDateOptionValues[0] } });
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: multiDateOptionValues[0], date: newDate } }]);
+    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(dateField.name);
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(multiDateOptionValues[0]);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(newDate);
+
+    wrapper.find('.advanced-filter-multi-options').simulate('change', { target: { value: selectField.name } });
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: selectField.name, value: selectField.options[0] }]);
+    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(selectField.name);
+    expect(wrapper.find('.advanced-filter-multi-select-options').prop('value')).toEqual(selectField.options[0]);
   });
 
   it('Toggling boolean buttons properly updates state and value', () => {
@@ -508,43 +740,43 @@ describe('AdvancedFilter', () => {
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterBoolOption.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterMonitoringStatusFalse.filterOption.name });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusTrue ]);
     expect(wrapper.find('.advanced-filter-boolean-true').prop('checked')).toBeTruthy();
     expect(wrapper.find('.advanced-filter-boolean-false').prop('checked')).toBeFalsy();
     wrapper.find('.advanced-filter-boolean-false').simulate('change');
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterBoolOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusFalse ]);
     expect(wrapper.find('.advanced-filter-boolean-true').prop('checked')).toBeFalsy();
     expect(wrapper.find('.advanced-filter-boolean-false').prop('checked')).toBeTruthy();
     wrapper.find('.advanced-filter-boolean-true').simulate('change');
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusTrue ]);
     expect(wrapper.find('.advanced-filter-boolean-true').prop('checked')).toBeTruthy();
     expect(wrapper.find('.advanced-filter-boolean-false').prop('checked')).toBeFalsy();
   });
 
   it('Changing advanced filter option dropdown properly updates state and value', () => {
     const wrapper = getWrapper();
-    const randomNumber = _.random(0, mockFilterOptionsOption.filterOption.options.length - 1);
-    let newMockFilterOptionsOption = _.clone(mockFilterOptionsOption);
-    newMockFilterOptionsOption.value = mockFilterOptionsOption.filterOption.options[randomNumber];
+    const randomNumber = _.random(0, mockFilterPreferredContactTime.filterOption.options.length - 1);
+    let newMockFilterOptionsOption = _.clone(mockFilterPreferredContactTime);
+    newMockFilterOptionsOption.value = mockFilterPreferredContactTime.filterOption.options[randomNumber];
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterOptionsOption.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterPreferredContactTime.filterOption.name });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptionsOption ]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterOptionsOption.filterOption.options[0]);
-    wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterOptionsOption.filterOption.options[randomNumber] } });
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterPreferredContactTime ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterPreferredContactTime.filterOption.options[0]);
+    wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterPreferredContactTime.filterOption.options[randomNumber] } });
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ newMockFilterOptionsOption ]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterOptionsOption.filterOption.options[randomNumber]);
-    wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterOptionsOption.filterOption.options[0] } });
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterPreferredContactTime.filterOption.options[randomNumber]);
+    wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterPreferredContactTime.filterOption.options[0] } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterOptionsOption ]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterOptionsOption.filterOption.options[0]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterPreferredContactTime ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterPreferredContactTime.filterOption.options[0]);
   });
 
   it('Changing advanced filter numberOption and value for number type advanced filters properly updates state and value', () => {
@@ -552,16 +784,16 @@ describe('AdvancedFilter', () => {
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterNumberOption.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAgeBetween.filterOption.name });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultNumberOption ]);
-    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultNumberOption.numberOption);
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultNumberOption.value);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAgeEqual ]);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterAgeEqual.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterAgeEqual.value);
     wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 12 } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterDefaultNumberOption.numberOption);
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterAgeEqual.numberOption);
     expect(wrapper.state('activeFilterOptions')[0].value).toEqual(12);
-    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultNumberOption.numberOption);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterAgeEqual.numberOption);
     expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(12);
     wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: 'less-than' } });
     expect(wrapper.state('activeFilter')).toEqual(null);
@@ -576,24 +808,24 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual('between');
     expect(wrapper.find('.advanced-filter-number-input').at(0).prop('value')).toEqual(0);
     expect(wrapper.find('.advanced-filter-number-input').at(1).prop('value')).toEqual(0);
-    wrapper.find('.advanced-filter-number-input').at(1).simulate('change', { target: { value: mockFilterNumberOption.value.secondBound } });
+    wrapper.find('.advanced-filter-number-input').at(1).simulate('change', { target: { value: mockFilterAgeBetween.value.secondBound } });
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual('between');
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ firstBound: 0, secondBound: mockFilterNumberOption.value.secondBound });
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ firstBound: 0, secondBound: mockFilterAgeBetween.value.secondBound });
     expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual('between');
     expect(wrapper.find('.advanced-filter-number-input').at(0).prop('value')).toEqual(0);
-    expect(wrapper.find('.advanced-filter-number-input').at(1).prop('value')).toEqual(mockFilterNumberOption.value.secondBound);
+    expect(wrapper.find('.advanced-filter-number-input').at(1).prop('value')).toEqual(mockFilterAgeBetween.value.secondBound);
     wrapper.find('.advanced-filter-number-input').at(0).simulate('change', { target: { value: 20 } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterNumberOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAgeBetween ]);
     expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual('between');
-    expect(wrapper.find('.advanced-filter-number-input').at(0).prop('value')).toEqual(mockFilterNumberOption.value.firstBound);
-    expect(wrapper.find('.advanced-filter-number-input').at(1).prop('value')).toEqual(mockFilterNumberOption.value.secondBound);
+    expect(wrapper.find('.advanced-filter-number-input').at(0).prop('value')).toEqual(mockFilterAgeBetween.value.firstBound);
+    expect(wrapper.find('.advanced-filter-number-input').at(1).prop('value')).toEqual(mockFilterAgeBetween.value.secondBound);
     wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: 'equal' } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultNumberOption ]);
-    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultNumberOption.numberOption);
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultNumberOption.value);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAgeEqual ]);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterAgeEqual.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterAgeEqual.value);
   });
 
   it('Changing advanced filter dateOption and values for date type advanced filters properly updates state and value', () => {
@@ -602,38 +834,38 @@ describe('AdvancedFilter', () => {
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDateOption.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEnrolledDateWithin.filterOption.name });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultDateOption ]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterDefaultDateOption.dateOption);
-    expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(mockFilterDefaultDateOption.value.start);
-    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterDefaultDateOption.value.end);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterEnrolledDateWithin ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEnrolledDateWithin.dateOption);
+    expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(mockFilterEnrolledDateWithin.value.start);
+    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterEnrolledDateWithin.value.end);
     wrapper.find(DateInput).at(0).simulate('change', newDate);
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterDefaultDateOption.dateOption);
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ start: newDate, end: mockFilterDefaultDateOption.value.end });
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterDefaultDateOption.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterEnrolledDateWithin.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ start: newDate, end: mockFilterEnrolledDateWithin.value.end });
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEnrolledDateWithin.dateOption);
     expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(newDate);
-    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterDefaultDateOption.value.end);
-    wrapper.find(DateInput).at(1).simulate('change', mockFilterDefaultDateOption.value.start);
+    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterEnrolledDateWithin.value.end);
+    wrapper.find(DateInput).at(1).simulate('change', mockFilterEnrolledDateWithin.value.start);
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterDefaultDateOption.dateOption);
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ start: newDate, end: mockFilterDefaultDateOption.value.start });
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterDefaultDateOption.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterEnrolledDateWithin.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ start: newDate, end: mockFilterEnrolledDateWithin.value.start });
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEnrolledDateWithin.dateOption);
     expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(newDate);
-    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterDefaultDateOption.value.start);
-    wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterDateOption.dateOption } });
+    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterEnrolledDateWithin.value.start);
+    wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterEnrolledDateBefore.dateOption } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterDateOption.dateOption);
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterDefaultDateOption.value.end);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterDateOption.dateOption);
-    expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilterDefaultDateOption.value.end);
-    wrapper.find(DateInput).simulate('change', mockFilterDateOption.value);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterEnrolledDateBefore.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterEnrolledDateWithin.value.end);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEnrolledDateBefore.dateOption);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilterEnrolledDateWithin.value.end);
+    wrapper.find(DateInput).simulate('change', mockFilterEnrolledDateBefore.value);
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterDateOption.dateOption);
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterDateOption.value);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterDateOption.dateOption);
-    expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilterDateOption.value);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterEnrolledDateBefore.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterEnrolledDateBefore.value);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEnrolledDateBefore.dateOption);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilterEnrolledDateBefore.value);
   });
 
   it('Changing advanced filter relativeOption and values for relative type advanced filters properly updates state and value', () => {
@@ -641,66 +873,66 @@ describe('AdvancedFilter', () => {
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultRelativeOption.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLatestReportRelativeToday.filterOption.name });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultRelativeOption ]);
-    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterDefaultRelativeOption.relativeOption);
-    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: mockFilterRelativeOption.relativeOption } });
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterLatestReportRelativeToday ]);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterLatestReportRelativeToday.relativeOption);
+    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: mockFilterLatestReportRelativeYesterday.relativeOption } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterRelativeOption ]);
-    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterRelativeOption.relativeOption);
-    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: mockFilterDefaultCustomRelativeOption1.relativeOption } });
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterLatestReportRelativeYesterday ]);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterLatestReportRelativeYesterday.relativeOption);
+    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: mockFilterLatestReportRelativeCustomPast.relativeOption } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultCustomRelativeOption1 ]);
-    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption1.relativeOption);
-    wrapper.find('.advanced-filter-operator-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.operator } });
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterLatestReportRelativeCustomPast ]);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterLatestReportRelativeCustomPast.relativeOption);
+    wrapper.find('.advanced-filter-operator-input').simulate('change', { target: { value: mockFilterLatestReportRelativeCustomFuture.value.operator } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.state('activeFilterOptions')[0].value.operator).toEqual(mockFilterCustomRelativeOption.value.operator);
-    expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterDefaultCustomRelativeOption1.value.number);
-    expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterDefaultCustomRelativeOption1.value.unit);
-    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterDefaultCustomRelativeOption1.value.when);
-    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.operator);
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption1.value.number);
-    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption1.value.unit);
-    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption1.value.when);
-    wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.number } });
+    expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterLatestReportRelativeCustomFuture.relativeOption);
+    expect(wrapper.state('activeFilterOptions')[0].value.operator).toEqual(mockFilterLatestReportRelativeCustomFuture.value.operator);
+    expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterLatestReportRelativeCustomPast.value.number);
+    expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterLatestReportRelativeCustomPast.value.unit);
+    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterLatestReportRelativeCustomPast.value.when);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.relativeOption);
+    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.value.operator);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomPast.value.number);
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomPast.value.unit);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomPast.value.when);
+    wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: mockFilterLatestReportRelativeCustomFuture.value.number } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.state('activeFilterOptions')[0].value.operator).toEqual(mockFilterCustomRelativeOption.value.operator);
-    expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterCustomRelativeOption.value.number);
-    expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterDefaultCustomRelativeOption1.value.unit);
-    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterDefaultCustomRelativeOption1.value.when);
-    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.operator);
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.number);
-    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption1.value.unit);
-    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption1.value.when);
-    wrapper.find('.advanced-filter-unit-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.unit } });
+    expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterLatestReportRelativeCustomFuture.relativeOption);
+    expect(wrapper.state('activeFilterOptions')[0].value.operator).toEqual(mockFilterLatestReportRelativeCustomFuture.value.operator);
+    expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterLatestReportRelativeCustomFuture.value.number);
+    expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterLatestReportRelativeCustomPast.value.unit);
+    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterLatestReportRelativeCustomPast.value.when);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.relativeOption);
+    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.value.operator);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.value.number);
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomPast.value.unit);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomPast.value.when);
+    wrapper.find('.advanced-filter-unit-input').simulate('change', { target: { value: mockFilterLatestReportRelativeCustomFuture.value.unit } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.state('activeFilterOptions')[0].value.operator).toEqual(mockFilterCustomRelativeOption.value.operator);
-    expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterCustomRelativeOption.value.number);
-    expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterCustomRelativeOption.value.unit);
-    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterDefaultCustomRelativeOption1.value.when);
-    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.operator);
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.number);
-    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.unit);
-    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterDefaultCustomRelativeOption1.value.when);
-    wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: mockFilterCustomRelativeOption.value.when } });
+    expect(wrapper.state('activeFilterOptions')[0].relativeOption).toEqual(mockFilterLatestReportRelativeCustomFuture.relativeOption);
+    expect(wrapper.state('activeFilterOptions')[0].value.operator).toEqual(mockFilterLatestReportRelativeCustomFuture.value.operator);
+    expect(wrapper.state('activeFilterOptions')[0].value.number).toEqual(mockFilterLatestReportRelativeCustomFuture.value.number);
+    expect(wrapper.state('activeFilterOptions')[0].value.unit).toEqual(mockFilterLatestReportRelativeCustomFuture.value.unit);
+    expect(wrapper.state('activeFilterOptions')[0].value.when).toEqual(mockFilterLatestReportRelativeCustomPast.value.when);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.relativeOption);
+    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.value.operator);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.value.number);
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.value.unit);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomPast.value.when);
+    wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: mockFilterLatestReportRelativeCustomFuture.value.when } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterCustomRelativeOption ]);
-    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterCustomRelativeOption.relativeOption);
-    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.operator);
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.number);
-    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.unit);
-    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterCustomRelativeOption.value.when);
-    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: mockFilterDefaultRelativeOption.relativeOption } });
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterLatestReportRelativeCustomFuture ]);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.relativeOption);
+    expect(wrapper.find('.advanced-filter-operator-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.value.operator);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.value.number);
+    expect(wrapper.find('.advanced-filter-unit-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.value.unit);
+    expect(wrapper.find('.advanced-filter-when-input').prop('value')).toEqual(mockFilterLatestReportRelativeCustomFuture.value.when);
+    wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: mockFilterLatestReportRelativeToday.relativeOption } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultRelativeOption ]);
-    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterDefaultRelativeOption.relativeOption);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterLatestReportRelativeToday ]);
+    expect(wrapper.find('.advanced-filter-relative-options').prop('value')).toEqual(mockFilterLatestReportRelativeToday.relativeOption);
   });
 
   it('Changing input text for search type advanced filter properly updates state and value', () => {
@@ -708,17 +940,17 @@ describe('AdvancedFilter', () => {
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAddressForeign.filterOption.name });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultSearchOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAddressForeignEmpty ]);
     expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual('');
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterSearchOption.value } });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterAddressForeign.value } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
-    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterSearchOption.value);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAddressForeign ]);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterAddressForeign.value);
     wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: '' } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultSearchOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAddressForeignEmpty ]);
     expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual('');
   });
 
@@ -727,35 +959,35 @@ describe('AdvancedFilter', () => {
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([ { 'filterOption': null } ]);
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterAdditionalOption.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterManualContactAttemptsLessThan.filterOption.name });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultAdditionalOption ]);
-    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterAdditionalOption.filterOption.options[0]);
-    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultAdditionalOption.numberOption);
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultAdditionalOption.value);
-    wrapper.find('.advanced-filter-additional-filter-options').simulate('change', { target: { value: mockFilterAdditionalOption.additionalFilterOption } });
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterManualContactAttemptsEqual ]);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterManualContactAttemptsLessThan.filterOption.options[0]);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterManualContactAttemptsEqual.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterManualContactAttemptsEqual.value);
+    wrapper.find('.advanced-filter-additional-filter-options').simulate('change', { target: { value: mockFilterManualContactAttemptsLessThan.additionalFilterOption } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].additionalFilterOption).toEqual(mockFilterAdditionalOption.additionalFilterOption);
-    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterDefaultAdditionalOption.numberOption);
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterDefaultAdditionalOption.value);
-    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterAdditionalOption.additionalFilterOption);
-    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultAdditionalOption.numberOption);
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterDefaultAdditionalOption.value);
+    expect(wrapper.state('activeFilterOptions')[0].additionalFilterOption).toEqual(mockFilterManualContactAttemptsLessThan.additionalFilterOption);
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterManualContactAttemptsEqual.numberOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterManualContactAttemptsEqual.value);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterManualContactAttemptsLessThan.additionalFilterOption);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterManualContactAttemptsEqual.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterManualContactAttemptsEqual.value);
     wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 2 } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].additionalFilterOption).toEqual(mockFilterAdditionalOption.additionalFilterOption);
-    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.state('activeFilterOptions')[0].additionalFilterOption).toEqual(mockFilterManualContactAttemptsLessThan.additionalFilterOption);
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterManualContactAttemptsEqual.numberOption);
     expect(wrapper.state('activeFilterOptions')[0].value).toEqual(2);
-    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterAdditionalOption.additionalFilterOption);
-    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterManualContactAttemptsLessThan.additionalFilterOption);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterManualContactAttemptsEqual.numberOption);
     expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(2);
     wrapper.find('.advanced-filter-additional-filter-options').simulate('change', { target: { value: 'Unsuccessful' } });
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')[0].additionalFilterOption).toEqual('Unsuccessful');
-    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.state('activeFilterOptions')[0].numberOption).toEqual(mockFilterManualContactAttemptsEqual.numberOption);
     expect(wrapper.state('activeFilterOptions')[0].value).toEqual(2);
     expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual('Unsuccessful');
-    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterDefaultAdditionalOption.numberOption);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterManualContactAttemptsEqual.numberOption);
     expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(2);
     wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: 'less-than' } });
     expect(wrapper.state('activeFilter')).toEqual(null);
@@ -765,18 +997,18 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual('Unsuccessful');
     expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual('less-than');
     expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(2);
-    wrapper.find('.advanced-filter-additional-filter-options').simulate('change', { target: { value: mockFilterAdditionalOption.additionalFilterOption } });
+    wrapper.find('.advanced-filter-additional-filter-options').simulate('change', { target: { value: mockFilterManualContactAttemptsLessThan.additionalFilterOption } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAdditionalOption ]);
-    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterAdditionalOption.additionalFilterOption);
-    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterAdditionalOption.numberOption);
-    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterAdditionalOption.value);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterManualContactAttemptsLessThan ]);
+    expect(wrapper.find('.advanced-filter-additional-filter-options').prop('value')).toEqual(mockFilterManualContactAttemptsLessThan.additionalFilterOption);
+    expect(wrapper.find('.advanced-filter-number-options').prop('value')).toEqual(mockFilterManualContactAttemptsLessThan.numberOption);
+    expect(wrapper.find('.advanced-filter-number-input').prop('value')).toEqual(mockFilterManualContactAttemptsLessThan.value);
   });
 
   it('Relative date with timestamp custom tooltip dynamically updates as options change', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultCustomRelativeOption1.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLatestReportRelativeCustomPast.filterOption.name });
     expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
     wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: 'custom' } });
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy(); 
@@ -794,7 +1026,7 @@ describe('AdvancedFilter', () => {
   it('Relative date without timestamp custom tooltip dynamically updates as options change', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultCustomRelativeOption2.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterSymptomOnsetRelativeCustomPast.filterOption.name });
     expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
     wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: 'custom' } });
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy(); 
@@ -900,25 +1132,25 @@ describe('AdvancedFilter', () => {
   it('Opening Filter Name modal and clicking "Cancel" button maintains advanced filter modal state', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterSearchOption.value } });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAddressForeign.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterAddressForeign.value } });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAddressForeign ]);
     expect(wrapper.state('showAdvancedFilterModal')).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterSearchOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterSearchOption.value);
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAddressForeign.filterOption.name);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterAddressForeign.value);
     wrapper.find('#advanced-filter-save').simulate('click');
     expect(wrapper.state('showAdvancedFilterModal')).toBeFalsy();
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
-    expect(wrapper.find('.advanced-filter-select').exists()).toBeFalsy();
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAddressForeign ]);
+    expect(wrapper.find('.advanced-filter-options-dropdown').exists()).toBeFalsy();
     expect(wrapper.find('.advanced-filter-search-input').exists()).toBeFalsy();
     wrapper.find('#filter-name-cancel').simulate('click');
     expect(wrapper.state('showAdvancedFilterModal')).toBeTruthy();
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
-    expect(wrapper.find('.advanced-filter-select').prop('value').value).toEqual(mockFilterSearchOption.filterOption.name);
-    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterSearchOption.value);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAddressForeign ]);
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAddressForeign.filterOption.name);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterAddressForeign.value);
   });
 
   it('Clicking Filter Name modal "Save" button calls save method', () => {
@@ -1063,14 +1295,14 @@ describe('AdvancedFilter', () => {
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
     expect(wrapper.find(Form.Control).exists()).toBeFalsy();
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterSearchOption.value } });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAddressForeign.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterAddressForeign.value } });
     expect(wrapper.state('applied')).toBeFalsy();
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAddressForeign ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
     expect(wrapper.find(Form.Control).exists()).toBeTruthy();
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSearchOption.value);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterAddressForeign.value);
     wrapper.find('#advanced-filter-cancel').simulate('click');
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('applied')).toBeFalsy();
@@ -1083,9 +1315,9 @@ describe('AdvancedFilter', () => {
   it('Clicking "Cancel" button after making changes properly resets modal to the most recent filter applied', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterDefaultBoolOption.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterMonitoringStatusTrue.filterOption.name });
     expect(wrapper.state('applied')).toBeFalsy();
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusTrue ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter')).toEqual(null);
     expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBeTruthy();
@@ -1093,59 +1325,59 @@ describe('AdvancedFilter', () => {
     wrapper.find('#advanced-filter-apply').simulate('click');
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('applied')).toBeTruthy();
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusTrue ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterMonitoringStatusTrue ]);
     expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBeTruthy();
     expect(wrapper.find(ToggleButton).at(1).prop('checked')).toBeFalsy();
     wrapper.find('.advanced-filter-boolean-false').simulate('change');
     expect(wrapper.state('applied')).toBeTruthy();
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterBoolOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusFalse ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterMonitoringStatusTrue ]);
     expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBeFalsy();
     expect(wrapper.find(ToggleButton).at(1).prop('checked')).toBeTruthy();
     wrapper.find('#advanced-filter-cancel').simulate('click');
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('applied')).toBeTruthy();
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterMonitoringStatusTrue ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterDefaultBoolOption ]);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterMonitoringStatusTrue ]);
     expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBeTruthy();
     expect(wrapper.find(ToggleButton).at(1).prop('checked')).toBeFalsy();
-    wrapper.find('.advanced-filter-select').simulate('change', { value: mockFilterSearchOption.filterOption.name });
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterSearchOption.value } });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAddressForeign.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterAddressForeign.value } });
     expect(wrapper.state('applied')).toBeTruthy();
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAddressForeign ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterDefaultBoolOption ]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSearchOption.value);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterMonitoringStatusTrue ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterAddressForeign.value);
     wrapper.find('#advanced-filter-apply').simulate('click');
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('applied')).toBeTruthy();
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAddressForeign ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterSearchOption ]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSearchOption.value);
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: `${mockFilterSearchOption.value}!!!` } });
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterAddressForeign ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterAddressForeign.value);
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: `${mockFilterAddressForeign.value}!!!` } });
     expect(wrapper.state('applied')).toBeTruthy();
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(`${mockFilterSearchOption.value}!!!`);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(`${mockFilterAddressForeign.value}!!!`);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterSearchOption ]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(`${mockFilterSearchOption.value}!!!`);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterAddressForeign ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(`${mockFilterAddressForeign.value}!!!`);
     wrapper.find('#advanced-filter-cancel').simulate('click');
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('applied')).toBeTruthy();
-    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterSearchOption ]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([ mockFilterAddressForeign ]);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('lastAppliedFilter').activeFilter).toEqual(null);
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterSearchOption ]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSearchOption.value);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([ mockFilterAddressForeign ]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterAddressForeign.value);
   });
 });

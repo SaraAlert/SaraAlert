@@ -273,18 +273,18 @@ export const advancedFilterOptions = [
         options: ['positive', 'negative', 'indeterminate', 'other']
       },
       {
-        name: 'test-type',
+        name: 'lab-type',
         title: 'test type',
         type: 'select',
         options: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other']
       },
       {
-        name: 'specimen-collection-date',
+        name: 'specimen-collection',
         title: 'specimen collection date',
         type: 'date'
       },
       {
-        name: 'report-date',
+        name: 'report',
         title: 'report',
         type: 'date'
       }

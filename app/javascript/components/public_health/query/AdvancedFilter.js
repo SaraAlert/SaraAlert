@@ -291,7 +291,12 @@ class AdvancedFilter extends React.Component {
     }));
   };
 
-  // TO DO: ADD ME
+  /**
+   * Adds another multi filter statement at certain index
+   * Ensures no field is repeated when a new statement is added
+   * @param {Object} filter - Current multi filter object containing all the possible fields
+   * @param {Number} statementIndex - Current overall statement filter index
+   */
   addMultiStatement = (filter, statementIndex) => {
     const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
     let possibleFields = currentMultiFilter.filterOption.fields;
@@ -302,7 +307,11 @@ class AdvancedFilter extends React.Component {
     this.changeValue(statementIndex, newValue);
   };
 
-  // TO DO: ADD ME
+  /**
+   * Removes one of the multi filter statements at certain index
+   * @param {Number} statementIndex - Current overall statement filter index
+   * @param {Number} multiIndex - Index of the statement within the multi filter that will be removed
+   */
   removeMultiStatement = (statementIndex, multiIndex) => {
     const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
     let oldValue = [...currentMultiFilter.value];
@@ -473,7 +482,12 @@ class AdvancedFilter extends React.Component {
     this.setState({ activeFilterOptions });
   };
 
-  // TO DO ADD ME
+  /**
+   * Change value of a filter statement of type multi
+   * @param {Number} statementIndex - Current overall statement filter index
+   * @param {Number} multiIndex - Index of the statement within the multi filter that needs to be updated
+   * @param {*} value - New value for the statement at the multi index
+   */
   changeMultiValue = (statementIndex, multiIndex, value) => {
     const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
     const newValue = [...currentMultiFilter.value];
@@ -481,7 +495,13 @@ class AdvancedFilter extends React.Component {
     this.changeValue(statementIndex, newValue);
   };
 
-  // TO DO ADD ME
+  /**
+   * Determines if a field within a multi statement should be disabled
+   * A field is disabled if it already exists in a different multi statement, but not the one it is selected in
+   * @param {String} name - Field name attribute of the dropdown option
+   * @param {Number} statementIndex - Current overall statement filter index
+   * @param {Number} multiIndex - Index of the statement within the multi filter
+   */
   multiFieldDisabled = (name, multiIndex, statementIndex) => {
     const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
     let disabled = false;
@@ -493,12 +513,21 @@ class AdvancedFilter extends React.Component {
     return disabled;
   };
 
-  // TO DO ADD ME
+  /**
+   * Returns the field of a filter when given the name of that filter
+   * @param {Object} filter - Multi filter object containing all the possible fields
+   * @param {String} name - Field name attribute
+   */
   getMultiFilter = (filter, name) => {
     return filter.fields.find(field => field.name === name);
   };
 
-  // TO DO ADD ME
+  /**
+   * Given the name on of a field for a certain multi filter, returns the default value
+   * The default value is determined by the type of the field
+   * @param {Object} filter - Multi filter object containing all the possible fields
+   * @param {String} name - Field name attribute
+   */
   getDefaultMultiValue = (filter, name) => {
     const multiFilter = this.getMultiFilter(filter, name);
     let value = null;
@@ -1043,7 +1072,14 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // TO DO ADD ME
+  /**
+   * Renders multi-select type line "statement"
+   * @param {Object} filter - Multi filter object containing all the possible fields
+   * @param {Number} statementIndex - Current overall statement filter index
+   * @param {Number} multiIndex - Index of the statement within the multi filter
+   * @param {Number} total - Total number of statments within the multi filter
+   * @param {*} multiValue - Value of this statement within the multi filter (name/value pair)
+   */
   renderMultiStatement = (filter, statementIndex, multiIndex, total, multiValue) => {
     return (
       <React.Fragment key={'rowkey-filter-m' + multiIndex}>
@@ -1054,7 +1090,7 @@ class AdvancedFilter extends React.Component {
             </Col>
           </Row>
         )}
-        <Row className="m-0">
+        <Row className="advanced-filter-multi-type-statement m-0">
           <Col className="p-0">
             <Form.Group className="form-group-inline py-0 my-0">
               <Form.Control
@@ -1077,7 +1113,7 @@ class AdvancedFilter extends React.Component {
                 <Form.Control
                   as="select"
                   value={multiValue.value}
-                  className="advanced-filter-multi-options advanced-filter-select my-0 mx-3 py-0"
+                  className="advanced-filter-multi-select-options advanced-filter-select my-0 mx-3 py-0"
                   aria-label="Advanced Filter Multi Select Options"
                   onChange={event => {
                     this.changeMultiValue(statementIndex, multiIndex, { name: multiValue.name, value: event.target.value });
