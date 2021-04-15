@@ -131,7 +131,7 @@ module AssessmentQueryHelper
       table_data << details
     end
 
-    { table_data: table_data, symptoms: threshold_symptoms.values.flat_map { |s| s[:symptoms]&.values } || [], total: assessments.total_entries }
+    { table_data: table_data, symptoms: threshold_symptoms.values.flat_map { |s| s[:symptoms]&.values }.uniq(&:name) || [], total: assessments.total_entries }
   end
 
   # Gets all unique symptoms (based on name and threshold_condition_hash) for a given array of assessment IDs.
