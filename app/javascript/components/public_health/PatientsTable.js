@@ -484,7 +484,9 @@ class PatientsTable extends React.Component {
   };
 
   formatSymptomOnset = data => {
-    return data?.value ? formatDate(data.value) : 'None reported';
+    return data?.value ? formatDate(data.value) : '';
+    // NOTE: Replace the above line with the line below when first positive lab is enabled
+    // return data?.value ? formatDate(data.value) : 'None reported';
   };
 
   formatLatestReport = data => {
