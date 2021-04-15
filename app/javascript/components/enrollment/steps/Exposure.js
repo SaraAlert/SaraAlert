@@ -262,7 +262,8 @@ class Exposure extends React.Component {
               .toDate(),
             'Date can not be more than 30 days in the future.'
           )
-          .required('Please enter a Symptom Onset Date OR select No Reported Symptoms and enter a first positive lab result')
+          .required('Please enter a Symptom Onset Date') // NOTE: replace this line with the commented out line below when first positive lab is enabled
+          // .required('Please enter a Symptom Onset Date OR select No Reported Symptoms and enter a first positive lab result')
           .nullable(),
         no_reported_symptoms: yup.bool().nullable(),
       });
@@ -405,7 +406,7 @@ class Exposure extends React.Component {
               {this.state.errors['case_status']}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} lg={{ span: 8, order: 3 }} className="mb-0"></Form.Group>
+          {/* <Form.Group as={Col} lg={{ span: 8, order: 3 }} className="mb-0"></Form.Group>
           <Form.Group
             as={Col}
             lg={{ span: 8, order: 4 }}
@@ -493,8 +494,9 @@ class Exposure extends React.Component {
                 </Form.Control.Feedback>
               </div>
             )}
-          </Form.Group>
+          </Form.Group> */}
         </Form.Row>
+        <div className="py-1" /> {/* NOTE: Remove this extra padding when first positive lab is enabled */}
         <Form.Row>
           <Form.Group as={Col} md="24" className="mb-2">
             <Form.Label htmlFor="exposure_notes" className="nav-input-label ml-1">

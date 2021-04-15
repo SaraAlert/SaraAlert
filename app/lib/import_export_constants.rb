@@ -270,7 +270,8 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     continuous_exposure: 'Continuous Exposure',
     symptom_onset: 'Symptom Onset Date',
     symptom_onset_defined_by: 'Symptom Onset Defined By',
-    no_reported_symptoms: 'No Reported Symptoms',
+    # NOTE: uncomment when first positive lab is enabled
+    # no_reported_symptoms: 'No Reported Symptoms',
     extended_isolation: 'Extended Isolation Date',
     end_of_monitoring: 'End of Monitoring',
     closed_at: 'Closure Date',
@@ -473,8 +474,12 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
               rct_node(:patients, 'Linelist Info', %i[workflow status]),
               rct_node(:patients, 'Monitoring Actions', %i[monitoring_status exposure_risk_assessment monitoring_plan case_status public_health_action
                                                            jurisdiction_path jurisdiction_name assigned_user]),
-              rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset symptom_onset_defined_by no_reported_symptoms
-                                                          extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_ts]),
+              # NOTE: uncomment when first positive lab is enabled
+              # rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset symptom_onset_defined_by
+              #                                             no_reported_symptoms extended_isolation end_of_monitoring closed_at monitoring_reason
+              #                                             expected_purge_ts]),
+              rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset symptom_onset_defined_by extended_isolation
+                                                          end_of_monitoring closed_at monitoring_reason expected_purge_ts]),
               rct_node(:patients, 'Reporting Info', %i[responder_id head_of_household pause_notifications last_assessment_reminder_sent])
             ]
           }
