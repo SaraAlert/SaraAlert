@@ -651,9 +651,8 @@ class Patient extends React.Component {
                     <div>
                       <b>Symptom Onset: </b>
                       <span>
-                        {this.props.details.symptom_onset
-                          ? moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY')
-                          : 'No symptoms reported'}
+                        {this.props.details.symptom_onset ? moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY') : '--'}
+                        {/* : 'No symptoms reported'} */} {/* NOTE: Replace the above line with this when first positive lab is enabled */}
                       </span>
                     </div>
                   </div>
