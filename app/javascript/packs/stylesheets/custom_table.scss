@@ -23,6 +23,11 @@
   width: 430px;
 }
 
+.col-long-text-field {
+  max-width: 500px;
+  overflow-wrap: break-word;
+}
+
 .opaque-table {
   opacity: 1;
   background-color: white;
@@ -46,6 +51,7 @@
   width: 60%;
   display: inline-block;
 }
+
 .right-container {
   display: inline;
   float: right;

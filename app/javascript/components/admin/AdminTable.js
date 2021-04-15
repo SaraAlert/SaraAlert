@@ -11,6 +11,7 @@ import _ from 'lodash';
 import { CSVLink } from 'react-csv';
 import CustomTable from '../layout/CustomTable';
 import { ToastContainer, toast } from 'react-toastify';
+import { removeFormulaStart } from '../../utils/Export';
 
 class AdminTable extends React.Component {
   constructor(props) {
@@ -26,6 +27,7 @@ class AdminTable extends React.Component {
           { label: 'API Enabled', field: 'is_api_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: '2FA Enabled', field: 'is_2fa_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: 'Failed Login Attempts', field: 'num_failed_logins', isSortable: true },
+          { label: 'Notes', field: 'notes', isSortable: false, filter: this.renderNotes, className: 'col-long-text-field' },
           { label: 'Audit', field: 'Audit', isSortable: false, tooltip: null, filter: this.createAuditButton, onClick: this.handleAuditClick },
         ],
         rowData: [],
@@ -33,6 +35,7 @@ class AdminTable extends React.Component {
         selectedRows: [],
         selectAll: false,
       },
+      expandedNotesIds: [],
       query: {
         page: 0,
         search: '',
@@ -55,23 +58,6 @@ class AdminTable extends React.Component {
     };
     // Ref for the CSVLink component used to click it when async data fetch has completed
     this.csvLink = React.createRef();
-  }
-
-  /**
-   * Creates a "Audit" button for each row of the table.
-   * @param {Object} rowData - Data about the cell this filter is called on.
-   */
-  createAuditButton(data) {
-    const rowData = data.rowData;
-    return (
-      <div id={rowData.id} className="float-left edit-button" aria-label="Open Audit Modal Row Button">
-        <i className="fas fa-user-clock"></i>
-      </div>
-    );
-  }
-
-  getRowCheckboxAriaLabel(rowData) {
-    return `User: ${rowData.email}`;
   }
 
   componentDidMount() {
@@ -98,6 +84,54 @@ class AdminTable extends React.Component {
         this.setState({ csvData: [] });
       });
     }
+  }
+
+  /**
+   * Handles the expand collapse of the buttons in the notes column.
+   * @param {Object} rowData - Data about the cell this filter is called on.
+   */
+  handleExpandClick = rowId => {
+    const ids = this.state.expandedNotesIds;
+    ids.includes(rowId) ? ids.splice(ids.indexOf(rowId), 1) : ids.push(rowId);
+    this.setState({ expandedNotesIds: ids });
+  };
+
+  /**
+   * Creates a "Collapse/Expand" button for each row of the table.
+   * @param {Object} rowData - Data about the cell this filter is called on.
+   */
+  renderNotes = data => {
+    const rowData = data.rowData;
+    return (
+      <div id={rowData.id}>
+        {rowData.notes?.length < 200 && <div>{rowData.notes}</div>}
+        {rowData.notes?.length >= 200 && (
+          <React.Fragment>
+            <div>{this.state.expandedNotesIds.includes(rowData.id) ? rowData.notes : rowData.notes.slice(0, 200) + ' ...'}</div>
+            <Button variant="link" className="notes-button p-0" onClick={() => this.handleExpandClick(rowData.id)}>
+              {this.state.expandedNotesIds.includes(rowData.id) ? '(Collapse)' : '(View all)'}
+            </Button>
+          </React.Fragment>
+        )}
+      </div>
+    );
+  };
+
+  /**
+   * Creates a "Audit" button for each row of the table.
+   * @param {Object} rowData - Data about the cell this filter is called on.
+   */
+  createAuditButton(data) {
+    const rowData = data.rowData;
+    return (
+      <div id={rowData.id} className="float-left edit-button" aria-label="Open Audit Modal Row Button">
+        <i className="fas fa-user-clock"></i>
+      </div>
+    );
+  }
+
+  getRowCheckboxAriaLabel(rowData) {
+    return `User: ${rowData.email}`;
   }
 
   /**
@@ -287,6 +321,7 @@ class AdminTable extends React.Component {
       jurisdiction: this.state.jurisdiction_paths[data.jurisdiction_path],
       role_title: data.roleTitle,
       is_api_enabled: data.isAPIEnabled,
+      notes: data.notes,
     };
 
     const handleSuccess = () => {
@@ -323,7 +358,6 @@ class AdminTable extends React.Component {
    */
   editUser = (row, data) => {
     const path = 'edit_user';
-
     const dataToSend = {
       id: this.state.table.rowData[parseInt(row)].id,
       email: data.email,
@@ -331,6 +365,7 @@ class AdminTable extends React.Component {
       role_title: data.roleTitle,
       is_api_enabled: data.isAPIEnabled,
       is_locked: data.isLocked,
+      notes: data.notes,
     };
 
     const handleSuccess = () => {
@@ -484,6 +519,7 @@ class AdminTable extends React.Component {
         const csvData = response.data.user_rows.map(userData => {
           return {
             ...userData,
+            notes: removeFormulaStart(userData.notes).toString(),
             is_api_enabled: userData.is_api_enabled.toString(),
             is_2fa_enabled: userData.is_2fa_enabled.toString(),
             is_locked: userData.is_locked.toString(),
