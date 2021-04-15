@@ -55,10 +55,51 @@ class AdvancedFilter extends React.Component {
   }
 
   /**
+   * Get a local storage value
+   * @param {String} key - relevant local storage key
+   */
+  getLocalStorage = key => {
+    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  /**
+   * Set a local storage value
+   * @param {String} key - relevant local storage key
+   * @param {String} value - value to set
+   */
+  setLocalStorage = (key, value) => {
+    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  /**
+   * Remove a local storage value
+   * @param {String} key - relevant local storage key
+   */
+  removeLocalStorage = key => {
+    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  /**
    * Start a new filter
    */
   newFilter = () => {
-    this.setState({ activeFilterOptions: [], showAdvancedFilterModal: true, activeFilter: null, applied: false }, () => {
+    this.setState({ activeFilterOptions: [], showAdvancedFilterModal: true, activeFilter: null, applied: false, filterName: null }, () => {
       this.addStatement();
     });
   };
@@ -1080,7 +1121,7 @@ class AdvancedFilter extends React.Component {
         centered
         className="advanced-filter-modal-container"
         onHide={() => {
-          this.setState({ showFilterNameModal: false });
+          this.setState({ showFilterNameModal: false, showAdvancedFilterModal: true, filterName: null });
         }}>
         <Modal.Header>
           <Modal.Title>Filter Name</Modal.Title>
@@ -1119,47 +1160,6 @@ class AdvancedFilter extends React.Component {
         </Modal.Footer>
       </Modal>
     );
-  };
-
-  /**
-   * Get a local storage value
-   * @param {String} key - relevant local storage key
-   */
-  getLocalStorage = key => {
-    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
-    try {
-      return localStorage.getItem(key);
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  };
-
-  /**
-   * Set a local storage value
-   * @param {String} key - relevant local storage key
-   * @param {String} value - value to set
-   */
-  setLocalStorage = (key, value) => {
-    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
-    try {
-      localStorage.setItem(key, value);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  /**
-   * Remove a local storage value
-   * @param {String} key - relevant local storage key
-   */
-  removeLocalStorage = key => {
-    // It's rare this is needed, but we want to make sure we won't fail on Firefox's NS_ERROR_FILE_CORRUPTED
-    try {
-      localStorage.removeItem(key);
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   render() {

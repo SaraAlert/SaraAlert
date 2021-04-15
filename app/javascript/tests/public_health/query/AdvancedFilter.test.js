@@ -881,6 +881,22 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('#filter-name-input').prop('value')).toEqual('');
   });
 
+  it('Filter name is cleared when saving a new filter', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('#advanced-filter-save').simulate('click');
+    expect(wrapper.state('filterName')).toEqual(null);
+    wrapper.find('#filter-name-input').simulate('change', { target: { value: 'some filter name' } });
+    expect(wrapper.state('filterName')).toEqual('some filter name');
+    wrapper.find('#filter-name-save').simulate('click');
+    expect(wrapper.state('filterName')).toEqual('some filter name');
+    wrapper.find('#advanced-filter-cancel').simulate('click');
+    expect(wrapper.state('filterName')).toEqual('some filter name');
+    wrapper.find(Dropdown.Item).simulate('click');
+    wrapper.find('#advanced-filter-save').simulate('click');
+    expect(wrapper.state('filterName')).toEqual(null);
+  });
+
   it('Opening Filter Name modal and clicking "Cancel" button maintains advanced filter modal state', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
