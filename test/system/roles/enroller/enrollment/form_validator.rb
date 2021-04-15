@@ -122,6 +122,7 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
 
     # isolation fields
     click_on 'edit-identification-btn'
+    @@system_test_utils.wait_for_enrollment_page_transition
     page.find_by_id('workflow_wrapper').first(:xpath, './/div//div//div//div//div//input').set('Isolation (case)').send_keys(:enter)
     click_on 'Next'
     @@system_test_utils.wait_for_enrollment_page_transition

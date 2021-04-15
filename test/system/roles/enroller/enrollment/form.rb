@@ -49,6 +49,7 @@ class EnrollmentForm < ApplicationSystemTestCase
           fill_in field[:id], with: data[field[:id]].days.ago.strftime('%m/%d/%Y')
         elsif field[:type] == :button
           click_on field[:label]
+          @@system_test_utils.wait_for_modal_animation
         end
         jurisdiction_change = true if field[:id] == 'jurisdiction_id'
       end
