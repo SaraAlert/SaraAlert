@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_17_233414) do
+ActiveRecord::Schema.define(version: 2021_04_04_213440) do
 
   create_table "analytics", charset: "utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -518,6 +518,7 @@ ActiveRecord::Schema.define(version: 2021_03_17_233414) do
     t.boolean "api_enabled", default: false
     t.string "role", default: "none", null: false
     t.boolean "is_api_proxy", default: false
+    t.text "notes"
     t.index ["authy_id"], name: "index_users_on_authy_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jurisdiction_id"], name: "index_users_on_jurisdiction_id"

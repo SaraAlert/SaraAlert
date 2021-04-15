@@ -7,17 +7,17 @@ class UserModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: this.props.initialUserData.email ? this.props.initialUserData.email : '',
-      jurisdiction_path: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdiction_paths[0],
-      roleTitle: this.props.initialUserData.role_title ? this.props.initialUserData.role_title : this.props.roles[0],
-      isAPIEnabled: this.props.initialUserData.is_api_enabled ? this.props.initialUserData.is_api_enabled : false,
-      isLocked: this.props.initialUserData.is_locked ? this.props.initialUserData.is_locked : false,
+      email: this.props.initialUserData.email || '',
+      jurisdiction_path: this.props.initialUserData.jurisdiction_path || this.props.jurisdiction_paths[0],
+      roleTitle: this.props.initialUserData.role_title || this.props.roles[0],
+      isAPIEnabled: this.props.initialUserData.is_api_enabled || false,
+      isLocked: this.props.initialUserData.is_locked || false,
+      notes: this.props.initialUserData.notes || '',
     };
   }
 
-  handleEmailChange = e => {
-    const val = e.target.value;
-    this.setState({ email: val });
+  handleChange = event => {
+    this.setState({ [event.target.name]: event?.target?.value || '' });
   };
 
   handleJurisdictionChange = data => {
@@ -61,7 +61,7 @@ class UserModal extends React.Component {
                   placeholder="Enter email address"
                   aria-label="Enter email address"
                   aria-describedby="email-addon"
-                  onChange={this.handleEmailChange}
+                  onChange={this.handleChange}
                 />
               </InputGroup>
             </Form.Group>
@@ -130,6 +130,22 @@ class UserModal extends React.Component {
                 label={this.state.isAPIEnabled ? 'Enabled' : 'Disabled'}
                 onChange={this.handleAPIAccessChange}
               />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Notes</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  id="notes"
+                  name="notes"
+                  as="textarea"
+                  rows="5"
+                  className="form-square"
+                  value={this.state.notes}
+                  maxLength="5000"
+                  onChange={this.handleChange}
+                />
+              </InputGroup>
+              <Form.Label className="notes-character-limit"> {5000 - this.state.notes.length} characters remaining </Form.Label>
             </Form.Group>
           </Form>
         </Modal.Body>
