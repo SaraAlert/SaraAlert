@@ -218,37 +218,37 @@ class AdminControllerTest < ActionController::TestCase
 
     # Test email param
     post :create_user, params: { email: 'bad format', jurisdiction: current_user_jur.id,
-                                 role_title: 'analyst', is_api_enabled: false }, as: :json
+                                 role_title: 'analyst', is_api_enabled: false, notes: '' }, as: :json
     assert_response :bad_request
 
     post :create_user, params: { jurisdiction: current_user_jur.id,
-                                 role_title: 'analyst', is_api_enabled: false }, as: :json
+                                 role_title: 'analyst', is_api_enabled: false, notes: '' }, as: :json
     assert_response :bad_request
 
     # Test invalid jurisdiction param
     post :create_user, params: { email: 'test@testing.com', jurisdiction: '',
-                                 role_title: 'analyst', is_api_enabled: false }, as: :json
+                                 role_title: 'analyst', is_api_enabled: false, notes: '' }, as: :json
     assert_response :bad_request
 
     # Test invalid jurisdiction param (out of scope jurisdiction)
     post :create_user, params: { email: 'test@testing.com', jurisdiction: Jurisdiction.find_by(path: 'USA, State 2').id,
-                                 role_title: 'analyst', is_api_enabled: false }, as: :json
+                                 role_title: 'analyst', is_api_enabled: false, notes: '' }, as: :json
     assert_response :bad_request
 
     # Test role param
     post :create_user, params: { email: 'test@testing.com', jurisdiction: current_user_jur.id,
-                                 role_title: 'test', is_api_enabled: false }, as: :json
+                                 role_title: 'test', is_api_enabled: false, notes: '' }, as: :json
     assert_response :bad_request
 
     # Test is_api_enabled param
     post :create_user, params: { email: 'test@testing.com', jurisdiction: current_user_jur.id,
-                                 role_title: 'analyst', is_api_enabled: 'test' }, as: :json
+                                 role_title: 'analyst', is_api_enabled: 'test', notes: '' }, as: :json
     assert_response :bad_request
 
     # Test User is created correctly
     assert_difference 'User.count' do
       post :create_user, params: { email: 'test@testing.com', jurisdiction: current_user_jur.id,
-                                   role_title: 'public_health_enroller', is_api_enabled: true }, as: :json
+                                   role_title: 'public_health_enroller', is_api_enabled: true, notes: 'test note' }, as: :json
     end
     assert_response :success
 
@@ -257,6 +257,7 @@ class AdminControllerTest < ActionController::TestCase
     assert_equal(user.api_enabled, true)
     assert_equal(user.role, 'public_health_enroller')
     assert_equal(user.force_password_change, true)
+    assert_equal(user.notes, 'test note')
 
     # Test welcome email is queued
     last_email = ActionMailer::Base.deliveries.last
@@ -279,50 +280,51 @@ class AdminControllerTest < ActionController::TestCase
     sign_in user
 
     new_jur = Jurisdiction.find_by(path: 'USA, State 1, County 1')
+    random_note = SecureRandom.urlsafe_base64(5010)
 
     # Test id param
     post :edit_user, params: { id: 'test', email: 'bad format', jurisdiction: new_jur.id,
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
     assert_response :bad_request
 
     # Test email param
     post :edit_user, params: { id: 17, email: 'bad format', jurisdiction: new_jur.id,
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
     assert_response :bad_request
 
     post :edit_user, params: { id: 17, jurisdiction: new_jur.id, role_title: 'analyst', is_api_enabled: false,
-                               is_locked: false }, as: :json
+                               is_locked: false, notes: '' }, as: :json
     assert_response :bad_request
 
     # Test bad jurisdiction param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: '',
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
     assert_response :bad_request
 
     # Test invalid jurisdiction param (out of scope jurisdiction)
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: Jurisdiction.find_by(path: 'USA, State 2').id,
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
     assert_response :bad_request
 
     # Test role param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'test',
-                               is_api_enabled: false, is_locked: false }, as: :json
+                               is_api_enabled: false, is_locked: false, notes: '' }, as: :json
     assert_response :bad_request
 
     # Test is_api_enabled param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
-                               is_api_enabled: 'test', is_locked: false }, as: :json
+                               is_api_enabled: 'test', is_locked: false, notes: '' }, as: :json
     assert_response :bad_request
 
     # Test is_locked param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
-                               is_api_enabled: false, is_locked: 'test' }, as: :json
+                               is_api_enabled: false, is_locked: 'test', notes: '' }, as: :json
     assert_response :bad_request
 
     # Test User is edited correctly after updating all fields
     assert_no_difference 'User.count' do
       post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
-                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true }, as: :json
+                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true, notes: 'test note edit' }, as: :json
     end
     assert_response :success
 
@@ -332,6 +334,14 @@ class AdminControllerTest < ActionController::TestCase
     assert_equal(user.api_enabled, false)
     assert_equal(user.role, 'public_health_enroller')
     assert user.locked_at?
+    assert_equal(user.notes, 'test note edit')
+
+    # Test notes param strips too large value
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
+                               role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true, notes: random_note }, as: :json
+    assert_response :success
+    user = User.find_by(id: 17)
+    assert_equal(user.notes, random_note.strip[0...5000])
 
     sign_out user
   end

@@ -39,7 +39,8 @@ class AdminController < ApplicationController
     # NOTE: Does not include API proxy users as those are not managed by anyone other than USA admins and cannot be accessed by real users
     users = User.where(is_api_proxy: false, jurisdiction_id: current_user.jurisdiction.subtree_ids)
                 .joins(:jurisdiction)
-                .select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, users.role, jurisdictions.path')
+                .select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id,
+                        users.failed_attempts, users.role, users.notes, jurisdictions.path')
 
     # Filter by search text
     users = filter(users, search)
@@ -66,7 +67,8 @@ class AdminController < ApplicationController
         is_locked: !user.locked_at.nil? || false,
         is_api_enabled: user[:api_enabled] || false,
         is_2fa_enabled: !user.authy_id.nil? || false,
-        num_failed_logins: user.failed_attempts
+        num_failed_logins: user.failed_attempts,
+        notes: user.notes
       }
 
       user_rows << details
@@ -111,13 +113,15 @@ class AdminController < ApplicationController
   def create_user
     redirect_to(root_url) && return unless current_user.can_access_admin_panel?
 
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title, :is_api_enabled)
+    permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title, :is_api_enabled, :notes)
     email = permitted_params[:email]
     return head :bad_request if email.nil? || email.blank?
 
     email = email.strip
     address = ValidEmail2::Address.new(email)
     return head :bad_request unless address.valid? && !address.disposable?
+
+    notes = permitted_params[:notes].strip[0...5000]
 
     role = permitted_params[:role_title]
     return head :bad_request if role.nil? || role.blank?
@@ -146,7 +150,8 @@ class AdminController < ApplicationController
       jurisdiction: Jurisdiction.find_by_id(jurisdiction),
       force_password_change: true,
       api_enabled: is_api_enabled,
-      role: role
+      role: role,
+      notes: notes
     )
     user.save!
     UserMailer.welcome_email(user, password).deliver_later
@@ -156,7 +161,7 @@ class AdminController < ApplicationController
   def edit_user
     redirect_to(root_url) && return unless current_user.can_access_admin_panel?
 
-    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role_title, :is_api_enabled, :is_locked)
+    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role_title, :is_api_enabled, :is_locked, :notes)
 
     id = permitted_params[:id]
     user_ids = User.pluck(:id)
@@ -199,6 +204,9 @@ class AdminController < ApplicationController
     # Update email
     user.email = email
 
+    # Update notes
+    user.notes = permitted_params[:notes].strip[0...5000]
+
     # Update jurisdiction
     user.jurisdiction = Jurisdiction.find_by_id(jurisdiction)
 
@@ -211,7 +219,6 @@ class AdminController < ApplicationController
     elsif !user.locked_at.nil? && !is_locked
       user.unlock_access!
     end
-
     user.save!
   end
 
