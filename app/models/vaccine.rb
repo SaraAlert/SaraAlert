@@ -34,7 +34,7 @@ class Vaccine < ApplicationRecord
       'is not an acceptable value, acceptable values for vaccine ' \
         "group #{vaccine[:group_name]} are: '#{product_name_options(vaccine[:group_name]).join("', '")}'"
     }
-  }, presence: { message: 'is required' }
+  }, presence: { message: 'is required' }, unless: -> { group_name.blank? }
 
   validates :administration_date, date: true
 
