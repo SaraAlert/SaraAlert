@@ -78,6 +78,12 @@ class VaccineTest < ActiveSupport::TestCase
 
     # Unknown is an acceptable value
     assert vaccine.update(product_name: 'Unknown')
+
+    # If the error is actually with group_name, don't log errors on product_name
+    vaccine.group_name = nil
+    assert_not vaccine.update(product_name: nil)
+    assert_equal(0, vaccine.errors.messages[:product_name].length)
+    assert_equal(2, vaccine.errors.messages[:group_name].length)
   end
 
   test 'validates administration_date' do
