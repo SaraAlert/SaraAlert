@@ -1,18 +1,18 @@
-import React from 'react'
+import React from 'react';
 import _ from 'lodash';
 import { shallow } from 'enzyme';
 import { DropdownButton, Dropdown } from 'react-bootstrap';
-import PatientsTable from '../../components/public_health/PatientsTable.js'
-import JurisdictionFilter from '../../components/public_health/query/JurisdictionFilter.js'
-import AssignedUserFilter from '../../components/public_health/query/AssignedUserFilter.js'
-import AdvancedFilter from '../../components/public_health/query/AdvancedFilter.js'
-import CustomTable from '../../components/layout/CustomTable'
+import PatientsTable from '../../components/public_health/PatientsTable';
+import JurisdictionFilter from '../../components/public_health/query/JurisdictionFilter';
+import AssignedUserFilter from '../../components/public_health/query/AssignedUserFilter';
+import AdvancedFilter from '../../components/public_health/query/AdvancedFilter';
+import CustomTable from '../../components/layout/CustomTable';
 import CloseRecords from '../../components/public_health/actions/CloseRecords';
 import UpdateCaseStatus from '../../components/public_health/actions/UpdateCaseStatus';
 import UpdateAssignedUser from '../../components/public_health/actions/UpdateAssignedUser';
-import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction'
-import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs'
-import { mockMonitoringReasons } from '../mocks/mockMonitoringReasons'
+import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction';
+import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs';
+import { mockMonitoringReasons } from '../mocks/mockMonitoringReasons';
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 const setQueryMock = jest.fn();

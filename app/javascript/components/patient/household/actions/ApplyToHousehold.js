@@ -3,10 +3,10 @@ import { PropTypes } from 'prop-types';
 import { Form } from 'react-bootstrap';
 import moment from 'moment-timezone';
 import _ from 'lodash';
-import { formatDate } from '../../../utils/DateTime';
+import { formatDate } from '../../../../utils/DateTime';
 
-import BadgeHOH from './BadgeHOH';
-import CustomTable from '../../layout/CustomTable';
+import BadgeHOH from '../utils/BadgeHOH';
+import CustomTable from '../../../layout/CustomTable';
 
 class ApplyToHousehold extends React.Component {
   constructor(props) {

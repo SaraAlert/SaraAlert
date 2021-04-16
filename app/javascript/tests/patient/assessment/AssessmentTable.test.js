@@ -1,21 +1,21 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Card, Form, InputGroup, OverlayTrigger } from 'react-bootstrap';
 
 import AssessmentModal from '../../../components/patient/assessment/AssessmentModal';
-import AssessmentTable from '../../../components/patient/assessment/AssessmentTable.js';
+import AssessmentTable from '../../../components/patient/assessment/AssessmentTable';
 import ClearAssessments from '../../../components/patient/assessment/actions/ClearAssessments';
-import ContactAttempt from '../../../components/patient/assessment/actions/ContactAttempt.js';
-import CurrentStatus from '../../../components/patient/assessment/actions/CurrentStatus.js';
-import CustomTable from '../../../components/layout/CustomTable.js';
-import LastDateExposure from '../../../components/patient/assessment/actions/LastDateExposure.js';
-import PauseNotifications from '../../../components/patient/assessment/actions/PauseNotifications.js';
+import ContactAttempt from '../../../components/patient/assessment/actions/ContactAttempt';
+import CurrentStatus from '../../../components/patient/assessment/actions/CurrentStatus';
+import CustomTable from '../../../components/layout/CustomTable';
+import LastDateExposure from '../../../components/patient/assessment/actions/LastDateExposure';
+import PauseNotifications from '../../../components/patient/assessment/actions/PauseNotifications';
 
-import { mockPatient1, mockPatient2 } from '../../mocks/mockPatients'
-import { mockAssessment1 } from '../../mocks/mockAssessments'
-import { mockNewSymptoms } from '../../mocks/mockSymptoms.js';
-import { mockTranslations } from '../../mocks/mockTranslations'
-import { mockUser1 } from '../../mocks/mockUsers'
+import { mockPatient1, mockPatient2 } from '../../mocks/mockPatients';
+import { mockAssessment1 } from '../../mocks/mockAssessments';
+import { mockNewSymptoms } from '../../mocks/mockSymptoms';
+import { mockTranslations } from '../../mocks/mockTranslations';
+import { mockUser1 } from '../../mocks/mockUsers';
 
 const reportEligibility = {
   eligible: false,

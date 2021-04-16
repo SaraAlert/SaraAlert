@@ -3,7 +3,7 @@ import { shallow, mount } from 'enzyme';
 import { Button, Modal, Form } from 'react-bootstrap';
 import moment from 'moment';
 import MonitoringStatus from '../../../components/patient/monitoring_actions/MonitoringStatus';
-import ApplyToHousehold from '../../../components/patient/household/ApplyToHousehold';
+import ApplyToHousehold from '../../../components/patient/household/actions/ApplyToHousehold';
 import CustomTable from '../../../components/layout/CustomTable';
 import InfoTooltip from '../../../components/util/InfoTooltip';
 import DateInput from '../../../components/util/DateInput';

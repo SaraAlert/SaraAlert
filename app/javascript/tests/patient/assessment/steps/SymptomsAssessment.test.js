@@ -1,10 +1,10 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Card, Form } from 'react-bootstrap';
-import SymptomsAssessment from '../../../../components/patient/assessment/steps/SymptomsAssessment.js'
-import { mockAssessment1, mockAssessment2 } from '../../../mocks/mockAssessments.js';
-import { mockNewSymptoms, mockSymptoms1, mockSymptoms2 } from '../../../mocks/mockSymptoms.js';
-import { mockTranslations } from '../../../mocks/mockTranslations'
+import SymptomsAssessment from '../../../../components/patient/assessment/steps/SymptomsAssessment';
+import { mockAssessment1, mockAssessment2 } from '../../../mocks/mockAssessments';
+import { mockNewSymptoms, mockSymptoms1, mockSymptoms2 } from '../../../mocks/mockSymptoms';
+import { mockTranslations } from '../../../mocks/mockTranslations';
 
 const submitMock = jest.fn();
 

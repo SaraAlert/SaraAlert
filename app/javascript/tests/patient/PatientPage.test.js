@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
-import PatientPage from '../../components/patient/PatientPage.js'
-import Patient from '../../components/patient/Patient.js'
-import { mockUser1 } from '../mocks/mockUsers'
-import { mockPatient1, mockPatient2 } from '../mocks/mockPatients'
+import PatientPage from '../../components/patient/PatientPage';
+import Patient from '../../components/patient/Patient';
+import { mockUser1 } from '../mocks/mockUsers';
+import { mockPatient1, mockPatient2 } from '../mocks/mockPatients';
 
 function getWrapper(mockPatient) {
   const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";

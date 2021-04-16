@@ -1,10 +1,9 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import EnrollerStatistics from '../../components/analytics/widgets/EnrollerStatistics';
-
-import EnrollerAnalytics from '../../components/analytics/EnrollerAnalytics.js'
-import { mockUser1 } from '../mocks/mockUsers'
-import { mockEnrollerStatistics1 } from '../mocks/mockEnrollerStatistics'
+import EnrollerAnalytics from '../../components/analytics/EnrollerAnalytics';
+import { mockUser1 } from '../mocks/mockUsers';
+import { mockEnrollerStatistics1 } from '../mocks/mockEnrollerStatistics';
 
 describe('EnrollerAnalytics', () => {
   it('Properly Renders Both EnrollerStatistics Cards correctly', () => {

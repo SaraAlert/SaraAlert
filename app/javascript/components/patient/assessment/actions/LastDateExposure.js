@@ -7,7 +7,7 @@ import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import { formatDate } from '../../../../utils/DateTime';
 
-import ApplyToHousehold from '../../household/ApplyToHousehold';
+import ApplyToHousehold from '../../household/actions/ApplyToHousehold';
 import DateInput from '../../../util/DateInput';
 import ExtendedIsolation from './ExtendedIsolation';
 import InfoTooltip from '../../../util/InfoTooltip';

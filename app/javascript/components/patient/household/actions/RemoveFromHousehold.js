@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
-import reportError from '../../util/ReportError';
+import reportError from '../../../util/ReportError';
 
 class RemoveFromHousehold extends React.Component {
   constructor(props) {

@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Modal } from 'react-bootstrap';
-import AddAssessmentNote from '../../../../components/patient/assessment/actions/AddAssessmentNote.js'
-import { mockPatient1 } from '../../../mocks/mockPatients'
-import { mockAssessment1 } from '../../../mocks/mockAssessments'
+import AddAssessmentNote from '../../../../components/patient/assessment/actions/AddAssessmentNote';
+import { mockPatient1 } from '../../../mocks/mockPatients';
+import { mockAssessment1 } from '../../../mocks/mockAssessments';
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 

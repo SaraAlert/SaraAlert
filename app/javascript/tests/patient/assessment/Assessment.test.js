@@ -1,13 +1,13 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Carousel } from 'react-bootstrap';
-import Assessment from '../../../components/patient/assessment/Assessment.js'
-import SymptomsAssessment from '../../../components/patient/assessment/steps/SymptomsAssessment.js'
-import AssessmentCompleted from '../../../components/patient/assessment/steps/AssessmentCompleted.js'
-import { mockPatient1 } from '../../mocks/mockPatients'
-import { mockAssessment1 } from '../../mocks/mockAssessments'
-import { mockUser1 } from '../../mocks/mockUsers'
-import { mockTranslations } from '../../mocks/mockTranslations'
+import Assessment from '../../../components/patient/assessment/Assessment.js';
+import SymptomsAssessment from '../../../components/patient/assessment/steps/SymptomsAssessment';
+import AssessmentCompleted from '../../../components/patient/assessment/steps/AssessmentCompleted';
+import { mockPatient1 } from '../../mocks/mockPatients';
+import { mockAssessment1 } from '../../mocks/mockAssessments';
+import { mockUser1 } from '../../mocks/mockUsers';
+import { mockTranslations } from '../../mocks/mockTranslations';
 
 const contactInfo = {
   email: 'email@example.com',

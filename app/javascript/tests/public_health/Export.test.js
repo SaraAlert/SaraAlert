@@ -1,13 +1,13 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
-import Export from '../../components/public_health/Export.js'
-import ConfirmExport from '../../components/public_health/ConfirmExport.js'
-import CustomExport from '../../components/public_health/CustomExport.js'
-import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction'
-import { mockQuery1, mockQuery2 } from '../mocks/mockQueries'
-import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs'
-import { mockExportPresets } from '../mocks/mockExportPresets'
+import Export from '../../components/public_health/Export';
+import ConfirmExport from '../../components/public_health/ConfirmExport';
+import CustomExport from '../../components/public_health/CustomExport';
+import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction';
+import { mockQuery1, mockQuery2 } from '../mocks/mockQueries';
+import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs';
+import { mockExportPresets } from '../mocks/mockExportPresets';
   
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 const dropdownOptions = [ 'Line list CSV', 'Sara Alert Format', 'Excel Export For Purge-Eligible Monitorees', 'Excel Export For All Monitorees', 'Custom Format...' ];
