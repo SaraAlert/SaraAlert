@@ -932,6 +932,7 @@ class Fhir::R4::ApiController < ActionController::API
           # FHIRPath has a lot debug logging we don't care about, so suppress it.
           Rails.logger.silence do
             value = FHIRPath.evaluate(fhir_path, req_json)
+            value = pretty_print_code_from_fhir(value) if value['code'] && value['system']
           end
         rescue StandardError
           # If the FHIRPath evaluation fails for some reason, just use the normalized value that failed validation
