@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Card } from 'react-bootstrap';
-import MonitoreeFlow from '../../../components/analytics/widgets/MonitoreeFlow.js'
-import mockAnalytics from '../../mocks/mockAnalytics'
+import MonitoreeFlow from '../../../components/analytics/widgets/MonitoreeFlow';
+import mockAnalytics from '../../mocks/mockAnalytics';
 
 const monitoreeFlowTableHeaders = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'];
 const exposureNewEnrollmentValues = [ 54, 164, 192, 223 ];

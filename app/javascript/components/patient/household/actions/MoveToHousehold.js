@@ -3,11 +3,11 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
 import _ from 'lodash';
-import { formatDate } from '../../../utils/DateTime';
+import { formatDate } from '../../../../utils/DateTime';
 
-import BadgeHOH from './BadgeHOH';
-import CustomTable from '../../layout/CustomTable';
-import reportError from '../../util/ReportError';
+import BadgeHOH from '../utils/BadgeHOH';
+import CustomTable from '../../../layout/CustomTable';
+import reportError from '../../../util/ReportError';
 
 class MoveToHousehold extends React.Component {
   constructor(props) {

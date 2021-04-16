@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Badge } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
-import CurrentStatus from '../../../../components/patient/assessment/actions/CurrentStatus.js'
-import EligibilityTooltip from '../../../../components/util/EligibilityTooltip.js';
+import CurrentStatus from '../../../../components/patient/assessment/actions/CurrentStatus';
+import EligibilityTooltip from '../../../../components/util/EligibilityTooltip';
 
 const reportEligibility = {
   eligible: false,

@@ -1,12 +1,11 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
-import MoveToHousehold from '../../../components/patient/household/MoveToHousehold.js'
-import CustomTable from '../../../components/layout/CustomTable';
-
-import { mockPatient1 } from '../../mocks/mockPatients'
-import { nameFormatterAlt } from '../../util.js'
+import MoveToHousehold from '../../../../components/patient/household/actions/MoveToHousehold';
+import CustomTable from '../../../../components/layout/CustomTable';
+import { mockPatient1 } from '../../../mocks/mockPatients';
+import { nameFormatterAlt } from '../../../util.js';
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 

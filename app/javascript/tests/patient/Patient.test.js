@@ -1,15 +1,15 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Col, Collapse, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
-import Patient from '../../components/patient/Patient.js'
-import BadgeHOH from '../../components/patient/household/BadgeHOH';
-import EnrollHouseholdMember from '../../components/patient/household/EnrollHouseholdMember.js'
-import ChangeHOH from '../../components/patient/household/ChangeHOH';
-import MoveToHousehold from '../../components/patient/household/MoveToHousehold';
-import RemoveFromHousehold from '../../components/patient/household/RemoveFromHousehold';
-import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankMockPatient } from '../mocks/mockPatients'
+import Patient from '../../components/patient/Patient';
+import BadgeHOH from '../../components/patient/household/utils/BadgeHOH';
+import EnrollHouseholdMember from '../../components/patient/household/actions/EnrollHouseholdMember';
+import ChangeHOH from '../../components/patient/household/actions/ChangeHOH';
+import MoveToHousehold from '../../components/patient/household/actions/MoveToHousehold';
+import RemoveFromHousehold from '../../components/patient/household/actions/RemoveFromHousehold';
+import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankMockPatient } from '../mocks/mockPatients';
 import { nameFormatter, formatDate } from '../util.js'
 
 const goToMock = jest.fn();
