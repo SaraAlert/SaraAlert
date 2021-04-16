@@ -4,11 +4,11 @@ import { Button, Col, Collapse, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import Patient from '../../components/patient/Patient.js'
-import BadgeHOH from '../../components/util/BadgeHOH';
-import EnrollHouseholdMember from '../../components/subject/household_actions/EnrollHouseholdMember.js'
-import ChangeHOH from '../../components/subject/household_actions/ChangeHOH';
-import MoveToHousehold from '../../components/subject/household_actions/MoveToHousehold';
-import RemoveFromHousehold from '../../components/subject/household_actions/RemoveFromHousehold';
+import BadgeHOH from '../../components/patient/household/BadgeHOH';
+import EnrollHouseholdMember from '../../components/patient/household/EnrollHouseholdMember.js'
+import ChangeHOH from '../../components/patient/household/ChangeHOH';
+import MoveToHousehold from '../../components/patient/household/MoveToHousehold';
+import RemoveFromHousehold from '../../components/patient/household/RemoveFromHousehold';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankMockPatient } from '../mocks/mockPatients'
 import { nameFormatter, formatDate } from '../util.js'
 

@@ -10,7 +10,6 @@ import CustomTable from '../../components/layout/CustomTable'
 import CloseRecords from '../../components/public_health/actions/CloseRecords';
 import UpdateCaseStatus from '../../components/public_health/actions/UpdateCaseStatus';
 import UpdateAssignedUser from '../../components/public_health/actions/UpdateAssignedUser';
-import InfoTooltip from '../../components/util/InfoTooltip';
 import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction'
 import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs'
 import { mockMonitoringReasons } from '../mocks/mockMonitoringReasons'
