@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Modal } from 'react-bootstrap';
-import ConfirmExport from '../../components/public_health/ConfirmExport.js'
+import ConfirmExport from '../../components/public_health/ConfirmExport';
 
-const workflow = 'exposure'
+const workflow = 'exposure';
 const onCancelMock = jest.fn();
 const onStartExportMock = jest.fn();
 

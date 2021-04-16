@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import _ from 'lodash';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import { Button, ButtonGroup, Dropdown, Form, Modal, OverlayTrigger, ToggleButton } from 'react-bootstrap';
-import AdvancedFilter from '../../../components/public_health/query/AdvancedFilter.js'
-import DateInput from '../../../components/util/DateInput.js'
+import AdvancedFilter from '../../../components/public_health/query/AdvancedFilter';
+import DateInput from '../../../components/util/DateInput';
 import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
 import {
   mockFilter1,
@@ -28,7 +28,7 @@ import {
   mockFilterAdditionalOption,
   mockFilterIncludesTooltip,
   mockSavedFilters
-} from '../../mocks/mockFilters'
+} from '../../mocks/mockFilters';
 
 const advancedFilterUpdateMock = jest.fn();
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";

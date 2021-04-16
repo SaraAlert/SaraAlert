@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { Button, Form, Modal } from 'react-bootstrap';
 import AssignedUser from '../../../components/patient/monitoring_actions/AssignedUser';
-import ApplyToHousehold from '../../../components/patient/household/ApplyToHousehold';
+import ApplyToHousehold from '../../../components/patient/household/actions/ApplyToHousehold';
 import CustomTable from '../../../components/layout/CustomTable';
 import InfoTooltip from '../../../components/util/InfoTooltip';
 import { mockUser1 } from '../../mocks/mockUsers';

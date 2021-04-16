@@ -1,8 +1,7 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import EnrollerStatistics from '../../../components/analytics/widgets/EnrollerStatistics';
-
-import { mockEnrollerStatistics1 } from '../../mocks/mockEnrollerStatistics'
+import { mockEnrollerStatistics1 } from '../../mocks/mockEnrollerStatistics';
 
 // Only need to test System Statistics because the behavior for "Your Statistics" is identical
 const componentProps = {

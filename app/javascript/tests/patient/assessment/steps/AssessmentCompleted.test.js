@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Card, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import AssessmentCompleted from '../../../../components/patient/assessment/steps/AssessmentCompleted.js'
-import { mockTranslations } from '../../../mocks/mockTranslations'
+import AssessmentCompleted from '../../../../components/patient/assessment/steps/AssessmentCompleted';
+import { mockTranslations } from '../../../mocks/mockTranslations';
 
 const contact = {
   email: 'email@example.com',

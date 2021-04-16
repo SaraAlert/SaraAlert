@@ -1,7 +1,7 @@
-import React from 'react'
-import { shallow, mount } from 'enzyme';
-import Contact from '../../../components/enrollment/steps/Contact.js'
-import { blankMockPatient, mockPatient1, mockPatient2 } from '../../mocks/mockPatients'
+import React from 'react';
+import { mount } from 'enzyme';
+import Contact from '../../../components/enrollment/steps/Contact';
+import { blankMockPatient, mockPatient1, mockPatient2 } from '../../mocks/mockPatients';
 
 const newEnrollmentState = {
   isolation: false,

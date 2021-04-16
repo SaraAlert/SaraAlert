@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Modal } from 'react-bootstrap';
-import EnrollHouseholdMember from '../../../components/patient/household/EnrollHouseholdMember.js'
+import EnrollHouseholdMember from '../../../../components/patient/household/actions/EnrollHouseholdMember';
 
 function getWrapper(isHoh) {
   return shallow(<EnrollHouseholdMember responderId={123} isHoh={isHoh} />);

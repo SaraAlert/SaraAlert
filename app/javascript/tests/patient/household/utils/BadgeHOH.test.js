@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Badge } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
-import BadgeHOH from '../../../components/patient/household/BadgeHOH.js'
+import BadgeHOH from '../../../../components/patient/household/utils/BadgeHOH';
 
 describe('BadgeHOH', () => {
   it('Properly renders all main components', () => {

@@ -5,7 +5,7 @@ import _ from 'lodash';
 import axios from 'axios';
 import ReactTooltip from 'react-tooltip';
 
-import ApplyToHousehold from '../household/ApplyToHousehold';
+import ApplyToHousehold from '../household/actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
 

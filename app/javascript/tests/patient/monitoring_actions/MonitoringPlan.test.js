@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { Button, Modal, Form } from 'react-bootstrap';
 import MonitoringPlan from '../../../components/patient/monitoring_actions/MonitoringPlan';
-import ApplyToHousehold from '../../../components/patient/household/ApplyToHousehold';
+import ApplyToHousehold from '../../../components/patient/household/actions/ApplyToHousehold';
 import CustomTable from '../../../components/layout/CustomTable';
 import InfoTooltip from '../../../components/util/InfoTooltip';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../mocks/mockPatients';

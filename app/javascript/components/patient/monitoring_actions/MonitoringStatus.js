@@ -6,7 +6,7 @@ import axios from 'axios';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 
-import ApplyToHousehold from '../household/ApplyToHousehold';
+import ApplyToHousehold from '../household/actions/ApplyToHousehold';
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';

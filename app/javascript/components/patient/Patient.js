@@ -5,11 +5,11 @@ import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import BadgeHOH from './household/BadgeHOH';
-import EnrollHouseholdMember from '../patient/household/EnrollHouseholdMember';
-import ChangeHOH from '../patient/household/ChangeHOH';
-import MoveToHousehold from '../patient/household/MoveToHousehold';
-import RemoveFromHousehold from '../patient/household/RemoveFromHousehold';
+import BadgeHOH from './household/utils/BadgeHOH';
+import ChangeHOH from './household/actions/ChangeHOH';
+import EnrollHouseholdMember from './household/actions/EnrollHouseholdMember';
+import MoveToHousehold from './household/actions/MoveToHousehold';
+import RemoveFromHousehold from './household/actions/RemoveFromHousehold';
 import InfoTooltip from '../util/InfoTooltip';
 
 class Patient extends React.Component {

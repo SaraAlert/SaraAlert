@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Button } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
-import PauseNotifications from '../../../../components/patient/assessment/actions/PauseNotifications.js'
-import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../../mocks/mockPatients'
+import PauseNotifications from '../../../../components/patient/assessment/actions/PauseNotifications';
+import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../../mocks/mockPatients';
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 

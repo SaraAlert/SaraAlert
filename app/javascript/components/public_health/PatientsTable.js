@@ -26,7 +26,7 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import AdvancedFilter from './query/AdvancedFilter';
-import BadgeHOH from '../patient/household/BadgeHOH';
+import BadgeHOH from '../patient/household/utils/BadgeHOH';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import UpdateAssignedUser from './actions/UpdateAssignedUser';

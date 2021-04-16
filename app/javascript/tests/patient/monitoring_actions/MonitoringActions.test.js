@@ -1,18 +1,18 @@
-import React from 'react'
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Form } from 'react-bootstrap';
 import MonitoringActions from '../../../components/patient/monitoring_actions/MonitoringActions';
 import AssignedUser from '../../../components/patient/monitoring_actions/AssignedUser';
-import CaseStatus from '../../../components/patient/monitoring_actions/CaseStatus'
-import ExposureRiskAssessment from '../../../components/patient/monitoring_actions/ExposureRiskAssessment'
+import CaseStatus from '../../../components/patient/monitoring_actions/CaseStatus';
+import ExposureRiskAssessment from '../../../components/patient/monitoring_actions/ExposureRiskAssessment';
 import Jurisdiction from '../../../components/patient/monitoring_actions/Jurisdiction';
 import MonitoringPlan from '../../../components/patient/monitoring_actions/MonitoringPlan';
 import MonitoringStatus from '../../../components/patient/monitoring_actions/MonitoringStatus';
 import PublicHealthAction from '../../../components/patient/monitoring_actions/PublicHealthAction';
-import { mockPatient1 } from '../../mocks/mockPatients'
-import { mockUser1 } from '../../mocks/mockUsers'
-import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction'
-import { mockMonitoringReasons } from '../../mocks/mockMonitoringReasons'
+import { mockPatient1 } from '../../mocks/mockPatients';
+import { mockUser1 } from '../../mocks/mockUsers';
+import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
+import { mockMonitoringReasons } from '../../mocks/mockMonitoringReasons';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const assigned_users = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
