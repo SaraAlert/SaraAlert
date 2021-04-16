@@ -120,7 +120,7 @@ describe('AssessmentCompleted', () => {
   });
 
   it('Properly renders success checkmark', () => {
-    const language = 'en';
+    const language = 'eng';
     const wrapper = getWrapper(language, contact);
     expect(wrapper.find(Card.Body).find(FontAwesomeIcon).exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find(FontAwesomeIcon).prop('icon').iconName).toEqual('check-circle');

@@ -126,6 +126,11 @@
   :iso6391code: null
   :system: 'iso639-2t'
 
+:ase:
+  :display: 'American Sign Language'
+  :iso6391code: "ase"
+  :system: 'iso639-3'
+
 :asm:
   :display: 'Assamese'
   :iso6391code: "as"
@@ -1267,7 +1272,7 @@
   :system: 'iso639-2t'
 
 :oci:
-  :display: 'Occitan (post 1500)'
+  :display: 'Occitan'
   :iso6391code: null
   :system: 'iso639-2t'
 

@@ -41,9 +41,10 @@ module PatientHelper
 
     # spa-PR is the only iso-code that involves case. it will not be properly matched if
     # we call downcase on the input
-    lang = lang.casecmp('spa-pr')&.zero? ? 'spa-PR' : lang.to_s
+    lang.strip!
+    lang = lang.casecmp('spa-pr')&.zero? ? 'spa-PR' : lang.to_s.downcase
     matched_language = nil
-    matched_language = lang.to_sym if all_languages[lang.to_sym]
+    matched_language = lang.to_sym if all_languages[lang.to_sym].present?
     return matched_language unless matched_language.nil?
 
     matched_language = all_languages.find { |_key, val| val[:display]&.casecmp(lang)&.zero? }

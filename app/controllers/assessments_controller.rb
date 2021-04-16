@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 
+# For backwards-compatibility reasons, we still want to support the old 2-letter language codes
+LEGACY_LANGUAGE_MAPPING = {
+  'en': 'eng',
+  'es': 'spa',
+  'es-PR': 'spa-PR',
+  'so': 'som',
+  'fr': 'fra'
+}.freeze
+
 # AssessmentsController: for assessment actions
 class AssessmentsController < ApplicationController
   def index
@@ -69,19 +78,10 @@ class AssessmentsController < ApplicationController
     @translations = @assessment.translations
     @contact_info = jurisdiction.contact_info
 
-    # For backwards-compatibility reasons, we still want to support the old 2-letter language codes
-    legacy_language_mapping = {
-      'en': 'eng',
-      'es': 'spa',
-      'es-PR': 'spa-PR',
-      'so': 'som',
-      'fr': 'fra'
-    }
-    unless params[:lang].nil?
-      @lang = legacy_language_mapping.keys.include?(params[:lang].to_sym) ? legacy_language_mapping[params[:lang].to_sym] : params[:lang]
+    @lang = %w[eng spa spa-PR som fra].include?(permitted_params[:lang]) ? permitted_params[:lang] : nil
+    if @lang.nil?
+      @lang = LEGACY_LANGUAGE_MAPPING.keys.include?(permitted_params[:lang].to_sym) ? LEGACY_LANGUAGE_MAPPING[permitted_params[:lang].to_sym] : 'eng'
     end
-    @lang = permitted_params[:lang] if %w[eng spa spa-PR som fra].include?(@lang)
-    @lang = 'eng' if @lang.nil? # Default to english
     @patient_initials = permitted_params[:initials_age]&.upcase&.gsub(/[^a-z]/i, '')
     @patient_age = permitted_params[:initials_age]&.gsub(/[^0-9]/, '')
   end

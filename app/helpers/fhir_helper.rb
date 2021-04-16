@@ -452,11 +452,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # Given a language string, try to find the corresponding BCP 47 code for it and construct a FHIR::Coding.
   def language_coding(language)
     mapped_lang = normalize_and_get_language_name(language)
-    return language if mapped_lang.nil? # Patients should not have invalid languages, but still safer to check here
+    return nil if mapped_lang.nil? # Patients should not have invalid languages, but still safer to check here
 
     language = all_languages[mapped_lang.to_sym]
     fhir_coding = FHIR::Coding.new
-    fhir_coding.code = language[:iso6391code]
+    fhir_coding.code = language[:iso6391code] || mapped_lang
     fhir_coding.display = language[:display]
     fhir_coding.system = 'urn:ietf:bcp:47'
     fhir_coding
