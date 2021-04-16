@@ -145,7 +145,7 @@ if Rails.env.test? || Rails.env.development?
         'config/locales/eng.yml'
       ],
       'es_PR': [
-        'config/locales/spa-PR.yml',
+        'config/locales/spa-pr.yml',
         'config/locales/spa.yml'
       ],
       'fr_FR': [

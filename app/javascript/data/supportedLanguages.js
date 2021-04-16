@@ -32,7 +32,7 @@ const supportedLanguages = [
   },
   {
     'name': 'Spanish (Puerto Rican)',
-    'code': 'spa-PR',
+    'code': 'spa-pr',
     'supported': {
       'sms': true,
       'email': true,

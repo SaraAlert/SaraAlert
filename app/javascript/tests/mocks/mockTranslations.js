@@ -347,7 +347,7 @@ const mockTranslations = {
       'daily4': ' Responda con \'Sí\' o \'No\''
     }
   },
-  'spa-PR': {
+  'spa-pr': {
     'symptoms': {
       'cough': {
         'name': 'Tos',

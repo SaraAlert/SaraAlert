@@ -642,12 +642,12 @@ namespace :stats do
         isolation: active_iso.where(primary_language: 'spa').count
       }
       results[title]['Preferred Language - Spanish (Puerto Rican)'] = {
-        exposure: active_exp.where(primary_language: 'spa-PR').count,
-        isolation: active_iso.where(primary_language: 'spa-PR').count
+        exposure: active_exp.where(primary_language: 'spa-pr').count,
+        isolation: active_iso.where(primary_language: 'spa-pr').count
       }
       results[title]['Preferred Language - Other'] = {
-        exposure: active_exp.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-PR']).count,
-        isolation: active_iso.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-PR']).count
+        exposure: active_exp.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr']).count,
+        isolation: active_iso.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr']).count
       }
       results[title]['Preferred Language - blank'] = {
         exposure: active_exp.where(primary_language: ['', nil]).count,

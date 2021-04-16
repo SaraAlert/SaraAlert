@@ -121,7 +121,7 @@ class Assessment < ApplicationRecord
     {
       eng: I18n.backend.send(:translations)[:eng][:assessments],
       spa: I18n.backend.send(:translations)[:spa][:assessments],
-      'spa-PR': I18n.backend.send(:translations)[:'spa-PR'][:assessments],
+      'spa-pr': I18n.backend.send(:translations)[:'spa-pr'][:assessments],
       som: I18n.backend.send(:translations)[:som][:assessments],
       fra: I18n.backend.send(:translations)[:fra][:assessments]
     }

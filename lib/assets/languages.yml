@@ -26,7 +26,7 @@
   :system: 'iso639-2t'
 
 # Despite not being an official iso-639 language, we want to include a specific dialect of Spanish for PR
-:spa-PR:
+:spa-pr:
   :display: 'Spanish (Puerto Rican)'
   :iso6391code: "es-PR"
   :system: ''
@@ -43,7 +43,7 @@
 
 :abk:
   :display: 'Abkhazian'
-  :iso6391code: null
+  :iso6391code: 'ab'
   :system: 'iso639-2t'
 
 :ace:
@@ -423,7 +423,7 @@
 
 :div:
   :display: 'Dhivehi'
-  :iso6391code: null
+  :iso6391code: 'dv'
   :system: 'iso639-2t'
 
 :doi:
@@ -543,7 +543,7 @@
 
 :ful:
   :display: 'Fulah'
-  :iso6391code: null
+  :iso6391code: 'ff'
   :system: 'iso639-2t'
 
 :fur:
@@ -608,7 +608,7 @@
 
 :grn:
   :display: 'Guarani'
-  :iso6391code: null
+  :iso6391code: 'gn'
   :system: 'iso639-2t'
 
 :gsw:
@@ -713,7 +713,7 @@
 
 :iii:
   :display: 'Sichuan Yi'
-  :iso6391code: null
+  :iso6391code: 'li'
   :system: 'iso639-2t'
 
 :iku:
@@ -848,7 +848,7 @@
 
 :kir:
   :display: 'Kirghiz'
-  :iso6391code: null
+  :iso6391code: 'ky'
   :system: 'iso639-2t'
 
 :kmb:
@@ -903,7 +903,7 @@
 
 :kua:
   :display: 'Kuanyama'
-  :iso6391code: null
+  :iso6391code: 'kj'
   :system: 'iso639-2t'
 
 :kum:
@@ -953,7 +953,7 @@
 
 :lim:
   :display: 'Limburgan'
-  :iso6391code: null
+  :iso6391code: 'li'
   :system: 'iso639-2t'
 
 :lin:
@@ -1123,7 +1123,7 @@
 
 :mri:
   :display: 'Maori'
-  :iso6391code: null
+  :iso6391code: 'mi'
   :system: 'iso639-2t'
 
 :msa:
@@ -1173,12 +1173,12 @@
 
 :nbl:
   :display: 'South Ndebele'
-  :iso6391code: null
+  :iso6391code: 'nr'
   :system: 'iso639-2t'
 
 :nde:
   :display: 'North Ndebele'
-  :iso6391code: null
+  :iso6391code: 'nd'
   :system: 'iso639-2t'
 
 :ndo:
@@ -1248,7 +1248,7 @@
 
 :nya:
   :display: 'Nyanja'
-  :iso6391code: null
+  :iso6391code: 'ny'
   :system: 'iso639-2t'
 
 :nym:
@@ -1273,12 +1273,12 @@
 
 :oci:
   :display: 'Occitan'
-  :iso6391code: null
+  :iso6391code: 'oc'
   :system: 'iso639-2t'
 
 :oji:
   :display: 'Ojibwa'
-  :iso6391code: null
+  :iso6391code: 'oj'
   :system: 'iso639-2t'
 
 :ori:
@@ -1343,7 +1343,7 @@
 
 :pus:
   :display: 'Pushto'
-  :iso6391code: null
+  :iso6391code: 'ps'
   :system: 'iso639-2t'
 
 :que:
@@ -1383,7 +1383,7 @@
 
 :run:
   :display: 'Rundi'
-  :iso6391code: null
+  :iso6391code: 'rn'
   :system: 'iso639-2t'
 
 :rup:
@@ -1658,7 +1658,7 @@
 
 :ton:
   :display: 'Tonga (Tonga Islands)'
-  :iso6391code: null
+  :iso6391code: 'to'
   :system: 'iso639-2t'
 
 :tpi:
@@ -1718,7 +1718,7 @@
 
 :uig:
   :display: 'Uighur'
-  :iso6391code: null
+  :iso6391code: 'ug'
   :system: 'iso639-2t'
 
 :ukr:

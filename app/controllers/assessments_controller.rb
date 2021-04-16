@@ -4,7 +4,7 @@
 LEGACY_LANGUAGE_MAPPING = {
   'en': 'eng',
   'es': 'spa',
-  'es-PR': 'spa-PR',
+  'es-PR': 'spa-pr',
   'so': 'som',
   'fr': 'fra'
 }.freeze
@@ -78,9 +78,9 @@ class AssessmentsController < ApplicationController
     @translations = @assessment.translations
     @contact_info = jurisdiction.contact_info
 
-    @lang = %w[eng spa spa-PR som fra].include?(permitted_params[:lang]) ? permitted_params[:lang] : nil
+    @lang = %w[eng spa spa-pr som fra].include?(permitted_params[:lang]) ? permitted_params[:lang] : nil
     if @lang.nil?
-      @lang = LEGACY_LANGUAGE_MAPPING.keys.include?(permitted_params[:lang].to_sym) ? LEGACY_LANGUAGE_MAPPING[permitted_params[:lang].to_sym] : 'eng'
+      @lang = LEGACY_LANGUAGE_MAPPING.keys.include?(permitted_params[:lang]&.to_sym) ? LEGACY_LANGUAGE_MAPPING[permitted_params[:lang]&.to_sym] : 'eng'
     end
     @patient_initials = permitted_params[:initials_age]&.upcase&.gsub(/[^a-z]/i, '')
     @patient_age = permitted_params[:initials_age]&.gsub(/[^0-9]/, '')

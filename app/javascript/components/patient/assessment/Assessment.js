@@ -12,7 +12,7 @@ import reportError from '../../util/ReportError';
 const LANGUAGE_MAPPINGS = {
   en: 'eng',
   es: 'spa',
-  'es-PR': 'spa-PR',
+  'es-PR': 'spa-pr',
   so: 'som',
   fr: 'fra',
 };

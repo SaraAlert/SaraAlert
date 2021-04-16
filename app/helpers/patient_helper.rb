@@ -39,10 +39,7 @@ module PatientHelper
   def normalize_and_get_language_name(lang)
     return nil if lang.nil?
 
-    # spa-PR is the only iso-code that involves case. it will not be properly matched if
-    # we call downcase on the input
-    lang.strip!
-    lang = lang.casecmp('spa-pr')&.zero? ? 'spa-PR' : lang.to_s.downcase
+    lang = lang.to_s.downcase.strip
     matched_language = nil
     matched_language = lang.to_sym if all_languages[lang.to_sym].present?
     return matched_language unless matched_language.nil?

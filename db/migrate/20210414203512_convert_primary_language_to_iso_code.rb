@@ -129,9 +129,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
   def match_language(lang)
     return nil if lang.nil?
 
-    # spa-PR is the only iso-code that involves case. it will not be properly matched if
-    # we call downcase on the input
-    lang = lang.casecmp('spa-pr')&.zero? ? 'spa-PR' : lang.to_s.downcase
+    lang = lang.to_s.downcase.strip
     matched_language = nil
     matched_language = lang.to_sym if PATIENT_HELPER_FILES[:languages][lang.to_sym].present?
     return matched_language unless matched_language.nil?

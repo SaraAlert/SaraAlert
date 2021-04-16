@@ -41,7 +41,7 @@ describe('AssessmentCompleted', () => {
   });
 
   it('Properly renders all main components in Spanish (Puerto Rican)', () => {
-    const language = 'spa-PR';
+    const language = 'spa-pr';
     const wrapper = getWrapper(language, contact);
     expect(wrapper.find(Card.Header).exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).text()).toEqual(mockTranslations[language]['web']['title']);
