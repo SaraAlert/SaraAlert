@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Carousel } from 'react-bootstrap';
-import Assessment from '../../../components/patient/assessment/Assessment.js';
+import Assessment from '../../../components/patient/assessment/Assessment';
 import SymptomsAssessment from '../../../components/patient/assessment/steps/SymptomsAssessment';
 import AssessmentCompleted from '../../../components/patient/assessment/steps/AssessmentCompleted';
 import { mockPatient1 } from '../../mocks/mockPatients';
