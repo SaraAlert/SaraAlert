@@ -45,7 +45,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         # Error occured in twilio studio flow
         if message['error_code'].present?
           TwilioSender.handle_twilio_error_codes(patient, message['error_code'])
-          # Will attempt to resend assessment if phone is off or if unknown error occurs
+          # Will attempt to resend assessment if phone is off
           patient.update(last_assessment_reminder_sent: nil) if message['error_code']&.in? TwilioSender.retry_eligible_error_codes
           queue.commit
           next
