@@ -3,66 +3,32 @@
 # TwilioSender: Methods to interact with Twilio REST API
 class TwilioSender
   TWILIO_ERROR_CODES = {
-    invalid_to_number: '21211',
-    blocked_number: '21610',
-    invalid_number: '21614',
-    unsupported_region: '21408',
-    unreachable_unavailable: '30003',
-    unavailable_ineligible: '30004',
-    non_existent_or_off: '30005',
-    sms_ineligible: '30006',
-    carrier_filter: '30007',
-    unknown_error: '30008'
+    invalid_to_number: { code: '21211', message: 'Invalid recipient phone number.' },
+    blocked_number: { code: '21610', message: 'Recipient phone number blocked communication with Sara Alert' },
+    invalid_number: { code: '21614', message: 'Invalid recipient phone number.' },
+    unsupported_region: { code: '21408', message: 'Recipient phone number is in an unsupported region.' },
+    unreachable_unavailable: { code: '30003', message: 'Recipient phone is off, may not be eligible to receive SMS messages, or is otherwise unavailable.' },
+    unavailable_ineligible: { code: '30004',
+                              message: 'Recipient may have blocked communications with SaraAlert, recipient phone may be unavailable or ineligible '\
+                              'to receive SMS text messages.' },
+    non_existent_or_off: { code: '30005',
+                           message: 'Recipient phone number may not exist, the phone may be off or the phone is not eligible to receive SMS text messages.' },
+    sms_ineligible: { code: '30006', message: 'Recipient phone number may not eligible to receive SMS text messages, or carrier network may be unreachable.' },
+    carrier_filter: { code: '30007', message: 'Message has been filtered by carrier network.' },
+    unknown_error: { code: '30008',
+                     message: 'An unknown error has been encountered by the messaging system. The system will retry in an hour if it is still in '\
+                     'monitoree’s preferred contact period.' }
   }.freeze
 
   @client = Twilio::REST::Client.new(ENV['TWILLIO_API_ACCOUNT'], ENV['TWILLIO_API_KEY'])
   def self.handle_twilio_error_codes(patient, error_code)
-    case error_code
-    # Invalid To Number https://www.twilio.com/docs/api/errors/21211
-    when TWILIO_ERROR_CODES[:invalid_to_number]
-      dispatch_errored_contact_history_items(patient, 'Invalid recipient phone number.')
-    # Blocked Number Error https://www.twilio.com/docs/api/errors/21610
-    when TWILIO_ERROR_CODES[:blocked_number]
-      dispatch_errored_contact_history_items(patient, 'Recipient phone number blocked communication with Sara Alert')
-      monitoree_number = Phonelib.parse(phone_numbers[:monitoree_number], 'US').full_e164
-      BlockedNumber.create(phone_number: monitoree_number) unless BlockedNumber.exists?(phone_number: monitoree_number)
-    # Invalid Mobile Number Error https://www.twilio.com/docs/api/errors/21614
-    when TWILIO_ERROR_CODES[:invalid_number]
-      dispatch_errored_contact_history_items(patient, 'Invalid recipient phone number.')
-    # Unsupported Region Error https://www.twilio.com/docs/api/errors/21408
-    when TWILIO_ERROR_CODES[:unsupported_region]
-      dispatch_errored_contact_history_items(patient, 'Recipient phone number is in an unsupported region.')
-    # Unreachable Destination Handset Error https://www.twilio.com/docs/api/errors/30003
-    when TWILIO_ERROR_CODES[:unreachable_unavailable]
-      error_message = 'Recipient phone is off, may not be eligible to receive SMS messages, or is otherwise unavailable.'
-      dispatch_errored_contact_history_items(patient, error_message)
-    # Message Blocked Error https://www.twilio.com/docs/api/errors/30004
-    when TWILIO_ERROR_CODES[:unavailable_ineligible]
-      error_message = 'Recipient may have blocked communications with SaraAlert, recipient phone may be unavailable or ineligible to receive SMS text messages.'
-      dispatch_errored_contact_history_items(patient, error_message)
-    # Unknown Destination Handset Error https://www.twilio.com/docs/api/errors/30005
-    when TWILIO_ERROR_CODES[:non_existent_or_off]
-      error_message = 'Recipient phone number may not exist, the phone may be off or the phone is not eligible to receive SMS text messages.'
-      dispatch_errored_contact_history_items(patient, error_message)
-    # Landline or Unreachable Carrier Error https://www.twilio.com/docs/api/errors/30006
-    when TWILIO_ERROR_CODES[:sms_ineligible]
-      error_message = 'Recipient phone number may not eligible to receive SMS text messages, or carrier network may be unreachable.'
-      dispatch_errored_contact_history_items(patient, error_message)
-    # Message Filtered By Carrier Error https://www.twilio.com/docs/api/errors/30007
-    when TWILIO_ERROR_CODES[:carrier_filter]
-      dispatch_errored_contact_history_items(patient, 'Message has been filtered by carrier network.')
-    # Unknown Error https://www.twilio.com/docs/api/errors/30008
-    when TWILIO_ERROR_CODES[:unknown_error]
-      error_message = 'An unknown error has been encountered by the messaging system. '
-      error_message += 'The system will retry in an hour if it is still in monitoree’s preferred contact period.'
-      dispatch_errored_contact_history_items(patient, error_message)
-    else
-      dispatch_errored_contact_history_items(patient, 'An unknown error has been encountered by the messaging system.')
-    end
+    BlockedNumber.create(phone_number: patient.primary_telephone) if error_code == (TWILIO_ERROR_CODES[:blocked_number][:code]) && !BlockedNumber.exists?
+    err_msg = find { |_k, v| v[:code] == error_code }&.second & [:message] || 'An unknown error has been encountered by the messaging system.'
+    dispatch_errored_contact_history_items(patient, err_msg)
   end
 
   def self.retry_eligible_error_codes
-    TWILIO_ERROR_CODES.values_at(:unreachable_unavailable)
+    TWILIO_ERROR_CODES.values_at(:unreachable_unavailable).pluck(:code)
   end
 
   # send_sms takes an array of patients for cases where messages for multiple patients need to
