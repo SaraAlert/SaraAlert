@@ -7,7 +7,7 @@ module AssessmentQueryHelper
   end
 
   # Queries assessments by ID or reporter based on search text.
-  def search(assessments, search)
+  def self.search(assessments, search)
     return assessments if search.blank?
 
     assessments.where('id like ?', "#{search&.downcase}%").or(
@@ -16,7 +16,7 @@ module AssessmentQueryHelper
   end
 
   # Sorts assessments based on given column and direction.
-  def sort(assessments, order, direction)
+  def self.sort(assessments, order, direction)
     # Order by created_at date by default
     return assessments.order(created_at: 'desc') if order.blank? || direction.blank?
 
@@ -61,14 +61,14 @@ module AssessmentQueryHelper
   end
 
   # Paginates assessments data.
-  def paginate(assessments, entries, page)
+  def self.paginate(assessments, entries, page)
     return assessments if entries.blank? || entries <= 0 || page.blank? || page.negative?
 
     assessments.paginate(per_page: entries, page: page + 1)
   end
 
   # Formats assessments to be displayed on the frontend.
-  def format_for_frontend(assessments)
+  def self.format_for_frontend(assessments)
     # Select relevant fields
     assessments = assessments.select(%i[id symptomatic who_reported created_at])
 
@@ -132,14 +132,5 @@ module AssessmentQueryHelper
     end
 
     { table_data: table_data, symptoms: threshold_symptoms.values.flat_map { |s| s[:symptoms]&.values }.uniq(&:name) || [], total: assessments.total_entries }
-  end
-
-  # Gets all unique symptoms (based on name and threshold_condition_hash) for a given array of assessment IDs.
-  def get_unique_threshold_symptoms(assessment_ids)
-    # Get distinct threshold condition hashes for all assessments
-    threshold_condition_hashes = ReportedCondition.where(assessment_id: assessment_ids).distinct.pluck(:threshold_condition_hash)
-
-    # Get all threshold symptoms associated with the distinct threshold condition hashes
-    Symptom.where(condition_id: ThresholdCondition.where(threshold_condition_hash: threshold_condition_hashes))
   end
 end

@@ -2,8 +2,6 @@
 
 # AssessmentsController: for assessment actions
 class AssessmentsController < ApplicationController
-  include AssessmentQueryHelper
-
   def index
     redirect_to(root_url) if ADMIN_OPTIONS['report_mode']
     redirect_to(root_url) && return unless current_user&.can_view_patient_assessments?
@@ -21,10 +19,10 @@ class AssessmentsController < ApplicationController
     assessments = patient&.assessments
     redirect_to(root_url) && return if patient.nil? || assessments.nil?
 
-    assessments = search(assessments, search_text)
-    assessments = sort(assessments, sort_order, sort_direction)
-    assessments = paginate(assessments, entries, page)
-    assessments = format_for_frontend(assessments)
+    assessments = AssessmentQueryHelper.search(assessments, search_text)
+    assessments = AssessmentQueryHelper.sort(assessments, sort_order, sort_direction)
+    assessments = AssessmentQueryHelper.paginate(assessments, entries, page)
+    assessments = AssessmentQueryHelper.format_for_frontend(assessments)
 
     render json: assessments
   end

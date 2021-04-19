@@ -2,6 +2,7 @@
 
 require_relative '../../config/environment'
 require_relative '../benchmark'
+require_relative '../../app/helpers/assessment_query_helper'
 
 def divider
   puts "\n\n#{'-' * 80}\n\n"
@@ -28,6 +29,43 @@ micro_results << benchmark(
   setup: proc { Timecop.travel(Time.now.utc.change(hour: 18)) },
   teardown: proc { Timecop.return }
 ) { Patient.reminder_eligible.count }
+
+divider
+
+# Time Threshold: 0.2 seconds
+# Setup: Create patient and add many assessments
+patient = Patient.create!(creator: User.first, jurisdiction: Jurisdiction.first, responder: Patient.first)
+micro_results << benchmark(
+  name: 'PatientAssessmentQuerying',
+  time_threshold: 0.2,
+  no_exit: true,
+  setup: proc {
+    assessments = []
+    100.times { assessments << Assessment.new(patient_id: patient.id, symptomatic: false) }
+    Assessment.import! assessments
+
+    reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
+    hash = reported_condition.threshold_condition_hash
+    conditions = []
+    patient.assessments.each { |assessment| conditions << ReportedCondition.new(assessment_id: assessment.id, threshold_condition_hash: hash) }
+    ReportedCondition.import! conditions
+
+    symptoms = []
+    patient.assessments.joins(:reported_condition).pluck('conditions.id').each do |condition_id|
+      reported_symptoms = reported_condition.symptoms.map do |symptom|
+        symptom[:condition_id] = condition_id
+        symptom
+      end
+      symptoms.concat(reported_symptoms)
+    end
+    Symptom.import! symptoms
+  }
+) do
+  assessments = AssessmentQueryHelper.search(patient.assessments, '')
+  assessments = AssessmentQueryHelper.sort(assessments, 'id', 'asc')
+  assessments = AssessmentQueryHelper.paginate(assessments, 100, 0)
+  AssessmentQueryHelper.format_for_frontend(assessments)
+end
 
 divider
 
