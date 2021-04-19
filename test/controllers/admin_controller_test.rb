@@ -321,6 +321,13 @@ class AdminControllerTest < ActionController::TestCase
                                is_api_enabled: false, is_locked: 'test', notes: '' }, as: :json
     assert_response :bad_request
 
+    # Test notes value too long
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
+                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true, notes: random_note }, as: :json
+    end
+    assert_equal('Validation failed: Notes is too long (maximum is 5000 characters)', error.message)
+
     # Test User is edited correctly after updating all fields
     assert_no_difference 'User.count' do
       post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
@@ -335,13 +342,6 @@ class AdminControllerTest < ActionController::TestCase
     assert_equal(user.role, 'public_health_enroller')
     assert user.locked_at?
     assert_equal(user.notes, 'test note edit')
-
-    # Test notes param strips too large value
-    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
-                               role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true, notes: random_note }, as: :json
-    assert_response :success
-    user = User.find_by(id: 17)
-    assert_equal(user.notes, random_note.strip[0...5000])
 
     sign_out user
   end

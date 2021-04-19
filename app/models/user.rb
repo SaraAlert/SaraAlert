@@ -3,13 +3,14 @@
 # User: user model
 class User < ApplicationRecord
   audited only: %i[locked_at jurisdiction_id created_at api_enabled role email authy_enabled
-                   force_password_change last_sign_in_with_authy notes], max_audits: 1000
+                   force_password_change last_sign_in_with_authy], max_audits: 1000
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable, :password_archivable, :trackable
 
   validates :role, inclusion: { in: Roles.all_role_values }
+  validates :notes, length: { maximum: 5000 }
 
   # Validate password complexity
   validate :password_complexity
