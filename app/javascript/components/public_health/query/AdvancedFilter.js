@@ -286,9 +286,9 @@ class AdvancedFilter extends React.Component {
    * @param {Number} index - Current filter index
    */
   removeStatement = index => {
-    this.setState(state => ({
-      activeFilterOptions: state.activeFilterOptions.slice(0, index).concat(state.activeFilterOptions.slice(index + 1, state.activeFilterOptions?.length)),
-    }));
+    let activeFilterOptions = this.state.activeFilterOptions;
+    activeFilterOptions.splice(index, 1);
+    this.setState({ activeFilterOptions });
   };
 
   /**
@@ -314,15 +314,15 @@ class AdvancedFilter extends React.Component {
    */
   removeMultiStatement = (statementIndex, multiIndex) => {
     const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
-    let oldValue = [...currentMultiFilter.value];
+    let value = [...currentMultiFilter.value];
 
     // if removing the last multi statement, remove the whole filter
     // otherwise just remove that multi statement
-    if (oldValue.length === 1) {
+    if (value.length === 1) {
       this.removeStatement(statementIndex);
     } else {
-      const newValue = oldValue.slice(0, multiIndex).concat(oldValue.slice(multiIndex + 1, oldValue.length));
-      this.changeValue(statementIndex, newValue);
+      value.splice(multiIndex, 1)
+      this.changeValue(statementIndex, value);
     }
   };
 
@@ -504,13 +504,7 @@ class AdvancedFilter extends React.Component {
    */
   multiFieldDisabled = (name, multiIndex, statementIndex) => {
     const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
-    let disabled = false;
-    currentMultiFilter.value.forEach((value, index) => {
-      if (value.name === name && index !== multiIndex) {
-        disabled = true;
-      }
-    });
-    return disabled;
+    return currentMultiFilter.value.some((value, index) => value.name === name && index !== multiIndex);
   };
 
   /**
