@@ -121,6 +121,7 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     verify_text_not_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
 
     # isolation fields
+    @@system_test_utils.wait_for_enrollment_page_transition
     click_on 'edit-identification-btn'
     @@system_test_utils.wait_for_enrollment_page_transition
     page.find_by_id('workflow_wrapper').first(:xpath, './/div//div//div//div//div//input').set('Isolation (case)').send_keys(:enter)
