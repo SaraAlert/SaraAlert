@@ -25,7 +25,9 @@ class TwilioSender
     if error_code == TWILIO_ERROR_CODES[:blocked_number][:code] && !BlockedNumber.exists?(phone_number: patient.primary_telephone)
       BlockedNumber.create(phone_number: patient.primary_telephone)
     end
-    err_msg = TWILIO_ERROR_CODES.find{ |_k, v| v[:code] == error_code }&.second[:message] || 'An unknown error has been encountered by the messaging system.'
+    err_msg = TWILIO_ERROR_CODES.find do |_k, v|
+                v[:code] == error_code
+              end.second&.[](:message) || 'An unknown error has been encountered by the messaging system.'
     dispatch_errored_contact_history_items(patient, err_msg)
   end
 
