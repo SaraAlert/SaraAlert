@@ -24,7 +24,7 @@ describe('ConfirmExport', () => {
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Body).find('p').at(0).text()).toEqual('After clicking Start Export, Sara Alert will gather all of the monitoree data that comprises your request and generate an export file. Sara Alert will then send your user account an email with a one-time download link. This process may take several minutes to complete, based on the amount of data present.');
-    expect(wrapper.find(Modal.Body).find('p').at(1).text()).toEqual('NOTE: The system will store one of each type of export file. If you initiate another export of this file type, any old files will be overwritten and download links that have not been accessed will be invalid. Only one of each export type is allowed per user per hour.');
+    expect(wrapper.find(Modal.Body).find('p').at(1).text()).toEqual('NOTE: The system will store one of each type of export file. If you initiate another export of this file type, any old files will be overwritten and download links that have not been accessed will be invalid. Only one of each export type is allowed per user per 15 minute period.');
     expect(wrapper.find(Modal.Body).find('b').text()).toEqual('Start Export');
     expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
