@@ -509,11 +509,11 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Return a FHIR Bundle containing a monitoree and all their assessments, lab results,
-  # and close contacts
+  # close contacts, and vaccinations
   #
   # GET /fhir/r4/Patient/[:id]/$everything
   def all
-    # Require all scopes for all four resources
+    # Require all scopes for all five resources
     return if doorkeeper_authorize!(
       :'user/Patient.read',
       :'user/Patient.*',
