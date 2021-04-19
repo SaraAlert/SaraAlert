@@ -202,7 +202,7 @@ class PatientMailer < ApplicationMailer
               else
                 "Sara Alert sent a report reminder to this monitoree's HoH via #{patient.responder.preferred_contact_method}."
               end
-    History.report_reminder(patient: patient, comment: comment) unless patient.id == patient.responder_id
+    History.report_reminder(patient: patient, comment: comment)
   end
 
   def add_fail_history_blank_field(patient, type)
