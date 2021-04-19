@@ -44,6 +44,11 @@ Rails.application.routes.draw do
     end
   end
   get '/.well-known/smart-configuration', to: 'fhir/r4/api#well_known'
+
+  namespace :api do
+    get '/nbs/patient', to: 'api_export#nbs_patients'
+  end
+
   get '/redirect', to: redirect { |params, request| "/oauth/authorize/native?#{request.params.to_query}" }
   get '/patients/sms_eligibility_check', to: 'patients#sms_eligibility_check'
 
@@ -81,7 +86,6 @@ Rails.application.routes.draw do
   get '/export/full_history_patient/:patient_id', to: 'export#full_history_patient'
   post '/export/custom', to: 'export#custom_export'
   get '/export/nbs/patient/:patient_id', to: 'export#nbs_patient'
-  get '/export/nbs/patient', to: 'api_export#nbs_patients'
   get '/export/download/:lookup', to: 'downloads#download', as: :export_download
 
   post '/import/:workflow/:format', to: 'import#import'
