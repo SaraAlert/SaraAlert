@@ -1,21 +1,21 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import * as yup from 'yup';
 import _ from 'lodash';
-import libphonenumber from 'google-libphonenumber';
-import DateInput from '../util/DateInput';
 import moment from 'moment';
-import InfoTooltip from '../util/InfoTooltip';
-import ReactTooltip from 'react-tooltip';
+import libphonenumber from 'google-libphonenumber';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
-import reportError from '../util/ReportError';
-import confirmDialog from '../util/ConfirmDialog';
-import PhoneInput from '../util/PhoneInput';
+import confirmDialog from '../../util/ConfirmDialog';
+import DateInput from '../../util/DateInput';
+import InfoTooltip from '../../util/InfoTooltip';
+import PhoneInput from '../../util/PhoneInput';
+import reportError from '../../util/ReportError';
 
 class CloseContact extends React.Component {
   constructor(props) {
