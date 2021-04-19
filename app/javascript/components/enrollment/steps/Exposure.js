@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import axios from 'axios';
 import moment from 'moment';
 
-import LaboratoryModal from '../../laboratory/LaboratoryModal';
+import LaboratoryModal from '../../patient/laboratory/LaboratoryModal';
 import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
