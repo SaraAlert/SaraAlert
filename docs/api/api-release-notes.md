@@ -5,9 +5,13 @@ parent: API
 nav_order: 1
 ---
 
+# 1.27.0
+* Improved validation error messaging: validation messages will more clearly indicate what value caused the validation error, and where that value is in the JSON document
+
+***
+
 # 1.26.0
 * Support for Close Contacts (read/write) via a FHIR RelatedPerson
-* Improved validation error messaging: validation messages will more clearly indicate what value caused the validation error, and where that value is in the JSON document
 
 ***
 
