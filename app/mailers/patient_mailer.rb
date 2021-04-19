@@ -197,7 +197,7 @@ class PatientMailer < ApplicationMailer
   private
 
   def add_success_history(patient)
-    comment = if patient.id == patient&.responder_id
+    comment = if patient.id == patient.responder_id
                 "Sara Alert sent a report reminder to this monitoree via #{patient.preferred_contact_method}."
               else
                 "Sara Alert sent a report reminder to this monitoree's HoH via #{patient.responder.preferred_contact_method}."
