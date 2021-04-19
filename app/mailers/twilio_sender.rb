@@ -22,7 +22,9 @@ class TwilioSender
 
   @client = Twilio::REST::Client.new(ENV['TWILLIO_API_ACCOUNT'], ENV['TWILLIO_API_KEY'])
   def self.handle_twilio_error_codes(patient, error_code)
-    BlockedNumber.create(phone_number: patient.primary_telephone) if error_code == (TWILIO_ERROR_CODES[:blocked_number][:code]) && !BlockedNumber.exists?
+    if error_code == TWILIO_ERROR_CODES[:blocked_number][:code] && !BlockedNumber.exists?(phone_number: patient.primary_telephone)
+      BlockedNumber.create(phone_number: patient.primary_telephone)
+    end
     err_msg = find { |_k, v| v[:code] == error_code }&.second & [:message] || 'An unknown error has been encountered by the messaging system.'
     dispatch_errored_contact_history_items(patient, err_msg)
   end
