@@ -321,7 +321,7 @@ class AdvancedFilter extends React.Component {
     if (value.length === 1) {
       this.removeStatement(statementIndex);
     } else {
-      value.splice(multiIndex, 1)
+      value.splice(multiIndex, 1);
       this.changeValue(statementIndex, value);
     }
   };
