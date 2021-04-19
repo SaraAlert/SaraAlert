@@ -261,7 +261,9 @@ namespace :stats do
         phone_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'Telephone call' && !times_sent.empty?
         sms_text_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if patient.preferred_contact_method == 'SMS Text-message' && !times_sent.empty?
         overall_rates_exp << times_recv_self_and_user.count / times_sent.count.to_f if !times_sent.empty?
-        enrollment_to_lde_exp << (patient.created_at.to_date - patient.last_date_of_exposure.to_date).to_i unless patient.last_date_of_exposure.nil?
+        unless patient.last_date_of_exposure.nil? || patient.continuous_exposure || patient.last_date_of_exposure > patient.created_at
+          enrollment_to_lde_exp << (patient.created_at.to_date - patient.last_date_of_exposure.to_date).to_i
+        end
         emailed_rates_count_exp += times_sent.count if patient.preferred_contact_method == 'E-mailed Web Link' && !times_sent.empty?
         sms_weblink_rates_count_exp += times_sent.count if patient.preferred_contact_method == 'SMS Texted Weblink' && !times_sent.empty?
         phone_rates_count_exp += times_sent.count if patient.preferred_contact_method == 'Telephone call' && !times_sent.empty?
@@ -478,7 +480,7 @@ namespace :stats do
       }
       results[title]['Number of monitorees in continuous exposure'] = {
         exposure: active_exp.where(continuous_exposure: true).count,
-        isolation: active_iso.where(continuous_exposure: true).count
+        isolation: 'N/A'
       }
 
       puts 'Step 4 of 6: demographics'
@@ -658,6 +660,13 @@ namespace :stats do
       results[title]['Enroller'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'enroller').count, isolation: nil }
       results[title]['Analyst'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'analyst').count, isolation: nil }
       results[title]['Admins'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'admin').count, isolation: nil }
+      results[title]['Super User (logged in last 7 days)'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'super_user').where('current_sign_in_at >= ?', 7.days.ago).count, isolation: nil }
+      results[title]['Public Health Enroller (logged in last 7 days)'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'public_health_enroller').where('current_sign_in_at >= ?', 7.days.ago).count, isolation: nil }
+      results[title]['Contact Tracer (logged in last 7 days)'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'contact_tracer').where('current_sign_in_at >= ?', 7.days.ago).count, isolation: nil }
+      results[title]['Public Health (logged in last 7 days)'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'public_health').where('current_sign_in_at >= ?', 7.days.ago).count, isolation: nil }
+      results[title]['Enroller (logged in last 7 days)'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'enroller').where('current_sign_in_at >= ?', 7.days.ago).count, isolation: nil }
+      results[title]['Analyst (logged in last 7 days)'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'analyst').where('current_sign_in_at >= ?', 7.days.ago).count, isolation: nil }
+      results[title]['Admins (logged in last 7 days)'] = { exposure: jur.all_users.where.not(jurisdiction_id: exclude_ids).where(role: 'admin').where('current_sign_in_at >= ?', 7.days.ago).count, isolation: nil }
 
       puts 'Step 6 of 6: finish'
       json = {}
