@@ -121,7 +121,7 @@ class AdminController < ApplicationController
     address = ValidEmail2::Address.new(email)
     return head :bad_request unless address.valid? && !address.disposable?
 
-    notes = permitted_params[:notes].strip[0...5000]
+    notes = permitted_params[:notes].strip
 
     role = permitted_params[:role_title]
     return head :bad_request if role.nil? || role.blank?
@@ -205,7 +205,7 @@ class AdminController < ApplicationController
     user.email = email
 
     # Update notes
-    user.notes = permitted_params[:notes].strip[0...5000]
+    user.notes = permitted_params[:notes].strip
 
     # Update jurisdiction
     user.jurisdiction = Jurisdiction.find_by_id(jurisdiction)
