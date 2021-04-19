@@ -64,7 +64,7 @@
   <div class="m-4">
     <div class="pb-1 mb-3">
       <div class="btn-group" role="group">
-        <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new }) %>
+        <%= react_component('patient/laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new }) %>
       </div>
     </div>
     <table class="lab_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
@@ -83,7 +83,7 @@
         <tr>
           <td>
             <div class="btn-group btn-group-sm" role="group">
-              <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: lab }) %>
+              <%= react_component('patient/laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: lab }) %>
             </div>
           </td>
           <td><%= lab.id %></td>
@@ -123,7 +123,7 @@
   <div class="m-4">
     <div class="pb-1 mb-3">
       <div class="btn-group" role="group">
-        <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
+        <%= react_component('patient/close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
       </div>
     </div>
     <table class="cc_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
@@ -146,7 +146,7 @@
         <tr>
           <td>
             <div class="btn-group btn-group-sm" role="group">
-              <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
+              <%= react_component('patient/close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts?, assigned_users: @patient.jurisdiction.assigned_users }) %>
             </div>
           </td>
           <td><%= cc.first_name %></td>

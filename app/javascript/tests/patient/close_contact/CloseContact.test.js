@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Modal } from 'react-bootstrap';
-import CloseContact from '../../components/close_contact/CloseContact';
-import InfoTooltip from '../../components/util/InfoTooltip';
-import { mockPatient1 } from '../mocks/mockPatients';
-import { mockCloseContact1, mockCloseContact2, mockCloseContact3 } from '../mocks/mockCloseContact';
+import CloseContact from '../../../components/patient/close_contact/CloseContact';
+import InfoTooltip from '../../../components/util/InfoTooltip';
+import { mockPatient1 } from '../../mocks/mockPatients';
+import { mockCloseContact1, mockCloseContact2, mockCloseContact3 } from '../../mocks/mockCloseContact';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const ASSIGNED_USERS = [ 123234, 512678, 910132 ]

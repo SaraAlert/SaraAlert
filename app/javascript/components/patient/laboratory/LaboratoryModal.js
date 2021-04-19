@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import moment from 'moment';
 
-import DateInput from '../util/DateInput';
+import DateInput from '../../util/DateInput';
 
 class LaboratoryModal extends React.Component {
   constructor(props) {

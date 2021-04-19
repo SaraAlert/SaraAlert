@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 import axios from 'axios';
 
 import LaboratoryModal from './LaboratoryModal';
-import reportError from '../util/ReportError';
+import reportError from '../../util/ReportError';
 
 class Laboratory extends React.Component {
   constructor(props) {
