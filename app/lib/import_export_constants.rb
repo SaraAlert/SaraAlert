@@ -374,6 +374,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     created_by: 'History Creator',
     history_type: 'History Type',
     comment: 'History Comment',
+    was_edited: 'Edited',
     created_at: 'History Created Date',
     updated_at: 'History Updated Date'
   }.freeze
@@ -523,7 +524,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
   HISTORIES_EXPORT_OPTIONS = {
     label: 'Histories',
     nodes: [rct_node(:histories, 'History', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id created_by history_type
-                                               comment created_at updated_at])]
+                                               comment was_edited created_at updated_at])]
   }.freeze
 
   CUSTOM_EXPORT_OPTIONS = {

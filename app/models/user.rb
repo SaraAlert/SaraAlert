@@ -80,6 +80,12 @@ class User < ApplicationRecord
     end
   end
 
+  def get_histories(ids)
+    return unless role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+
+    History.where(patient_id: viewable_patients.pluck(:id)).find(ids)
+  end
+
   # Get jurisdictions that the user can transfer patients into
   def jurisdictions_for_transfer
     if can_transfer_patients?

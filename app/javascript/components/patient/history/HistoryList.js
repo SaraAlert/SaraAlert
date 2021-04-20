@@ -1,7 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card, Row } from 'react-bootstrap';
-
+import { Button, Card, Row } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 import Pagination from 'jw-react-pagination';
@@ -9,10 +8,10 @@ import Select from 'react-select';
 import { cursorPointerStyle } from '../../packs/stylesheets/ReactSelectStyling';
 
 import History from './History';
-import InfoTooltip from '../util/InfoTooltip';
-import reportError from '../util/ReportError';
+import InfoTooltip from '../../util/InfoTooltip';
+import reportError from '../../util/ReportError';
 
-class HistoryComponent extends React.Component {
+class HistoryList extends React.Component {
   constructor(props) {
     super(props);
 
@@ -21,8 +20,9 @@ class HistoryComponent extends React.Component {
       comment: '',
       filters: { typeFilters: [], creatorFilters: [] },
       filteredHistories: this.props.histories,
-      pageOfHistories: [],
+      displayedHistories: this.props.histories.slice(0,5),
     };
+
     this.creatorFilterData = [
       {
         label: 'History Creator',
@@ -47,12 +47,12 @@ class HistoryComponent extends React.Component {
     }
   }
 
-  handleTextChange = event => {
-    this.setState({ comment: event.target.value });
+  handleChange = event => {
+    this.setState({ [event.target.id]: event.target.value });
   };
 
-  onChangePage = pageOfHistories => {
-    this.setState({ pageOfHistories });
+  onChangePage = displayedHistories => {
+    this.setState({ displayedHistories });
   };
 
   submit = () => {
@@ -86,6 +86,7 @@ class HistoryComponent extends React.Component {
     }
     this.setState({
       filteredHistories,
+      displayedHistories: filteredHistories.slice(0,5)
     });
   };
 
@@ -102,7 +103,7 @@ class HistoryComponent extends React.Component {
     }
     this.setState(
       {
-        selectedFilters,
+        filters,
       },
       () => {
         this.filterHistories();
@@ -115,20 +116,23 @@ class HistoryComponent extends React.Component {
   handleCreatorFilterChange = inputValue => this.handleFilterChange(inputValue, 'History Creator');
 
   render() {
-    const historiesArray = this.state.pageOfHistories.map(history => <History key={history.id} history={history} />);
+    const historiesArray = this.state.displayedHistories.map(history => (
+      <History key={history.id} history={history} authenticity_token={this.props.authenticity_token} />
+    ));
+
     return (
       <React.Fragment>
         <Card id="histories" className="mx-2 mt-3 mb-4 card-square">
           <Card.Header>
             <div className="d-flex flex-row align-items-center">
               <div className="float-left flex-grow-1 mb-0 h5">
-                <span>History </span>
-                <InfoTooltip tooltipTextKey="history" location="right"></InfoTooltip>
+                <span>History</span>
+                <InfoTooltip tooltipTextKey="history" location="right" className="pl-1"></InfoTooltip>
               </div>
             </div>
           </Card.Header>
           <Card.Body className="py-0 px-1">
-            <Row className="mx-3 mt-3 justify-content-end">
+            <Row id="filters" className="mx-3 mt-3 justify-content-end">
               <Select
                 closeMenuOnSelect={false}
                 isMulti
@@ -172,20 +176,21 @@ class HistoryComponent extends React.Component {
                 <textarea
                   id="comment"
                   name="comment"
-                  aria-label="Add comment"
+                  aria-label="Add comment input"
                   className="form-control"
                   style={{ resize: 'none' }}
                   rows="3"
                   placeholder="enter comment here..."
                   value={this.state.comment}
-                  onChange={this.handleTextChange}
+                  onChange={this.handleChange}
                 />
-                <button
-                  className="mt-3 btn btn-primary btn-square float-right"
+                <Button
+                  variant="primary"
+                  className="mt-3 btn btn-square float-right"
                   disabled={this.state.loading || this.state.comment === ''}
                   onClick={this.submit}>
                   <i className="fas fa-comment-dots"></i> Add Comment
-                </button>
+                </Button>
               </Card.Body>
             </Card>
           </Card.Body>
@@ -195,11 +200,11 @@ class HistoryComponent extends React.Component {
   }
 }
 
-HistoryComponent.propTypes = {
+HistoryList.propTypes = {
   patient_id: PropTypes.number,
   histories: PropTypes.array,
   authenticity_token: PropTypes.string,
   history_types: PropTypes.object,
 };
 
-export default HistoryComponent;
+export default HistoryList;
