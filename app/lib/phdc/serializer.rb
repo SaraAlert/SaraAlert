@@ -200,7 +200,7 @@ module PHDC
       auth_name = Ox::Element.new(:name)
       assigned_person << auth_name
       jur_name = Ox::Element.new(:family)
-      jur_name << "Sara Alert NBS Export: #{jurisdiction.jurisdiction_path_string}"
+      jur_name << "Sara Alert NBS Export: #{jurisdiction[:path]}"
       auth_name << jur_name
 
       # Custodian
@@ -214,7 +214,7 @@ module PHDC
       custodian_id['root'] = '1.3.3.3.333.23'
       represented_custodian_organization << custodian_id
       jur_name_cust = Ox::Element.new(:name)
-      jur_name_cust << "Sara Alert NBS Export: #{jurisdiction.jurisdiction_path_string}"
+      jur_name_cust << "Sara Alert NBS Export: #{jurisdiction[:path]}"
       represented_custodian_organization << jur_name_cust
 
       # Body

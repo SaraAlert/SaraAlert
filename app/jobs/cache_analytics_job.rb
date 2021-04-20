@@ -17,9 +17,9 @@ class CacheAnalyticsJob < ApplicationJob
         MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless jur.root?
         MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.subtree_ids)
       end
-      cached << { id: jur.id, name: jur.jurisdiction_path_string }
+      cached << { id: jur.id, name: jur[:path] }
     rescue StandardError => e
-      not_cached << { id: jur.id, name: jur.jurisdiction_path_string, reason: e.message }
+      not_cached << { id: jur.id, name: jur[:path], reason: e.message }
       next
     end
 

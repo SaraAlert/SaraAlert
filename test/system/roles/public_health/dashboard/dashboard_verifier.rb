@@ -142,7 +142,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     assert page.has_select?('case_status', selected: patient.case_status.to_s)
     assert page.has_select?('public_health_action', selected: public_health_action)
     assert page.has_field?('assigned_user', with: patient.assigned_user.to_s)
-    assert page.has_field?('jurisdiction_id', with: patient.jurisdiction.jurisdiction_path_string)
+    assert page.has_field?('jurisdiction_id', with: patient.jurisdiction[:path])
     @@system_test_utils.return_to_dashboard(nil)
     return unless apply_to_household
 

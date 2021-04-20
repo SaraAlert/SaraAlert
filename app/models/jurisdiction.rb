@@ -22,7 +22,7 @@ class Jurisdiction < ApplicationRecord
 
   # All patients are all those in this or descendent jurisdictions (including purged)
   def all_patients_including_purged
-    Patient.includes([:jurisdiction]).where(jurisdiction_id: subtree_ids)
+    Patient.where(jurisdiction_id: subtree_ids)
   end
 
   # All patients are all those in this or descendent jurisdictions (excluding purged)
@@ -32,12 +32,7 @@ class Jurisdiction < ApplicationRecord
 
   # All users that are in this or descendent jurisdictions
   def all_users
-    User.includes([:jurisdiction]).where(jurisdiction_id: subtree_ids)
-  end
-
-  # Join this and parent jurisdictions names as a string
-  def jurisdiction_path_string
-    path&.map(&:name)&.join(', ')
+    User.where(jurisdiction_id: subtree_ids)
   end
 
   def assigned_users
@@ -64,7 +59,7 @@ class Jurisdiction < ApplicationRecord
   def jurisdiction_path_threshold_hash
     theshold_conditions_edit_count = 0
     path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
-    jurisdiction_threshold_unique_string = jurisdiction_path_string + theshold_conditions_edit_count.to_s
+    jurisdiction_threshold_unique_string = self[:path] + theshold_conditions_edit_count.to_s
     Digest::SHA256.hexdigest(jurisdiction_threshold_unique_string)
   end
 
