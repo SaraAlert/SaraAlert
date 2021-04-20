@@ -29,7 +29,7 @@ namespace :admin do
       Jurisdiction.all.each do |jur|
         theshold_conditions_edit_count = 0
         jur.path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
-        puts jur.jurisdiction_path_string.ljust(80)  + "Edits: " + theshold_conditions_edit_count.to_s.ljust(5) + "Hash: " + jur.jurisdiction_path_threshold_hash[0..6]
+        puts jur[:path].ljust(80)  + "Edits: " + theshold_conditions_edit_count.to_s.ljust(5) + "Hash: " + jur.jurisdiction_path_threshold_hash[0..6]
         combined_hash += jur.jurisdiction_path_threshold_hash
       end
 
@@ -107,16 +107,17 @@ namespace :admin do
     # Create jurisdiction for it does not already exist
     if jurisdiction == nil
       jurisdiction = Jurisdiction.create(name: jur_name , parent: parent)
+      jurisdiction_path = jurisdiction.path&.map(&:name)&.join(', ')
 
       # create a 10 character, url-safe, base-64 string based on the SHA-256 hash of the jurisdiction path
-      unique_identifier = Base64::urlsafe_encode64([[Digest::SHA256.hexdigest(jurisdiction.jurisdiction_path_string)].pack('H*')].pack('m0'))[0, 10]
+      unique_identifier = Base64::urlsafe_encode64([[Digest::SHA256.hexdigest(jurisdiction_path)].pack('H*')].pack('m0'))[0, 10]
 
       # Warn user if collision has occured
       if Jurisdiction.where(unique_identifier: unique_identifier).where.not(id: jurisdiction.id).any?
-        raise "JURISDICTION IDENTIFIER HASH COLLISION FOR: #{jurisdiction[:path]}"
+        raise "JURISDICTION IDENTIFIER HASH COLLISION FOR: #{jurisdiction_path}"
       end
 
-      jurisdiction.update(unique_identifier: unique_identifier, path: jurisdiction.jurisdiction_path_string)
+      jurisdiction.update(unique_identifier: unique_identifier, path: jurisdiction_path)
     end
 
     # Parse and add symptoms list to jurisdiction if included

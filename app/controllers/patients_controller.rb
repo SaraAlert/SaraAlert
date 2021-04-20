@@ -17,6 +17,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_patient?
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
+    @jurisdiction = @patient.jurisdiction
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(action: 'monitoree_unavailable', id: params[:id]) && return if @patient.nil?
@@ -28,6 +29,7 @@ class PatientsController < ApplicationController
     @close_contacts = @patient.close_contacts.order(:created_at)
 
     @possible_jurisdiction_paths = current_user.jurisdictions_for_transfer
+    @possible_assigned_users = @jurisdiction.assigned_users
 
     # Household members (dependents) for the HOH excluding HOH
     @dependents_exclude_hoh = @patient.dependents_exclude_self.where(purged: false)

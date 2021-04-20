@@ -31,32 +31,39 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
+      end_of_monitoring: (continuous_exposure ? 'Continuous Exposure' : end_of_monitoring) || ''
+    }
+  end
+
+  # Information about this subject (that is useful in a linelist) (used by system tests export verifier)
+  def linelist_for_export
+    {
       id: id,
       name: first_name.present? || last_name.present? ? "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}" : 'NAME NOT PROVIDED',
-      jurisdiction: jurisdiction&.name || '',
+      jurisdiction_name: jurisdiction&.name || '',
       assigned_user: assigned_user || '',
-      state_local_id: user_defined_id_statelocal || '',
+      user_defined_id_statelocal: user_defined_id_statelocal || '',
       sex: sex || '',
-      dob: date_of_birth&.strftime('%F') || '',
+      date_of_birth: date_of_birth&.strftime('%F') || '',
       end_of_monitoring: (continuous_exposure ? 'Continuous Exposure' : end_of_monitoring) || '',
-      risk_level: exposure_risk_assessment || '',
+      exposure_risk_assessment: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
-      latest_report: latest_assessment_at || '',
-      transferred_at: latest_transfer_at || '',
-      reason_for_closure: monitoring_reason || '',
+      transferred_from: latest_transfer&.from_path || '',
+      transferred_to: latest_transfer&.to_path || '',
+      latest_assessment_at: latest_assessment_at || '',
+      latest_transfer_at: latest_transfer_at || '',
+      monitoring_reason: monitoring_reason || '',
       public_health_action: public_health_action || '',
       status: status&.to_s&.humanize&.downcase&.sub('exposure ', '')&.sub('isolation ', '') || '',
       closed_at: closed_at || '',
-      transferred_from: latest_transfer&.from_path || '',
-      transferred_to: latest_transfer&.to_path || '',
       expected_purge_ts: expected_purge_date_exp || '',
       symptom_onset: symptom_onset&.strftime('%F') || '',
       extended_isolation: extended_isolation || ''
     }
   end
 
-  # All information about this subject
-  def full_history_details
+  # All information about this subject (used by system tests export verifier)
+  def full_history_details_for_export
     labs = Laboratory.where(patient_id: id).order(specimen_collection: :desc)
     {
       first_name: first_name || '',
@@ -165,7 +172,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   end
 
   # Getter used for testing custom exports.
-  def custom_export_details
+  def custom_export_details_for_export
     additional_custom_export_details = {
       public_health_action: public_health_action || '',
       monitoring_status: monitoring ? 'Actively Monitoring' : 'Not Monitoring',
@@ -187,6 +194,6 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       updated_at: updated_at || ''
     }
 
-    full_history_details.merge(additional_custom_export_details)
+    full_history_details_for_export.merge(additional_custom_export_details)
   end
 end
