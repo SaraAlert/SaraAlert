@@ -5,11 +5,6 @@ import { Card } from 'react-bootstrap';
 import Patient from './Patient';
 
 class PatientPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hideBody: props.hideBody };
-  }
-
   reloadHook = () => {
     // Optional reload, specifically for assessments
     location.href = `${window.BASE_PATH}/patients/${this.props.patient.id}`;
@@ -25,9 +20,9 @@ class PatientPage extends React.Component {
           <Card.Body>
             <Patient
               jurisdiction_path={this.props.jurisdiction_path}
-              dependents={this.props.dependents || []}
+              other_household_members={this.props.other_household_members || []}
               details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
-              hideBody={this.state.hideBody}
+              hideBody={this.props.hideBody}
               can_add_group={this.props.can_add_group}
               edit_mode={false}
               authenticity_token={this.props.authenticity_token}
@@ -44,7 +39,7 @@ PatientPage.propTypes = {
   current_user: PropTypes.object,
   can_add_group: PropTypes.bool,
   patient: PropTypes.object,
-  dependents: PropTypes.array,
+  other_household_members: PropTypes.array,
   dashboardUrl: PropTypes.string,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
