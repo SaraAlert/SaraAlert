@@ -16,7 +16,7 @@ class Patient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: !props.hideBody,
+      expanded: props.edit_mode,
       expandNotes: false,
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
@@ -743,7 +743,6 @@ Patient.propTypes = {
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
   can_add_group: PropTypes.bool,
-  hideBody: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };
 

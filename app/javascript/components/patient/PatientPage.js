@@ -22,7 +22,6 @@ class PatientPage extends React.Component {
               jurisdiction_path={this.props.jurisdiction_path}
               other_household_members={this.props.other_household_members || []}
               details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
-              hideBody={this.props.hideBody}
               can_add_group={this.props.can_add_group}
               edit_mode={false}
               authenticity_token={this.props.authenticity_token}
@@ -44,7 +43,6 @@ PatientPage.propTypes = {
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
   canAddAssessments: PropTypes.bool,
-  hideBody: PropTypes.bool,
   jurisdiction_path: PropTypes.string,
   blocked_sms: PropTypes.bool,
 };
