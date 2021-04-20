@@ -11,7 +11,7 @@
 # end
 
 # These inflection rules are supported but not enabled by default:
-ActiveSupport::Inflector.inflections(:eng) do |inflect|
+ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym 'PHDC'
   inflect.acronym 'FIPS'
 end

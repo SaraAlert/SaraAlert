@@ -7,31 +7,11 @@ import SymptomsAssessment from './steps/SymptomsAssessment';
 import AssessmentCompleted from './steps/AssessmentCompleted';
 import reportError from '../../util/ReportError';
 
-// For backwards-compatibility reasons, we still want to support the old 2-letter language codes
-// THIS SHOULDN'T BE NECESSARY AS WE TRANSLATE THIS ON THE BACK-END
-const LANGUAGE_MAPPINGS = {
-  en: 'eng',
-  es: 'spa',
-  'es-PR': 'spa-pr',
-  so: 'som',
-  fr: 'fra',
-};
-
 class Assessment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: 0, direction: null, lastIndex: null, lang: this.mapLanguage() };
+    this.state = { index: 0, direction: null, lastIndex: null, lang: this.props.lang };
   }
-
-  mapLanguage = () => {
-    if (Object.prototype.hasOwnProperty.call(LANGUAGE_MAPPINGS, this.props.lang)) {
-      // If we make it through testing without this ever printing, i think it's safe to remove it.
-      console.error("I do not think this should ever print. If this prints, something is happening that we don't understand.");
-      return LANGUAGE_MAPPINGS[`${this.props.lang}`];
-    } else {
-      return this.props.lang;
-    }
-  };
 
   goto = targetIndex => {
     let index = this.state.index;

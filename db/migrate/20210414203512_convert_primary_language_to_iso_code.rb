@@ -37,6 +37,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
                           'Laotian ', 'Mandarin', 'RUNYORO', 'Sign Languages', 'acholi', 'afro-asiatic languages', 'dad limited eng', 'dad span',
                           'dad span/eng', 'eng/braz', 'farsi', 'lingala, french', 'lingala/portuguese', 'manderin chinese', 'no', 'parent eng',
                           'somali, may maay', 'somali, may-maay'].freeze
+
   def up
     add_column :patients, :legacy_primary_language, :string
     add_column :patients, :legacy_secondary_language, :string
@@ -67,11 +68,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     existing_primary_languages = Patient.where(purged: false).where.not(primary_language: nil).distinct.pluck(:primary_language)
     existing_secondary_languages = Patient.where(purged: false).where.not(secondary_language: nil).distinct.pluck(:secondary_language)
     # Create an translation in automatic_translations, unless we already have it defined in `custom_translations`
-    existing_primary_languages.each do |el|
-      automatic_translations[el.to_sym] = (match_language(el).to_s || nil) unless custom_translations.key?(el.to_sym)
-    end
-    # Create an translation in automatic_translations, unless we already have it defined in `custom_translations`
-    existing_secondary_languages.each do |el|
+    (existing_primary_languages | existing_secondary_languages).each do |el|
       automatic_translations[el.to_sym] = (match_language(el).to_s || nil) unless custom_translations.key?(el.to_sym)
     end
     ActiveRecord::Base.transaction do
