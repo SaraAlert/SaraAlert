@@ -1,5 +1,3 @@
-import { LANGUAGES } from '../utils/Languages';
-
 export const advancedFilterOptions = [
 
   /* BOOLEAN FILTER OPTIONS */
@@ -178,7 +176,7 @@ export const advancedFilterOptions = [
     title: 'Primary Language (Select)',
     description: 'Monitoree primary language',
     type: 'select',
-    options: LANGUAGES.map(lang => lang.d).concat(['']),
+    options: [] // calculated asynchronously in the AdvancedFilter componentt,
   },
   {
     name: 'risk-exposure',

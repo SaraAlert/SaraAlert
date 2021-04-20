@@ -1,7 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
-import { convertLanguageCodeToName } from '../../utils/Languages';
+import { convertLanguageCodesToNames } from '../../utils/Languages';
 
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -34,7 +34,18 @@ class Import extends React.Component {
       importDuplicates: false,
       isPaused: false,
       acceptedAllStarted: false,
+      allLanguageDisplayNames: new Array(this.props.patients.length),
     };
+  }
+
+  componentDidMount() {
+    convertLanguageCodesToNames(
+      this.state.patients.map(x => x.primary_language),
+      this.props.authenticity_token,
+      res => {
+        this.setState({ allLanguageDisplayNames: res });
+      }
+    );
   }
 
   importAll = () => {
@@ -251,7 +262,7 @@ class Import extends React.Component {
                         <br />
                         <b>DOB:</b> {patient.date_of_birth}
                         <br />
-                        <b>Language:</b> {convertLanguageCodeToName(patient.primary_language)}
+                        <b>Language:</b> {this.state.allLanguageDisplayNames[Number(index)] || '--'}
                         <br />
                         <b>Flight or Vessel Number:</b> {patient.flight_or_vessel_number}
                       </Col>

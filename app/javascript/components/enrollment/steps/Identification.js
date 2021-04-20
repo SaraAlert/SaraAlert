@@ -8,9 +8,7 @@ import moment from 'moment-timezone';
 
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
-import { tryToMatchLanguage, getLanguageSupported, getLanguagesAsOptions } from '../../../utils/Languages';
-
-const languageOptions = getLanguagesAsOptions();
+import { convertLanguageCodesToNames, getLanguageSupported, getLanguagesAsOptions } from '../../../utils/Languages';
 
 const WORKFLOW_OPTIONS = [
   { label: 'Exposure (contact)', value: 'exposure' },
@@ -32,8 +30,28 @@ class Identification extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
-      primaryLanguageMessage: this.getPrimaryLanguageMessage(tryToMatchLanguage(this.props.currentState.patient.primary_language)),
+      primaryLanguageDisplay: '',
+      secondaryLanguageDisplay: '',
+      primaryLanguageMessage: '',
+      languageOptions: [], // store these on state so the component re-renders when they are returned asynchronously
     };
+  }
+
+  componentDidMount() {
+    getLanguagesAsOptions(this.props.authenticity_token, res => {
+      this.setState({ languageOptions: res });
+    });
+    convertLanguageCodesToNames(
+      [this.state.current.patient.primary_language, this.state.current.patient.secondary_language],
+      this.props.authenticity_token,
+      res => {
+        this.setState({
+          primaryLanguageDisplay: res[0],
+          secondaryLanguageDisplay: res[1],
+          primaryLanguageMessage: this.getPrimaryLanguageMessage(res[0] ? { c: this.state.current.patient.primary_language, d: res[0] } : null),
+        });
+      }
+    );
   }
 
   handleChange = event => {
@@ -133,14 +151,16 @@ class Identification extends React.Component {
   /**
    * @param {Object} event - In the structure of {value: 'eng', label: 'English'}
    * @param {String} languageType - 'primary_language' or 'secondary_language'
+   * @param {String} displayType - 'primaryLanguageDisplay' or 'secondaryLanguageDisplay'
    */
-  handleLanguageChange = (event, languageType) => {
+  handleLanguageChange = (event, languageType, displayType) => {
     const value = event.value;
     const current = this.state.current;
     const modified = this.state.modified;
     let newState = {
       current: { ...current, patient: { ...current.patient, [languageType]: value } },
       modified: { ...modified, patient: { ...modified.patient, [languageType]: value } },
+      [displayType]: event.label,
     };
     if (languageType === 'primary_language') {
       // Calculate a new primaryLanguageMessage if that value has changed
@@ -222,24 +242,26 @@ class Identification extends React.Component {
    * @param {*} isPrimary - whether to render the primary or secondary language Select
    */
   renderLanguageSelect = isPrimary => {
-    let inputId, value, languageType, language;
+    let inputId, value, languageType, language, displayType;
     if (isPrimary) {
       inputId = 'primary-language-select';
       languageType = 'primary_language';
-      language = tryToMatchLanguage(this.state.current.patient.primary_language);
+      displayType = 'primaryLanguageDisplay';
+      language = { c: this.state.current.patient.primary_language, d: this.state.primaryLanguageDisplay };
       value = { label: language?.d, value: language?.c };
     } else {
       inputId = 'secondary-language-select';
       languageType = 'secondary_language';
-      language = tryToMatchLanguage(this.state.current.patient.secondary_language);
+      displayType = 'secondaryLanguageDisplay';
+      language = { c: this.state.current.patient.secondary_language, d: this.state.secondaryLanguageDisplay };
       value = { label: language?.d, value: language?.c };
     }
     return (
       <Select
         inputId={inputId}
         value={value}
-        options={languageOptions}
-        onChange={e => this.handleLanguageChange(e, languageType)}
+        options={this.state.languageOptions}
+        onChange={e => this.handleLanguageChange(e, languageType, displayType)}
         placeholder=""
         styles={cursorPointerStyle}
         theme={theme => ({
@@ -643,6 +665,7 @@ Identification.propTypes = {
   race_options: PropTypes.object,
   next: PropTypes.func,
   setEnrollmentState: PropTypes.func,
+  authenticity_token: PropTypes.string,
 };
 
 export default Identification;

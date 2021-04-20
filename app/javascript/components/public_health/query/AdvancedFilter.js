@@ -11,6 +11,7 @@ import _ from 'lodash';
 import DateInput from '../../util/DateInput';
 import confirmDialog from '../../util/ConfirmDialog';
 import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
+import { getAllLanguages } from '../../../utils/Languages';
 
 class AdvancedFilter extends React.Component {
   constructor(props) {
@@ -28,6 +29,13 @@ class AdvancedFilter extends React.Component {
   }
 
   componentDidMount() {
+    getAllLanguages(this.props.authenticity_token, res => {
+      let index = advancedFilterOptions.findIndex(x => x.name === 'primary-language');
+      if (index > 0) {
+        advancedFilterOptions[Number(index)].options = res.map(lang => lang.d).concat(['']);
+      }
+    });
+
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
       this.addStatement();
