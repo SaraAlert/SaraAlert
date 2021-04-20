@@ -163,13 +163,13 @@ class TransferTest < ActiveSupport::TestCase
     transfer = build(:transfer)
     transfer.from_jurisdiction = from_jurisdiction
     transfer.save!
-    assert_equal(transfer.from_path, from_jurisdiction.jurisdiction_path_string)
+    assert_equal(transfer.from_path, from_jurisdiction[:path])
   end
 
   test 'to path' do
     to_jurisdiction = create(:jurisdiction)
     transfer = create(:transfer, to_jurisdiction: to_jurisdiction)
-    assert_equal(transfer.to_path, to_jurisdiction.jurisdiction_path_string)
+    assert_equal(transfer.to_path, to_jurisdiction[:path])
   end
 
   test 'transfer in time frame' do

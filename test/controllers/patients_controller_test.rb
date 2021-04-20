@@ -1003,8 +1003,9 @@ class PatientsControllerTest < ActionController::TestCase
   test 'update status when jurisdiction changes' do
     user = create(:public_health_enroller_user)
     sign_in user
+    old_jurisdiction = create(:jurisdiction, path: 'Foo')
     new_jurisdiction = create(:jurisdiction, path: 'Bar')
-    patient = create(:patient, creator: user, monitoring: true)
+    patient = create(:patient, creator: user, jurisdiction: old_jurisdiction, monitoring: true)
     old_jurisdiction = patient.jurisdiction
 
     post :update_status, params: {
@@ -1019,7 +1020,7 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal old_jurisdiction.id, t.from_jurisdiction_id
     assert_equal new_jurisdiction.id, t.to_jurisdiction_id
     assert_equal user.id, t.who_id
-    assert_match(/blank to "Bar"/, History.find_by(patient: patient).comment)
+    assert_match(/"#{old_jurisdiction[:path]}" to "#{new_jurisdiction[:path]}"/, History.find_by(patient: patient).comment)
   end
 
   test 'update resets symptom onset when isolation changes' do

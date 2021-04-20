@@ -21,7 +21,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     # Verify per outer batch (file)
     patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
       csv = get_csv(build_export_filename({ export_type: export_type, format: :csv }, nil, index, true))
-      verify_csv_linelist_export(csv, LINELIST_HEADERS, patients_group.order(:id))
+      verify_csv_linelist_export(csv, patients_group.order(:id))
     end
   end
 
@@ -130,15 +130,15 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     get_xlsx('Sara%20Alert%20Import%20Format.xlsx')
   end
 
-  def verify_csv_linelist_export(csv, headers, patients)
+  def verify_csv_linelist_export(csv, patients)
     assert_equal(patients.size, csv.length, 'Number of patients')
-    headers.each_with_index do |header, col|
+    LINELIST_HEADERS.each_with_index do |header, col|
       assert_equal(header, csv.headers[col], "For header: #{header}")
     end
     patients.each_with_index do |patient, row|
       assert_equal(patient[:id].to_s, csv[row][0], 'For field: id')
-      details = patient.linelist
-      details.keys.each_with_index do |field, col|
+      details = patient.linelist_for_export
+      LINELIST_FIELDS.each_with_index do |field, col|
         if [true, false].include?(details[field])
           assert_equal(details[field] ? 'true' : 'false', csv[row][col], "For field: #{field}")
         elsif %i[latest_report transferred_at].include?(field)
@@ -162,8 +162,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       assert_equal(header, monitorees.cell(1, col + 1), "For header: #{header}")
     end
     patients.each_with_index do |patient, row|
-      details = patient.full_history_details
-      details.keys.each_with_index do |field, col|
+      details = patient.full_history_details_for_export
+      SARA_ALERT_FORMAT_FIELDS.each_with_index do |field, col|
         cell_value = monitorees.cell(row + 2, col + 1)
         if field == :full_status
           assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field} (row #{row + 1})")
@@ -183,7 +183,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       assert_equal(header, monitorees_list.cell(1, col + 1), "For header: #{header} in Monitorees List")
     end
     patients.each_with_index do |patient, row|
-      details = { patient_id: patient.id }.merge(patient.full_history_details)
+      details = { patient_id: patient.id }.merge(patient.full_history_details_for_export)
       details.keys.each_with_index do |field, col|
         cell_value = monitorees_list.cell(row + 2, col + 1)
         if field == :full_status
@@ -337,7 +337,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
     # Validate cell values
     patients.each_with_index do |patient, row|
-      patient_details = { id: patient.id }.merge(patient.custom_export_details)
+      patient_details = { id: patient.id }.merge(patient.custom_export_details_for_export)
       checked.each_with_index do |field, col|
         cell_value = patients_sheet.cell(row + 2, col + 1)
 
