@@ -11,6 +11,7 @@ import Dependent from './household/Dependent';
 import HOH from './household/HOH';
 import Individual from './household/Individual';
 import InfoTooltip from '../util/InfoTooltip';
+import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -44,49 +45,6 @@ class Patient extends React.Component {
       });
     }
   }
-
-  formatName = () => {
-    return `${this.props.details.first_name ? this.props.details.first_name : ''}${this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''}${
-      this.props.details.last_name ? ' ' + this.props.details.last_name : ''
-    }`;
-  };
-
-  formatPhoneNumber = phone => {
-    const match = phone
-      .replace('+1', '')
-      .replace(/\D/g, '')
-      .match(/^(\d{3})(\d{3})(\d{4})$/);
-    return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
-  };
-
-  formatRace = () => {
-    let raceArray = [];
-    if (this.props.details.white) {
-      raceArray.push('White');
-    }
-    if (this.props.details.black_or_african_american) {
-      raceArray.push('Black or African American');
-    }
-    if (this.props.details.asian) {
-      raceArray.push('Asian');
-    }
-    if (this.props.details.american_indian_or_alaska_native) {
-      raceArray.push('American Indian or Alaska Native');
-    }
-    if (this.props.details.native_hawaiian_or_other_pacific_islander) {
-      raceArray.push('Native Hawaiian or Other Pacific Islander');
-    }
-    if (this.props.details.race_other) {
-      raceArray.push('Other');
-    }
-    if (this.props.details.race_unknown) {
-      raceArray.push('Unknown');
-    }
-    if (this.props.details.race_refused_to_answer) {
-      raceArray.push('Refused to Answer');
-    }
-    return <span>{raceArray.length === 0 ? '--' : raceArray.join(', ')}</span>;
-  };
 
   /**
    * Renders the edit link depending on if the user is coming from the monitoree details section or summary of the enrollment wizard.
@@ -180,8 +138,8 @@ class Patient extends React.Component {
         <Row id="monitoree-details-header">
           <Col sm={12}>
             <h3>
-              <span aria-label={this.formatName()} className="pr-2">
-                {this.formatName()}
+              <span aria-label={formatName(this.props.details)} className="pr-2">
+                {formatName(this.props.details)}
               </span>
               {this.props.details.head_of_household && <BadgeHOH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
@@ -238,7 +196,7 @@ class Patient extends React.Component {
                   <b>Sexual Orientation:</b> <span>{this.props.details.sexual_orientation || '--'}</span>
                 </div>
                 <div>
-                  <b>Race:</b> {this.formatRace()}
+                  <b>Race:</b> <span>{formatRace(this.props.details)}</span>
                 </div>
                 <div>
                   <b>Ethnicity:</b> <span>{this.props.details.ethnicity || '--'}</span>
@@ -256,7 +214,7 @@ class Patient extends React.Component {
             </div>
             <div className="item-group">
               <div>
-                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${this.formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
+                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 {this.props.details.blocked_sms && (
                   <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
                     &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
@@ -711,6 +669,7 @@ class Patient extends React.Component {
             {!this.props.details.head_of_household && this.props?.other_household_members?.length > 0 && (
               <Dependent
                 patient={this.props.details}
+                hoh={this.props.other_household_members.find(patient => patient.head_of_household)}
                 authenticity_token={this.props.authenticity_token}
               />
             )}

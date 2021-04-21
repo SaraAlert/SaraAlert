@@ -4,7 +4,7 @@ import { Row } from 'react-bootstrap';
 import EnrollHouseholdMember from './actions/EnrollHouseholdMember';
 import MoveToHousehold from './actions/MoveToHousehold';
 
-class Dependent extends React.Component {
+class Individual extends React.Component {
   render() {
     return (
       <React.Fragment>
@@ -18,10 +18,10 @@ class Dependent extends React.Component {
   }
 }
 
-Dependent.propTypes = {
+Individual.propTypes = {
   can_add_group: PropTypes.bool,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
 };
 
-export default Dependent;
+export default Individual;
