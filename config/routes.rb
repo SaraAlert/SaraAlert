@@ -86,8 +86,8 @@ Rails.application.routes.draw do
   post '/import/:workflow/:format', to: 'import#import'
   get '/import/download_guidance', to: 'import#download_guidance'
 
+  get '/monitoree_unavailable', to: 'patients#monitoree_unavailable'
   get '/patients/:id/household_removeable', to: 'patients#household_removeable'
-  get '/patients/:id/monitoree_unavailable', to: 'patients#monitoree_unavailable'
   post '/patients/head_of_household_options', to: 'patients#head_of_household_options'
   post '/patients/bulk_edit', to: 'patients#bulk_update'
   post '/patients/:id/status', to: 'patients#update_status'
