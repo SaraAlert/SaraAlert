@@ -4,37 +4,58 @@
 # https://www.loc.gov/standards/iso639-2/php/code_list.php
 # This ensures that there are no Extinct languages present
 
-# ANY CHANGES TO THIS FILE MUST BE MANUALLY INCLUDED IN `minifiedLanguages.js`
-# The most common languages are listed first for faster lookups
-
 # The three-letter key (first value) is the accepted 3-letter iso-639-2t code that the application will use
 # In the interest of interoperability with other health systems, the tool will support and accept
 # iso-639-1 two-letter codes.
+
+# Every language in languages.yml will be included in our Languages dropdowns.
+# However, they will all be given values of `false` for `sms`, `email`, and `phone`
+# Unless that field is specifically listed as `true` in `supported` below
+
 :eng:
   :display: 'English'
   :iso6391code: "en"
   :system: 'iso639-2t'
+  :supported:
+      :sms: true
+      :email: true
+      :phone: true
 
 :fra:
   :display: 'French'
   :iso6391code: "fr"
   :system: 'iso639-2t'
+  :supported:
+      :sms: true
+      :email: true
+      :phone: true
 
 :spa:
   :display: 'Spanish'
   :iso6391code: "es"
   :system: 'iso639-2t'
+  :supported:
+      :sms: true
+      :email: true
+      :phone: true
 
 # Despite not being an official iso-639 language, we want to include a specific dialect of Spanish for PR
 :spa-pr:
   :display: 'Spanish (Puerto Rican)'
   :iso6391code: "es-PR"
   :system: ''
+  :supported:
+      :sms: true
+      :email: true
+      :phone: true
 
 :som:
   :display: 'Somali'
   :iso6391code: "so"
   :system: 'iso639-2t'
+  :supported:
+      :sms: true
+      :email: true
 
 :aar:
   :display: 'Afar'
@@ -1855,5 +1876,3 @@
   :display: 'Zaza'
   :iso6391code: null
   :system: 'iso639-2t'
-
-# ANY CHANGES TO THIS FILE MUST BE MANUALLY INCLUDED IN `minifiedLanguages.js`

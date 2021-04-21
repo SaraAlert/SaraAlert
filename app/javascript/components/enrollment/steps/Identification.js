@@ -2,25 +2,20 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Form } from 'react-bootstrap';
 import Select from 'react-select';
+import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 
+import _ from 'lodash';
 import * as yup from 'yup';
 import moment from 'moment-timezone';
 
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
-import { convertLanguageCodesToNames, getLanguageSupported, getLanguagesAsOptions } from '../../../utils/Languages';
+import { getLanguageData } from '../../../utils/Languages';
 
 const WORKFLOW_OPTIONS = [
   { label: 'Exposure (contact)', value: 'exposure' },
   { label: 'Isolation (case)', value: 'isolation' },
 ];
-
-const cursorPointerStyle = {
-  option: provided => ({
-    ...provided,
-    cursor: 'pointer',
-  }),
-};
 
 class Identification extends React.Component {
   constructor(props) {
@@ -30,28 +25,53 @@ class Identification extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
-      primaryLanguageDisplay: '',
-      secondaryLanguageDisplay: '',
-      primaryLanguageMessage: '',
+      primaryLanguageData: {},
+      secondaryLanguageData: {},
       languageOptions: [], // store these on state so the component re-renders when they are returned asynchronously
     };
   }
 
   componentDidMount() {
-    getLanguagesAsOptions(this.props.authenticity_token, res => {
-      this.setState({ languageOptions: res });
-    });
-    convertLanguageCodesToNames(
-      [this.state.current.patient.primary_language, this.state.current.patient.secondary_language],
-      this.props.authenticity_token,
-      res => {
-        this.setState({
-          primaryLanguageDisplay: res[0],
-          secondaryLanguageDisplay: res[1],
-          primaryLanguageMessage: this.getPrimaryLanguageMessage(res[0] ? { c: this.state.current.patient.primary_language, d: res[0] } : null),
-        });
+    getLanguageData(this.props.authenticity_token, languageData => {
+      const langOptions = languageData.map(lang => {
+        const fullySupported = lang.supported.sms && lang.supported.email && lang.supported.phone;
+        const langLabel = fullySupported ? lang.display : lang.display + '*';
+        return { value: lang.code, label: langLabel };
+      });
+
+      // lodash's 'remove()' actually removes the values from the object
+      let supportedLangCodes = languageData.filter(l => l.supported.sms || l.supported.email || l.supported.phone).map(x => x.code);
+      const supportedLangsFormatted = _.remove(langOptions, n => supportedLangCodes.includes(n.value));
+      const unsupportedLangsFormatted = langOptions;
+
+      // For each language, get the support options
+      const groupedOptions = [
+        {
+          label: 'Supported Languages',
+          options: supportedLangsFormatted,
+        },
+        {
+          label: 'Unsupported Languages',
+          options: unsupportedLangsFormatted,
+        },
+      ];
+      let primaryLanguageData = {},
+        secondaryLanguageData = {};
+
+      let primaryLanguageRef = languageData.find(x => x.code === this.state.current.patient.primary_language);
+      if (primaryLanguageRef) {
+        primaryLanguageData.code = primaryLanguageRef?.code;
+        primaryLanguageData.display = primaryLanguageRef?.display;
+        primaryLanguageData.supported = primaryLanguageRef?.supported;
       }
-    );
+      let secondaryLanguageRef = languageData.find(x => x.code === this.state.current.patient.secondary_language);
+      if (secondaryLanguageRef) {
+        secondaryLanguageData.code = secondaryLanguageRef?.code;
+        secondaryLanguageData.display = secondaryLanguageRef?.display;
+        secondaryLanguageData.supported = secondaryLanguageRef?.display;
+      }
+      this.setState({ languageData, languageOptions: groupedOptions, primaryLanguageData, secondaryLanguageData });
+    });
   }
 
   handleChange = event => {
@@ -150,25 +170,26 @@ class Identification extends React.Component {
 
   /**
    * @param {Object} event - In the structure of {value: 'eng', label: 'English'}
-   * @param {String} languageType - 'primary_language' or 'secondary_language'
-   * @param {String} displayType - 'primaryLanguageDisplay' or 'secondaryLanguageDisplay'
+   * @param {Boolean} isPrimary - whether to handle the change of the primary or secondary language
    */
-  handleLanguageChange = (event, languageType, displayType) => {
-    const value = event.value;
+  handleLanguageChange = (event, isPrimary) => {
     const current = this.state.current;
     const modified = this.state.modified;
-    let newState = {
-      current: { ...current, patient: { ...current.patient, [languageType]: value } },
-      modified: { ...modified, patient: { ...modified.patient, [languageType]: value } },
-      [displayType]: event.label,
-    };
-    if (languageType === 'primary_language') {
-      // Calculate a new primaryLanguageMessage if that value has changed
-      newState['primaryLanguageMessage'] = this.getPrimaryLanguageMessage({ c: event.value, d: event.label });
-    }
-    this.setState(newState, () => {
-      this.props.setEnrollmentState({ ...this.state.modified });
-    });
+    const languageType = isPrimary ? 'primary_language' : 'secondary_language';
+    const languageData = isPrimary ? 'primaryLanguageData' : 'secondaryLanguageData';
+
+    let langRef = event === null ? null : this.state.languageData.find(x => x.code === event.value);
+    let primaryLanguageData = langRef ? { code: langRef.code, display: langRef.display, supported: langRef.supported } : {};
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [languageType]: primaryLanguageData.code || null } },
+        modified: { ...modified, patient: { ...modified.patient, [languageType]: primaryLanguageData.code || null } },
+        [languageData]: primaryLanguageData,
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
   };
 
   validate = callback => {
@@ -192,49 +213,44 @@ class Identification extends React.Component {
       });
   };
 
-  /**
-   * @param {Object} language - in the format of { c: isoCode, d: displayName }
-   * @returns {String} - the support message if the Primary Language has any limitations
-   */
-  getPrimaryLanguageMessage = language => {
-    let message = null;
-    if (language) {
-      // Don't include any trailing asterisks (*) from unsupported languages in the message
-      language.d = language.d.replace(/\*+$/, '');
+  renderPrimaryLanguageSupportMessage = () => {
+    let selectedLanguage = this.state.primaryLanguageData;
+    if (!_.isEmpty(selectedLanguage)) {
+      const sms = selectedLanguage.supported.sms;
+      const email = selectedLanguage.supported.email;
+      const phone = selectedLanguage.supported.phone;
+      const fullySupported = sms && email && phone;
 
-      const languageJson = getLanguageSupported(language);
-      if (languageJson && languageJson.supported) {
-        const sms = languageJson.supported.sms;
-        const email = languageJson.supported.email;
-        const phone = languageJson.supported.phone;
-        const fullySupported = sms && email && phone;
-        if (!fullySupported) {
-          message = languageJson.name;
-          if (!sms && !email && !phone) {
-            message += ' is not currently supported by Sara Alert. Any messages sent to this monitoree will be in English.';
-          } else if (!sms && !email && phone) {
-            message +=
-              ' is supported for the telephone call method only. If email or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
-          } else if (!sms && email && !phone) {
-            message +=
-              ' is supported for the email weblink method only. If telephone call or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
-          } else if (!sms && email && phone) {
-            message +=
-              ' is supported for telephone call and email reporting methods only. If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
-          } else if (sms && !email && !phone) {
-            message +=
-              ' is supported for the SMS text weblink method only. If telephone call or emailed weblink is selected as the preferred reporting method, messages will be in English.';
-          } else if (sms && !email && phone) {
-            message +=
-              ' is supported for telephone call and SMS text reporting methods only. If email is selected as the preferred reporting method, the email will be in English.';
-          } else if (sms && email && !phone) {
-            message +=
-              ' is supported for email and SMS text reporting methods only. If telephone call is selected as the preferred reporting method, the call will be in English.';
-          }
+      if (!fullySupported) {
+        let message = selectedLanguage.display;
+        if (!sms && !email && !phone) {
+          message += ' is not currently supported by Sara Alert. Any messages sent to this monitoree will be in English.';
+        } else if (!sms && !email && phone) {
+          message +=
+            ' is supported for the telephone call method only. If email or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
+        } else if (!sms && email && !phone) {
+          message +=
+            ' is supported for the email weblink method only. If telephone call or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
+        } else if (!sms && email && phone) {
+          message +=
+            ' is supported for telephone call and email reporting methods only. If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
+        } else if (sms && !email && !phone) {
+          message +=
+            ' is supported for the SMS text weblink method only. If telephone call or emailed weblink is selected as the preferred reporting method, messages will be in English.';
+        } else if (sms && !email && phone) {
+          message +=
+            ' is supported for telephone call and SMS text reporting methods only. If email is selected as the preferred reporting method, the email will be in English.';
+        } else if (sms && email && !phone) {
+          message +=
+            ' is supported for email and SMS text reporting methods only. If telephone call is selected as the preferred reporting method, the call will be in English.';
         }
+        return (
+          <i>
+            <b>* Warning:</b> {message}
+          </i>
+        );
       }
     }
-    return message;
   };
 
   /**
@@ -242,26 +258,21 @@ class Identification extends React.Component {
    * @param {*} isPrimary - whether to render the primary or secondary language Select
    */
   renderLanguageSelect = isPrimary => {
-    let inputId, value, languageType, language, displayType;
+    let inputId, value;
     if (isPrimary) {
       inputId = 'primary-language-select';
-      languageType = 'primary_language';
-      displayType = 'primaryLanguageDisplay';
-      language = { c: this.state.current.patient.primary_language, d: this.state.primaryLanguageDisplay };
-      value = { label: language?.d, value: language?.c };
+      value = { label: this.state.primaryLanguageData.display, value: this.state.primaryLanguageData.code };
     } else {
       inputId = 'secondary-language-select';
-      languageType = 'secondary_language';
-      displayType = 'secondaryLanguageDisplay';
-      language = { c: this.state.current.patient.secondary_language, d: this.state.secondaryLanguageDisplay };
-      value = { label: language?.d, value: language?.c };
+      value = { label: this.state.secondaryLanguageData.display, value: this.state.secondaryLanguageData.code };
     }
     return (
       <Select
         inputId={inputId}
+        isClearable
         value={value}
         options={this.state.languageOptions}
-        onChange={e => this.handleLanguageChange(e, languageType, displayType)}
+        onChange={e => this.handleLanguageChange(e, isPrimary)}
         placeholder=""
         styles={cursorPointerStyle}
         theme={theme => ({
@@ -511,11 +522,7 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} sm={24} md={12} controlId="primary_language_support_message" className="pr-md-4 mb-0">
-                  {this.state.primaryLanguageMessage && (
-                    <i>
-                      <b>* Warning:</b> {this.state.primaryLanguageMessage}
-                    </i>
-                  )}
+                  {this.renderPrimaryLanguageSupportMessage()}
                 </Form.Group>
                 <Form.Group as={Col} sm={24} md={12} controlId="secondary_language_support_message" className="pl-md-4 mb-0">
                   {this.state.current.patient.secondary_language && (

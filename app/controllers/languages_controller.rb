@@ -4,10 +4,11 @@
 class LanguagesController < ApplicationController
   def index; end
 
-  # Returns all languagaes as an array of arrays where each inner is in the format ['eng', 'English']
-  # Example Return: [["eng", "English"]...,["zho","Chinese"],["zul","Zulu"]]
-  def language_code_display_pairs
-    render json: Languages.all_languages.map { |k, v| [k.to_sym, v[:display]] }
+  # Returns all languagaes as an array of arrays where each inner is in the format
+  # ['eng', 'English', supported: {sms: true, phone: true, email: true}]
+  # Example Return: [["eng", "English", {}]...,["zho","Chinese", {}],["zul","Zulu", {}]]
+  def language_data
+    render json: Languages.all_languages.map { |k, v| [k.to_sym, v[:display], v[:supported]] }
   end
 
   # Matches code to display name

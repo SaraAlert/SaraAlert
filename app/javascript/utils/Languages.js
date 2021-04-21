@@ -2,18 +2,17 @@ import axios from 'axios'
 import _ from 'lodash'
 
 import reportError from '../components/util/ReportError'
-import supportedLanguages from '../data/supportedLanguages'
 
 // Keep a small list of the most common languages on the front-end, and try to match them.
 // If we can great, it saves us a call to the back-end
 // Otherwise, make an async call to the back-end to do a lookup there
 const COMMON_LANGUAGES = {
-  'spa-pr': 'Spanish (Puerto Rican)',
   'eng': 'English',
-  'spa': 'Spanish',
-  'som': 'Somali',
   'fra': 'French',
-  'por': 'Portuguese'
+  'spa': 'Spanish',
+  'spa-pr': 'Spanish (Puerto Rican)',
+  'por': 'Portuguese',
+  'som': 'Somali'
 }
 
 /**
@@ -23,10 +22,10 @@ const COMMON_LANGUAGES = {
  * If we can't match it there, we make a call to the back-end to look the up (for only the unmatchable ones)
  * @param {Array} languageCodes - An array of strings of language codes (must be valid). Nulls are allowed, but will be filtered out
  * @param {*} authToken - the authToken
- * @param {*} cb - a callback function to set the values on the front-end when this finishes
+ * @param {*} callback - a callback function to set the values on the front-end when this finishes
  * @return {Array} Returns array of translated language codes (leaves nulls as nulls)
  */
-function convertLanguageCodesToNames (languageCodes, authToken, cb) {
+function convertLanguageCodesToNames (languageCodes, authToken, callback) {
   let names = new Array(languageCodes.length)
   let unmatchabledLangs = []
   languageCodes.forEach((code, i) => {
@@ -47,55 +46,28 @@ function convertLanguageCodesToNames (languageCodes, authToken, cb) {
         unmatchabledLangs.forEach((indexVal, responseIndex) => {
           names[indexVal] = res[responseIndex]
         })
-        cb(names)
+        callback(names)
       })
       .catch(err => {
         reportError(err)
       });
   } else {
-    cb(names)
+    callback(names)
   }
 }
 
 /**
- * Returns an object containing all the contact-method booleans
- * for a language. The values default to false, unless specified true in
- * 'supportedLanguages.js'
- * @param {Object} language - must be in the form of {c: isoCode, d: displayName}
- * @return {Object}
- */
-function getLanguageSupported(language = {c:null, d:null}) {
-  let supportedLanguageReference = supportedLanguages.find(y => y.name === language.d)
-  if (supportedLanguageReference) {
-    supportedLanguageReference["code"] = language.c
-  } else {
-    supportedLanguageReference = {
-      "name": language.d,
-      "code": language.c,
-      "supported": {
-        "sms": false,
-        "email": false,
-        "phone": false
-      }
-    }
-  }
-  return supportedLanguageReference
-}
-
-/**
- * This function returns to cb an array of arrays where each inner
- * array is in the format ["eng", "English"]
+ * This function returns to the callback an array of all language display names (alphabetized)
  * @param {String} authToken
- * @param {Function} cb - the callback to pass the results to
- * @return {Array} [["eng", "English"]...,["zho","Chinese"],["zul","Zulu"]]
+ * @param {Function} callback - the callback to pass the results to
+ * @return {Array of Strings} [English","Chinese",..."Zulu"]
  */
-function getAllLanguages (authToken, cb) {
+function getAllLanguageDisplayNames (authToken, callback) {
   axios.defaults.headers.common['X-CSRF-Token'] = authToken;
   axios.get(`${window.BASE_PATH}/languages/get_all_languages`)
     .then(val => {
-      let allLangs = val.data.map(x => ({ c: x[0], d: x[1] }))
-      allLangs = allLangs.sort((a, b) => a.c.localeCompare(b.c))
-      cb(allLangs);
+      let languageDisplayNames = val.data.map(x => x[1]).sort((a, b) => a.localeCompare(b))
+      callback(languageDisplayNames)
     })
     .catch(err => {
       reportError(err);
@@ -103,42 +75,22 @@ function getAllLanguages (authToken, cb) {
   }
 
 /**
- * Returns a grouped array of all Languages in the system, formatted to work
- * with react-select (AKA in the format { value: isoCode, label: displayName }).
- * The groups are by whether the language is Supported and Unsupported.
- * These options are all alphabetized as well.
+ * Returns to the callback all languages from the backend (alphabetized), in the format of:
+ * [{code: 'eng', display: 'English, supported: {sms: true, phone: true, email: false}}, {...}]
  * @param {String} authToken
- * @param {Function} cb - the callback to pass the results to
+ * @param {Function} callback - the callback to pass the results to
+ * @return {Array of Objects}
  */
-function getLanguagesAsOptions (authToken, cb) {
+function getLanguageData (authToken, callback) {
   axios.defaults.headers.common['X-CSRF-Token'] = authToken;
   axios.get(`${window.BASE_PATH}/languages/get_all_languages`)
     .then(val => {
-      let allLangs = val.data.map(x => getLanguageSupported({c: x[0], d: x[1]}))
-      allLangs = allLangs.sort((a, b) => a.name.localeCompare(b.name))
-      const langOptions = allLangs.map(lang => {
-        const fullySupported = lang.supported.sms && lang.supported.email && lang.supported.phone;
-        const langLabel = fullySupported ? lang.name : lang.name + '*';
-        return { value: lang.code, label: langLabel };
-      });
-
-      // lodash's 'remove()' actually removes the values from the object
-      let supportedLangCodes = supportedLanguages.map(sL => sL.code);
-      const supportedLangsFormatted = _.remove(langOptions, n => supportedLangCodes.includes(n.value));
-      const unsupportedLangsFormatted = langOptions;
-
-      const groupedOptions = [
-        {
-          label: 'Supported Languages',
-          options: supportedLangsFormatted,
-        },
-        {
-          label: 'Unsupported Languages',
-          options: unsupportedLangsFormatted,
-        },
-      ];
-      cb(groupedOptions);
-
+      let languageData = val.data.sort((a, b) => a[1].localeCompare(b[1])).map(x => ({
+        code: x[0],
+        display: x[1],
+        supported: { sms: !!(x[2])?.sms, email: !!(x[2])?.email, phone: !!(x[2])?.phone}
+      }))
+      callback(languageData)
     })
     .catch(err => {
       reportError(err);
@@ -147,8 +99,7 @@ function getLanguagesAsOptions (authToken, cb) {
 
 
 export {
-  getAllLanguages,
-  getLanguagesAsOptions,
-  getLanguageSupported,
+  getAllLanguageDisplayNames,
+  getLanguageData,
   convertLanguageCodesToNames
 };

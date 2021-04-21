@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
-import Select from 'react-select';
+
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
+import Select from 'react-select';
+import { vaccineModalSelectStyling } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import DateInput from '../../util/DateInput';
 
@@ -103,7 +105,7 @@ class VaccineModal extends React.Component {
                     ...theme,
                     borderRadius: 0,
                   })}
-                  styles={{ menu: base => ({ ...base, zIndex: 9999 }), option: base => ({ ...base, minHeight: 30 }) }}
+                  styles={vaccineModalSelectStyling}
                 />
               </Form.Group>
             </Row>
@@ -128,7 +130,7 @@ class VaccineModal extends React.Component {
                     ...theme,
                     borderRadius: 0,
                   })}
-                  styles={{ menu: base => ({ ...base, zIndex: 9999 }), option: base => ({ ...base, minHeight: 30 }) }}
+                  styles={vaccineModalSelectStyling}
                 />
               </Form.Group>
             </Row>
@@ -170,7 +172,7 @@ class VaccineModal extends React.Component {
                     borderRadius: 0,
                   })}
                   placeholder=""
-                  styles={{ menu: base => ({ ...base, zIndex: 9999 }), option: base => ({ ...base, minHeight: 30 }) }}
+                  styles={vaccineModalSelectStyling}
                 />
               </Form.Group>
             </Row>

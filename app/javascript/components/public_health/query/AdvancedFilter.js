@@ -1,17 +1,19 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, ButtonGroup, Col, Dropdown, Form, Modal, OverlayTrigger, Row, ToggleButton, Tooltip } from 'react-bootstrap';
-import Select, { components } from 'react-select';
-import ReactTooltip from 'react-tooltip';
 import { toast } from 'react-toastify';
+
+import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment-timezone';
-import _ from 'lodash';
+import ReactTooltip from 'react-tooltip';
+import Select, { components } from 'react-select';
+import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import DateInput from '../../util/DateInput';
 import confirmDialog from '../../util/ConfirmDialog';
 import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
-import { getAllLanguages } from '../../../utils/Languages';
+import { getAllLanguageDisplayNames } from '../../../utils/Languages';
 
 class AdvancedFilter extends React.Component {
   constructor(props) {
@@ -29,10 +31,13 @@ class AdvancedFilter extends React.Component {
   }
 
   componentDidMount() {
-    getAllLanguages(this.props.authenticity_token, res => {
+    getAllLanguageDisplayNames(this.props.authenticity_token, displayNames => {
       let index = advancedFilterOptions.findIndex(x => x.name === 'primary-language');
       if (index > 0) {
-        advancedFilterOptions[Number(index)].options = res.map(lang => lang.d).concat(['']);
+        const languagesToListFirst = ['English', 'French', 'Somali', 'Spanish', 'Spanish (Puerto Rican)'];
+        _.remove(displayNames, l => languagesToListFirst.includes(l));
+        displayNames = [''].concat(languagesToListFirst).concat(displayNames);
+        advancedFilterOptions[Number(index)].options = displayNames;
       }
     });
 
@@ -602,6 +607,7 @@ class AdvancedFilter extends React.Component {
         placeholder="Select Field...."
         aria-label="Advanced Filter Options Dropdown"
         className="advanced-filter-select"
+        styles={cursorPointerStyle}
         theme={theme => ({
           ...theme,
           borderRadius: 0,

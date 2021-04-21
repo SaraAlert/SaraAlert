@@ -132,7 +132,7 @@ Rails.application.routes.draw do
   get '/public_health/patients/counts/workflow', to: 'public_health#workflow_counts', as: :workflow_counts
   get '/public_health/patients/counts/:workflow/:tab', to: 'public_health#tab_counts', as: :tab_counts
 
-  get '/languages/get_all_languages', to: 'languages#language_code_display_pairs'
+  get '/languages/get_all_languages', to: 'languages#language_data'
   post '/languages/translate_languages', to: 'languages#translate_language_codes'
 
   get '/analytics', to: 'analytics#index', as: :analytics

@@ -4,11 +4,11 @@
 # This module provides a home for any legacy language functionality
 module LegacyLanguages
   LEGACY_LANGUAGE_MAPPING = {
-    'en': 'eng',
-    'es': 'spa',
+    en: 'eng',
+    es: 'spa',
     'es-PR': 'spa-pr',
-    'so': 'som',
-    'fr': 'fra'
+    so: 'som',
+    fr: 'fra'
   }.freeze
 
   # Returns true or false whether `lang` exists in LEGACY_LANGUAGE_MAPPING

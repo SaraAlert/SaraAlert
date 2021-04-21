@@ -71,7 +71,7 @@ class AssessmentsController < ApplicationController
 
     @lang = LegacyLanguages.legacy_language_code?(permitted_params[:lang]) ?
             LegacyLanguages.translate_legacy_language_code(permitted_params[:lang]) : permitted_params[:lang]
-    @lang = 'eng' unless Languages.supported_languages.include?(@lang)
+    @lang = 'eng' unless Languages.supported_language?(@lang)
 
     @patient_initials = permitted_params[:initials_age]&.upcase&.gsub(/[^a-z]/i, '')
     @patient_age = permitted_params[:initials_age]&.gsub(/[^0-9]/, '')

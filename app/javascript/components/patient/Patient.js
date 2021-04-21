@@ -21,14 +21,28 @@ class Patient extends React.Component {
       expandNotes: false,
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
-      primaryLanguageDisplayName: '',
+      primaryLanguageDisplayName: null,
     };
   }
 
   componentDidMount() {
     convertLanguageCodesToNames([this.props.details?.primary_language], this.props.authenticity_token, res => {
-      this.setState({ primaryLanguageDisplayName: res });
+      this.setState({ primaryLanguageDisplayName: res[0] });
     });
+  }
+
+  componentDidUpdate(nextProps, prevState) {
+    // The way that Enrollment is structured, this Patient component is not re-mounted when reviewing a Patient
+    // We need to update the `primaryLanguageDisplayName`. We reset `primary_language` below to break out of the
+    // infinite loop that not resetting it will cause.
+    if (nextProps.details?.primary_language !== prevState.details?.primary_language) {
+      convertLanguageCodesToNames([nextProps.details?.primary_language], this.props.authenticity_token, res => {
+        this.setState({
+          details: { ...nextProps.details, primary_language: nextProps.details?.primary_language },
+          primaryLanguageDisplayName: res[0],
+        });
+      });
+    }
   }
 
   formatName = () => {
