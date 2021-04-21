@@ -108,7 +108,7 @@ function getAllLanguages (authToken, cb) {
  * The groups are by whether the language is Supported and Unsupported.
  * These options are all alphabetized as well.
  * @param {String} authToken
- * @param {Function} cb - the callback to pass the resultss to
+ * @param {Function} cb - the callback to pass the results to
  */
 function getLanguagesAsOptions (authToken, cb) {
   axios.defaults.headers.common['X-CSRF-Token'] = authToken;

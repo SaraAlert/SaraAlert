@@ -1,0 +1,42 @@
+# frozen_string_literal: true
+
+# Helper methods for languages
+module Languages
+  SUPPORTED_LANGUAGES = %w[eng spa spa-pr som fra].freeze
+
+  def self.supported_languages
+    SUPPORTED_LANGUAGES
+  end
+
+  def self.all_languages
+    PATIENT_HELPER_FILES[:languages]
+  end
+
+  def self.attempt_language_matching(lang)
+    # This function returns the `lang` passed in if it can't be matched
+    # Else returns the matched 'lang' iso code (stringified)
+    matched_val = normalize_and_get_language_name(lang)
+    matched_val ? matched_val.to_s : lang
+  end
+
+  # This function will attempt to match the input to a language in the system
+  # PARAM: `lang` can be a three-letter iso-639-2t code, a two-letter iso-639-1 code, or the name (not case sensitive)
+  # PARAM EXAMPLES: 'eng', 'en', 'English', 'ENGLISH' <-- All will map to 'eng'
+  # RETURN VALUE: `nil` if unmatchable, else the three-letter iso code ('eng')
+  def self.normalize_and_get_language_name(lang)
+    return nil if lang.nil?
+
+    lang = lang.to_s.downcase.strip
+    matched_language = nil
+    matched_language = lang.to_sym if all_languages[lang.to_sym].present?
+    return matched_language unless matched_language.nil?
+
+    matched_language = all_languages.find { |_key, val| val[:display]&.casecmp(lang)&.zero? }
+    return matched_language[0] unless matched_language.nil?
+
+    matched_language = all_languages.find { |_key, val| val[:iso6391code]&.casecmp(lang)&.zero? }
+    return matched_language[0] unless matched_language.nil?
+
+    matched_language
+  end
+end

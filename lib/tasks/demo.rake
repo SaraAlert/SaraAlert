@@ -270,10 +270,7 @@ desc 'Backup the database'
       end
       patient[:ethnicity] = rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino'
 
-      available_lang_codes = []
-      PATIENT_HELPER_FILES[:languages].each_with_object([]) do |(k,v)|
-        available_lang_codes << k
-      end
+      available_lang_codes = Languages.all_languages.keys.to_a.map{|x| x.to_s}
 
       patient[:primary_language] = rand < 0.7 ? 'eng' : available_lang_codes[rand(0..available_lang_codes.length)]
       patient[:secondary_language] = available_lang_codes[rand(0..available_lang_codes.length)] if rand < 0.4

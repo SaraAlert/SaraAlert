@@ -26,7 +26,7 @@ class Patient extends React.Component {
   }
 
   componentDidMount() {
-    convertLanguageCodesToNames([this.props.details.primary_language], this.props.authenticity_token, res => {
+    convertLanguageCodesToNames([this.props.details?.primary_language], this.props.authenticity_token, res => {
       this.setState({ primaryLanguageDisplayName: res });
     });
   }

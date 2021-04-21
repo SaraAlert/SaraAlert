@@ -10,7 +10,7 @@ import reportError from '../../util/ReportError';
 class Assessment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: 0, direction: null, lastIndex: null, lang: this.props.lang };
+    this.state = { index: 0, direction: null, lastIndex: null };
   }
 
   goto = targetIndex => {
@@ -71,11 +71,11 @@ class Assessment extends React.Component {
               translations={this.props.translations}
               patient_initials={this.props.patient_initials}
               patient_age={this.props.patient_age}
-              lang={this.state.lang || 'eng'}
+              lang={this.props.lang || 'eng'}
             />
           </Carousel.Item>
           <Carousel.Item>
-            <AssessmentCompleted translations={this.props.translations} lang={this.state.lang || 'eng'} contact_info={this.props.contact_info || {}} />
+            <AssessmentCompleted translations={this.props.translations} lang={this.props.lang || 'eng'} contact_info={this.props.contact_info || {}} />
           </Carousel.Item>
         </Carousel>
       </React.Fragment>

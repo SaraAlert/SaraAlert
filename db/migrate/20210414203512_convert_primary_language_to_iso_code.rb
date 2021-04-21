@@ -86,7 +86,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
         elsif TRANSLATION_COMMENTS.include?(key)
           note = "Primary language was listed as '#{key}' \
                 which could not be matched to the standard language list. This monitoree’s primary \
-                language has been updated to '#{value.nil? ? 'blank' : PATIENT_HELPER_FILES[:languages][value.to_sym][:display]}'. You \
+                language has been updated to '#{value.nil? ? 'blank' : Languages.all_languages[value.to_sym][:display]}'. You \
                 may update this value."
           execute <<-SQL.squish
                 INSERT INTO histories (patient_id,created_by,comment,history_type,created_at,updated_at)
@@ -98,7 +98,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
 
           note = "Secondary language was listed as '#{key}' \
                 which could not be matched to the standard language list. This monitoree’s secondary \
-                language has been updated to '#{value.nil? ? 'blank' : PATIENT_HELPER_FILES[:languages][value.to_sym][:display]}'. You \
+                language has been updated to '#{value.nil? ? 'blank' : Languages.all_languages[value.to_sym][:display]}'. You \
                 may update this value."
           execute <<-SQL.squish
                 INSERT INTO histories (patient_id,created_by,comment,history_type,created_at,updated_at)
@@ -128,13 +128,13 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
 
     lang = lang.to_s.downcase.strip
     matched_language = nil
-    matched_language = lang.to_sym if PATIENT_HELPER_FILES[:languages][lang.to_sym].present?
+    matched_language = lang.to_sym if Languages.all_languages[lang.to_sym].present?
     return matched_language unless matched_language.nil?
 
-    matched_language = PATIENT_HELPER_FILES[:languages].find { |_key, val| val[:display]&.casecmp(lang)&.zero? }
+    matched_language = Languages.all_languages.find { |_key, val| val[:display]&.casecmp(lang)&.zero? }
     return matched_language[0] unless matched_language.nil?
 
-    matched_language = PATIENT_HELPER_FILES[:languages].find { |_key, val| val[:iso6391code]&.casecmp(lang)&.zero? }
+    matched_language = Languages.all_languages.find { |_key, val| val[:iso6391code]&.casecmp(lang)&.zero? }
     return matched_language[0] unless matched_language.nil?
 
     matched_language

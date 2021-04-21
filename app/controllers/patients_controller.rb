@@ -621,21 +621,6 @@ class PatientsController < ApplicationController
     patients_table_data(params)
   end
 
-  # Returns all languagaes as an array of arrays where each inner is in the format ['eng', 'English']
-  # Example Return: [["eng", "English"]...,["zho","Chinese"],["zul","Zulu"]]
-  def language_code_display_pairs
-    render json: PATIENT_HELPER_FILES[:languages].map { |k, v| [k.to_sym, v[:display]] }
-  end
-
-  # Matches code to display name
-  # params[:language_codes] must be a valid array of language codes (no nils or invalids)
-  # Returns array of the display names for those codes
-  # PARAM EXAMPLE: ['oci', 'tgk']
-  # RETURN EXAMPLE: ['Occitan', 'Tajik']
-  def translate_language_codes
-    render json: { display_names: params[:language_codes].map { |lang_code| PATIENT_HELPER_FILES[:languages][lang_code.to_sym][:display] } }
-  end
-
   # Parameters allowed for saving to database
   def allowed_params
     params.require(:patient).permit(

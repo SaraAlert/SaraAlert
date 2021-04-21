@@ -2,7 +2,6 @@
 
 # Helper module for FHIR translations
 module FhirHelper # rubocop:todo Metrics/ModuleLength
-  include PatientHelper
   SA_EXT_BASE_URL = 'http://saraalert.org/StructureDefinition/'
   DATA_ABSENT_URL = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
   OMB_URL = 'ombCategory'
@@ -134,7 +133,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       pl = patient&.communication&.first&.language&.coding&.first&.code
       pl_path = 'Patient.communication[0].language.coding[0].code'
     end
-    primary_language = attempt_language_matching(pl)
+    primary_language = Languages.attempt_language_matching(pl)
     {
       monitoring: { value: patient&.active.nil? ? false : patient.active, path: 'Patient.active' },
       first_name: { value: patient&.name&.first&.given&.first, path: 'Patient.name[0].given[0]' },
@@ -451,10 +450,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   # Given a language string, try to find the corresponding BCP 47 code for it and construct a FHIR::Coding.
   def language_coding(language)
-    mapped_lang = normalize_and_get_language_name(language)
+    mapped_lang = Languages.normalize_and_get_language_name(language)
     return nil if mapped_lang.nil? # Patients should not have invalid languages, but still safer to check here
 
-    language = all_languages[mapped_lang.to_sym]
+    language = Languages.all_languages[mapped_lang.to_sym]
     fhir_coding = FHIR::Coding.new
     fhir_coding.code = language[:iso6391code] || mapped_lang
     fhir_coding.display = language[:display]
@@ -613,13 +612,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     end
 
     address
-  end
-
-  def attempt_language_matching(lang)
-    # This function returns the `lang` passed in if it can't be matched
-    # Else returns the matched 'lang' iso code (stringified)
-    matched_val = normalize_and_get_language_name(lang)
-    matched_val ? matched_val.to_s : lang
   end
 
   def str_ext_path(base_path, ext_id)

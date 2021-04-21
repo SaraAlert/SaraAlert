@@ -1,14 +1,5 @@
 # frozen_string_literal: true
 
-# For backwards-compatibility reasons, we still want to support the old 2-letter language codes
-LEGACY_LANGUAGE_MAPPING = {
-  'en': 'eng',
-  'es': 'spa',
-  'es-PR': 'spa-pr',
-  'so': 'som',
-  'fr': 'fra'
-}.freeze
-
 # AssessmentsController: for assessment actions
 class AssessmentsController < ApplicationController
   def index
@@ -78,12 +69,13 @@ class AssessmentsController < ApplicationController
     @translations = @assessment.translations
     @contact_info = jurisdiction.contact_info
 
-    @lang = %w[eng spa spa-pr som fra].include?(permitted_params[:lang]) ? permitted_params[:lang] : nil
-    if @lang.nil?
-      @lang = LEGACY_LANGUAGE_MAPPING.keys.include?(permitted_params[:lang]&.to_sym) ? LEGACY_LANGUAGE_MAPPING[permitted_params[:lang]&.to_sym] : 'eng'
-    end
+    @lang = LegacyLanguages.legacy_language_code?(permitted_params[:lang]) ?
+            LegacyLanguages.translate_legacy_language_code(permitted_params[:lang]) : permitted_params[:lang]
+    @lang = 'eng' unless Languages.supported_languages.include?(@lang)
+
     @patient_initials = permitted_params[:initials_age]&.upcase&.gsub(/[^a-z]/i, '')
     @patient_age = permitted_params[:initials_age]&.gsub(/[^0-9]/, '')
+    @patient_age = @patient_age.nil? ? nil : Integer(@patient_age)
   end
 
   def create
