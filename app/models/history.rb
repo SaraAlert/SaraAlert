@@ -96,6 +96,11 @@ class History < ApplicationRecord
     where('comment like ?', '%Continue Monitoring in Isolation Workflow%')
   }
 
+  # Histories that indicate a record was moved from isolation to exposure
+  scope :isolation_to_exposure, lambda {
+    where('comment like ?', '%moved from isolation to exposure workflow%')
+  }
+
   # Histories that indicate a public health action
   scope :changed_public_health_action, lambda {
     where('comment like ?', '%changed Latest Public Health Action from "None" to%')

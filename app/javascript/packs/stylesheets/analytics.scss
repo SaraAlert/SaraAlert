@@ -72,6 +72,14 @@
   height: 50px; // the height of each row
 }
 
+.analytics-table-flow {
+  margin-top: 26px;
+}
+
+.analytics-table-flow tbody tr {
+  height: 46px;
+}
+
 .analytics-chart-borders {
   border: 1px solid #cecece6e;
   padding-top: 10px;

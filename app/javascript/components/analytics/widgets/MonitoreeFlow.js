@@ -22,6 +22,8 @@ class MonitoreeFlow extends React.Component {
           transferred_in: thisTimeFrameData?.transferred_in || 0,
           closed: thisTimeFrameData?.closed || 0,
           transferred_out: thisTimeFrameData?.transferred_out || 0,
+          exposure_to_isolation: thisTimeFrameData?.exposure_to_isolation || 0,
+          isolation_to_exposure: thisTimeFrameData?.isolation_to_exposure || 0,
         };
       });
     });
@@ -33,7 +35,7 @@ class MonitoreeFlow extends React.Component {
         <Card className="card-square text-center">
           <div className="analytics-card-header font-weight-bold h5">Monitoree Flow Over Time (All Records)</div>
           <Card.Body className="mt-4">
-            <table className="analytics-table">
+            <table className="analytics-table analytics-table-flow">
               <thead>
                 <tr>
                   <th className="py-0"></th>
@@ -42,49 +44,64 @@ class MonitoreeFlow extends React.Component {
                   ))}
                 </tr>
               </thead>
-              {this.tableData.map((data, index) => (
-                <tbody key={index}>
-                  <tr>
-                    <td className="font-weight-bold text-left p-0">
-                      <u>{_.upperCase(WORKFLOWS[Number(index)])} WORKFLOW</u>
-                    </td>
-                  </tr>
-                  <tr style={{ height: '20px' }}>
-                    <td className="font-weight-bold text-left analytics-mf-subheader">
-                      <u>INCOMING</u>
-                    </td>
-                  </tr>
-                  <tr className="analytics-zebra-bg">
-                    <td className="text-right">NEW ENROLLMENTS</td>
-                    {data.map((x, index) => (
-                      <td key={index}>{x.new_enrollments}</td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td className="text-right">TRANSFERRED IN</td>
-                    {data.map((x, index) => (
-                      <td key={index}>{x.transferred_in}</td>
-                    ))}
-                  </tr>
-                  <tr style={{ height: '20px' }}>
-                    <td className="font-weight-bold text-left analytics-mf-subheader">
-                      <u>OUTGOING</u>
-                    </td>
-                  </tr>
-                  <tr className="analytics-zebra-bg">
-                    <td className="text-right">CLOSED</td>
-                    {data.map((x, index) => (
-                      <td key={index}>{x.closed}</td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td className="text-right">TRANSFERRED OUT</td>
-                    {data.map((x, index) => (
-                      <td key={index}>{x.transferred_out}</td>
-                    ))}
-                  </tr>
-                </tbody>
-              ))}
+              {this.tableData.map((data, index) => {
+                let oppositeWorkflow = _.upperCase(WORKFLOWS[Number(index == 0 ? 1 : 0)]);
+                return (
+                  <tbody key={index}>
+                    <tr>
+                      <td className="font-weight-bold text-left p-0">
+                        <u>{_.upperCase(WORKFLOWS[Number(index)])} WORKFLOW</u>
+                      </td>
+                    </tr>
+                    <tr style={{ height: '20px' }}>
+                      <td className="font-weight-bold text-left analytics-mf-subheader">
+                        <u>INCOMING</u>
+                      </td>
+                    </tr>
+                    <tr className="analytics-zebra-bg">
+                      <td className="text-right">NEW ENROLLMENTS</td>
+                      {data.map((x, index) => (
+                        <td key={index}>{x.new_enrollments}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="text-right">TRANSFERRED IN</td>
+                      {data.map((x, index) => (
+                        <td key={index}>{x.transferred_in}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="text-right">FROM {oppositeWorkflow} WORKFLOW</td>
+                      {data.map((x, index) => (
+                        <td key={index}>{oppositeWorkflow === 'ISOLATION' ? x.isolation_to_exposure : x.exposure_to_isolation}</td>
+                      ))}
+                    </tr>
+                    <tr style={{ height: '20px' }}>
+                      <td className="font-weight-bold text-left analytics-mf-subheader">
+                        <u>OUTGOING</u>
+                      </td>
+                    </tr>
+                    <tr className="analytics-zebra-bg">
+                      <td className="text-right">CLOSED</td>
+                      {data.map((x, index) => (
+                        <td key={index}>{x.closed}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="text-right">TRANSFERRED OUT</td>
+                      {data.map((x, index) => (
+                        <td key={index}>{x.transferred_out}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="text-right">TO {oppositeWorkflow} WORKFLOW</td>
+                      {data.map((x, index) => (
+                        <td key={index}>{oppositeWorkflow === 'ISOLATION' ? x.exposure_to_isolation : x.isolation_to_exposure}</td>
+                      ))}
+                    </tr>
+                  </tbody>
+                );
+              })}
             </table>
             <div className="text-secondary fake-demographic-text mb-1">
               <i className="fas fa-info-circle mr-3 mt-2"></i>

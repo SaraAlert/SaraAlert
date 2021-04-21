@@ -215,20 +215,24 @@ class CacheAnalyticsJob < ApplicationJob
   def self.monitoree_counts_by_reporting_method(analytic_id, monitorees)
     counts = []
     LINELIST_STATUSES.each do |linelist_status|
-      monitorees.monitoring_status(linelist_status)
-                .group(:preferred_contact_method)
-                .order(:preferred_contact_method)
-                .size
-                .map do |preferred_contact_method, total|
-                  counts.append(
-                    monitoree_count(analytic_id,
-                                    true,
-                                    'Contact Method',
-                                    preferred_contact_method.nil? ? 'Missing' : preferred_contact_method,
-                                    total,
-                                    linelist_status)
-                  )
-                end
+      if monitorees.empty?
+        counts.append(monitoree_count(analytic_id, true, 'Contact Method', 'Missing', 0, linelist_status))
+      else
+        monitorees.monitoring_status(linelist_status)
+                  .group(:preferred_contact_method)
+                  .order(:preferred_contact_method)
+                  .size
+                  .map do |preferred_contact_method, total|
+                    counts.append(
+                      monitoree_count(analytic_id,
+                                      true,
+                                      'Contact Method',
+                                      preferred_contact_method.nil? ? 'Missing' : preferred_contact_method,
+                                      total,
+                                      linelist_status)
+                    )
+                  end
+      end
     end
     counts
   end
@@ -373,6 +377,8 @@ class CacheAnalyticsJob < ApplicationJob
   def self.all_monitoree_snapshots(analytic_id, monitorees, subjur_ids)
     counts = []
     MONITOREE_SNAPSHOT_TIME_FRAMES.map do |time_frame|
+      etoi = monitorees.joins(:histories).merge(History.exposure_to_isolation.in_time_frame(time_frame)).size
+      itoe = monitorees.joins(:histories).merge(History.isolation_to_exposure.in_time_frame(time_frame)).size
       WORKFLOWS.map do |workflow|
         counts.append(MonitoreeSnapshot.new(
                         analytic_id: analytic_id,
@@ -396,6 +402,8 @@ class CacheAnalyticsJob < ApplicationJob
                                                  .where_assoc_exists(:patient, isolation: workflow == 'Isolation')
                                                  .in_time_frame(time_frame)
                                                  .size,
+                        exposure_to_isolation: etoi,
+                        isolation_to_exposure: itoe,
                         status: workflow
                       ))
       end

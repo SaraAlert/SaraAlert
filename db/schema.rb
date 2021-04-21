@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_14_203512) do
+ActiveRecord::Schema.define(version: 2021_04_21_171134) do
 
   create_table "analytics", charset: "utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -217,6 +217,8 @@ ActiveRecord::Schema.define(version: 2021_04_14_203512) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "status", default: "Missing"
+    t.integer "exposure_to_isolation"
+    t.integer "isolation_to_exposure"
     t.index ["analytic_id"], name: "index_monitoree_snapshots_on_analytic_id"
   end
 
