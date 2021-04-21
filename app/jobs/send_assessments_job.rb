@@ -11,7 +11,7 @@ class SendAssessmentsJob < ApplicationJob
     # Check what the max thread pool is for the DB since that is the limiting factor
     # on how many threads can be used in the job. Subtracting 2 from the pool
     # size to be on the safer side of exhausting the connection pool.
-    total_threads = [1, ActiveRecord::Base.connection_pool.stat[:size] - 2].max
+    total_threads = ENV['SEND_ASSESSMENTS_THREADS']&.to_i || 1
 
     # [1, x].max here avoids an exception when there are 0 eligible patients
     slice_size = [1, patient_ids.size / total_threads].max
