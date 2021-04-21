@@ -7,20 +7,7 @@ class SendAssessmentsJob < ApplicationJob
   def perform(*_args)
     patient_ids = Patient.reminder_eligible.pluck(:id)
     eligible = patient_ids.size
-
-    # Check what the max thread pool is for the DB since that is the limiting factor
-    # on how many threads can be used in the job. Subtracting 2 from the pool
-    # size to be on the safer side of exhausting the connection pool.
-    total_threads = ENV['SEND_ASSESSMENTS_THREADS']&.to_i || 1
-
-    # [1, x].max here avoids an exception when there are 0 eligible patients
-    slice_size = [1, patient_ids.size / total_threads].max
-
-    threads = patient_ids.each_slice(slice_size).map do |patient_batch|
-      Thread.new { perform_batch(patient_batch) }
-    end
-    threads.each(&:join)
-    results = combine_batch_results(threads.map(&:value))
+    results = perform_batch(patient_ids)
     UserMailer.assessment_job_email(results[:sent], results[:not_sent], eligible).deliver_now
   end
 
@@ -55,15 +42,15 @@ class SendAssessmentsJob < ApplicationJob
     }
   end
 
-  def combine_batch_results(batch_results)
-    results = {
-      sent: [],
-      not_sent: []
-    }
-    batch_results.each do |batch_result|
-      results[:sent] += batch_result[:sent]
-      results[:not_sent] += batch_result[:not_sent]
-    end
-    results
-  end
+  # def combine_batch_results(batch_results)
+  #   results = {
+  #     sent: [],
+  #     not_sent: []
+  #   }
+  #   batch_results.each do |batch_result|
+  #     results[:sent] += batch_result[:sent]
+  #     results[:not_sent] += batch_result[:not_sent]
+  #   end
+  #   results
+  # end
 end
