@@ -333,7 +333,7 @@ class CustomTable extends React.Component {
 }
 
 CustomTable.propTypes = {
-  dataType: PropTypes.string.required,
+  dataType: PropTypes.string.isRequired,
   columnData: PropTypes.array,
   rowData: PropTypes.array,
   totalRows: PropTypes.number,
