@@ -82,6 +82,12 @@ class ApiExportControllerTest < ActionDispatch::IntegrationTest
     assert_expected_patients({ monitoring: 'true' }, { monitoring: true })
   end
 
+  test 'should get active patients with a boolean parameter' do
+    create(:patient, creator: @shadow_user, monitoring: true)
+    create(:patient, creator: @shadow_user, monitoring: false)
+    assert_expected_patients({ monitoring: true }, { monitoring: true }, :json)
+  end
+
   test 'should get inactive patients' do
     create(:patient, creator: @shadow_user, monitoring: true)
     create(:patient, creator: @shadow_user, monitoring: false)
@@ -149,11 +155,12 @@ class ApiExportControllerTest < ActionDispatch::IntegrationTest
     assert_expected_patients({ caseStatus: 'confirmed, probable' }, { case_status: %w[Confirmed Probable] })
   end
 
-  def assert_expected_patients(params, scope)
+  def assert_expected_patients(params, scope, type = nil)
     get(
       '/api/nbs/patient',
       headers: { Authorization: "Bearer #{@system_patient_token_r.token}", Accept: 'application/zip' },
-      params: params
+      params: params,
+      as: type
     )
     assert_response :ok
     ids = []

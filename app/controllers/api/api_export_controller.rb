@@ -23,8 +23,8 @@ class Api::ApiExportController < ActionController::API
   def nbs_patients
     search_params = params.slice('workflow', 'monitoring', 'caseStatus', 'updatedAt')
     patients = search_params.blank? ? Patient.none : Jurisdiction.find_by(id: @current_client_app[:jurisdiction_id])&.all_patients_excluding_purged
-
-    search_params.reject { |_, v| v.nil? }.transform_values { |v| v.downcase.strip }.each do |field, search|
+    
+    search_params.reject { |_, v| v.nil? }.transform_values { |v| v.to_s.downcase.strip }.each do |field, search|
       case field
       when 'workflow'
         patients = case search
