@@ -175,7 +175,7 @@ class PatientMailer < ApplicationMailer
     end
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before SMTP call
-    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :eng)) do |format|
+    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
     patient.active_dependents_and_self.each { |pat| add_success_history(pat) }
@@ -189,7 +189,7 @@ class PatientMailer < ApplicationMailer
 
     @patient = patient
     @lang = patient.select_language
-    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.closed.subject', locale: @lang || :eng)) do |format|
+    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.closed.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
   end

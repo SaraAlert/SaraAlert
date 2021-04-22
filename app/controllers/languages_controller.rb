@@ -2,7 +2,7 @@
 
 # LanguagesController: for language functionality
 class LanguagesController < ApplicationController
-  def index; end
+  before_action :authenticate_user!
 
   # Returns all languagaes as an array of arrays where each inner is in the format
   # ['eng', 'English', supported: {sms: true, phone: true, email: true}]

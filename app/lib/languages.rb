@@ -42,6 +42,8 @@ module Languages
     return matched_language unless matched_language.nil?
 
     matched_language = all_languages.find { |_key, val| val[:display]&.casecmp(lang)&.zero? }
+    # [:fra, {:display=>"French", :iso6391code=>"fr", :system=>"iso639-2t" }]
+    # matched_language will take the form of the above, and we want to return the 3-letter code at [0]
     return matched_language[0] unless matched_language.nil?
 
     matched_language = all_languages.find { |_key, val| val[:iso6391code]&.casecmp(lang)&.zero? }

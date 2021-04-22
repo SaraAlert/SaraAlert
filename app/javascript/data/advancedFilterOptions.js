@@ -176,7 +176,7 @@ export const advancedFilterOptions = [
     title: 'Primary Language (Select)',
     description: 'Monitoree primary language',
     type: 'select',
-    options: [] // calculated asynchronously in the AdvancedFilter componentt,
+    options: [] // populated asynchronously in the AdvancedFilter component
   },
   {
     name: 'risk-exposure',

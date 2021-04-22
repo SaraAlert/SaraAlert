@@ -269,7 +269,7 @@ class Identification extends React.Component {
     return (
       <Select
         inputId={inputId}
-        isClearable
+        isClearable={value.value}
         value={value}
         options={this.state.languageOptions}
         onChange={e => this.handleLanguageChange(e, isPrimary)}

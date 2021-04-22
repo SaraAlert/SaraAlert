@@ -32,7 +32,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
   # For example, it doesnt make sense to tell the User that we've translated "ENGLLISH" to "English"
   # But if we translate 'dad span/eng' to spanish and english, it's worth telling them in a note
   # Only for values listed below will the system create History items explaining the language mapping
-  TRANSLATION_COMMENTS = [' French-based (Other)', 'American Sign Language', 'Chin', 'Chinese (Cantonese)', 'Chinese (Mandarin)',
+  TRANSLATION_COMMENTS = [' French-based (Other)', 'Chin', 'Chinese (Cantonese)', 'Chinese (Mandarin)',
                           'Chinese (not specified)', 'Creoles and pidgins', 'Dari', 'HAITIAN FRENCH CREOLE', 'Haitian Creole', 'Jefferson', 'Laos',
                           'Laotian ', 'Mandarin', 'RUNYORO', 'Sign Languages', 'acholi', 'afro-asiatic languages', 'dad limited eng', 'dad span',
                           'dad span/eng', 'eng/braz', 'farsi', 'lingala, french', 'lingala/portuguese', 'manderin chinese', 'no', 'parent eng',
@@ -120,7 +120,8 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     remove_column :patients, :legacy_primary_language
     remove_column :patients, :legacy_secondary_language
 
-    History.where(history_type: 'System Note').destroy_all
+    # Destroy all System Notes that contain the text `language was listed as`
+    History.where('history_type = ? AND comment like ?', 'System Note', '%language was listed as%').destroy_all
   end
 
   def match_language(lang)
@@ -132,6 +133,8 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     return matched_language unless matched_language.nil?
 
     matched_language = Languages.all_languages.find { |_key, val| val[:display]&.casecmp(lang)&.zero? }
+    # [:fra, {:display=>"French", :iso6391code=>"fr", :system=>"iso639-2t" }]
+    # matched_language will take the form of the above, and we want to return the 3-letter code at [0]
     return matched_language[0] unless matched_language.nil?
 
     matched_language = Languages.all_languages.find { |_key, val| val[:iso6391code]&.casecmp(lang)&.zero? }
