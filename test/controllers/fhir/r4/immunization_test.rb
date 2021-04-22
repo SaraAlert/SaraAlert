@@ -28,7 +28,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     vaccine_id = 3
     get(
       '/fhir/r4/Immunization/' + vaccine_id.to_s,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     assert_equal JSON.parse(Vaccine.find_by_id(vaccine_id).as_fhir.to_json), JSON.parse(response.body)
@@ -37,7 +37,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be forbidden via show for inaccessible Immunization' do
     get(
       '/fhir/r4/Immunization/4',
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -48,7 +48,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Immunization',
       params: @vaccine_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
 
     assert_response :created
@@ -81,7 +81,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Immunization',
       params: @vaccine_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -96,7 +96,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Immunization',
       params: @vaccine_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -114,7 +114,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     post(
       '/fhir/r4/Immunization',
       params: immunization_json_str,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -134,7 +134,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       "/fhir/r4/Immunization/#{@vaccine_1.id}",
       params: @vaccine_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :ok
     updated_v = Vaccine.find_by_id(@vaccine_1.id)
@@ -161,12 +161,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @vaccine_1.save
     original_v = @vaccine_1.dup
     patch = [
-      { 'op': 'replace', 'path': '/protocolApplied/0/doseNumberString', 'value': 'Unknown' }
+      { op: 'replace', path: '/protocolApplied/0/doseNumberString', value: 'Unknown' }
     ]
     patch(
       "/fhir/r4/Immunization/#{@vaccine_1.id}",
       params: patch.to_json,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/json-patch+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/json-patch+json' }
     )
     assert_response :ok
     updated_v = Vaccine.find_by_id(@vaccine_1.id)
@@ -190,7 +190,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       "/fhir/r4/Immunization/#{@vaccine_1.id}",
       params: @vaccine_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -206,7 +206,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       "/fhir/r4/Immunization/#{@vaccine_1.id}",
       params: @vaccine_1.as_fhir.to_json,
-      headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -225,7 +225,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       "/fhir/r4/Immunization/#{@vaccine_1.id}",
       params: immunization_json_str,
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
@@ -244,7 +244,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     patient = Patient.find_by_id(@vaccine_1.patient_id)
     get(
       "/fhir/r4/Immunization?patient=Patient/#{@vaccine_1.patient_id}",
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -257,7 +257,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should find no Immunizations for an invalid Patient via search' do
     get(
       '/fhir/r4/Immunization?patient=Patient/blah',
-      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
