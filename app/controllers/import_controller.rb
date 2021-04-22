@@ -41,7 +41,10 @@ class ImportController < ApplicationController
       xlsx = Roo::Excelx.new(params[:file].tempfile.path, file_warning: :ignore)
       validate_headers(format, xlsx.sheet(0).row(1))
       raise ValidationError.new('File must contain at least one monitoree to import', 2) if xlsx.sheet(0).last_row < 2
-      raise ValidationError.new('Please limit each import to 1000 monitorees.', 1000) if xlsx.sheet(0).last_row > 1000
+      raise ValidationError.new('Please limit each import to 1000 monitorees.', 1000) if xlsx.sheet(0).last_row > 1001
+
+      # define patients for duplicate detection here to avoid duplicate queries
+      patients_for_duplicate_detection = current_user.viewable_patients
 
       xlsx.sheet(0).each_with_index do |row, row_ind|
         next if row_ind.zero? # Skip headers
@@ -113,7 +116,7 @@ class ImportController < ApplicationController
           end
 
           # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
-          patient[:duplicate_data] = current_user.viewable_patients.duplicate_data_detection(patient)
+          patient[:duplicate_data] = patients_for_duplicate_detection.duplicate_data_detection(patient)
         rescue ValidationError => e
           @errors << e&.message || "Unknown error on row #{row_ind}"
         rescue StandardError => e
