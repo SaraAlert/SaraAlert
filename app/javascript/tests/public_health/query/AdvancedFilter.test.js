@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import _ from 'lodash';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
-import { Button, ButtonGroup, Dropdown, Form, Modal, OverlayTrigger, ToggleButton } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Dropdown, Form, Modal, OverlayTrigger, ToggleButton } from 'react-bootstrap';
 import AdvancedFilter from '../../../components/public_health/query/AdvancedFilter';
 import DateInput from '../../../components/util/DateInput';
 import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
@@ -525,7 +525,9 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('.advanced-filter-multi-type-statement').find(Button).at(1).find('i').hasClass('fa-minus')).toBeTruthy();
     expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterLabResults.filterOption.tooltip);
+    expect(wrapper.find(ReactTooltip).length).toEqual(2);
+    expect(wrapper.find(ReactTooltip).at(0).find('span').text()).toEqual('Select to add multiple Lab Result search criteria.');
+    expect(wrapper.find(ReactTooltip).at(1).find('span').text()).toEqual(mockFilterLabResults.filterOption.tooltip);
   });
 
   it('Properly renders select option of advanced filter multi type statement', () => {
@@ -571,10 +573,12 @@ describe('AdvancedFilter', () => {
     _.times(mockFilterLabResults.filterOption.fields.length-1, (i) => {
       expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(i+1);
       expect(wrapper.find('.and-row').length).toEqual(i);
+      expect(wrapper.find('#lab-result-0-multi-add').exists()).toBeTruthy();
       wrapper.find('.btn-circle').simulate('click');
     });
     expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length);
     expect(wrapper.find('.and-row').length).toEqual(mockFilterLabResults.filterOption.fields.length-1);
+    expect(wrapper.find('#lab-result-0-multi-add').exists()).toBeFalsy();
   });
 
   it('Adding additional fields to multi filter does not allow for repeats', () => {

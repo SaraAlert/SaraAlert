@@ -1152,17 +1152,22 @@ class AdvancedFilter extends React.Component {
                 </React.Fragment>
               )}
               {multiIndex + 1 === total && multiIndex + 1 < filter.fields.length && (
-                <div className="my-auto">
-                  <Button
-                    className="btn-circle"
-                    variant="secondary"
-                    onClick={() => {
-                      this.addMultiStatement(filter, statementIndex);
-                    }}
-                    aria-label="Add Advanced Filter Multi Option">
-                    <i className="fas fa-plus"></i>
-                  </Button>
-                </div>
+                <React.Fragment>
+                  <div className="my-auto" data-for={`${filter.name}-${statementIndex}-multi-add`} data-tip="">
+                    <Button
+                      className="btn-circle"
+                      variant="secondary"
+                      onClick={() => {
+                        this.addMultiStatement(filter, statementIndex);
+                      }}
+                      aria-label="Add Advanced Filter Multi Option">
+                      <i className="fas fa-plus"></i>
+                    </Button>
+                  </div>
+                  <ReactTooltip id={`${filter.name}-${statementIndex}-multi-add`} multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
+                    <span>Select to add multiple Lab Result search criteria.</span>
+                  </ReactTooltip>
+                </React.Fragment>
               )}
             </Form.Group>
           </Col>
