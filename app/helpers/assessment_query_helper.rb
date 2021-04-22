@@ -77,8 +77,8 @@ module AssessmentQueryHelper
 
     # Get distinct threshold conditions for these assessments
     threshold_condition_hashes = ReportedCondition.where(assessment_id: assessment_ids).select(:threshold_condition_hash)
-    threshold_conditions = Hash[ThresholdCondition.where(threshold_condition_hash: threshold_condition_hashes)
-                                                  .pluck(:id, :threshold_condition_hash)].transform_values { |hash| { hash: hash, symptoms: {} } }
+    threshold_conditions = ThresholdCondition.where(threshold_condition_hash: threshold_condition_hashes).pluck(:id, :threshold_condition_hash)
+                                             .to_h.transform_values { |hash| { hash: hash, symptoms: {} } }
 
     # Get all threshold symptoms associated with the distinct threshold condition hashes
     Symptom.where(condition_id: threshold_conditions.keys)
@@ -89,11 +89,11 @@ module AssessmentQueryHelper
     threshold_symptoms = threshold_conditions.transform_keys { |condition_id| threshold_conditions[condition_id][:hash] }
 
     # Query relevant fields for all associated reported conditions
-    reported_conditions = Hash[ReportedCondition.where(assessment_id: assessment_ids).pluck(:id, :assessment_id, :threshold_condition_hash)
-                                                .map { |(id, assessment_id, hash)| [id, { assessment_id: assessment_id, hash: hash, symptoms: [] }] }]
+    reported_conditions = ReportedCondition.where(assessment_id: assessment_ids).pluck(:id, :assessment_id, :threshold_condition_hash)
+                                           .map { |(id, assessment_id, hash)| [id, { assessment_id: assessment_id, hash: hash, symptoms: [] }] }.to_h
 
     # Create hash for condition id to assessment id lookup
-    reported_condition_ids_by_assessment_id = Hash[reported_conditions.map { |id, reported_condition| [reported_condition[:assessment_id], id] }]
+    reported_condition_ids_by_assessment_id = reported_conditions.map { |id, reported_condition| [reported_condition[:assessment_id], id] }.to_h
 
     # Query relevant fields for all associated symptoms and include them in the reported conditions
     Symptom.where(condition_id: reported_conditions.keys)
