@@ -285,7 +285,7 @@ export const advancedFilterOptions = [
       },
       {
         name: 'report',
-        title: 'report',
+        title: 'report date',
         type: 'date'
       }
     ]
