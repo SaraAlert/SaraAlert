@@ -751,9 +751,9 @@ class Patient < ApplicationRecord
 
     # check for a duplicate state/local id
     if patient[:user_defined_id_statelocal].present?
-      dup_statelocal_id = where('trim(user_defined_id_statelocal) = ?', patient[:user_defined_id_statelocal]&.to_s&.strip)
+      dup_statelocal_id_matches = where(user_defined_id_statelocal: patient[:user_defined_id_statelocal]&.to_s&.strip).size
+      duplicate_field_data << { count: dup_statelocal_id_matches, fields: ['State/Local ID'] } unless dup_statelocal_id_matches.zero?
     end
-    duplicate_field_data << { count: dup_statelocal_id.size, fields: ['State/Local ID'] } if dup_statelocal_id.present?
 
     # if first_name or last_name is null skip duplicate detection
     return { is_duplicate: duplicate_field_data.any?, duplicate_field_data: duplicate_field_data } if patient[:first_name].nil? || patient[:last_name].nil?
@@ -768,7 +768,10 @@ class Patient < ApplicationRecord
 
     # Determine which type of duplicate exists
     where(first_name: patient[:first_name], last_name: patient[:last_name])
-      .pluck(:sex, ActiveRecord::Base.sanitize_sql(Arel.sql('CAST(date_of_birth AS CHAR)'))).each do |(sex, dob)|
+      .pluck(:sex, :date_of_birth).each do |(sex, dob)|
+        # Cast dob from date to string for comparison
+        dob = dob&.to_s
+
         # If the sex isn't nil and doesn't match it is not a duplicate. Same for DoB.
         if (patient[:sex].present? && sex.present? && patient[:sex] != sex) ||
            (date_of_birth.present? && dob.present? && date_of_birth != dob)
