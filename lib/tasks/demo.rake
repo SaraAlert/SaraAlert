@@ -412,7 +412,7 @@ desc 'Backup the database'
     end
 
     Patient.import! patients
-    new_patients = Patient.where('created_at >= ?', today)
+    new_patients = Patient.where('created_at >= ?', today - DateTime.now.utc_offset)
     new_patients.update_all('responder_id = id')
 
     # Create household members (10-20% of patients are managed by a HoH)
@@ -981,12 +981,7 @@ desc 'Backup the database'
   end
 
   def create_fake_timestamp(from, to)
-    timestamp = Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
-    # Ensure the UTC timezone conversion of the returned timestamp is within the desired timeframe
-    while(timestamp.utc > to + 1)
-      timestamp = Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
-    end
-    timestamp
+    Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
   end
 
   def duplicate_timestamps(from, to)
