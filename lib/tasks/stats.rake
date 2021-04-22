@@ -355,12 +355,12 @@ namespace :stats do
         activity_first_48h_iso += 1 if patient.histories.user_generated_between(patient.created_at, patient.created_at + 48.hours).count.positive?
       end
       results[title]['Mean number of reporting days'] = {
-        exposure: reporting_days_exp.inject{ |sum, el| sum + el }.to_f / reporting_days_exp.size,
-        isolation: reporting_days_iso.inject{ |sum, el| sum + el }.to_f / reporting_days_iso.size,
+        exposure: reporting_days_exp.empty? ? 0 : reporting_days_exp.inject{ |sum, el| sum + el }.to_f / reporting_days_exp.size,
+        isolation: reporting_days_iso.empty? ? 0 : reporting_days_iso.inject{ |sum, el| sum + el }.to_f / reporting_days_iso.size,
       }
       results[title]['Mean number of reporting days for those responding to all'] = {
-        exposure: reporting_days_responded_to_all_exp.inject{ |sum, el| sum + el }.to_f / reporting_days_responded_to_all_exp.size,
-        isolation: reporting_days_responded_to_all_iso.inject{ |sum, el| sum + el }.to_f / reporting_days_responded_to_all_iso.size,
+        exposure: reporting_days_responded_to_all_exp.empty? ? 0 : reporting_days_responded_to_all_exp.inject{ |sum, el| sum + el }.to_f / reporting_days_responded_to_all_exp.size,
+        isolation: reporting_days_responded_to_all_iso.empty? ? 0 : reporting_days_responded_to_all_iso.inject{ |sum, el| sum + el }.to_f / reporting_days_responded_to_all_iso.size,
       }
       results[title]['Number of monitorees responding to ALL automated messages (monitoree or proxy response only)'] = {
         exposure: responded_to_all_reminders_self_exp,
@@ -379,56 +379,56 @@ namespace :stats do
         isolation: not_respond_to_all_reminders_self_iso
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all daily automated messages (monitoree or proxy response only) - Mean number of days with no response'] = {
-        exposure: days_no_response_self_exp.inject{ |sum, el| sum + el }.to_f / days_no_response_self_exp.size,
-        isolation: days_no_response_self_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_self_iso.size
+        exposure: days_no_response_self_exp.empty? ? 0 : days_no_response_self_exp.inject{ |sum, el| sum + el }.to_f / days_no_response_self_exp.size,
+        isolation: days_no_response_self_iso.empty? ? 0 : days_no_response_self_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_self_iso.size
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all daily automated messages (monitoree or proxy response only) - Mean number of consecutive days with no response'] = {
-        exposure: cons_days_no_response_self_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_exp.size,
-        isolation: cons_days_no_response_self_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_iso.size
+        exposure: cons_days_no_response_self_exp.empty? ? 0 : cons_days_no_response_self_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_exp.size,
+        isolation: cons_days_no_response_self_iso.empty? ? 0 : cons_days_no_response_self_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_iso.size
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (any response documented, including by public health user)'] = {
         exposure: not_respond_to_all_reminders_self_and_user_exp,
         isolation: not_respond_to_all_reminders_self_and_user_iso
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (any response documented, including by public health user) - Mean number of days with no response'] = {
-        exposure: days_no_response_self_and_user_exp.inject{ |sum, el| sum + el }.to_f / days_no_response_self_and_user_exp.size,
-        isolation: days_no_response_self_and_user_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_self_and_user_iso.size
+        exposure: days_no_response_self_and_user_exp.empty? ? 0 : days_no_response_self_and_user_exp.inject{ |sum, el| sum + el }.to_f / days_no_response_self_and_user_exp.size,
+        isolation: days_no_response_self_and_user_iso.empty? ? 0 : days_no_response_self_and_user_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_self_and_user_iso.size
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (any response documented, including by public health user) - Mean number of consecutive days with no response'] = {
-        exposure: cons_days_no_response_self_and_user_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_and_user_exp.size,
-        isolation: cons_days_no_response_self_and_user_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_and_user_iso.size
+        exposure: cons_days_no_response_self_and_user_exp.empty? ? 0 : cons_days_no_response_self_and_user_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_and_user_exp.size,
+        isolation: cons_days_no_response_self_and_user_iso.empty? ? 0 : cons_days_no_response_self_and_user_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_and_user_iso.size
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (public health user only)'] = {
         exposure: not_respond_to_all_reminders_user_exp,
         isolation: not_respond_to_all_reminders_user_iso
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (public health user only) - Mean number of days with no response'] = {
-        exposure: days_no_response_user_exp.inject{ |sum, el| sum + el }.to_f / days_no_response_user_exp.size,
-        isolation: days_no_response_user_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_user_iso.size
+        exposure: days_no_response_user_exp.empty? ? 0 : days_no_response_user_exp.inject{ |sum, el| sum + el }.to_f / days_no_response_user_exp.size,
+        isolation: days_no_response_user_iso.empty? ? 0 : days_no_response_user_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_user_iso.size
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (public health user only) - Mean number of consecutive days with no response'] = {
-        exposure: cons_days_no_response_user_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_user_exp.size,
-        isolation: cons_days_no_response_user_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_user_iso.size
+        exposure: cons_days_no_response_user_exp.empty? ? 0 : cons_days_no_response_user_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_user_exp.size,
+        isolation: cons_days_no_response_user_iso.empty? ? 0 : cons_days_no_response_user_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_user_iso.size
       }
       results[title]['Monitoree Response Rate - E-mailed Web Link'] = {
-        exposure: emailed_rates_exp.inject{ |sum, el| sum + el }.to_f / emailed_rates_exp.size,
-        isolation: emailed_rates_iso.inject{ |sum, el| sum + el }.to_f / emailed_rates_iso.size
+        exposure: emailed_rates_exp.empty? ? 0 : emailed_rates_exp.inject{ |sum, el| sum + el }.to_f / emailed_rates_exp.size,
+        isolation: emailed_rates_iso.empty? ? 0 : emailed_rates_iso.inject{ |sum, el| sum + el }.to_f / emailed_rates_iso.size
       }
       results[title]['Monitoree Response Rate - SMS Texted Weblink'] = {
-        exposure: sms_weblink_rates_exp.inject{ |sum, el| sum + el }.to_f / sms_weblink_rates_exp.size,
-        isolation: sms_weblink_rates_iso.inject{ |sum, el| sum + el }.to_f / sms_weblink_rates_iso.size
+        exposure: sms_weblink_rates_exp.empty? ? 0 : sms_weblink_rates_exp.inject{ |sum, el| sum + el }.to_f / sms_weblink_rates_exp.size,
+        isolation: sms_weblink_rates_iso.empty? ? 0 : sms_weblink_rates_iso.inject{ |sum, el| sum + el }.to_f / sms_weblink_rates_iso.size
       }
       results[title]['Monitoree Response Rate - Telephone call'] = {
-        exposure: phone_rates_exp.inject{ |sum, el| sum + el }.to_f / phone_rates_exp.size,
-        isolation: phone_rates_iso.inject{ |sum, el| sum + el }.to_f / phone_rates_iso.size
+        exposure: phone_rates_exp.empty? ? 0 : phone_rates_exp.inject{ |sum, el| sum + el }.to_f / phone_rates_exp.size,
+        isolation: phone_rates_iso.empty? ? 0 : phone_rates_iso.inject{ |sum, el| sum + el }.to_f / phone_rates_iso.size
       }
       results[title]['Monitoree Response Rate - SMS Text-message'] = {
-        exposure: sms_text_rates_exp.inject{ |sum, el| sum + el }.to_f / sms_text_rates_exp.size,
-        isolation: sms_text_rates_iso.inject{ |sum, el| sum + el }.to_f / sms_text_rates_iso.size
+        exposure: sms_text_rates_exp.empty? ? 0 : sms_text_rates_exp.inject{ |sum, el| sum + el }.to_f / sms_text_rates_exp.size,
+        isolation: sms_text_rates_iso.empty? ? 0 : sms_text_rates_iso.inject{ |sum, el| sum + el }.to_f / sms_text_rates_iso.size
       }
       results[title]['Monitoree Response Rate - Overall'] = {
-        exposure: overall_rates_exp.inject{ |sum, el| sum + el }.to_f / overall_rates_exp.size,
-        isolation: overall_rates_iso.inject{ |sum, el| sum + el }.to_f / overall_rates_iso.size
+        exposure: overall_rates_exp.empty? ? 0 : overall_rates_exp.inject{ |sum, el| sum + el }.to_f / overall_rates_exp.size,
+        isolation: overall_rates_iso.empty? ? 0 : overall_rates_iso.inject{ |sum, el| sum + el }.to_f / overall_rates_iso.size
       }
       results[title]['Monitoree Total Sent Message Count - E-mailed Web Link'] = {
         exposure: emailed_rates_count_exp,
@@ -459,12 +459,12 @@ namespace :stats do
         isolation: active_iso.where_assoc_exists(:histories) { reports_reviewed_since(start) }.count
       }
       results[title]['Time between last date of exposure and enrollment in monitoring (days)'] = {
-        exposure: enrollment_to_lde_exp.inject{ |sum, el| sum + el }.to_f / enrollment_to_lde_exp.size,
+        exposure: enrollment_to_lde_exp.empty? ? 0 : enrollment_to_lde_exp.inject{ |sum, el| sum + el }.to_f / enrollment_to_lde_exp.size,
         isolation: 'N/A'
       }
       results[title]['Time between create date and first report by monitoree'] = {
-        exposure: enrollment_to_first_rep_exp.inject{ |sum, el| sum + el }.to_f / enrollment_to_first_rep_exp.size,
-        isolation: enrollment_to_first_rep_iso.inject{ |sum, el| sum + el }.to_f / enrollment_to_first_rep_iso.size
+        exposure: enrollment_to_first_rep_exp.empty? ? 0 : enrollment_to_first_rep_exp.inject{ |sum, el| sum + el }.to_f / enrollment_to_first_rep_exp.size,
+        isolation: enrollment_to_first_rep_iso.empty? ? 0 : enrollment_to_first_rep_iso.inject{ |sum, el| sum + el }.to_f / enrollment_to_first_rep_iso.size
       }
       results[title]['Number of monitorees with any action other than none in their history'] = {
         exposure: active_exp.where_assoc_exists(:histories) { user_generated_since(start) }.count,
@@ -588,12 +588,19 @@ namespace :stats do
         exposure: active_exp.where('date_of_birth <= ?', 110.years.ago).or(active_exp.where(date_of_birth: ['', nil])).count,
         isolation: active_iso.where('date_of_birth <= ?', 110.years.ago).or(active_exp.where(date_of_birth: ['', nil])).count
       }
-      dates_exp = active_exp.where('date_of_birth > ?', 110.years.ago).pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
-      dates_iso = active_exp.where('date_of_birth > ?', 110.years.ago).pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
-      results[title]['Age - Continuous mean'] = {
-        exposure: DateTime.now.year - Date.strptime((dates_exp.sum / dates_exp.count).to_i.to_s, "%s").year,
-        isolation: DateTime.now.year - Date.strptime((dates_iso.sum / dates_iso.count).to_i.to_s, "%s").year
-      }
+      begin
+        dates_exp = active_exp.where('date_of_birth > ?', 110.years.ago).pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
+        dates_iso = active_exp.where('date_of_birth > ?', 110.years.ago).pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
+        results[title]['Age - Continuous mean'] = {
+          exposure: dates_exp.empty? ? 'NULL' : (DateTime.now.year - Date.strptime((dates_exp.sum / dates_exp.count).to_i.to_s, "%s").year),
+          isolation: dates_iso.empty? ? 'NULL' : (DateTime.now.year - Date.strptime((dates_iso.sum / dates_iso.count).to_i.to_s, "%s").year)
+        }
+      rescue StandardError => error
+        results[title]['Age - Continuous mean'] = {
+          exposure: 'NULL',
+          isolation: 'NULL'
+        }
+      end
       results[title]['Preferred Reporting Method - Telephone call'] = {
         exposure: active_exp.where(preferred_contact_method: 'Telephone call').count,
         isolation: active_iso.where(preferred_contact_method: 'Telephone call').count
