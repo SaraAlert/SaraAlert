@@ -488,10 +488,11 @@ class Fhir::R4::ApiController < ActionController::API
     summary_mode = page_size.zero?
     page = params.permit(:page)[:page].to_i
     page = 1 if page.zero?
-    results = []
-    unless summary_mode || resources.blank?
+    entries = resources.size
+    unless summary_mode
       results = resources.paginate(per_page: page_size, page: page).collect do |r|
-        FHIR::Bundle::Entry.new(fullUrl: full_url_helper(r.as_fhir), resource: r.as_fhir)
+        r_as_fhir = r.as_fhir
+        FHIR::Bundle::Entry.new(fullUrl: full_url_helper(r_as_fhir), resource: r_as_fhir)
       end
     end
 
@@ -500,9 +501,9 @@ class Fhir::R4::ApiController < ActionController::API
       id: SecureRandom.uuid,
       meta: FHIR::Meta.new(lastUpdated: DateTime.now.strftime('%FT%T%:z')),
       type: 'searchset',
-      total: resources&.size || 0,
-      link: summary_mode ? nil : bundle_search_links(page, page_size, resources, resource_type, search_params),
-      entry: results
+      total: entries,
+      link: summary_mode ? nil : bundle_search_links(page, page_size, resource_type, search_params, entries),
+      entry: results || []
     )
 
     status_ok(bundle) && return
@@ -743,25 +744,29 @@ class Fhir::R4::ApiController < ActionController::API
   def check_client_type
     return if doorkeeper_token.nil?
 
-    if current_resource_owner.present?
-      Rails.logger.info "Client: User, ID: #{current_resource_owner.id}, Email: #{current_resource_owner.email}"
-      if current_resource_owner.can_use_api?
+    # query current_resource_owner and current_client_application from db only once
+    resource_owner = current_resource_owner
+    client_application = current_client_application unless resource_owner.present?
+
+    if resource_owner.present?
+      Rails.logger.info "Client: User, ID: #{resource_owner.id}, Email: #{resource_owner.email}"
+      if resource_owner.can_use_api?
         @user_workflow = true
-        @current_actor = current_resource_owner
-        @current_actor_label = "#{current_resource_owner.email} (API)"
+        @current_actor = resource_owner
+        @current_actor_label = "#{resource_owner.email} (API)"
         nil
       else
         head :unauthorized
       end
-    elsif current_client_application.present?
-      Rails.logger.info "Client: Application, ID: #{current_client_application.id}, Name: #{current_client_application.name}"
+    elsif client_application.present?
+      Rails.logger.info "Client: Application, ID: #{client_application.id}, Name: #{client_application.name}"
       @m2m_workflow = true
 
       # Actor is client application - need to get created proxy user
-      proxy_user = User.where(is_api_proxy: true).find_by(id: current_client_application.user_id)
+      proxy_user = User.where(is_api_proxy: true).find_by(id: client_application.user_id)
       head :unauthorized if proxy_user.nil?
       @current_actor = proxy_user
-      @current_actor_label = "#{current_client_application.name} (API)"
+      @current_actor_label = "#{client_application.name} (API)"
     end
   end
 
@@ -1000,7 +1005,7 @@ class Fhir::R4::ApiController < ActionController::API
         query = query.where(monitoring: search == 'true')
       end
     end
-    query
+    query.includes(:jurisdiction, :creator)
   end
 
   # Search for laboratories
@@ -1032,7 +1037,7 @@ class Fhir::R4::ApiController < ActionController::API
         query = query.where(id: search)
       end
     end
-    query
+    query.includes({ reported_condition: :symptoms })
   end
 
   # Search for CloseContacts
@@ -1078,8 +1083,7 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Generate pagination links for searchset bundle
-  def bundle_search_links(page, page_size, resources, resource_type, search_params)
-    total = resources.size
+  def bundle_search_links(page, page_size, resource_type, search_params, total)
     last_page = (total.to_f / page_size).ceil
     [
       page != 1 && total > page_size ?
