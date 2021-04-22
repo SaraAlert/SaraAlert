@@ -36,7 +36,7 @@ class PublicHealthPatientPageReportsVerifier < ApplicationSystemTestCase
     headers = table.find('thead').all('th').map(&:text)
 
     # Verify that all symptom names are displayed
-    symptom_names = Hash[assessments.joins({ reported_condition: :symptoms }).distinct.pluck(:name, :label)]
+    symptom_names = assessments.joins({ reported_condition: :symptoms }).distinct.pluck(:name, :label).to_h
     symptom_labels = symptom_names.values
     assert_equal symptom_labels, symptom_labels & headers, "Missing symptom headers: #{symptom_labels - (symptom_labels & headers)}"
 
