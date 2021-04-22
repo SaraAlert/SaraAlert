@@ -499,7 +499,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to create Immunization resource with Immunization read scope' do
     post(
       '/fhir/r4/Immunization',
-      headers: { 'Authorization': "Bearer #{@system_immunization_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_immunization_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -507,7 +507,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to create Immunization resource with Observation scope' do
     post(
       '/fhir/r4/Immunization',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -515,7 +515,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to create Immunization resource with QuestionnaireResponse scope' do
     post(
       '/fhir/r4/Immunization',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -523,7 +523,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to update Immunization resource with Immunization read scope' do
     put(
       '/fhir/r4/Immunization/1',
-      headers: { 'Authorization': "Bearer #{@system_immunization_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_immunization_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -532,7 +532,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     put(
       '/fhir/r4/Immunization/1',
       params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -540,7 +540,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to update Immunization resource with QuestionnaireResponse scope' do
     put(
       '/fhir/r4/Immunization/1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -548,7 +548,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read Immunization resource with Immunization write only scope' do
     get(
       '/fhir/r4/Immunization/1',
-      headers: { 'Authorization': "Bearer #{@system_immunization_token_w.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_immunization_token_w.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -556,7 +556,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read Immunization resource with Observation scope' do
     get(
       '/fhir/r4/Immunization/1',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -564,7 +564,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to read Immunization resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Immunization/1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -572,7 +572,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search Immunization resource with Immunization write only scope' do
     get(
       '/fhir/r4/Immunization?_id=1',
-      headers: { 'Authorization': "Bearer #{@system_immunization_token_w.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_immunization_token_w.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -580,7 +580,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search Immunization resource with Observation scope' do
     get(
       '/fhir/r4/Immunization?_id=1',
-      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_observation_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
@@ -588,7 +588,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should not be able to search Immunization resource with QuestionnaireResponse scope' do
     get(
       '/fhir/r4/Immunization?_id=1',
-      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+      headers: { Authorization: "Bearer #{@system_response_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :forbidden
   end
