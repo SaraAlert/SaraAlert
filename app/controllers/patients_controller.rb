@@ -308,6 +308,7 @@ class PatientsController < ApplicationController
     updated = current_patient.update(responder_id: new_hoh_id)
 
     if updated
+      # Create history item for new HoH
       comment = "User added monitoree with ID #{current_patient.id} to a household. This monitoree"\
                 ' will now be responsible for handling the reporting on their behalf.'
       History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
@@ -317,7 +318,6 @@ class PatientsController < ApplicationController
                 ' for handling the reporting on their behalf.'
       History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
     else
-      # Create history item for new HoH
       error_message = 'Move to household action failed: monitoree was unable to be be updated.'
       render(json: { error: error_message }, status: :bad_request) && return
     end
@@ -351,6 +351,7 @@ class PatientsController < ApplicationController
     updated = current_patient.update(responder_id: current_patient.id)
 
     if updated
+      # Create history item for old HoH
       comment = "User removed dependent monitoree with ID #{current_patient.id} from the household. This monitoree"\
                 ' will no longer be responsible for handling their reporting.'
       History.monitoring_change(patient: old_hoh, created_by: current_user.email, comment: comment)
@@ -360,7 +361,6 @@ class PatientsController < ApplicationController
                 ' no longer be responsible for handling their reporting.'
       History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
     else
-      # Create history item for old HoH
       error_message = 'Remove from household action failed: monitoree was unable to be be updated.'
       render(json: { error: error_message }, status: :bad_request) && return
     end
