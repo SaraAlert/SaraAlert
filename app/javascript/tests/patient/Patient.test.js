@@ -458,7 +458,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders no details message', () => {
-    const blankWrapper = shallow(<Patient />);
+    const blankWrapper = shallow(<Patient details={null} other_household_members={[ ]} goto={goToMock} can_add_group={true}
+      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(blankWrapper.text()).toEqual('No monitoree details to show.');
   });
 
