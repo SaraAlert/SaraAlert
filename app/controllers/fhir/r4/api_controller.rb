@@ -2,10 +2,9 @@
 
 # rubocop:disable Metrics/ClassLength
 # ApiController: API for interacting with Sara Alert
-class Fhir::R4::ApiController < ActionController::API
+class Fhir::R4::ApiController < ApplicationApiController
   include ValidationHelper
   include FhirHelper
-  include ActionController::MimeResponds
   before_action :cors_headers
   before_action only: %i[create update] do
     doorkeeper_authorize!(
@@ -756,7 +755,7 @@ class Fhir::R4::ApiController < ActionController::API
         @current_actor_label = "#{resource_owner.email} (API)"
         nil
       else
-        head :unauthorized
+        status_unauthorized
       end
     elsif client_application.present?
       Rails.logger.info "Client: Application, ID: #{client_application.id}, Name: #{client_application.name}"
@@ -764,7 +763,7 @@ class Fhir::R4::ApiController < ActionController::API
 
       # Actor is client application - need to get created proxy user
       proxy_user = User.where(is_api_proxy: true).find_by(id: client_application.user_id)
-      head :unauthorized if proxy_user.nil?
+      status_unauthorized if proxy_user.nil?
       @current_actor = proxy_user
       @current_actor_label = "#{client_application.name} (API)"
     end
@@ -877,38 +876,10 @@ class Fhir::R4::ApiController < ActionController::API
     request.content_type == header
   end
 
-  # Generic 406 not acceptable
-  def status_not_acceptable
-    respond_to do |format|
-      format.any { head :not_acceptable }
-    end
-  end
-
-  # Generic 415 unsupported media type
-  def status_unsupported_media_type
-    respond_to do |format|
-      format.any { head :unsupported_media_type }
-    end
-  end
-
   # Generic 400 bad request response
   def status_bad_request(errors = [])
     respond_to do |format|
       format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :bad_request }
-    end
-  end
-
-  # Generic 403 forbidden response
-  def status_forbidden
-    respond_to do |format|
-      format.any { head :forbidden }
-    end
-  end
-
-  # Generic 404 not found response
-  def status_not_found
-    respond_to do |format|
-      format.any { head :not_found }
     end
   end
 

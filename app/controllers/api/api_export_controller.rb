@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # API::ApiExportController: for exporting subjects via the API
-class Api::ApiExportController < ActionController::API
+class Api::ApiExportController < ApplicationApiController
   before_action do
     doorkeeper_authorize!(
       :'system/Patient.read',
@@ -11,19 +11,19 @@ class Api::ApiExportController < ActionController::API
   end
 
   before_action only: %i[nbs_patients] do
-    head :not_acceptable unless request.headers['Accept']&.include?('application/zip')
+    status_not_acceptable unless request.headers['Accept']&.include?('application/zip')
   end
 
   def set_client_app
     @current_client_app = OauthApplication.find_by(id: doorkeeper_token&.application_id)
-    head :unauthorized if @current_client_app.nil?
+    status_unauthorized if @current_client_app.nil?
   end
 
   # Multi patient PHDC export
   def nbs_patients
     search_params = params.slice('workflow', 'monitoring', 'caseStatus', 'updatedAt')
     patients = search_params.blank? ? Patient.none : Jurisdiction.find_by(id: @current_client_app[:jurisdiction_id])&.all_patients_excluding_purged
-    
+
     search_params.reject { |_, v| v.nil? }.transform_values { |v| v.to_s.downcase.strip }.each do |field, search|
       case field
       when 'workflow'
