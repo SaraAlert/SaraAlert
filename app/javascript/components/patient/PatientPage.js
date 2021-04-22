@@ -1,15 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card } from 'react-bootstrap';
-
 import Patient from './Patient';
 
 class PatientPage extends React.Component {
-  reloadHook = () => {
-    // Optional reload, specifically for assessments
-    location.href = `${window.BASE_PATH}/patients/${this.props.patient.id}`;
-  };
-
   render() {
     return (
       <React.Fragment>
@@ -34,15 +28,10 @@ class PatientPage extends React.Component {
 }
 
 PatientPage.propTypes = {
-  patient_id: PropTypes.string,
-  current_user: PropTypes.object,
   can_add_group: PropTypes.bool,
   patient: PropTypes.object,
   other_household_members: PropTypes.array,
-  dashboardUrl: PropTypes.string,
   authenticity_token: PropTypes.string,
-  patient_submission_token: PropTypes.string,
-  canAddAssessments: PropTypes.bool,
   jurisdiction_path: PropTypes.string,
   blocked_sms: PropTypes.bool,
 };

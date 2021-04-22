@@ -2,14 +2,12 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import PatientPage from '../../components/patient/PatientPage';
 import Patient from '../../components/patient/Patient';
-import { mockUser1 } from '../mocks/mockUsers';
 import { mockPatient1, mockPatient2 } from '../mocks/mockPatients';
 
 function getWrapper(mockPatient) {
   const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
-  const otherHouseholdMembers = [ mockPatient2 ]
-  const wrapper = shallow(<PatientPage patient_id="EX-771721" patient={mockPatient} current_user={mockUser1} other_household_members={otherHouseholdMembers}
-    jurisdiction_path="USA, State 1, County 2" dashboardUrl="/public_health" authenticity_token={authyToken} />);
+  const wrapper = shallow(<PatientPage patient={mockPatient} other_household_members={[ ]} can_add_group={true}
+    blocked_sms={false} jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
   return wrapper;
 }
 
@@ -20,7 +18,8 @@ describe('PatientPage', () => {
   it('Properly renders all main components', () => {
     expect(wrapper.find('#patient-info-header').exists()).toBeTruthy();
     expect(wrapper.find('#patient-info-header').text().includes('Monitoree Details')).toBeTruthy();
+    expect(wrapper.find('#patient-info-header').text().includes(`(ID: ${mockPatient1.user_defined_id})`)).toBeFalsy();
     expect(wrapper.containsMatchingElement(Patient)).toBeTruthy();
-    expect(wrapper2.find('#patient-info-header').text().includes('Monitoree Details (ID: 00000-1)')).toBeTruthy();
+    expect(wrapper2.find('#patient-info-header').text().includes(`Monitoree Details (ID: ${mockPatient2.user_defined_id})`)).toBeTruthy();
   });
 });
