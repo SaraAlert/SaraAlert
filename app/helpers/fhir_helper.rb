@@ -80,7 +80,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_date_extension(patient.symptom_onset, 'symptom-onset-date'),
         to_date_extension(patient.last_date_of_exposure, 'last-date-of-exposure'),
         to_bool_extension(patient.isolation, 'isolation'),
-        to_string_extension(patient.jurisdiction.jurisdiction_path_string, 'full-assigned-jurisdiction-path'),
+        to_string_extension(patient.jurisdiction[:path], 'full-assigned-jurisdiction-path'),
         to_string_extension(patient.monitoring_plan, 'monitoring-plan'),
         to_positive_integer_extension(patient.assigned_user, 'assigned-user'),
         to_date_extension(patient.additional_planned_travel_start_date, 'additional-planned-travel-start-date'),
