@@ -200,7 +200,7 @@ class PatientMailer < ApplicationMailer
     comment = if patient.id == patient.responder_id
                 "Sara Alert sent a report reminder to this monitoree via #{patient.preferred_contact_method}."
               else
-                "Sara Alert sent a report reminder to this monitoree's HoH via #{patient.responder.preferred_contact_method}."
+                "Sara Alert sent a report reminder to this monitoree's head of household via #{patient.responder.preferred_contact_method}."
               end
     History.report_reminder(patient: patient, comment: comment)
   end
