@@ -66,7 +66,7 @@ function getAllLanguageDisplayNames (authToken, callback) {
   axios.defaults.headers.common['X-CSRF-Token'] = authToken;
   axios.get(`${window.BASE_PATH}/languages/get_all_languages`)
     .then(val => {
-      let languageDisplayNames = val.data.map(x => x[1]).sort((a, b) => a.localeCompare(b))
+      let languageDisplayNames = _.values(val.data).map(x => x.display).sort((a, b) => a.localeCompare(b))
       callback(languageDisplayNames)
     })
     .catch(err => {
@@ -85,11 +85,15 @@ function getLanguageData (authToken, callback) {
   axios.defaults.headers.common['X-CSRF-Token'] = authToken;
   axios.get(`${window.BASE_PATH}/languages/get_all_languages`)
     .then(val => {
-      let languageData = val.data.sort((a, b) => a[1].localeCompare(b[1])).map(x => ({
-        code: x[0],
-        display: x[1],
-        supported: { sms: !!(x[2])?.sms, email: !!(x[2])?.email, phone: !!(x[2])?.phone}
-      }))
+      let languageData = []
+      _.forIn(val.data, (value, key) => {
+        languageData.push({
+          code: key,
+          display: value.display,
+          supported: value.supported || {}
+        })
+      });
+      languageData.sort((a, b) => a.display.localeCompare(b.display))
       callback(languageData)
     })
     .catch(err => {

@@ -8,7 +8,7 @@ class LanguagesController < ApplicationController
   # ['eng', 'English', supported: {sms: true, phone: true, email: true}]
   # Example Return: [["eng", "English", {}]...,["zho","Chinese", {}],["zul","Zulu", {}]]
   def language_data
-    render json: Languages.all_languages.map { |k, v| [k.to_sym, v[:display], v[:supported]] }
+    render json: Languages.all_languages
   end
 
   # Matches code to display name
