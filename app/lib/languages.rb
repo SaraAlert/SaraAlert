@@ -19,7 +19,7 @@ module Languages
   end
 
   def self.all_languages
-    PATIENT_HELPER_FILES[:languages]
+    LANGUAGES
   end
 
   def self.attempt_language_matching(lang)
