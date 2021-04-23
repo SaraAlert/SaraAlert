@@ -236,7 +236,7 @@ class ImportController < ApplicationController
   def import_and_validate_language_field(field, value, row_ind)
     return nil if value.blank?
 
-    val = Languages.normalize_and_get_language_name(value)
+    val = Languages.normalize_and_get_language_code(value)
     return val if val # val will the three-letter language code if value is matchable, else nil
 
     err_msg = "'#{value}' is not a valid language for '#{VALIDATION[field][:label]}'. Please use the full language name or three letter ISO-639 abbreviation"

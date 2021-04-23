@@ -17,6 +17,12 @@ class LanguagesController < ApplicationController
   # PARAM EXAMPLE: ['oci', 'tgk']
   # RETURN EXAMPLE: ['Occitan', 'Tajik']
   def translate_language_codes
-    render json: { display_names: params[:language_codes].map { |lang_code| Languages.all_languages[lang_code.to_sym][:display] } }
+    language_set_difference = params.require(:language_codes).map(&:to_sym) - Languages.all_languages.keys
+    if language_set_difference.any?
+      error_message = "There was an error looking up the following languages: #{language_set_difference.map(&:to_s)}"
+      render(json: { error: error_message }, status: :unprocessable_entity) && return
+    else
+      render json: { display_names: params[:language_codes].map { |lang_code| Languages.all_languages[lang_code.to_sym][:display] } }
+    end
   end
 end

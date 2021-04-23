@@ -132,7 +132,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
           elsif field == :sex && !row[index].blank?
             assert_equal(SEX_ABBREVIATIONS[row[index].to_sym], patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif %i[primary_language secondary_language].include?(field) && !row[index].blank?
-            assert_equal(Languages.normalize_and_get_language_name(row[index])&.to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :address_state || (field == :monitored_address_state && !row[index].nil?)
             assert_equal(normalize_state_field(row[index].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :monitored_address_state && row[index].nil? # copy over monitored address state if state is nil
@@ -192,7 +192,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
           #                           end
           #   assert_equal(normalized_cell_value, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif %i[primary_language secondary_language].include?(field) && !row[index].blank?
-            assert_equal(Languages.normalize_and_get_language_name(row[index])&.to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :jurisdiction_path
             assert_equal(row[index] ? row[index].to_s : user_jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, "#{field} mismatch in row #{row_num}")
           elsif ENUM_FIELDS.include?(field)

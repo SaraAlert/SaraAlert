@@ -1,31 +1,33 @@
 # frozen_string_literal: true
 
+# ConvertPrimaryLanguageToIsoCode: converts primary_languages to iso codes
 class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
+  include Languages
   # Nothing in the following list is case sensitive
   TRANSLATION_LIST = {
-    "Acoli": ['acholi'],
-    "American Sign Language": ['Sign Languages', 'asl', 'sign language'],
-    "bilingual spanish/english": ['dad span/eng', 'span/eng'],
-    "bilingual english/spanish": ['ENG/SPAN', 'eng/braz'],
-    "bosnian": ['bos'],
-    "Chinese": ['Chinese (Cantonese)', 'Chinese (Mandarin)', 'Chinese (not specified)', 'Mandarin', 'manderin chinese'],
-    "English": ['E', 'ENGLIAH', 'ENHLISH', 'Emglish', 'Engiish', 'Engish', 'Englaih', 'England', 'Englislh', 'Englsh', 'Englsih', 'Englxish', 'Enlish',
-                'dad limited eng', 'parent eng'],
-    "French": ['FR', 'fre', 'lingala, french'],
-    "filipino": ['philippines'],
-    "frisian": ['frysian'],
-    "haitian": ['haitian creole', 'HAITIAN FRENCH CREOLE', 'Haitian Creole'],
-    "Lao": %w[Laos Laotian],
-    "Marshallese": ['marshalee'],
-    "Panjabi": ['punjabi'],
-    "Persian": ['Persian (Farsi)', 'farsi'],
-    "Portuguese": ['PORTG', 'PORTUG', 'lingala/portuguese', 'portguese', 'portugese'],
-    "Somali": ['somali, may maay', 'somali, may-maay'],
-    "Spanish": ['Espanol', 'SPAN', 'SpanishA', 'dad span'],
-    "Telugu": %w[pelugu Telegu],
-    "Vietnamese": ['vietamese'],
-    'nil': [' French-based (Other)', '1', '9', 'Chin', 'Creoles and pidgins', 'Dari', 'Jefferson', 'NA', 'No.', 'None', 'Other', 'RUNYORO', 'UND',
-            'Undetermined', 'Unknown', 'afro-asiatic languages', 'no']
+    'Acoli' => ['acholi'],
+    'American Sign Language' => ['Sign Languages', 'asl', 'sign language'],
+    'bilingual spanish/english' => ['dad span/eng', 'span/eng'],
+    'bilingual english/spanish' => ['ENG/SPAN', 'eng/braz'],
+    'bosnian' => ['bos'],
+    'Chinese' => ['Chinese (Cantonese)', 'Chinese (Mandarin)', 'Chinese (not specified)', 'Mandarin', 'manderin chinese'],
+    'English' => ['E', 'ENGLIAH', 'ENHLISH', 'Emglish', 'Engiish', 'Engish', 'Englaih', 'England', 'Englislh', 'Englsh', 'Englsih', 'Englxish', 'Enlish',
+                  'dad limited eng', 'parent eng'],
+    'French' => ['FR', 'fre', 'lingala, french'],
+    'filipino' => ['philippines'],
+    'frisian' => ['frysian'],
+    'haitian' => ['haitian creole', 'HAITIAN FRENCH CREOLE', 'Haitian Creole'],
+    'Lao' => %w[Laos Laotian],
+    'Marshallese' => ['marshalee'],
+    'Panjabi' => ['punjabi'],
+    'Persian' => ['Persian (Farsi)', 'farsi'],
+    'Portuguese' => ['PORTG', 'PORTUG', 'lingala/portuguese', 'portguese', 'portugese'],
+    'Somali' => ['somali, may maay', 'somali, may-maay'],
+    'Spanish' => ['Espanol', 'SPAN', 'SpanishA', 'dad span'],
+    'Telugu' => %w[pelugu Telegu],
+    'Vietnamese' => ['vietamese'],
+    'nil' => [' French-based (Other)', '1', '9', 'Chin', 'Creoles and pidgins', 'Dari', 'Jefferson', 'NA', 'No.', 'None', 'Other', 'RUNYORO', 'UND',
+              'Undetermined', 'Unknown', 'afro-asiatic languages', 'no']
   }.freeze
 
   # For some translations we want to leave comments explaining the translation
@@ -55,13 +57,10 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     # It is merely a re-formatting of the TRANSLATION_LIST above
     custom_translations = {}
     TRANSLATION_LIST.each do |key, value|
-      key = key == :nil ? nil : key.to_s
+      key = nil if key == 'nil'
+      normalized_key = Languages.normalize_and_get_language_code(key).to_s
       value.each do |language|
-        custom_translations[language.to_sym] = if ['bilingual english/spanish', 'bilingual spanish/english', nil].include?(key)
-                                                 key
-                                               else
-                                                 match_language(key).to_s
-                                               end
+        custom_translations[language.to_sym] = ['bilingual english/spanish', 'bilingual spanish/english', nil].include?(key) ? key : normalized_key
       end
     end
 
@@ -69,7 +68,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     existing_secondary_languages = Patient.where(purged: false).where.not(secondary_language: nil).distinct.pluck(:secondary_language)
     # Create an translation in automatic_translations, unless we already have it defined in `custom_translations`
     (existing_primary_languages | existing_secondary_languages).each do |el|
-      automatic_translations[el.to_sym] = (match_language(el).to_s || nil) unless custom_translations.key?(el.to_sym)
+      automatic_translations[el.to_sym] = (Languages.normalize_and_get_language_code(el).to_s || nil) unless custom_translations.key?(el.to_sym)
     end
     ActiveRecord::Base.transaction do
       automatic_translations.each do |key, value|
@@ -79,33 +78,17 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
       end
       custom_translations.each do |key, value|
         key = key.to_s
-        if value === 'bilingual english/spanish'
+        case value
+        when 'bilingual english/spanish'
+          insert_history_items(key, 'eng', true) if TRANSLATION_COMMENTS.include?(key)
           Patient.where(purged: false).where(primary_language: key).update_all({ primary_language: 'eng', secondary_language: 'spa' })
-        elsif value === 'bilingual spanish/english'
+        when 'bilingual spanish/english'
+          insert_history_items(key, 'spa', true) if TRANSLATION_COMMENTS.include?(key)
           Patient.where(purged: false).where(primary_language: key).update_all({ primary_language: 'spa', secondary_language: 'eng' })
-        elsif TRANSLATION_COMMENTS.include?(key)
-          note = "Primary language was listed as '#{key}' \
-                which could not be matched to the standard language list. This monitoree’s primary \
-                language has been updated to '#{value.nil? ? 'blank' : Languages.all_languages[value.to_sym][:display]}'. You \
-                may update this value."
-          execute <<-SQL.squish
-                INSERT INTO histories (patient_id, created_by, comment, history_type, created_at, updated_at)
-                SELECT id, 'Sara Alert System', "#{note}", 'System Note', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-                FROM patients
-                WHERE purged = false AND primary_language = "#{key}"
-          SQL
+        else
+          insert_history_items(key, value, true) if TRANSLATION_COMMENTS.include?(key)
           Patient.where(purged: false).where(primary_language: key).update_all(primary_language: value)
-
-          note = "Secondary language was listed as '#{key}' \
-                which could not be matched to the standard language list. This monitoree’s secondary \
-                language has been updated to '#{value.nil? ? 'blank' : Languages.all_languages[value.to_sym][:display]}'. You \
-                may update this value."
-          execute <<-SQL.squish
-                INSERT INTO histories (patient_id, created_by, comment, history_type, created_at, updated_at)
-                SELECT id, 'Sara Alert System', "#{note}", 'System Note', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-                FROM patients
-                WHERE purged = false AND secondary_language = "#{key}"
-          SQL
+          insert_history_items(key, value, false) if TRANSLATION_COMMENTS.include?(key)
           Patient.where(purged: false).where(secondary_language: key).update_all(secondary_language: value)
         end
       end
@@ -124,22 +107,25 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     History.where('history_type = ? AND comment like ?', 'System Note', '%language was listed as%').destroy_all
   end
 
-  def match_language(lang)
-    return nil if lang.nil?
-
-    lang = lang.to_s.downcase.strip
-    matched_language = nil
-    matched_language = lang.to_sym if Languages.all_languages[lang.to_sym].present?
-    return matched_language unless matched_language.nil?
-
-    matched_language = Languages.all_languages.find { |_key, val| val[:display]&.casecmp(lang)&.zero? }
-    # [:fra, {:display=>"French", :iso6391code=>"fr", :system=>"iso639-2t" }]
-    # matched_language will take the form of the above, and we want to return the 3-letter code at [0]
-    return matched_language[0] unless matched_language.nil?
-
-    matched_language = Languages.all_languages.find { |_key, val| val[:iso6391code]&.casecmp(lang)&.zero? }
-    return matched_language[0] unless matched_language.nil?
-
-    matched_language
+  def insert_history_items(key, value, is_primary)
+    note = "#{is_primary ? 'Primary' : 'Secondary'} language was listed as '#{key}' \
+    which could not be matched to the standard language list. This monitoree’s #{is_primary ? 'primary' : 'secondary'} \
+    language has been updated to '#{value.nil? ? 'blank' : Languages.all_languages[value.to_sym][:display]}'. You \
+    may update this value."
+    if is_primary
+      execute <<-SQL.squish
+        INSERT INTO histories (patient_id, created_by, comment, history_type, created_at, updated_at)
+        SELECT id, 'Sara Alert System', "#{note}", 'System Note', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+        FROM patients
+        WHERE purged = false AND primary_language = "#{key}"
+      SQL
+    else
+      execute <<-SQL.squish
+        INSERT INTO histories (patient_id, created_by, comment, history_type, created_at, updated_at)
+        SELECT id, 'Sara Alert System', "#{note}", 'System Note', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+        FROM patients
+        WHERE purged = false AND secondary_language = "#{key}"
+      SQL
+    end
   end
 end
