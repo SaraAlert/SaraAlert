@@ -12,51 +12,6 @@
 # However, they will all be given values of `false` for `sms`, `email`, and `phone`
 # Unless that field is specifically listed as `true` in `supported` below
 
-:eng:
-  :display: 'English'
-  :iso6391code: "en"
-  :system: 'iso639-2t'
-  :supported:
-      :sms: true
-      :email: true
-      :phone: true
-
-:fra:
-  :display: 'French'
-  :iso6391code: "fr"
-  :system: 'iso639-2t'
-  :supported:
-      :sms: true
-      :email: true
-      :phone: true
-
-:spa:
-  :display: 'Spanish'
-  :iso6391code: "es"
-  :system: 'iso639-2t'
-  :supported:
-      :sms: true
-      :email: true
-      :phone: true
-
-# Despite not being an official iso-639 language, we want to include a specific dialect of Spanish for PR
-:spa-pr:
-  :display: 'Spanish (Puerto Rican)'
-  :iso6391code: "es-PR"
-  :system: ''
-  :supported:
-      :sms: true
-      :email: true
-      :phone: true
-
-:som:
-  :display: 'Somali'
-  :iso6391code: "so"
-  :system: 'iso639-2t'
-  :supported:
-      :sms: true
-      :email: true
-
 :aar:
   :display: 'Afar'
   :iso6391code: "aa"
@@ -487,6 +442,15 @@
   :iso6391code: "el"
   :system: 'iso639-2t'
 
+:eng:
+  :display: 'English'
+  :iso6391code: "en"
+  :system: 'iso639-2t'
+  :supported:
+    :sms: true
+    :email: true
+    :phone: true
+
 :est:
   :display: 'Estonian'
   :iso6391code: "et"
@@ -546,6 +510,15 @@
   :display: 'Fon'
   :iso6391code: null
   :system: 'iso639-2t'
+
+:fra:
+  :display: 'French'
+  :iso6391code: "fr"
+  :system: 'iso639-2t'
+  :supported:
+    :sms: true
+    :email: true
+    :phone: true
 
 :frr:
   :display: 'Northern Frisian'
@@ -1527,10 +1500,36 @@
   :iso6391code: null
   :system: 'iso639-2t'
 
+:som:
+  :display: 'Somali'
+  :iso6391code: "so"
+  :system: 'iso639-2t'
+  :supported:
+    :sms: true
+    :email: true
+
 :sot:
   :display: 'Southern Sotho'
   :iso6391code: "st"
   :system: 'iso639-2t'
+
+:spa:
+  :display: 'Spanish'
+  :iso6391code: "es"
+  :system: 'iso639-2t'
+  :supported:
+    :sms: true
+    :email: true
+    :phone: true
+
+:spa-pr:
+  :display: 'Spanish (Puerto Rican)'
+  :iso6391code: "es-PR"
+  :system: ''
+  :supported:
+    :sms: true
+    :email: true
+    :phone: true
 
 :sqi:
   :display: 'Albanian'

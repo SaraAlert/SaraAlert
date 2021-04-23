@@ -89,7 +89,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
                 language has been updated to '#{value.nil? ? 'blank' : Languages.all_languages[value.to_sym][:display]}'. You \
                 may update this value."
           execute <<-SQL.squish
-                INSERT INTO histories (patient_id,created_by,comment,history_type,created_at,updated_at)
+                INSERT INTO histories (patient_id, created_by, comment, history_type, created_at, updated_at)
                 SELECT id, 'Sara Alert System', "#{note}", 'System Note', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
                 FROM patients
                 WHERE purged = false AND primary_language = "#{key}"
@@ -101,7 +101,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
                 language has been updated to '#{value.nil? ? 'blank' : Languages.all_languages[value.to_sym][:display]}'. You \
                 may update this value."
           execute <<-SQL.squish
-                INSERT INTO histories (patient_id,created_by,comment,history_type,created_at,updated_at)
+                INSERT INTO histories (patient_id, created_by, comment, history_type, created_at, updated_at)
                 SELECT id, 'Sara Alert System', "#{note}", 'System Note', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
                 FROM patients
                 WHERE purged = false AND secondary_language = "#{key}"

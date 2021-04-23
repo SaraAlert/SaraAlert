@@ -74,8 +74,7 @@ class AssessmentsController < ApplicationController
     @lang = 'eng' unless Languages.supported_language?(@lang)
 
     @patient_initials = permitted_params[:initials_age]&.upcase&.gsub(/[^a-z]/i, '')
-    @patient_age = permitted_params[:initials_age]&.gsub(/[^0-9]/, '')
-    @patient_age = @patient_age.nil? ? nil : Integer(@patient_age)
+    @patient_age = permitted_params[:initials_age]&.gsub(/[^0-9]/, '')&.to_i
   end
 
   def create

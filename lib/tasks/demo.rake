@@ -249,6 +249,8 @@ desc 'Backup the database'
     printf("Generating monitorees...")
     patients = []
     histories = []
+    available_lang_codes = Languages.all_languages.keys.to_a.map(&:to_s)
+
     num_patients_today.times do |i|
       printf("\rGenerating monitoree #{i + 1} of #{num_patients_today}...")
       patient = Patient.new()
@@ -270,10 +272,8 @@ desc 'Backup the database'
       end
       patient[:ethnicity] = rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino'
 
-      available_lang_codes = Languages.all_languages.keys.to_a.map{|x| x.to_s}
-
-      patient[:primary_language] = rand < 0.7 ? 'eng' : available_lang_codes[rand(0..available_lang_codes.length)]
-      patient[:secondary_language] = available_lang_codes[rand(0..available_lang_codes.length)] if rand < 0.4
+      patient[:primary_language] = rand < 0.7 ? 'eng' : available_lang_codes.sample
+      patient[:secondary_language] = available_lang_codes.sample if rand < 0.4
       patient[:interpretation_required] = rand < 0.15
       patient[:nationality] = Faker::Nation.nationality if rand < 0.6
       patient[:user_defined_id_statelocal] = "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}" if rand < 0.7
