@@ -163,16 +163,19 @@ desc 'Backup the database'
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
 
-    days.times do |day|
-      today = Date.today - (days - (day + 1)).days
-      # Create the patients for this day
-      printf("Simulating day #{day + 1} (#{today}):\n")
+    # Freeze beginning of day outside loop to prevent problems when script is called over midnight
+    beginning_of_today = DateTime.now.beginning_of_day
 
+    days.times do |day|
       # Calculate number of days ago
       days_ago = days - day
+      beginning_of_day = beginning_of_today - days_ago.days
+
+      # Create the patients for this day
+      printf("Simulating day #{day + 1} (#{beginning_of_day.to_date}):\n")
 
       # Populate patients, assessments, laboratories, transfers, histories, analytics
-      demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties)
+      demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties)
 
       # Cases increase 10-20% every day
       num_patients_today += (num_patients_today * (0.1 + (rand / 10))).round
@@ -195,38 +198,38 @@ desc 'Backup the database'
 
     printf("Simulating today\n")
 
-    demo_populate_day(Date.today, num_patients_today, 0, jurisdictions, assigned_users, case_ids, cache_analytics, counties)
+    demo_populate_day(DateTime.now.beginning_of_day, num_patients_today, 0, jurisdictions, assigned_users, case_ids, cache_analytics, counties)
   end
 
-  def demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties)
+  def demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties)
     # Transactions speeds things up a bit
     ActiveRecord::Base.transaction do
       # Patients created before today
-      existing_patients = Patient.monitoring_open.where('created_at < ?', today)
+      existing_patients = Patient.monitoring_open.where('created_at < ?', beginning_of_day)
 
       # Create patients
-      demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties)
+      demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties)
 
       # Create assessments
-      demo_populate_assessments(today, days_ago, existing_patients, jurisdictions)
+      demo_populate_assessments(beginning_of_day, days_ago, existing_patients, jurisdictions)
 
       # Create laboratories
-      demo_populate_laboratories(today, days_ago, existing_patients)
+      demo_populate_laboratories(beginning_of_day, days_ago, existing_patients)
 
       # Create vaccinations
-      demo_populate_vaccines(today, days_ago, existing_patients)
+      demo_populate_vaccines(beginning_of_day, days_ago, existing_patients)
 
       # Create close contacts
-      demo_populate_close_contacts(today, days_ago, existing_patients)
+      demo_populate_close_contacts(beginning_of_day, days_ago, existing_patients)
 
       # Create transfers
-      demo_populate_transfers(today, existing_patients, jurisdictions, assigned_users)
+      demo_populate_transfers(beginning_of_day, existing_patients, jurisdictions, assigned_users)
 
       # Create close contacts
-      demo_populate_close_contacts(today, days_ago, existing_patients)
+      demo_populate_close_contacts(beginning_of_day, days_ago, existing_patients)
 
       # Create contact attempts
-      demo_populate_contact_attempts(today, existing_patients)
+      demo_populate_contact_attempts(beginning_of_day, existing_patients)
     end
 
     # Needs to be in a separate transaction
@@ -236,10 +239,10 @@ desc 'Backup the database'
     end
 
     # Cache analytics
-    demo_cache_analytics(today, cache_analytics)
+    demo_cache_analytics(beginning_of_day, cache_analytics)
   end
 
-  def demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties)
+  def demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties)
     territory_names = ['American Samoa', 'District of Columbia', 'Federated States of Micronesia', 'Guam', 'Marshall Islands', 'Northern Mariana Islands',
                        'Palau', 'Puerto Rico', 'Virgin Islands'].freeze
 
@@ -331,13 +334,13 @@ desc 'Backup the database'
       # Arrival information
       if rand < 0.7
         patient[:port_of_origin] = Faker::Address.city
-        patient[:date_of_departure] = today - (rand < 0.3 ? 1.day : 0.days)
+        patient[:date_of_departure] = beginning_of_day - (rand < 0.3 ? 1.day : 0.days)
         patient[:source_of_report] = ValidationHelper::VALID_PATIENT_ENUMS[:source_of_report].sample if rand < 0.7
         patient[:source_of_report_specify] = Faker::TvShows::SiliconValley.invention if patient[:source_of_report] == 'Other'
         patient[:flight_or_vessel_number] = "#{('A'..'Z').to_a.sample}#{rand(10)}#{rand(10)}#{rand(10)}"
         patient[:flight_or_vessel_carrier] = "#{Faker::Name.first_name} Airlines"
         patient[:port_of_entry_into_usa] = Faker::Address.city
-        patient[:date_of_arrival] = today
+        patient[:date_of_arrival] = beginning_of_day
         patient[:travel_related_notes] = Faker::GreekPhilosophers.quote if rand < 0.3
       end
 
@@ -352,7 +355,7 @@ desc 'Backup the database'
         end
         patient[:additional_planned_travel_destination] = Faker::Address.city
         patient[:additional_planned_travel_port_of_departure] = Faker::Address.city
-        patient[:additional_planned_travel_start_date] = today + rand(6).days
+        patient[:additional_planned_travel_start_date] = beginning_of_day + rand(6).days
         patient[:additional_planned_travel_end_date] = patient[:additional_planned_travel_start_date] + rand(10).days
         patient[:additional_planned_travel_related_notes] = Faker::ChuckNorris.fact if rand < 0.4
       end
@@ -361,12 +364,12 @@ desc 'Backup the database'
       patient[:isolation] = days_ago > 10 ? rand < 0.9 : rand < 0.4
       if patient[:isolation]
         if rand < 0.7
-          patient[:symptom_onset] = today - rand(10).days
+          patient[:symptom_onset] = beginning_of_day - rand(10).days
           patient[:user_defined_symptom_onset] = true
         end
       else
         patient[:continuous_exposure] = rand < 0.3
-        patient[:last_date_of_exposure] = today - rand(5).days unless patient[:continuous_exposure]
+        patient[:last_date_of_exposure] = beginning_of_day - rand(5).days unless patient[:continuous_exposure]
       end
       patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
       patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
@@ -394,25 +397,25 @@ desc 'Backup the database'
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
       patient[:creator_id] = User.all.select { |u| u.role?('enroller') }.sample[:id]
       patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
-      patient_ts = create_fake_timestamp(today, today)
+      patient_ts = create_fake_timestamp(beginning_of_day)
       patient[:created_at] = patient_ts
       patient[:updated_at] = patient_ts
 
       # Update monitoring status
-      patient[:extended_isolation] = today + rand(10).days if patient[:isolation] && rand < 0.3
+      patient[:extended_isolation] = beginning_of_day + rand(10).days if patient[:isolation] && rand < 0.3
       patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable'].sample : ['Suspect', 'Unknown', 'Not a Case', nil].sample
       patient[:monitoring] = rand < 0.95
       patient[:closed_at] = patient[:updated_at] unless patient[:monitoring]
       patient[:monitoring_reason] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_reason].sample if patient[:monitoring].nil?
       patient[:public_health_action] = patient[:isolation] || rand < 0.8 ? 'None' : ValidationHelper::VALID_PATIENT_ENUMS[:public_health_action].sample
       patient[:pause_notifications] = rand < 0.1
-      patient[:last_assessment_reminder_sent] = today - rand(7).days if rand < 0.3
+      patient[:last_assessment_reminder_sent] = beginning_of_day - rand(7).days if rand < 0.3
 
       patients << patient
     end
 
     Patient.import! patients
-    new_patients = Patient.where('created_at >= ?', today - DateTime.now.utc_offset)
+    new_patients = Patient.where('created_at >= ?', beginning_of_day)
     new_patients.update_all('responder_id = id')
 
     # Create household members (10-20% of patients are managed by a HoH)
@@ -432,8 +435,8 @@ desc 'Backup the database'
       laboratories << Laboratory.new(
         patient_id: patient[:id],
         lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
-        specimen_collection: create_fake_timestamp(1.week.ago, today - 1.day),
-        report: create_fake_timestamp(today, today),
+        specimen_collection: create_fake_timestamp(beginning_of_day - 1.week, beginning_of_day),
+        report: create_fake_timestamp(beginning_of_day),
         result: 'positive',
         created_at: patient[:created_at],
         updated_at: patient[:created_at]
@@ -510,7 +513,7 @@ desc 'Backup the database'
     printf(" done.\n")
   end
 
-  def demo_populate_assessments(today, days_ago, existing_patients, jurisdictions)
+  def demo_populate_assessments(beginning_of_day, days_ago, existing_patients, jurisdictions)
     printf("Generating assessments...")
     assessments = []
     assessment_receipts = []
@@ -518,7 +521,7 @@ desc 'Backup the database'
     patient_jur_ids_and_sub_tokens = existing_patients.limit(existing_patients.count * rand(55..60) / 100).order('RAND()').pluck(:id, :jurisdiction_id, :submission_token)
     patient_jur_ids_and_sub_tokens.each_with_index do |(patient_id, jur_id, sub_token), index|
       printf("\rGenerating assessment #{index+1} of #{patient_jur_ids_and_sub_tokens.length}...")
-      assessment_ts = create_fake_timestamp(today, today)
+      assessment_ts = create_fake_timestamp(beginning_of_day)
       assessments << Assessment.new(
         patient_id: patient_id,
         symptomatic: false,
@@ -566,7 +569,7 @@ desc 'Backup the database'
 
     printf("Generating condition for assessments...")
     reported_conditions = []
-    new_assessments = Assessment.where('assessments.created_at >= ?', today).joins(:patient)
+    new_assessments = Assessment.where('assessments.created_at >= ?', beginning_of_day).joins(:patient)
     new_assessments.each_with_index do |assessment, index|
       printf("\rGenerating condition for assessment #{index+1} of #{new_assessments.length}...")
       reported_conditions << ReportedCondition.new(
@@ -590,7 +593,7 @@ desc 'Backup the database'
 
     printf("Generating symptoms for assessments...")
     symptoms = []
-    new_reported_conditions = ReportedCondition.where('conditions.created_at >= ?', today).joins(assessment: :reported_condition)
+    new_reported_conditions = ReportedCondition.where('conditions.created_at >= ?', beginning_of_day).joins(assessment: :reported_condition)
     new_reported_conditions.each_with_index do |reported_condition, index|
       printf("\rGenerating symptoms for assessment #{index+1} of #{new_reported_conditions.length}...")
       threshold_symptoms = threshold_conditions[reported_condition.assessment.patient.jurisdiction_id][:symptoms]
@@ -635,7 +638,7 @@ desc 'Backup the database'
     printf(" done.\n")
   end
 
-  def demo_populate_laboratories(today, days_ago, existing_patients)
+  def demo_populate_laboratories(beginning_of_day, days_ago, existing_patients)
     printf("Generating laboratories...")
     laboratories = []
     histories = []
@@ -647,7 +650,7 @@ desc 'Backup the database'
     end
     patient_ids_lab.each_with_index do |patient_id, index|
       printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
-      lab_ts = create_fake_timestamp(today, today)
+      lab_ts = create_fake_timestamp(beginning_of_day)
       if days_ago > 10
         result = (Array.new(12, 'positive') + ['negative', 'indeterminate', 'other']).sample
       elsif patient_id % 4 == 0
@@ -658,8 +661,8 @@ desc 'Backup the database'
       laboratories << Laboratory.new(
         patient_id: patient_id,
         lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
-        specimen_collection: create_fake_timestamp(1.week.ago, today - 1.day),
-        report: create_fake_timestamp(today, today),
+        specimen_collection: create_fake_timestamp(beginning_of_day - 1.week, beginning_of_day),
+        report: create_fake_timestamp(beginning_of_day),
         result: result,
         created_at: lab_ts,
         updated_at: lab_ts
@@ -679,21 +682,21 @@ desc 'Backup the database'
     printf(" done.\n")
   end
 
-  def demo_populate_vaccines(today, days_ago, existing_patients)
+  def demo_populate_vaccines(beginning_of_day, days_ago, existing_patients)
     printf("Generating vaccinations...")
     vaccines = []
     histories = []
     patient_ids = existing_patients.limit(existing_patients.count * rand(15..25) / 100).order('RAND()').pluck(:id)
     patient_ids.each_with_index do |patient_id, index|
       printf("\rGenerating vaccine #{index+1} of #{patient_ids.length}...")
-      vaccine_ts = create_fake_timestamp(today, today)
+      vaccine_ts = create_fake_timestamp(beginning_of_day)
       group_name = Vaccine.group_name_options.sample
       notes = rand < 0.5 ? Faker::Games::LeagueOfLegends.quote : nil
       vaccines << Vaccine.new(
         patient_id: patient_id,
         group_name: group_name,
         product_name: Vaccine.product_name_options(group_name).sample,
-        administration_date: create_fake_timestamp(1.week.ago, today),
+        administration_date: create_fake_timestamp(beginning_of_day - 1.week, beginning_of_day + 1.day),
         dose_number: Vaccine::DOSE_OPTIONS.sample,
         notes: notes,
         created_at: vaccine_ts,
@@ -715,7 +718,7 @@ desc 'Backup the database'
     printf(" done.\n")
   end
 
-  def demo_populate_close_contacts(today, days_ago, existing_patients)
+  def demo_populate_close_contacts(beginning_of_day, days_ago, existing_patients)
     printf("Generating close contacts...")
     close_contacts = []
     histories = []
@@ -724,7 +727,7 @@ desc 'Backup the database'
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
       printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
-      close_contact_ts = create_fake_timestamp(today, today)
+      close_contact_ts = create_fake_timestamp(beginning_of_day)
       close_contact = {
         patient_id: patient_id,
         created_at: close_contact_ts,
@@ -759,7 +762,7 @@ desc 'Backup the database'
     printf(" done.\n")
   end
 
-  def demo_populate_transfers(today, existing_patients, jurisdictions, assigned_users)
+  def demo_populate_transfers(beginning_of_day, existing_patients, jurisdictions, assigned_users)
     printf("Generating transfers...")
     transfers = []
     histories = []
@@ -768,7 +771,7 @@ desc 'Backup the database'
     patients_transfer = existing_patients.limit(existing_patients.count * rand(5..10) / 100).order('RAND()').pluck(:id, :jurisdiction_id, :assigned_user)
     patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
       printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
-      transfer_ts = create_fake_timestamp(today, today)
+      transfer_ts = create_fake_timestamp(beginning_of_day)
       to_jurisdiction = (jurisdictions.ids - [jur_id]).sample
       patient_updates[patient_id] = {
         jurisdiction_id: to_jurisdiction,
@@ -798,7 +801,7 @@ desc 'Backup the database'
     printf(" done.\n")
   end
 
-  def demo_populate_close_contacts(today, days_ago, existing_patients)
+  def demo_populate_close_contacts(beginning_of_day, days_ago, existing_patients)
     printf("Generating close contacts...")
     close_contacts = []
     histories = []
@@ -807,7 +810,7 @@ desc 'Backup the database'
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
       printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
-      close_contact_ts = create_fake_timestamp(today, today)
+      close_contact_ts = create_fake_timestamp(beginning_of_day)
       close_contact = {
         patient_id: patient_id,
         created_at: close_contact_ts,
@@ -844,7 +847,7 @@ desc 'Backup the database'
     printf(" done.\n")
   end
 
-  def demo_populate_contact_attempts(today, existing_patients)
+  def demo_populate_contact_attempts(beginning_of_day, existing_patients)
     printf("Generating contact attempts...")
     contact_attempts = []
     histories = []
@@ -853,7 +856,7 @@ desc 'Backup the database'
       printf("\rGenerating contact attempt #{index+1} of #{patients_contact_attempts.length}...")
       successful = rand < 0.45
       note = rand < 0.65 ? " #{Faker::TvShows::GameOfThrones.quote}" : ''
-      contact_attempt_ts = create_fake_timestamp(today, today)
+      contact_attempt_ts = create_fake_timestamp(beginning_of_day)
       user = User.all.select { |u| u.role?('public_health') }.sample
       manual_attempt = rand < 0.7
       if manual_attempt
@@ -967,21 +970,21 @@ desc 'Backup the database'
     SQL
   end
 
-  def demo_cache_analytics(today, cache_analytics)
+  def demo_cache_analytics(beginning_of_day, cache_analytics)
     printf("Caching analytics...")
     if cache_analytics || (day + 1) == days
       Rake::Task["analytics:cache_current_analytics"].reenable
       Rake::Task["analytics:cache_current_analytics"].invoke
       # Add time onto update time for more realistic reports
       t = Time.now
-      date_time_update = DateTime.new(today.year, today.month, today.day, t.hour, t.min, t.sec, t.zone)
+      date_time_update = DateTime.new(beginning_of_day.year, beginning_of_day.month, beginning_of_day.day, t.hour, t.min, t.sec, t.zone)
       Analytic.where('created_at > ?', 1.hour.ago).update_all(created_at: date_time_update, updated_at: date_time_update)
     end
     printf(" done.\n")
   end
 
-  def create_fake_timestamp(from, to)
-    Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :all)
+  def create_fake_timestamp(from, to = from + 1.day)
+    Faker::Time.between(from: from, to: to > Time.now ? Time.now : to)
   end
 
   def duplicate_timestamps(from, to)
