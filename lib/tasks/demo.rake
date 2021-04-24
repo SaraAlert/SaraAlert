@@ -239,7 +239,7 @@ desc 'Backup the database'
     end
 
     # Cache analytics
-    demo_cache_analytics(beginning_of_day, cache_analytics)
+    demo_cache_analytics(beginning_of_day) if cache_analytics
   end
 
   def demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties)
@@ -970,16 +970,15 @@ desc 'Backup the database'
     SQL
   end
 
-  def demo_cache_analytics(beginning_of_day, cache_analytics)
+  def demo_cache_analytics(beginning_of_day)
     printf("Caching analytics...")
-    if cache_analytics || (day + 1) == days
-      Rake::Task["analytics:cache_current_analytics"].reenable
-      Rake::Task["analytics:cache_current_analytics"].invoke
-      # Add time onto update time for more realistic reports
-      t = Time.now
-      date_time_update = DateTime.new(beginning_of_day.year, beginning_of_day.month, beginning_of_day.day, t.hour, t.min, t.sec, t.zone)
-      Analytic.where('created_at > ?', 1.hour.ago).update_all(created_at: date_time_update, updated_at: date_time_update)
-    end
+    Rake::Task["analytics:cache_current_analytics"].reenable
+    Rake::Task["analytics:cache_current_analytics"].invoke
+    # Add time onto update time for more realistic reports
+    Analytic.where('created_at > ?', 1.hour.ago).update_all(created_at: beginning_of_day, updated_at: beginning_of_day)
+    MonitoreeCount.where('created_at > ?', 1.hour.ago).update_all(created_at: beginning_of_day, updated_at: beginning_of_day)
+    MonitoreeSnapshot.where('created_at > ?', 1.hour.ago).update_all(created_at: beginning_of_day, updated_at: beginning_of_day)
+    MonitoreeMap.where('created_at > ?', 1.hour.ago).update_all(created_at: beginning_of_day, updated_at: beginning_of_day)
     printf(" done.\n")
   end
 
