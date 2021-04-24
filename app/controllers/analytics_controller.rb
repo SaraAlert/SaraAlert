@@ -28,6 +28,23 @@ class AnalyticsController < ApplicationController
     send_file("#{Rails.root}/public/CountyLevelMaps/#{map_file_name}.json", filename: "#{map_file_name}.json", type: 'application/json')
   end
 
+  def monitoree_maps
+    # Restrict access to public health & analysts users only
+    redirect_to(root_url) && return unless current_user.can_view_analytics?
+
+    # Only query user jurisdiction once
+    jur = current_user.jurisdiction
+
+    # Query analytic ids and dates of latest analytics of each of the last 10 days (ordering by created_at then calling to_h will guarantee 1 analytic per day)
+    recent_analytics = jur.analytics.where('created_at > ?', 10.days.ago.to_date).order(:created_at).pluck('DATE(created_at)', :id).to_h.invert
+
+    # Query monitoree maps of those analytics
+    maps = MonitoreeMap.where(analytic_id: recent_analytics.keys)
+    maps = maps.where(level: 'State') unless jur.root?
+
+    render json: { monitoree_maps: maps.group_by(&:analytic_id).map { |id, m| { day: recent_analytics[id], maps: m } } }
+  end
+
   protected
 
   def enroller_stats
@@ -44,36 +61,15 @@ class AnalyticsController < ApplicationController
   end
 
   def epi_stats
-    analytics = current_user.jurisdiction.analytics
-
-    # Retrieve map analytics from up to 14 days ago
-    maps = []
-    dates = (14.days.ago.to_date..Date.today).to_a
-    dates.each do |date|
-      next if date.nil?
-
-      # Get last saved analytic for each date
-      analytic = analytics.where(created_at: date.beginning_of_day..date.end_of_day).last
-
-      next if analytic.nil?
-
-      maps << if current_user.jurisdiction.root?
-                { day: date, maps: MonitoreeMap.where(analytic_id: analytic.id, level: 'State') }
-              else
-                { day: date, maps: MonitoreeMap.where(analytic_id: analytic.id) }
-              end
-    end
-
     # Get analytics from most recent cache analytics job
-    most_recent_analytics = current_user.jurisdiction.analytics.last
-
+    most_recent_analytics = current_user.jurisdiction.analytics.includes(:monitoree_counts, :monitoree_snapshots, :monitoree_maps).last
     return {} if most_recent_analytics.nil?
 
     {
       last_updated_at: most_recent_analytics.updated_at,
-      monitoree_counts: MonitoreeCount.where(analytic_id: most_recent_analytics.id),
-      monitoree_snapshots: MonitoreeSnapshot.where(analytic_id: most_recent_analytics.id),
-      monitoree_maps: maps
+      monitoree_counts: most_recent_analytics.monitoree_counts,
+      monitoree_snapshots: most_recent_analytics.monitoree_snapshots,
+      monitoree_maps: [{ day: most_recent_analytics.updated_at.to_date, maps: most_recent_analytics.monitoree_maps }]
     }
   end
 end

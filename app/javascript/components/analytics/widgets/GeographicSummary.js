@@ -11,22 +11,19 @@ import { insularAreas } from '../mapData';
 import { stateOptions } from '../../../data/stateOptions';
 import CountyLevelMaps from './CountyLevelMaps';
 
-const MAX_DAYS_OF_HISTORY = 10; // only allow the user to scrub back N days from today
-const INITIAL_SELECTED_DATE_INDEX = 9;
+const INITIAL_SELECTED_DATE_INDEX = 0;
 const TERRITORY_GEOJSON_FILE = 'usaTerritories.json';
-let JURISDICTIONS_NOT_IN_USE = {
-  states: [],
-  insularAreas: [],
-};
 
 class GeographicSummary extends React.Component {
   constructor(props) {
     super(props);
-    this.analyticsData = this.parseAnalyticsStatistics();
-    this.jurisdictionsPermittedToView = this.obtainJurisdictionsPermittedToView();
-    this.obtainJurisdictionsNotInUse();
-    if (this.analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)]) {
+    const maxDaysOfHistory = 1;
+    const analyticsData = this.parseAnalyticsStatistics(props.stats.monitoree_maps, maxDaysOfHistory);
+    if (analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)]) {
       this.state = {
+        analyticsData,
+        jurisdictionsPermittedToView: this.obtainJurisdictionsPermittedToView(props.stats.monitoree_maps, maxDaysOfHistory),
+        jurisdictions_not_in_use: this.obtainJurisdictionsNotInUse(props.stats.monitoree_maps, maxDaysOfHistory),
         selectedDateIndex: INITIAL_SELECTED_DATE_INDEX,
         showBackButton: false,
         jurisdictionToShow: {
@@ -37,8 +34,12 @@ class GeographicSummary extends React.Component {
         mapObject: null,
         showSpinner: false,
         viewMapTable: false,
-        exposureMapData: this.analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)].value,
-        isolationMapData: this.analyticsData.isolation[Number(INITIAL_SELECTED_DATE_INDEX)].value,
+        exposureMapData: analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)].value,
+        isolationMapData: analyticsData.isolation[Number(INITIAL_SELECTED_DATE_INDEX)].value,
+        // analyticsData.exposure is the same as analyticsData.isolation (in terms of dates) so it doesnt matter which you use
+        dateSubset: analyticsData.exposure.map(x => x.date),
+        dateRange: analyticsData.exposure.map(x => moment(x.date).format('MM/DD')),
+        maxDaysOfHistory,
       };
 
       // A lot of times, the CountyLevelMaps functions will take time to render some new jurisdiction map.
@@ -46,10 +47,6 @@ class GeographicSummary extends React.Component {
       // and subtract 1 every time they report back. When they each report back, 2 - 1 - 1 = 0 then we set `showSpinner` to false
       // Because calls to setState are asynchronous, this value must be on the component itself
       this.spinnerState = 0;
-
-      // this.analyticsData.exposure is the same as this.analyticsData.isolation (in terms of dates) so it doesnt matter which you use
-      this.dateSubset = this.analyticsData.exposure.map(x => x.date);
-      this.dateRange = this.analyticsData.exposure.map(x => moment(x.date).format('MM/DD'));
     } else {
       this.state = {
         hasError: true,
@@ -57,7 +54,25 @@ class GeographicSummary extends React.Component {
     }
   }
 
-  parseAnalyticsStatistics = () => {
+  componentDidMount() {
+    axios.get('/analytics/monitoree_maps').then(response => {
+      const maxDaysOfHistory = response.data.monitoree_maps.length;
+      const analyticsData = this.parseAnalyticsStatistics(response.data.monitoree_maps, maxDaysOfHistory);
+      this.setState({
+        analyticsData,
+        jurisdictionsPermittedToView: this.obtainJurisdictionsPermittedToView(response.data.monitoree_maps, maxDaysOfHistory),
+        jurisdictions_not_in_use: this.obtainJurisdictionsNotInUse(response.data.monitoree_maps, maxDaysOfHistory),
+        selectedDateIndex: maxDaysOfHistory - 1,
+        exposureMapData: analyticsData.exposure[maxDaysOfHistory - 1].value,
+        isolationMapData: analyticsData.isolation[maxDaysOfHistory - 1].value,
+        dateSubset: analyticsData.exposure.map(x => x.date),
+        dateRange: analyticsData.exposure.map(x => moment(x.date).format('MM/DD')),
+        maxDaysOfHistory,
+      });
+    });
+  }
+
+  parseAnalyticsStatistics = (monitoree_maps, maxDaysOfHistory) => {
     // internal function for parsing the two workflow types
     const obtainAnalyticsValue = (values, workflowType) => {
       let returnVal = {
@@ -94,8 +109,8 @@ class GeographicSummary extends React.Component {
     };
 
     _.takeRight(
-      this.props.stats.monitoree_maps.sort((a, b) => b.day - a.day),
-      MAX_DAYS_OF_HISTORY
+      monitoree_maps.sort((a, b) => b.day - a.day),
+      maxDaysOfHistory
     ).forEach(dayMapsPair => {
       analyticsObject.exposure.push({ date: dayMapsPair.day, value: obtainAnalyticsValue(dayMapsPair.maps, 'Exposure') });
       analyticsObject.isolation.push({ date: dayMapsPair.day, value: obtainAnalyticsValue(dayMapsPair.maps, 'Isolation') });
@@ -103,15 +118,15 @@ class GeographicSummary extends React.Component {
     return analyticsObject;
   };
 
-  obtainJurisdictionsPermittedToView = () => {
+  obtainJurisdictionsPermittedToView = (monitoree_maps, maxDaysOfHistory) => {
     // This function iterates over monitoree_maps and pulls out all the state names where counties are referenced
     // This is used to determine what the user has permission to view (as the server only provides the data they are able to view)
     // For example, an epi in Virgina will only be served county-level data for virginia (and possibly bordering states depending on what `address_state` is set)
     // and this epi will not be able to zoom in on Arizona's data for example
     // The function then returns the isoCode for each state the current_user is allowed to expand
     let dateSubset = _.takeRight(
-      this.props.stats.monitoree_maps.sort((a, b) => b.day - a.day),
-      MAX_DAYS_OF_HISTORY
+      monitoree_maps.sort((a, b) => b.day - a.day),
+      maxDaysOfHistory
     );
     let statesWhereCountyReferenced = _.uniq(
       _.flatten(
@@ -126,12 +141,12 @@ class GeographicSummary extends React.Component {
     return statesWhereCountyReferenced.map(x => stateOptions.find(y => y.name?.toLowerCase() === x?.toLowerCase())?.isoCode);
   };
 
-  obtainJurisdictionsNotInUse = () => {
+  obtainJurisdictionsNotInUse = (monitoree_maps, maxDaysOfHistory) => {
     // Go through all the monitoree_maps and if a state or territory is NEVER referenced then it must not be in use
     // If it does have data, but just no county-data for it, then the current_user must just not have permission to zoom in on it
     let dateSubset = _.takeRight(
-      this.props.stats.monitoree_maps.sort((a, b) => b.day - a.day),
-      MAX_DAYS_OF_HISTORY
+      monitoree_maps.sort((a, b) => b.day - a.day),
+      maxDaysOfHistory
     );
     let statesReferenced = _.uniq(
       _.flatten(
@@ -143,14 +158,15 @@ class GeographicSummary extends React.Component {
         )
       )
     );
-    JURISDICTIONS_NOT_IN_USE.states = stateOptions
+    const statesNotInUse = stateOptions
       .map(x => (statesReferenced.includes(x.name) && !insularAreas.includes(x.name) ? null : x))
       .filter(x => x)
       .map(x => x.isoCode);
-    JURISDICTIONS_NOT_IN_USE.insularAreas = insularAreas
+    const insularAreasNotInUse = insularAreas
       .map(x => (statesReferenced.includes(x.name) ? null : x))
       .filter(x => x)
       .map(x => x.isoCode);
+    return { states: statesNotInUse, insularAreas: insularAreasNotInUse };
   };
 
   decrementSpinnerCount = () => {
@@ -188,8 +204,8 @@ class GeographicSummary extends React.Component {
         // show the spinner and update the date value to provide responsive UI
         setTimeout(() => {
           this.setState({
-            exposureMapData: this.analyticsData.exposure[Number(value)].value,
-            isolationMapData: this.analyticsData.isolation[Number(value)].value,
+            exposureMapData: this.state.analyticsData.exposure[Number(value)].value,
+            isolationMapData: this.state.analyticsData.isolation[Number(value)].value,
           });
         }, 25);
       }
@@ -226,8 +242,8 @@ class GeographicSummary extends React.Component {
           name: 'USA',
           eventValue: null,
         },
-        exposureMapData: this.analyticsData.exposure[Number(this.state.selectedDateIndex)].value,
-        isolationMapData: this.analyticsData.isolation[Number(this.state.selectedDateIndex)].value,
+        exposureMapData: this.state.analyticsData.exposure[Number(this.state.selectedDateIndex)].value,
+        isolationMapData: this.state.analyticsData.isolation[Number(this.state.selectedDateIndex)].value,
         mapObject: null,
       });
     } else if (jurisdiction === 'territory') {
@@ -241,8 +257,8 @@ class GeographicSummary extends React.Component {
             name: jurisdiction.name,
             eventValue: null,
           },
-          exposureMapData: this.analyticsData.exposure[Number(this.state.selectedDateIndex)].value,
-          isolationMapData: this.analyticsData.isolation[Number(this.state.selectedDateIndex)].value,
+          exposureMapData: this.state.analyticsData.exposure[Number(this.state.selectedDateIndex)].value,
+          isolationMapData: this.state.analyticsData.isolation[Number(this.state.selectedDateIndex)].value,
           mapObject: jurisdictionData.mapObject,
         });
       });
@@ -256,8 +272,8 @@ class GeographicSummary extends React.Component {
             name: jurisdiction.target.dataItem.dataContext.name,
             eventValue: jurisdiction, // this is actually an eventObject from am4Charts
           },
-          exposureMapData: this.analyticsData.exposure[Number(this.state.selectedDateIndex)].value,
-          isolationMapData: this.analyticsData.isolation[Number(this.state.selectedDateIndex)].value,
+          exposureMapData: this.state.analyticsData.exposure[Number(this.state.selectedDateIndex)].value,
+          isolationMapData: this.state.analyticsData.isolation[Number(this.state.selectedDateIndex)].value,
           mapObject: jurisdictionData.mapObject,
         });
       });
@@ -288,11 +304,11 @@ class GeographicSummary extends React.Component {
       <div style={{ width: '96%', marginLeft: '2%' }}>
         <Row className="mb-4 mx-2 px-0">
           <Col md="24">
-            <div className="text-center display-5 mb-1 mt-1 pb-4">{moment(this.dateSubset[this.state.selectedDateIndex]).format('MMMM DD, YYYY')}</div>
+            <div className="text-center display-5 mb-1 mt-1 pb-4">{moment(this.state.dateSubset[this.state.selectedDateIndex]).format('MMMM DD, YYYY')}</div>
             <div className="mx-5 mb-4 pb-2">
               <Slider
-                max={MAX_DAYS_OF_HISTORY - 1}
-                marks={this.dateRange}
+                max={this.state.maxDaysOfHistory - 1}
+                marks={this.state.dateRange}
                 defaultValue={INITIAL_SELECTED_DATE_INDEX}
                 railStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
                 trackStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
@@ -317,8 +333,8 @@ class GeographicSummary extends React.Component {
                   mapObject={this.state.mapObject}
                   handleJurisdictionChange={this.handleJurisdictionChange}
                   decrementSpinnerCount={this.decrementSpinnerCount}
-                  jurisdictionsNotInUse={JURISDICTIONS_NOT_IN_USE}
-                  jurisdictionsPermittedToView={this.jurisdictionsPermittedToView}
+                  jurisdictionsNotInUse={this.state.jurisdictions_not_in_use}
+                  jurisdictionsPermittedToView={this.state.jurisdictionsPermittedToView}
                 />
               </Col>
               <Col md="12" className="pl-0">
@@ -330,8 +346,8 @@ class GeographicSummary extends React.Component {
                   mapObject={this.state.mapObject}
                   handleJurisdictionChange={this.handleJurisdictionChange}
                   decrementSpinnerCount={this.decrementSpinnerCount}
-                  jurisdictionsNotInUse={JURISDICTIONS_NOT_IN_USE}
-                  jurisdictionsPermittedToView={this.jurisdictionsPermittedToView}
+                  jurisdictionsNotInUse={this.state.jurisdictions_not_in_use}
+                  jurisdictionsPermittedToView={this.state.jurisdictionsPermittedToView}
                 />
               </Col>
             </Row>
