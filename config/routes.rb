@@ -103,7 +103,7 @@ Rails.application.routes.draw do
   end
 
   resources :vaccines, only: [:index, :create, :update]
-  
+
   resources :user_filters, only: [:index, :create, :update, :destroy]
 
   resources :user_export_presets, only: [:index, :create, :update, :destroy]
@@ -133,6 +133,7 @@ Rails.application.routes.draw do
   get '/public_health/patients/counts/:workflow/:tab', to: 'public_health#tab_counts', as: :tab_counts
 
   get '/analytics', to: 'analytics#index', as: :analytics
+  get '/analytics/monitoree_maps', to: 'analytics#monitoree_maps', as: :monitoree_maps
   get '/county_level_maps/:mapFile', to: 'analytics#clm_geo_json'
 
   # Errors
