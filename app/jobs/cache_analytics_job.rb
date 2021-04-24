@@ -330,10 +330,10 @@ class CacheAnalyticsJob < ApplicationJob
   def self.monitoree_counts_by_last_exposure_month(analytic_id, monitorees)
     counts = []
     exposure_months = <<-SQL
-      DATE_FORMAT(last_date_of_exposure ,'%Y-%m-01')
+      DATE_FORMAT(last_date_of_exposure, '%Y-%m-01')
     SQL
     symptom_onset_months = <<-SQL
-      DATE_FORMAT(symptom_onset ,'%Y-%m-01')
+      DATE_FORMAT(symptom_onset, '%Y-%m-01')
     SQL
 
     monitorees.where(isolation: false)
