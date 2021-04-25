@@ -6,6 +6,6 @@
   <%= react_component('analytics/EnrollerAnalytics', { current_user: current_user, stats: @stats }) %>
 <% end %>
 
-<% if current_user.can_view_epi_analytics? %>
+<% if @can_view_epi_analytics %>
   <%= react_component('analytics/PublicHealthAnalytics', { current_user: current_user, stats: @stats }) %>
 <% end %>
