@@ -11,8 +11,9 @@ class AnalyticsController < ApplicationController
     # Stats for enrollers
     @stats = enroller_stats if current_user.role?(Roles::ENROLLER)
 
-    # Stats for public health & analysts
-    @stats = epi_stats if current_user.can_view_epi_analytics?
+    # Stats for public health & analysts (store @can_view_epi_analytics in class variable to prevent duplicate query from view)
+    @can_view_epi_analytics = current_user.can_view_epi_analytics?
+    @stats = epi_stats if @can_view_epi_analytics
 
     redirect_to(root_url) && return if @stats.nil?
   end
@@ -62,14 +63,13 @@ class AnalyticsController < ApplicationController
 
   def epi_stats
     # Get analytics from most recent cache analytics job
-    most_recent_analytics = current_user.jurisdiction.analytics.includes(:monitoree_counts, :monitoree_snapshots, :monitoree_maps).last
+    most_recent_analytics = current_user.jurisdiction.analytics.last
     return {} if most_recent_analytics.nil?
 
     {
       last_updated_at: most_recent_analytics.updated_at,
       monitoree_counts: most_recent_analytics.monitoree_counts,
-      monitoree_snapshots: most_recent_analytics.monitoree_snapshots,
-      monitoree_maps: [{ day: most_recent_analytics.updated_at.to_date, maps: most_recent_analytics.monitoree_maps }]
+      monitoree_snapshots: most_recent_analytics.monitoree_snapshots
     }
   end
 end
