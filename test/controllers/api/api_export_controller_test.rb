@@ -46,12 +46,12 @@ class ApiExportControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should be 403 forbidden when invalid scope' do
-    get '/api/nbs/patient', headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}" }
+    get '/api/nbs/patient', headers: { Authorization: "Bearer #{@system_patient_token_w.token}" }
     assert_response :forbidden
   end
 
   test 'should be 406 not_acceptable accept header is not provided' do
-    get '/api/nbs/patient', headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}" }
+    get '/api/nbs/patient', headers: { Authorization: "Bearer #{@system_patient_token_r.token}" }
     assert_response :not_acceptable
   end
 
