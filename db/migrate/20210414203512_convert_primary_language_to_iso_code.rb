@@ -112,20 +112,11 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     which could not be matched to the standard language list. This monitoree’s #{is_primary ? 'primary' : 'secondary'} \
     language has been updated to '#{value.nil? ? 'blank' : Languages.all_languages[value.to_sym][:display]}'. You \
     may update this value."
-    if is_primary
-      execute <<-SQL.squish
-        INSERT INTO histories (patient_id, created_by, comment, history_type, created_at, updated_at)
-        SELECT id, 'Sara Alert System', "#{note}", 'System Note', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-        FROM patients
-        WHERE purged = false AND primary_language = "#{key}"
-      SQL
-    else
-      execute <<-SQL.squish
-        INSERT INTO histories (patient_id, created_by, comment, history_type, created_at, updated_at)
-        SELECT id, 'Sara Alert System', "#{note}", 'System Note', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-        FROM patients
-        WHERE purged = false AND secondary_language = "#{key}"
-      SQL
-    end
+    execute <<-SQL.squish
+      INSERT INTO histories (patient_id, created_by, comment, history_type, created_at, updated_at)
+      SELECT id, 'Sara Alert System', "#{note}", 'System Note', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+      FROM patients
+      WHERE purged = false AND #{is_primary ? 'primary_language' : 'secondary_language'} = "#{key}"
+    SQL
   end
 end
