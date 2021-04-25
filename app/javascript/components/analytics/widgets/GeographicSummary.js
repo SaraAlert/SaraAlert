@@ -11,64 +11,50 @@ import { insularAreas } from '../mapData';
 import { stateOptions } from '../../../data/stateOptions';
 import CountyLevelMaps from './CountyLevelMaps';
 
-const INITIAL_SELECTED_DATE_INDEX = 0;
 const TERRITORY_GEOJSON_FILE = 'usaTerritories.json';
 
 class GeographicSummary extends React.Component {
   constructor(props) {
     super(props);
-    const maxDaysOfHistory = 1;
-    const analyticsData = this.parseAnalyticsStatistics(props.stats.monitoree_maps, maxDaysOfHistory);
-    if (analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)]) {
-      this.state = {
-        analyticsData,
-        jurisdictionsPermittedToView: this.obtainJurisdictionsPermittedToView(props.stats.monitoree_maps, maxDaysOfHistory),
-        jurisdictions_not_in_use: this.obtainJurisdictionsNotInUse(props.stats.monitoree_maps, maxDaysOfHistory),
-        selectedDateIndex: INITIAL_SELECTED_DATE_INDEX,
-        showBackButton: false,
-        jurisdictionToShow: {
-          category: 'fullCountry',
-          name: 'USA',
-          eventValue: null,
-        },
-        mapObject: null,
-        showSpinner: false,
-        viewMapTable: false,
-        exposureMapData: analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)].value,
-        isolationMapData: analyticsData.isolation[Number(INITIAL_SELECTED_DATE_INDEX)].value,
-        // analyticsData.exposure is the same as analyticsData.isolation (in terms of dates) so it doesnt matter which you use
-        dateSubset: analyticsData.exposure.map(x => x.date),
-        dateRange: analyticsData.exposure.map(x => moment(x.date).format('MM/DD')),
-        maxDaysOfHistory,
-      };
-
-      // A lot of times, the CountyLevelMaps functions will take time to render some new jurisdiction map.
-      // We want the Spinner to spin until they report back that they're done. Therefore, we set spinnerState to 2
-      // and subtract 1 every time they report back. When they each report back, 2 - 1 - 1 = 0 then we set `showSpinner` to false
-      // Because calls to setState are asynchronous, this value must be on the component itself
-      this.spinnerState = 0;
-    } else {
-      this.state = {
-        hasError: true,
-      };
-    }
+    this.state = { loading: true };
   }
 
   componentDidMount() {
     axios.get('/analytics/monitoree_maps').then(response => {
       const maxDaysOfHistory = response.data.monitoree_maps.length;
+      const selectedDateIndex = maxDaysOfHistory - 1;
       const analyticsData = this.parseAnalyticsStatistics(response.data.monitoree_maps, maxDaysOfHistory);
-      this.setState({
-        analyticsData,
-        jurisdictionsPermittedToView: this.obtainJurisdictionsPermittedToView(response.data.monitoree_maps, maxDaysOfHistory),
-        jurisdictions_not_in_use: this.obtainJurisdictionsNotInUse(response.data.monitoree_maps, maxDaysOfHistory),
-        selectedDateIndex: maxDaysOfHistory - 1,
-        exposureMapData: analyticsData.exposure[maxDaysOfHistory - 1].value,
-        isolationMapData: analyticsData.isolation[maxDaysOfHistory - 1].value,
-        dateSubset: analyticsData.exposure.map(x => x.date),
-        dateRange: analyticsData.exposure.map(x => moment(x.date).format('MM/DD')),
-        maxDaysOfHistory,
-      });
+      if (analyticsData.exposure[Number(selectedDateIndex)]) {
+        this.setState({
+          analyticsData,
+          jurisdictionsPermittedToView: this.obtainJurisdictionsPermittedToView(response.data.monitoree_maps, maxDaysOfHistory),
+          jurisdictions_not_in_use: this.obtainJurisdictionsNotInUse(response.data.monitoree_maps, maxDaysOfHistory),
+          selectedDateIndex: maxDaysOfHistory - 1,
+          showBackButton: false,
+          jurisdictionToShow: {
+            category: 'fullCountry',
+            name: 'USA',
+            eventValue: null,
+          },
+          mapObject: null,
+          showSpinner: false,
+          viewMapTable: false,
+          exposureMapData: analyticsData.exposure[maxDaysOfHistory - 1].value,
+          isolationMapData: analyticsData.isolation[maxDaysOfHistory - 1].value,
+          dateSubset: analyticsData.exposure.map(x => x.date),
+          dateRange: analyticsData.exposure.map(x => moment(x.date).format('MM/DD')),
+          maxDaysOfHistory,
+          loading: false,
+        });
+
+        // A lot of times, the CountyLevelMaps functions will take time to render some new jurisdiction map.
+        // We want the Spinner to spin until they report back that they're done. Therefore, we set spinnerState to 2
+        // and subtract 1 every time they report back. When they each report back, 2 - 1 - 1 = 0 then we set `showSpinner` to false
+        // Because calls to setState are asynchronous, this value must be on the component itself
+        this.spinnerState = 0;
+      } else {
+        this.setState({ hasError: true, loading: false });
+      }
     });
   }
 
@@ -294,6 +280,13 @@ class GeographicSummary extends React.Component {
         </div>
       );
     }
+    if (this.state.loading) {
+      return (
+        <div className="text-center mt-4" style={{ width: '100%' }}>
+          <div className="h5">Loading Geographic Analytics Data...</div>
+        </div>
+      );
+    }
     let backButton = this.state.showBackButton && (
       <Button variant="primary" size="md" className="ml-auto btn-square" onClick={() => this.backToFullCountryMap()}>
         <i className="fas fa-arrow-left mr-2"> </i>
@@ -309,7 +302,7 @@ class GeographicSummary extends React.Component {
               <Slider
                 max={this.state.maxDaysOfHistory - 1}
                 marks={this.state.dateRange}
-                defaultValue={INITIAL_SELECTED_DATE_INDEX}
+                value={this.state.selectedDateIndex}
                 railStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
                 trackStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
                 handleStyle={{ borderColor: '#595959', backgroundColor: 'white' }}
