@@ -12,6 +12,7 @@ class ChangeHOH extends React.Component {
       disabled: true,
       showModal: false,
       loading: false,
+      hoh_selection: null
     };
   }
 
@@ -20,6 +21,7 @@ class ChangeHOH extends React.Component {
     this.setState({
       disabled: true,
       showModal: !current,
+      hoh_selection: null
     });
   };
 

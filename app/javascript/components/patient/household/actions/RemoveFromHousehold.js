@@ -14,15 +14,15 @@ class RemoveFromHousehold extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.checkHouseholdRemoveEligible();
+  }
+
   toggleModal = () => {
     let current = this.state.showModal;
     this.setState({
       showModal: !current,
     });
-  };
-
-  handleChange = event => {
-    this.setState({ [event.target.id]: event.target.value });
   };
 
   submit = () => {
@@ -91,10 +91,6 @@ class RemoveFromHousehold extends React.Component {
         </Modal.Footer>
       </Modal>
     );
-  }
-
-  componentDidMount() {
-    this.checkHouseholdRemoveEligible();
   }
 
   render() {
