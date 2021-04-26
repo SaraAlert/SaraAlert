@@ -70,7 +70,7 @@ class MonitoreeFlow extends React.Component {
                         <td key={index}>{x.transferred_in}</td>
                       ))}
                     </tr>
-                    <tr>
+                    <tr className="analytics-zebra-bg">
                       <td className="text-right">FROM {oppositeWorkflow} WORKFLOW</td>
                       {data.map((x, index) => (
                         <td key={index}>{oppositeWorkflow === 'ISOLATION' ? x.isolation_to_exposure : x.exposure_to_isolation}</td>
@@ -93,7 +93,7 @@ class MonitoreeFlow extends React.Component {
                         <td key={index}>{x.transferred_out}</td>
                       ))}
                     </tr>
-                    <tr>
+                    <tr className="analytics-zebra-bg">
                       <td className="text-right">TO {oppositeWorkflow} WORKFLOW</td>
                       {data.map((x, index) => (
                         <td key={index}>{oppositeWorkflow === 'ISOLATION' ? x.exposure_to_isolation : x.isolation_to_exposure}</td>
