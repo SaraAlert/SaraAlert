@@ -103,8 +103,8 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     remove_column :patients, :legacy_primary_language
     remove_column :patients, :legacy_secondary_language
 
-    # Destroy all System Notes that contain the text `language was listed as`
-    History.where('history_type = ? AND comment like ?', 'System Note', '%language was listed as%').destroy_all
+    # Destroy all System Record Edits that contain the text `language was listed as`
+    History.where('history_type = ? AND comment like ?', 'System Record Edit', '%language was listed as%').destroy_all
   end
 
   def insert_history_items(key, value, is_primary)
@@ -114,7 +114,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     may update this value."
     execute <<-SQL.squish
       INSERT INTO histories (patient_id, created_by, comment, history_type, created_at, updated_at)
-      SELECT id, 'Sara Alert System', "#{note}", 'System Note', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+      SELECT id, 'Sara Alert System', "#{note}", 'System Record Edit', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
       FROM patients
       WHERE purged = false AND #{is_primary ? 'primary_language' : 'secondary_language'} = "#{key}"
     SQL

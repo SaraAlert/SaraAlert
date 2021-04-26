@@ -9,6 +9,7 @@ class History < ApplicationRecord
 
   HISTORY_TYPES = {
     record_edit: 'Record Edit',
+    system_record_edit: 'System Record Edit',
     report_created: 'Report Created',
     report_updated: 'Report Updated',
     comment: 'Comment',
@@ -28,8 +29,7 @@ class History < ApplicationRecord
     close_contact_edit: 'Close Contact Edit',
     contact_attempt: 'Contact Attempt',
     welcome_message_sent: 'Welcome Message Sent',
-    record_automatically_closed: 'Record Automatically Closed',
-    system_note: 'System Note'
+    record_automatically_closed: 'Record Automatically Closed'
   }.freeze
 
   columns.each do |column|
