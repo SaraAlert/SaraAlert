@@ -897,7 +897,3 @@ jobs:
           bundle exec rake coverage:report
         env:
           APP_IN_CI: true
-      - uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage/lcov/SaraAlert.lcov
