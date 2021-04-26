@@ -17,7 +17,6 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_patient?
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
-    @jurisdiction = @patient.jurisdiction
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(action: 'monitoree_unavailable', id: params[:id]) && return if @patient.nil?
@@ -25,6 +24,7 @@ class PatientsController < ApplicationController
     # If purged, redirect to index
     redirect_to(root_url) && return if @patient.purged
 
+    @jurisdiction = @patient.jurisdiction
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
 
