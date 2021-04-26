@@ -2,6 +2,9 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card } from 'react-bootstrap';
 import Patient from './Patient';
+import Dependent from './household/Dependent';
+import HOH from './household/HOH';
+import Individual from './household/Individual';
 
 class PatientPage extends React.Component {
   render() {
@@ -20,6 +23,30 @@ class PatientPage extends React.Component {
               edit_mode={false}
               authenticity_token={this.props.authenticity_token}
             />
+            <div className="household-info">
+              {!this.props.patient.head_of_household && this.props?.other_household_members?.length > 0 && (
+                <Dependent
+                  patient={this.props.patient}
+                  hoh={this.props.other_household_members.find(patient => patient.head_of_household)}
+                  authenticity_token={this.props.authenticity_token}
+                />
+              )}
+              {this.props.patient.head_of_household && (
+                <HOH
+                  patient={this.props.patient}
+                  dependents={this.props.other_household_members}
+                  can_add_group={this.props.can_add_group}
+                  authenticity_token={this.props.authenticity_token}
+                />
+              )}
+              {!this.props.patient.head_of_household && this.props?.other_household_members?.length === 0 && (
+                <Individual
+                  patient={this.props.patient}
+                  can_add_group={this.props.can_add_group}
+                  authenticity_token={this.props.authenticity_token}
+                />
+              )}
+            </div>
           </Card.Body>
         </Card>
       </React.Fragment>

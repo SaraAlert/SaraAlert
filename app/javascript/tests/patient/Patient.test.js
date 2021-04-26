@@ -5,9 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import Patient from '../../components/patient/Patient';
 import BadgeHOH from '../../components/patient/household/utils/BadgeHOH';
-import Dependent from '../../components/patient/household/Dependent';
-import HOH from '../../components/patient/household/HOH';
-import Individual from '../../components/patient/household/Individual';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankMockPatient } from '../mocks/mockPatients';
 import { nameFormatter, formatDate } from '../util.js'
 
@@ -28,14 +25,10 @@ const riskFactors = [
   { key: 'Crew on Passenger or Cargo Flight', val: null },
 ];
 
-beforeEach(() => {
-  window.BASE_PATH = ""
-})
-
 describe('Patient', () => {
   it('Properly renders all main components when not in edit mode', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ mockPatient2 ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
     expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient1));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeTruthy();
@@ -51,18 +44,17 @@ describe('Patient', () => {
     expect(wrapper.find('#potential-exposure-information').exists()).toBeTruthy();
     expect(wrapper.find('#exposure-notes').exists()).toBeTruthy();
     expect(wrapper.find('#case-information').exists()).toBeTruthy();
-    expect(wrapper.find('.household-info').exists()).toBeTruthy();
   });
 
   it('Properly renders all main components when in edit mode', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} edit_mode={true}
-      jurisdiction_path='USA, State 1, County 2'  />);
+    const wrapper = shallow(<Patient details={mockPatient4} goto={goToMock} edit_mode={true} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
-    expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient1));
-    expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeTruthy();
+    expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient4));
+    expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeFalsy();
     expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
     expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
-    expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient1.assigned_user);
+    expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient4.assigned_user);
     expect(wrapper.find('#identification').exists()).toBeTruthy();
     expect(wrapper.find('#contact-information').exists()).toBeTruthy();
     expect(wrapper.find('.details-expander').exists()).toBeFalsy();
@@ -72,12 +64,11 @@ describe('Patient', () => {
     expect(wrapper.find('#potential-exposure-information').exists()).toBeTruthy();
     expect(wrapper.find('#exposure-notes').exists()).toBeTruthy();
     expect(wrapper.find('#case-information').exists()).toBeTruthy();
-    expect(wrapper.find('.household-info').exists()).toBeFalsy();
   });
 
   it('Properly renders identification section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#identification');
     expect(section.find('h4').text()).toEqual('Identification');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -87,8 +78,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders contact information section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#contact-information');
     expect(section.find('h4').text()).toEqual('Contact Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -98,8 +89,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders show/hide divider when expanded is false', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ mockPatient2 ]} goto={goToMock}
-      edit_mode={false} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} edit_mode={false}
+      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(wrapper.find('.details-expander').exists()).toBeTruthy();
     expect(wrapper.find('#details-expander-link').exists()).toBeTruthy();
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).exists()).toBeTruthy();
@@ -109,8 +100,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders show/hide divider when expanded is true', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ mockPatient2 ]} goto={goToMock}
-      edit_mode={false} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} edit_mode={false}
+      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(wrapper.find('.details-expander').exists()).toBeTruthy();
     expect(wrapper.find('#details-expander-link').exists()).toBeTruthy();
     wrapper.find('#details-expander-link').simulate('click');
@@ -121,8 +112,8 @@ describe('Patient', () => {
   });
 
   it('Clicking show/hide divider updates label and expands or collapses details', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ mockPatient2 ]} goto={goToMock}
-      edit_mode={false} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} edit_mode={false}
+      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(wrapper.find(Collapse).prop('in')).toBeFalsy();
     expect(wrapper.state('expanded')).toBeFalsy();
     wrapper.find('#details-expander-link').simulate('click');
@@ -134,8 +125,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders address section for domestic address with no monitoring address', () => {
-    const wrapper = shallow(<Patient details={mockPatient2} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient2} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#address');
     expect(section.find('h4').text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -149,8 +140,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders address section for domestic address and monitoring address', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#address');
     expect(section.find('h4').text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -170,8 +161,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders address section for foreign address with no monitoring address', () => {
-    const wrapper = shallow(<Patient details={mockPatient5} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient5} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#address');
     expect(section.find('h4').text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -185,8 +176,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders address section for foreign address and monitoring address', () => {
-    const wrapper = shallow(<Patient details={mockPatient4} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient4} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#address');
     expect(section.find('h4').text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -206,8 +197,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders arrival information section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#arrival-information');
     expect(section.find('h4').text()).toEqual('Arrival Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -236,8 +227,8 @@ describe('Patient', () => {
   });
 
   it('Collapses/expands travel related notes if longer than 400 characters', () => {
-    const wrapper = shallow(<Patient details={mockPatient3} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient3} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     expect(wrapper.find('#arrival-information').find('.notes-section').find(Button).exists()).toBeTruthy();
     expect(wrapper.state('expandArrivalNotes')).toBeFalsy();
     expect(wrapper.find('#arrival-information').find('.notes-section').find(Button).text()).toEqual('(View all)');
@@ -256,8 +247,8 @@ describe('Patient', () => {
   });
 
   it('Displays "None" if arrival information has no information', () => {
-    const wrapper = shallow(<Patient details={blankMockPatient} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={blankMockPatient} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#arrival-information');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();
@@ -265,8 +256,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders planned travel section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#planned-travel');
     expect(section.find('h4').text()).toEqual('Additional Planned Travel');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -281,8 +272,8 @@ describe('Patient', () => {
   });
 
   it('Collapses/expands additional planned travel notes if longer than 400 characters', () => {
-    const wrapper = shallow(<Patient details={mockPatient3} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient3} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     expect(wrapper.find('#planned-travel').find('.notes-section').find(Button).exists()).toBeTruthy();
     expect(wrapper.state('expandPlannedTravelNotes')).toBeFalsy();
     expect(wrapper.find('#planned-travel').find('.notes-section').find(Button).text()).toEqual('(View all)');
@@ -301,8 +292,8 @@ describe('Patient', () => {
   });
 
   it('Displays "None" if planned travel has no information', () => {
-    const wrapper = shallow(<Patient details={blankMockPatient} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={blankMockPatient} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#planned-travel');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();
@@ -310,8 +301,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders potential exposure information section', () => {
-    const wrapper = shallow(<Patient details={mockPatient2} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient2} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.find('h4').text()).toEqual('Potential Exposure Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -337,8 +328,8 @@ describe('Patient', () => {
   it('Properly renders notes in potential exposure information section if the rest of the section is empty', () => {
     let newMockPatient5 = _.cloneDeep(mockPatient5);
     newMockPatient5.exposure_notes = 'new exposure note';
-    const wrapper = shallow(<Patient details={newMockPatient5} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={newMockPatient5} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.find('.item-group').exists()).toBeFalsy();
     expect(section.find('.risk-factors').exists()).toBeFalsy();
@@ -349,8 +340,8 @@ describe('Patient', () => {
   });
 
   it('Collapses/expands exposure notes in potential exposure information section if longer than 400 characters', () => {
-    const wrapper = shallow(<Patient details={mockPatient5} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient5} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     expect(wrapper.find('#potential-exposure-information').find(Button).exists()).toBeTruthy();
     expect(wrapper.find('#potential-exposure-information').find(Button).text()).toEqual('(View all)');
     expect(wrapper.find('#potential-exposure-information').find('.notes-text').text()).toEqual(mockPatient5.exposure_notes.slice(0, 400) + ' ...');
@@ -363,8 +354,8 @@ describe('Patient', () => {
   });
 
   it('Displays "None" if potential exposure information has no information', () => {
-    const wrapper = shallow(<Patient details={blankMockPatient} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={blankMockPatient} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();
@@ -375,8 +366,8 @@ describe('Patient', () => {
   });
 
   it('Properly renders case information section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     const section = wrapper.find('#case-information');
     expect(section.find('h4').text()).toEqual('Case Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -389,13 +380,13 @@ describe('Patient', () => {
   });
 
   it('Hides case information section when monitoree is in the exposure workflow', () => {
-    const wrapper = shallow(<Patient details={mockPatient2} other_household_members={[ ]} edit_mode={false}
+    const wrapper = shallow(<Patient details={mockPatient2} edit_mode={false}
       jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />)
     expect(wrapper.find('#case-information').exists()).toBeFalsy();
   });
 
   it('Properly renders notes section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ ]} edit_mode={false}
+    const wrapper = shallow(<Patient details={mockPatient1} edit_mode={false}
       jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     const section = wrapper.find('#exposure-notes');
     expect(section.find('h4').text()).toEqual('Notes');
@@ -406,8 +397,8 @@ describe('Patient', () => {
   });
 
   it('Collapses/expands exposure notes if longer than 400 characters', () => {
-    const wrapper = shallow(<Patient details={mockPatient3} other_household_members={[ ]} edit_mode={false}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient3} edit_mode={false} jurisdiction_path='USA, State 1, County 2'
+      authenticity_token={authyToken} />);
     expect(wrapper.find('#exposure-notes').find(Button).exists()).toBeTruthy();
     expect(wrapper.find('#exposure-notes').find(Button).text()).toEqual('(View all)');
     expect(wrapper.find('#exposure-notes').find('.notes-text').text()).toEqual(mockPatient3.exposure_notes.slice(0, 400) + ' ...');
@@ -420,7 +411,7 @@ describe('Patient', () => {
   });
 
   it('Displays "None" if exposure notes is null', () => {
-    const wrapper = shallow(<Patient details={mockPatient4} other_household_members={[ ]} edit_mode={false}
+    const wrapper = shallow(<Patient details={mockPatient4} edit_mode={false}
       jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     const section = wrapper.find('#exposure-notes');
     expect(section.exists()).toBeTruthy();
@@ -430,42 +421,14 @@ describe('Patient', () => {
     expect(section.find(Button).exists()).toBeFalsy();
   });
 
-  it('Properly renders household section and HoH badge for HoH', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ mockPatient2 ]} goto={goToMock}
-      can_add_group={true} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
-    expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeTruthy();
-    expect(wrapper.find(HOH).exists()).toBeTruthy();
-    expect(wrapper.find(Dependent).exists()).toBeFalsy();
-    expect(wrapper.find(Individual).exists()).toBeFalsy();
-  });
-
-  it('Properly renders household section for dependent', () => {
-    const wrapper = shallow(<Patient details={mockPatient2} other_household_members={[ mockPatient1 ]} goto={goToMock} can_add_group={true}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
-    expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeFalsy();
-    expect(wrapper.find(Dependent).exists()).toBeTruthy();
-    expect(wrapper.find(HOH).exists()).toBeFalsy();
-    expect(wrapper.find(Individual).exists()).toBeFalsy();
-  });
-
-  it('Properly renders household section for individual monitoree (not in a household)', () => {
-    const wrapper = shallow(<Patient details={mockPatient3} other_household_members={[ ]} goto={goToMock} can_add_group={true}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
-    expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeFalsy();
-    expect(wrapper.find(Individual).exists()).toBeTruthy();
-    expect(wrapper.find(Dependent).exists()).toBeFalsy();
-    expect(wrapper.find(HOH).exists()).toBeFalsy();
-  });
-
   it('Properly renders no details message', () => {
-    const blankWrapper = shallow(<Patient details={null} other_household_members={[ ]} goto={goToMock} can_add_group={true}
-      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const blankWrapper = shallow(<Patient details={null} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(blankWrapper.text()).toEqual('No monitoree details to show.');
   });
 
   it('Renders edit buttons if props.goto is defined', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ mockPatient2 ]} goto={goToMock}
-      edit_mode={true} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} edit_mode={true}
+      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(wrapper.find('.edit-link').find(Button).length).toEqual(7);
     expect(wrapper.find('.edit-link').find('a').exists()).toBeFalsy();
     wrapper.find('.edit-link').find(Button).forEach(function(btn) {
@@ -475,8 +438,8 @@ describe('Patient', () => {
 
   it('Renders edit hrefs if props.goto is not defined', () => {
     const stepIds = [ 0, 2, 1, 3, 4, 5, 5]
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ mockPatient2 ]} 
-      edit_mode={true} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} edit_mode={true}
+      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(wrapper.find('.edit-link').find(Button).exists()).toBeFalsy();
     expect(wrapper.find('.edit-link').find('a').length).toEqual(7);
     wrapper.find('.edit-link').find('a').forEach(function(link, index) {
@@ -486,8 +449,8 @@ describe('Patient', () => {
   });
 
   it('Calls props goto method when the edit buttons are clicked', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} other_household_members={[ mockPatient2 ]} goto={goToMock}
-      edit_mode={true} jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
+    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} edit_mode={true}
+      jurisdiction_path='USA, State 1, County 2' authenticity_token={authyToken} />);
     expect(goToMock).toHaveBeenCalledTimes(0);
     wrapper.find('.edit-link').find(Button).forEach(function(btn, index) {
       btn.simulate('click');

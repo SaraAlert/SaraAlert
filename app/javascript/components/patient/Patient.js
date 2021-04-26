@@ -4,13 +4,10 @@ import { Button, Col, Collapse, Form, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { convertLanguageCodesToNames } from '../../utils/Languages';
 
 import BadgeHOH from './household/utils/BadgeHOH';
-import Dependent from './household/Dependent';
-import HOH from './household/HOH';
-import Individual from './household/Individual';
 import InfoTooltip from '../util/InfoTooltip';
+import { convertLanguageCodesToNames } from '../../utils/Languages';
 import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
 
 class Patient extends React.Component {
@@ -664,44 +661,16 @@ class Patient extends React.Component {
             </Row>
           </div>
         </Collapse>
-        {!this.props.edit_mode && (
-          <div className="household-info">
-            {!this.props.details.head_of_household && this.props?.other_household_members?.length > 0 && (
-              <Dependent
-                patient={this.props.details}
-                hoh={this.props.other_household_members.find(patient => patient.head_of_household)}
-                authenticity_token={this.props.authenticity_token}
-              />
-            )}
-            {this.props.details.head_of_household && (
-              <HOH
-                patient={this.props.details}
-                dependents={this.props.other_household_members}
-                can_add_group={this.props.can_add_group}
-                authenticity_token={this.props.authenticity_token}
-              />
-            )}
-            {!this.props.details.head_of_household && this.props?.other_household_members?.length === 0 && (
-              <Individual
-                patient={this.props.details}
-                can_add_group={this.props.can_add_group}
-                authenticity_token={this.props.authenticity_token}
-              />
-            )}
-          </div>
-        )}
       </React.Fragment>
     );
   }
 }
 
 Patient.propTypes = {
-  other_household_members: PropTypes.array,
   details: PropTypes.object,
   jurisdiction_path: PropTypes.string,
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
-  can_add_group: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };
 
