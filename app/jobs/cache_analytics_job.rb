@@ -215,23 +215,23 @@ class CacheAnalyticsJob < ApplicationJob
   def self.monitoree_counts_by_reporting_method(analytic_id, monitorees)
     counts = []
     LINELIST_STATUSES.each do |linelist_status|
-      if monitorees.empty?
+      reporting_method_counts = monitorees.monitoring_status(linelist_status)
+                                          .group(:preferred_contact_method)
+                                          .order(:preferred_contact_method)
+                                          .size
+      if reporting_method_counts.empty?
         counts.append(monitoree_count(analytic_id, true, 'Contact Method', 'Missing', 0, linelist_status))
       else
-        monitorees.monitoring_status(linelist_status)
-                  .group(:preferred_contact_method)
-                  .order(:preferred_contact_method)
-                  .size
-                  .map do |preferred_contact_method, total|
-                    counts.append(
-                      monitoree_count(analytic_id,
-                                      true,
-                                      'Contact Method',
-                                      preferred_contact_method.nil? ? 'Missing' : preferred_contact_method,
-                                      total,
-                                      linelist_status)
-                    )
-                  end
+        reporting_method_counts.map do |preferred_contact_method, total|
+          counts.append(
+            monitoree_count(analytic_id,
+                            true,
+                            'Contact Method',
+                            preferred_contact_method.nil? ? 'Missing' : preferred_contact_method,
+                            total,
+                            linelist_status)
+          )
+        end
       end
     end
     counts
