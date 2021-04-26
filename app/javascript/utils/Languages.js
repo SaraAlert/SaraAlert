@@ -21,8 +21,8 @@ const COMMON_LANGUAGES = {
  * We keep a list of the most common translations above. They will cover at least 90% of all translations
  * If we can't match it there, we make a call to the back-end to look the up (for only the unmatchable ones)
  * @param {Array} languageCodes - An array of strings of language codes (must be valid). Nulls are allowed, but will be filtered out
- * @param {*} authToken - the authToken
- * @param {*} callback - a callback function to set the values on the front-end when this finishes
+ * @param {String} authToken - the authToken
+ * @param {Function} callback - a callback function to set the values on the front-end when this finishes
  * @return {Array} Returns array of translated language codes (leaves nulls as nulls)
  */
 function convertLanguageCodesToNames (languageCodes, authToken, callback) {
@@ -60,7 +60,7 @@ function convertLanguageCodesToNames (languageCodes, authToken, callback) {
  * This function returns to the callback an array of all language display names (alphabetized)
  * @param {String} authToken
  * @param {Function} callback - the callback to pass the results to
- * @return {Array of Strings} [English","Chinese",..."Zulu"]
+ * @return {Array of Strings} ["English","Chinese",..."Zulu"]
  */
 function getAllLanguageDisplayNames (authToken, callback) {
   axios.defaults.headers.common['X-CSRF-Token'] = authToken;
@@ -76,7 +76,7 @@ function getAllLanguageDisplayNames (authToken, callback) {
 
 /**
  * Returns to the callback all languages from the backend (alphabetized), in the format of:
- * [{code: 'eng', display: 'English, supported: {sms: true, phone: true, email: false}}, {...}]
+ * [{code: 'eng', display: 'English', supported: {sms: true, phone: true, email: false}}, {...}]
  * @param {String} authToken
  * @param {Function} callback - the callback to pass the results to
  * @return {Array of Objects}
