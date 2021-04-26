@@ -14,7 +14,7 @@
           "event": "incomingCall"
         },
         {
-          "next": "initialize_variables",
+          "next": "initialize_retry_count",
           "event": "incomingRequest"
         }
       ],
@@ -117,8 +117,8 @@
       "properties": {
         "input": "{{widgets.sms_assessment_prompt.inbound.Body}}",
         "offset": {
-          "x": -550,
-          "y": 530
+          "x": -770,
+          "y": 510
         }
       }
     },
@@ -495,7 +495,7 @@
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_sms\", \"error_code\": \"{{widgets.sms_assessment_prompt.ErrorCode}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\", \"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "body": "{\"response_status\": \"error_sms\", \"error_code\": \"{{widgets.sms_assessment_prompt.outbound.ErrorCode}}\" , \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\", \"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
         "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
@@ -683,7 +683,7 @@
           ]
         },
         {
-          "next": "split_on_iterator",
+          "next": "send_single_message",
           "event": "match",
           "conditions": [
             {
@@ -840,7 +840,7 @@
       }
     },
     {
-      "name": "initialize_variables",
+      "name": "initialize_retry_count",
       "type": "set-variables",
       "transitions": [
         {
@@ -853,10 +853,6 @@
           {
             "value": "0",
             "key": "retry_count"
-          },
-          {
-            "value": "0",
-            "key": "iterator"
           }
         ],
         "offset": {
@@ -1098,8 +1094,8 @@
               "arguments": [
                 "{{flow.data.language}}"
               ],
-              "type": "equal_to",
-              "value": "EN"
+              "type": "matches_any_of",
+              "value": "EN,ENG"
             }
           ]
         },
@@ -1112,8 +1108,8 @@
               "arguments": [
                 "{{flow.data.language}}"
               ],
-              "type": "equal_to",
-              "value": "ES"
+              "type": "matches_any_of",
+              "value": "ES,SPA,SPA-PR"
             }
           ]
         },
@@ -1126,8 +1122,8 @@
               "arguments": [
                 "{{flow.data.language}}"
               ],
-              "type": "equal_to",
-              "value": "FR"
+              "type": "matches_any_of",
+              "value": "FR,FRA"
             }
           ]
         }
@@ -1223,22 +1219,20 @@
       "type": "make-http-request",
       "transitions": [
         {
-          "next": "increment_params_iterator",
           "event": "success"
         },
         {
-          "next": "increment_params_iterator",
           "event": "failed"
         }
       ],
       "properties": {
         "offset": {
-          "x": 3060,
+          "x": 3050,
           "y": 120
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
-        "body": "{% assign i=flow.variables.iterator | plus:0 %}\n{\"response_status\": \"error_sms\", \"error_code\": \"{{widgets.send_single_message.ErrorCode}}\", \"patient_submission_token\": \"{{flow.data.messages_array[i].patient_submission_token}}\", \"threshold_hash\": \"{{flow.data.messages_array[i].threshold_hash}}\"}",
+        "body": "{\"response_status\": \"error_sms\", \"error_code\": \"{{widgets.send_single_message.outbound.ErrorCode}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\", \"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
         "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
@@ -1267,7 +1261,7 @@
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
-        "body": "{% assign i=flow.variables.iterator | plus:0 %}\n{{flow.data.messages_array[i].prompt}}",
+        "body": "{{flow.data.prompt}}",
         "timeout": "0"
       }
     },
@@ -1276,67 +1270,14 @@
       "type": "set-variables",
       "transitions": [
         {
-          "next": "increment_params_iterator",
           "event": "next"
         }
       ],
       "properties": {
         "variables": [],
         "offset": {
-          "x": 2740,
+          "x": 2550,
           "y": 120
-        }
-      }
-    },
-    {
-      "name": "increment_params_iterator",
-      "type": "set-variables",
-      "transitions": [
-        {
-          "next": "split_on_iterator",
-          "event": "next"
-        }
-      ],
-      "properties": {
-        "variables": [
-          {
-            "value": "{{flow.variables.iterator | plus: 1}}",
-            "key": "iterator"
-          }
-        ],
-        "offset": {
-          "x": 2830,
-          "y": 410
-        }
-      }
-    },
-    {
-      "name": "split_on_iterator",
-      "type": "split-based-on",
-      "transitions": [
-        {
-          "event": "noMatch"
-        },
-        {
-          "next": "send_single_message",
-          "event": "match",
-          "conditions": [
-            {
-              "friendly_name": "If value less_than {{flow.data.prompt.messages_array.size}}",
-              "arguments": [
-                "{{flow.variables.iterator}}"
-              ],
-              "type": "less_than",
-              "value": "{{flow.data.messages_array.size}}"
-            }
-          ]
-        }
-      ],
-      "properties": {
-        "input": "{{flow.variables.iterator}}",
-        "offset": {
-          "x": 2460,
-          "y": -520
         }
       }
     }
