@@ -28,7 +28,7 @@ class GeographicSummary extends React.Component {
         this.setState({
           analyticsData,
           jurisdictionsPermittedToView: this.obtainJurisdictionsPermittedToView(response.data.monitoree_maps, maxDaysOfHistory),
-          jurisdictions_not_in_use: this.obtainJurisdictionsNotInUse(response.data.monitoree_maps, maxDaysOfHistory),
+          jurisdictionsNotInUse: this.obtainJurisdictionsNotInUse(response.data.monitoree_maps, maxDaysOfHistory),
           selectedDateIndex: maxDaysOfHistory - 1,
           showBackButton: false,
           jurisdictionToShow: {
@@ -326,7 +326,7 @@ class GeographicSummary extends React.Component {
                   mapObject={this.state.mapObject}
                   handleJurisdictionChange={this.handleJurisdictionChange}
                   decrementSpinnerCount={this.decrementSpinnerCount}
-                  jurisdictionsNotInUse={this.state.jurisdictions_not_in_use}
+                  jurisdictionsNotInUse={this.state.jurisdictionsNotInUse}
                   jurisdictionsPermittedToView={this.state.jurisdictionsPermittedToView}
                 />
               </Col>
@@ -339,7 +339,7 @@ class GeographicSummary extends React.Component {
                   mapObject={this.state.mapObject}
                   handleJurisdictionChange={this.handleJurisdictionChange}
                   decrementSpinnerCount={this.decrementSpinnerCount}
-                  jurisdictionsNotInUse={this.state.jurisdictions_not_in_use}
+                  jurisdictionsNotInUse={this.state.jurisdictionsNotInUse}
                   jurisdictionsPermittedToView={this.state.jurisdictionsPermittedToView}
                 />
               </Col>
