@@ -69,8 +69,7 @@ class AssessmentsController < ApplicationController
     @translations = @assessment.translations
     @contact_info = jurisdiction.contact_info
 
-    @lang = LegacyLanguages.legacy_language_code?(permitted_params[:lang]) ?
-            LegacyLanguages.translate_legacy_language_code(permitted_params[:lang]) : permitted_params[:lang]
+    @lang = LegacyLanguages.translate_legacy_language_code(permitted_params[:lang]) || permitted_params[:lang]
     @lang = 'eng' unless Languages.supported_language?(@lang)
 
     @patient_initials = permitted_params[:initials_age]&.upcase&.gsub(/[^a-z]/i, '')

@@ -39,12 +39,6 @@ module Languages
     lang = lang.downcase.strip
     return lang.to_sym if all_languages.key?(lang.to_sym)
 
-    matched_language = DISPLAY_LANGUAGES[lang]
-    return matched_language.to_sym unless matched_language.nil?
-
-    matched_language = ISO_6391_CODES[lang]
-    return matched_language.to_sym unless matched_language.nil?
-
-    nil
+    DISPLAY_LANGUAGES[lang]&.to_sym || ISO_6391_CODES[lang]&.to_sym
   end
 end
