@@ -11,12 +11,7 @@ module LegacyLanguages
     'fr' => 'fra'
   }.freeze
 
-  # Returns true or false whether `lang` exists in LEGACY_LANGUAGE_MAPPING
-  def self.legacy_language_code?(lang)
-    LEGACY_LANGUAGE_MAPPING.keys.include?(lang)
-  end
-
-  # Given a two-letter code, returns a three-letter code above
+  # Given a two-letter code, returns a three-letter code above or nil
   def self.translate_legacy_language_code(lang)
     LEGACY_LANGUAGE_MAPPING[lang]
   end
