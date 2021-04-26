@@ -13,7 +13,8 @@ class TwilioSender
                               'to receive SMS text messages.' },
     non_existent_or_off: { code: '30005',
                            message: 'Recipient phone number may not exist, the phone may be off or the phone is not eligible to receive SMS text messages.' },
-    sms_ineligible: { code: '30006', message: 'Recipient phone number may not eligible to receive SMS text messages, or carrier network may be unreachable.' },
+    sms_ineligible: { code: '30006',
+                      message: 'Recipient phone number may not be eligible to receive SMS text messages, or the carrier network may be unreachable.' },
     carrier_filter: { code: '30007', message: 'Message has been filtered by carrier network.' },
     unknown_error: { code: '30008',
                      message: 'An unknown error has been encountered by the messaging system. The system will retry in an hour if it is still in '\
