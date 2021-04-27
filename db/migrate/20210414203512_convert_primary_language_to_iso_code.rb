@@ -66,21 +66,32 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
 
     existing_primary_languages = Patient.where(purged: false).where.not(primary_language: nil).distinct.pluck(:primary_language)
     existing_secondary_languages = Patient.where(purged: false).where.not(secondary_language: nil).distinct.pluck(:secondary_language)
+
+    unknown_languages = [] # will be populated with an array of strings
+
     # Create an translation in automatic_translations, unless we already have it defined in `custom_translations`
     (existing_primary_languages | existing_secondary_languages).each do |el|
       # If the language in question cannot be found in the ISO list and it is not custom-mapped by this migration (TRANSLATION_LIST above)
-      # the Patient will have their primary language set to nil.
+      # the Patient will have their primary language set to nil (and a History item inserted)
       # Example:
       # Languages.normalize_and_get_language_code('Klingon')&.to_s => nil
       # automatic_translations[:klingon] = 'nil'
-      automatic_translations[el.to_sym] = Languages.normalize_and_get_language_code(el)&.to_s unless custom_translations.key?(el.to_sym)
+      next if custom_translations.key?(el.to_sym)
+
+      matched_lang = Languages.normalize_and_get_language_code(el)
+      unknown_languages << el if matched_lang.nil?
+      automatic_translations[el.to_sym] = matched_lang&.to_s
     end
+
     ActiveRecord::Base.transaction do
       automatic_translations.each do |key, value|
-        # Patient records updated here are solely updated (no History Items included)
+        key = key.to_s
         Patient.where(purged: false).where(primary_language: key).update_all(primary_language: value)
+        insert_history_items(key, value, true) if unknown_languages.include?(key)
         Patient.where(purged: false).where(secondary_language: key).update_all(secondary_language: value)
+        insert_history_items(key, value, false) if unknown_languages.include?(key)
       end
+
       custom_translations.each do |key, value|
         key = key.to_s
         case value
