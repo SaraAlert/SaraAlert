@@ -16,3 +16,4 @@ Quick Tips:
 * You can reference the `Migration` object itself with `@migration` in the tests.
 * Name the migration test file the same name as the migration without the timestamp followed by _test.
 * In the `setup` method `destroy_all` any data for Models that are being migrated.
+* If you use `byebug` in the test try not to `exit(1)` out of the test or else you will need to reset your database.
