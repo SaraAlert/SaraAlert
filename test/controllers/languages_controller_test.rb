@@ -29,5 +29,8 @@ class LanguagesControllerTest < ActionController::TestCase
     assert_raises(ActionController::ParameterMissing) do
       get :translate_language_codes
     end
+
+    get :translate_language_codes, params: { language_codes: %w[000] }
+    assert_response :unprocessable_entity
   end
 end
