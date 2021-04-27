@@ -8,38 +8,18 @@ class Fhir::R4::ApiController < ApplicationApiController
   before_action :cors_headers
   before_action only: %i[create update] do
     doorkeeper_authorize!(
-      :'user/Patient.write',
-      :'user/Patient.*',
-      :'system/Patient.write',
-      :'system/Patient.*',
-      :'user/RelatedPerson.write',
-      :'user/RelatedPerson.*',
-      :'system/RelatedPerson.write',
-      :'system/RelatedPerson.*',
-      :'user/Immunization.write',
-      :'user/Immunization.*',
-      :'system/Immunization.write',
-      :'system/Immunization.*'
+      *patient_write_scopes,
+      *related_person_write_scopes,
+      *immunization_write_scopes
     )
   end
   before_action only: %i[show search] do
     doorkeeper_authorize!(
-      :'user/Patient.read',
-      :'user/Patient.*',
-      :'user/RelatedPerson.read',
-      :'user/RelatedPerson.*',
-      :'user/Immunization.read',
-      :'user/Immunization.*',
-      :'user/Observation.read',
-      :'user/QuestionnaireResponse.read',
-      :'system/Patient.read',
-      :'system/Patient.*',
-      :'system/RelatedPerson.read',
-      :'system/RelatedPerson.*',
-      :'system/Immunization.read',
-      :'system/Immunization.*',
-      :'system/Observation.read',
-      :'system/QuestionnaireResponse.read'
+      *patient_read_scopes,
+      *related_person_read_scopes,
+      *immunization_read_scopes,
+      *observation_read_scopes,
+      *questionnaire_response_read_scopes
     )
   end
   before_action :check_client_type
@@ -56,44 +36,23 @@ class Fhir::R4::ApiController < ApplicationApiController
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
-      return if doorkeeper_authorize!(
-        :'user/Patient.read',
-        :'user/Patient.*',
-        :'system/Patient.read',
-        :'system/Patient.*'
-      )
+      return if doorkeeper_authorize!(*patient_read_scopes)
 
       resource = get_patient(params.permit(:id)[:id])
     when 'observation'
-      return if doorkeeper_authorize!(
-        :'user/Observation.read',
-        :'system/Observation.read'
-      )
+      return if doorkeeper_authorize!(*observation_read_scopes)
 
       resource = get_record(Laboratory, params.permit(:id)[:id])
     when 'questionnaireresponse'
-      return if doorkeeper_authorize!(
-        :'user/QuestionnaireResponse.read',
-        :'system/QuestionnaireResponse.read'
-      )
+      return if doorkeeper_authorize!(*questionnaire_response_read_scopes)
 
       resource = get_record(Assessment, params.permit(:id)[:id])
     when 'relatedperson'
-      return if doorkeeper_authorize!(
-        :'user/RelatedPerson.read',
-        :'user/RelatedPerson.*',
-        :'system/RelatedPerson.read',
-        :'system/RelatedPerson.*'
-      )
+      return if doorkeeper_authorize!(*related_person_read_scopes)
 
       resource = get_record(CloseContact, params.permit(:id)[:id])
     when 'immunization'
-      return if doorkeeper_authorize!(
-        :'user/Immunization.read',
-        :'user/Immunization.*',
-        :'system/Immunization.read',
-        :'system/Immunization.*'
-      )
+      return if doorkeeper_authorize!(*immunization_read_scopes)
 
       resource = get_record(Vaccine, params.permit(:id)[:id])
     else
@@ -128,12 +87,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
-      return if doorkeeper_authorize!(
-        :'user/Patient.write',
-        :'user/Patient.*',
-        :'system/Patient.write',
-        :'system/Patient.*'
-      )
+      return if doorkeeper_authorize!(*patient_write_scopes)
 
       # Get the patient that needs to be updated
       patient = get_patient(params.permit(:id)[:id])
@@ -182,12 +136,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       status_ok(patient.as_fhir) && return
     when 'relatedperson'
-      return if doorkeeper_authorize!(
-        :'user/RelatedPerson.write',
-        :'user/RelatedPerson.*',
-        :'system/RelatedPerson.write',
-        :'system/RelatedPerson.*'
-      )
+      return if doorkeeper_authorize!(*related_person_write_scopes)
 
       # Get the CloseContact that needs to be updated
       close_contact = get_record(CloseContact, params.permit(:id)[:id])
@@ -223,12 +172,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       end
       status_ok(close_contact.as_fhir) && return
     when 'immunization'
-      return if doorkeeper_authorize!(
-        :'user/Immunization.write',
-        :'user/Immunization.*',
-        :'system/Immunization.write',
-        :'system/Immunization.*'
-      )
+      return if doorkeeper_authorize!(*immunization_write_scopes)
 
       # Get the Vaccine that needs to be updated
       vaccine = get_record(Vaccine, params.permit(:id)[:id])
@@ -310,12 +254,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
-      return if doorkeeper_authorize!(
-        :'user/Patient.write',
-        :'user/Patient.*',
-        :'system/Patient.write',
-        :'system/Patient.*'
-      )
+      return if doorkeeper_authorize!(*patient_write_scopes)
 
       # Construct a Sara Alert Patient
       # fhir_map is of the form:
@@ -367,12 +306,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       # Send enrollment notification only to responders
       resource.send_enrollment_notification if resource.self_reporter_or_proxy?
     when 'relatedperson'
-      return if doorkeeper_authorize!(
-        :'user/RelatedPerson.write',
-        :'user/RelatedPerson.*',
-        :'system/RelatedPerson.write',
-        :'system/RelatedPerson.*'
-      )
+      return if doorkeeper_authorize!(*related_person_write_scopes)
 
       fhir_map = close_contact_from_fhir(contents)
       vals = fhir_map.transform_values { |v| v[:value] }
@@ -390,12 +324,7 @@ class Fhir::R4::ApiController < ApplicationApiController
                               comment: "New close contact added via API (ID: #{resource.id}).")
       end
     when 'immunization'
-      return if doorkeeper_authorize!(
-        :'user/Immunization.write',
-        :'user/Immunization.*',
-        :'system/Immunization.write',
-        :'system/Immunization.*'
-      )
+      return if doorkeeper_authorize!(*immunization_write_scopes)
 
       fhir_map = vaccine_from_fhir(contents)
       vals = fhir_map.transform_values { |v| v[:value] }
@@ -433,48 +362,27 @@ class Fhir::R4::ApiController < ApplicationApiController
                                  '_count', '_id', 'patient')
     case resource_type
     when 'patient'
-      return if doorkeeper_authorize!(
-        :'user/Patient.read',
-        :'user/Patient.*',
-        :'system/Patient.read',
-        :'system/Patient.*'
-      )
+      return if doorkeeper_authorize!(*patient_read_scopes)
 
       resources = search_patients(search_params)
       resource_type = 'Patient'
     when 'observation'
-      return if doorkeeper_authorize!(
-        :'user/Observation.read',
-        :'system/Observation.read'
-      )
+      return if doorkeeper_authorize!(*observation_read_scopes)
 
       resources = search_laboratories(search_params) || []
       resource_type = 'Observation'
     when 'questionnaireresponse'
-      return if doorkeeper_authorize!(
-        :'user/QuestionnaireResponse.read',
-        :'system/QuestionnaireResponse.read'
-      )
+      return if doorkeeper_authorize!(*questionnaire_response_read_scopes)
 
       resources = search_assessments(search_params) || []
       resource_type = 'QuestionnaireResponse'
     when 'relatedperson'
-      return if doorkeeper_authorize!(
-        :'user/RelatedPerson.read',
-        :'user/RelatedPerson.*',
-        :'system/RelatedPerson.read',
-        :'system/RelatedPerson.*'
-      )
+      return if doorkeeper_authorize!(*related_person_read_scopes)
 
       resources = search_close_contacts(search_params) || []
       resource_type = 'RelatedPerson'
     when 'immunization'
-      return if doorkeeper_authorize!(
-        :'user/Immunization.read',
-        :'user/Immunization.*',
-        :'system/Immunization.read',
-        :'system/Immunization.*'
-      )
+      return if doorkeeper_authorize!(*immunization_read_scopes)
 
       resources = search_vaccines(search_params) || []
       resource_type = 'Immunization'
@@ -514,32 +422,11 @@ class Fhir::R4::ApiController < ApplicationApiController
   # GET /fhir/r4/Patient/[:id]/$everything
   def all
     # Require all scopes for all five resources
-    return if doorkeeper_authorize!(
-      :'user/Patient.read',
-      :'user/Patient.*',
-      :'system/Patient.read',
-      :'system/Patient.*'
-    )
-    return if doorkeeper_authorize!(
-      :'user/Observation.read',
-      :'system/Observation.read'
-    )
-    return if doorkeeper_authorize!(
-      :'user/QuestionnaireResponse.read',
-      :'system/QuestionnaireResponse.read'
-    )
-    return if doorkeeper_authorize!(
-      :'user/RelatedPerson.read',
-      :'user/RelatedPerson.*',
-      :'system/RelatedPerson.read',
-      :'system/RelatedPerson.*'
-    )
-    return if doorkeeper_authorize!(
-      :'user/Immunization.read',
-      :'user/Immunization.*',
-      :'system/Immunization.read',
-      :'system/Immunization.*'
-    )
+    return if doorkeeper_authorize!(*patient_read_scopes)
+    return if doorkeeper_authorize!(*observation_read_scopes)
+    return if doorkeeper_authorize!(*questionnaire_response_read_scopes)
+    return if doorkeeper_authorize!(*related_person_read_scopes)
+    return if doorkeeper_authorize!(*immunization_read_scopes)
 
     status_not_acceptable && return unless accept_header?
 
@@ -1099,6 +986,38 @@ class Fhir::R4::ApiController < ApplicationApiController
         val.is_a?(Hash) ? messages.push(*format_fhir_validation_errors(val)) : messages << val
       end
     end
+  end
+
+  def patient_read_scopes
+    %i[user/Patient.read user/Patient.* system/Patient.read system/Patient.*]
+  end
+
+  def patient_write_scopes
+    %i[user/Patient.write user/Patient.* system/Patient.write system/Patient.*]
+  end
+
+  def related_person_read_scopes
+    %i[user/RelatedPerson.read user/RelatedPerson.* system/RelatedPerson.read system/RelatedPerson.*]
+  end
+
+  def related_person_write_scopes
+    %i[user/RelatedPerson.write user/RelatedPerson.* system/RelatedPerson.write system/RelatedPerson.*]
+  end
+
+  def immunization_read_scopes
+    %i[user/Immunization.read user/Immunization.* system/Immunization.read system/Immunization.*]
+  end
+
+  def immunization_write_scopes
+    %i[user/Immunization.write user/Immunization.* system/Immunization.write system/Immunization.*]
+  end
+
+  def observation_read_scopes
+    %i[user/Observation.read system/Observation.read]
+  end
+
+  def questionnaire_response_read_scopes
+    %i[user/QuestionnaireResponse.read system/QuestionnaireResponse.read]
   end
 
   # Allow cross-origin requests
