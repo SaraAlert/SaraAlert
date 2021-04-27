@@ -11,7 +11,7 @@ module PHDC
 
     # Convert many patients to the PHDC format
     def patients_to_phdc_zip(patients, jurisdiction)
-      jurisdiction_path_string = jurisdiction.jurisdiction_path_string
+      jurisdiction_path_string = jurisdiction[:path]
       stringio = Zip::OutputStream.write_buffer do |zio|
         patients.each do |patient|
           zio.put_next_entry("records/#{patient.id}.xml")
