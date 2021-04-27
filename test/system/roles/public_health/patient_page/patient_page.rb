@@ -64,6 +64,6 @@ class PublicHealthPatientPage < ApplicationSystemTestCase
     assert page.has_button?('Select', count: 1)
     click_on 'Select'
 
-    assert page.has_link?('Click here to view that monitoree', href: "/patients/#{new_responder_id}")
+    assert page.find('#dependent-hoh-link').has_link?("/patients/#{new_responder_id}")
   end
 end

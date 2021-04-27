@@ -1,9 +1,17 @@
 /**
- * Formats a patient's name (first, middle, last) as a string.
+ * Formats a patient's name (first middle last) as a string.
  * @param {Object} patient - patient object
  */
 function formatName(patient) {
-  return `${patient.first_name ? patient.first_name : ''}${patient.middle_name ? ' ' + patient.middle_name : ''}${patient.last_name ? ' ' + patient.last_name : ''}`;
+  return `${patient.first_name || ''}${patient.middle_name ? ' ' + patient.middle_name : ''}${patient.last_name ? ' ' + patient.last_name : ''}`;
+};
+
+/**
+ * Formats a patient's name (last, first middle) as a string.
+ * @param {Object} patient - patient object
+ */
+ function formatNameAlt(patient) {
+  return `${patient.last_name || ''}, ${patient.first_name || ''}${patient.middle_name ? ' ' + patient.middle_name : ''}`;
 };
 
 /**
@@ -54,6 +62,7 @@ function formatRace(patient) {
 
 export {
   formatName,
+  formatNameAlt,
   formatPhoneNumber,
   formatRace
 };

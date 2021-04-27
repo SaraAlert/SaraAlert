@@ -3,11 +3,12 @@ import { PropTypes } from 'prop-types';
 import { Row, Table } from 'react-bootstrap';
 import ChangeHOH from './actions/ChangeHOH';
 import EnrollHouseholdMember from './actions/EnrollHouseholdMember';
+import { formatNameAlt } from '../../../utils/Patient';
 
 class HOH extends React.Component {
   render() {
     return (
-      <React.Fragment>
+      <div id="head-of-household">
         <Row>This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
         <Row className="pt-2">
           <Table striped bordered hover size="sm">
@@ -25,7 +26,7 @@ class HOH extends React.Component {
                   <tr key={`dl-${index}`}>
                     <td>
                       <a href={`${window.BASE_PATH}/patients/${member.id}`}>
-                        {member.last_name}, {member.first_name} {member.middle_name || ''}
+                        {formatNameAlt(member)}
                       </a>
                     </td>
                     <td>{member.isolation ? 'Isolation' : 'Exposure'}</td>
@@ -41,7 +42,7 @@ class HOH extends React.Component {
           <ChangeHOH patient={this.props.patient} dependents={this.props.dependents} authenticity_token={this.props.authenticity_token} />
           {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.patient.id} isHoh={true} />}
         </Row>
-      </React.Fragment>
+      </div>
     );
   }
 }

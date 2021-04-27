@@ -7,15 +7,17 @@ import { formatName } from '../../../utils/Patient';
 class Dependent extends React.Component {
   render() {
     return (
-      <React.Fragment>
+      <div id="household-member-not-hoh">
         <Row>
           The reporting responsibility for this monitoree is handled by&nbsp;
-          <a href={`${window.BASE_PATH}/patients/${this.props.hoh.id}`}>{formatName(this.props.hoh)}</a>.
+          <a id="dependent-hoh-link" href={`${window.BASE_PATH}/patients/${this.props.patient.responder_id}`}>
+            {this.props.hoh ? formatName(this.props.hoh) : 'this monitoree'}
+          </a>.
         </Row>
         <Row>
           <RemoveFromHousehold patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
         </Row>
-      </React.Fragment>
+      </div>
     );
   }
 }

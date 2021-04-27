@@ -24,10 +24,6 @@ function getMountedWrapper() {
     handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
 }
 
-beforeEach(() => {
-  window.BASE_PATH = ""
-})
-
 afterEach(() => {
   jest.clearAllMocks();
 });

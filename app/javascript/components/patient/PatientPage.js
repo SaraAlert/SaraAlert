@@ -17,11 +17,9 @@ class PatientPage extends React.Component {
           <Card.Body>
             <Patient
               jurisdiction_path={this.props.jurisdiction_path}
-              other_household_members={this.props.other_household_members || []}
               details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
               can_add_group={this.props.can_add_group}
               edit_mode={false}
-              authenticity_token={this.props.authenticity_token}
             />
             <div className="household-info">
               {!this.props.patient.head_of_household && this.props?.other_household_members?.length > 0 && (

@@ -2,8 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
-
 import reportError from '../../../util/ReportError';
+import { formatNameAlt } from '../../../../utils/Patient';
 
 class ChangeHOH extends React.Component {
   constructor(props) {
@@ -68,11 +68,7 @@ class ChangeHOH extends React.Component {
                     --
                   </option>
                   {this.props?.dependents?.map((member, index) => {
-                    return (
-                      <option key={`option-${index}`} value={member.id}>
-                        {member.last_name}, {member.first_name} {member.middle_name || ''}
-                      </option>
-                    );
+                    return <option key={`option-${index}`} value={member.id}>{formatNameAlt(member)}</option>;
                   })}
                 </Form.Control>
               </Form.Group>

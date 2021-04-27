@@ -671,7 +671,6 @@ Patient.propTypes = {
   jurisdiction_path: PropTypes.string,
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
-  authenticity_token: PropTypes.string,
 };
 
 export default Patient;
