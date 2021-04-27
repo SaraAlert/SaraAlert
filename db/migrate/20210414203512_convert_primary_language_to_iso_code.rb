@@ -86,10 +86,10 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     ActiveRecord::Base.transaction do
       automatic_translations.each do |key, value|
         key = key.to_s
-        Patient.where(purged: false).where(primary_language: key).update_all(primary_language: value)
         insert_history_items(key, value, true) if unknown_languages.include?(key)
-        Patient.where(purged: false).where(secondary_language: key).update_all(secondary_language: value)
+        Patient.where(purged: false).where(primary_language: key).update_all(primary_language: value)
         insert_history_items(key, value, false) if unknown_languages.include?(key)
+        Patient.where(purged: false).where(secondary_language: key).update_all(secondary_language: value)
       end
 
       custom_translations.each do |key, value|

@@ -12,10 +12,10 @@ module Languages
 
   # Even though some languages may be supported, we are unable to send
   # voice-calls in that language (typically due to Twilio limitations)
-  def self.voice_unsupported?(lang)
+  def self.voice_supported?(lang)
     return false if lang.nil?
 
-    !all_languages&.dig(lang.to_sym, :supported, :phone)
+    all_languages&.dig(lang.to_sym, :supported, :phone)
   end
 
   def self.all_languages
