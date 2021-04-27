@@ -125,7 +125,6 @@ class PreferredReportingMethod extends React.Component {
                       <u>{workflow['workflow']} WORKFLOW</u>{' '}
                     </td>
                   </tr>
-                  <tr style={{ height: '20px' }}></tr>
                   {workflow.data.map((data, index2) => (
                     <tr key={`data-${index2}`} className={data.linelistClass}>
                       <td className="text-right font-weight-bold">{data.linelist}</td>
@@ -140,7 +139,6 @@ class PreferredReportingMethod extends React.Component {
                       ))}
                     </tr>
                   ))}
-                  {index1 < this.tableData.length - 1 && <tr style={{ height: '44px' }}></tr>}
                 </tbody>
               ))}
             </table>

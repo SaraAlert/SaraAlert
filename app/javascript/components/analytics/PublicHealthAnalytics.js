@@ -104,10 +104,12 @@ class PublicHealthAnalytics extends React.Component {
             </Col>
           </Row>
           <Row className="mx-2">
-            <Col xl="24" className="col-xxl-14 mx-0 my-3">
+            <Col className="mx-0 my-3">
               <PreferredReportingMethod stats={this.props.stats} />
             </Col>
-            <Col xl="24" className="col-xxl-10 mx-0 my-3">
+          </Row>
+          <Row className="mx-2">
+            <Col className="mx-0 my-3">
               <MonitoreeFlow stats={this.props.stats} />
             </Col>
           </Row>
