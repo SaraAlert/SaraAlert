@@ -10,8 +10,8 @@ import { mockPatient1, mockPatient2, mockPatient3 } from '../mocks/mockPatients'
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 
 function getWrapper(patient, householdMembers) {
-  return shallow(<PatientPage patient={patient} other_household_members={householdMembers} can_add_group={true}
-    blocked_sms={false} jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
+  return shallow(<PatientPage patient={patient} other_household_members={householdMembers} blocked_sms={false} can_add_group={true}
+    can_modify_subject_status={true} jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
 }
 
 describe('PatientPage', () => {
@@ -28,8 +28,7 @@ describe('PatientPage', () => {
     expect(wrapper.find('.household-info').exists()).toBeTruthy();
   });
 
-
-  it('Properly renders household section  for a HoH', () => {
+  it('Properly renders household section for a HoH', () => {
     expect(wrapper.find('.household-info').exists()).toBeTruthy();
     expect(wrapper.find(HOH).exists()).toBeTruthy();
     expect(wrapper.find(Dependent).exists()).toBeFalsy();

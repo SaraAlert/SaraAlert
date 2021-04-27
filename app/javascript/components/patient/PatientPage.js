@@ -18,7 +18,7 @@ class PatientPage extends React.Component {
             <Patient
               jurisdiction_path={this.props.jurisdiction_path}
               details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
-              can_add_group={this.props.can_add_group}
+              collapse={this.props.can_modify_subject_status}
               edit_mode={false}
             />
             <div className="household-info">
@@ -54,6 +54,7 @@ class PatientPage extends React.Component {
 
 PatientPage.propTypes = {
   can_add_group: PropTypes.bool,
+  can_modify_subject_status: PropTypes.bool,
   patient: PropTypes.object,
   other_household_members: PropTypes.array,
   authenticity_token: PropTypes.string,

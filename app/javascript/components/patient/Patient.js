@@ -14,7 +14,7 @@ class Patient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: props.edit_mode,
+      expanded: props.edit_mode || !props.collapse,
       expandNotes: false,
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
@@ -671,6 +671,7 @@ Patient.propTypes = {
   jurisdiction_path: PropTypes.string,
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
+  collapse: PropTypes.bool,
 };
 
 export default Patient;
