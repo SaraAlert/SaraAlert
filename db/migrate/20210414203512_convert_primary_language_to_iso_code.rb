@@ -68,6 +68,11 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     existing_secondary_languages = Patient.where(purged: false).where.not(secondary_language: nil).distinct.pluck(:secondary_language)
     # Create an translation in automatic_translations, unless we already have it defined in `custom_translations`
     (existing_primary_languages | existing_secondary_languages).each do |el|
+      # If the language in question cannot be found in the ISO list and it is not custom-mapped by this migration (TRANSLATION_LIST above)
+      # the Patient will have their primary language set to nil.
+      # Example:
+      # Languages.normalize_and_get_language_code('Klingon')&.to_s => nil
+      # automatic_translations[:klingon] = 'nil'
       automatic_translations[el.to_sym] = Languages.normalize_and_get_language_code(el)&.to_s unless custom_translations.key?(el.to_sym)
     end
     ActiveRecord::Base.transaction do
