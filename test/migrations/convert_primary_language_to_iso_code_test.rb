@@ -53,7 +53,7 @@ class ConvertPrimaryLanguageToIsoCodeTest < MigrationTestCase
     upgrade_to!(@migration_file)
     patient.reload
     # Unknown language gets set to nil
-    assert_equal(nil, patient.primary_language)
+    assert_nil(patient.primary_language)
     assert_equal('Klingon', patient.legacy_primary_language)
     assert_nil(patient.secondary_language)
     # Create a history item that says the language could not be converted
