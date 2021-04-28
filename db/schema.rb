@@ -158,6 +158,8 @@ ActiveRecord::Schema.define(version: 2021_05_08_141314) do
     t.string "history_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "archived", default: false
+    t.string "archived_by"
     t.index ["patient_id"], name: "index_histories_on_patient_id"
   end
 

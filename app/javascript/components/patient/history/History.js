@@ -61,18 +61,17 @@ class History extends React.Component {
   };
 
   handleArchiveSubmit = () => {
-    console.log('submitting archive...')
-    // this.setState({ loading: true }, () => {
-    //   axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    //   axios
-    //     .delete(window.BASE_PATH + '/histories/' + this.props.history.id)
-    //     .then(() => {
-    //       location.reload(true);
-    //     })
-    //     .catch(error => {
-    //       reportError(error);
-    //     });
-    // });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/archive')
+        .then(() => {
+          location.reload(true);
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   };
 
   renderEditMode() {
@@ -146,6 +145,7 @@ class History extends React.Component {
   }
 
   render() {
+    console.log(this.props.history)
     return (
       <React.Fragment>
         <Card className="card-square mt-4 mx-3 shadow-sm">
