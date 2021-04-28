@@ -377,8 +377,8 @@ class CacheAnalyticsJob < ApplicationJob
   def self.all_monitoree_snapshots(analytic_id, monitorees, subjur_ids)
     counts = []
     MONITOREE_SNAPSHOT_TIME_FRAMES.map do |time_frame|
-      etoi = monitorees.joins(:histories).merge(History.exposure_to_isolation.in_time_frame(time_frame)).size
-      itoe = monitorees.joins(:histories).merge(History.isolation_to_exposure.in_time_frame(time_frame)).size
+      e_to_i = monitorees.joins(:histories).merge(History.exposure_to_isolation.in_time_frame(time_frame)).size
+      i_to_e = monitorees.joins(:histories).merge(History.isolation_to_exposure.in_time_frame(time_frame)).size
       WORKFLOWS.map do |workflow|
         counts.append(MonitoreeSnapshot.new(
                         analytic_id: analytic_id,
@@ -402,8 +402,8 @@ class CacheAnalyticsJob < ApplicationJob
                                                  .where_assoc_exists(:patient, isolation: workflow == 'Isolation')
                                                  .in_time_frame(time_frame)
                                                  .size,
-                        exposure_to_isolation: etoi,
-                        isolation_to_exposure: itoe,
+                        exposure_to_isolation: e_to_i,
+                        isolation_to_exposure: i_to_e,
                         status: workflow
                       ))
       end
