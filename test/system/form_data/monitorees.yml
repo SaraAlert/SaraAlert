@@ -421,7 +421,7 @@ monitoree_18:
     address_state: 'Maine'
     address_zip: '43058'
   potential_exposure_information:
-    no_reported_symptoms: true
+    asymptomatic: true
     first_positive_lab: true
     lab_type: 'PCR'
     specimen_collection: 4

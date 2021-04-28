@@ -25,10 +25,9 @@ class EnrollerEnrollmentTest < ApplicationSystemTestCase
     @@enroller_test_helper.enroll_monitoree('locals2c4_enroller', 'monitoree_17')
   end
 
-  # NOTE: Uncomment after first positive lab is enabled
-  # test 'enroll case with first positive lab' do
-  #   @@enroller_test_helper.enroll_monitoree('locals1c1_enroller', 'monitoree_18')
-  # end
+  test 'enroll case with first positive lab' do
+    @@enroller_test_helper.enroll_monitoree('locals1c1_enroller', 'monitoree_18')
+  end
 
   test 'enroll monitoree with jurisdiction within hierarchy' do
     @@enroller_test_helper.enroll_monitoree('state1_enroller', 'monitoree_5')

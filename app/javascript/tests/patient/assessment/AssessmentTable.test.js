@@ -8,7 +8,7 @@ import ClearAssessments from '../../../components/patient/assessment/actions/Cle
 import ContactAttempt from '../../../components/patient/assessment/actions/ContactAttempt';
 import CurrentStatus from '../../../components/patient/assessment/actions/CurrentStatus';
 import CustomTable from '../../../components/layout/CustomTable';
-import LastDateExposure from '../../../components/patient/assessment/actions/LastDateExposure';
+import MonitoringPeriod from '../../../components/patient/assessment/actions/MonitoringPeriod';
 import PauseNotifications from '../../../components/patient/assessment/actions/PauseNotifications';
 
 import { mockPatient1, mockPatient2 } from '../../mocks/mockPatients';
@@ -43,7 +43,7 @@ describe('AssessmentTable', () => {
     expect(wrapper.find(CurrentStatus).exists()).toBeTruthy();
     expect(wrapper.find(InputGroup).exists()).toBeTruthy();
     expect(wrapper.find(CustomTable).exists()).toBeTruthy();
-    expect(wrapper.find(LastDateExposure).exists()).toBeTruthy();
+    expect(wrapper.find(MonitoringPeriod).exists()).toBeTruthy();
     expect(wrapper.find(AssessmentModal).exists()).toBeFalsy();
   });
 
@@ -52,7 +52,7 @@ describe('AssessmentTable', () => {
     expect(wrapper.find(Button).exists()).toBeTruthy();
     expect(wrapper.find(Button).find('i').hasClass('fa-plus')).toBeTruthy();
     expect(wrapper.find(Button).find('span').text()).toEqual('Add New Report');
-    expect(wrapper.find(ClearAssessments).exists()).toBeFalsy();
+    expect(wrapper.find(ClearAssessments).exists()).toBeTruthy();
     expect(wrapper.find(PauseNotifications).exists()).toBeTruthy();
     expect(wrapper.find(ContactAttempt).exists()).toBeTruthy();
   });

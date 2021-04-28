@@ -128,26 +128,24 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     click_on 'Next'
     @@system_test_utils.wait_for_enrollment_page_transition
     click_on 'edit-potential_exposure_information-btn'
-    click_on 'Next'
-    verify_text_displayed('Please enter a Symptom Onset Date')
-    # verify_text_displayed('Please enter a Symptom Onset Date OR select No Reported Symptoms and enter a first positive lab result')
-    fill_in 'symptom_onset', with: 3.days.ago.strftime('%m/%d/%Y')
     fill_in 'jurisdiction_id', with: '' # clear out jurisdiction to so that there is at least one validation error
     click_on 'Next'
-    verify_text_not_displayed('Please enter a Symptom Onset Date')
-    # verify_text_not_displayed('Please enter a Symptom Onset Date OR select No Reported Symptoms and enter a first positive lab result')
-    # page.find('label', text: 'NO REPORTED SYMPTOMS').click
-    # click_on 'Next'
-    # verify_text_not_displayed('Please enter a Symptom Onset Date OR select No Reported Symptoms and enter a first positive lab result')
-    # fill_in 'jurisdiction_id', with: 'USA, State 1, County 1'
-    # click_on 'Next'
-    # verify_text_displayed('Please enter a lab result')
-    # click_on 'Enter Lab Result'
-    # assert page.has_button?('Create', disabled: true)
-    # fill_in 'specimen_collection', with: 2.days.ago.strftime('%m/%d/%Y')
-    # click_on 'Create'
-    # click_on 'Next'
-    # verify_text_not_displayed('Please enter a lab result')
+    verify_text_not_displayed('Please enter a Symptom Onset Date OR select Asymptomatic and enter a first positive lab result')
+    fill_in 'symptom_onset', with: 3.days.ago.strftime('%m/%d/%Y')
+    click_on 'Next'
+    verify_text_not_displayed('Please enter a Symptom Onset Date OR select Asymptomatic and enter a first positive lab result')
+    page.find('label', text: 'ASYMPTOMATIC').click
+    click_on 'Next'
+    verify_text_not_displayed('Please enter a Symptom Onset Date OR select Asymptomatic and enter a first positive lab result')
+    fill_in 'jurisdiction_id', with: 'USA, State 1, County 1'
+    click_on 'Next'
+    verify_text_displayed('Please enter a lab result')
+    click_on 'Enter Lab Result'
+    assert page.has_button?('Create', disabled: true)
+    fill_in 'specimen_collection', with: 2.days.ago.strftime('%m/%d/%Y')
+    click_on 'Create'
+    click_on 'Next'
+    verify_text_not_displayed('Please enter a lab result')
   end
 
   def verify_text_displayed(text)

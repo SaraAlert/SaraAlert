@@ -112,14 +112,14 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  noReportedSymptoms: (
+  asymptomatic: (
     <div>
       Allows a user to indicate that the monitoree is an asymptomatic or pre-symptomatic case. If checked, the monitoree will only be eligible to meet an
       asymptomatic recovery definition (unless they develop symptoms later on).
     </div>
   ),
 
-  noReportedSymptomsDisabled: <div>NO REPORTED SYMPTOMS cannot be selected because this case has at least one symptomatic report.</div>,
+  asymptomaticDisabled: <div>ASYMPTOMATIC cannot be selected because this case has at least one symptomatic report.</div>,
 
   latestPublicHealthActionInExposure: (
     <div>
@@ -179,6 +179,21 @@ const TOOLTIP_TEXT = {
   // REPORTS
 
   exposureNeedsReviewColumn: (
+    <div>
+      The “Needs Review” column tells you which reports the system considers as symptomatic (red highlight). The “Review” and “Mark All As Reviewed” functions
+      allow a user to tell the system not to consider that report as symptomatic. This indicates that the disease of interest is not suspected after review of
+      the monitoree&apos;s symptom report(s).
+      <br />
+      The system will automatically generate the{' '}
+      <i>
+        <b>Symptom Onset</b>
+      </i>{' '}
+      Date as the date of the earliest symptomatic report (red highlight) that needs review unless a date has been entered by a user. Any report where “Needs
+      Review” is “Yes” is considered symptomatic. To clear the symptomatic flag on a report(s), click “Review” or “Mark all as Reviewed” as appropriate.
+    </div>
+  ),
+
+  isolationNeedsReviewColumn: (
     <div>
       The “Needs Review” column tells you which reports the system considers as symptomatic (red highlight). The “Review” and “Mark All As Reviewed” functions
       allow a user to tell the system not to consider that report as symptomatic. This indicates that the disease of interest is not suspected after review of
