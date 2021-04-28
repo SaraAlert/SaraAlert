@@ -38,11 +38,6 @@ module PatientHelper
     states_with_time_zone_data[normalize_name(name)][:zone_name]
   end
 
-  def self.languages(language)
-    languages = PATIENT_HELPER_FILES[:languages]
-    languages[language&.downcase&.to_sym].present? ? languages[language&.downcase&.to_sym] : nil
-  end
-
   # Calculated symptom onset date is based on latest symptomatic assessment.
   def calculated_symptom_onset(patient)
     patient.assessments.where(symptomatic: true).minimum(:created_at)&.to_date

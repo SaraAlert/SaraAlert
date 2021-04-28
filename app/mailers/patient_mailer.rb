@@ -62,7 +62,7 @@ class PatientMailer < ApplicationMailer
     messages_array = []
     patient.active_dependents.uniq.each do |dependent|
       lang = dependent.select_language
-      url = new_patient_assessment_jurisdiction_lang_initials_url(dependent.submission_token, dependent.jurisdiction.unique_identifier, lang&.to_s || 'en',
+      url = new_patient_assessment_jurisdiction_lang_initials_url(dependent.submission_token, dependent.jurisdiction.unique_identifier, lang&.to_s,
                                                                   dependent&.initials_age)
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
       patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
@@ -125,7 +125,7 @@ class PatientMailer < ApplicationMailer
     return unless patient.last_assessment_reminder_sent_eligible?
 
     lang = patient.select_language
-    lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
+    lang = :eng unless Languages.voice_supported?(lang) # Some languages are not supported via voice
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient_names = patient.active_dependents.uniq.collect do |dependent|
       "#{dependent&.first_name&.first || ''}, #{dependent&.last_name&.first || ''}, "\
@@ -175,7 +175,7 @@ class PatientMailer < ApplicationMailer
     end
 
     patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before SMTP call
-    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
+    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
     patient.active_dependents_and_self.each { |pat| add_success_history(pat) }
@@ -189,7 +189,7 @@ class PatientMailer < ApplicationMailer
 
     @patient = patient
     @lang = patient.select_language
-    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.closed.subject', locale: @lang || :en)) do |format|
+    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.closed.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
   end

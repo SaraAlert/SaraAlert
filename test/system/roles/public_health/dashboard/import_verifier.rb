@@ -7,6 +7,7 @@ require_relative '../../../lib/system_test_utils'
 
 class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   include ImportExport
+  include PatientHelper
   @@system_test_utils = SystemTestUtils.new(nil)
 
   TELEPHONE_FIELDS = %i[primary_telephone secondary_telephone].freeze
@@ -130,6 +131,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :sex && !row[index].blank?
             assert_equal(SEX_ABBREVIATIONS[row[index].to_sym], patient[field].to_s, "#{field} mismatch in row #{row_num}")
+          elsif %i[primary_language secondary_language].include?(field) && !row[index].blank?
+            assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :address_state || (field == :monitored_address_state && !row[index].nil?)
             assert_equal(normalize_state_field(row[index].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :monitored_address_state && row[index].nil? # copy over monitored address state if state is nil
@@ -188,6 +191,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
           #                             NORMALIZED_EXPOSURE_ENUMS[field][normalize_enum_field_value(row[index])].to_s
           #                           end
           #   assert_equal(normalized_cell_value, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+          elsif %i[primary_language secondary_language].include?(field) && !row[index].blank?
+            assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :jurisdiction_path
             assert_equal(row[index] ? row[index].to_s : user_jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, "#{field} mismatch in row #{row_num}")
           elsif ENUM_FIELDS.include?(field)
