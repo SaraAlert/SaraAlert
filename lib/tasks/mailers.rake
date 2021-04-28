@@ -28,7 +28,7 @@ namespace :mailers do
     # patient = Patient.first.dup
     # patient.first_name = "Test"
     # patient.last_name = "McTest"
-    # patient.primary_language = "Spanish"
+    # patient.primary_language = "spa"
     # patient.age = 27
     # patient.primary_telephone = <Test Number in E164 format>
     # patient.save!
@@ -40,7 +40,7 @@ namespace :mailers do
     # patient = Patient.first.dup
     # patient.first_name = "Test"
     # patient.last_name = "McTest"
-    # patient.primary_language = "Spanish"
+    # patient.primary_language = "spa"
     # patient.age = 27
     # patient.primary_telephone = <Test Number in E164 format>
     # patient.save
@@ -56,7 +56,7 @@ namespace :mailers do
   task send_purge_warning: :environment do
     SendPurgeWarningsJob.perform_later
   end
-  
+
   desc "Sends patient digest to users"
   task send_patient_digest: :environment do
     SendPatientDigestJob.perform_later

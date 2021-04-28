@@ -237,7 +237,7 @@ module PHDC
       sh_section_title = Ox::Element.new(:title)
       sh_section_title << 'SOCIAL HISTORY INFORMATION'
       sh_section << sh_section_title
-      if patient.primary_language == 'English'
+      if patient.primary_language == 'eng'
         sh_section << entry_helper_code('DEM142', 'Patient Primary Language', 'CE', 'ENG', 'English')
         sh_section << entry_helper_code('NBS214', 'Patient Speaks English', 'CE', 'Y', 'Yes')
       end

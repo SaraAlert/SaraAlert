@@ -9,6 +9,7 @@ class History < ApplicationRecord
 
   HISTORY_TYPES = {
     record_edit: 'Record Edit',
+    system_record_edit: 'System Record Edit',
     report_created: 'Report Created',
     report_updated: 'Report Updated',
     comment: 'Comment',

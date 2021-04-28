@@ -119,11 +119,11 @@ class Assessment < ApplicationRecord
   def translations
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     {
-      en: I18n.backend.send(:translations)[:en][:assessments],
-      es: I18n.backend.send(:translations)[:es][:assessments],
-      'es-PR': I18n.backend.send(:translations)[:'es-PR'][:assessments],
-      so: I18n.backend.send(:translations)[:so][:assessments],
-      fr: I18n.backend.send(:translations)[:fr][:assessments]
+      eng: I18n.backend.send(:translations)[:eng][:assessments],
+      spa: I18n.backend.send(:translations)[:spa][:assessments],
+      'spa-pr': I18n.backend.send(:translations)[:'spa-pr'][:assessments],
+      som: I18n.backend.send(:translations)[:som][:assessments],
+      fra: I18n.backend.send(:translations)[:fra][:assessments]
     }
   end
 

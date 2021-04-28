@@ -1,10 +1,12 @@
 import React from 'react';
-import _ from 'lodash';
 import { PropTypes } from 'prop-types';
 import { Card, Row } from 'react-bootstrap';
+
+import _ from 'lodash';
+import axios from 'axios';
 import Pagination from 'jw-react-pagination';
 import Select from 'react-select';
-import axios from 'axios';
+import { cursorPointerStyle } from '../../packs/stylesheets/ReactSelectStyling';
 
 import History from './History';
 import InfoTooltip from '../util/InfoTooltip';
@@ -136,6 +138,7 @@ class HistoryComponent extends React.Component {
                 classNamePrefix="select"
                 placeholder="Filter by Creator"
                 aria-label="History Creator Filter"
+                styles={cursorPointerStyle}
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,
@@ -151,6 +154,7 @@ class HistoryComponent extends React.Component {
                 classNamePrefix="select"
                 placeholder="Filter by Type"
                 aria-label="History Type Filter"
+                styles={cursorPointerStyle}
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,

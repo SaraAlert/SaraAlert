@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_04_213440) do
+ActiveRecord::Schema.define(version: 2021_04_14_203512) do
 
   create_table "analytics", charset: "utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -401,6 +401,8 @@ ActiveRecord::Schema.define(version: 2021_04_04_213440) do
     t.boolean "race_refused_to_answer"
     t.boolean "latest_assessment_symptomatic", default: false
     t.date "first_positive_lab_at"
+    t.string "legacy_primary_language"
+    t.string "legacy_secondary_language"
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
