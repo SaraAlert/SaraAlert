@@ -4,6 +4,7 @@ import { Button, Col, Collapse, Form, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { convertLanguageCodesToNames } from '../../utils/Languages';
 
 import BadgeHOH from './household/utils/BadgeHOH';
 import ChangeHOH from './household/actions/ChangeHOH';
@@ -20,7 +21,28 @@ class Patient extends React.Component {
       expandNotes: false,
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
+      primaryLanguageDisplayName: null,
     };
+  }
+
+  componentDidMount() {
+    convertLanguageCodesToNames([this.props.details?.primary_language], this.props.authenticity_token, res => {
+      this.setState({ primaryLanguageDisplayName: res[0] });
+    });
+  }
+
+  componentDidUpdate(nextProps, prevState) {
+    // The way that Enrollment is structured, this Patient component is not re-mounted when reviewing a Patient
+    // We need to update the `primaryLanguageDisplayName`. We reset `primary_language` below to break out of the
+    // infinite loop that not resetting it will cause.
+    if (nextProps.details?.primary_language !== prevState.details?.primary_language) {
+      convertLanguageCodesToNames([nextProps.details?.primary_language], this.props.authenticity_token, res => {
+        this.setState({
+          details: { ...nextProps.details, primary_language: nextProps.details?.primary_language },
+          primaryLanguageDisplayName: res[0],
+        });
+      });
+    }
   }
 
   formatName = () => {
@@ -193,7 +215,7 @@ class Patient extends React.Component {
                   <b>Age:</b> <span>{this.props.details.age || '--'}</span>
                 </div>
                 <div>
-                  <b>Language:</b> <span>{this.props.details.primary_language || '--'}</span>
+                  <b>Language:</b> <span>{this.state.primaryLanguageDisplayName || '--'}</span>
                 </div>
                 <div>
                   <b>State/Local ID:</b> <span>{this.props.details.user_defined_id_statelocal || '--'}</span>

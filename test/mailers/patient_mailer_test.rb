@@ -16,7 +16,7 @@ class PatientMailerTest < ActionMailer::TestCase
     patient_submission_token = SecureRandom.urlsafe_base64[0, 10]
     @patient = create(:patient)
     @patient.update(email: patient_email,
-                    primary_language: 'en',
+                    primary_language: 'eng',
                     submission_token: patient_submission_token,
                     primary_telephone: '+15555550111',
                     preferred_contact_method: 'Telephone call')
@@ -121,7 +121,7 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'enrollment sms weblink message contents' do
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'en')}"
+    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -149,7 +149,7 @@ class PatientMailerTest < ActionMailer::TestCase
   test 'enrollment sms weblink message contents not using messaging service' do
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
 
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'en')}"
+    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
 
     # Assert correct REST call when messaging_service is NOT used falls back to from number
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
@@ -172,7 +172,7 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'enrollment sms text based message contents using messaging service' do
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'en')}"
+    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -198,7 +198,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'enrollment sms text based message contents not using messaging service' do
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'en')}"
+    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -223,9 +223,9 @@ class PatientMailerTest < ActionMailer::TestCase
     @patient.update(preferred_contact_method: 'SMS Texted Weblink')
     url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
                                                                 @patient.jurisdiction.unique_identifier,
-                                                                'en',
+                                                                'eng',
                                                                 @patient&.initials_age)
-    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
+    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'eng')} -0: #{url}"
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -252,9 +252,9 @@ class PatientMailerTest < ActionMailer::TestCase
 
     url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
                                                                 @patient.jurisdiction.unique_identifier,
-                                                                'en',
+                                                                'eng',
                                                                 @patient&.initials_age)
-    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
+    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'eng')} -0: #{url}"
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -375,16 +375,16 @@ class PatientMailerTest < ActionMailer::TestCase
     patient_history_count = @patient.histories.count
 
     params = {
-      language: 'EN',
-      try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'en'),
-      thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'en'),
+      language: 'ENG',
+      try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'eng'),
+      thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'eng'),
       medium: 'SMS',
-      max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'en'),
+      max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'eng'),
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
       # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'en')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'en')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'en')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('en')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'en')}"
+      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'eng')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'eng')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'eng')}"
       # rubocop:enable Layout/LineLength
     }
 
@@ -412,16 +412,16 @@ class PatientMailerTest < ActionMailer::TestCase
     patient_history_count = @patient.histories.count
 
     params = {
-      language: 'EN',
-      try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'en'),
-      thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'en'),
+      language: 'ENG',
+      try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'eng'),
+      thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'eng'),
       medium: 'SMS',
-      max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'en'),
+      max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'eng'),
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
       # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'en')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'en')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'en')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('en')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'en')}"
+      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'eng')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'eng')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'eng')}"
       # rubocop:enable Layout/LineLength
     }
 
@@ -449,17 +449,17 @@ class PatientMailerTest < ActionMailer::TestCase
     patient_history_count = @patient.histories.count
 
     params = {
-      language: 'EN',
-      intro: I18n.t('assessments.phone.intro', locale: 'en'),
-      try_again: I18n.t('assessments.phone.try-again', locale: 'en'),
-      thanks: I18n.t('assessments.phone.thanks', locale: 'en'),
-      max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: 'en'),
+      language: 'ENG',
+      intro: I18n.t('assessments.phone.intro', locale: 'eng'),
+      try_again: I18n.t('assessments.phone.try-again', locale: 'eng'),
+      thanks: I18n.t('assessments.phone.thanks', locale: 'eng'),
+      max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: 'eng'),
       medium: 'VOICE',
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
       # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.phone.daily1', locale: 'en')}, , #{I18n.t('assessments.phone.age', locale: 'en')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'en')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'en')}#{I18n.t('assessments.phone.daily3', locale: 'en')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('en')}?#{I18n.t('assessments.phone.daily4', locale: 'en')}"
+      prompt: "#{I18n.t('assessments.phone.daily1', locale: 'eng')}, , #{I18n.t('assessments.phone.age', locale: 'eng')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'eng')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'eng')}#{I18n.t('assessments.phone.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}?#{I18n.t('assessments.phone.daily4', locale: 'eng')}"
       # rubocop:enable Layout/LineLength
     }
 

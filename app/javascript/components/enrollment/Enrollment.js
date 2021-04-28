@@ -222,6 +222,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               currentState={this.state.enrollmentState}
               race_options={this.props.race_options}
+              authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -271,6 +272,7 @@ class Enrollment extends React.Component {
               submit={this.submit}
               canAddGroup={this.props.can_add_group}
               jurisdiction_paths={this.props.jurisdiction_paths}
+              authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
         </Carousel>

@@ -634,20 +634,20 @@ namespace :stats do
         isolation: active_iso.where(preferred_contact_time: ['', nil]).count
       }
       results[title]['Preferred Language - English'] = {
-        exposure: active_exp.where(primary_language: 'English').count,
-        isolation: active_iso.where(primary_language: 'English').count
+        exposure: active_exp.where(primary_language: 'eng').count,
+        isolation: active_iso.where(primary_language: 'eng').count
       }
       results[title]['Preferred Language - Spanish'] = {
-        exposure: active_exp.where(primary_language: 'Spanish').count,
-        isolation: active_iso.where(primary_language: 'Spanish').count
+        exposure: active_exp.where(primary_language: 'spa').count,
+        isolation: active_iso.where(primary_language: 'spa').count
       }
       results[title]['Preferred Language - Spanish (Puerto Rican)'] = {
-        exposure: active_exp.where(primary_language: 'Spanish (Puerto Rican)').count,
-        isolation: active_iso.where(primary_language: 'Spanish (Puerto Rican)').count
+        exposure: active_exp.where(primary_language: 'spa-pr').count,
+        isolation: active_iso.where(primary_language: 'spa-pr').count
       }
       results[title]['Preferred Language - Other'] = {
-        exposure: active_exp.where.not(primary_language: ['', nil, 'English', 'Spanish', 'Spanish (Puerto Rican)']).count,
-        isolation: active_iso.where.not(primary_language: ['', nil, 'English', 'Spanish', 'Spanish (Puerto Rican)']).count
+        exposure: active_exp.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr']).count,
+        isolation: active_iso.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr']).count
       }
       results[title]['Preferred Language - blank'] = {
         exposure: active_exp.where(primary_language: ['', nil]).count,

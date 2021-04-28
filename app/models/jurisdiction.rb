@@ -111,7 +111,7 @@ class Jurisdiction < ApplicationRecord
     new_cond
   end
 
-  def hierarchical_condition_bool_symptoms_string(lang = :en)
+  def hierarchical_condition_bool_symptoms_string(lang = :eng)
     hierarchical_condition = hierarchical_symptomatic_condition
     bool_symptom_labels = hierarchical_condition.symptoms.where(required: true).collect do |symptom|
       symptom.bool_based_prompt(lang)
