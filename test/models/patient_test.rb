@@ -1402,6 +1402,48 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
+  test 'validates primary_language inclusion in api and import context' do
+    patient = valid_patient
+
+    patient.primary_language = 'eng'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.primary_language = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.primary_language = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.primary_language = 'foo'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
+  test 'validates secondary_language inclusion in api and import context' do
+    patient = valid_patient
+
+    patient.secondary_language = 'spa'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.secondary_language = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.secondary_language = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.secondary_language = 'foo'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
   test 'validates monitored_address_state inclusion in api and import context' do
     patient = valid_patient
 

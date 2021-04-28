@@ -330,7 +330,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = if filter[:value].blank?
                      patients.where(primary_language: [nil, ''])
                    else
-                     patients.where('lower(patients.primary_language) like ?', "%#{filter[:value]&.downcase}%")
+                     language = DISPLAY_LANGUAGES[filter[:value]&.downcase&.strip] || Languages.normalize_and_get_langauge_name(filter[:value]&.downcase&.strip)
+                     patients.where(primary_language: language)
                    end
       when 'sara-id'
         patients = patients.where(id: filter[:value])

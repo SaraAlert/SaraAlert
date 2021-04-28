@@ -55,8 +55,8 @@ class ExposureSummary extends React.Component {
     const url = window.URL.createObjectURL(new Blob([csvContent]));
     const link = document.createElement('a');
     link.href = url;
-    self.csvFileName = `CompleteCountryData.csv`;
-    link.setAttribute('download', `${self.csvFileName}`);
+    this.csvFileName = `CompleteCountryData.csv`;
+    link.setAttribute('download', `${this.csvFileName}`);
     document.body.appendChild(link);
     link.click();
   };

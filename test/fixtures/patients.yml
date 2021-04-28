@@ -17,7 +17,7 @@ patient_1:
   sexual_orientation: 'Another'
   american_indian_or_alaska_native: true
   ethnicity: 'Not Hispanic or Latino'
-  primary_language: 'English'
+  primary_language: 'eng'
   address_line_1: '76640 Barney Street'
   address_city: 'South Lenport'
   address_state: 'New York'
@@ -75,7 +75,7 @@ patient_2:
   sexual_orientation: 'Straight or Heterosexual'
   native_hawaiian_or_other_pacific_islander: true
   ethnicity: 'Hispanic or Latino'
-  primary_language: 'English'
+  primary_language: 'eng'
   address_line_1: '358 Stefany Village'
   address_city: 'Spinkaville'
   address_state: 'California'
