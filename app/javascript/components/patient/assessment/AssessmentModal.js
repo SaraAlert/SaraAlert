@@ -27,7 +27,7 @@ class AssessmentModal extends React.Component {
             patient_id={this.props.patient.id}
             updateId={this.props.updateId}
             translations={this.props.translations}
-            lang={'en'}
+            lang={'eng'}
           />
         </Modal.Body>
       </Modal>
