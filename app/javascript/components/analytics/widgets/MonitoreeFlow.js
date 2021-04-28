@@ -32,7 +32,7 @@ class MonitoreeFlow extends React.Component {
   renderWorkflowTable(data, index) {
     let oppositeWorkflow = _.upperCase(WORKFLOWS[Number(index == 0 ? 1 : 0)]);
     return (
-      <Col lg="12">
+      <Col lg="12" key={index} className="pb-3">
         <table className="analytics-table">
           <thead>
             <tr>
@@ -43,13 +43,13 @@ class MonitoreeFlow extends React.Component {
             </tr>
           </thead>
           <tbody key={index}>
-            <tr>
+            <tr style={{ height: '25px' }}>
               <td className="font-weight-bold text-left p-0">
                 <u>{_.upperCase(WORKFLOWS[Number(index)])} WORKFLOW</u>
               </td>
             </tr>
-            <tr style={{ height: '20px' }}>
-              <td className="font-weight-bold text-left analytics-mf-subheader">
+            <tr style={{ height: '25px' }}>
+              <td className="font-weight-bold text-left analytics-mf-subheader align-bottom">
                 <u>INCOMING</u>
               </td>
             </tr>
@@ -108,7 +108,7 @@ class MonitoreeFlow extends React.Component {
           <Card.Body className="mt-4">
             <Row>{this.tableData.map((data, index) => this.renderWorkflowTable(data, index))}</Row>
             <div className="text-secondary fake-demographic-text mb-1">
-              <i className="fas fa-info-circle mr-3 mt-2"></i>
+              <i className="fas fa-info-circle mr-1"></i>
               Total includes all incoming and outgoing counts ever recorded for this jurisdiction
             </div>
           </Card.Body>
