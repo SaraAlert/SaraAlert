@@ -117,7 +117,7 @@ class HistoryList extends React.Component {
 
   render() {
     const historiesArray = this.state.displayedHistories.map(history => (
-      <History key={history.id} history={history} authenticity_token={this.props.authenticity_token} />
+      <History key={history.id} history={history} current_user={this.props.current_user} authenticity_token={this.props.authenticity_token} />
     ));
 
     return (
@@ -202,9 +202,10 @@ class HistoryList extends React.Component {
 
 HistoryList.propTypes = {
   patient_id: PropTypes.number,
+  current_user: PropTypes.object,
   histories: PropTypes.array,
-  authenticity_token: PropTypes.string,
   history_types: PropTypes.object,
+  authenticity_token: PropTypes.string,
 };
 
 export default HistoryList;

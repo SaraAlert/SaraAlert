@@ -7,6 +7,7 @@ import HistoryList from '../../../components/patient/history/HistoryList';
 import History from '../../../components/patient/history/History';
 import InfoTooltip from '../../../components/util/InfoTooltip';
 import { mockHistory1, mockHistory2, mockHistory3 } from '../../mocks/mockHistories';
+import { mockUser1 } from '../../mocks/mockUsers';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const mockHistories = [ mockHistory1, mockHistory2, mockHistory3 ];
@@ -16,7 +17,7 @@ let historyTypes = mockHistories.map(history => history.history_type);
 historyTypes = historyTypes.filter((type, index) => historyTypes.includes(type) && index === historyTypes.indexOf(type));
 
 function getWrapper() {
-  return shallow(<HistoryList patient_id={mockHistory1.patient_id} histories={mockHistories}
+  return shallow(<HistoryList patient_id={mockHistory1.patient_id} histories={mockHistories} current_user={mockUser1}
     authenticity_token={authyToken} history_types={{enrollment: 'Enrollment', comment: 'Comment'}} />);
 }
 

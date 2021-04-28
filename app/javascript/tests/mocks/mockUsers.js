@@ -4,7 +4,7 @@ const mockUser1 = {
   authy_enforced: false,
   authy_id: null,
   created_at: '2020-07-15T15:15:15.000Z',
-  email: 'mockUser1@example.com',
+  email: 'mock_user_1@example.com',
   force_password_change: false,
   id: 16,
   jurisdiction_id: 2,

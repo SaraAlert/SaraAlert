@@ -4,13 +4,14 @@ import { Button, Card, Col } from 'react-bootstrap';
 import _ from 'lodash';
 import History from '../../../components/patient/history/History';
 import { mockHistory1, mockHistory2, mockHistory3 } from '../../mocks/mockHistories';
+import { mockUser1 } from '../../mocks/mockUsers';
 import { formatTimestamp, formatRelativePast } from '../../../utils/DateTime';
 import ReactTooltip from 'react-tooltip';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 
 function getWrapper(history) {
-  return shallow(<History key={history.id} history={history} authenticity_token={authyToken} />);
+  return shallow(<History key={history.id} history={history} current_user={mockUser1} authenticity_token={authyToken} />);
 }
 
 describe('History', () => {
@@ -22,13 +23,13 @@ describe('History', () => {
     expect(wrapper.find(Card.Header).text().includes(formatRelativePast(mockHistory1.created_at))).toBeTruthy();
     expect(wrapper.find(Card.Header).find('.badge').text()).toEqual(mockHistory1.history_type);
     expect(wrapper.find(Card.Body).find(Col).text()).toEqual(mockHistory1.comment);
-    expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeFalsy();
+    // expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#delete-history-btn').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find(ReactTooltip).exists()).toBeFalsy();
   });
 
-  it('Properly renders comment histories', () => {
+  it('Properly renders comment histories if current user created the comment', () => {
     const wrapper = getWrapper(mockHistory2);
     expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockHistory2.created_by);
@@ -36,7 +37,7 @@ describe('History', () => {
     expect(wrapper.find(Card.Header).text().includes(formatRelativePast(mockHistory2.created_at))).toBeTruthy();
     expect(wrapper.find(Card.Header).find('.badge').text()).toEqual(mockHistory2.history_type);
     expect(wrapper.find(Card.Body).find(Col).at(0).text()).toEqual(mockHistory2.comment);
-    expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeFalsy();
+    // expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find(Button).length).toEqual(2);
     expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#edit-history-btn').find('i').hasClass('fa-edit')).toBeTruthy();
@@ -45,6 +46,20 @@ describe('History', () => {
     expect(wrapper.find(Card.Body).find(ReactTooltip).length).toEqual(2);
     expect(wrapper.find(Card.Body).find(ReactTooltip).at(0).find('span').text()).toEqual('Edit comment');
     expect(wrapper.find(Card.Body).find(ReactTooltip).at(1).find('span').text()).toEqual('Archive comment');
+  });
+
+  it('Properly renders comment histories if current user did not create the comment', () => {
+    const wrapper = getWrapper(mockHistory3);
+    expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockHistory3.created_by);
+    expect(wrapper.find(Card.Header).text().includes(formatTimestamp(mockHistory3.created_at))).toBeTruthy();
+    expect(wrapper.find(Card.Header).text().includes(formatRelativePast(mockHistory3.created_at))).toBeTruthy();
+    expect(wrapper.find(Card.Header).find('.badge').text()).toEqual(mockHistory3.history_type);
+    expect(wrapper.find(Card.Body).find(Col).at(0).text()).toEqual(mockHistory3.comment);
+    // expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeFalsy();
+    expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeFalsy();
+    expect(wrapper.find(Card.Body).find('#delete-history-btn').exists()).toBeFalsy();
+    expect(wrapper.find(Card.Body).find(ReactTooltip).exists()).toBeFalsy();
   });
 
   it('Clicking the edit button properly renders edit mode', () => {

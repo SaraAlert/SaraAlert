@@ -166,7 +166,7 @@ class History extends React.Component {
                   {this.props.history.comment}
                   {/* {!!this.props.history.was_edited && <i className="edit-text"> (edited)</i>} */}
                 </Col>
-                {this.props.history.history_type == 'Comment' && this.renderActionButtons()}
+                {this.props.history.history_type === 'Comment' && this.props.history.created_by === this.props.current_user.email && this.renderActionButtons()}
               </Row>
             )}
           </Card.Body>
@@ -178,6 +178,7 @@ class History extends React.Component {
 
 History.propTypes = {
   history: PropTypes.object,
+  current_user: PropTypes.object,
   authenticity_token: PropTypes.string,
 };
 
