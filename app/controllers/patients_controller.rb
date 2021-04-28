@@ -19,10 +19,7 @@ class PatientsController < ApplicationController
     @patient = current_user.get_patient(params.permit(:id)[:id])
 
     # If we failed to find a subject given the id, redirect to index
-    redirect_to(action: 'monitoree_unavailable', id: params[:id]) && return if @patient.nil?
-
-    # If purged, redirect to index
-    redirect_to(root_url) && return if @patient.purged
+    redirect_to(action: 'monitoree_unavailable', id: params[:id]) && return if @patient.nil? || @patient.purged
 
     @jurisdiction = @patient.jurisdiction
     @laboratories = @patient.laboratories.order(:created_at)
