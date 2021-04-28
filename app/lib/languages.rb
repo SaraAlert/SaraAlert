@@ -15,7 +15,7 @@ module Languages
   def self.voice_supported?(lang)
     return false if lang.nil?
 
-    all_languages&.dig(lang.to_sym, :supported, :phone)
+    all_languages&.dig(lang.to_sym, :supported, :phone) || false
   end
 
   def self.all_languages
