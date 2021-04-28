@@ -27,8 +27,20 @@ body {
   background-size: 100px 100px;
 }
 
+.btn {
+  border-radius: 0 !important;
+}
+
 .btn.btn-square {
   border-radius: 0;
+}
+
+.btn.btn-circle {
+  width: 30px; 
+  height: 30px; 
+  padding: 2px 5px; 
+  border-radius: 15px !important; 
+  text-align: center; 
 }
 
 .react-datepicker-popper {
@@ -37,10 +49,6 @@ body {
 
 .custom-control {
   z-index: 0 !important;
-}
-
-.btn {
-  border-radius: 0 !important;
 }
 
 .popover {
