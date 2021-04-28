@@ -21,22 +21,6 @@ class History extends React.Component {
     this.setState({ [event.target.id]: event.target.value });
   };
 
-  edit = () => {
-    this.setState({ loading: true }, () => {
-      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .patch(window.BASE_PATH + '/histories/' + this.props.history.id, {
-          comment: this.state.comment,
-        })
-        .then(() => {
-          location.reload(true);
-        })
-        .catch(error => {
-          reportError(error);
-        });
-    });
-  };
-
   handleEditClick = () => {
     this.setState({ editMode: true });
   };
@@ -46,38 +30,49 @@ class History extends React.Component {
   };
 
   handleEditSubmit = () => {
-    this.edit();
+    console.log('submitting edit...')
+      //   this.setState({ loading: true }, () => {
+  //     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+  //     axios
+  //       .patch(window.BASE_PATH + '/histories/' + this.props.history.id, {
+  //         comment: this.state.comment,
+  //       })
+  //       .then(() => {
+  //         location.reload(true);
+  //       })
+  //       .catch(error => {
+  //         reportError(error);
+  //       });
+  //   });
   };
 
-  delete = async () => {
-    const confirmText = 'Are you sure you would like to delete this comment? This action cannot be undone.';
+
+  handleArchiveClick = async() => {
+    const confirmText = 'Are you sure you would like to archive this comment? This action cannot be undone.'; // CHANGE ME??
     const options = {
       title: 'History',
-      okLabel: 'Delete',
+      okLabel: 'Archive',
       okVariant: 'danger',
       cancelLabel: 'Cancel',
     };
     if (await confirmDialog(confirmText, options)) {
-      this.handleDeleteSubmit();
+      this.handleArchiveSubmit();
     }
   };
 
-  handleDeleteClick = () => {
-    this.delete();
-  };
-
-  handleDeleteSubmit = () => {
-    this.setState({ loading: true }, () => {
-      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .delete(window.BASE_PATH + '/histories/' + this.props.history.id)
-        .then(() => {
-          location.reload(true);
-        })
-        .catch(error => {
-          reportError(error);
-        });
-    });
+  handleArchiveSubmit = () => {
+    console.log('submitting archive...')
+    // this.setState({ loading: true }, () => {
+    //   axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    //   axios
+    //     .delete(window.BASE_PATH + '/histories/' + this.props.history.id)
+    //     .then(() => {
+    //       location.reload(true);
+    //     })
+    //     .catch(error => {
+    //       reportError(error);
+    //     });
+    // });
   };
 
   renderEditMode() {
@@ -98,7 +93,7 @@ class History extends React.Component {
           variant="primary"
           size="sm"
           className="float-right mt-2"
-          disabled={this.state.loading || this.state.comment === ''}
+          disabled={this.state.loading || this.state.comment === '' || this.state.comment === this.props.history.comment}
           onClick={this.handleEditSubmit}
           aria-label="Submit Edit History Comment">
           Update
@@ -128,26 +123,22 @@ class History extends React.Component {
           </span>
           <ReactTooltip
             id={`edit-history-item-${this.props.history.id}`}
-            multiline={true}
-            place="left"
+            place="top"
             type="dark"
-            effect="solid"
-            className="tooltip-container">
-            <span>You may edit comments you have added</span>
+            effect="solid">
+            <span>Edit comment</span>
           </ReactTooltip>
-          <span data-for={`delete-history-item-${this.props.history.id}`} data-tip="">
-            <Button id="delete-history-btn" variant="link" className="icon-btn p-0" onClick={this.handleDeleteClick} aria-label="Delete History Comment">
-              <i className="fas fa-trash"></i>
+          <span data-for={`archive-history-item-${this.props.history.id}`} data-tip="">
+            <Button id="delete-history-btn" variant="link" className="icon-btn p-0" onClick={this.handleArchiveClick} aria-label="Archive History Comment">
+              <i className="fas fa-archive"></i>
             </Button>
           </span>
           <ReactTooltip
-            id={`delete-history-item-${this.props.history.id}`}
-            multiline={true}
-            place="left"
+            id={`archive-history-item-${this.props.history.id}`}
+            place="top"
             type="dark"
-            effect="solid"
-            className="tooltip-container">
-            <span>You may delete comments you have added</span>
+            effect="solid">
+            <span>Archive comment</span>
           </ReactTooltip>
         </div>
       </Col>
@@ -173,7 +164,7 @@ class History extends React.Component {
               <Row>
                 <Col md="auto">
                   {this.props.history.comment}
-                  {!!this.props.history.was_edited && <i className="edit-text"> (edited)</i>}
+                  {/* {!!this.props.history.was_edited && <i className="edit-text"> (edited)</i>} */}
                 </Col>
                 {this.props.history.history_type == 'Comment' && this.renderActionButtons()}
               </Row>

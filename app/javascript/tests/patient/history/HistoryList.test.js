@@ -27,7 +27,7 @@ describe('HistoryList', () => {
     expect(wrapper.find(Card.Header).find('span').text()).toEqual('History');
     expect(wrapper.find(Card.Header).find(InfoTooltip).exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).find(InfoTooltip).prop('tooltipTextKey')).toEqual('history');
-    expect(wrapper.find('#filters').exists()).toBeTruthy();
+    expect(wrapper.find('#history-filters').exists()).toBeTruthy();
     expect(wrapper.find(Select).length).toEqual(2);
     expect(wrapper.find(Select).at(0).prop('placeholder')).toEqual('Filter by Creator');
     expect(wrapper.find(Select).at(0).prop('options')[0].label).toEqual('History Creator');

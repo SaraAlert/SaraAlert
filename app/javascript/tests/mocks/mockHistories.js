@@ -7,7 +7,6 @@ const mockHistory1 = {
   created_at: '2020-09-13T14:35:09.000Z',
   updated_at: '2020-09-13T14:35:09.000Z',
   patient_id: 17,
-  was_edited: false
 };
 
 const mockHistory2 = {
@@ -18,7 +17,6 @@ const mockHistory2 = {
   created_at: '2020-09-13T14:35:09.000Z',
   updated_at: '2020-09-13T14:35:09.000Z',
   patient_id: 17,
-  was_edited: false
 };
 
 const mockHistory3 = {
@@ -29,7 +27,6 @@ const mockHistory3 = {
   created_at: '2020-09-13T14:35:09.000Z',
   updated_at: '2020-09-13T14:35:09.000Z',
   patient_id: 17,
-  was_edited: true
 };
 
 export {

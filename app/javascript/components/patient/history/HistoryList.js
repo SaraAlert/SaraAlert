@@ -5,7 +5,7 @@ import _ from 'lodash';
 import axios from 'axios';
 import Pagination from 'jw-react-pagination';
 import Select from 'react-select';
-import { cursorPointerStyle } from '../../packs/stylesheets/ReactSelectStyling';
+import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import History from './History';
 import InfoTooltip from '../../util/InfoTooltip';
@@ -132,7 +132,7 @@ class HistoryList extends React.Component {
             </div>
           </Card.Header>
           <Card.Body className="py-0 px-1">
-            <Row id="filters" className="mx-3 mt-3 justify-content-end">
+            <Row id="history-filters" className="mx-3 mt-3 justify-content-end">
               <Select
                 closeMenuOnSelect={false}
                 isMulti
