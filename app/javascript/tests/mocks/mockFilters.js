@@ -1,87 +1,86 @@
 import moment from 'moment';
+import { advancedFilterOptions } from '../../data/advancedFilterOptions';
 
-const mockFilterDefaultBoolOption = {
+/* BOOLEAN TYPE MOCK FILTERS */
+const mockFilterMonitoringStatusTrue = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    description: 'Monitorees who are currently under active monitoring',
-    name: 'monitoring-status',
-    title: 'Active Monitoring (Boolean)',
-    type: 'boolean'
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'monitoring-status'),
   numberOption: null,
   relativeOption: null,
   value: true
 }
 
-const mockFilterBoolOption = {
+const mockFilterMonitoringStatusFalse = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    description: 'Monitorees who are currently under active monitoring',
-    name: 'monitoring-status',
-    title: 'Active Monitoring (Boolean)',
-    type: 'boolean'
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'monitoring-status'),
   numberOption: null,
   relativeOption: null,
   value: false
 }
 
-const mockFilterOptionsOption = {
+const mockFilterSevenDayQuarantine = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    name: 'preferred-contact-time',
-    title: 'Preferred Contact Time (Select)',
-    description: 'Monitoree preferred contact time',
-    type: 'select',
-    options: ['Morning', 'Afternoon', 'Evening', '']
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'seven-day-quarantine'),
+  numberOption: null,
+  relativeOption: null,
+  value: false
+}
+
+/* SELECT TYPE MOCK FILTERS */
+const mockFilterPreferredContactTime = {
+  additionalFilterOption: null,
+  dateOption: null,
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'preferred-contact-time'),
   numberOption: null,
   relativeOption: null,
   value: 'Morning'
 }
 
-const mockFilterDefaultNumberOption = {
+/* NUMBER TYPE MOCK FILTERS */
+const mockFilterAgeEqual = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    name: 'age',
-    title: 'Age (Number)',
-    description: 'Current Monitoree Age',
-    type: 'number',
-    allowRange: true
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'age'),
   numberOption: 'equal',
   relativeOption: null,
   value: 0
 }
 
-const mockFilterNumberOption = {
+const mockFilterAgeBetween = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    name: 'age',
-    title: 'Age (Number)',
-    description: 'Current Monitoree Age',
-    type: 'number',
-    allowRange: true
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'age'),
   numberOption: 'between',
   relativeOption: null,
   value: {firstBound: 20, secondBound: 30}
 }
 
-const mockFilterDefaultDateOption = {
+const mockFilterManualContactAttemptsEqual = {
+  additionalFilterOption: 'Successful',
+  dateOption: null,
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'manual-contact-attempts'),
+  numberOption: 'equal',
+  relativeOption: null,
+  value: 0
+}
+
+const mockFilterManualContactAttemptsLessThan = {
+  additionalFilterOption: 'All',
+  dateOption: null,
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'manual-contact-attempts'),
+  numberOption: 'less-than',
+  relativeOption: null,
+  value: 2
+}
+
+/* DATE TYPE MOCK FILTERS */
+const mockFilterEnrolledDateWithin = {
   additionalFilterOption: null,
   dateOption: 'within',
-  filterOption: {
-    description: 'Monitorees enrolled in system during specified date range',
-    name: 'enrolled',
-    title: 'Enrolled (Date)',
-    type: 'date'
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'enrolled'),
   numberOption: null,
   relativeOption: null,
   value: { 
@@ -90,60 +89,38 @@ const mockFilterDefaultDateOption = {
   }
 }
 
-const mockFilterDateOption = {
+const mockFilterEnrolledDateBefore = {
   additionalFilterOption: null,
   dateOption: 'before',
-  filterOption: {
-    description: 'Monitorees enrolled in system during specified date range',
-    name: 'enrolled',
-    title: 'Enrolled (Date)',
-    type: 'date'
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'enrolled'),
   numberOption: null,
   relativeOption: null,
   value: '2020-12-30'
 }
 
-const mockFilterDefaultRelativeOption = {
+/* RELATIVE TYPE MOCK FILTERS */
+const mockFilterLatestReportRelativeToday = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    name: 'latest-report-relative',
-    title: 'Latest Report (Relative Date)',
-    description: 'Monitorees with latest report during specified date range (relative to the current date)',
-    type: 'relative',
-    hasTimestamp: true
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'latest-report-relative'),
   numberOption: null,
   relativeOption: 'today',
   value: 'today'
 }
 
-const mockFilterRelativeOption = {
+const mockFilterLatestReportRelativeYesterday = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    name: 'latest-report-relative',
-    title: 'Latest Report (Relative Date)',
-    description: 'Monitorees with latest report during specified date range (relative to the current date)',
-    type: 'relative',
-    hasTimestamp: true
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'latest-report-relative'),
   numberOption: null,
   relativeOption: 'yesterday',
   value: 'yesterday'
 }
 
-const mockFilterDefaultCustomRelativeOption1 = {
+const mockFilterLatestReportRelativeCustomPast = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    name: 'latest-report-relative',
-    title: 'Latest Report (Relative Date)',
-    description: 'Monitorees with latest report during specified date range (relative to the current date)',
-    type: 'relative',
-    hasTimestamp: true
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'latest-report-relative'),
   numberOption: null,
   relativeOption: 'custom',
   value: {
@@ -154,36 +131,10 @@ const mockFilterDefaultCustomRelativeOption1 = {
   }
 }
 
-const mockFilterDefaultCustomRelativeOption2 = {
+const mockFilterLatestReportRelativeCustomFuture = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    name: 'symptom-onset-relative',
-    title: 'Symptom Onset (Relative Date)',
-    description: 'Monitorees who have a symptom onset date during specified date range (relative to the current date)',
-    type: 'relative',
-    hasTimestamp: false,
-  },
-  numberOption: null,
-  relativeOption: 'custom',
-  value: {
-    operator: 'less-than',
-    number: 1,
-    unit: 'days',
-    when: 'past'
-  }
-}
-
-const mockFilterCustomRelativeOption = {
-  additionalFilterOption: null,
-  dateOption: null,
-  filterOption: {
-    name: 'latest-report-relative',
-    title: 'Latest Report (Relative Date)',
-    description: 'Monitorees with latest report during specified date range (relative to the current date)',
-    type: 'relative',
-    hasTimestamp: true
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'latest-report-relative'),
   numberOption: null,
   relativeOption: 'custom',
   value: {
@@ -194,84 +145,52 @@ const mockFilterCustomRelativeOption = {
   }
 }
 
-const mockFilterDefaultSearchOption = {
+const mockFilterSymptomOnsetRelativeCustomPast = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
-    name: 'address-foreign',
-    title: 'Address (outside USA) (Text)',
-    type: 'search'
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'symptom-onset-relative'),
+  numberOption: null,
+  relativeOption: 'custom',
+  value: {
+    operator: 'less-than',
+    number: 1,
+    unit: 'days',
+    when: 'past'
+  }
+}
+
+/* SEARCH TYPE MOCK FILTERS */
+const mockFilterAddressForeignEmpty = {
+  additionalFilterOption: null,
+  dateOption: null,
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'address-foreign'),
   numberOption: null,
   relativeOption: null,
   value: ''
 }
 
-const mockFilterSearchOption = {
+const mockFilterAddressForeign = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
-    name: 'address-foreign',
-    title: 'Address (outside USA) (Text)',
-    type: 'search'
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'address-foreign'),
   numberOption: null,
   relativeOption: null,
   value: '42 Wallaby Way'
 }
 
-const mockFilterDefaultAdditionalOption = {
-  additionalFilterOption: 'Successful',
-  dateOption: null,
-  filterOption: {
-    name: 'manual-contact-attempts',
-    title: 'Manual Contact Attempts (Number)',
-    description: 'All records with the specified number of manual contact attempts',
-    type: 'number',
-    options: ['Successful', 'Unsuccessful', 'All']
-  },
-  numberOption: 'equal',
-  relativeOption: null,
-  value: 0
-}
-
-const mockFilterAdditionalOption = {
-  additionalFilterOption: 'All',
-  dateOption: null,
-  filterOption: {
-    name: 'manual-contact-attempts',
-    title: 'Manual Contact Attempts (Number)',
-    description: 'All records with the specified number of manual contact attempts',
-    type: 'number',
-    options: ['Successful', 'Unsuccessful', 'All']
-  },
-  numberOption: 'less-than',
-  relativeOption: null,
-  value: 2
-}
-
-const mockFilterIncludesTooltip = {
+/* MULTI TYPE MOCK FILTERS */
+const mockFilterLabResults = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: {
-    name: 'seven-day-quarantine',
-    title: 'Candidate to Reduce Quarantine after 7 Days (Boolean)',
-    description:
-      'All asymptomatic records that meet CDC criteria to end quarantine after Day 7 (based on last date of exposure and most recent lab result)',
-    type: 'boolean',
-    tooltip:
-      'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom ' +
-      'Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.',
-  },
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'lab-result'),
   numberOption: null,
   relativeOption: null,
-  value: false
+  value: [ {name: 'result', value: 'positive'} ]
 }
 
+/* MOCK SAVED FILTERS */
 const mockFilter1 = {
-  contents: [ mockFilterSearchOption ],
+  contents: [ mockFilterAddressForeign ],
   created_at: '2021-01-11T14:04:32.994Z',
   id: 2,
   name: 'my new filter',
@@ -280,7 +199,7 @@ const mockFilter1 = {
 }
 
 const mockFilter2 = {
-  contents: [ mockFilterBoolOption, mockFilterDateOption ],
+  contents: [ mockFilterMonitoringStatusFalse, mockFilterEnrolledDateBefore],
   created_at: '2020-11-11T02:43:56.234Z',
   id: 1,
   name: 'my filter',
@@ -291,23 +210,24 @@ const mockFilter2 = {
 const mockSavedFilters = [ mockFilter1, mockFilter2 ]
 
 export {
-  mockFilterDefaultBoolOption,
-  mockFilterBoolOption,
-  mockFilterOptionsOption,
-  mockFilterDefaultNumberOption,
-  mockFilterNumberOption,
-  mockFilterDefaultDateOption,
-  mockFilterDateOption,
-  mockFilterDefaultRelativeOption,
-  mockFilterRelativeOption,
-  mockFilterDefaultCustomRelativeOption1,
-  mockFilterDefaultCustomRelativeOption2,
-  mockFilterCustomRelativeOption,
-  mockFilterDefaultSearchOption,
-  mockFilterSearchOption,
-  mockFilterDefaultAdditionalOption,
-  mockFilterAdditionalOption,
-  mockFilterIncludesTooltip,
+  mockFilterMonitoringStatusTrue,
+  mockFilterMonitoringStatusFalse,
+  mockFilterSevenDayQuarantine,
+  mockFilterPreferredContactTime,
+  mockFilterAgeEqual,
+  mockFilterAgeBetween,
+  mockFilterManualContactAttemptsEqual,
+  mockFilterManualContactAttemptsLessThan,
+  mockFilterEnrolledDateWithin,
+  mockFilterEnrolledDateBefore,
+  mockFilterLatestReportRelativeToday,
+  mockFilterLatestReportRelativeYesterday,
+  mockFilterLatestReportRelativeCustomPast,
+  mockFilterSymptomOnsetRelativeCustomPast,
+  mockFilterLatestReportRelativeCustomFuture,
+  mockFilterAddressForeignEmpty,
+  mockFilterAddressForeign,
+  mockFilterLabResults,
   mockFilter1,
   mockFilter2,
   mockSavedFilters
