@@ -12,7 +12,7 @@ import ClearSingleAssessment from './actions/ClearSingleAssessment';
 import ContactAttempt from './actions/ContactAttempt';
 import CurrentStatus from './actions/CurrentStatus';
 import CustomTable from '../../layout/CustomTable';
-import LastDateExposure from './actions/LastDateExposure';
+import MonitoringPeriod from './actions/MonitoringPeriod';
 import PauseNotifications from './actions/PauseNotifications';
 import reportError from '../../util/ReportError';
 
@@ -24,9 +24,12 @@ class AssessmentTable extends React.Component {
         colData: [
           { label: 'Actions', field: '', isSortable: false, filter: this.createActionsButton },
           { label: 'ID', field: 'id', isSortable: true },
-          // NOTE: This column is only shown in the Exposure workflow. There is a check when the table data
-          // is initially loaded that removes this column data if the Patient is in the Isolation workflow.
-          { label: 'Needs Review', field: 'symptomatic', isSortable: true, tooltip: 'exposureNeedsReviewColumn' },
+          {
+            label: 'Needs Review',
+            field: 'symptomatic',
+            isSortable: true,
+            tooltip: `${this.props.patient.isolation ? 'isolation' : 'exposure'}NeedsReviewColumn`,
+          },
           { label: 'Reporter', field: 'who_reported', isSortable: true },
           { label: 'Created At', field: 'created_at', isSortable: true, filter: formatTimestamp },
         ],
@@ -107,10 +110,6 @@ class AssessmentTable extends React.Component {
             if (isInitialLoad) {
               const symptomColData = this.getSymptomCols(response.data.symptoms);
               updatedColData = state.table.colData.concat(symptomColData);
-              // Only show the Needs Review column if the patient is in the Exposure workflow
-              if (this.props.patient.isolation) {
-                delete updatedColData[2];
-              }
             }
             return {
               table: {
@@ -292,9 +291,7 @@ class AssessmentTable extends React.Component {
             <span className="ml-2">Edit</span>
           </Dropdown.Item>
           <AddAssessmentNote assessment={rowData} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
-          {!this.props.patient.isolation && (
-            <ClearSingleAssessment assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
-          )}
+          <ClearSingleAssessment assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
         </Dropdown.Menu>
       </Dropdown>
     );
@@ -323,7 +320,7 @@ class AssessmentTable extends React.Component {
                     <i className="fas fa-plus fa-fw"></i>
                     <span className="ml-2">Add New Report</span>
                   </Button>
-                  {!this.props.patient.isolation && <ClearAssessments authenticity_token={this.props.authenticity_token} patient={this.props.patient} />}
+                  <ClearAssessments authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
                   <PauseNotifications authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
                   <ContactAttempt authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
                 </Col>
@@ -361,7 +358,7 @@ class AssessmentTable extends React.Component {
                 />
               </div>
             </div>
-            <LastDateExposure
+            <MonitoringPeriod
               authenticity_token={this.props.authenticity_token}
               patient={this.props.patient}
               current_user={this.props.current_user}
@@ -369,6 +366,7 @@ class AssessmentTable extends React.Component {
               household_members={this.props.household_members}
               monitoring_period_days={this.props.monitoring_period_days}
               workflow={this.props.workflow}
+              symptomatic_assessments_exist={this.state.table.rowData.map(x => x.symptomatic).includes('Yes')}
             />
           </Card.Body>
         </Card>
