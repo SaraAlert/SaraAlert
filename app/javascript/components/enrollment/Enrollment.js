@@ -166,7 +166,7 @@ class Enrollment extends React.Component {
         }
       })
       .catch(err => {
-        reportError(err);
+        reportError(err?.response?.data?.error ? err.response.data.error : err, false);
       });
   };
 

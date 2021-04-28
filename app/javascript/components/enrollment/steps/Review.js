@@ -28,11 +28,11 @@ class Review extends React.Component {
     });
   };
 
-  createModal(title, toggle, submit) {
+  createModal() {
     return (
-      <Modal size="lg" show centered onHide={toggle}>
+      <Modal size="lg" show centered onHide={this.toggleGroupAddNotification}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>Enroll Household Members</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>
@@ -46,10 +46,10 @@ class Review extends React.Component {
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
+          <Button variant="secondary btn-square" onClick={this.toggleGroupAddNotification}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit}>
+          <Button variant="primary btn-square" onClick={event => this.submit(event, true)}>
             Continue
           </Button>
         </Modal.Footer>
@@ -94,7 +94,7 @@ class Review extends React.Component {
                 Finish
               </Button>
             )}
-            {this.props.submit && this.props.currentState.responder_id === this.props.currentState.id && this.props.canAddGroup && (
+            {this.props.submit && this.props.currentState.patient.responder_id === this.props.currentState.patient.id && this.props.canAddGroup && (
               <Button
                 variant="primary"
                 size="lg"
@@ -106,8 +106,7 @@ class Review extends React.Component {
             )}
           </Card.Body>
         </Card>
-        {this.state.showGroupAddNotification &&
-          this.createModal('Enroll Household Members', this.toggleGroupAddNotification, event => this.submit(event, true))}
+        {this.state.showGroupAddNotification && this.createModal()}
       </React.Fragment>
     );
   }
