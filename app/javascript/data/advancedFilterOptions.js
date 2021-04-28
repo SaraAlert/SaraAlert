@@ -207,25 +207,25 @@ export const advancedFilterOptions = [
     name: 'enrolled',
     title: 'Enrolled (Date)',
     description: 'Monitorees enrolled in system during specified date range',
-    type: 'date',
+    type: 'date'
   },
   {
     name: 'latest-report',
     title: 'Latest Report (Date)',
     description: 'Monitorees with latest report during specified date range',
-    type: 'date',
+    type: 'date'
   },
   {
     name: 'last-date-exposure',
     title: 'Last Date of Exposure (Date)',
     description: 'Monitorees who have a last date of exposure during specified date range',
-    type: 'date',
+    type: 'date'
   },
   {
     name: 'symptom-onset',
     title: 'Symptom Onset (Date)',
     description: 'Monitorees who have a symptom onset date during specified date range',
-    type: 'date',
+    type: 'date'
   },
 
   /* RELATIVE DATE FILTER OPTIONS */
@@ -234,27 +234,60 @@ export const advancedFilterOptions = [
     title: 'Enrolled (Relative Date)',
     description: 'Monitorees enrolled in system during specified date range (relative to the current date)',
     type: 'relative',
-    hasTimestamp: true,
+    hasTimestamp: true
   },
   {
     name: 'latest-report-relative',
     title: 'Latest Report (Relative Date)',
     description: 'Monitorees with latest report during specified date range (relative to the current date)',
     type: 'relative',
-    hasTimestamp: true,
+    hasTimestamp: true
   },
   {
     name: 'last-date-exposure-relative',
     title: 'Last Date of Exposure (Relative Date)',
     description: 'Monitorees who have a last date of exposure during specified date range (relative to the current date)',
     type: 'relative',
-    hasTimestamp: false,
+    hasTimestamp: false
   },
   {
     name: 'symptom-onset-relative',
     title: 'Symptom Onset (Relative Date)',
     description: 'Monitorees who have a symptom onset date during specified date range (relative to the current date)',
     type: 'relative',
-    hasTimestamp: false,
+    hasTimestamp: false
+  },
+
+  /* MULTI FILTER OPTIONS */
+  {
+    name: 'lab-result',
+    title: 'Lab Result (Multi-select)',
+    description: 'Monitorees with specified Lab Result criteria',
+    type: 'multi',
+    tooltip: 'Returns records that contain at least one Lab Result entry that meets all user-specified criteria (e.g., searching for a specific Lab Test Type and Report Date will only return records containing at least one Lab Result entry with matching values in both fields).',
+    fields: [
+      {
+        name: 'result',
+        title: 'result',
+        type: 'select',
+        options: ['positive', 'negative', 'indeterminate', 'other']
+      },
+      {
+        name: 'lab-type',
+        title: 'test type',
+        type: 'select',
+        options: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other']
+      },
+      {
+        name: 'specimen-collection',
+        title: 'specimen collection date',
+        type: 'date'
+      },
+      {
+        name: 'report',
+        title: 'report date',
+        type: 'date'
+      }
+    ]
   }
 ]

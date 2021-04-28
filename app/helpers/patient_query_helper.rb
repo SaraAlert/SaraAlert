@@ -70,7 +70,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       query[:filter] = unsanitized_query[:filter].collect do |filter|
         permitted_filter_params = filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption, filterOption: {}, value: {})
         {
-          filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, options: []),
+          filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :tooltip,
+                                                             options: [], fields: [:name, :title, :type, { options: [] }]),
           value: permitted_filter_params[:value] || filter.require(:value) || false,
           numberOption: permitted_filter_params[:numberOption],
           dateOption: permitted_filter_params[:dateOption],
@@ -236,6 +237,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     filters.each do |filter|
       case filter[:filterOption]['name']
+      when 'lab-result'
+        patients = advanced_filter_lab_result(patients, filter)
       when 'sent-today'
         patients = if filter[:value].present?
                      patients.where('last_assessment_reminder_sent >= ?', 24.hours.ago)
@@ -474,6 +477,34 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     # Based on if the user selected true/false, return appropriate patients
     filter[:value].present? ? query : patients.where.not(id: query.pluck(:id))
+  end
+
+  def advanced_filter_lab_result(patients, filter)
+    labs = patients.joins(:laboratories)
+    filter[:value].each do |field|
+      case field[:name]
+      when 'lab-type'
+        labs = labs.where('laboratories.lab_type = ?', field[:value])
+      when 'result'
+        labs = labs.where('laboratories.result = ?', field[:value])
+      when 'specimen-collection'
+        case field[:value][:when]
+        when 'before'
+          labs = labs.where('laboratories.specimen_collection < ?', field[:value][:date])
+        when 'after'
+          labs = labs.where('laboratories.specimen_collection > ?', field[:value][:date])
+        end
+      when 'report'
+        case field[:value][:when]
+        when 'before'
+          labs = labs.where('laboratories.report < ?', field[:value][:date])
+        when 'after'
+          labs = labs.where('laboratories.report > ?', field[:value][:date])
+        end
+      end
+    end
+
+    patients.where(id: labs)
   end
 
   # Filter patients by a set time range for the given field
