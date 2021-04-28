@@ -180,7 +180,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       age: calc_current_age || '',
       jurisdiction_name: jurisdiction[:name] || '',
       symptom_onset_defined_by: user_defined_symptom_onset ? 'User' : 'System',
-      no_reported_symptoms: symptom_onset.nil?,
+      asymptomatic: asymptomatic || false,
       continuous_exposure: continuous_exposure || false,
       extended_isolation: extended_isolation || '',
       end_of_monitoring: end_of_monitoring || '',
