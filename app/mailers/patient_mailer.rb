@@ -206,7 +206,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def add_fail_history_blank_field(patient, type)
-    History.errored_report_reminder(patient: patient,
+    History.unsuccessful_report_reminder(patient: patient,
                                     comment: "Sara Alert could not send a report reminder to this monitoree via \
                                      #{patient.preferred_contact_method}, because the monitoree #{type} was blank.")
   end

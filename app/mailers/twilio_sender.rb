@@ -120,6 +120,6 @@ class TwilioSender
              # If errored contact was for a particular dependent ie: weblink assessment
              [patient, patient&.responder]
            end
-    History.errored_report_reminder_group_of_patients(patients: pats, error_message: error_message)
+    History.unsuccessful_report_reminder_group_of_patients(patients: pats, error_message: error_message)
   end
 end
