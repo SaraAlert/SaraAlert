@@ -27,7 +27,6 @@ class ExportJob < ApplicationJob
     # Construct export
     patients = patients_by_query(user, data.dig(:patients, :query) || {})
     files = write_export_data_to_files(config, patients, OUTER_BATCH_SIZE, INNER_BATCH_SIZE)
-    return unless files.present?
 
     # Sort files by filename so that they are grouped together accordingly after batching
     files = files.sort_by { |file| file[:filename] }
