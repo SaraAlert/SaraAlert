@@ -272,7 +272,6 @@ desc 'Backup the database'
         ValidationHelper::RACE_OPTIONS[exclusive ? :exclusive : :non_exclusive].map { |option| option[:race] }.sample(exclusive ? 1 : rand(0..4)).each { |race| patient[race] = true }
       end
       patient[:ethnicity] = rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino'
-
       patient[:primary_language] = rand < 0.7 ? 'eng' : available_lang_codes.sample
       patient[:secondary_language] = available_lang_codes.sample if rand < 0.4
       patient[:interpretation_required] = rand < 0.15
