@@ -71,8 +71,8 @@ class MonitoreeFlow extends React.Component {
                 <td key={index}>{oppositeWorkflow === 'ISOLATION' ? x.isolation_to_exposure : x.exposure_to_isolation}</td>
               ))}
             </tr>
-            <tr style={{ height: '20px' }}>
-              <td className="font-weight-bold text-left analytics-mf-subheader">
+            <tr style={{ height: '25px' }}>
+              <td className="font-weight-bold text-left analytics-mf-subheader align-bottom">
                 <u>OUTGOING</u>
               </td>
             </tr>
