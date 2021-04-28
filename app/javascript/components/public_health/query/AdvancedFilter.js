@@ -1164,7 +1164,13 @@ class AdvancedFilter extends React.Component {
                       <i className="fas fa-plus"></i>
                     </Button>
                   </div>
-                  <ReactTooltip id={`${filter.name}-${statementIndex}-multi-add`} multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
+                  <ReactTooltip
+                    id={`${filter.name}-${statementIndex}-multi-add`}
+                    multiline={true}
+                    place="top"
+                    type="dark"
+                    effect="solid"
+                    className="tooltip-container">
                     <span>Select to add multiple Lab Result search criteria.</span>
                   </ReactTooltip>
                 </React.Fragment>
