@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes, { bool } from 'prop-types';
 import { Button, Modal, InputGroup, Form } from 'react-bootstrap';
 import Select from 'react-select';
+import { cursorPointerStyle } from '../../packs/stylesheets/ReactSelectStyling';
 
 class UserModal extends React.Component {
   constructor(props) {
@@ -80,6 +81,7 @@ class UserModal extends React.Component {
                 })}
                 onChange={this.handleJurisdictionChange}
                 placeholder=""
+                styles={cursorPointerStyle}
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,
@@ -101,6 +103,7 @@ class UserModal extends React.Component {
                 })}
                 onChange={this.handleRoleChange}
                 placeholder=""
+                styles={cursorPointerStyle}
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,
