@@ -20,6 +20,7 @@ class PatientPage extends React.Component {
               details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
               collapse={this.props.can_modify_subject_status}
               edit_mode={false}
+              authenticity_token={this.props.authenticity_token}
             />
             <div className="household-info">
               {!this.props.patient.head_of_household && this.props?.other_household_members?.length > 0 && (

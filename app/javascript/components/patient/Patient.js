@@ -672,6 +672,7 @@ Patient.propTypes = {
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
   collapse: PropTypes.bool,
+  authenticity_token: PropTypes.string,
 };
 
 export default Patient;
