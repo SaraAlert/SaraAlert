@@ -198,7 +198,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # Nested querying by id is faster than joining patients to assessments to conditions to symptoms
     symptoms = Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: patients.pluck(:id)).pluck(:id)).pluck(:id))
-    symptom_names_and_labels = symptoms.distinct.order(:label).pluck(:name, :label).transpose
+    symptom_names_and_labels = symptoms.where.not(name: nil).where.not(label: nil).distinct.order(:label).pluck(:name, :label).transpose
 
     # Empty symptoms check
     return [] unless symptom_names_and_labels.present?

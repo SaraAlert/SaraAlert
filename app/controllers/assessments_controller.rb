@@ -181,34 +181,44 @@ class AssessmentsController < ApplicationController
 
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
     reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
+    redirect_to(root_url) && return if reported_symptoms_array.map { |symptom| symptom[:name] }.include?(:nil)
 
-    typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
+    valid_symptom_names = assessment.reported_condition.threshold_condition.symptoms.pluck(:name)
+    redirect_to(root_url) && return if (reported_symptoms_array.map { |symptom| symptom[:name] } - valid_symptom_names).any?
 
-    # Figure out the change
+    reported_symptoms = reported_symptoms_array.map { |symptom| [symptom[:name], symptom] }.to_h
+
     delta = []
-    typed_reported_symptoms.each do |symptom|
-      new_val = symptom.value
-      old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.value
-      case symptom.type
-      when 'BoolSymptom'
-        has_changed = old_val != new_val && !old_val.nil? && !new_val.nil?
-        delta << "#{symptom.label} (\"#{old_val ? 'Yes' : 'No'}\" to \"#{new_val ? 'Yes' : 'No'}\")" if has_changed
-      when 'FloatSymptom', 'IntegerSymptom'
-        delta << "#{symptom.label} (\"#{old_val}\" to \"#{new_val}\")" if new_val != old_val
+    Assessment.transaction do
+      assessment.reported_condition&.symptoms&.each do |symptom|
+        new_val = reported_symptoms[symptom[:name]][:value]
+        old_val = symptom.value
+        next if new_val == old_val
+
+        case symptom.type
+        when 'BoolSymptom'
+          symptom.update(bool_value: new_val)
+          delta << "#{symptom.label} (\"#{old_val ? 'Yes' : 'No'}\" to \"#{new_val ? 'Yes' : 'No'}\")" if !old_val.nil? && !new_val.nil?
+        when 'IntegerSymptom'
+          symptom.update(int_value: new_val)
+          delta << "#{symptom.label} (\"#{old_val}\" to \"#{new_val}\")"
+        when 'FloatSymptom'
+          symptom.update(float_value: new_val)
+          delta << "#{symptom.label} (\"#{old_val}\" to \"#{new_val}\")"
+        end
       end
+
+      assessment.symptomatic = assessment.symptomatic?
+      # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
+      assessment.who_reported = current_user.email
+
+      # Attempt to save and continue; else if failed redirect to index
+      return unless assessment.save
+
+      comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
+      comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
+      History.report_updated(patient: patient, created_by: current_user.email, comment: comment)
     end
-
-    assessment.reported_condition.symptoms = typed_reported_symptoms
-    assessment.symptomatic = assessment.symptomatic?
-    # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
-    assessment.who_reported = current_user.email
-
-    # Attempt to save and continue; else if failed redirect to index
-    return unless assessment.save
-
-    comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
-    comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
-    History.report_updated(patient: patient, created_by: current_user.email, comment: comment)
   end
 
   # For report mode instances, this is the default landing
