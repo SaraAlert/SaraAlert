@@ -236,7 +236,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(total, counts[index].total, monitoree_count_err_msg(index, active_monitoring, category_type))
   end
 
-  # rubocop:disable Metics/ParameterLists
+  # rubocop:disable Metrics/ParameterLists
   def verify_snapshot(snapshots, index, time_frame, new_enrollments, transferred_in, closed, transferred_out, exposure_to_isolation, isolation_to_exposure)
     assert_equal(1, snapshots[index].analytic_id, 'Analytic ID')
     assert_equal(time_frame, snapshots[index].time_frame, 'Time frame')
@@ -247,7 +247,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(exposure_to_isolation, snapshots[index].exposure_to_isolation, 'Exposure to isolation')
     assert_equal(isolation_to_exposure, snapshots[index].isolation_to_exposure, 'Isolation to exposure')
   end
-  # rubocop:enable Metics/ParameterLists
+  # rubocop:enable Metrics/ParameterLists
 
   def verify_map(maps, index, level, workflow, state, county, total)
     assert_equal(1, maps[index].analytic_id, 'Analytic ID')
