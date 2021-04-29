@@ -112,7 +112,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         data_types.each do |data_type|
           workbook = FastExcel.open(constant_memory: true) if separate_files
           worksheet = workbook.add_worksheet(config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label))
-          worksheet.auto_width = true
           worksheet.append_row(field_data.dig(data_type, :headers))
           last_row_nums[data_type] = 0
           sheets[data_type] = worksheet
