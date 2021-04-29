@@ -26,6 +26,7 @@ class PurgeJob < ApplicationJob
       mask = attributes.collect { |a| [a, nil] }.to_h.symbolize_keys
       mask[:purged] = true
       monitoree.update!(mask)
+      monitoree.responder.refresh_head_of_household if monitoree.responder_id != monitoree.id
       purged << { id: monitoree.id }
     rescue StandardError => e
       not_purged << { id: monitoree.id, reason: e.message }
