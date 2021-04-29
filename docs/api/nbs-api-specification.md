@@ -20,10 +20,10 @@ To support interoperabilty with NBS, the Sara Alert API provides an endpoint tha
 <a name="supported-scopes"/>
 
 ## Supported Scopes
-This endpoint is only supported for applications following the [SMART on FHIR Backend Services Workflow](api-getting-started#backend-services), and applications should follow the process detailed in that section to authenticate. This endpoint is only supported for the following scopes:
+This endpoint is only supported for applications following the [SMART on FHIR Backend Services Workflow](api-getting-started#backend-services), and applications should follow the process detailed in that section to authenticate. To access this endpoint the following scopes are required:
 
-* `system/Patient.read`,
-* `system/Patient.*`, (for both read and write access to this resource)
+* One of `system/Patient.read` or `system/Patient.*`
+* `system/QuestionnaireResponse.read`
 
 <a name="export"/>
 
