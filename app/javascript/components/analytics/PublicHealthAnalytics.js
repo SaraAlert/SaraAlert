@@ -41,7 +41,7 @@ class PublicHealthAnalytics extends React.Component {
     } else {
       var node = document.getElementById('sara-alert-body');
       let isDemo = false;
-      if (node.className === 'demo-bg') {
+      if (node?.className === 'demo-bg') {
         node.className = '';
         isDemo = true;
       }
