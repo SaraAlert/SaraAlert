@@ -1,11 +1,11 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Row, Table } from 'react-bootstrap';
-import ChangeHOH from './actions/ChangeHOH';
+import ChangeHoH from './actions/ChangeHoH';
 import EnrollHouseholdMember from './actions/EnrollHouseholdMember';
 import { formatNameAlt } from '../../../utils/Patient';
 
-class HOH extends React.Component {
+class HeadOfHousehold extends React.Component {
   render() {
     return (
       <div id="head-of-household">
@@ -39,7 +39,7 @@ class HOH extends React.Component {
           </Table>
         </Row>
         <Row>
-          <ChangeHOH patient={this.props.patient} dependents={this.props.dependents} authenticity_token={this.props.authenticity_token} />
+          <ChangeHoH patient={this.props.patient} dependents={this.props.dependents} authenticity_token={this.props.authenticity_token} />
           {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.patient.id} isHoh={true} />}
         </Row>
       </div>
@@ -47,11 +47,11 @@ class HOH extends React.Component {
   }
 }
 
-HOH.propTypes = {
+HeadOfHousehold.propTypes = {
   can_add_group: PropTypes.bool,
   patient: PropTypes.object,
   dependents: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 
-export default HOH;
+export default HeadOfHousehold;

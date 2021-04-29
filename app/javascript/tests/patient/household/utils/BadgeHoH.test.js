@@ -2,11 +2,11 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Badge } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
-import BadgeHOH from '../../../../components/patient/household/utils/BadgeHOH';
+import BadgeHoH from '../../../../components/patient/household/utils/BadgeHoH';
 
-describe('BadgeHOH', () => {
+describe('BadgeHoH', () => {
   it('Properly renders all main components', () => {
-    const wrapper = shallow(<BadgeHOH patientId={'1'} location={'right'} />);
+    const wrapper = shallow(<BadgeHoH patientId={'1'} location={'right'} />);
 
     expect(wrapper.find(Badge).exists()).toBeTruthy();
     expect(wrapper.find(Badge).text()).toEqual('HoH');

@@ -15,14 +15,14 @@ describe('Individual', () => {
     
     // if user can add group
     expect(wrapper.find(Row).length).toEqual(2);
-    expect(wrapper.find(Row).at(0).text()).toEqual('This monitoree is not a member of a household:');
+    expect(wrapper.find(Row).at(0).text()).toEqual('This monitoree is not a member of a household.');
     expect(wrapper.find(MoveToHousehold).exists()).toBeTruthy();
     expect(wrapper.find(EnrollHouseholdMember).exists()).toBeTruthy();
     expect(wrapper.find(EnrollHouseholdMember).prop('isHoh')).toBeFalsy();
 
     // if user can't add group
     expect(wrapper2.find(Row).length).toEqual(2);
-    expect(wrapper2.find(Row).at(0).text()).toEqual('This monitoree is not a member of a household:');
+    expect(wrapper2.find(Row).at(0).text()).toEqual('This monitoree is not a member of a household.');
     expect(wrapper2.find(MoveToHousehold).exists()).toBeTruthy();
     expect(wrapper2.find(EnrollHouseholdMember).exists()).toBeFalsy();
   });

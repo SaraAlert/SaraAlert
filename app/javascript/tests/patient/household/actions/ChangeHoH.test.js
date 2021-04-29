@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 import _ from 'lodash';
-import ChangeHOH from '../../../../components/patient/household/actions/ChangeHOH';
+import ChangeHoH from '../../../../components/patient/household/actions/ChangeHoH';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../../mocks/mockPatients';
 import { nameFormatterAlt } from '../../../util.js';
 
@@ -11,10 +11,10 @@ const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEU
 const dependents = [ mockPatient2, mockPatient3, mockPatient4 ];
 
 function getWrapper() {
-  return shallow(<ChangeHOH patient={mockPatient1} dependents={dependents} authenticity_token={authyToken} />);
+  return shallow(<ChangeHoH patient={mockPatient1} dependents={dependents} authenticity_token={authyToken} />);
 }
 
-describe('ChangeHOH', () => {
+describe('ChangeHoH', () => {
   it('Properly renders Change HoH button', () => {
     const wrapper = getWrapper();
     expect(wrapper.find(Button).length).toEqual(1);

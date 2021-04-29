@@ -5,7 +5,7 @@ import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import reportError from '../../../util/ReportError';
 import { formatNameAlt } from '../../../../utils/Patient';
 
-class ChangeHOH extends React.Component {
+class ChangeHoH extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -104,10 +104,10 @@ class ChangeHOH extends React.Component {
   }
 }
 
-ChangeHOH.propTypes = {
+ChangeHoH.propTypes = {
   patient: PropTypes.object,
   dependents: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 
-export default ChangeHOH;
+export default ChangeHoH;

@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { formatDate } from '../../../../utils/DateTime';
 import { formatNameAlt } from '../../../../utils/Patient';
 
-import BadgeHOH from '../utils/BadgeHOH';
+import BadgeHoH from '../utils/BadgeHoH';
 import CustomTable from '../../../layout/CustomTable';
 
 class ApplyToHousehold extends React.Component {
@@ -273,7 +273,7 @@ class ApplyToHousehold extends React.Component {
     if (rowData.id === rowData.responder_id) {
       return (
         <div>
-          <BadgeHOH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
+          <BadgeHoH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
           {this.validJurisdiction(rowData) ? (
             <a href={`${window.BASE_PATH}/patients/${rowData.id}`} rel="noreferrer" target="_blank">
               {monitoreeName}

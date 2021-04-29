@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { formatDate } from '../../../../utils/DateTime';
 import { formatNameAlt } from '../../../../utils/Patient';
 
-import BadgeHOH from '../utils/BadgeHOH';
+import BadgeHoH from '../utils/BadgeHoH';
 import CustomTable from '../../../layout/CustomTable';
 import reportError from '../../../util/ReportError';
 
@@ -65,7 +65,7 @@ class MoveToHousehold extends React.Component {
     if (rowData.is_hoh) {
       return (
         <div>
-          <BadgeHOH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
+          <BadgeHoH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
           <a href={`${window.BASE_PATH}/patients/${rowData.id}`}>{name}</a>
         </div>
       );

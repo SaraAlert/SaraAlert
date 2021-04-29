@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Card } from 'react-bootstrap';
 import Patient from './Patient';
 import Dependent from './household/Dependent';
-import HOH from './household/HOH';
+import HeadOfHousehold from './household/HeadOfHousehold';
 import Individual from './household/Individual';
 
 class PatientPage extends React.Component {
@@ -31,7 +31,7 @@ class PatientPage extends React.Component {
                 />
               )}
               {this.props.patient.head_of_household && (
-                <HOH
+               <HeadOfHousehold
                   patient={this.props.patient}
                   dependents={this.props.other_household_members}
                   can_add_group={this.props.can_add_group}

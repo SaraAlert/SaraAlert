@@ -4,7 +4,7 @@ import { Button, Col, Collapse, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import Patient from '../../components/patient/Patient';
-import BadgeHOH from '../../components/patient/household/utils/BadgeHOH';
+import BadgeHoH from '../../components/patient/household/utils/BadgeHoH';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankMockPatient } from '../mocks/mockPatients';
 import { nameFormatter, formatDate } from '../util.js'
 
@@ -29,7 +29,7 @@ describe('Patient', () => {
     const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
     expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient1));
-    expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeTruthy();
+    expect(wrapper.find('#monitoree-details-header').find(BadgeHoH).exists()).toBeTruthy();
     expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
     expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
     expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient1.assigned_user);
@@ -48,7 +48,7 @@ describe('Patient', () => {
     const wrapper = shallow(<Patient details={mockPatient4} goto={goToMock} collapse={true} edit_mode={true} jurisdiction_path='USA, State 1, County 2' />);
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
     expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient4));
-    expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeFalsy();
+    expect(wrapper.find('#monitoree-details-header').find(BadgeHoH).exists()).toBeFalsy();
     expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
     expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
     expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient4.assigned_user);

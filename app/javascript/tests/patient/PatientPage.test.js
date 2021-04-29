@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import PatientPage from '../../components/patient/PatientPage';
 import Patient from '../../components/patient/Patient';
 import Dependent from '../../components/patient/household/Dependent';
-import HOH from '../../components/patient/household/HOH';
+import HeadOfHousehold from '../../components/patient/household/HeadOfHousehold';
 import Individual from '../../components/patient/household/Individual';
 import { mockPatient1, mockPatient2, mockPatient3 } from '../mocks/mockPatients';
 
@@ -30,7 +30,7 @@ describe('PatientPage', () => {
 
   it('Properly renders household section for a HoH', () => {
     expect(wrapper.find('.household-info').exists()).toBeTruthy();
-    expect(wrapper.find(HOH).exists()).toBeTruthy();
+    expect(wrapper.find(HeadOfHousehold).exists()).toBeTruthy();
     expect(wrapper.find(Dependent).exists()).toBeFalsy();
     expect(wrapper.find(Individual).exists()).toBeFalsy();
   });
@@ -38,7 +38,7 @@ describe('PatientPage', () => {
   it('Properly renders all main components for a dependent', () => {
     expect(wrapper2.find('.household-info').exists()).toBeTruthy();
     expect(wrapper2.find(Dependent).exists()).toBeTruthy();
-    expect(wrapper2.find(HOH).exists()).toBeFalsy();
+    expect(wrapper2.find(HeadOfHousehold).exists()).toBeFalsy();
     expect(wrapper2.find(Individual).exists()).toBeFalsy();
   });
 
@@ -46,6 +46,6 @@ describe('PatientPage', () => {
     expect(wrapper3.find('.household-info').exists()).toBeTruthy();
     expect(wrapper3.find(Individual).exists()).toBeTruthy();
     expect(wrapper3.find(Dependent).exists()).toBeFalsy();
-    expect(wrapper3.find(HOH).exists()).toBeFalsy();
+    expect(wrapper3.find(HeadOfHousehold).exists()).toBeFalsy();
   });
 });

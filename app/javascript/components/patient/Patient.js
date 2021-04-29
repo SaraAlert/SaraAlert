@@ -5,7 +5,7 @@ import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import BadgeHOH from './household/utils/BadgeHOH';
+import BadgeHoH from './household/utils/BadgeHoH';
 import InfoTooltip from '../util/InfoTooltip';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
 import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
@@ -138,7 +138,7 @@ class Patient extends React.Component {
               <span aria-label={formatName(this.props.details)} className="pr-2">
                 {formatName(this.props.details)}
               </span>
-              {this.props.details.head_of_household && <BadgeHOH patientId={String(this.props.details.id)} location={'right'} />}
+              {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
           </Col>
           <Col sm={12}>
