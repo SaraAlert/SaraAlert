@@ -27,7 +27,7 @@ class Exposure extends React.Component {
       },
       errors: {},
       modified: {},
-      jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
+      sorted_jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
       jurisdiction_path: this.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
@@ -848,7 +848,7 @@ class Exposure extends React.Component {
                         value={this.state.jurisdiction_path}
                       />
                       <datalist id="jurisdiction_paths">
-                        {this.state.jurisdiction_paths.map((jurisdiction, index) => {
+                        {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
                           return (
                             <option value={jurisdiction} key={index}>
                               {jurisdiction}

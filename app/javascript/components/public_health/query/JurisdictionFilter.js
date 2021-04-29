@@ -9,7 +9,7 @@ class JurisdictionFilter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      jurisdiction_paths: [],
+      sorted_jurisdiction_paths: [],
       jurisdiction_path: props.jurisdiction_paths[props.jurisdiction] || '',
     };
   }
@@ -17,13 +17,12 @@ class JurisdictionFilter extends React.Component {
   handleJurisdictionChange = jurisdiction_path => {
     // Populate & sort the jurisdiction paths if it hasn't been populated yet
     // This is done here since the jurisdiction_paths props data element is not initially available to populate with when the constructor is called
-    let jurisdiction_paths = this.state.jurisdiction_paths;
-    if (jurisdiction_paths.length === 0) {
-      jurisdiction_paths = _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b));
-      this.setState({ jurisdiction_paths });
+    let sorted_jurisdiction_paths = this.state.sorted_jurisdiction_paths;
+    if (sorted_jurisdiction_paths.length === 0) {
+      sorted_jurisdiction_paths = _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b));
     }
 
-    this.setState({ jurisdiction_path, jurisdiction_paths }, () => {
+    this.setState({ jurisdiction_path, sorted_jurisdiction_paths }, () => {
       const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === jurisdiction_path);
       if (jurisdiction) {
         this.props.onJurisdictionChange(parseInt(jurisdiction));
@@ -54,7 +53,7 @@ class JurisdictionFilter extends React.Component {
           onChange={event => this.handleJurisdictionChange(event?.target?.value)}
         />
         <datalist id="jurisdiction_paths">
-          {this.state.jurisdiction_paths.map((jurisdiction, index) => {
+          {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
             return (
               <option value={jurisdiction} key={index}>
                 {jurisdiction}

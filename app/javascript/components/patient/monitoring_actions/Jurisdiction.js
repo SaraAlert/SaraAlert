@@ -14,7 +14,7 @@ class Jurisdiction extends React.Component {
     super(props);
     this.state = {
       showJurisdictionModal: false,
-      jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
+      sorted_jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
       jurisdiction_path: this.props.jurisdiction_paths[this.props.patient.jurisdiction_id],
       original_jurisdiction_id: this.props.patient.jurisdiction_id,
       validJurisdiction: true,
@@ -177,7 +177,7 @@ class Jurisdiction extends React.Component {
               value={this.state.jurisdiction_path}
             />
             <datalist id="jurisdiction_paths">
-              {this.state.jurisdiction_paths.map((jurisdiction, index) => {
+              {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
                 return (
                   <option value={jurisdiction} key={index}>
                     {jurisdiction}
