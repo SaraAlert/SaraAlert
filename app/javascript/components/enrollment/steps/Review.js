@@ -7,18 +7,18 @@ import Patient from '../../patient/Patient';
 class Review extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { submitDisabled: false, showGroupAddNotification: false };
+    this.state = { submitDisabled: false, cancelDisabled: false, showGroupAddNotification: false };
   }
 
   submit = (event, groupMember) => {
     // Update state before submitting data so submit button disables when clicked to prevent multiple submissions.
-    this.setState({ submitDisabled: true }, () => {
-      this.props.submit(event, groupMember, this.reenableSubmit);
+    this.setState({ submitDisabled: true, cancelDisabled: true }, () => {
+      this.props.submit(event, groupMember, this.reenableButtons);
     });
   };
 
-  reenableSubmit = () => {
-    this.setState({ submitDisabled: false });
+  reenableButtons = (submitDisabled, cancelDisabled) => {
+    this.setState({ submitDisabled, cancelDisabled });
   };
 
   toggleGroupAddNotification = () => {
@@ -82,7 +82,7 @@ class Review extends React.Component {
                 variant="secondary"
                 size="lg"
                 className="float-right btn-square px-5"
-                disabled={this.state.submitDisabled}
+                disabled={this.state.cancelDisabled}
                 onClick={() => {
                   window.history.back();
                 }}>
@@ -90,7 +90,12 @@ class Review extends React.Component {
               </Button>
             )}
             {this.props.submit && (
-              <Button variant="primary" size="lg" className="float-right btn-square px-5 mr-4" disabled={this.state.submitDisabled} onClick={this.submit}>
+              <Button
+                variant="primary"
+                size="lg"
+                className="float-right btn-square px-5 mr-4"
+                disabled={this.state.submitDisabled}
+                onClick={this.submit}>
                 Finish
               </Button>
             )}
