@@ -301,6 +301,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       patient_details[:expected_purge_ts] = patient.expected_purge_date_exp if fields.include?(:expected_purge_ts)
       patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase if fields.include?(:full_status)
       patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
+      patient_details[:primary_language] = Languages.translate_code_to_display(patient.primary_language)
+      patient_details[:secondary_language] = Languages.translate_code_to_display(patient.secondary_language)
 
       # populate creator if requested
       patient_details[:creator] = patients_creators[patient.creator_id] if fields.include?(:creator)

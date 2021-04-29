@@ -34,7 +34,8 @@ class Patient extends React.Component {
   componentDidUpdate(nextProps, prevState) {
     // The way that Enrollment is structured, this Patient component is not re-mounted when reviewing a Patient
     // We need to update the `primaryLanguageDisplayName`. We reset `primary_language` below to break out of the
-    // infinite loop that not resetting it will cause.
+    // infinite loop that not resetting it will cause. You cannot use `getDerivedStateFromProps` here due to the
+    // async nature of convertLanguageCodesToNames()
     if (nextProps.details?.primary_language !== prevState.details?.primary_language) {
       convertLanguageCodesToNames([nextProps.details?.primary_language], this.props.authenticity_token, res => {
         this.setState({
