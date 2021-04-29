@@ -9,9 +9,9 @@ class HistoriesController < ApplicationController
     redirect_to root_url unless current_user.can_create_subject_history?
 
     history = History.new(patient_id: params.permit(:patient_id)[:patient_id],
-                    created_by: current_user.email,
-                    comment: params.permit(:comment)[:comment],
-                    history_type: params.permit(:type)[:type] || 'Comment')
+                          created_by: current_user.email,
+                          comment: params.permit(:comment)[:comment],
+                          history_type: params.permit(:type)[:type] || 'Comment')
 
     history.original_comment = history
 
