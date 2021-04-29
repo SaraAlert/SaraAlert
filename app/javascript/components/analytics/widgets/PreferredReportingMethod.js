@@ -91,7 +91,7 @@ class PreferredReportingMethod extends React.Component {
       workflowData['data'].forEach(linelist => {
         const value = _.sum(linelist.contactMethodData.map(x => x.value));
         const cumuluativeSum = _.sum(workflowData['data'].find(x => x.linelist === 'Total').contactMethodData.map(x => x.value));
-        const percentageOfTotal = ((value / cumuluativeSum) * 100).toFixed(1);
+        const percentageOfTotal = value ? ((value / cumuluativeSum) * 100).toFixed(1) : value;
         linelist.contactMethodData.push({ contactMethod: 'Total', value, percentageOfTotal: percentageOfTotal ? percentageOfTotal + '%' : 'None' });
       });
       return workflowData;
