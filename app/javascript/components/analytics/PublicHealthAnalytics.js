@@ -83,15 +83,15 @@ class PublicHealthAnalytics extends React.Component {
       return (
         <React.Fragment>
           <h1 className="sr-only">Analytics</h1>
-          <Row className="mx-0 px-0 mt-1 mb-4 ">
-            <Col className="mx-2 px-0">
+          <Row className="mx-2">
+            <Col className="align-self-center mb-3">
               <div className="display-6">
                 <div style={{ display: 'inline' }}>
-                  <span data-for="analytics-refresh" data-tip="" className="ml-1">
-                    <i className="fas fa-info-circle mr-1 px-0"></i>
+                  <span data-for="analytics-refresh" data-tip="">
+                    <i className="fas fa-info-circle mr-2"></i>
                   </span>
                   <ReactTooltip id="analytics-refresh" multiline={true} place="right" effect="solid" className="tooltip-container">
-                    <div className="font-weight-bold p-2">
+                    <div className="font-weight-bold">
                       The data on this page refreshes once a day. Therefore, any changes to records throughout the day will not be reflected on this page until
                       it is refreshed around 12:00 midnight EST.
                     </div>
@@ -100,7 +100,7 @@ class PublicHealthAnalytics extends React.Component {
                 Last Updated At {formatTimestamp(this.props.stats.last_updated_at)}.
               </div>
             </Col>
-            <Col className="mx-2 px-0 text-right">
+            <Col sm="24" md="auto" className="text-right mb-3">
               <Button variant="primary" className="btn-square export-png" disabled={this.state.loading} onClick={this.handleClick}>
                 <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG&nbsp;&nbsp;
                 {this.state.loading && (
@@ -111,23 +111,25 @@ class PublicHealthAnalytics extends React.Component {
               </Button>
             </Col>
           </Row>
-          <Row className="mb-4 mx-2 px-0">
-            <Col xl="14" lg="24" sm="24" className="mx-0 pr-xl-3">
+          <Row className="mx-2">
+            <Col className="mx-0 my-3">
               <PreferredReportingMethod stats={this.props.stats} />
             </Col>
-            <Col xl="10" lg="24" sm="24" className="mx-0 mt-5 mt-xl-0 pl-xl-3">
+          </Row>
+          <Row className="mx-2">
+            <Col className="mx-0 my-3">
               <MonitoreeFlow stats={this.props.stats} />
             </Col>
           </Row>
-          <Row className="mx-2 mt-2 px-0">
+          <Row className="mx-2 my-1">
             <Col xs="20">
               <span className="display-5">Epidemiological Summary</span>
             </Col>
-            <Col xs="4">
+            <Col xs="4" className="align-self-end">
               <span className="float-right">
                 <Switch
                   id="epidemiological-graph-switch"
-                  className="ml-2 mt-4 custom-react-switch"
+                  className="custom-react-switch"
                   onChange={this.toggleEpidemiologicalGraphs}
                   onColor="#557385"
                   height={30}
@@ -138,7 +140,7 @@ class PublicHealthAnalytics extends React.Component {
               </span>
             </Col>
           </Row>
-          <Row className="mb-4 mx-1 px-0">
+          <Row className="mx-2 mb-2">
             <Col xs="16">
               <label htmlFor="epidemiological-graph-switch" className="h5 text-secondary">
                 Among Those Currently Under Active Monitoring
@@ -148,23 +150,25 @@ class PublicHealthAnalytics extends React.Component {
               <span className="h5 float-right text-secondary">View Data as Graph</span>
             </Col>
           </Row>
-          <Row className="mb-4 mx-1 px-0">
-            <Col className="mx-0 pr-xl-3">
+          <Row className="mx-2">
+            <Col className="mx-0 my-3">
               <Demographics stats={this.props.stats} showGraphs={this.state.showEpidemiologicalGraphs} />
             </Col>
           </Row>
-          <Row className="mb-4 mt-4 pt-3 mx-1 px-0">
-            <Col className="mx-0 pr-xl-3">
+          <Row className="mx-2">
+            <Col className="mx-0 my-3">
               <ExposureSummary stats={this.props.stats} showGraphs={this.state.showEpidemiologicalGraphs} />
             </Col>
           </Row>
-          <Row className="mb-2 pt-4 mx-1 px-0">
-            <Col className="mx-0 pr-xl-3">
+          <Row className="mx-2">
+            <Col className="mx-0 my-3">
               <MonitoreesByEventDate stats={this.props.stats} />
             </Col>
           </Row>
-          <Row className="mb-2 pb-3 mx-1 px-0 pt-4">
-            <GeographicSummary stats={this.props.stats} />
+          <Row className="mx-2">
+            <Col className="mx-0 my-3">
+              <GeographicSummary stats={this.props.stats} />
+            </Col>
           </Row>
         </React.Fragment>
       );

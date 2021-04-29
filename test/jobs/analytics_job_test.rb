@@ -127,24 +127,24 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   # TODO: Test is intermittently failing - needs to be investigated when Analytics are revisited
   #   test 'monitoree snapshots' do
   #     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, @@monitorees, 1)
-  #     verify_snapshot(snapshots, 0, 'Last 24 Hours', 3, 0, 2, 0)
-  #     verify_snapshot(snapshots, 1, 'Last 24 Hours', 2, 0, 0, 0)
-  #     verify_snapshot(snapshots, 2, 'Last 7 Days', 14, 0, 1, 0)
-  #     verify_snapshot(snapshots, 3, 'Last 7 Days', 12, 0, 0, 0)
-  #     verify_snapshot(snapshots, 4, 'Last 14 Days', 18, 0, 1, 0)
-  #     verify_snapshot(snapshots, 5, 'Last 14 Days', 13, 0, 0, 0)
-  #     verify_snapshot(snapshots, 6, 'Total', 29, 0, 3, 0)
-  #     verify_snapshot(snapshots, 7, 'Total', 15, 0, 0, 0)
+  #     verify_snapshot(snapshots, 0, 'Last 24 Hours', 3, 0, 2, 0, 0, 0)
+  #     verify_snapshot(snapshots, 1, 'Last 24 Hours', 2, 0, 0, 0, 0, 0)
+  #     verify_snapshot(snapshots, 2, 'Last 7 Days', 14, 0, 1, 0, 1, 1)
+  #     verify_snapshot(snapshots, 3, 'Last 7 Days', 12, 0, 0, 0, 1, 1)
+  #     verify_snapshot(snapshots, 4, 'Last 14 Days', 18, 0, 1, 0, 1, 1)
+  #     verify_snapshot(snapshots, 5, 'Last 14 Days', 13, 0, 0, 0, 1, 1)
+  #     verify_snapshot(snapshots, 6, 'Total', 29, 0, 3, 0, 1, 1)
+  #     verify_snapshot(snapshots, 7, 'Total', 15, 0, 0, 0, 1, 1)
 
   #     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, Patient.where(jurisdiction_id: 2), 2)
-  #     verify_snapshot(snapshots, 0, 'Last 24 Hours', 0, 1, 1, 1)
-  #     verify_snapshot(snapshots, 1, 'Last 24 Hours', 2, 0, 0, 0)
-  #     verify_snapshot(snapshots, 2, 'Last 7 Days', 5, 1, 0, 1)
-  #     verify_snapshot(snapshots, 3, 'Last 7 Days', 11, 0, 0, 0)
-  #     verify_snapshot(snapshots, 4, 'Last 14 Days', 7, 1, 0, 1)
-  #     verify_snapshot(snapshots, 5, 'Last 14 Days', 11, 0, 0, 0)
-  #     verify_snapshot(snapshots, 6, 'Total', 13, 2, 1, 2)
-  #     verify_snapshot(snapshots, 7, 'Total', 13, 0, 0, 0)
+  #     verify_snapshot(snapshots, 0, 'Last 24 Hours', 0, 1, 1, 1, 0, 0)
+  #     verify_snapshot(snapshots, 1, 'Last 24 Hours', 2, 0, 0, 0, 0, 0)
+  #     verify_snapshot(snapshots, 2, 'Last 7 Days', 5, 1, 0, 1, 1, 1)
+  #     verify_snapshot(snapshots, 3, 'Last 7 Days', 11, 0, 0, 0, 1, 1)
+  #     verify_snapshot(snapshots, 4, 'Last 14 Days', 7, 1, 0, 1, 1, 1)
+  #     verify_snapshot(snapshots, 5, 'Last 14 Days', 11, 0, 0, 0, 1, 1)
+  #     verify_snapshot(snapshots, 6, 'Total', 13, 2, 1, 2, 1, 1)
+  #     verify_snapshot(snapshots, 7, 'Total', 13, 0, 0, 0, 1, 1)
   #   end
 
   test 'monitoree snapshots transfer from jurisdiction to subjurisdiction' do
@@ -236,14 +236,18 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(total, counts[index].total, monitoree_count_err_msg(index, active_monitoring, category_type))
   end
 
-  def verify_snapshot(snapshots, index, time_frame, new_enrollments, transferred_in, closed, transferred_out)
+  # rubocop:disable Metics/ParameterLists
+  def verify_snapshot(snapshots, index, time_frame, new_enrollments, transferred_in, closed, transferred_out, exposure_to_isolation, isolation_to_exposure)
     assert_equal(1, snapshots[index].analytic_id, 'Analytic ID')
     assert_equal(time_frame, snapshots[index].time_frame, 'Time frame')
     assert_equal(new_enrollments, snapshots[index].new_enrollments, 'New enrollments')
     assert_equal(transferred_in, snapshots[index].transferred_in, 'Incoming transfers')
     assert_equal(closed, snapshots[index].closed, 'Closed patients')
     assert_equal(transferred_out, snapshots[index].transferred_out, 'Outgoing transfers')
+    assert_equal(exposure_to_isolation, snapshots[index].exposure_to_isolation, 'Exposure to isolation')
+    assert_equal(isolation_to_exposure, snapshots[index].isolation_to_exposure, 'Isolation to exposure')
   end
+  # rubocop:enable Metics/ParameterLists
 
   def verify_map(maps, index, level, workflow, state, county, total)
     assert_equal(1, maps[index].analytic_id, 'Analytic ID')
