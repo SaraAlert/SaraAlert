@@ -186,7 +186,7 @@
 
 <% if current_user.can_modify_subject_status? %>
 <%= react_component('patient/history/HistoryList', {
-                      histories: @active_histories,
+                      histories: @histories,
                       history_types: @history_types,
                       patient_id: @patient.id,
                       current_user: current_user,
