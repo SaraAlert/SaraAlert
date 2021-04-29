@@ -1,20 +1,29 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Form, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import _ from 'lodash';
 
-import { compareJurisdictionObjectEntries } from '../../../utils/Sorting';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class JurisdictionFilter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      jurisdiction_paths: [],
       jurisdiction_path: props.jurisdiction_paths[props.jurisdiction] || '',
     };
   }
 
   handleJurisdictionChange = jurisdiction_path => {
-    this.setState({ jurisdiction_path }, () => {
+    // Populate & sort the jurisdiction paths if it hasn't been populated yet
+    // This is done here since the jurisdiction_paths props data element is not initially available to populate with when the constructor is called
+    let jurisdiction_paths = this.state.jurisdiction_paths;
+    if (jurisdiction_paths.length === 0) {
+      jurisdiction_paths = _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b));
+      this.setState({ jurisdiction_paths });
+    }
+
+    this.setState({ jurisdiction_path, jurisdiction_paths }, () => {
       const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === jurisdiction_path);
       if (jurisdiction) {
         this.props.onJurisdictionChange(parseInt(jurisdiction));
@@ -45,15 +54,13 @@ class JurisdictionFilter extends React.Component {
           onChange={event => this.handleJurisdictionChange(event?.target?.value)}
         />
         <datalist id="jurisdiction_paths">
-          {Object.entries(this.props.jurisdiction_paths)
-            .map(([id, path]) => {
-              return (
-                <option value={path} key={id}>
-                  {path}
-                </option>
-              );
-            })
-            .sort(compareJurisdictionObjectEntries)}
+          {this.state.jurisdiction_paths.map((jurisdiction, index) => {
+            return (
+              <option value={jurisdiction} key={index}>
+                {jurisdiction}
+              </option>
+            );
+          })}
         </datalist>
         <React.Fragment>
           <OverlayTrigger overlay={<Tooltip>Include Sub-Jurisdictions</Tooltip>}>

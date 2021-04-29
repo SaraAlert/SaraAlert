@@ -8,13 +8,13 @@ import ReactTooltip from 'react-tooltip';
 import ApplyToHousehold from '../household/actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
-import { compareJurisdictionObjectEntries } from '../../../utils/Sorting';
 
 class Jurisdiction extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       showJurisdictionModal: false,
+      jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
       jurisdiction_path: this.props.jurisdiction_paths[this.props.patient.jurisdiction_id],
       original_jurisdiction_id: this.props.patient.jurisdiction_id,
       validJurisdiction: true,
@@ -177,15 +177,13 @@ class Jurisdiction extends React.Component {
               value={this.state.jurisdiction_path}
             />
             <datalist id="jurisdiction_paths">
-              {Object.entries(this.props.jurisdiction_paths)
-                .map(([id, path]) => {
-                  return (
-                    <option value={path} key={id}>
-                      {path}
-                    </option>
-                  );
-                })
-                .sort(compareJurisdictionObjectEntries)}
+              {this.state.jurisdiction_paths.map((jurisdiction, index) => {
+                return (
+                  <option value={jurisdiction} key={index}>
+                    {jurisdiction}
+                  </option>
+                );
+              })}
             </datalist>
             <Button
               className="btn-lg btn-square text-nowrap ml-2"

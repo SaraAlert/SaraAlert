@@ -2,15 +2,15 @@ import React from 'react';
 import PropTypes, { bool } from 'prop-types';
 import { Button, Modal, InputGroup, Form } from 'react-bootstrap';
 import Select from 'react-select';
+import _ from 'lodash';
 import { cursorPointerStyle } from '../../packs/stylesheets/ReactSelectStyling';
-
-import { compareJurisdictionArrayElements } from '../../utils/Sorting';
 
 class UserModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       email: this.props.initialUserData.email || '',
+      jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
       jurisdiction_path: this.props.initialUserData.jurisdiction_path || this.props.jurisdiction_paths[0],
       roleTitle: this.props.initialUserData.role_title || this.props.roles[0],
       isAPIEnabled: this.props.initialUserData.is_api_enabled || false,
@@ -78,11 +78,9 @@ class UserModal extends React.Component {
                     ? { label: this.props.initialUserData.jurisdiction_path, value: this.props.initialUserData.jurisdiction_path }
                     : { label: this.props.jurisdiction_paths[0], value: this.props.jurisdiction_paths[0] }
                 }
-                options={this.props.jurisdiction_paths
-                  .map(path => {
-                    return { label: path, value: path };
-                  })
-                  .sort(compareJurisdictionArrayElements)}
+                options={this.state.jurisdiction_paths.map(path => {
+                  return { label: path, value: path };
+                })}
                 onChange={this.handleJurisdictionChange}
                 placeholder=""
                 styles={cursorPointerStyle}

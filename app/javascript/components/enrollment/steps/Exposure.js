@@ -4,12 +4,12 @@ import { Button, Card, Col, Form } from 'react-bootstrap';
 import * as yup from 'yup';
 import axios from 'axios';
 import moment from 'moment';
+import _ from 'lodash';
 
 import LaboratoryModal from '../../patient/laboratory/LaboratoryModal';
 import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
-import { compareJurisdictionObjectEntries } from '../../../utils/Sorting';
 import { countryOptions } from '../../../data/countryOptions';
 
 class Exposure extends React.Component {
@@ -27,6 +27,7 @@ class Exposure extends React.Component {
       },
       errors: {},
       modified: {},
+      jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
       jurisdiction_path: this.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
@@ -847,15 +848,13 @@ class Exposure extends React.Component {
                         value={this.state.jurisdiction_path}
                       />
                       <datalist id="jurisdiction_paths">
-                        {Object.entries(this.props.jurisdiction_paths)
-                          .map(([id, path]) => {
-                            return (
-                              <option value={path} key={id}>
-                                {path}
-                              </option>
-                            );
-                          })
-                          .sort(compareJurisdictionObjectEntries)}
+                        {this.state.jurisdiction_paths.map((jurisdiction, index) => {
+                          return (
+                            <option value={jurisdiction} key={index}>
+                              {jurisdiction}
+                            </option>
+                          );
+                        })}
                       </datalist>
                       <Form.Control.Feedback className="d-block" type="invalid">
                         {this.state.errors['jurisdiction_id']}
