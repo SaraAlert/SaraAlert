@@ -67,6 +67,7 @@ Rails.application.routes.draw do
   post 'admin/email_all', to: 'admin#email_all'
 
   post '/histories', to: 'histories#create'
+  post '/histories/:id/edit', to: 'histories#edit'
   post '/histories/:id/archive', to: 'histories#archive'
 
   resources :contact_attempts, only: [:create]

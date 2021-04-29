@@ -24,6 +24,7 @@ class PatientsController < ApplicationController
     @jurisdiction = @patient.jurisdiction
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
+    @histories = @patient.histories.order(created_at: :desc).where(archived: false).where(latest_version: true)
 
     @possible_jurisdiction_paths = current_user.jurisdictions_for_transfer
     @possible_assigned_users = @jurisdiction.assigned_users

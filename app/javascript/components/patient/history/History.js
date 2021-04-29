@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
+import _ from 'lodash';
 import reportError from '../../util/ReportError';
 import confirmDialog from '../../util/ConfirmDialog';
 import { formatTimestamp, formatRelativePast } from '../../../utils/DateTime';
@@ -30,20 +31,19 @@ class History extends React.Component {
   };
 
   handleEditSubmit = () => {
-    console.log('submitting edit...')
-      //   this.setState({ loading: true }, () => {
-  //     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-  //     axios
-  //       .patch(window.BASE_PATH + '/histories/' + this.props.history.id, {
-  //         comment: this.state.comment,
-  //       })
-  //       .then(() => {
-  //         location.reload(true);
-  //       })
-  //       .catch(error => {
-  //         reportError(error);
-  //       });
-  //   });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/edit', {
+          comment: this.state.comment,
+        })
+        .then(() => {
+          location.reload(true);
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   };
 
 
@@ -145,7 +145,6 @@ class History extends React.Component {
   }
 
   render() {
-    console.log(this.props.history)
     return (
       <React.Fragment>
         <Card className="card-square mt-4 mx-3 shadow-sm">
@@ -164,7 +163,7 @@ class History extends React.Component {
               <Row>
                 <Col md="auto">
                   {this.props.history.comment}
-                  {/* {!!this.props.history.was_edited && <i className="edit-text"> (edited)</i>} */}
+                  {!_.isNil(this.props.history.original_comment_id) && <i className="edit-text"> (edited)</i>}
                 </Col>
                 {this.props.history.history_type === 'Comment' && this.props.history.created_by === this.props.current_user.email && this.renderActionButtons()}
               </Row>
