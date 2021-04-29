@@ -40,6 +40,11 @@ class PublicHealthAnalytics extends React.Component {
       );
     } else {
       var node = document.getElementById('sara-alert-body');
+      let isDemo = false;
+      if (node.className === 'demo-bg') {
+        node.className = '';
+        isDemo = true;
+      }
       domtoimage
         .toPng(node)
         .then(dataUrl => {
@@ -53,6 +58,9 @@ class PublicHealthAnalytics extends React.Component {
           link.href = dataUrl;
           link.click();
           this.setState({ loading: false });
+          if (isDemo) {
+            node.className = 'demo-bg';
+          }
         })
         .catch(error => {
           reportError(error);
