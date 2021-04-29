@@ -683,7 +683,7 @@
           ]
         },
         {
-          "next": "send_single_message",
+          "next": "split_on_iterator",
           "event": "match",
           "conditions": [
             {
@@ -853,6 +853,10 @@
           {
             "value": "0",
             "key": "retry_count"
+          },
+          {
+            "value": "0",
+            "key": "iterator"
           }
         ],
         "offset": {
@@ -1090,7 +1094,7 @@
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value equal_to EN",
+              "friendly_name": "If value matches any of EN, ENG",
               "arguments": [
                 "{{flow.data.language}}"
               ],
@@ -1104,7 +1108,7 @@
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value equal_to ES",
+              "friendly_name": "If value matches any of ES, SPA, SPA-PR",
               "arguments": [
                 "{{flow.data.language}}"
               ],
@@ -1118,7 +1122,7 @@
           "event": "match",
           "conditions": [
             {
-              "friendly_name": "If value equal_to FR",
+              "friendly_name": "If value matches any of FR FRA",
               "arguments": [
                 "{{flow.data.language}}"
               ],
@@ -1219,9 +1223,11 @@
       "type": "make-http-request",
       "transitions": [
         {
+          "next": "increment_params_iterator",
           "event": "success"
         },
         {
+          "next": "increment_params_iterator",
           "event": "failed"
         }
       ],
@@ -1261,7 +1267,7 @@
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
-        "body": "{{flow.data.prompt}}",
+        "body": "{% assign i=flow.variables.iterator | plus:0 %}\n{{flow.data.messages_array[i].prompt}}",
         "timeout": "0"
       }
     },
@@ -1270,6 +1276,7 @@
       "type": "set-variables",
       "transitions": [
         {
+          "next": "increment_params_iterator",
           "event": "next"
         }
       ],
@@ -1278,6 +1285,58 @@
         "offset": {
           "x": 2550,
           "y": 120
+        }
+      }
+    },
+    {
+      "name": "split_on_iterator",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "event": "noMatch"
+        },
+        {
+          "next": "send_single_message",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less_than {{flow.data.messages_array.size}}",
+              "arguments": [
+                "{{flow.variables.iterator}}"
+              ],
+              "type": "less_than",
+              "value": "{{flow.data.messages_array.size}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.iterator}}",
+        "offset": {
+          "x": 2710,
+          "y": -520
+        }
+      }
+    },
+    {
+      "name": "increment_params_iterator",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_on_iterator",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "value": "{{flow.variables.iterator | plus: 1}}",
+            "key": "iterator"
+          }
+        ],
+        "offset": {
+          "x": 2798,
+          "y": 415
         }
       }
     }
