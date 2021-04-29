@@ -126,3 +126,19 @@ public_health_action_patient_20_secondary:
   history_type: 'Monitoring Change'
   created_at: <%= 3.hours.ago %>
   updated_at: <%= 3.hours.ago %>
+public_health_action_patient_53:
+  id: 20203
+  patient_id: 53
+  comment: 'System changed Symptom Onset Date from 04/15/2021 to 04/15/2021 because monitoree was moved from isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports.'
+  created_by: 'state1_epi_enroller@example.com'
+  history_type: 'Monitoring Change'
+  created_at: <%= 3.days.ago %>
+  updated_at: <%= 3.days.ago %>
+public_health_action_patient_54:
+  id: 20204
+  patient_id: 54
+  comment: 'User changed Case Status from "Not a Case" to "Probable", and chose to "Continue Monitoring in Isolation Workflow".'
+  created_by: 'state1_epi_enroller@example.com'
+  history_type: 'Monitoring Change'
+  created_at: <%= 3.days.ago %>
+  updated_at: <%= 3.days.ago %>

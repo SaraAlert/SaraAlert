@@ -7,12 +7,16 @@ import mockAnalytics from '../../mocks/mockAnalytics';
 const monitoreeFlowTableHeaders = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'];
 const exposureNewEnrollmentValues = [ 54, 164, 192, 223 ];
 const exposureTransferredInValues = [ 7, 21, 22, 25 ];
+const exposureFromIsolationValues = [ 0, 6, 16, 76 ];
 const exposureClosedValues = [ 4, 11, 12, 15 ];
 const exposureTransferredOutValues = [ 8, 18, 20, 27 ];
+const exposureToIsolationValues = [ 2, 21, 56, 138 ];
 const isolationNewEnrollmentValues = [ 39, 100, 171, 195 ];
 const isolationTransferredInValues = [ 4, 17, 19, 22 ];
+const isolationFromExposureValues = [ 2, 21, 56, 138 ];
 const isolationClosedValues = [ 2, 4, 6, 7 ];
 const isolationTransferredOutValues = [ 5, 18, 22, 25 ];
+const isolationToExposureValues = [ 0, 6, 16, 76 ];
 
 function getWrapper() {
   return shallow(<MonitoreeFlow stats={mockAnalytics}/>);
@@ -46,33 +50,49 @@ describe('MonitoreeFlow', () => {
     exposureTransferredInValues.forEach(function(value, index) {
       expect(tableBody.find('tr').at(3).find('td').at(index+1).text()).toEqual(String(value));
     });
-    expect(tableBody.find('tr').at(4).text()).toEqual('OUTGOING');
-    expect(tableBody.find('tr').at(5).find('td').first().text()).toEqual('CLOSED');
-    exposureClosedValues.forEach(function(value, index) {
-      expect(tableBody.find('tr').at(5).find('td').at(index+1).text()).toEqual(String(value));
+    expect(tableBody.find('tr').at(4).find('td').first().text()).toEqual('FROM ISOLATION WORKFLOW');
+    exposureFromIsolationValues.forEach(function(value, index) {
+      expect(tableBody.find('tr').at(4).find('td').at(index+1).text()).toEqual(String(value));
     });
-    expect(tableBody.find('tr').at(6).find('td').first().text()).toEqual('TRANSFERRED OUT');
-    exposureTransferredOutValues.forEach(function(value, index) {
+    expect(tableBody.find('tr').at(5).text()).toEqual('OUTGOING');
+    expect(tableBody.find('tr').at(6).find('td').first().text()).toEqual('CLOSED');
+    exposureClosedValues.forEach(function(value, index) {
       expect(tableBody.find('tr').at(6).find('td').at(index+1).text()).toEqual(String(value));
     });
-    expect(tableBody.find('tr').at(7).text()).toEqual('ISOLATION WORKFLOW');
-    expect(tableBody.find('tr').at(8).text()).toEqual('INCOMING');
-    expect(tableBody.find('tr').at(9).find('td').first().text()).toEqual('NEW ENROLLMENTS');
+    expect(tableBody.find('tr').at(7).find('td').first().text()).toEqual('TRANSFERRED OUT');
+    exposureTransferredOutValues.forEach(function(value, index) {
+      expect(tableBody.find('tr').at(7).find('td').at(index+1).text()).toEqual(String(value));
+    });
+    expect(tableBody.find('tr').at(8).find('td').first().text()).toEqual('TO ISOLATION WORKFLOW');
+    exposureToIsolationValues.forEach(function(value, index) {
+      expect(tableBody.find('tr').at(8).find('td').at(index+1).text()).toEqual(String(value));
+    });
+    expect(tableBody.find('tr').at(9).text()).toEqual('ISOLATION WORKFLOW');
+    expect(tableBody.find('tr').at(10).text()).toEqual('INCOMING');
+    expect(tableBody.find('tr').at(11).find('td').first().text()).toEqual('NEW ENROLLMENTS');
     isolationNewEnrollmentValues.forEach(function(value, index) {
-      expect(tableBody.find('tr').at(9).find('td').at(index+1).text()).toEqual(String(value));
+      expect(tableBody.find('tr').at(11).find('td').at(index+1).text()).toEqual(String(value));
     });
-    expect(tableBody.find('tr').at(10).find('td').first().text()).toEqual('TRANSFERRED IN');
+    expect(tableBody.find('tr').at(12).find('td').first().text()).toEqual('TRANSFERRED IN');
     isolationTransferredInValues.forEach(function(value, index) {
-      expect(tableBody.find('tr').at(10).find('td').at(index+1).text()).toEqual(String(value));
-    });
-    expect(tableBody.find('tr').at(11).text()).toEqual('OUTGOING');
-    expect(tableBody.find('tr').at(12).find('td').first().text()).toEqual('CLOSED');
-    isolationClosedValues.forEach(function(value, index) {
       expect(tableBody.find('tr').at(12).find('td').at(index+1).text()).toEqual(String(value));
     });
-    expect(tableBody.find('tr').at(13).find('td').first().text()).toEqual('TRANSFERRED OUT');
-    isolationTransferredOutValues.forEach(function(value, index) {
+    expect(tableBody.find('tr').at(13).find('td').first().text()).toEqual('FROM EXPOSURE WORKFLOW');
+    isolationFromExposureValues.forEach(function(value, index) {
       expect(tableBody.find('tr').at(13).find('td').at(index+1).text()).toEqual(String(value));
+    });
+    expect(tableBody.find('tr').at(14).text()).toEqual('OUTGOING');
+    expect(tableBody.find('tr').at(15).find('td').first().text()).toEqual('CLOSED');
+    isolationClosedValues.forEach(function(value, index) {
+      expect(tableBody.find('tr').at(15).find('td').at(index+1).text()).toEqual(String(value));
+    });
+    expect(tableBody.find('tr').at(16).find('td').first().text()).toEqual('TRANSFERRED OUT');
+    isolationTransferredOutValues.forEach(function(value, index) {
+      expect(tableBody.find('tr').at(16).find('td').at(index+1).text()).toEqual(String(value));
+    });
+    expect(tableBody.find('tr').at(17).find('td').first().text()).toEqual('TO EXPOSURE WORKFLOW');
+    isolationToExposureValues.forEach(function(value, index) {
+      expect(tableBody.find('tr').at(17).find('td').at(index+1).text()).toEqual(String(value));
     });
   });
 });

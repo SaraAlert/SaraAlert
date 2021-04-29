@@ -275,7 +275,7 @@ class GeographicSummary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="text-center mt-4" style={{ width: '100%' }}>
+        <div className="text-center" style={{ width: '100%' }}>
           <div className="h5">No Geographic Analytics Data could be shown</div>
         </div>
       );
