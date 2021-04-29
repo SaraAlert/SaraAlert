@@ -7,6 +7,9 @@ class Api::ApiExportController < ApplicationApiController
       :'system/Patient.read',
       :'system/Patient.*'
     )
+    doorkeeper_authorize!(
+      :'system/QuestionnaireResponse.read'
+    )
     set_client_app
   end
 
@@ -21,7 +24,7 @@ class Api::ApiExportController < ApplicationApiController
 
   # Multi patient PHDC export
   def nbs_patients
-    search_params = params.slice('workflow', 'monitoring', 'caseStatus', 'updatedAt')
+    search_params = params.slice('workflow', 'monitoring', 'caseStatus', 'updatedSince')
     patients = search_params.blank? ? Patient.none : @current_client_app.jurisdiction&.all_patients_excluding_purged
 
     search_params.compact.transform_values { |v| v.to_s.downcase.strip }.each do |field, search|
@@ -48,7 +51,7 @@ class Api::ApiExportController < ApplicationApiController
         # Since case_status can be from a set of values, allow a list of comma separated values
         search = search.split(',').map(&:strip)
         patients = patients.where('lower(case_status) in (?)', search)
-      when 'updatedAt'
+      when 'updatedSince'
         begin
           search = DateTime.parse(search)
           patients = patients.where(updated_at: search..)

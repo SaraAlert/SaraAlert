@@ -15,11 +15,11 @@ class ApiExportControllerTest < ActionDispatch::IntegrationTest
     @shadow_user_jurisdiction = @shadow_user.jurisdiction_id
     @shadow_user.lock_access!
 
-    @system_patient_read_app = create(
+    @nbs_read_app = create(
       :oauth_application,
       user_id: @shadow_user,
       jurisdiction_id: @shadow_user_jurisdiction,
-      scopes: 'system/Patient.read'
+      scopes: 'system/Patient.read system/QuestionnaireResponse.read'
     )
 
     @system_patient_write_app = create(
@@ -29,9 +29,9 @@ class ApiExportControllerTest < ActionDispatch::IntegrationTest
       scopes: 'system/Patient.write'
     )
 
-    @system_patient_token_r = Doorkeeper::AccessToken.create(
-      application: @system_patient_read_app,
-      scopes: 'system/Patient.read'
+    @nbs_read_token = Doorkeeper::AccessToken.create(
+      application: @nbs_read_app,
+      scopes: 'system/Patient.read system/QuestionnaireResponse.read'
     )
 
     @system_patient_token_w = Doorkeeper::AccessToken.create(
@@ -51,7 +51,7 @@ class ApiExportControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should be 406 not_acceptable accept header is not provided' do
-    get '/api/nbs/patient', headers: { Authorization: "Bearer #{@system_patient_token_r.token}" }
+    get '/api/nbs/patient', headers: { Authorization: "Bearer #{@nbs_read_token.token}" }
     assert_response :not_acceptable
   end
 
@@ -121,7 +121,7 @@ class ApiExportControllerTest < ActionDispatch::IntegrationTest
     create(:patient, creator: @shadow_user)
     old_patient = create(:patient, creator: @shadow_user, updated_at: 3.days.ago)
     old_patient.update(updated_at: 3.days.ago)
-    assert_expected_patients({ updatedAt: 2.days.ago }, ['patients.updated_at > ?', 2.days.ago])
+    assert_expected_patients({ updatedSince: 2.days.ago }, ['patients.updated_at > ?', 2.days.ago])
   end
 
   test 'should get patients by multiple parameters' do
@@ -135,7 +135,7 @@ class ApiExportControllerTest < ActionDispatch::IntegrationTest
 
   test 'should get no patients with bad updated_at' do
     create(:patient, creator: @shadow_user)
-    assert_expected_patients({ updatedAt: 'foo' }, { id: -1 })
+    assert_expected_patients({ updatedSince: 'foo' }, { id: -1 })
   end
 
   test 'should ignore whitespace in parameters' do
@@ -158,7 +158,7 @@ class ApiExportControllerTest < ActionDispatch::IntegrationTest
   def assert_expected_patients(params, scope, type = nil)
     get(
       '/api/nbs/patient',
-      headers: { Authorization: "Bearer #{@system_patient_token_r.token}", Accept: 'application/zip' },
+      headers: { Authorization: "Bearer #{@nbs_read_token.token}", Accept: 'application/zip' },
       params: params,
       as: type
     )
