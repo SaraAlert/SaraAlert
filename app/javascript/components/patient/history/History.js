@@ -163,7 +163,7 @@ class History extends React.Component {
               <Row>
                 <Col md="auto">
                   {this.props.history.comment}
-                  {!_.isNil(this.props.history.original_comment_id) && <i className="edit-text"> (edited)</i>}
+                  {this.props.history.history_type === 'Comment' && this.props.history.id !== this.props.history.original_comment_id && <i className="edit-text"> (edited)</i>}
                 </Col>
                 {this.props.history.history_type === 'Comment' && this.props.history.created_by === this.props.current_user.email && this.renderActionButtons()}
               </Row>

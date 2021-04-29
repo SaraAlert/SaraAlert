@@ -44,6 +44,7 @@ class History < ApplicationRecord
   validates :history_type, inclusion: { in: HISTORY_TYPES.values }
 
   belongs_to :patient
+  belongs_to :original_comment, class_name: 'History', optional: true
 
   # Patient updated_at should not be updated if history was created by a monitoree data download
   after_create(proc { patient.touch unless history_type == HISTORY_TYPES[:monitoree_data_downloaded] })
