@@ -181,7 +181,7 @@ class AssessmentsController < ApplicationController
 
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
     reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
-    redirect_to(root_url) && return if reported_symptoms_array.map { |symptom| symptom[:name] }.include?(:nil)
+    redirect_to(root_url) && return if reported_symptoms_array.any? { |symptom| symptom[:name].nil? }
 
     valid_symptom_names = assessment.reported_condition&.threshold_condition&.symptoms&.pluck(:name)
     redirect_to(root_url) && return if valid_symptom_names.nil? || (reported_symptoms_array.map { |symptom| symptom[:name] } - valid_symptom_names).any?
