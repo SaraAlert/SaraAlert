@@ -53,6 +53,25 @@ threshold_condition_1_difficulty_breathing_symptom:
   type: 'BoolSymptom'
   created_at: <%= 50.days.ago %>
   updated_at: <%= 50.days.ago %>
+threshold_condition_1_temperature_symptom:
+  id: 7
+  name: 'temperature'
+  label: 'Temperature'
+  int_value: 2
+  condition_id: 8
+  type: 'IntegerSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
+threshold_condition_1_pulse_ox_symptom:
+  id: 8
+  name: 'pulse-ox'
+  label: 'Pulse Ox'
+  float_value: 98.4
+  condition_id: 8
+  type: 'FloatSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
+
 threshold_condition_2_fever_symptom:
   id: 10
   name: 'fever'
@@ -268,6 +287,24 @@ patient_1_assessment_2_difficulty_breathing:
   bool_value: false
   condition_id: 1002
   type: 'BoolSymptom'
+  created_at: <%= 36.days.ago %>
+  updated_at: <%= 32.days.ago %>
+patient_1_assessment_2_temperature:
+  id: 10024
+  name: 'temperature'
+  label: 'Temperature'
+  int_value: 2
+  condition_id: 1002
+  type: 'IntegerSymptom'
+  created_at: <%= 36.days.ago %>
+  updated_at: <%= 32.days.ago %>
+patient_1_assessment_2_pulse_ox:
+  id: 10025
+  name: 'pulse-ox'
+  label: 'Pulse Ox'
+  float_value: 99.8
+  condition_id: 1002
+  type: 'FloatSymptom'
   created_at: <%= 36.days.ago %>
   updated_at: <%= 32.days.ago %>
 patient_2_assessment_1_fever:

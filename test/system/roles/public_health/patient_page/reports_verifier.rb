@@ -60,7 +60,7 @@ class PublicHealthPatientPageReportsVerifier < ApplicationSystemTestCase
         cell = cells[symptom_column_indexes[symptom[:name]]]
         value = symptom.value
         value = value == true ? 'Yes' : 'No' if symptom[:type] == 'BoolSymptom' && !value.nil?
-        assert_equal value || '', cell.text, "Symptom '#{symptom[:label]}' for assessment #{assessment[:id]}"
+        assert_equal value&.to_s || '', cell.text, "Symptom '#{symptom[:label]}' for assessment #{assessment[:id]}"
         assert_equal assessment.symptom_passes_threshold(symptom), cell.find('span')[:class].include?('concern'),
                      "'Symptomatic color' for symptom '#{symptom[:label]}' for assessment #{assessment[:id]}"
       end

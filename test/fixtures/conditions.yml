@@ -43,36 +43,43 @@ jurisdiction_7_threshold_condition:
 
 threshold_condition_1:
   id: 8
+  type: 'ThresholdCondition'
   threshold_condition_hash: <%= Digest::SHA256.hexdigest('USA, State 1' + '2') %>
   created_at: <%= 50.days.ago %>
   updated_at: <%= 50.days.ago %>
 threshold_condition_2:
   id: 10
+  type: 'ThresholdCondition'
   threshold_condition_hash: <%= Digest::SHA256.hexdigest('USA, State 2' + '2') %>
   created_at: <%= 50.days.ago %>
   updated_at: <%= 50.days.ago %>
 threshold_condition_3:
   id: 12
+  type: 'ThresholdCondition'
   threshold_condition_hash: <%= Digest::SHA256.hexdigest('USA, State 2, County 3' + '3') %>
   created_at: <%= 50.days.ago %>
   updated_at: <%= 50.days.ago %>
 threshold_condition_4:
   id: 14
+  type: 'ThresholdCondition'
   threshold_condition_hash: <%= Digest::SHA256.hexdigest('USA, State 2, County 4' + '3') %>
   created_at: <%= 50.days.ago %>
   updated_at: <%= 50.days.ago %>
 threshold_condition_5:
   id: 16
+  type: 'ThresholdCondition'
   threshold_condition_hash: <%= Digest::SHA256.hexdigest('USA' + '1') %>
   created_at: <%= 50.days.ago %>
   updated_at: <%= 50.days.ago %>
 threshold_condition_6:
   id: 25
+  type: 'ThresholdCondition'
   threshold_condition_hash: <%= Digest::SHA256.hexdigest('USA, State 1, County 2' + '3') %>
   created_at: <%= 50.days.ago %>
   updated_at: <%= 50.days.ago %>
 threshold_condition_7:
   id: 44
+  type: 'ThresholdCondition'
   threshold_condition_hash: <%= Digest::SHA256.hexdigest('USA, State 1, County 1' + '3') %>
   created_at: <%= 50.days.ago %>
   updated_at: <%= 50.days.ago %>

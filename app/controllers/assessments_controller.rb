@@ -183,22 +183,24 @@ class AssessmentsController < ApplicationController
     reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
     redirect_to(root_url) && return if reported_symptoms_array.map { |symptom| symptom[:name] }.include?(:nil)
 
-    valid_symptom_names = assessment.reported_condition.threshold_condition.symptoms.pluck(:name)
-    redirect_to(root_url) && return if (reported_symptoms_array.map { |symptom| symptom[:name] } - valid_symptom_names).any?
+    valid_symptom_names = assessment.reported_condition&.threshold_condition&.symptoms&.pluck(:name)
+    redirect_to(root_url) && return if valid_symptom_names.nil? || (reported_symptoms_array.map { |symptom| symptom[:name] } - valid_symptom_names).any?
 
     reported_symptoms = reported_symptoms_array.map { |symptom| [symptom[:name], symptom] }.to_h
 
     delta = []
     Assessment.transaction do
       assessment.reported_condition&.symptoms&.each do |symptom|
+        next unless reported_symptoms.key?(symptom[:name])
+
         new_val = reported_symptoms[symptom[:name]][:value]
         old_val = symptom.value
-        next if new_val == old_val
+        next if new_val&.to_s == old_val&.to_s
 
         case symptom.type
         when 'BoolSymptom'
           symptom.update(bool_value: new_val)
-          delta << "#{symptom.label} (\"#{old_val ? 'Yes' : 'No'}\" to \"#{new_val ? 'Yes' : 'No'}\")" if !old_val.nil? && !new_val.nil?
+          delta << "#{symptom.label} (\"#{format_bool_value(old_val)}\" to \"#{format_bool_value(new_val)}\")"
         when 'IntegerSymptom'
           symptom.update(int_value: new_val)
           delta << "#{symptom.label} (\"#{old_val}\" to \"#{new_val}\")"
@@ -235,5 +237,9 @@ class AssessmentsController < ApplicationController
     return submission_token if submission_token.length != 40
 
     PatientLookup.find_by(old_submission_token: submission_token)&.new_submission_token
+  end
+
+  def format_bool_value(bool_value)
+    bool_value&.to_s&.present? ? bool_value ? 'Yes' : 'No' : ''
   end
 end

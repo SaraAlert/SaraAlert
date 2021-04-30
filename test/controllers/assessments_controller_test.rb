@@ -8,16 +8,7 @@ class AssessmentsControllerTest < ActionController::TestCase
   def teardown; end
 
   def symptoms_param(model_symptoms)
-    model_symptoms.map do |s|
-      {
-        name: s.name,
-        value: s.value,
-        type: s.type,
-        label: s.label,
-        notes: s.notes,
-        required: s.required
-      }
-    end
+    model_symptoms.map { |s| { name: s.name, value: s.value } }
   end
 
   test 'successful get new report as patient' do
@@ -299,92 +290,41 @@ class AssessmentsControllerTest < ActionController::TestCase
     submission_token = patients(:patient_1).submission_token
     assessment = assessments(:patient_1_assessment_2)
     user = create(:public_health_user)
+
+    # add unknown symptom
     symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    symptoms << {
-      name: 'productive_cough',
-      value: true,
-      type: 'BoolSymptom',
-      label: 'Productive Cough',
-      notes: nil,
-      required: false
-    }
+    symptoms << { name: 'unknown-symptom', value: true }
     sign_in user
 
-    # create the new symptom
-    assert_changes 'History.count' do
+    assert_no_difference 'History.count' do
       assert_no_difference 'AssessmentReceipt.count' do
         assert_no_difference 'Assessment.count' do
-          post :update, params: {
-            patient_submission_token: submission_token,
-            id: assessment.id,
-            experiencing_symptoms: 'yes',
-            symptoms: symptoms
-          }
-          assert_equal 204, response.code.to_i
+          assert_no_difference 'Symptom.count' do
+            post :update, params: {
+              patient_submission_token: submission_token,
+              id: assessment.id,
+              experiencing_symptoms: 'yes',
+              symptoms: symptoms
+            }
+            assert_equal 302, response.code.to_i
+          end
         end
       end
     end
-    assessment.reload
-
-    assert_equal true, symptoms.find { |d| d[:name] == 'productive_cough' }[:value]
-
-    # update the new symptom
-    symptoms.find { |d| d[:name] == 'productive_cough' }[:value] = false
-    assert_changes 'History.count' do
-      assert_no_difference 'AssessmentReceipt.count' do
-        assert_no_difference 'Assessment.count' do
-          post :update, params: {
-            patient_submission_token: submission_token,
-            id: assessment.id,
-            experiencing_symptoms: 'yes',
-            symptoms: symptoms
-          }
-          assert_equal 204, response.code.to_i
-          assert_match(/Symptom updates/, History.last.comment)
-          assert_match(/Productive Cough \("Yes" to "No"\)/, History.last.comment)
-        end
-      end
-    end
-    assessment.reload
-    symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    assert_equal false, symptoms.find { |d| d[:name] == 'productive_cough' }[:value]
   end
 
   test 'updating with a new arbitrary float symptom' do
     submission_token = patients(:patient_1).submission_token
     assessment = assessments(:patient_1_assessment_2)
     user = create(:public_health_user)
-    symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    symptoms << {
-      name: 'temperature',
-      value: 99.8,
-      type: 'FloatSymptom',
-      label: 'Temperature',
-      notes: nil,
-      required: false
-    }
+
+    # update existing symptom
+    symptoms = symptoms_param(assessment.reported_condition.symptoms).each do |s|
+      s[:value] = 100.4 if s[:name] == 'pulse-ox'
+    end
+
     sign_in user
 
-    # create the new symptom
-    assert_changes 'History.count' do
-      assert_no_difference 'AssessmentReceipt.count' do
-        assert_no_difference 'Assessment.count' do
-          post :update, params: {
-            patient_submission_token: submission_token,
-            id: assessment.id,
-            experiencing_symptoms: 'yes',
-            symptoms: symptoms
-          }
-          assert_equal 204, response.code.to_i
-        end
-      end
-    end
-    assessment.reload
-
-    assert_equal 99.8, symptoms.find { |d| d[:name] == 'temperature' }[:value]
-
-    # update the new symptom
-    symptoms.find { |d| d[:name] == 'temperature' }[:value] = 100.4
     assert_changes 'History.count' do
       assert_no_difference 'AssessmentReceipt.count' do
         assert_no_difference 'Assessment.count' do
@@ -396,50 +336,26 @@ class AssessmentsControllerTest < ActionController::TestCase
           }
           assert_equal 204, response.code.to_i
           assert_match(/Symptom updates/, History.last.comment)
-          assert_match(/Temperature \("99.8" to "100.4"\)/, History.last.comment)
+          assert_match(/Pulse Ox \("99.8" to "100.4"\)/, History.last.comment)
         end
       end
     end
     assessment.reload
     symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    assert_equal 100.4, symptoms.find { |d| d[:name] == 'temperature' }[:value]
+    assert_equal 100.4, symptoms.find { |d| d[:name] == 'pulse-ox' }[:value]
   end
 
   test 'updating with a new arbitrary integer symptom' do
     submission_token = patients(:patient_1).submission_token
     assessment = assessments(:patient_1_assessment_2)
     user = create(:public_health_user)
-    symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    symptoms << {
-      name: 'daysWithoutFever',
-      value: 2,
-      type: 'IntegerSymptom',
-      label: 'Days Without Fever',
-      notes: nil,
-      required: false
-    }
+
+    # update existing symptom
+    symptoms = symptoms_param(assessment.reported_condition.symptoms).each do |s|
+      s[:value] = 3 if s[:name] == 'temperature'
+    end
     sign_in user
 
-    # create the new symptom
-    assert_changes 'History.count' do
-      assert_no_difference 'AssessmentReceipt.count' do
-        assert_no_difference 'Assessment.count' do
-          post :update, params: {
-            patient_submission_token: submission_token,
-            id: assessment.id,
-            experiencing_symptoms: 'yes',
-            symptoms: symptoms
-          }
-          assert_equal 204, response.code.to_i
-        end
-      end
-    end
-    assessment.reload
-
-    assert_equal 2, symptoms.find { |d| d[:name] == 'daysWithoutFever' }[:value]
-
-    # update the new symptom
-    symptoms.find { |d| d[:name] == 'daysWithoutFever' }[:value] = 3
     assert_changes 'History.count' do
       assert_no_difference 'AssessmentReceipt.count' do
         assert_no_difference 'Assessment.count' do
@@ -451,50 +367,27 @@ class AssessmentsControllerTest < ActionController::TestCase
           }
           assert_equal 204, response.code.to_i
           assert_match(/Symptom updates/, History.last.comment)
-          assert_match(/Days Without Fever \("2" to "3"\)/, History.last.comment)
+          assert_match(/Temperature \("2" to "3"\)/, History.last.comment)
         end
       end
     end
     assessment.reload
     symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    assert_equal 3, symptoms.find { |d| d[:name] == 'daysWithoutFever' }[:value]
+    assert_equal 3, symptoms.find { |d| d[:name] == 'temperature' }[:value]
   end
 
   test 'update boolean assessment with nils' do
     submission_token = patients(:patient_1).submission_token
     assessment = assessments(:patient_1_assessment_2)
     user = create(:public_health_user)
-    symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    symptoms << {
-      name: 'productive_cough',
-      value: nil,
-      type: 'BoolSymptom',
-      label: 'Productive Cough',
-      notes: nil,
-      required: false
-    }
+
+    # update existing symptom
+    symptoms = symptoms_param(assessment.reported_condition.symptoms).each do |s|
+      s[:value] = nil if s[:name] == 'cough'
+    end
     sign_in user
 
-    # create the new symptom
-    assert_changes 'History.count' do
-      assert_no_difference 'AssessmentReceipt.count' do
-        assert_no_difference 'Assessment.count' do
-          post :update, params: {
-            patient_submission_token: submission_token,
-            id: assessment.id,
-            experiencing_symptoms: 'yes',
-            symptoms: symptoms
-          }
-          assert_equal 204, response.code.to_i
-        end
-      end
-    end
-    assessment.reload
-
-    assert_nil symptoms.find { |d| d[:name] == 'productive_cough' }[:value]
-
     # update the new symptom
-    symptoms.find { |d| d[:name] == 'productive_cough' }[:value] = false
     assert_changes 'History.count' do
       assert_no_difference 'AssessmentReceipt.count' do
         assert_no_difference 'Assessment.count' do
@@ -505,34 +398,13 @@ class AssessmentsControllerTest < ActionController::TestCase
             symptoms: symptoms
           }
           assert_equal 204, response.code.to_i
-          assert_no_match(/Symptom updates/, History.last.comment)
-          assert_no_match(/Productive Cough \("No" to "No"\)/, History.last.comment)
+          assert_match(/Symptom updates/, History.last.comment)
+          assert_match(/Cough \("No" to ""\)/, History.last.comment)
         end
       end
     end
     assessment.reload
     symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    assert_equal false, symptoms.find { |d| d[:name] == 'productive_cough' }[:value]
-
-    # update the new symptom
-    symptoms.find { |d| d[:name] == 'productive_cough' }[:value] = nil
-    assert_changes 'History.count' do
-      assert_no_difference 'AssessmentReceipt.count' do
-        assert_no_difference 'Assessment.count' do
-          post :update, params: {
-            patient_submission_token: submission_token,
-            id: assessment.id,
-            experiencing_symptoms: 'yes',
-            symptoms: symptoms
-          }
-          assert_equal 204, response.code.to_i
-          assert_no_match(/Symptom updates/, History.last.comment)
-          assert_no_match(/Productive Cough \("No" to "No"\)/, History.last.comment)
-        end
-      end
-    end
-    assessment.reload
-    symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    assert_nil symptoms.find { |d| d[:name] == 'productive_cough' }[:value]
+    assert_nil symptoms.find { |d| d[:name] == 'cough' }[:value]
   end
 end
