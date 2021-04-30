@@ -68,7 +68,7 @@ Rails.application.routes.draw do
 
   post '/histories', to: 'histories#create'
   post '/histories/:id/edit', to: 'histories#edit'
-  post '/histories/:id/archive', to: 'histories#archive'
+  post '/histories/:id/delete', to: 'histories#delete'
 
   resources :contact_attempts, only: [:create]
 

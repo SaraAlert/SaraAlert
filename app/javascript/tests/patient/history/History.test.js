@@ -42,10 +42,10 @@ describe('History', () => {
     expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#edit-history-btn').find('i').hasClass('fa-edit')).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#delete-history-btn').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('#delete-history-btn').find('i').hasClass('fa-archive')).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('#delete-history-btn').find('i').hasClass('fa-trash')).toBeTruthy();
     expect(wrapper.find(Card.Body).find(ReactTooltip).length).toEqual(2);
     expect(wrapper.find(Card.Body).find(ReactTooltip).at(0).find('span').text()).toEqual('Edit comment');
-    expect(wrapper.find(Card.Body).find(ReactTooltip).at(1).find('span').text()).toEqual('Archive comment');
+    expect(wrapper.find(Card.Body).find(ReactTooltip).at(1).find('span').text()).toEqual('Delete comment');
   });
 
   it('Properly renders comment histories if current user did not create the comment', () => {
@@ -164,7 +164,7 @@ describe('History', () => {
   //   expect(wrapper.find(Card.Body).find('.edit-text').text()).toEqual(' (edited)');
   // });
 
-  // it('Clicking the archive button calls handleArchiveClick method', () => {
+  // it('Clicking the delete button calls handleArchiveClick method', () => {
   //   const wrapper = getWrapper(mockHistory2);
   //   const handleArchiveClickSpy = jest.spyOn(wrapper.instance(), 'handleArchiveClick');
   //   expect(handleArchiveClickSpy).toHaveBeenCalledTimes(0);

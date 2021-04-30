@@ -58,7 +58,7 @@ class History extends React.Component {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/archive', {
+        .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/delete', {
           delete_reason: this.state.delete_reason
         })
         .then(() => {

@@ -34,17 +34,18 @@ class HistoriesController < ApplicationController
                     original_comment_id: history.original_comment_id)
   end
 
-  def archive
+  def delete
     redirect_to root_url unless current_user.can_create_subject_history?
 
     history = current_user.get_histories(params.permit(:id)[:id])
     redirect_to root_url && return if history.nil? || history.history_type != 'Comment' || history.created_by != current_user.email
 
-    # mark each version of the history as archived, not just the most recent one
+    # mark each version of the history as deleted, not just the most recent one
     history_versions = current_user.get_all_histories.where(original_comment_id: history.original_comment_id)
     history_versions.each do |h|
-      h.archived = true
-      h.archived_by = current_user.email
+      h.deleted = true
+      h.deleted_by = current_user.email
+      h.delete_reason = params.permit(:delete_reason)[:delete_reason]
       h.save!
     end
   end

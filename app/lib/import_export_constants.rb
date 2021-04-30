@@ -110,10 +110,10 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
   FULL_HISTORY_VACCINES_HEADERS = ['Patient ID', 'Vaccine Group', 'Product Name', 'Administration Date', 'Dose Number', 'Notes', 'Created At',
                                    'Updated At'].freeze
 
-  FULL_HISTORY_HISTORIES_FIELDS = %i[patient_id comment created_by history_type created_at updated_at archived archived_by original_comment_id].freeze
+  FULL_HISTORY_HISTORIES_FIELDS = %i[patient_id comment created_by history_type created_at updated_at deleted deleted_by delete_reason original_comment_id].freeze
 
-  FULL_HISTORY_HISTORIES_HEADERS = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At', 'Archived', 'Archived By',
-                                    'Original Comment Id'].freeze
+  FULL_HISTORY_HISTORIES_HEADERS = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At', 'Deleted', 'Deleted By',
+                                    'Delete Reason', 'Original Comment Id'].freeze
 
   PATIENT_FIELD_TYPES = {
     numbers: %i[id assigned_user responder_id],
@@ -377,8 +377,9 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     comment: 'History Comment',
     created_at: 'History Created Date',
     updated_at: 'History Updated Date',
-    archived: 'Archived',
-    archived_by: 'Archived By',
+    deleted: 'Deleted',
+    deleted_by: 'Deleted By',
+    delete_reason: 'Delete Reason',
     original_comment_id: 'Original Comment Id'
   }.freeze
 
@@ -527,7 +528,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
   HISTORIES_EXPORT_OPTIONS = {
     label: 'Histories',
     nodes: [rct_node(:histories, 'History', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id created_by history_type
-                                               comment created_at updated_at archived archived_by original_comment_id])]
+                                               comment created_at updated_at deleted deleted_by delete_reason original_comment_id])]
   }.freeze
 
   CUSTOM_EXPORT_OPTIONS = {
