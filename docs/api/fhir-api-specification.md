@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Interface Specification
+title: FHIR Interface Specification
 parent: API
 nav_order: 4
 ---
@@ -13,7 +13,7 @@ nav_order: 4
 {:toc}
 </details>
 
-# API Specification
+# FHIR API Specification
 
 For the purposes of this documentation, when describing an API route, [base] includes `/fhir/r4`.
 JSON is currently the only supported format. Please make use of the `application/fhir+json` mime type for the Accept header. When using a POST or PUT endpoint, please also use `application/fhir+json` for the Content-Type header, and when using a PATCH endpoint, please use `application/json-patch+json`.
