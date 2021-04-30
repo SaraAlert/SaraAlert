@@ -195,7 +195,7 @@ class AssessmentsController < ApplicationController
 
         new_val = reported_symptoms[symptom[:name]][:value]
         old_val = symptom.value
-        next if new_val&.to_s == old_val&.to_s
+        next if new_val == old_val
 
         case symptom.type
         when 'BoolSymptom'
