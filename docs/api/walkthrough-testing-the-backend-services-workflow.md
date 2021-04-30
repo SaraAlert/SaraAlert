@@ -2,7 +2,7 @@
 layout: default
 title: "Walkthrough: Testing the Backend Services Workflow"
 parent: API
-nav_order: 5
+nav_order: 6
 ---
 This page documents a set of steps to connect to the Sara Alert FHIR API using the SMART on FHIR Backend Services Workflow as described in  [Getting Started](api-getting-started#smart-on-fhir-backend-services-workflow).
 
