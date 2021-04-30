@@ -165,6 +165,9 @@ class CaseStatus extends React.Component {
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
+          reasoning: this.state.reasoning
+            ? this.state.monitoring_reason + (this.state.monitoring_reason !== '' && this.state.reasoning !== '' ? ', ' : '') + this.state.reasoning
+            : null,
           apply_to_household: this.state.apply_to_household,
           apply_to_household_ids: this.state.apply_to_household_ids,
           diffState: diffState,
@@ -176,6 +179,11 @@ class CaseStatus extends React.Component {
           reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
+  };
+
+  handleChange = event => {
+    event.persist();
+    this.setState({ [`${event.target.id}`]: event.target.value });
   };
 
   createModal(toggle, submit) {
@@ -201,6 +209,25 @@ class CaseStatus extends React.Component {
             </React.Fragment>
           )}
           {this.state.modal_text !== '' && <p>{this.state.modal_text}</p>}
+          {this.state.monitoring_option === 'End Monitoring' && (
+            <div>
+              <Form.Group controlId="monitoring_reason">
+                <Form.Label>Please select reason for status change:</Form.Label>
+                <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange} defaultValue={'Meets Case Definition'}>
+                  <option></option>
+                  {this.props.monitoring_reasons.map((option, index) => (
+                    <option key={`option-${index}`} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="reasoning">
+                <Form.Label>Please include any additional details:</Form.Label>
+                <Form.Control as="textarea" rows="2" onChange={this.handleChange} />
+              </Form.Group>
+            </div>
+          )}
           {this.props.household_members.length > 0 && (
             <ApplyToHousehold
               household_members={this.props.household_members}
@@ -270,6 +297,7 @@ CaseStatus.propTypes = {
   household_members: PropTypes.array,
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
+  monitoring_reasons: PropTypes.array,
 };
 
 export default CaseStatus;

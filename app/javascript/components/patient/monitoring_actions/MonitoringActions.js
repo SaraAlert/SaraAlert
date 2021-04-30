@@ -53,6 +53,7 @@ class MonitoringActions extends React.Component {
                 patient={this.props.patient}
                 authenticity_token={this.props.authenticity_token}
                 household_members={this.props.household_members}
+                monitoring_reasons={this.props.monitoring_reasons}
                 current_user={this.props.current_user}
                 jurisdiction_paths={this.props.jurisdiction_paths}
               />
