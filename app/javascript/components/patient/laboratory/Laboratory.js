@@ -38,7 +38,11 @@ class Laboratory extends React.Component {
 
   toggleDeleteModal = () => {
     let current = this.state.showDeleteModal;
-    this.setState({ showDeleteModal: !current });
+    this.setState({
+      showDeleteModal: !current,
+      delete_reason: null,
+      delete_reason_text: null,
+    });
   };
 
   handleChange = event => {
@@ -46,13 +50,17 @@ class Laboratory extends React.Component {
   };
 
   handleDeleteSubmit = () => {
+    let deleteReason = this.state.delete_reason;
+    if (deleteReason === 'Other' && this.state.delete_reason_text) {
+      deleteReason += ': ' + this.state.delete_reason_text;
+    }
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .delete(window.BASE_PATH + '/laboratories/' + this.props.lab.id, {
           data: {
             patient_id: this.props.patient.id,
-            delete_reason: this.state.delete_reason,
+            delete_reason: deleteReason,
           },
         })
         .then(() => {
@@ -106,7 +114,13 @@ class Laboratory extends React.Component {
           />
         )}
         {this.state.showDeleteModal && (
-          <DeleteDialog type={'Lab Result'} delete={this.handleDeleteSubmit} toggle={this.toggleDeleteModal} onChange={this.handleChange} />
+          <DeleteDialog
+            type={'Lab Result'}
+            delete={this.handleDeleteSubmit}
+            toggle={this.toggleDeleteModal}
+            onChange={this.handleChange}
+            show_text_input={true}
+          />
         )}
       </React.Fragment>
     );

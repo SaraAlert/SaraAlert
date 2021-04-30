@@ -1,9 +1,13 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
+<<<<<<< HEAD
 import { Button, Form, Modal } from 'react-bootstrap';
 
 const MAX_REASON_LENGTH = 200;
 
+=======
+import { Form, Button, Modal } from 'react-bootstrap';
+>>>>>>> 6e652d145 (Add custom text to delete reason)
 class DeleteDialog extends React.Component {
   constructor(props) {
     super(props);
@@ -11,7 +15,10 @@ class DeleteDialog extends React.Component {
       loading: false,
       disabled: true,
       showTextInput: false,
+<<<<<<< HEAD
       delete_reason_text: ''
+=======
+>>>>>>> 6e652d145 (Add custom text to delete reason)
     };
   }
 
@@ -57,6 +64,7 @@ class DeleteDialog extends React.Component {
             <option>Other</option>
           </Form.Control>
           {this.state.showTextInput && (
+<<<<<<< HEAD
             <React.Fragment>
               <Form.Control
                 id="delete_reason_text"
@@ -70,6 +78,16 @@ class DeleteDialog extends React.Component {
               />
               <div className="character-limit-text">{MAX_REASON_LENGTH - this.state.delete_reason_text.length} characters remaining</div>
             </React.Fragment>
+=======
+            <Form.Control
+              id="delete_reason_text"
+              as="textarea"
+              rows="4"
+              className="form-square"
+              placeholder="Please enter additional information about the reason for deletion"
+              onChange={this.handleTextChange}
+            />
+>>>>>>> 6e652d145 (Add custom text to delete reason)
           )}
         </Modal.Body>
         <Modal.Footer>
