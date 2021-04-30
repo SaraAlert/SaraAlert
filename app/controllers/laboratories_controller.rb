@@ -51,7 +51,7 @@ class LaboratoriesController < ApplicationController
     lab = Laboratory.find_by(id: params.permit(:id)[:id])
     lab.destroy
     if lab.destroyed?
-      reason = params.permit(:reason)[:reason]
+      reason = params.permit(:delete_reason)[:delete_reason]
       History.lab_result_edit(patient: params.permit(:patient_id)[:patient_id],
       created_by: current_user.email,
       comment: "User deleted a lab result (ID: #{lab.id}, Type: #{lab.lab_type}, Specimen Collected: #{lab.specimen_collection}, Report: #{lab.report}, Result: #{lab.result}) For Reason: #{reason}.")
