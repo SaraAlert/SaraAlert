@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form, Button, Modal } from 'react-bootstrap';
+import _ from 'lodash';
 
 class DeleteDialog extends React.Component {
   constructor(props) {
@@ -8,12 +9,21 @@ class DeleteDialog extends React.Component {
     this.state = {
       loading: false,
       disabled: true,
+      showTextInput: false,
     };
   }
-  
-  handleChange = event => {
+
+  handleReasonChange = event => {
     event.persist();
-    this.setState({ disabled: false }, () => {
+    const showTextInput = event.target.value === 'Other';
+    this.setState({ disabled: false, showTextInput, [event.target.id]: event.target.value }, () => {
+      this.props.onChange(event);
+    });
+  }
+
+  handleTextChange = event => {
+    event.persist();
+    this.setState({ [event.target.id]: event.target.value }, () => {
       this.props.onChange(event);
     });
   }
@@ -38,15 +48,25 @@ class DeleteDialog extends React.Component {
           <p>Please select reason for deletion:</p>
           <Form.Control
             as="select"
-            className="form-control-lg mb-3"
+            className="form-control-md mb-3"
             id="delete_reason"
-            onChange={this.handleChange}
+            onChange={this.handleReasonChange}
             defaultValue={-1}>
-            <option value={-1} disabled>--</option>
+            <option disabled value={-1}>--</option>
             <option>Duplicate entry</option>
-            <option>Wrong entry</option>
+            <option>Entered in error</option>
             <option>Other</option>
           </Form.Control>
+          {this.state.showTextInput && (
+            <Form.Control
+              id="delete_reason_text"
+              as="textarea"
+              rows="4"
+              className="form-square"
+              placeholder="Please enter additional information about the reason for deletion"
+              onChange={this.handleTextChange}
+            />
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary btn-square" onClick={this.props.toggle}>

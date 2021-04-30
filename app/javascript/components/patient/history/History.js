@@ -51,15 +51,24 @@ class History extends React.Component {
 
   toggleDeleteModal = () => {
     let current = this.state.showDeleteModal;
-    this.setState({ showDeleteModal: !current });
+    this.setState({
+      showDeleteModal: !current,
+      delete_reason: null,
+      delete_reason_text: null
+    });
   };
 
   handleDeleteSubmit = () => {
+    let deleteReason = this.state.delete_reason;
+    if (deleteReason === 'Other' && this.state.delete_reason_text) {
+      deleteReason += ': ' + this.state.delete_reason_text;
+    }
+
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/delete', {
-          delete_reason: this.state.delete_reason
+          delete_reason: deleteReason
         })
         .then(() => {
           location.reload(true);
