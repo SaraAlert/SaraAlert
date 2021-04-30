@@ -5,15 +5,17 @@ import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import _ from 'lodash';
 import reportError from '../../util/ReportError';
-import confirmDialog from '../../util/ConfirmDialog';
+import DeleteDialog from '../../util/DeleteDialog';
+
 import { formatTimestamp, formatRelativePast } from '../../../utils/DateTime';
 
 class History extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      editMode: false,
       loading: false,
+      editMode: false,
+      showDeleteModal: false,
       comment: props.history.comment,
     };
   }
@@ -22,12 +24,13 @@ class History extends React.Component {
     this.setState({ [event.target.id]: event.target.value });
   };
 
-  handleEditClick = () => {
+  toggleEditMode = () => {
     this.setState({ editMode: true });
   };
 
-  handleEditCancel = () => {
-    this.setState({ editMode: false, comment: this.props.history.comment });
+  toggleEditMode = () => {
+    let current = this.state.editMode;
+    this.setState({ editMode: !current, comment: this.props.history.comment });
   };
 
   handleEditSubmit = () => {
@@ -35,7 +38,7 @@ class History extends React.Component {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/edit', {
-          comment: this.state.comment,
+          comment: this.state.comment
         })
         .then(() => {
           location.reload(true);
@@ -46,25 +49,18 @@ class History extends React.Component {
     });
   };
 
-
-  handleArchiveClick = async() => {
-    const confirmText = 'Are you sure you would like to archive this comment? This action cannot be undone.'; // CHANGE ME??
-    const options = {
-      title: 'History',
-      okLabel: 'Archive',
-      okVariant: 'danger',
-      cancelLabel: 'Cancel',
-    };
-    if (await confirmDialog(confirmText, options)) {
-      this.handleArchiveSubmit();
-    }
+  toggleDeleteModal = () => {
+    let current = this.state.showDeleteModal;
+    this.setState({ showDeleteModal: !current });
   };
 
-  handleArchiveSubmit = () => {
+  handleDeleteSubmit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/archive')
+        .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/archive', {
+          delete_reason: this.state.delete_reason
+        })
         .then(() => {
           location.reload(true);
         })
@@ -103,7 +99,7 @@ class History extends React.Component {
           size="sm"
           className="float-right mt-2 mr-2"
           disabled={this.state.loading}
-          onClick={this.handleEditCancel}
+          onClick={this.toggleEditMode}
           aria-label="Cancel Edit History Comment">
           Cancel
         </Button>
@@ -116,7 +112,7 @@ class History extends React.Component {
       <Col>
         <div className="float-right" style={{ width: '45px' }}>
           <span data-for={`edit-history-item-${this.props.history.id}`} data-tip="">
-            <Button id="edit-history-btn" variant="link" className="icon-btn p-0 mr-1" onClick={this.handleEditClick} aria-label="Edit History Comment">
+            <Button id="edit-history-btn" variant="link" className="icon-btn p-0 mr-1" onClick={this.toggleEditMode} aria-label="Edit History Comment">
               <i className="fas fa-edit"></i>
             </Button>
           </span>
@@ -127,17 +123,17 @@ class History extends React.Component {
             effect="solid">
             <span>Edit comment</span>
           </ReactTooltip>
-          <span data-for={`archive-history-item-${this.props.history.id}`} data-tip="">
-            <Button id="delete-history-btn" variant="link" className="icon-btn p-0" onClick={this.handleArchiveClick} aria-label="Archive History Comment">
-              <i className="fas fa-archive"></i>
+          <span data-for={`delete-history-item-${this.props.history.id}`} data-tip="">
+            <Button id="delete-history-btn" variant="link" className="icon-btn p-0" onClick={this.toggleDeleteModal} aria-label="Delete History Comment">
+              <i className="fas fa-trash"></i>
             </Button>
           </span>
           <ReactTooltip
-            id={`archive-history-item-${this.props.history.id}`}
+            id={`delete-history-item-${this.props.history.id}`}
             place="top"
             type="dark"
             effect="solid">
-            <span>Archive comment</span>
+            <span>Delete comment</span>
           </ReactTooltip>
         </div>
       </Col>
@@ -161,7 +157,7 @@ class History extends React.Component {
               this.renderEditMode()
             ) : (
               <Row>
-                <Col md="auto">
+                <Col xs="auto">
                   {this.props.history.comment}
                   {this.props.history.edited_at && <i className="edit-text"> (edited)</i>}
                 </Col>
@@ -170,6 +166,14 @@ class History extends React.Component {
             )}
           </Card.Body>
         </Card>
+        {this.state.showDeleteModal && (
+          <DeleteDialog
+            type={'Comment'}
+            delete={this.handleDeleteSubmit}
+            toggle={this.toggleDeleteModal}
+            onChange={this.handleChange}
+          />
+        )}
       </React.Fragment>
     );
   }
