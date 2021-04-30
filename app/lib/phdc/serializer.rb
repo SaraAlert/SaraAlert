@@ -11,17 +11,18 @@ module PHDC
 
     # Convert many patients to the PHDC format
     def patients_to_phdc_zip(patients, jurisdiction)
+      jurisdiction_path_string = jurisdiction[:path]
       stringio = Zip::OutputStream.write_buffer do |zio|
         patients.each do |patient|
           zio.put_next_entry("records/#{patient.id}.xml")
-          zio.write patient_to_phdc(patient, jurisdiction, patient.assessments.where(symptomatic: true))
+          zio.write patient_to_phdc(patient, jurisdiction_path_string, patient.assessments.where(symptomatic: true))
         end
       end
       stringio.set_encoding('UTF-8')
     end
 
     # Convert a single patient to the PHDC format
-    def patient_to_phdc(patient, jurisdiction, symptomatic_assessments) # rubocop:todo Metrics/MethodLength
+    def patient_to_phdc(patient, jurisdiction_path_string, symptomatic_assessments) # rubocop:todo Metrics/MethodLength
       doc = Ox::Document.new
 
       # Document Headers
@@ -200,7 +201,7 @@ module PHDC
       auth_name = Ox::Element.new(:name)
       assigned_person << auth_name
       jur_name = Ox::Element.new(:family)
-      jur_name << "Sara Alert NBS Export: #{jurisdiction[:path]}"
+      jur_name << "Sara Alert NBS Export: #{jurisdiction_path_string}"
       auth_name << jur_name
 
       # Custodian
@@ -214,7 +215,7 @@ module PHDC
       custodian_id['root'] = '1.3.3.3.333.23'
       represented_custodian_organization << custodian_id
       jur_name_cust = Ox::Element.new(:name)
-      jur_name_cust << "Sara Alert NBS Export: #{jurisdiction[:path]}"
+      jur_name_cust << "Sara Alert NBS Export: #{jurisdiction_path_string}"
       represented_custodian_organization << jur_name_cust
 
       # Body
