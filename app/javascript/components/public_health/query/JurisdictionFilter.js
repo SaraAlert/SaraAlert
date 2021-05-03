@@ -14,15 +14,14 @@ class JurisdictionFilter extends React.Component {
     };
   }
 
-  handleJurisdictionChange = jurisdiction_path => {
-    // Populate & sort the jurisdiction paths if it hasn't been populated yet
-    // This is done here since the jurisdiction_paths props data element is not initially available to populate with when the constructor is called
-    let sorted_jurisdiction_paths = this.state.sorted_jurisdiction_paths;
-    if (sorted_jurisdiction_paths.length === 0) {
-      sorted_jurisdiction_paths = _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b));
-    }
+  static getDerivedStateFromProps(nextProps) {
+    return {
+      sorted_jurisdiction_paths: _.values(nextProps.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
+    };
+  }
 
-    this.setState({ jurisdiction_path, sorted_jurisdiction_paths }, () => {
+  handleJurisdictionChange = jurisdiction_path => {
+    this.setState({ jurisdiction_path }, () => {
       const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === jurisdiction_path);
       if (jurisdiction) {
         this.props.onJurisdictionChange(parseInt(jurisdiction));
