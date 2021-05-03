@@ -98,17 +98,6 @@ class PatientsController < ApplicationController
   def create
     redirect_to(root_url) && return unless current_user.can_create_patient? || current_user.can_import?
 
-    # ----- Error Checking -----
-
-    # Check if patient's responder is a dependent in a household
-    if params.permit(:responder_id)[:responder_id]
-      responder = current_user.get_patient(params.permit(:responder_id)[:responder_id])
-      unless responder.responder_id == responder.id
-        error_message = 'Add new household member failed: responder is a dependent in a household.'
-        render(json: { error: error_message }, status: :bad_request) && return
-      end
-    end
-
     # Check for potential duplicate
     unless params[:bypass_duplicate]
       duplicate_data = current_user.viewable_patients.duplicate_data_detection(allowed_params)

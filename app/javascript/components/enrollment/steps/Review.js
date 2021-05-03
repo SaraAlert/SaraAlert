@@ -7,18 +7,18 @@ import Patient from '../../patient/Patient';
 class Review extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { submitDisabled: false, cancelDisabled: false, showGroupAddNotification: false };
+    this.state = { disabled: false, showGroupAddNotification: false };
   }
 
   submit = (event, groupMember) => {
     // Update state before submitting data so submit button disables when clicked to prevent multiple submissions.
-    this.setState({ submitDisabled: true, cancelDisabled: true }, () => {
+    this.setState({ disabled: true }, () => {
       this.props.submit(event, groupMember, this.reenableButtons);
     });
   };
 
-  reenableButtons = (submitDisabled, cancelDisabled) => {
-    this.setState({ submitDisabled, cancelDisabled });
+  reenableButtons = () => {
+    this.setState({ disabled: false });
   };
 
   toggleGroupAddNotification = () => {
@@ -82,7 +82,7 @@ class Review extends React.Component {
                 variant="secondary"
                 size="lg"
                 className="float-right btn-square px-5"
-                disabled={this.state.cancelDisabled}
+                disabled={this.state.disabled}
                 onClick={() => {
                   window.history.back();
                 }}>
@@ -94,7 +94,7 @@ class Review extends React.Component {
                 variant="primary"
                 size="lg"
                 className="float-right btn-square px-5 mr-4"
-                disabled={this.state.submitDisabled}
+                disabled={this.state.disabled}
                 onClick={this.submit}>
                 Finish
               </Button>
@@ -104,7 +104,7 @@ class Review extends React.Component {
                 variant="primary"
                 size="lg"
                 className="float-right btn-square px-5 mr-4"
-                disabled={this.state.submitDisabled}
+                disabled={this.state.disabled}
                 onClick={this.toggleGroupAddNotification}>
                 Finish and Add a Household Member
               </Button>

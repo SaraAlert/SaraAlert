@@ -79,7 +79,7 @@ class Enrollment extends React.Component {
       window.onbeforeunload = () => {
         return 'All progress will be lost. Are you sure?';
       };
-      reenableButtons(true, true);
+      reenableButtons();
     }
   };
 
@@ -167,7 +167,6 @@ class Enrollment extends React.Component {
       })
       .catch(err => {
         reportError(err?.response?.data?.error ? err.response.data.error : err, false);
-        reenableButtons(true, false);
       });
   };
 
