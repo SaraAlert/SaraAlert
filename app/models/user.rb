@@ -150,6 +150,11 @@ class User < ApplicationRecord
     role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
+  # Can this user view other user editors on a Patient?
+  def can_see_viewers_of_a_patient?
+    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+  end
+
   # Can this user view Patient vaccines?
   def can_view_patient_vaccines?
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)

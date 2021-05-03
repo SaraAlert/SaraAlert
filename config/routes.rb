@@ -102,6 +102,7 @@ Rails.application.routes.draw do
   post '/patients/:id/move_to_household', to: 'patients#move_to_household'
   post '/patients/:id/remove_from_household', to: 'patients#remove_from_household'
   post '/patients/current_case_status', to: 'patients#current_case_status'
+  post '/patients/:id/on_unload', to: 'patients#on_unload'
 
   resources :patients, param: :submission_token do
     resources :assessments, only: [:create, :new, :index]

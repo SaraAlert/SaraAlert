@@ -10,7 +10,14 @@
            } %>
 
 <% if current_user.can_download_monitoree_data? %>
-<%= react_component('patient/export/DownloadMonitoree', { authenticity_token: form_authenticity_token, patient: @patient }) %>
+  <%= react_component('patient/export/DownloadMonitoree', { authenticity_token: form_authenticity_token, patient: @patient }) %>
+<% end %>
+
+<% if current_user.can_see_viewers_of_a_patient? %>
+  <%= react_component('patient/Viewers', {
+                        patient_id: @patient.id,
+                        viewers: @viewers
+                      }) %>
 <% end %>
 
 <%= react_component('patient/PatientPage', {
