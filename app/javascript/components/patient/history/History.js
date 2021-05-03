@@ -38,6 +38,7 @@ class History extends React.Component {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/edit', {
+          patient_id: this.props.history.patient_id,
           comment: this.state.comment
         })
         .then(() => {
@@ -68,6 +69,7 @@ class History extends React.Component {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/delete', {
+          patient_id: this.props.history.patient_id,
           delete_reason: deleteReason
         })
         .then(() => {
