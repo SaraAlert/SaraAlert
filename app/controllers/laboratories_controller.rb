@@ -48,16 +48,17 @@ class LaboratoriesController < ApplicationController
   # Delete an existing lab result
   def destroy
     redirect_to(root_url) && return unless current_user.can_edit_patient_laboratories?
+
     lab = Laboratory.find_by(id: params.permit(:id)[:id])
     lab.destroy
     if lab.destroyed?
       reason = params.permit(:delete_reason)[:delete_reason]
       History.lab_result_edit(patient: params.permit(:patient_id)[:patient_id],
-      created_by: current_user.email,
-      comment: "User deleted a lab result (ID: #{lab.id}, Type: #{lab.lab_type}, Specimen Collected: #{lab.specimen_collection}, Report: #{lab.report}, Result: #{lab.result}) For Reason: #{reason}.")
+                              created_by: current_user.email,
+                              comment: "User deleted a lab result (ID: #{lab.id}, Type: #{lab.lab_type}, Specimen Collected:"\
+                              "#{lab.specimen_collection}, Report: #{lab.report}, Result: #{lab.result}) For Reason: #{reason}.")
     else
       render status: 500
     end
   end
-
 end
