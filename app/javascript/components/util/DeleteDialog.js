@@ -1,7 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form, Button, Modal } from 'react-bootstrap';
-import _ from 'lodash';
+import { Button, Form, Modal } from 'react-bootstrap';
 
 class DeleteDialog extends React.Component {
   constructor(props) {
@@ -21,13 +20,6 @@ class DeleteDialog extends React.Component {
     });
   }
 
-  handleTextChange = event => {
-    event.persist();
-    this.setState({ [event.target.id]: event.target.value }, () => {
-      this.props.onChange(event);
-    });
-  }
-
   delete = () => {
     this.setState({ loading: true }, () => {
       this.props.delete();
@@ -42,7 +34,8 @@ class DeleteDialog extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to delete this {this.props.type}? This action cannot be undone.&nbsp;
+            Are you sure you want to delete this {this.props.type}?&nbsp;
+            This action cannot be undone.&nbsp;
             For auditing purposes, this deletion will be available in this record's history export.
           </p>
           <p>Please select reason for deletion:</p>
@@ -64,7 +57,7 @@ class DeleteDialog extends React.Component {
               rows="4"
               className="form-square"
               placeholder="Please enter additional information about the reason for deletion"
-              onChange={this.handleTextChange}
+              onChange={this.props.onChange}
             />
           )}
         </Modal.Body>
