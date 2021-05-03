@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 # ApiController: API for interacting with Sara Alert
 class Fhir::R4::ApiController < ApplicationApiController
   include ValidationHelper
@@ -997,4 +996,3 @@ class Fhir::R4::ApiController < ApplicationApiController
     headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
   end
 end
-# rubocop:enable Metrics/ClassLength
