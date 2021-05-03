@@ -6,51 +6,60 @@ import Pagination from 'jw-react-pagination';
 import HistoryList from '../../../components/patient/history/HistoryList';
 import History from '../../../components/patient/history/History';
 import InfoTooltip from '../../../components/util/InfoTooltip';
-import { mockHistory1, mockHistory2, mockHistory3 } from '../../mocks/mockHistories';
 import { mockUser1 } from '../../mocks/mockUsers';
+import { mockEnrollmentHistory, mockCommentHistory1, mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2 } from '../../mocks/mockHistories';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const mockHistories = [ mockHistory1, mockHistory2, mockHistory3 ];
-let historyCreators = mockHistories.map(history => history.created_by);
+const histories = [ mockEnrollmentHistory, mockCommentHistory2Edit2, mockCommentHistory2Edit1, mockCommentHistory2, mockCommentHistory1 ];
+const formattedHistories = [ mockEnrollmentHistory, mockCommentHistory2Edit2, mockCommentHistory1 ];
+let historyCreators = histories.map(history => history.created_by);
 historyCreators = historyCreators.filter((creator, index) => historyCreators.includes(creator) && index === historyCreators.indexOf(creator));
-let historyTypes = mockHistories.map(history => history.history_type);
+let historyTypes = histories.map(history => history.history_type);
 historyTypes = historyTypes.filter((type, index) => historyTypes.includes(type) && index === historyTypes.indexOf(type));
 
 function getWrapper() {
-  return shallow(<HistoryList patient_id={mockHistory1.patient_id} histories={mockHistories} current_user={mockUser1}
+  return shallow(<HistoryList patient_id={histories[0].patient_id} histories={histories} current_user={mockUser1}
     authenticity_token={authyToken} history_types={{enrollment: 'Enrollment', comment: 'Comment'}} />);
 }
 
 describe('HistoryList', () => {
-  // it('Properly renders all main components', () => {
-  //   const wrapper = getWrapper();
-  //   expect(wrapper.find('#histories').exists()).toBeTruthy();
-  //   expect(wrapper.find(Card.Header).find('span').text()).toEqual('History');
-  //   expect(wrapper.find(Card.Header).find(InfoTooltip).exists()).toBeTruthy();
-  //   expect(wrapper.find(Card.Header).find(InfoTooltip).prop('tooltipTextKey')).toEqual('history');
-  //   expect(wrapper.find('#history-filters').exists()).toBeTruthy();
-  //   expect(wrapper.find(Select).length).toEqual(2);
-  //   expect(wrapper.find(Select).at(0).prop('placeholder')).toEqual('Filter by Creator');
-  //   expect(wrapper.find(Select).at(0).prop('options')[0].label).toEqual('History Creator');
-  //   wrapper.find(Select).at(0).prop('options')[0].options.forEach((option, index) => {
-  //     expect(option.label).toEqual(historyCreators[index]);
-  //     expect(option.value).toEqual(historyCreators[index]);
-  //   });
-  //   expect(wrapper.find(Select).at(1).prop('placeholder')).toEqual('Filter by Type');
-  //   expect(wrapper.find(Select).at(1).prop('options')[0].label).toEqual('History Type');
-  //   wrapper.find(Select).at(1).prop('options')[0].options.forEach((option, index) => {
-  //     expect(option.label).toEqual(historyTypes[index]);
-  //     expect(option.value).toEqual(historyTypes[index]);
-  //   });
-  //   expect(wrapper.find(Card.Body).find(History).length).toEqual(3);
-  //   expect(wrapper.find(Card.Body).find(Pagination).exists()).toBeTruthy();
-  //   expect(wrapper.find(Card.Body).find(Card).exists()).toBeTruthy();
-  //   expect(wrapper.find(Card.Body).find(Card.Header).text()).toEqual('Add Comment');
-  //   expect(wrapper.find(Card.Body).find('#comment').exists()).toBeTruthy();
-  //   expect(wrapper.find(Card.Body).find(Button).exists()).toBeTruthy();
-  //   expect(wrapper.find(Card.Body).find(Button).text()).toEqual(' Add Comment');
-  //   expect(wrapper.find(Card.Body).find(Button).find('i').hasClass('fa-comment-dots')).toBeTruthy();
-  // });
+  it('Properly renders all main components', () => {
+    const wrapper = getWrapper();
+    expect(wrapper.find('#histories').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Header).find('span').text()).toEqual('History');
+    expect(wrapper.find(Card.Header).find(InfoTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Header).find(InfoTooltip).prop('tooltipTextKey')).toEqual('history');
+    expect(wrapper.find('#history-filters').exists()).toBeTruthy();
+    expect(wrapper.find(Select).length).toEqual(2);
+    expect(wrapper.find(Select).at(0).prop('placeholder')).toEqual('Filter by Creator');
+    expect(wrapper.find(Select).at(0).prop('options')[0].label).toEqual('History Creator');
+    wrapper.find(Select).at(0).prop('options')[0].options.forEach((option, index) => {
+      expect(option.label).toEqual(historyCreators[index]);
+      expect(option.value).toEqual(historyCreators[index]);
+    });
+    expect(wrapper.find(Select).at(1).prop('placeholder')).toEqual('Filter by Type');
+    expect(wrapper.find(Select).at(1).prop('options')[0].label).toEqual('History Type');
+    wrapper.find(Select).at(1).prop('options')[0].options.forEach((option, index) => {
+      expect(option.label).toEqual(historyTypes[index]);
+      expect(option.value).toEqual(historyTypes[index]);
+    });
+    expect(wrapper.find(Card.Body).find(History).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Pagination).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Card).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Card.Header).text()).toEqual('Add Comment');
+    expect(wrapper.find(Card.Body).find('#comment').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Button).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Button).text()).toEqual(' Add Comment');
+    expect(wrapper.find(Card.Body).find(Button).find('i').hasClass('fa-comment-dots')).toBeTruthy();
+  });
+
+  it('Properly filters and sorts history list on component mount', () => {
+    const wrapper = getWrapper();
+    expect(wrapper.find(History).length).toEqual(3);
+    expect(wrapper.state('histories')).toEqual(formattedHistories);
+    expect(wrapper.state('filteredHistories')).toEqual(formattedHistories);
+    expect(wrapper.state('displayedHistories')).toEqual(formattedHistories);
+  });
 
   it('Selecting history creators in dropdown properly updates state', () => {
     const wrapper = getWrapper();
@@ -76,42 +85,47 @@ describe('HistoryList', () => {
     expect(wrapper.state('filters').typeFilters).toEqual(historyTypes);
   });
 
-  // it('Selecting history dropdown filters properly filters histories', () => {
-  //   const wrapper = getWrapper();
-  //   let filteredHistories = mockHistories;
-  //   expect(wrapper.find(History).length).toEqual(3);
-  //   expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
-  //   expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
+  it('Selecting history dropdown filters properly filters histories', () => {
+    const wrapper = getWrapper();
+    expect(wrapper.find(History).length).toEqual(formattedHistories.length);
+    expect(wrapper.state('histories')).toEqual(formattedHistories);
+    expect(wrapper.state('filteredHistories')).toEqual(formattedHistories);
+    expect(wrapper.state('displayedHistories')).toEqual(formattedHistories);
 
-  //   wrapper.find(Select).at(0).simulate('change', [{ label: historyCreators[0], value: historyCreators[0] }]);
-  //   filteredHistories = filteredHistories.filter(history => history.created_by === historyCreators[0]);
-  //   expect(wrapper.find(History).length).toEqual(filteredHistories.length); 
-  //   expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
-  //   expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
+    let filteredHistories = formattedHistories.filter(history => history.created_by === historyCreators[0]);
+    wrapper.find(Select).at(0).simulate('change', [{ label: historyCreators[0], value: historyCreators[0] }]);
+    expect(wrapper.find(History).length).toEqual(filteredHistories.length);
+    expect(wrapper.state('histories')).toEqual(formattedHistories);
+    expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
+    expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
-  //   wrapper.find(Select).at(1).simulate('change', [{ label: historyTypes[0], value: historyTypes[0] }]);
-  //   filteredHistories = filteredHistories.filter(history => history.history_type === historyTypes[0]);
-  //   expect(wrapper.find(History).length).toEqual(filteredHistories.length); 
-  //   expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
-  //   expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
+    filteredHistories = filteredHistories.filter(history => history.history_type === historyTypes[0]);
+    wrapper.find(Select).at(1).simulate('change', [{ label: historyTypes[0], value: historyTypes[0] }]);
+    expect(wrapper.find(History).length).toEqual(filteredHistories.length);
+    expect(wrapper.state('histories')).toEqual(formattedHistories);
+    expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
+    expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
-  //   wrapper.find(Select).at(0).simulate('change', []);
-  //   filteredHistories = mockHistories.filter(history => history.history_type === historyTypes[0]);
-  //   expect(wrapper.find(History).length).toEqual(filteredHistories.length); 
-  //   expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
-  //   expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
+    filteredHistories = formattedHistories.filter(history => history.history_type === historyTypes[0]);
+    wrapper.find(Select).at(0).simulate('change', []);
+    expect(wrapper.find(History).length).toEqual(filteredHistories.length);
+    expect(wrapper.state('histories')).toEqual(formattedHistories);
+    expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
+    expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
-  //   wrapper.find(Select).at(1).simulate('change', [{ label: historyTypes[0], value: historyTypes[0] }, { label: historyTypes[1], value: historyTypes[1] }]);
-  //   filteredHistories = mockHistories.filter(history => history.history_type === historyTypes[0] || history.history_type === historyTypes[1]);
-  //   expect(wrapper.find(History).length).toEqual(filteredHistories.length); 
-  //   expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
-  //   expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
+    filteredHistories = formattedHistories.filter(history => history.history_type === historyTypes[0] || history.history_type === historyTypes[1]);
+    wrapper.find(Select).at(1).simulate('change', [{ label: historyTypes[0], value: historyTypes[0] }, { label: historyTypes[1], value: historyTypes[1] }]);
+    expect(wrapper.find(History).length).toEqual(filteredHistories.length);
+    expect(wrapper.state('histories')).toEqual(formattedHistories);
+    expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
+    expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
-  //   wrapper.find(Select).at(1).simulate('change', []);
-  //   expect(wrapper.find(History).length).toEqual(mockHistories.length); 
-  //   expect(wrapper.state('filteredHistories')).toEqual(mockHistories);
-  //   expect(wrapper.state('displayedHistories')).toEqual(mockHistories);
-  // });
+    wrapper.find(Select).at(1).simulate('change', []);
+    expect(wrapper.find(History).length).toEqual(formattedHistories.length);
+    expect(wrapper.state('histories')).toEqual(formattedHistories);
+    expect(wrapper.state('filteredHistories')).toEqual(formattedHistories);
+    expect(wrapper.state('displayedHistories')).toEqual(formattedHistories);
+  });
 
   it('Editing comment text properly updates state and value', () => {
     const wrapper = getWrapper();

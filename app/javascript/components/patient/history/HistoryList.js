@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Row } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
+import moment from 'moment-timezone';
 import Pagination from 'jw-react-pagination';
 import Select from 'react-select';
 import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
@@ -49,7 +50,7 @@ class HistoryList extends React.Component {
   }
 
   componentDidMount() {
-    const filteredHistories = this.formatHistories(this.props.histories);
+    const filteredHistories = this.formatHistories(this.props.histories); // props.histories must be ordered by created date, newest first
     const displayedHistories = _.clone(filteredHistories).splice(0,5);
     this.setState({ filteredHistories, displayedHistories, histories: filteredHistories });
   }

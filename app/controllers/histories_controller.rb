@@ -21,6 +21,7 @@ class HistoriesController < ApplicationController
     render(json: history) && return
   end
 
+  # "Edits" a history comment - a new history comment is created with the updated comment text and a reference to the id of the original
   def edit
     redirect_to root_url unless current_user.can_create_subject_history?
 
@@ -34,6 +35,8 @@ class HistoriesController < ApplicationController
                     original_comment_id: history.original_comment_id)
   end
 
+  # "Deletes" a history comment - does not actually remove the comment from the database
+  # but adds a deleted_by and deleted_reason that show the comment was deleted
   def delete
     redirect_to root_url unless current_user.can_create_subject_history?
 

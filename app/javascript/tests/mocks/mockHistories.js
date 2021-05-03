@@ -1,35 +1,89 @@
-const mockHistory1 = {
+const mockEnrollmentHistory = {
   id: 1,
+  original_comment_id: null,
   created_by: 'mock_user_1@example.com',
-  comment: "test non-comment",
-  history_type: "Enrollment",
-  created_at: '2020-09-13T14:35:09.000Z',
-  updated_at: '2020-09-13T14:35:09.000Z',
+  comment: 'test non-comment',
+  history_type: 'Enrollment',
+  created_at: '2020-10-13T14:35:09.000Z',
+  updated_at: '2020-10-13T14:35:09.000Z',
   patient_id: 17,
 };
 
-const mockHistory2 = {
+const mockCommentHistory1 = {
   id: 2,
+  original_comment_id: 2,
+  created_by: 'mock_user_2@example.com',
+  comment: 'I am another comment',
+  history_type: 'Comment',
+  created_at: '2020-07-13T14:35:09.000Z',
+  updated_at: '2020-07-13T14:35:09.000Z',
+  patient_id: 17,
+};
+
+const mockCommentHistory2 = {
+  id: 3,
+  original_comment_id: 3,
   created_by: 'mock_user_1@example.com',
-  comment: "test comment",
-  history_type: "Comment",
+  comment: 'I am a comment',
+  history_type: 'Comment',
   created_at: '2020-09-13T14:35:09.000Z',
   updated_at: '2020-09-13T14:35:09.000Z',
   patient_id: 17,
 };
 
-const mockHistory3 = {
-  id: 3,
-  created_by: 'mock_user_2@example.com',
-  comment: "test comment",
-  history_type: "Comment",
-  created_at: '2020-09-13T14:35:09.000Z',
-  updated_at: '2020-09-13T14:35:09.000Z',
+const mockCommentHistory2Edit1 = {
+  id: 4,
+  original_comment_id: 3,
+  created_by: 'mock_user_1@example.com',
+  comment: 'I am a comment and have been edited',
+  history_type: 'Comment',
+  created_at: '2020-09-14T14:35:09.000Z',
+  updated_at: '2020-09-14T14:35:09.000Z',
   patient_id: 17,
+};
+
+const mockCommentHistory2Edit2 = {
+  id: 5,
+  original_comment_id: 3,
+  created_by: 'mock_user_1@example.com',
+  comment: 'I am a comment and have been edited',
+  history_type: 'Comment',
+  created_at: '2020-09-16T14:35:09.000Z',
+  updated_at: '2020-09-16T14:35:09.000Z',
+  patient_id: 17,
+};
+
+const mockEditedHistory = {
+  id: 4,
+  original_comment_id: 4,
+  created_by: 'mock_user_1@example.com',
+  comment: 'I am a comment and have been edited',
+  history_type: 'Comment',
+  created_at: '2020-09-13T14:35:09.000Z',
+  updated_at: '2020-09-16T14:35:09.000Z',
+  edited_at: '2020-09-16T14:35:09.000Z',
+  patient_id: 17,
+};
+
+const mockDeletedHistory = {
+  id: 4,
+  original_comment_id: 4,
+  created_by: 'mock_user_2@example.com',
+  comment: 'I am a deleted comment',
+  history_type: 'Comment',
+  created_at: '2020-09-13T14:35:09.000Z',
+  updated_at: '2020-09-15T14:35:09.000Z',
+  patient_id: 17,
+  deleted_by: 'mock_user_2@example.com',
+  deleted_reason: 'Duplicate entry',
 };
 
 export {
-  mockHistory1,
-  mockHistory2,
-  mockHistory3
+  mockEnrollmentHistory,
+  mockCommentHistory1,
+  mockCommentHistory2,
+  mockCommentHistory2Edit1,
+  mockCommentHistory2Edit2,
+  mockEditedHistory,
+  mockDeletedHistory
 };

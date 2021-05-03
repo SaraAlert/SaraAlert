@@ -4,9 +4,9 @@ import { Button, Card, Col, Row } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import _ from 'lodash';
-import reportError from '../../util/ReportError';
-import DeleteDialog from '../../util/DeleteDialog';
 
+import DeleteDialog from '../../util/DeleteDialog';
+import reportError from '../../util/ReportError';
 import { formatTimestamp, formatRelativePast } from '../../../utils/DateTime';
 
 class History extends React.Component {
