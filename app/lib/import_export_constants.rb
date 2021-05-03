@@ -138,6 +138,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                  member_of_a_common_exposure_cohort head_of_household pause_notifications],
     races: %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander race_other race_unknown
               race_refused_to_answer],
+    languages: %i[primary_language secondary_language],
     alternative_identifiers: %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss],
     lab_fields: %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result]
   }.freeze

@@ -13,6 +13,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   include HistoryQueryHelper
   include Utils
   include ExcelSanitizer
+  include Languages
 
   # Writes export data to file(s)
   def write_export_data_to_files(config, patients, outer_batch_size, inner_batch_size)
@@ -289,6 +290,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       (fields & PATIENT_FIELD_TYPES[:phones]).each { |field| patient_details[field] = format_phone_number(patient[field]) }
       (fields & (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:timestamps])).each { |field| patient_details[field] = patient[field] }
       (fields & (PATIENT_FIELD_TYPES[:booleans] + PATIENT_FIELD_TYPES[:races])).each { |field| patient_details[field] = patient[field] || false }
+      (fields & PATIENT_FIELD_TYPES[:languages]).each { |field| patient_details[field] = Languages.translate_code_to_display(patient[field]) }
 
       # populate computed fields
       patient_details[:name] = patient.displayed_name if fields.include?(:name)
@@ -301,8 +303,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       patient_details[:expected_purge_ts] = patient.expected_purge_date_exp if fields.include?(:expected_purge_ts)
       patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase if fields.include?(:full_status)
       patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
-      patient_details[:primary_language] = Languages.translate_code_to_display(patient.primary_language)
-      patient_details[:secondary_language] = Languages.translate_code_to_display(patient.secondary_language)
 
       # populate creator if requested
       patient_details[:creator] = patients_creators[patient.creator_id] if fields.include?(:creator)
