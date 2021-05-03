@@ -379,7 +379,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     created_at: 'History Created Date',
     updated_at: 'History Updated Date',
     deleted_by: 'Deleted By',
-    delete_reason: 'Delete Reason',
+    delete_reason: 'Delete Reason'
   }.freeze
 
   ALL_FIELDS_NAMES = {
@@ -526,8 +526,8 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
 
   HISTORIES_EXPORT_OPTIONS = {
     label: 'Histories',
-    nodes: [rct_node(:histories, 'History', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id original_comment_id created_by history_type
-                                               comment created_at updated_at deleted_by delete_reason])]
+    nodes: [rct_node(:histories, 'History', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id original_comment_id created_by
+                                               history_type comment created_at updated_at deleted_by delete_reason])]
   }.freeze
 
   CUSTOM_EXPORT_OPTIONS = {
