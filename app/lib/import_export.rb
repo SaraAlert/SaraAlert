@@ -13,6 +13,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   include HistoryQueryHelper
   include Utils
   include ExcelSanitizer
+  include Languages
 
   # Writes export data to file(s)
   def write_export_data_to_files(config, patients, outer_batch_size, inner_batch_size)
@@ -289,6 +290,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       (fields & PATIENT_FIELD_TYPES[:phones]).each { |field| patient_details[field] = format_phone_number(patient[field]) }
       (fields & (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:timestamps])).each { |field| patient_details[field] = patient[field] }
       (fields & (PATIENT_FIELD_TYPES[:booleans] + PATIENT_FIELD_TYPES[:races])).each { |field| patient_details[field] = patient[field] || false }
+      (fields & PATIENT_FIELD_TYPES[:languages]).each { |field| patient_details[field] = Languages.translate_code_to_display(patient[field]) }
 
       # populate computed fields
       patient_details[:name] = patient.displayed_name if fields.include?(:name)
