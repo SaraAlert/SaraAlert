@@ -5,6 +5,11 @@ parent: API
 nav_order: 1
 ---
 
+# 1.28.0
+* Support for reading and writing Vaccines via a FHIR Immunization.
+* Improve performance of search, especially when searching FHIR Patients.
+
+***
 # 1.27.0
 * Improved validation error messaging: validation messages will more clearly indicate what value caused the validation error, and where that value is in the JSON document
 
