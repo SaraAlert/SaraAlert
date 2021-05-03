@@ -1,7 +1,19 @@
 # frozen_string_literal: true
 
 namespace :demo do
-desc 'Backup the database'
+  desc 'Clear all sidekiq queues'
+  task clear_sidekiq: :environment do
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    puts 'Clearing sidekiq...'
+    require 'sidekiq/api'
+    Sidekiq::Queue.all.each(&:clear)
+    Sidekiq::RetrySet.new.clear
+    Sidekiq::ScheduledSet.new.clear
+    Sidekiq::DeadSet.new.clear
+    puts 'sidekiq cleared!'
+  end
+
+  desc 'Backup the database'
   task backup_database: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
     username = ActiveRecord::Base.configurations.configurations[1].config['username']
