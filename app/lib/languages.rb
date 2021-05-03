@@ -34,7 +34,7 @@ module Languages
   # PARAM: 'eng', 'spa', 'fra'
   # RETURN VALUE: 'English', 'Spanish', 'French'
   def self.translate_code_to_display(lang)
-    Languages.all_languages[lang&.to_sym]&.[](:display)
+    Languages.all_languages.dig(lang&.to_sym, :display)
   end
 
   # This function will attempt to match the input to a language in the system
