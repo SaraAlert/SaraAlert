@@ -7,6 +7,7 @@ require_relative '../../../lib/system_test_utils'
 
 class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   include ImportExport
+  include Languages
   @@system_test_utils = SystemTestUtils.new(nil)
 
   DOWNLOAD_TIMEOUT = 5
@@ -169,6 +170,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
           assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field} (row #{row + 1})")
         elsif %i[primary_telephone secondary_telephone].include?(field)
           assert_equal(format_phone_number(details[field]).to_s, cell_value || '', "For field: #{field} (row #{row + 1})")
+        elsif %i[primary_language secondary_language].include?(field)
+          assert_equal(Languages.translate_code_to_display(details[field]).to_s, cell_value || '', "For field: #{field} (row #{row + 1})")
         else
           assert_equal(details[field].to_s, cell_value || '', "For field: #{field} (row #{row + 1})")
         end
@@ -190,6 +193,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
           assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field} in Monitorees List (row #{row + 1})")
         elsif %i[primary_telephone secondary_telephone].include?(field)
           assert_equal(format_phone_number(details[field]).to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
+        elsif %i[primary_language secondary_language].include?(field)
+          assert_equal(Languages.translate_code_to_display(details[field]).to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
         else
           assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
         end
@@ -348,6 +353,9 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
                        "For field: #{field} in Monitorees List (row #{row + 1})")
         elsif %i[primary_telephone secondary_telephone].include?(field)
           assert_equal(format_phone_number(patient_details[field]).to_s, cell_value || '', "For field: #{field} in Monitorees List (row #{row + 1})")
+        elsif %i[primary_language secondary_language].include?(field)
+          assert_equal(Languages.translate_code_to_display(patient_details[field]).to_s, cell_value || '',
+                       "For field: #{field} in Monitorees List (row #{row + 1})")
         elsif field == :creator
           responder_email = User.find(patient.creator_id).email
           assert_equal(responder_email, cell_value, "For field: #{field} in Monitorees List (row #{row + 1})")

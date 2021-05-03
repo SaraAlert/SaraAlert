@@ -34,6 +34,19 @@ class LanguagesTest < ActiveSupport::TestCase
     assert_nil(Languages.normalize_and_get_language_code(:en))
   end
 
+  test 'translate code to display string' do
+    assert_equal(Languages.translate_code_to_display('eng'), 'English')
+    assert_equal(Languages.translate_code_to_display('fra'), 'French')
+    assert_equal(Languages.translate_code_to_display('isl'), 'Icelandic')
+
+    assert_equal(Languages.translate_code_to_display(:ita), 'Italian')
+    assert_equal(Languages.translate_code_to_display(:cha), 'Chamorro')
+    assert_equal(Languages.translate_code_to_display(:ase), 'American Sign Language')
+
+    assert_nil(Languages.translate_code_to_display('INVALID LANGUAGE'))
+    assert_nil(Languages.translate_code_to_display(nil))
+  end
+
   test 'normalize_and_get_language_code 2-letter-code' do
     assert_equal(:eng, Languages.normalize_and_get_language_code('en'))
     assert_equal(:'spa-pr', Languages.normalize_and_get_language_code('es-PR'))
