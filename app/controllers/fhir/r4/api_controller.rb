@@ -56,6 +56,12 @@ class Fhir::R4::ApiController < ApplicationApiController
       return if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
 
       resource = get_record(Vaccine, params.permit(:id)[:id])
+    when 'provenance'
+      return if doorkeeper_authorize!(
+        :'system/History.read'
+      )
+
+      resource = get_record(History, params.permit(:id)[:id])
     else
       status_not_found && return
     end
