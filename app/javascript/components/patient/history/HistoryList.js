@@ -51,7 +51,7 @@ class HistoryList extends React.Component {
 
   componentDidMount() {
     const filteredHistories = this.formatHistories(this.props.histories); // props.histories must be ordered by created date, newest first
-    const displayedHistories = _.clone(filteredHistories).splice(0,5);
+    const displayedHistories = _.clone(filteredHistories).splice(0, 5);
     this.setState({ filteredHistories, displayedHistories, histories: filteredHistories });
   }
 
@@ -81,27 +81,30 @@ class HistoryList extends React.Component {
   };
 
   formatHistories = histories => {
-    return histories.filter(history=> {
-      if (history.history_type === 'Comment'){
-        const latest_version = histories.find(h => history.original_comment_id === h.original_comment_id);
-        return history.id === latest_version.id;
-      }
-      return true;
-    }).map(history => {
-      // if comment has been edited, set created at as the time the original was created and store a new variable for the time the history was edited
-      // otherwise store the history object as is
-      if (history.history_type === 'Comment') {
-        const original_comment = histories.find(h => history.original_comment_id === h.id);
-        if (history.id !== original_comment.id) {
-          history.edited_at = history.created_at;
-          history.created_at = original_comment.created_at;
+    return histories
+      .filter(history => {
+        if (history.history_type === 'Comment') {
+          const latest_version = histories.find(h => history.original_comment_id === h.original_comment_id);
+          return history.id === latest_version.id;
         }
-      }
-      return history;
-    }).sort((a, b) => {
-      return moment.utc(b.created_at).diff(moment.utc(a.created_at))
-    });
-  }
+        return true;
+      })
+      .map(history => {
+        // if comment has been edited, set created at as the time the original was created and store a new variable for the time the history was edited
+        // otherwise store the history object as is
+        if (history.history_type === 'Comment') {
+          const original_comment = histories.find(h => history.original_comment_id === h.id);
+          if (history.id !== original_comment.id) {
+            history.edited_at = history.created_at;
+            history.created_at = original_comment.created_at;
+          }
+        }
+        return history;
+      })
+      .sort((a, b) => {
+        return moment.utc(b.created_at).diff(moment.utc(a.created_at));
+      });
+  };
 
   filterHistories = () => {
     let filteredHistories = [...this.state.histories];
@@ -117,7 +120,7 @@ class HistoryList extends React.Component {
     }
     this.setState({
       filteredHistories,
-      displayedHistories: filteredHistories.slice(0,5)
+      displayedHistories: filteredHistories.slice(0, 5),
     });
   };
 

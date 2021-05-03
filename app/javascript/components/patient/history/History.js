@@ -3,7 +3,6 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
-import _ from 'lodash';
 
 import DeleteDialog from '../../util/DeleteDialog';
 import reportError from '../../util/ReportError';
@@ -39,7 +38,7 @@ class History extends React.Component {
       axios
         .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/edit', {
           patient_id: this.props.history.patient_id,
-          comment: this.state.comment
+          comment: this.state.comment,
         })
         .then(() => {
           location.reload(true);
@@ -55,7 +54,7 @@ class History extends React.Component {
     this.setState({
       showDeleteModal: !current,
       delete_reason: null,
-      delete_reason_text: null
+      delete_reason_text: null,
     });
   };
 
@@ -70,7 +69,7 @@ class History extends React.Component {
       axios
         .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/delete', {
           patient_id: this.props.history.patient_id,
-          delete_reason: deleteReason
+          delete_reason: deleteReason,
         })
         .then(() => {
           location.reload(true);
@@ -127,11 +126,7 @@ class History extends React.Component {
               <i className="fas fa-edit"></i>
             </Button>
           </span>
-          <ReactTooltip
-            id={`edit-history-item-${this.props.history.id}`}
-            place="top"
-            type="dark"
-            effect="solid">
+          <ReactTooltip id={`edit-history-item-${this.props.history.id}`} place="top" type="dark" effect="solid">
             <span>Edit comment</span>
           </ReactTooltip>
           <span data-for={`delete-history-item-${this.props.history.id}`} data-tip="">
@@ -139,11 +134,7 @@ class History extends React.Component {
               <i className="fas fa-trash"></i>
             </Button>
           </span>
-          <ReactTooltip
-            id={`delete-history-item-${this.props.history.id}`}
-            place="top"
-            type="dark"
-            effect="solid">
+          <ReactTooltip id={`delete-history-item-${this.props.history.id}`} place="top" type="dark" effect="solid">
             <span>Delete comment</span>
           </ReactTooltip>
         </div>
@@ -178,12 +169,7 @@ class History extends React.Component {
           </Card.Body>
         </Card>
         {this.state.showDeleteModal && (
-          <DeleteDialog
-            type={'Comment'}
-            delete={this.handleDeleteSubmit}
-            toggle={this.toggleDeleteModal}
-            onChange={this.handleChange}
-          />
+          <DeleteDialog type={'Comment'} delete={this.handleDeleteSubmit} toggle={this.toggleDeleteModal} onChange={this.handleChange} />
         )}
       </React.Fragment>
     );

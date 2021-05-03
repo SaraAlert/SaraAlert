@@ -25,7 +25,8 @@ class HistoriesController < ApplicationController
   def edit
     redirect_to root_url unless current_user.can_create_subject_history?
 
-    history = current_user.viewable_patients.find_by(id: params.permit(:patient_id)[:patient_id])&.histories.find_by(id: params.permit(:id)[:id])
+    patient = current_user.viewable_patients.find_by(id: params.permit(:patient_id)[:patient_id])
+    history = patient.histories.find_by(id: params.permit(:id)[:id])
     redirect_to root_url && return if history.nil? || history.history_type != 'Comment' || history.created_by != current_user.email
 
     History.create!(patient_id: history.patient_id,
@@ -40,11 +41,12 @@ class HistoriesController < ApplicationController
   def delete
     redirect_to root_url unless current_user.can_create_subject_history?
 
-    history = current_user.viewable_patients.find_by(id: params.permit(:patient_id)[:patient_id])&.histories.find_by(id: params.permit(:id)[:id])
+    patient = current_user.viewable_patients.find_by(id: params.permit(:patient_id)[:patient_id])
+    history = patient.histories.find_by(id: params.permit(:id)[:id])
     redirect_to root_url && return if history.nil? || history.history_type != 'Comment' || history.created_by != current_user.email
 
     # mark each version of the history as deleted, not just the most recent one
-    history_versions = current_user.viewable_patients.find_by(id: params.permit(:patient_id)[:patient_id])&.histories.where(original_comment_id: history.original_comment_id)
+    history_versions = patient.histories.where(original_comment_id: history.original_comment_id)
 
     history_versions.each do |h|
       h.deleted_by = current_user.email

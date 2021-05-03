@@ -223,7 +223,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     edit_histories = xlsx_full_history.sheet('Edit Histories')
     histories = History.where(patient_id: patient_ids)
     assert_equal(histories.size, edit_histories.last_row - 1, 'Number of histories in Edit Histories')
-    history_headers = ['Patient ID', 'Comment ID', 'Original Comment ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At', 'Deleted By', 'Delete Reason']
+    history_headers = ['Patient ID', 'Comment ID', 'Original Comment ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At', 'Deleted By',
+                       'Delete Reason']
     history_headers.each_with_index do |header, col|
       assert_equal(header, edit_histories.cell(1, col + 1), "For header: #{header} in Edit Histories")
     end

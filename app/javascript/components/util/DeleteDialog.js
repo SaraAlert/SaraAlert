@@ -18,13 +18,13 @@ class DeleteDialog extends React.Component {
     this.setState({ disabled: false, showTextInput, [event.target.id]: event.target.value }, () => {
       this.props.onChange(event);
     });
-  }
+  };
 
   delete = () => {
     this.setState({ loading: true }, () => {
       this.props.delete();
     });
-  }
+  };
 
   render() {
     return (
@@ -34,18 +34,14 @@ class DeleteDialog extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to delete this {this.props.type}?&nbsp;
-            This action cannot be undone.&nbsp;
-            For auditing purposes, this deletion will be available in this record's history export.
+            Are you sure you want to delete this {this.props.type}?&nbsp; This action cannot be undone.&nbsp; For auditing purposes, this deletion will be
+            available in this record&apos;s history export.
           </p>
           <p>Please select reason for deletion:</p>
-          <Form.Control
-            as="select"
-            className="form-control-md mb-3"
-            id="delete_reason"
-            onChange={this.handleReasonChange}
-            defaultValue={-1}>
-            <option disabled value={-1}>--</option>
+          <Form.Control as="select" className="form-control-md mb-3" id="delete_reason" onChange={this.handleReasonChange} defaultValue={-1}>
+            <option disabled value={-1}>
+              --
+            </option>
             <option>Duplicate entry</option>
             <option>Entered in error</option>
             <option>Other</option>
