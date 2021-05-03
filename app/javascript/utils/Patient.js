@@ -59,7 +59,6 @@ function formatRace(patient) {
   return raceArray.length === 0 ? '--' : raceArray.join(', ');
 };
 
-
 export {
   formatName,
   formatNameAlt,
