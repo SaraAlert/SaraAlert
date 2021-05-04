@@ -94,6 +94,7 @@ describe('History', () => {
     expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#delete-history-btn').exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#comment').exists()).toBeFalsy();
+    expect(wrapper.find(Card.Body).find('.character-limit-text').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#update-edit-history-btn').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#cancel-edit-history-btn').exists()).toBeFalsy();
     wrapper.find(Card.Body).find('#edit-history-btn').simulate('click');
@@ -101,6 +102,8 @@ describe('History', () => {
     expect(wrapper.find(Card.Body).text().includes(mockCommentHistory2.comment)).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#delete-history-btn').exists()).toBeFalsy();
+    expect(wrapper.find(Card.Body).find('.character-limit-text').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('.character-limit-text').text()).toEqual(`${10000-mockCommentHistory2.comment.length} characters remaining`);
     expect(wrapper.find(Card.Body).find('#comment').exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#comment').prop('value')).toEqual(mockCommentHistory2.comment);
     expect(wrapper.find(Card.Body).find('#update-edit-history-btn').exists()).toBeTruthy();
@@ -114,12 +117,15 @@ describe('History', () => {
     wrapper.find(Card.Body).find('#edit-history-btn').simulate('click');
     expect(wrapper.state('comment')).toEqual(mockCommentHistory2.comment);
     expect(wrapper.find(Card.Body).find('#comment').prop('value')).toEqual(mockCommentHistory2.comment);
+    expect(wrapper.find(Card.Body).find('.character-limit-text').text()).toEqual(`${10000-mockCommentHistory2.comment.length} characters remaining`);
     wrapper.find(Card.Body).find('#comment').simulate('change', { target: { id: 'comment', value: 'editing comment' } });
     expect(wrapper.state('comment')).toEqual('editing comment');
     expect(wrapper.find(Card.Body).find('#comment').prop('value')).toEqual('editing comment');
+    expect(wrapper.find(Card.Body).find('.character-limit-text').text()).toEqual(`${10000-('editing comment').length} characters remaining`);
     wrapper.find(Card.Body).find('#comment').simulate('change', { target: { id: 'comment', value: 'editing comment again' } });
     expect(wrapper.state('comment')).toEqual('editing comment again');
     expect(wrapper.find(Card.Body).find('#comment').prop('value')).toEqual('editing comment again');
+    expect(wrapper.find(Card.Body).find('.character-limit-text').text()).toEqual(`${10000-('editing comment again').length} characters remaining`);
   });
 
   it('Disables the update button when edit text input is empty or when edit text has not changed from original', () => {

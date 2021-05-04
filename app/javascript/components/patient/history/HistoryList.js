@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Card, Row } from 'react-bootstrap';
+import { Button, Card, Form, Row } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 import Pagination from 'jw-react-pagination';
@@ -171,20 +171,21 @@ class HistoryList extends React.Component {
             <Card className="mb-4 mt-4 mx-3 card-square shadow-sm">
               <Card.Header>Add Comment</Card.Header>
               <Card.Body>
-                <textarea
+                <Form.Control
                   id="comment"
-                  name="comment"
-                  aria-label="Add comment input"
+                  as="textarea"
+                  aria-label="Add history comment input"
                   className="form-control"
-                  style={{ resize: 'none' }}
                   rows="3"
+                  maxLength="10000"
                   placeholder="enter comment here..."
                   value={this.state.comment}
                   onChange={this.handleChange}
                 />
+                <div className="character-limit-text">{10000 - this.state.comment.length} characters remaining</div>
                 <Button
                   variant="primary"
-                  className="mt-3 btn btn-square float-right"
+                  className="btn btn-square float-right mt-2"
                   disabled={this.state.loading || this.state.comment === ''}
                   onClick={this.submit}>
                   <i className="fas fa-comment-dots"></i> Add Comment

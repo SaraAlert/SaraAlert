@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Card, Col, Row } from 'react-bootstrap';
+import { Button, Card, Col, Form, Row } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 
@@ -85,16 +85,17 @@ class History extends React.Component {
   renderEditMode() {
     return (
       <React.Fragment>
-        <textarea
+        <Form.Control
           id="comment"
-          name="comment"
+          as="textarea"
           className="form-control"
           aria-label="Edit comment input"
-          style={{ resize: 'none' }}
           rows="3"
+          maxLength="10000"
           value={this.state.comment}
           onChange={this.handleChange}
         />
+        <div className="character-limit-text">{10000 - this.state.comment.length} characters remaining</div>
         <Button
           id="update-edit-history-btn"
           variant="primary"

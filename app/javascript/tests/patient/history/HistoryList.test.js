@@ -47,6 +47,8 @@ describe('HistoryList', () => {
     expect(wrapper.find(Card.Body).find(Card).exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find(Card.Header).text()).toEqual('Add Comment');
     expect(wrapper.find(Card.Body).find('#comment').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('.character-limit-text').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('.character-limit-text').text()).toEqual('10000 characters remaining');
     expect(wrapper.find(Card.Body).find(Button).exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find(Button).text()).toEqual(' Add Comment');
     expect(wrapper.find(Card.Body).find(Button).find('i').hasClass('fa-comment-dots')).toBeTruthy();
