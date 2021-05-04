@@ -4,19 +4,19 @@ import { Card } from 'react-bootstrap';
 import MonitoreeFlow from '../../../components/analytics/widgets/MonitoreeFlow';
 import mockAnalytics from '../../mocks/mockAnalytics';
 
-const monitoreeFlowTableHeaders = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'];
-const exposureNewEnrollmentValues = [ 54, 164, 192, 223 ];
-const exposureTransferredInValues = [ 7, 21, 22, 25 ];
-const exposureFromIsolationValues = [ 0, 6, 16, 76 ];
-const exposureClosedValues = [ 4, 11, 12, 15 ];
-const exposureTransferredOutValues = [ 8, 18, 20, 27 ];
-const exposureToIsolationValues = [ 2, 21, 56, 138 ];
-const isolationNewEnrollmentValues = [ 39, 100, 171, 195 ];
-const isolationTransferredInValues = [ 4, 17, 19, 22 ];
-const isolationFromExposureValues = [ 2, 21, 56, 138 ];
-const isolationClosedValues = [ 2, 4, 6, 7 ];
-const isolationTransferredOutValues = [ 5, 18, 22, 25 ];
-const isolationToExposureValues = [ 0, 6, 16, 76 ];
+const monitoreeFlowTableHeaders = [' Last 24 Hours  n (col %) ', ' Last 7 Days  n (col %) ', ' Last 14 Days  n (col %) ', ' Total  n (col %) '];
+const exposureNewEnrollmentValues = [ '54 (88.5%)', '164 (85.9%)', '192 (83.5%)', '223 (68.8%)' ];
+const exposureTransferredInValues = [ '7 (11.5%)', '21 (11.0%)', '22 (9.6%)', '25 (7.7%)' ];
+const exposureFromIsolationValues = [ '0 (None)', '6 (3.1%)', '16 (7.0%)', '76 (23.5%)' ];
+const exposureClosedValues = [ '4 (28.6%)', '11 (22.0%)', '12 (13.6%)', '15 (8.3%)' ];
+const exposureTransferredOutValues = [ '8 (57.1%)', '18 (36.0%)', '20 (22.7%)', '27 (15.0%)' ];
+const exposureToIsolationValues = [ '2 (14.3%)', '21 (42.0%)', '56 (63.6%)', '138 (76.7%)' ];
+const isolationNewEnrollmentValues = [ '39 (86.7%)', '100 (72.5%)', '171 (69.5%)', '195 (54.9%)' ];
+const isolationTransferredInValues = [ '4 (8.9%)', '17 (12.3%)', '19 (7.7%)', '22 (6.2%)' ];
+const isolationFromExposureValues = [ '2 (4.4%)', '21 (15.2%)', '56 (22.8%)', '138 (38.9%)' ];
+const isolationClosedValues = [ '2 (28.6%)', '4 (14.3%)', '6 (13.6%)', '7 (6.5%)' ];
+const isolationTransferredOutValues = [ '5 (71.4%)', '18 (64.3%)', '22 (50.0%)', '25 (23.1%)' ];
+const isolationToExposureValues = [ '0 (None)', '6 (21.4%)', '16 (36.4%)', '76 (70.4%)' ];
 
 function getWrapper() {
   return shallow(<MonitoreeFlow stats={mockAnalytics}/>);
