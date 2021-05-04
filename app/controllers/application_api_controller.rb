@@ -3,6 +3,16 @@
 # ApplicationAPIController: defines methods useful for all API controllers
 class ApplicationApiController < ActionController::API
   include ActionController::MimeResponds
+
+  PATIENT_READ_SCOPES = %i[user/Patient.read user/Patient.* system/Patient.read system/Patient.*].freeze
+  PATIENT_WRITE_SCOPES = %i[user/Patient.write user/Patient.* system/Patient.write system/Patient.*].freeze
+  RELATED_PERSON_READ_SCOPES = %i[user/RelatedPerson.read user/RelatedPerson.* system/RelatedPerson.read system/RelatedPerson.*].freeze
+  RELATED_PERSON_WRITE_SCOPES = %i[user/RelatedPerson.write user/RelatedPerson.* system/RelatedPerson.write system/RelatedPerson.*].freeze
+  IMMUNIZATION_READ_SCOPES = %i[user/Immunization.read user/Immunization.* system/Immunization.read system/Immunization.*].freeze
+  IMMUNIZATION_WRITE_SCOPES = %i[user/Immunization.write user/Immunization.* system/Immunization.write system/Immunization.*].freeze
+  OBSERVATION_READ_SCOPES = %i[user/Observation.read system/Observation.read].freeze
+  QUESTIONNAIRE_RESPONSE_READ_SCOPES = %i[user/QuestionnaireResponse.read system/QuestionnaireResponse.read].freeze
+
   # Generic 401 unauthorized
   def status_unauthorized
     respond_to do |format|
