@@ -6,7 +6,6 @@ class Laboratory < ApplicationRecord
   include FhirHelper
 
   belongs_to :patient, touch: true
-  # { system: "http://terminology.hl7.org/CodeSystem/v3-NullFlavor", code: "unk" } => nil
 
   RESULT_TO_CODE = {
     positive: { system: 'http://snomed.info/sct', code: '10828004' },

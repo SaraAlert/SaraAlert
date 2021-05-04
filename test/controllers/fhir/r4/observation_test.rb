@@ -115,6 +115,111 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert(FHIRPath.evaluate(result_iss['expression'].first, observation_json) == inv_result)
   end
 
+  #----- update tests -----
+
+  test 'should update Observation via update' do
+    original_lab = @lab_1.dup
+    new_specimen_collection = @lab_1.specimen_collection - 1.day
+    @lab_1.specimen_collection = new_specimen_collection
+    put(
+      "/fhir/r4/Observation/#{@lab_1.id}",
+      params: @lab_1.as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+
+    # Verify that the updated Lab matches the original outside of updated fields
+    %i[patient_id
+       lab_type
+       report
+       result].each do |field|
+      assert_equal original_lab[field], @lab_1[field]
+    end
+
+    # Verify that updated fields are updated
+    assert_equal new_specimen_collection, @lab_1.reload.specimen_collection
+
+    histories = History.where(patient: @lab_1.patient_id)
+    assert_equal(1, histories.count)
+    assert_equal 'system-test-everything (API)', histories.first.created_by
+    assert_match(/Lab Result edited.*API/, histories.first.comment)
+  end
+
+  test 'should update Observation via patch update' do
+    original_lab = @lab_1.dup
+    new_specimen_collection = @lab_1.specimen_collection - 1.day
+    patch = [
+      { op: 'replace', path: '/effectiveDateTime', value: new_specimen_collection.to_s }
+    ]
+    patch(
+      "/fhir/r4/Observation/#{@lab_1.id}",
+      params: patch.to_json,
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/json-patch+json' }
+    )
+    assert_response :ok
+
+    # Verify that the updated Lab matches the original outside of updated fields
+    %i[patient_id
+      lab_type
+      report
+      result].each do |field|
+     assert_equal original_lab[field], @lab_1[field]
+   end
+
+   # Verify that updated fields are updated
+   assert_equal new_specimen_collection, @lab_1.reload.specimen_collection
+  end
+
+  test 'SYSTEM FLOW: should be unprocessable entity via Observation update with invalid Patient reference' do
+    @lab_1.patient_id = 0
+    put(
+      "/fhir/r4/Observation/#{@lab_1.id}",
+      params: @lab_1.as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    assert_equal 1, errors.length
+    assert_match(/0.*Patient ID.*client application/, errors[0])
+  end
+
+  test 'USER FLOW: should be unprocessable entity via Observation update with invalid Patient reference' do
+    @lab_1.patient_id = 0
+    put(
+      "/fhir/r4/Observation/#{@lab_1.id}",
+      params: @lab_1.as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@user_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    assert_equal 1, errors.length
+    assert_match(/0.*Patient ID.*API user/, errors[0])
+  end
+
+  test 'should be unprocessable entity via Observation update with validation errors' do
+    inv_result = { 'system' => 'foo', 'code' => 'foo' }
+    lab_1_as_fhir = @lab_1.as_fhir
+    lab_1_as_fhir.valueCodeableConcept.coding = [inv_result]
+    observation_json_str = lab_1_as_fhir.to_json
+    observation_json = JSON.parse(observation_json_str)
+    put(
+      "/fhir/r4/Observation/#{@lab_1.id}",
+      params: observation_json_str,
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    issues = json_response['issue']
+
+    assert_equal 1, issues.length
+    result_iss = issues.find { |i| /foo.*Result/.match(i['diagnostics']) }
+    assert(FHIRPath.evaluate(result_iss['expression'].first, observation_json) == inv_result)
+  end
+
   #----- search tests -----
 
   test 'should find Observations for a Patient via search' do

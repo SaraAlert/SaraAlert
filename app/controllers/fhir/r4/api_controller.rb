@@ -74,7 +74,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
   # Update a resource given a type and an id.
   #
-  # Supports (updating): Patient, RelatedPerson, Immunization
+  # Supports (updating): Patient, RelatedPerson, Immunization, Observation
   #
   # PUT /fhir/r4/[:resource_type]/[:id]
   def update
@@ -215,6 +215,42 @@ class Fhir::R4::ApiController < ApplicationApiController
                                  comment: "Vaccination edited via the API (ID: #{vaccine.id}).")
       end
       status_ok(vaccine.as_fhir) && return
+    when 'observation'
+      return if doorkeeper_authorize!(*OBSERVATION_WRITE_SCOPES)
+
+      # Get the Lab that needs to be updated
+      lab = get_record(Laboratory, params.permit(:id)[:id])
+      status_forbidden && return if lab.nil?
+
+      # Get the contents from applying a patch, if needed
+      if request.patch? && !lab.nil?
+        begin
+          contents = apply_patch(lab, patch)
+        rescue StandardError => e
+          status_bad_request([['Unable to apply patch', e&.message].compact.join(': ')]) && return
+        end
+      end
+
+      fhir_map = laboratory_from_fhir(contents)
+      request_updates = fhir_map.transform_values { |v| v[:value] }
+      status_unprocessable_entity && return if request_updates.nil?
+
+      # Assign any remaining updates to the Lab
+      lab.assign_attributes(request_updates)
+
+      # Wrap updates to the Lab and History creation in a transaction
+      ActiveRecord::Base.transaction do
+        unless referenced_patient_valid_for_client?(lab, :patient_id) && lab.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
+          req_json = request.patch? ? lab.as_fhir.to_json : JSON.parse(request.body.string)
+          status_unprocessable_entity(lab, fhir_map, req_json) && return
+        end
+
+        Rails.logger.info "Updated Lab Result (ID: #{lab.id}) for Patient with ID: #{lab.patient_id}"
+        History.lab_result_edit(patient: lab.patient_id,
+                                 created_by: @current_actor_label,
+                                 comment: "Lab Result edited via the API (ID: #{lab.id}).")
+      end
+      status_ok(lab.as_fhir) && return
     else
       status_not_found && return
     end
@@ -357,7 +393,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       resource = Laboratory.new(vals)
 
       ActiveRecord::Base.transaction do
-        unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save && fhir_map.all? { |_k, v| v[:errors].blank? }
+        unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
           req_json = JSON.parse(request.body.string)
           status_unprocessable_entity(resource, fhir_map, req_json) && return
         end
@@ -494,7 +530,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     resource = FHIR::CapabilityStatement.new(
       status: 'active',
       kind: 'instance',
-      date: DateTime.parse('2021-04-01').strftime('%FT%T%:z'),
+      date: DateTime.parse('2021-05-04').strftime('%FT%T%:z'),
       software: FHIR::CapabilityStatement::Software.new(
         name: 'Sara Alert',
         version: ADMIN_OPTIONS['version']
@@ -580,6 +616,9 @@ class Fhir::R4::ApiController < ApplicationApiController
             type: 'Observation',
             interaction: [
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'read'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'update'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'patch'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'create'),
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'search-type')
             ],
             searchParam: [
