@@ -25,7 +25,7 @@ class PatientsController < ApplicationController
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
 
-    @histories = @patient.histories.order(created_at: :desc).where(deleted_by: nil).cluster{ |h| h.original_comment_id || h.id }
+    @histories = @patient.histories.order(created_at: :desc).where(deleted_by: nil).group_by{ |h| h.original_comment_id || h.id }
 
     @possible_jurisdiction_paths = current_user.jurisdictions_for_transfer
     @possible_assigned_users = @jurisdiction.assigned_users
