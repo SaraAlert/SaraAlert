@@ -47,11 +47,6 @@ class HistoriesController < ApplicationController
 
     # mark each version of the history as deleted, not just the most recent one
     history_versions = patient.histories.where(original_comment_id: history.original_comment_id)
-
-    history_versions.each do |h|
-      h.deleted_by = current_user.email
-      h.delete_reason = params.permit(:delete_reason)[:delete_reason]
-      h.save!
-    end
+    history_versions.update_all({deleted_by: current_user.email, delete_reason: params.permit(:delete_reason)[:delete_reason]})
   end
 end
