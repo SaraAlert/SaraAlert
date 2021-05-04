@@ -12,7 +12,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     doorkeeper_authorize!(
       *PATIENT_WRITE_SCOPES,
       *RELATED_PERSON_WRITE_SCOPES,
-      *IMMUNIZATION_WRITE_SCOPES
+      *IMMUNIZATION_WRITE_SCOPES,
+      *OBSERVATION_WRITE_SCOPES
     )
   end
   before_action only: %i[show search] do
@@ -247,7 +248,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
   # Create a resource given a type.
   #
-  # Supports (writing): Patient, RelatedPerson, Immunization
+  # Supports (writing): Patient, RelatedPerson, Immunization, Observation
   #
   # POST /fhir/r4/[:resource_type]
   def create
@@ -347,6 +348,24 @@ class Fhir::R4::ApiController < ApplicationApiController
         History.vaccination(patient: resource.patient_id,
                             created_by: @current_actor_label,
                             comment: "New vaccine added via API (ID: #{resource.id}).")
+      end
+    when 'observation'
+      return if doorkeeper_authorize!(*OBSERVATION_WRITE_SCOPES)
+
+      fhir_map = laboratory_from_fhir(contents)
+      vals = fhir_map.transform_values { |v| v[:value] }
+      resource = Laboratory.new(vals)
+
+      ActiveRecord::Base.transaction do
+        unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save && fhir_map.all? { |_k, v| v[:errors].blank? }
+          req_json = JSON.parse(request.body.string)
+          status_unprocessable_entity(resource, fhir_map, req_json) && return
+        end
+
+        Rails.logger.info "Created Lab Result (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
+        History.lab_result(patient: resource.patient_id,
+                           created_by: @current_actor_label,
+                           comment: "New lab result added via API (ID: #{resource.id}).")
       end
     else
       status_not_found && return
@@ -615,6 +634,7 @@ class Fhir::R4::ApiController < ApplicationApiController
         'user/Patient.write',
         'user/Patient.*',
         'user/Observation.read',
+        'user/Observation.*',
         'user/QuestionnaireResponse.read',
         'user/RelatedPerson.read',
         'user/RelatedPerson.write',
@@ -627,6 +647,7 @@ class Fhir::R4::ApiController < ApplicationApiController
         'system/Patient.write',
         'system/Patient.*',
         'system/Observation.read',
+        'system/Observation.*',
         'system/QuestionnaireResponse.read',
         'system/RelatedPerson.read',
         'system/RelatedPerson.write',

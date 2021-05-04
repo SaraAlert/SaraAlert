@@ -294,8 +294,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  # Create a hash of atttributes that corresponds to a Sara Alert Patient (and can be used to
-  # create new ones, or update existing ones), using the given FHIR::Patient.
+  # Create a hash of atttributes that corresponds to a Sara Alert Vaccine (and can be used to
+  # create new ones, or update existing ones), using the given FHIR::Immunization.
   # Hash is of the form:
   # {
   #  attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element>, errors: <array-of-messages> }
@@ -324,6 +324,82 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       dose_number: { value: vaccine&.protocolApplied&.first&.doseNumberString, path: 'Immunization.protocolApplied[0].doseNumberString' },
       notes: { value: vaccine&.note&.first&.text, path: 'Immunization.note[0].text' },
       patient_id: { value: vaccine&.patient&.reference&.match(%r{^Patient/(\d+)$}).to_a[1], path: 'Immunization.patient.reference' }
+    }
+  end
+
+  # Returns a representative FHIR::Observation for an instance of a Sara Alert Laboratory.
+  # https://www.hl7.org/fhir/observation.html
+  def laboratory_as_fhir(laboratory)
+    coded_lab_type = Laboratory.lab_type_to_code(laboratory.lab_type)
+    coded_result = Laboratory.result_to_code(laboratory.result)
+
+    FHIR::Observation.new(
+      meta: FHIR::Meta.new(lastUpdated: laboratory.updated_at.strftime('%FT%T%:z')),
+      id: laboratory.id,
+      status: 'final',
+      category: [
+        FHIR::CodeableConcept.new(
+          coding: [
+            FHIR::Coding.new(
+              system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+              code: 'laboratory'
+            )
+          ]
+        )
+      ],
+      code: FHIR::CodeableConcept.new(
+        coding: [
+          FHIR::Coding.new(
+            system: coded_lab_type[:system],
+            code: coded_lab_type[:code]
+          )
+        ]
+      ),
+      subject: FHIR::Reference.new(reference: "Patient/#{laboratory.patient_id}"),
+      effectiveDateTime: laboratory.specimen_collection&.strftime('%FT%T%:z'),
+      valueCodeableConcept: coded_result.nil? ? nil : FHIR::CodeableConcept.new(
+        coding: [
+          FHIR::Coding.new(
+            system: coded_result[:system],
+            code: coded_result[:code]
+          )
+        ]
+      ),
+      extension: [
+        to_date_extension(laboratory.report, 'report-date')
+      ]
+    )
+  end
+
+  # Create a hash of atttributes that corresponds to a Sara Alert Laboratory (and can be used to
+  # create new ones, or update existing ones), using the given FHIR::Observation.
+  # Hash is of the form:
+  # {
+  #  attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element>, errors: <array-of-messages> }
+  # }
+  def laboratory_from_fhir(observation)
+    result_coding = observation&.valueCodeableConcept&.coding&.first
+    result = Laboratory.code_to_result(result_coding&.system, result_coding&.code)
+    if result.nil? && !result_coding.nil?
+      result_errors = ["is not an acceptable value, acceptable values are: #{Laboratory::CODE_TO_RESULT.keys.map do |c|
+                                                                               pretty_print_code_from_fhir(c.stringify_keys)
+                                                                             end.join(', ')}"]
+    end
+
+    lab_type_coding = observation&.code&.coding&.first
+    lab_type = Laboratory.code_to_lab_type(lab_type_coding&.system, lab_type_coding&.code)
+    if lab_type.nil? && !lab_type_coding.nil?
+      lab_type_errors = ["is not an acceptable value, acceptable values are: #{Laboratory::CODE_TO_LAB_TYPE.keys.map do |c|
+                                                                                 pretty_print_code_from_fhir(c.stringify_keys)
+                                                                               end.join(', ')}"]
+    end
+
+    {
+      patient_id: { value: observation&.subject&.reference&.match(%r{^Patient/(\d+)$}).to_a[1], path: 'Observation.subject.reference' },
+      lab_type: { value: lab_type, path: 'Observation.code.coding[0]', errors: lab_type_errors },
+      specimen_collection: { value: observation&.effectiveDateTime, path: 'Observation.effectiveDateTime' },
+      report: from_date_extension(observation, 'Observation', ['report-date']),
+      result: { value: result, path: 'Observation.valueCodeableConcept.coding[0]', errors: result_errors }
     }
   end
 
