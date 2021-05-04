@@ -3,7 +3,6 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Row } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
-import moment from 'moment-timezone';
 import Pagination from 'jw-react-pagination';
 import Select from 'react-select';
 import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
@@ -20,15 +19,14 @@ class HistoryList extends React.Component {
       loading: false,
       comment: '',
       filters: { typeFilters: [], creatorFilters: [] },
-      histories: [],
-      filteredHistories: [],
-      displayedHistories: [],
+      filteredHistories: this.props.histories,
+      displayedHistories: this.props.histories.slice(0, 5),
     };
 
     this.creatorFilterData = [
       {
         label: 'History Creator',
-        options: _.uniq(props.histories.map(x => x.created_by)).map(x => {
+        options: _.uniq(props.histories.map(h => h[0].created_by)).map(x => {
           return { value: x, label: x };
         }),
       },
@@ -47,12 +45,6 @@ class HistoryList extends React.Component {
         label: this.props.history_types[`${historyType}`],
       });
     }
-  }
-
-  componentDidMount() {
-    const filteredHistories = this.formatHistories(this.props.histories); // props.histories must be ordered by created date, newest first
-    const displayedHistories = _.clone(filteredHistories).splice(0, 5);
-    this.setState({ filteredHistories, displayedHistories, histories: filteredHistories });
   }
 
   handleChange = event => {
@@ -80,42 +72,16 @@ class HistoryList extends React.Component {
     });
   };
 
-  formatHistories = histories => {
-    return histories
-      .filter(history => {
-        if (history.history_type === 'Comment') {
-          const latest_version = histories.find(h => history.original_comment_id === h.original_comment_id);
-          return history.id === latest_version.id;
-        }
-        return true;
-      })
-      .map(history => {
-        // if comment has been edited, set created at as the time the original was created and store a new variable for the time the history was edited
-        // otherwise store the history object as is
-        if (history.history_type === 'Comment') {
-          const original_comment = histories.find(h => history.original_comment_id === h.id);
-          if (history.id !== original_comment.id) {
-            history.edited_at = history.created_at;
-            history.created_at = original_comment.created_at;
-          }
-        }
-        return history;
-      })
-      .sort((a, b) => {
-        return moment.utc(b.created_at).diff(moment.utc(a.created_at));
-      });
-  };
-
   filterHistories = () => {
-    let filteredHistories = [...this.state.histories];
+    let filteredHistories = [...this.props.histories];
     if (this.state.filters.typeFilters.length !== 0) {
-      filteredHistories = filteredHistories.filter(history => {
-        return this.state.filters.typeFilters.includes(history.history_type);
+      filteredHistories = filteredHistories.filter(history_group => {
+        return this.state.filters.typeFilters.includes(history_group[0].history_type);
       });
     }
     if (this.state.filters.creatorFilters.length !== 0) {
-      filteredHistories = filteredHistories.filter(history => {
-        return this.state.filters.creatorFilters.includes(history.created_by);
+      filteredHistories = filteredHistories.filter(history_group => {
+        return this.state.filters.creatorFilters.includes(history_group[0].created_by);
       });
     }
     this.setState({
@@ -196,8 +162,8 @@ class HistoryList extends React.Component {
                 onChange={this.handleTypeFilterChange}
               />
             </Row>
-            {this.state.displayedHistories.map(history => (
-              <History key={history.id} history={history} current_user={this.props.current_user} authenticity_token={this.props.authenticity_token} />
+            {this.state.displayedHistories.map(histories => (
+              <History key={histories[0].id} versions={histories} current_user={this.props.current_user} authenticity_token={this.props.authenticity_token} />
             ))}
             <Row className="mx-3 mt-3 justify-content-end">
               <Pagination pageSize={5} maxPages={5} items={this.state.filteredHistories} onChangePage={this.onChangePage} />

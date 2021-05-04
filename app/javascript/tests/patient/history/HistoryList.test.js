@@ -10,15 +10,14 @@ import { mockUser1 } from '../../mocks/mockUsers';
 import { mockEnrollmentHistory, mockCommentHistory1, mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2 } from '../../mocks/mockHistories';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const histories = [ mockEnrollmentHistory, mockCommentHistory2Edit2, mockCommentHistory2Edit1, mockCommentHistory2, mockCommentHistory1 ];
-const formattedHistories = [ mockEnrollmentHistory, mockCommentHistory2Edit2, mockCommentHistory1 ];
-let historyCreators = histories.map(history => history.created_by);
+const histories = [ [ mockEnrollmentHistory ], [ mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2 ], [ mockCommentHistory1 ] ];
+let historyCreators = histories.map(history_group => history_group[0].created_by);
 historyCreators = historyCreators.filter((creator, index) => historyCreators.includes(creator) && index === historyCreators.indexOf(creator));
-let historyTypes = histories.map(history => history.history_type);
+let historyTypes = histories.map(history_group => history_group[0].history_type);
 historyTypes = historyTypes.filter((type, index) => historyTypes.includes(type) && index === historyTypes.indexOf(type));
 
 function getWrapper() {
-  return shallow(<HistoryList patient_id={histories[0].patient_id} histories={histories} current_user={mockUser1}
+  return shallow(<HistoryList patient_id={17} histories={histories} current_user={mockUser1}
     authenticity_token={authyToken} history_types={{enrollment: 'Enrollment', comment: 'Comment'}} />);
 }
 
@@ -53,14 +52,6 @@ describe('HistoryList', () => {
     expect(wrapper.find(Card.Body).find(Button).find('i').hasClass('fa-comment-dots')).toBeTruthy();
   });
 
-  it('Properly filters and sorts history list on component mount', () => {
-    const wrapper = getWrapper();
-    expect(wrapper.find(History).length).toEqual(3);
-    expect(wrapper.state('histories')).toEqual(formattedHistories);
-    expect(wrapper.state('filteredHistories')).toEqual(formattedHistories);
-    expect(wrapper.state('displayedHistories')).toEqual(formattedHistories);
-  });
-
   it('Selecting history creators in dropdown properly updates state', () => {
     const wrapper = getWrapper();
     let filterValue = [];
@@ -87,47 +78,41 @@ describe('HistoryList', () => {
 
   it('Selecting history dropdown filters properly filters histories', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find(History).length).toEqual(formattedHistories.length);
-    expect(wrapper.state('histories')).toEqual(formattedHistories);
-    expect(wrapper.state('filteredHistories')).toEqual(formattedHistories);
-    expect(wrapper.state('displayedHistories')).toEqual(formattedHistories);
+    expect(wrapper.find(History).length).toEqual(histories.length);
+    expect(wrapper.state('filteredHistories')).toEqual(histories);
+    expect(wrapper.state('displayedHistories')).toEqual(histories);
 
-    let filteredHistories = formattedHistories.filter(history => history.created_by === historyCreators[0]);
+    let filteredHistories = histories.filter(history_group => history_group[0].created_by === historyCreators[0]);
     wrapper.find(Select).at(0).simulate('change', [{ label: historyCreators[0], value: historyCreators[0] }]);
     expect(wrapper.find(History).length).toEqual(filteredHistories.length);
-    expect(wrapper.state('histories')).toEqual(formattedHistories);
     expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
-    filteredHistories = filteredHistories.filter(history => history.history_type === historyTypes[0]);
+    filteredHistories = filteredHistories.filter(history_group => history_group[0].history_type === historyTypes[0]);
     wrapper.find(Select).at(1).simulate('change', [{ label: historyTypes[0], value: historyTypes[0] }]);
     expect(wrapper.find(History).length).toEqual(filteredHistories.length);
-    expect(wrapper.state('histories')).toEqual(formattedHistories);
     expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
-    filteredHistories = formattedHistories.filter(history => history.history_type === historyTypes[0]);
+    filteredHistories = histories.filter(history_group => history_group[0].history_type === historyTypes[0]);
     wrapper.find(Select).at(0).simulate('change', []);
     expect(wrapper.find(History).length).toEqual(filteredHistories.length);
-    expect(wrapper.state('histories')).toEqual(formattedHistories);
     expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
-    filteredHistories = formattedHistories.filter(history => history.history_type === historyTypes[0] || history.history_type === historyTypes[1]);
+    filteredHistories = histories.filter(history_group => history_group[0].history_type === historyTypes[0] || history_group[0].history_type === historyTypes[1]);
     wrapper.find(Select).at(1).simulate('change', [{ label: historyTypes[0], value: historyTypes[0] }, { label: historyTypes[1], value: historyTypes[1] }]);
     expect(wrapper.find(History).length).toEqual(filteredHistories.length);
-    expect(wrapper.state('histories')).toEqual(formattedHistories);
     expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
     wrapper.find(Select).at(1).simulate('change', []);
-    expect(wrapper.find(History).length).toEqual(formattedHistories.length);
-    expect(wrapper.state('histories')).toEqual(formattedHistories);
-    expect(wrapper.state('filteredHistories')).toEqual(formattedHistories);
-    expect(wrapper.state('displayedHistories')).toEqual(formattedHistories);
+    expect(wrapper.find(History).length).toEqual(histories.length);
+    expect(wrapper.state('filteredHistories')).toEqual(histories);
+    expect(wrapper.state('displayedHistories')).toEqual(histories);
   });
 
-  it('Editing comment text properly updates state and value', () => {
+  it('Changing comment text properly updates state and value', () => {
     const wrapper = getWrapper();
     expect(wrapper.state('comment')).toEqual('');
     expect(wrapper.find('#comment').prop('value')).toEqual('');

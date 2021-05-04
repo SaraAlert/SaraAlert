@@ -53,37 +53,10 @@ const mockCommentHistory2Edit2 = {
   patient_id: 17,
 };
 
-const mockEditedHistory = {
-  id: 4,
-  original_comment_id: 4,
-  created_by: 'mock_user_1@example.com',
-  comment: 'I am a comment and have been edited',
-  history_type: 'Comment',
-  created_at: '2020-09-13T14:35:09.000Z',
-  updated_at: '2020-09-16T14:35:09.000Z',
-  edited_at: '2020-09-16T14:35:09.000Z',
-  patient_id: 17,
-};
-
-const mockDeletedHistory = {
-  id: 4,
-  original_comment_id: 4,
-  created_by: 'mock_user_2@example.com',
-  comment: 'I am a deleted comment',
-  history_type: 'Comment',
-  created_at: '2020-09-13T14:35:09.000Z',
-  updated_at: '2020-09-15T14:35:09.000Z',
-  patient_id: 17,
-  deleted_by: 'mock_user_2@example.com',
-  deleted_reason: 'Duplicate entry',
-};
-
 export {
   mockEnrollmentHistory,
   mockCommentHistory1,
   mockCommentHistory2,
   mockCommentHistory2Edit1,
   mockCommentHistory2Edit2,
-  mockEditedHistory,
-  mockDeletedHistory
 };

@@ -4,20 +4,24 @@ import { Button, Card, Col, Form, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import History from '../../../components/patient/history/History';
 import DeleteDialog from '../../../components/util/DeleteDialog';
-import { mockEnrollmentHistory, mockCommentHistory1, mockCommentHistory2, mockEditedHistory } from '../../mocks/mockHistories';
+import { mockEnrollmentHistory, mockCommentHistory1, mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2 } from '../../mocks/mockHistories';
 import { mockUser1 } from '../../mocks/mockUsers';
 import { formatTimestamp, formatRelativePast } from '../../../utils/DateTime';
 import ReactTooltip from 'react-tooltip';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 
-function getWrapper(history) {
-  return shallow(<History key={history.id} history={history} current_user={mockUser1} authenticity_token={authyToken} />);
+function getWrapper(historyGroup) {
+  return shallow(<History versions={historyGroup} current_user={mockUser1} authenticity_token={authyToken} />);
+}
+
+function getMountedWrapper(historyGroup) {
+  return mount(<History versions={historyGroup} current_user={mockUser1} authenticity_token={authyToken} />);
 }
 
 describe('History', () => {
   it('Properly renders non-comment histories', () => {
-    const wrapper = getWrapper(mockEnrollmentHistory);
+    const wrapper = getWrapper([ mockEnrollmentHistory ]);
     expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockEnrollmentHistory.created_by);
     expect(wrapper.find(Card.Header).text().includes(formatTimestamp(mockEnrollmentHistory.created_at))).toBeTruthy();
@@ -31,7 +35,7 @@ describe('History', () => {
   });
 
   it('Properly renders comment histories if current user created the comment', () => {
-    const wrapper = getWrapper(mockCommentHistory2);
+    const wrapper = getWrapper([ mockCommentHistory2 ]);
     expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockCommentHistory2.created_by);
     expect(wrapper.find(Card.Header).text().includes(formatTimestamp(mockCommentHistory2.created_at))).toBeTruthy();
@@ -50,7 +54,7 @@ describe('History', () => {
   });
 
   it('Properly renders comment histories if current user did not create the comment', () => {
-    const wrapper = getWrapper(mockCommentHistory1);
+    const wrapper = getWrapper([ mockCommentHistory1 ]);
     expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockCommentHistory1.created_by);
     expect(wrapper.find(Card.Header).text().includes(formatTimestamp(mockCommentHistory1.created_at))).toBeTruthy();
@@ -63,8 +67,28 @@ describe('History', () => {
     expect(wrapper.find(Card.Body).find(ReactTooltip).exists()).toBeFalsy();
   });
 
+  it('Properly renders edited comment histories', () => {
+    const wrapper = getWrapper([ mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2 ]);
+    expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockCommentHistory2.created_by);
+    expect(wrapper.find(Card.Header).text().includes(formatTimestamp(mockCommentHistory2.created_at))).toBeTruthy();
+    expect(wrapper.find(Card.Header).text().includes(formatRelativePast(mockCommentHistory2.created_at))).toBeTruthy();
+    expect(wrapper.find(Card.Header).find('.badge').text()).toEqual(mockCommentHistory2.history_type);
+    expect(wrapper.find(Card.Body).find(Col).at(0).text().includes(mockCommentHistory2Edit2.comment)).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('.edit-text').text()).toEqual(' (edited)');
+    expect(wrapper.find(Card.Body).find(Button).length).toEqual(2);
+    expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('#edit-history-btn').find('i').hasClass('fa-edit')).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('#delete-history-btn').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('#delete-history-btn').find('i').hasClass('fa-trash')).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(ReactTooltip).length).toEqual(2);
+    expect(wrapper.find(Card.Body).find(ReactTooltip).at(0).find('span').text()).toEqual('Edit comment');
+    expect(wrapper.find(Card.Body).find(ReactTooltip).at(1).find('span').text()).toEqual('Delete comment');
+  });
+
   it('Clicking the edit button properly renders edit mode', () => {
-    const wrapper = getWrapper(mockCommentHistory2);
+    const wrapper = getWrapper([ mockCommentHistory2 ]);
     expect(wrapper.state('editMode')).toBeFalsy();
     expect(wrapper.find(Card.Body).text().includes(mockCommentHistory2.comment)).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeTruthy();
@@ -86,7 +110,7 @@ describe('History', () => {
   });
 
   it('Editing history text properly updates state and value', () => {
-    const wrapper = getWrapper(mockCommentHistory2);
+    const wrapper = getWrapper([ mockCommentHistory2 ]);
     wrapper.find(Card.Body).find('#edit-history-btn').simulate('click');
     expect(wrapper.state('comment')).toEqual(mockCommentHistory2.comment);
     expect(wrapper.find(Card.Body).find('#comment').prop('value')).toEqual(mockCommentHistory2.comment);
@@ -99,7 +123,7 @@ describe('History', () => {
   });
 
   it('Disables the update button when edit text input is empty or when edit text has not changed from original', () => {
-    const wrapper = getWrapper(mockCommentHistory2);
+    const wrapper = getWrapper([ mockCommentHistory2 ]);
     wrapper.find(Card.Body).find('#edit-history-btn').simulate('click');
     expect(wrapper.find(Card.Body).find('#update-edit-history-btn').prop('disabled')).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#cancel-edit-history-btn').prop('disabled')).toBeFalsy();
@@ -112,7 +136,7 @@ describe('History', () => {
   });
 
   it('Clicking the update button calls handleEditSubmit method', () => {
-    const wrapper = getWrapper(mockCommentHistory2);
+    const wrapper = getWrapper([ mockCommentHistory2 ]);
     const handleEditSubmitSpy = jest.spyOn(wrapper.instance(), 'handleEditSubmit');
     wrapper.find(Card.Body).find('#edit-history-btn').simulate('click');
     expect(handleEditSubmitSpy).toHaveBeenCalledTimes(0);
@@ -123,7 +147,7 @@ describe('History', () => {
   });
 
   it('Clicking the update button disables update and cancel buttons and updates state', () => {
-    const wrapper = getWrapper(mockCommentHistory2);
+    const wrapper = getWrapper([ mockCommentHistory2 ]);
     wrapper.find(Card.Body).find('#edit-history-btn').simulate('click');
     expect(wrapper.state('loading')).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#update-edit-history-btn').prop('disabled')).toBeTruthy();
@@ -135,7 +159,7 @@ describe('History', () => {
   });
 
   it('Clicking the cancel button exits edit mode and resets state', () => {
-    const wrapper = getWrapper(mockCommentHistory2);
+    const wrapper = getWrapper([ mockCommentHistory2 ]);
     wrapper.find(Card.Body).find('#edit-history-btn').simulate('click');
     wrapper.find(Card.Body).find('#comment').simulate('change', { target: { id: 'comment', value: 'editing comment' } });
     expect(wrapper.state('editMode')).toBeTruthy();
@@ -159,14 +183,8 @@ describe('History', () => {
     expect(wrapper.find(Card.Body).find('#cancel-edit-history-btn').exists()).toBeFalsy();
   });
 
-  it('Properly renders "edited" tag if comment was edited', () => {
-    const wrapper = getWrapper(mockEditedHistory);
-    expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.edit-text').text()).toEqual(' (edited)');
-  });
-
   it('Clicking the delete button shows the delete dialog', () => {
-    const wrapper = getWrapper(mockCommentHistory2);
+    const wrapper = getWrapper([ mockCommentHistory2 ]);
     expect(wrapper.state('showDeleteModal')).toBeFalsy();
     expect(wrapper.find(DeleteDialog).exists()).toBeFalsy();
     wrapper.find(Card.Body).find('#delete-history-btn').simulate('click');
@@ -175,7 +193,7 @@ describe('History', () => {
   });
 
   it('Clicking the delete button in the delete dialog calls handleDeleteSubmit', () => {
-    const wrapper = mount(<History key={mockCommentHistory2.id} history={mockCommentHistory2} current_user={mockUser1} authenticity_token={authyToken} />);
+    const wrapper = getMountedWrapper([ mockCommentHistory2 ]);
     const handleDeleteSubmitSpy = jest.spyOn(wrapper.instance(), 'handleDeleteSubmit');
     expect(handleDeleteSubmitSpy).toHaveBeenCalledTimes(0);
     wrapper.find('#delete-history-btn').find(Button).simulate('click');
@@ -187,7 +205,7 @@ describe('History', () => {
   });
 
   it('Clicking the cancel button in the delete dialog calls toggleDeleteModal', () => {
-    const wrapper = mount(<History key={mockCommentHistory2.id} history={mockCommentHistory2} current_user={mockUser1} authenticity_token={authyToken} />);
+    const wrapper = getMountedWrapper([ mockCommentHistory2 ]);
     const toggleDeleteModalSpy = jest.spyOn(wrapper.instance(), 'toggleDeleteModal');
     expect(toggleDeleteModalSpy).toHaveBeenCalledTimes(0);
     wrapper.find('#delete-history-btn').find(Button).simulate('click');
@@ -199,7 +217,7 @@ describe('History', () => {
   });
 
   it('Clicking the cancel button in the delete dialog resets state', () => {
-    const wrapper = mount(<History key={mockCommentHistory2.id} history={mockCommentHistory2} current_user={mockUser1} authenticity_token={authyToken} />);
+    const wrapper = getMountedWrapper([ mockCommentHistory2 ]);
     expect(wrapper.state('showDeleteModal')).toBeFalsy();
     expect(wrapper.state('delete_reason')).toEqual();
     expect(wrapper.state('delete_reason_text')).toEqual();

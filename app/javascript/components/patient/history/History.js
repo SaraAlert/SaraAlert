@@ -15,7 +15,9 @@ class History extends React.Component {
       loading: false,
       editMode: false,
       showDeleteModal: false,
-      comment: props.history.comment,
+      original_version: props.versions[0],
+      latest_version: props.versions[props.versions.length - 1],
+      comment: props.versions[props.versions.length - 1].comment,
     };
   }
 
@@ -29,15 +31,15 @@ class History extends React.Component {
 
   toggleEditMode = () => {
     let current = this.state.editMode;
-    this.setState({ editMode: !current, comment: this.props.history.comment });
+    this.setState({ editMode: !current, comment: this.state.latest_version.comment });
   };
 
   handleEditSubmit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/edit', {
-          patient_id: this.props.history.patient_id,
+        .post(window.BASE_PATH + '/histories/' + this.state.latest_version.id + '/edit', {
+          patient_id: this.state.latest_version.patient_id,
           comment: this.state.comment,
         })
         .then(() => {
@@ -67,8 +69,8 @@ class History extends React.Component {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/histories/' + this.props.history.id + '/delete', {
-          patient_id: this.props.history.patient_id,
+        .post(window.BASE_PATH + '/histories/' + this.state.latest_version.id + '/delete', {
+          patient_id: this.state.latest_version.patient_id,
           delete_reason: deleteReason,
         })
         .then(() => {
@@ -98,7 +100,7 @@ class History extends React.Component {
           variant="primary"
           size="sm"
           className="float-right mt-2"
-          disabled={this.state.loading || this.state.comment === '' || this.state.comment === this.props.history.comment}
+          disabled={this.state.loading || this.state.comment === '' || this.state.comment === this.state.latest_version.comment}
           onClick={this.handleEditSubmit}
           aria-label="Submit Edit History Comment">
           Update
@@ -121,20 +123,20 @@ class History extends React.Component {
     return (
       <Col>
         <div className="float-right" style={{ width: '45px' }}>
-          <span data-for={`edit-history-item-${this.props.history.id}`} data-tip="">
+          <span data-for={`edit-history-item-${this.state.latest_version.id}`} data-tip="">
             <Button id="edit-history-btn" variant="link" className="icon-btn p-0 mr-1" onClick={this.toggleEditMode} aria-label="Edit History Comment">
               <i className="fas fa-edit"></i>
             </Button>
           </span>
-          <ReactTooltip id={`edit-history-item-${this.props.history.id}`} place="top" type="dark" effect="solid">
+          <ReactTooltip id={`edit-history-item-${this.state.latest_version.id}`} place="top" type="dark" effect="solid">
             <span>Edit comment</span>
           </ReactTooltip>
-          <span data-for={`delete-history-item-${this.props.history.id}`} data-tip="">
+          <span data-for={`delete-history-item-${this.state.latest_version.id}`} data-tip="">
             <Button id="delete-history-btn" variant="link" className="icon-btn p-0" onClick={this.toggleDeleteModal} aria-label="Delete History Comment">
               <i className="fas fa-trash"></i>
             </Button>
           </span>
-          <ReactTooltip id={`delete-history-item-${this.props.history.id}`} place="top" type="dark" effect="solid">
+          <ReactTooltip id={`delete-history-item-${this.state.latest_version.id}`} place="top" type="dark" effect="solid">
             <span>Delete comment</span>
           </ReactTooltip>
         </div>
@@ -147,10 +149,11 @@ class History extends React.Component {
       <React.Fragment>
         <Card className="card-square mt-4 mx-3 shadow-sm">
           <Card.Header>
-            <b>{this.props.history.created_by}</b>, {formatRelativePast(this.props.history.created_at)} ({formatTimestamp(this.props.history.created_at)})
+            <b>{this.state.original_version.created_by}</b>, {formatRelativePast(this.state.original_version.created_at)} (
+            {formatTimestamp(this.state.original_version.created_at)})
             <span className="float-right">
               <div className="badge-padding h5">
-                <span className="badge badge-secondary">{this.props.history.history_type}</span>
+                <span className="badge badge-secondary">{this.state.original_version.history_type}</span>
               </div>
             </span>
           </Card.Header>
@@ -160,10 +163,12 @@ class History extends React.Component {
             ) : (
               <Row>
                 <Col xs="auto">
-                  {this.props.history.comment}
-                  {this.props.history.edited_at && <i className="edit-text"> (edited)</i>}
+                  {this.state.comment}
+                  {this.state.latest_version.id !== this.state.original_version.id && <i className="edit-text"> (edited)</i>}
                 </Col>
-                {this.props.history.history_type === 'Comment' && this.props.history.created_by === this.props.current_user.email && this.renderActionButtons()}
+                {this.state.original_version.history_type === 'Comment' &&
+                  this.state.original_version.created_by === this.props.current_user.email &&
+                  this.renderActionButtons()}
               </Row>
             )}
           </Card.Body>
@@ -177,7 +182,7 @@ class History extends React.Component {
 }
 
 History.propTypes = {
-  history: PropTypes.object,
+  versions: PropTypes.array,
   current_user: PropTypes.object,
   authenticity_token: PropTypes.string,
 };
