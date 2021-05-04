@@ -57,7 +57,7 @@ class Enrollment extends React.Component {
     });
   }, 1000);
 
-  handleConfirmDuplicate = async (data, groupMember, message, reenableSubmit, confirmText) => {
+  handleConfirmDuplicate = async (data, groupMember, message, reenableButtons, confirmText) => {
     if (await confirmDialog(confirmText)) {
       data['bypass_duplicate'] = true;
       axios({
@@ -79,11 +79,11 @@ class Enrollment extends React.Component {
       window.onbeforeunload = () => {
         return 'All progress will be lost. Are you sure?';
       };
-      reenableSubmit();
+      reenableButtons();
     }
   };
 
-  submit = (_event, groupMember, reenableSubmit) => {
+  submit = (_event, groupMember, reenableButtons) => {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
 
@@ -155,7 +155,7 @@ class Enrollment extends React.Component {
           text += ` Are you sure you want to enroll this ${patientType}?`;
 
           // Duplicate, ask if want to continue with create
-          this.handleConfirmDuplicate(data, groupMember, message, reenableSubmit, text);
+          this.handleConfirmDuplicate(data, groupMember, message, reenableButtons, text);
         } else {
           // Success, inform user and redirect to home
           toast.success(message, {
