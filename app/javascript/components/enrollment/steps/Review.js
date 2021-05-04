@@ -7,18 +7,18 @@ import Patient from '../../patient/Patient';
 class Review extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { submitDisabled: false, showGroupAddNotification: false };
+    this.state = { disabled: false, showGroupAddNotification: false };
   }
 
   submit = (event, groupMember) => {
     // Update state before submitting data so submit button disables when clicked to prevent multiple submissions.
-    this.setState({ submitDisabled: true }, () => {
-      this.props.submit(event, groupMember, this.reenableSubmit);
+    this.setState({ disabled: true }, () => {
+      this.props.submit(event, groupMember, this.reenableButtons);
     });
   };
 
-  reenableSubmit = () => {
-    this.setState({ submitDisabled: false });
+  reenableButtons = () => {
+    this.setState({ disabled: false });
   };
 
   toggleGroupAddNotification = () => {
@@ -28,11 +28,11 @@ class Review extends React.Component {
     });
   };
 
-  createModal(title, toggle, submit) {
+  createModal() {
     return (
-      <Modal size="lg" show centered onHide={toggle}>
+      <Modal size="lg" show centered onHide={this.toggleGroupAddNotification}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>Enroll Household Members</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>
@@ -46,10 +46,10 @@ class Review extends React.Component {
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
+          <Button variant="secondary btn-square" onClick={this.toggleGroupAddNotification}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit}>
+          <Button variant="primary btn-square" onClick={event => this.submit(event, true)}>
             Continue
           </Button>
         </Modal.Footer>
@@ -82,7 +82,7 @@ class Review extends React.Component {
                 variant="secondary"
                 size="lg"
                 className="float-right btn-square px-5"
-                disabled={this.state.submitDisabled}
+                disabled={this.state.disabled}
                 onClick={() => {
                   window.history.back();
                 }}>
@@ -90,24 +90,28 @@ class Review extends React.Component {
               </Button>
             )}
             {this.props.submit && (
-              <Button variant="primary" size="lg" className="float-right btn-square px-5 mr-4" disabled={this.state.submitDisabled} onClick={this.submit}>
-                Finish
-              </Button>
-            )}
-            {this.props.submit && this.props.currentState.responder_id === this.props.currentState.id && this.props.canAddGroup && (
               <Button
                 variant="primary"
                 size="lg"
                 className="float-right btn-square px-5 mr-4"
-                disabled={this.state.submitDisabled}
+                disabled={this.state.disabled}
+                onClick={this.submit}>
+                Finish
+              </Button>
+            )}
+            {this.props.submit && this.props.currentState.patient.responder_id === this.props.currentState.patient.id && this.props.canAddGroup && (
+              <Button
+                variant="primary"
+                size="lg"
+                className="float-right btn-square px-5 mr-4"
+                disabled={this.state.disabled}
                 onClick={this.toggleGroupAddNotification}>
                 Finish and Add a Household Member
               </Button>
             )}
           </Card.Body>
         </Card>
-        {this.state.showGroupAddNotification &&
-          this.createModal('Enroll Household Members', this.toggleGroupAddNotification, event => this.submit(event, true))}
+        {this.state.showGroupAddNotification && this.createModal()}
       </React.Fragment>
     );
   }
