@@ -55,8 +55,8 @@ class LaboratoriesController < ApplicationController
       reason = params.permit(:delete_reason)[:delete_reason]
       History.lab_result_edit(patient: params.permit(:patient_id)[:patient_id],
                               created_by: current_user.email,
-                              comment: "User deleted a lab result (ID: #{lab.id}, Type: #{lab.lab_type}, Specimen Collected:"\
-                              "#{lab.specimen_collection}, Report: #{lab.report}, Result: #{lab.result}) For Reason: #{reason}.")
+                              comment: "User deleted a lab result (ID: #{lab.id}, Type: #{lab.lab_type}, Specimen Collected: "\
+                              "#{lab.specimen_collection}, Report: #{lab.report}, Result: #{lab.result}). Reason: #{reason}.")
     else
       render status: 500
     end
