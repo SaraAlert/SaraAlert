@@ -1,45 +1,26 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 # ApiController: API for interacting with Sara Alert
 class Fhir::R4::ApiController < ApplicationApiController
   include ValidationHelper
   include FhirHelper
+  include ActionController::MimeResponds
+
   before_action :cors_headers
   before_action only: %i[create update] do
     doorkeeper_authorize!(
-      :'user/Patient.write',
-      :'user/Patient.*',
-      :'system/Patient.write',
-      :'system/Patient.*',
-      :'user/RelatedPerson.write',
-      :'user/RelatedPerson.*',
-      :'system/RelatedPerson.write',
-      :'system/RelatedPerson.*',
-      :'user/Immunization.write',
-      :'user/Immunization.*',
-      :'system/Immunization.write',
-      :'system/Immunization.*'
+      *PATIENT_WRITE_SCOPES,
+      *RELATED_PERSON_WRITE_SCOPES,
+      *IMMUNIZATION_WRITE_SCOPES
     )
   end
   before_action only: %i[show search] do
     doorkeeper_authorize!(
-      :'user/Patient.read',
-      :'user/Patient.*',
-      :'user/RelatedPerson.read',
-      :'user/RelatedPerson.*',
-      :'user/Immunization.read',
-      :'user/Immunization.*',
-      :'user/Observation.read',
-      :'user/QuestionnaireResponse.read',
-      :'system/Patient.read',
-      :'system/Patient.*',
-      :'system/RelatedPerson.read',
-      :'system/RelatedPerson.*',
-      :'system/Immunization.read',
-      :'system/Immunization.*',
-      :'system/Observation.read',
-      :'system/QuestionnaireResponse.read'
+      *PATIENT_READ_SCOPES,
+      *RELATED_PERSON_READ_SCOPES,
+      *IMMUNIZATION_READ_SCOPES,
+      *OBSERVATION_READ_SCOPES,
+      *QUESTIONNAIRE_RESPONSE_READ_SCOPES
     )
   end
   before_action :check_client_type
@@ -56,44 +37,23 @@ class Fhir::R4::ApiController < ApplicationApiController
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
-      return if doorkeeper_authorize!(
-        :'user/Patient.read',
-        :'user/Patient.*',
-        :'system/Patient.read',
-        :'system/Patient.*'
-      )
+      return if doorkeeper_authorize!(*PATIENT_READ_SCOPES)
 
       resource = get_patient(params.permit(:id)[:id])
     when 'observation'
-      return if doorkeeper_authorize!(
-        :'user/Observation.read',
-        :'system/Observation.read'
-      )
+      return if doorkeeper_authorize!(*OBSERVATION_READ_SCOPES)
 
       resource = get_record(Laboratory, params.permit(:id)[:id])
     when 'questionnaireresponse'
-      return if doorkeeper_authorize!(
-        :'user/QuestionnaireResponse.read',
-        :'system/QuestionnaireResponse.read'
-      )
+      return if doorkeeper_authorize!(*QUESTIONNAIRE_RESPONSE_READ_SCOPES)
 
       resource = get_record(Assessment, params.permit(:id)[:id])
     when 'relatedperson'
-      return if doorkeeper_authorize!(
-        :'user/RelatedPerson.read',
-        :'user/RelatedPerson.*',
-        :'system/RelatedPerson.read',
-        :'system/RelatedPerson.*'
-      )
+      return if doorkeeper_authorize!(*RELATED_PERSON_READ_SCOPES)
 
       resource = get_record(CloseContact, params.permit(:id)[:id])
     when 'immunization'
-      return if doorkeeper_authorize!(
-        :'user/Immunization.read',
-        :'user/Immunization.*',
-        :'system/Immunization.read',
-        :'system/Immunization.*'
-      )
+      return if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
 
       resource = get_record(Vaccine, params.permit(:id)[:id])
     else
@@ -128,12 +88,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
-      return if doorkeeper_authorize!(
-        :'user/Patient.write',
-        :'user/Patient.*',
-        :'system/Patient.write',
-        :'system/Patient.*'
-      )
+      return if doorkeeper_authorize!(*PATIENT_WRITE_SCOPES)
 
       # Get the patient that needs to be updated
       patient = get_patient(params.permit(:id)[:id])
@@ -182,12 +137,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       status_ok(patient.as_fhir) && return
     when 'relatedperson'
-      return if doorkeeper_authorize!(
-        :'user/RelatedPerson.write',
-        :'user/RelatedPerson.*',
-        :'system/RelatedPerson.write',
-        :'system/RelatedPerson.*'
-      )
+      return if doorkeeper_authorize!(*RELATED_PERSON_WRITE_SCOPES)
 
       # Get the CloseContact that needs to be updated
       close_contact = get_record(CloseContact, params.permit(:id)[:id])
@@ -223,12 +173,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       end
       status_ok(close_contact.as_fhir) && return
     when 'immunization'
-      return if doorkeeper_authorize!(
-        :'user/Immunization.write',
-        :'user/Immunization.*',
-        :'system/Immunization.write',
-        :'system/Immunization.*'
-      )
+      return if doorkeeper_authorize!(*IMMUNIZATION_WRITE_SCOPES)
 
       # Get the Vaccine that needs to be updated
       vaccine = get_record(Vaccine, params.permit(:id)[:id])
@@ -310,12 +255,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
-      return if doorkeeper_authorize!(
-        :'user/Patient.write',
-        :'user/Patient.*',
-        :'system/Patient.write',
-        :'system/Patient.*'
-      )
+      return if doorkeeper_authorize!(*PATIENT_WRITE_SCOPES)
 
       # Construct a Sara Alert Patient
       # fhir_map is of the form:
@@ -367,12 +307,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       # Send enrollment notification only to responders
       resource.send_enrollment_notification if resource.self_reporter_or_proxy?
     when 'relatedperson'
-      return if doorkeeper_authorize!(
-        :'user/RelatedPerson.write',
-        :'user/RelatedPerson.*',
-        :'system/RelatedPerson.write',
-        :'system/RelatedPerson.*'
-      )
+      return if doorkeeper_authorize!(*RELATED_PERSON_WRITE_SCOPES)
 
       fhir_map = close_contact_from_fhir(contents)
       vals = fhir_map.transform_values { |v| v[:value] }
@@ -390,12 +325,7 @@ class Fhir::R4::ApiController < ApplicationApiController
                               comment: "New close contact added via API (ID: #{resource.id}).")
       end
     when 'immunization'
-      return if doorkeeper_authorize!(
-        :'user/Immunization.write',
-        :'user/Immunization.*',
-        :'system/Immunization.write',
-        :'system/Immunization.*'
-      )
+      return if doorkeeper_authorize!(*IMMUNIZATION_WRITE_SCOPES)
 
       fhir_map = vaccine_from_fhir(contents)
       vals = fhir_map.transform_values { |v| v[:value] }
@@ -433,48 +363,27 @@ class Fhir::R4::ApiController < ApplicationApiController
                                  '_count', '_id', 'patient')
     case resource_type
     when 'patient'
-      return if doorkeeper_authorize!(
-        :'user/Patient.read',
-        :'user/Patient.*',
-        :'system/Patient.read',
-        :'system/Patient.*'
-      )
+      return if doorkeeper_authorize!(*PATIENT_READ_SCOPES)
 
       resources = search_patients(search_params)
       resource_type = 'Patient'
     when 'observation'
-      return if doorkeeper_authorize!(
-        :'user/Observation.read',
-        :'system/Observation.read'
-      )
+      return if doorkeeper_authorize!(*OBSERVATION_READ_SCOPES)
 
       resources = search_laboratories(search_params) || []
       resource_type = 'Observation'
     when 'questionnaireresponse'
-      return if doorkeeper_authorize!(
-        :'user/QuestionnaireResponse.read',
-        :'system/QuestionnaireResponse.read'
-      )
+      return if doorkeeper_authorize!(*QUESTIONNAIRE_RESPONSE_READ_SCOPES)
 
       resources = search_assessments(search_params) || []
       resource_type = 'QuestionnaireResponse'
     when 'relatedperson'
-      return if doorkeeper_authorize!(
-        :'user/RelatedPerson.read',
-        :'user/RelatedPerson.*',
-        :'system/RelatedPerson.read',
-        :'system/RelatedPerson.*'
-      )
+      return if doorkeeper_authorize!(*RELATED_PERSON_READ_SCOPES)
 
       resources = search_close_contacts(search_params) || []
       resource_type = 'RelatedPerson'
     when 'immunization'
-      return if doorkeeper_authorize!(
-        :'user/Immunization.read',
-        :'user/Immunization.*',
-        :'system/Immunization.read',
-        :'system/Immunization.*'
-      )
+      return if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
 
       resources = search_vaccines(search_params) || []
       resource_type = 'Immunization'
@@ -514,32 +423,11 @@ class Fhir::R4::ApiController < ApplicationApiController
   # GET /fhir/r4/Patient/[:id]/$everything
   def all
     # Require all scopes for all five resources
-    return if doorkeeper_authorize!(
-      :'user/Patient.read',
-      :'user/Patient.*',
-      :'system/Patient.read',
-      :'system/Patient.*'
-    )
-    return if doorkeeper_authorize!(
-      :'user/Observation.read',
-      :'system/Observation.read'
-    )
-    return if doorkeeper_authorize!(
-      :'user/QuestionnaireResponse.read',
-      :'system/QuestionnaireResponse.read'
-    )
-    return if doorkeeper_authorize!(
-      :'user/RelatedPerson.read',
-      :'user/RelatedPerson.*',
-      :'system/RelatedPerson.read',
-      :'system/RelatedPerson.*'
-    )
-    return if doorkeeper_authorize!(
-      :'user/Immunization.read',
-      :'user/Immunization.*',
-      :'system/Immunization.read',
-      :'system/Immunization.*'
-    )
+    return if doorkeeper_authorize!(*PATIENT_READ_SCOPES)
+    return if doorkeeper_authorize!(*OBSERVATION_READ_SCOPES)
+    return if doorkeeper_authorize!(*QUESTIONNAIRE_RESPONSE_READ_SCOPES)
+    return if doorkeeper_authorize!(*RELATED_PERSON_READ_SCOPES)
+    return if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
 
     status_not_acceptable && return unless accept_header?
 
@@ -1108,4 +996,3 @@ class Fhir::R4::ApiController < ApplicationApiController
     headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
   end
 end
-# rubocop:enable Metrics/ClassLength
