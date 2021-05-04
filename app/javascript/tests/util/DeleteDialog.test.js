@@ -25,7 +25,7 @@ describe('DeleteDialog', () => {
     expect(wrapper.find(Modal.Header).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Title).text()).toEqual(`Delete ${mockType}`);
     expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Body).find('p').at(0).text()).toEqual(`Are you sure you want to delete this ${mockType}?  This action cannot be undone.  For auditing purposes, this deletion will be available in this record's history export.`);
+    expect(wrapper.find(Modal.Body).find('p').at(0).text()).toEqual(`Are you sure you want to delete this ${mockType}? This action cannot be undone. For auditing purposes, this deletion will be available in this record's history export.`);
     expect(wrapper.find(Modal.Body).find('p').at(1).text()).toEqual('Please select reason for deletion:');
     expect(wrapper.find(Modal.Body).find(Form.Control).length).toEqual(1);
     expect(wrapper.find(Modal.Body).find('#delete_reason').exists()).toBeTruthy();

@@ -232,6 +232,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         assert_equal(history[field].to_s, cell_value || '', "For field: #{field} in Edit Histories")
       end
     end
+  end
 
   def verify_custom_export_xlsx(patients, settings, export_file)
     # Duplicate because the data will be updated each call of this method (which matters with batching)
