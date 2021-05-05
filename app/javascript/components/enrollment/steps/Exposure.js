@@ -82,7 +82,7 @@ class Exposure extends React.Component {
       }
       this.updateLDEandCEValidations({ ...current.patient, [event.target.id]: value });
     } else if (event?.target?.id && event.target.id === 'asymptomatic') {
-      // clear out SO if NRS is turned on and populate it with previous SO if NRS is turned off
+      // clear out SO if Asymp is turned on and populate it with previous SO if Asymp is turned off
       const so = value ? null : this.props.patient.symptom_onset;
       current.patient.symptom_onset = so;
       if (modified.patient) {
@@ -90,7 +90,7 @@ class Exposure extends React.Component {
       } else {
         modified = { patient: { symptom_onset: so } };
       }
-      this.updateSOandNRSValidations({ ...current.patient, [event.target.id]: value });
+      this.updateSOandAsympValidations({ ...current.patient, [event.target.id]: value });
     }
     this.setState(
       {
@@ -114,7 +114,7 @@ class Exposure extends React.Component {
       }
       this.updateLDEandCEValidations({ ...current.patient, [field]: date });
     } else if (field === 'symptom_onset') {
-      // turn off NRS if SO is populated
+      // turn off Asymp if SO is populated
       if (date) {
         current.patient.asymptomatic = false;
         modified = { patient: { ...modified.patient, asymptomatic: false } };
@@ -126,7 +126,7 @@ class Exposure extends React.Component {
           modified = { patient: { ...modified.patient, first_positive_lab_at: null } };
         }
       }
-      this.updateSOandNRSValidations({ ...current.patient, [field]: date });
+      this.updateSOandAsympValidations({ ...current.patient, [field]: date });
     }
     this.setState(
       {
@@ -171,7 +171,7 @@ class Exposure extends React.Component {
   updateStaticValidations = isolation => {
     // Update the Schema Validator based on workflow.
     if (isolation) {
-      this.updateSOandNRSValidations({
+      this.updateSOandAsympValidations({
         ...this.props.currentState.patient,
         asymptomatic: this.props.edit_mode && this.props.patient.isolation && !this.props.patient.symptom_onset && !this.props.symptomatic_assessments_exist,
       });
@@ -225,17 +225,8 @@ class Exposure extends React.Component {
     });
   };
 
-  updateSOandNRSValidations = patient => {
-    if (patient.symptom_onset && patient.asymptomatic) {
-      schema = yup.object().shape({
-        ...staticValidations,
-        symptom_onset: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .oneOf([null, undefined], 'Please enter a Symptom Onset Date OR select Asymptomatic, but not both.')
-          .nullable(),
-        continuous_exposure: yup.bool().nullable(),
-      });
-    } else {
+  updateSOandAsympValidations = patient => {
+    if (!patient.symptom_onset && !patient.asymptomatic) {
       schema = yup.object().shape({
         ...staticValidations,
         symptom_onset: yup
@@ -246,8 +237,48 @@ class Exposure extends React.Component {
               .toDate(),
             'Date can not be more than 30 days in the future.'
           )
+          .required('Please enter a Symptom Onset Date OR select Asymptomatic and enter a first positive lab result')
           .nullable(),
         asymptomatic: yup.bool().nullable(),
+      });
+    } else if (!patient.symptom_onset && patient.asymptomatic) {
+      schema = yup.object().shape({
+        ...staticValidations,
+        symptom_onset: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .oneOf([null, undefined])
+          .nullable(),
+        asymptomatic: yup
+          .bool()
+          .oneOf([true])
+          .nullable(),
+      });
+    } else if (patient.symptom_onset && !patient.asymptomatic) {
+      schema = yup.object().shape({
+        ...staticValidations,
+        symptom_onset: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .max(
+            moment()
+              .add(30, 'days')
+              .toDate(),
+            'Date can not be more than 30 days in the future.'
+          )
+          .required('Please enter a Symptom Onset Date')
+          .nullable(),
+        asymptomatic: yup
+          .bool()
+          .oneOf([null, undefined, false])
+          .nullable(),
+      });
+    } else {
+      schema = yup.object().shape({
+        ...staticValidations,
+        symptom_onset: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .oneOf([null, undefined], 'Please enter a Symptom Onset Date OR select Asymptomatic, but not both.')
+          .nullable(),
+        continuous_exposure: yup.bool().nullable(),
       });
     }
     this.setState(state => {
