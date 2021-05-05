@@ -8,7 +8,6 @@ import { formatTimestamp } from '../../../utils/DateTime';
 import AddAssessmentNote from './actions/AddAssessmentNote';
 import AssessmentModal from './AssessmentModal';
 import ClearAssessments from './actions/ClearAssessments';
-import ClearSingleAssessment from './actions/ClearSingleAssessment';
 import ContactAttempt from './actions/ContactAttempt';
 import CurrentStatus from './actions/CurrentStatus';
 import CustomTable from '../../layout/CustomTable';
@@ -291,7 +290,7 @@ class AssessmentTable extends React.Component {
             <span className="ml-2">Edit</span>
           </Dropdown.Item>
           <AddAssessmentNote assessment={rowData} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
-          <ClearSingleAssessment assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+          <ClearAssessments assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
         </Dropdown.Menu>
       </Dropdown>
     );
