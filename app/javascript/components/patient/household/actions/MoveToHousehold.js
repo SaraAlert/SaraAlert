@@ -4,8 +4,9 @@ import { Form, Row, Col, Button, Modal, InputGroup, OverlayTrigger, Tooltip } fr
 import axios from 'axios';
 import _ from 'lodash';
 import { formatDate } from '../../../../utils/DateTime';
+import { formatNameAlt } from '../../../../utils/Patient';
 
-import BadgeHOH from '../utils/BadgeHOH';
+import BadgeHoH from '../utils/BadgeHoH';
 import CustomTable from '../../../layout/CustomTable';
 import reportError from '../../../util/ReportError';
 
@@ -64,7 +65,7 @@ class MoveToHousehold extends React.Component {
     if (rowData.is_hoh) {
       return (
         <div>
-          <BadgeHOH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
+          <BadgeHoH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
           <a href={`${window.BASE_PATH}/patients/${rowData.id}`}>{name}</a>
         </div>
       );
@@ -256,13 +257,6 @@ class MoveToHousehold extends React.Component {
   };
 
   /**
-   * Grabs a formatted string with the name of the patient who is being moved to a household.
-   */
-  getPatientName = () => {
-    return `${this.props.patient?.last_name || ''}, ${this.props.patient?.first_name || ''} ${this.props.patient?.middle_name || ''}`;
-  };
-
-  /**
    * Handles a key press event on the search form control.
    * Checks for enter button press and prevents submisson event.
    * @param {Object} event
@@ -284,11 +278,11 @@ class MoveToHousehold extends React.Component {
             <Row>
               <Form.Group as={Col}>
                 <Form.Label>
-                  Please select the new monitoree that will respond for <b>{this.getPatientName()}</b>.
+                  Please select the new monitoree that will respond for <b>{formatNameAlt(this.props.patient)}</b>.
                 </Form.Label>
                 <p>
-                  You may select from the provided existing Head of Households and monitorees who are self reporting.
-                  {` ${this.getPatientName()}`} will be immediately moved into the selected monitoree&apos;s household.
+                  You may select from the provided existing Head of Households and monitorees who are self reporting.&nbsp;
+                  {formatNameAlt(this.props.patient)} will be immediately moved into the selected monitoree&apos;s household.
                 </p>
                 <InputGroup size="md">
                   <InputGroup.Prepend>

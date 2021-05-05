@@ -1042,6 +1042,7 @@ patient_52:
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
   last_date_of_exposure: <%= 11.days.ago %>
+  head_of_household: true
 patient_53:
   id: 53
   created_at: <%= 10.days.ago %>
@@ -1066,6 +1067,7 @@ patient_53:
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
   last_date_of_exposure: <%= 11.days.ago %>
+  head_of_household: false
 patient_54:
   id: 54
   created_at: <%= 6.days.ago %>

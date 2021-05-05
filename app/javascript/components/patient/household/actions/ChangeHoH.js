@@ -2,29 +2,31 @@ import React from 'react';
 import axios from 'axios';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
-
 import reportError from '../../../util/ReportError';
+import { formatNameAlt } from '../../../../utils/Patient';
 
-class ChangeHOH extends React.Component {
+class ChangeHoH extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      updateDisabled: true,
+      disabled: true,
       showModal: false,
       loading: false,
+      hoh_selection: null
     };
   }
 
   toggleModal = () => {
     let current = this.state.showModal;
     this.setState({
-      updateDisabled: true,
+      disabled: true,
       showModal: !current,
+      hoh_selection: null
     });
   };
 
   handleChange = event => {
-    this.setState({ [event.target.id]: event.target.value, updateDisabled: false });
+    this.setState({ [event.target.id]: event.target.value, disabled: false });
   };
 
   submit = () => {
@@ -35,7 +37,7 @@ class ChangeHOH extends React.Component {
           new_hoh_id: this.state.hoh_selection,
         })
         .then(() => {
-          this.setState({ updateDisabled: false }, () => {
+          this.setState({ disabled: false }, () => {
             location.reload();
           });
         })
@@ -45,11 +47,11 @@ class ChangeHOH extends React.Component {
     });
   };
 
-  createModal(title, toggle, submit) {
+  createModal() {
     return (
-      <Modal size="lg" show centered onHide={toggle}>
+      <Modal size="lg" show centered onHide={this.toggleModal}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>Edit Head of Household</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -66,11 +68,7 @@ class ChangeHOH extends React.Component {
                     --
                   </option>
                   {this.props?.dependents?.map((member, index) => {
-                    return (
-                      <option key={`option-${index}`} value={member.id}>
-                        {member.last_name}, {member.first_name} {member.middle_name || ''}
-                      </option>
-                    );
+                    return <option key={`option-${index}`} value={member.id}>{formatNameAlt(member)}</option>;
                   })}
                 </Form.Control>
               </Form.Group>
@@ -78,10 +76,10 @@ class ChangeHOH extends React.Component {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
+          <Button variant="secondary btn-square" onClick={this.toggleModal}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={this.state.updateDisabled || this.state.loading}>
+          <Button variant="primary btn-square" onClick={this.submit} disabled={this.state.disabled || this.state.loading}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
@@ -100,16 +98,16 @@ class ChangeHOH extends React.Component {
         <Button size="sm" className="my-2 mr-2" onClick={this.toggleModal}>
           <i className="fas fa-house-user"></i> Change Head of Household
         </Button>
-        {this.state.showModal && this.createModal('Edit Head of Household', this.toggleModal, this.submit)}
+        {this.state.showModal && this.createModal()}
       </React.Fragment>
     );
   }
 }
 
-ChangeHOH.propTypes = {
+ChangeHoH.propTypes = {
   patient: PropTypes.object,
   dependents: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 
-export default ChangeHOH;
+export default ChangeHoH;

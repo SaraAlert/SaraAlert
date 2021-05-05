@@ -9,17 +9,13 @@ import { nameFormatterAlt } from '../../../util.js';
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 
-function getWrapper(patient) {
-  return shallow(<MoveToHousehold patient={patient} authenticity_token={authyToken} />);
+function getWrapper() {
+  return shallow(<MoveToHousehold patient={mockPatient1} authenticity_token={authyToken} />);
 }
 
-afterEach(() => {
-  jest.clearAllMocks();
-});
-
 describe('MoveToHousehold', () => {
-  it('Properly renders Move To Household button', () => {
-    const wrapper = getWrapper(mockPatient1);
+  it('Properly renders Move to Household button', () => {
+    const wrapper = getWrapper();
     expect(wrapper.find(Button).length).toEqual(1);
     expect(wrapper.find(Button).text().includes('Move To Household')).toBeTruthy();
     expect(wrapper.find('i').hasClass('fa-house-user')).toBeTruthy();
@@ -28,7 +24,7 @@ describe('MoveToHousehold', () => {
   });
 
   it('Clicking the Move to Household button opens modal', () => {
-    const wrapper = getWrapper(mockPatient1);
+    const wrapper = getWrapper();
     expect(wrapper.state('showModal')).toBeFalsy();
     expect(wrapper.find(Modal).exists()).toBeFalsy();
     wrapper.find(Button).simulate('click');
@@ -37,27 +33,29 @@ describe('MoveToHousehold', () => {
   });
 
   it('Properly renders Move to Household modal', () => {
-    const wrapper = getWrapper(mockPatient1);
+    const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     expect(wrapper.find(Modal).exists()).toBeTruthy();
-    expect(wrapper.find(Modal).find(Form.Label).text()).toEqual(
+    expect(wrapper.find(Modal.Header).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Header).text()).toEqual('Move To Household');
+    expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Body).find(Form.Label).text()).toEqual(
       `Please select the new monitoree that will respond for ${nameFormatterAlt(mockPatient1)}.`
     );
-    expect(wrapper.find(Modal).find(Form.Label).find('b').text()).toEqual(nameFormatterAlt(mockPatient1));
-    expect(wrapper.find(Modal).find('p').text())
-    .toEqual(
-      'You may select from the provided existing Head of Households and monitorees who are self reporting.' + 
-      ` ${nameFormatterAlt(mockPatient1)} will be immediately moved into the selected monitoree's household.`
+    expect(wrapper.find(Modal.Body).find(Form.Label).find('b').text()).toEqual(nameFormatterAlt(mockPatient1));
+    expect(wrapper.find(Modal.Body).find('p').text()).toEqual(
+      `You may select from the provided existing Head of Households and monitorees who are self reporting. ${nameFormatterAlt(mockPatient1)} will be immediately moved into the selected monitoree's household.`
     );
-    expect(wrapper.find(InputGroup).exists()).toBeTruthy();
-    expect(wrapper.find('#search-input').exists()).toBeTruthy();
-    expect(wrapper.find('#search-input').prop('value')).toEqual('');
-    expect(wrapper.find(CustomTable).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Body).find(InputGroup).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Body).find('#search-input').exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Body).find('#search-input').prop('value')).toEqual('');
+    expect(wrapper.find(Modal.Body).find(CustomTable).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
     expect(wrapper.find('#move-to-household-cancel-button').exists()).toBeTruthy();
   });
 
   it('Changing search input updates state and calls updateTable', () => {
-    const wrapper = getWrapper(mockPatient1);
+    const wrapper = getWrapper();
     const updateTableSpy = jest.spyOn(wrapper.instance(), 'updateTable');
     expect(updateTableSpy).toHaveBeenCalledTimes(0);
     wrapper.find(Button).simulate('click');
@@ -70,18 +68,18 @@ describe('MoveToHousehold', () => {
     expect(wrapper.find('#search-input').prop('value')).toEqual('smith');
   });
 
-  it('Clicking Cancel in Move to Household modal closes modal', () => {
-    const wrapper = getWrapper(mockPatient1);
+  it('Clicking the cancel button in Move to Household modal closes modal', () => {
+    const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('showModal')).toBeTruthy();
     expect(wrapper.find(Modal).exists()).toBeTruthy();
-    wrapper.find('#move-to-household-cancel-button').first().simulate('click');
+    wrapper.find('#move-to-household-cancel-button').simulate('click');
     expect(wrapper.state('showModal')).toBeFalsy();
     expect(wrapper.find(Modal).exists()).toBeFalsy();
   });
   
-  it('Clicking Cancel in Move to Household modal resets state', () => {
-    const wrapper = getWrapper(mockPatient1);
+  it('Clicking the cancel button in Move to Household modal resets state', () => {
+    const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     wrapper.setState({ query: { ...wrapper.state.query, search: 'smith', entries: 10, page: 32 } }, () => {
       expect(wrapper.state('query').page).toEqual(32);

@@ -8,10 +8,14 @@ class RemoveFromHousehold extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      removeEligible: undefined,
+      removeEligible: null,
       showModal: false,
       loading: false,
     };
+  }
+
+  componentDidMount() {
+    this.checkHouseholdRemoveEligible();
   }
 
   toggleModal = () => {
@@ -19,10 +23,6 @@ class RemoveFromHousehold extends React.Component {
     this.setState({
       showModal: !current,
     });
-  };
-
-  handleChange = event => {
-    this.setState({ [event.target.id]: event.target.value });
   };
 
   submit = () => {
@@ -51,11 +51,11 @@ class RemoveFromHousehold extends React.Component {
       });
   };
 
-  createModal(title, toggle, submit) {
+  createModal() {
     return (
-      <Modal size="lg" show centered onHide={toggle}>
+      <Modal size="lg" show centered onHide={this.toggleModal}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>{this.state.removeEligible == false && 'Cannot '}Remove Monitoree From Household</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -77,10 +77,10 @@ class RemoveFromHousehold extends React.Component {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
+          <Button variant="secondary btn-square" onClick={this.toggleModal}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={!this.state.removeEligible || this.state.loading}>
+          <Button variant="primary btn-square" onClick={this.submit} disabled={!this.state.removeEligible || this.state.loading}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
@@ -93,20 +93,13 @@ class RemoveFromHousehold extends React.Component {
     );
   }
 
-  componentDidMount() {
-    this.checkHouseholdRemoveEligible();
-  }
-
   render() {
     return (
       <React.Fragment>
         <Button size="sm" className="my-2" onClick={this.toggleModal}>
           <i className="fas fa-house-user"></i> Remove From Household
         </Button>
-        {this.state.showModal && this.state.removeEligible && this.createModal('Remove Monitoree From Household', this.toggleModal, this.submit)}
-        {this.state.showModal &&
-          this.state.removeEligible == false &&
-          this.createModal('Cannot Remove Monitoree From Household', this.toggleModal, this.submit)}
+        {this.state.showModal && this.createModal()}
       </React.Fragment>
     );
   }
@@ -114,7 +107,6 @@ class RemoveFromHousehold extends React.Component {
 
 RemoveFromHousehold.propTypes = {
   patient: PropTypes.object,
-  dependents: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 

@@ -1,20 +1,12 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card } from 'react-bootstrap';
-
 import Patient from './Patient';
+import Dependent from './household/Dependent';
+import HeadOfHousehold from './household/HeadOfHousehold';
+import Individual from './household/Individual';
 
 class PatientPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hideBody: props.hideBody };
-  }
-
-  reloadHook = () => {
-    // Optional reload, specifically for assessments
-    location.href = `${window.BASE_PATH}/patients/${this.props.patient.id}`;
-  };
-
   render() {
     return (
       <React.Fragment>
@@ -25,13 +17,35 @@ class PatientPage extends React.Component {
           <Card.Body>
             <Patient
               jurisdiction_path={this.props.jurisdiction_path}
-              dependents={this.props.dependents || []}
               details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
-              hideBody={this.state.hideBody}
-              can_add_group={this.props.can_add_group}
+              collapse={this.props.can_modify_subject_status}
               edit_mode={false}
               authenticity_token={this.props.authenticity_token}
             />
+            <div className="household-info">
+              {!this.props.patient.head_of_household && this.props?.other_household_members?.length > 0 && (
+                <Dependent
+                  patient={this.props.patient}
+                  hoh={this.props.other_household_members.find(patient => patient.head_of_household)}
+                  authenticity_token={this.props.authenticity_token}
+                />
+              )}
+              {this.props.patient.head_of_household && (
+               <HeadOfHousehold
+                  patient={this.props.patient}
+                  dependents={this.props.other_household_members}
+                  can_add_group={this.props.can_add_group}
+                  authenticity_token={this.props.authenticity_token}
+                />
+              )}
+              {!this.props.patient.head_of_household && this.props?.other_household_members?.length === 0 && (
+                <Individual
+                  patient={this.props.patient}
+                  can_add_group={this.props.can_add_group}
+                  authenticity_token={this.props.authenticity_token}
+                />
+              )}
+            </div>
           </Card.Body>
         </Card>
       </React.Fragment>
@@ -40,16 +54,11 @@ class PatientPage extends React.Component {
 }
 
 PatientPage.propTypes = {
-  patient_id: PropTypes.string,
-  current_user: PropTypes.object,
   can_add_group: PropTypes.bool,
+  can_modify_subject_status: PropTypes.bool,
   patient: PropTypes.object,
-  dependents: PropTypes.array,
-  dashboardUrl: PropTypes.string,
+  other_household_members: PropTypes.array,
   authenticity_token: PropTypes.string,
-  patient_submission_token: PropTypes.string,
-  canAddAssessments: PropTypes.bool,
-  hideBody: PropTypes.bool,
   jurisdiction_path: PropTypes.string,
   blocked_sms: PropTypes.bool,
 };
