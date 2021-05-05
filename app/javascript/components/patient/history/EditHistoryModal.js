@@ -19,10 +19,10 @@ class EditHistoryModal extends React.Component {
               })
               .map(version => (
                 <ListGroup.Item key={version.id}>
-                  <div className="text-muted mb-1">
-                    {formatRelativePast(version.created_at)} by {version.created_by}
-                  </div>
-                  <i>{version.comment}</i>
+                  <div className="mb-1">{version.comment}</div>
+                  <i className="edit-text">
+                    {version.created_by} {version.id === version.original_comment_id ? 'created' : 'edited'} {formatRelativePast(version.created_at)}
+                  </i>
                 </ListGroup.Item>
               ))}
           </ListGroup>

@@ -22,8 +22,9 @@ describe('EditHistoryModal', () => {
     expect(wrapper.find(Modal.Body).find(ListGroup).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Body).find(ListGroup.Item).length).toEqual(historyVersions.length);
     historyVersions.forEach((history, index) => {
-      expect(wrapper.find(Modal.Body).find(ListGroup.Item).at(index).find('div').text()).toEqual(`${formatRelativePast(history.created_at)} by ${history.created_by}`);
-      expect(wrapper.find(Modal.Body).find(ListGroup.Item).at(index).find('i').text()).toEqual(history.comment);
+      expect(wrapper.find(Modal.Body).find(ListGroup.Item).at(index).find('div').text()).toEqual(history.comment);
+      expect(wrapper.find(Modal.Body).find(ListGroup.Item).at(index).find('i').text())
+        .toEqual(`${history.created_by} ${index === historyVersions.length-1 ? 'created' : 'edited'} ${formatRelativePast(history.created_at)}`);
     });
     expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(1);
