@@ -15,7 +15,7 @@ class SymptomOnset extends React.Component {
     super(props);
     this.state = {
       symptom_onset: this.props.patient.symptom_onset,
-      asymptomatic: this.props.patient.asymptomatic,
+      asymptomatic: this.props.patient.asymptomatic || false,
       showSymptomOnsetModal: false,
       showAsymptomaticModal: false,
       loading: false,
@@ -146,7 +146,7 @@ class SymptomOnset extends React.Component {
                   'MM/DD/YYYY'
                 )}? Doing so will result in the symptom onset date no longer being auto-populated by the system and Asymptomatic will be ${
                   this.state.asymptomatic ? 'checked' : 'unchecked'
-                }`
+                }.`
               : 'Are you sure you want to clear the symptom onset date? Doing so will result in the symptom onset date being auto-populated by the system.',
             this.closeModal,
             this.submit
