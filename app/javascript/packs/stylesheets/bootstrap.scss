@@ -132,14 +132,13 @@ select.form-control {
   font-size: 90% !important;
 }
 
-.badge-hoh {
-  float: right;
-  vertical-align: top;
-}
-
 .badge-muted {
   background-color: #6c757d !important;
   color: #fff;
+}
+
+.badge-hoh {
+  vertical-align: top !important;
 }
 
 .table .concern {
