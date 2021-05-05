@@ -210,7 +210,7 @@ public_health_action_patient_20_comment_1_edit_2:
 public_health_action_patient_20_comment_2:
   id: 20205
   patient_id: 20
-  original_comment_id: null
+  original_comment_id: 20205
   comment: 'I am another comment'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Comment'
@@ -221,7 +221,7 @@ public_health_action_patient_20_comment_2:
 public_health_action_patient_20_deleted_comment:
   id: 20206
   patient_id: 20
-  original_comment_id: null
+  original_comment_id: 20206
   comment: 'I am a deleted comment'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Comment'
