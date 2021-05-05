@@ -703,47 +703,30 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'reminder eligible does not include records have received an assessment reminder in the last 12 hours' do
-    # Assessment was sent more than 12 hours ago - should be eligible
+    # Assessment was sent yesterday in patient local time - should be eligible
     patient = create(:patient,
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
                      preferred_contact_method: 'Telephone call',
-                     primary_telephone: '+13333333333',
-                     last_assessment_reminder_sent: 13.hours.ago)
+                     primary_telephone: '+13333333333')
+    patient_local_time = Time.now.getlocal(patient.address_timezone_offset)
+    patient.update(last_assessment_reminder_sent: correct_dst_edge(patient, patient_local_time.yesterday.end_of_day))
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
 
     # Assessment was not sent (nil) - should be eligible
-    patient = create(:patient,
-                     purged: false,
-                     pause_notifications: false,
-                     monitoring: true,
-                     preferred_contact_method: 'Telephone call',
-                     primary_telephone: '+13333333333',
-                     last_assessment_reminder_sent: nil)
+    patient.update(last_assessment_reminder_sent: nil)
 
     assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
 
-    # Assessment was sent exactly 12 hours ago - should be eligible
-    patient = create(:patient,
-                     purged: false,
-                     pause_notifications: false,
-                     monitoring: true,
-                     preferred_contact_method: 'Telephone call',
-                     primary_telephone: '+13333333333',
-                     last_assessment_reminder_sent: 12.hours.ago)
+    # Assessment was sent at the beginning of the day in patient local time - should not be eligible
+    patient.update(last_assessment_reminder_sent: correct_dst_edge(patient, patient_local_time.beginning_of_day))
 
-    assert_equal(1, Patient.reminder_eligible.where(id: patient.id).count)
+    assert_equal(0, Patient.reminder_eligible.where(id: patient.id).count)
 
-    # Assessment was sent under 10 hours - should NOT be eligible
-    patient = create(:patient,
-                     purged: false,
-                     pause_notifications: false,
-                     monitoring: true,
-                     preferred_contact_method: 'Telephone call',
-                     primary_telephone: '+13333333333',
-                     last_assessment_reminder_sent: 10.hours.ago)
+    # Assessment was sent noon today in patient local time - should NOT be eligible
+    patient.update(last_assessment_reminder_sent: patient_local_time.change(hour: 12))
 
     assert_equal(0, Patient.reminder_eligible.where(id: patient.id).count)
   end
@@ -2722,7 +2705,7 @@ class PatientTest < ActiveSupport::TestCase
 
       # default time window is 1200 - 1659
       # before window
-      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 11, minute: 59)) do
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 11, min: 59)) do
         assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # front edge of window
@@ -2734,7 +2717,7 @@ class PatientTest < ActiveSupport::TestCase
         assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # back edge of window
-      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 16, minute: 59)) do
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 16, min: 59)) do
         assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # after window
@@ -2746,7 +2729,7 @@ class PatientTest < ActiveSupport::TestCase
       patient.update(preferred_contact_time: 'Morning')
       patient.reload
       # before window
-      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 7, minute: 59)) do
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 7, min: 59)) do
         assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # front edge of window
@@ -2758,7 +2741,7 @@ class PatientTest < ActiveSupport::TestCase
         assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # back edge of window
-      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 12, minute: 59)) do
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 12, min: 59)) do
         assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # after window
@@ -2770,7 +2753,7 @@ class PatientTest < ActiveSupport::TestCase
       patient.update(preferred_contact_time: 'Afternoon')
       patient.reload
       # before window
-      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 11, minute: 59)) do
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 11, min: 59)) do
         assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # front edge of window
@@ -2782,7 +2765,7 @@ class PatientTest < ActiveSupport::TestCase
         assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # back edge of window
-      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 16, minute: 59)) do
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 16, min: 59)) do
         assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # after window
@@ -2794,7 +2777,7 @@ class PatientTest < ActiveSupport::TestCase
       patient.update(preferred_contact_time: 'Evening')
       patient.reload
       # before window
-      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 15, minute: 59)) do
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 15, min: 59)) do
         assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # front edge of window
@@ -2806,7 +2789,7 @@ class PatientTest < ActiveSupport::TestCase
         assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # back edge of window
-      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 19, minute: 59)) do
+      Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 19, min: 59)) do
         assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
       # after window
@@ -2952,14 +2935,14 @@ class PatientTest < ActiveSupport::TestCase
 
       # assessment is 11:59 PM day before
       yesterday_local = Time.now.getlocal(patient.address_timezone_offset) - 1.day
-      assessment.update(created_at: correct_dst_edge(patient, yesterday_local.change(hour: 23, minute: 59)))
+      assessment.update(created_at: correct_dst_edge(patient, yesterday_local.change(hour: 23, min: 59)))
       assessment.reload
       patient.reload
       assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 12:00 AM current day
       assessment.update(
-        created_at: correct_dst_edge(patient, Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, minute: 0))
+        created_at: correct_dst_edge(patient, Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, min: 0))
       )
       assessment.reload
       patient.reload
@@ -2972,19 +2955,19 @@ class PatientTest < ActiveSupport::TestCase
       assert_not_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 11:59 PM current day
-      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 23, minute: 59))
+      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 23, min: 59))
       assessment.reload
       patient.reload
       assert_not_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 12:00 AM next day
-      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, minute: 0) + 1.day)
+      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, min: 0) + 1.day)
       assessment.reload
       patient.reload
       assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 9:00 AM next day
-      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 9, minute: 0) + 1.day)
+      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 9, min: 0) + 1.day)
       assessment.reload
       patient.reload
       assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
@@ -3017,7 +3000,7 @@ class PatientTest < ActiveSupport::TestCase
 
         # Created at on edge of monitoring period
         edge_of_period = Time.now.getlocal(patient.address_timezone_offset) - monitoring_period.days
-        patient.update(created_at: edge_of_period.change(hour: 0, minute: 0))
+        patient.update(created_at: edge_of_period.change(hour: 0, min: 0))
         patient.reload
         assert_not_nil Patient.end_of_monitoring_period.find_by(id: patient.id)
 
