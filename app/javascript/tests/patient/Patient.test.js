@@ -9,7 +9,7 @@ import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, b
 import { nameFormatter, formatDate } from '../util.js'
 
 const goToMock = jest.fn();
-const identificationFields = [ 'DOB', 'Age', 'Language', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality' ];
+const identificationFields = [ 'DOB', 'Age', 'Language', 'Sara Alert ID', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality' ];
 const contactFields = [ 'Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Reporting Method' ];
 const domesticAddressFields = [ 'Address 1', 'Address 2', 'Town/City', 'State', 'Zip', 'County'];
 const foreignAddressFields = [ 'Address 1', 'Address 2', 'Address 3', 'Town/City', 'State', 'Zip', 'Country' ];

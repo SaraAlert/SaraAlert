@@ -173,6 +173,9 @@ class Patient extends React.Component {
                   <b>Language:</b> <span>{this.state.primaryLanguageDisplayName || '--'}</span>
                 </div>
                 <div>
+                  <b>Sara Alert ID:</b> <span>{this.props.details.id || '--'}</span>
+                </div>
+                <div>
                   <b>State/Local ID:</b> <span>{this.props.details.user_defined_id_statelocal || '--'}</span>
                 </div>
                 <div>
