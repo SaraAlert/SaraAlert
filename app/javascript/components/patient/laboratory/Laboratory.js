@@ -52,7 +52,7 @@ class Laboratory extends React.Component {
   handleDeleteSubmit = () => {
     let deleteReason = this.state.delete_reason;
     if (deleteReason === 'Other' && this.state.delete_reason_text) {
-      deleteReason += ': ' + this.state.delete_reason_text;
+      deleteReason += ', ' + this.state.delete_reason_text;
     }
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
