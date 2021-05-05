@@ -130,7 +130,7 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     click_on 'edit-potential_exposure_information-btn'
     fill_in 'jurisdiction_id', with: '' # clear out jurisdiction to so that there is at least one validation error
     click_on 'Next'
-    verify_text_not_displayed('Please enter a Symptom Onset Date OR select Asymptomatic and enter a first positive lab result')
+    verify_text_displayed('Please enter a Symptom Onset Date OR select Asymptomatic and enter a first positive lab result')
     fill_in 'symptom_onset', with: 3.days.ago.strftime('%m/%d/%Y')
     click_on 'Next'
     verify_text_not_displayed('Please enter a Symptom Onset Date OR select Asymptomatic and enter a first positive lab result')
