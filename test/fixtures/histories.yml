@@ -177,7 +177,7 @@ public_health_action_patient_20_secondary:
 public_health_action_patient_20_comment_1:
   id: 20202
   patient_id: 20
-  original_comment_id: null
+  original_comment_id: 20202
   comment: 'I am a comment'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Comment'
@@ -251,4 +251,3 @@ public_health_action_patient_54:
   updated_at: <%= 3.days.ago %>
   deleted_by: null
   delete_reason: null
-
