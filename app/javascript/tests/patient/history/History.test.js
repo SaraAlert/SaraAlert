@@ -3,6 +3,7 @@ import { shallow, mount } from 'enzyme';
 import { Button, Card, Col, Form, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import History from '../../../components/patient/history/History';
+import EditHistoryModal from '../../../components/patient/history/EditHistoryModal';
 import DeleteDialog from '../../../components/util/DeleteDialog';
 import { mockEnrollmentHistory, mockCommentHistory1, mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2 } from '../../mocks/mockHistories';
 import { mockUser1 } from '../../mocks/mockUsers';
@@ -190,6 +191,15 @@ describe('History', () => {
     expect(wrapper.find(Card.Body).find('#comment').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#update-edit-history-btn').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#cancel-edit-history-btn').exists()).toBeFalsy();
+  });
+
+  it('Clicking the edited link shows the delete dialog', () => {
+    const wrapper = getWrapper([ mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2 ]);
+    expect(wrapper.state('showEditHistoryModal')).toBeFalsy();
+    expect(wrapper.find(EditHistoryModal).exists()).toBeFalsy();
+    wrapper.find(Card.Body).find('.history-edited-link').simulate('click');
+    expect(wrapper.state('showEditHistoryModal')).toBeTruthy();
+    expect(wrapper.find(EditHistoryModal).exists()).toBeTruthy();
   });
 
   it('Clicking the delete button shows the delete dialog', () => {
