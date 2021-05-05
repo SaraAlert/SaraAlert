@@ -4,8 +4,9 @@ import { Form } from 'react-bootstrap';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import { formatDate } from '../../../../utils/DateTime';
+import { formatNameAlt } from '../../../../utils/Patient';
 
-import BadgeHOH from '../utils/BadgeHOH';
+import BadgeHoH from '../utils/BadgeHoH';
 import CustomTable from '../../../layout/CustomTable';
 
 class ApplyToHousehold extends React.Component {
@@ -267,12 +268,12 @@ class ApplyToHousehold extends React.Component {
    */
   formatPatientName = data => {
     const rowData = data.rowData;
-    const monitoreeName = `${rowData.last_name || ''}, ${rowData.first_name || ''} ${rowData.middle_name || ''}`;
+    const monitoreeName = formatNameAlt(rowData);
 
     if (rowData.id === rowData.responder_id) {
       return (
         <div>
-          <BadgeHOH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
+          <BadgeHoH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
           {this.validJurisdiction(rowData) ? (
             <a href={`${window.BASE_PATH}/patients/${rowData.id}`} rel="noreferrer" target="_blank">
               {monitoreeName}
@@ -297,7 +298,7 @@ class ApplyToHousehold extends React.Component {
    * @param {Object} rowData - provided by CustomTable about the current row.
    */
   getRowCheckboxAriaLabel(rowData) {
-    return `Monitoree ${rowData.last_name || ''}, ${rowData.first_name || ''} ${rowData.middle_name || ''}`;
+    return `Monitoree ${formatNameAlt(rowData)}`;
   }
 
   render() {

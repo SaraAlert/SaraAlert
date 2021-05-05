@@ -165,7 +165,7 @@ class WorkflowTest < ApplicationSystemTestCase
 
     # edit parent assigned user and propagate to group member
     edited_monitoree_with_propogation_label = 'monitoree_16'
-    click_on 'Click here to view that monitoree'
+    find('#dependent-hoh-link').click
     @@enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_with_propogation_label])
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission

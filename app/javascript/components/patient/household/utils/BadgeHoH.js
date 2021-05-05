@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Badge } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 
-class BadgeHOH extends React.Component {
+class BadgeHoH extends React.Component {
   render() {
     return (
       <React.Fragment>
@@ -20,10 +20,10 @@ class BadgeHOH extends React.Component {
   }
 }
 
-BadgeHOH.propTypes = {
+BadgeHoH.propTypes = {
   patientId: PropTypes.string,
   customClass: PropTypes.string,
   location: PropTypes.string,
 };
 
-export default BadgeHOH;
+export default BadgeHoH;

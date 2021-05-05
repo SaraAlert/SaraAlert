@@ -131,6 +131,6 @@ class EnrollerPatientPageVerifier < ApplicationSystemTestCase
     assert page.has_button?('Select', count: 1)
     click_on 'Select'
 
-    assert page.has_link?('Click here to view that monitoree', href: "/patients/#{new_responder_id}")
+    assert page.find('#household-member-not-hoh').has_link?(href: "/patients/#{new_responder_id}")
   end
 end
