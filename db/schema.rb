@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_21_171134) do
+ActiveRecord::Schema.define(version: 2021_04_29_200726) do
 
   create_table "analytics", charset: "utf8", force: :cascade do |t|
-    t.integer "jurisdiction_id"
+    t.bigint "jurisdiction_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["jurisdiction_id", "created_at", "id"], name: "analytics_index_chain_1"
@@ -38,11 +38,11 @@ ActiveRecord::Schema.define(version: 2021_04_21_171134) do
   end
 
   create_table "audits", charset: "utf8", force: :cascade do |t|
-    t.integer "auditable_id"
+    t.bigint "auditable_id"
     t.string "auditable_type"
-    t.integer "associated_id"
+    t.bigint "associated_id"
     t.string "associated_type"
-    t.integer "user_id"
+    t.bigint "user_id"
     t.string "user_type"
     t.string "username"
     t.string "action"
@@ -71,7 +71,7 @@ ActiveRecord::Schema.define(version: 2021_04_21_171134) do
     t.string "primary_telephone"
     t.string "email"
     t.text "notes"
-    t.integer "enrolled_id"
+    t.bigint "enrolled_id"
     t.integer "contact_attempts"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -83,8 +83,8 @@ ActiveRecord::Schema.define(version: 2021_04_21_171134) do
   create_table "conditions", charset: "utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "jurisdiction_id"
-    t.integer "assessment_id"
+    t.bigint "jurisdiction_id"
+    t.bigint "assessment_id"
     t.string "threshold_condition_hash"
     t.string "type"
     t.index ["assessment_id"], name: "index_conditions_on_assessment_id"
@@ -262,7 +262,7 @@ ActiveRecord::Schema.define(version: 2021_04_21_171134) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.json "public_key_set"
-    t.integer "jurisdiction_id"
+    t.bigint "jurisdiction_id"
     t.bigint "user_id"
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
@@ -285,9 +285,9 @@ ActiveRecord::Schema.define(version: 2021_04_21_171134) do
   create_table "patients", charset: "utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "responder_id"
-    t.integer "creator_id"
-    t.integer "jurisdiction_id"
+    t.bigint "responder_id"
+    t.bigint "creator_id"
+    t.bigint "jurisdiction_id"
     t.binary "submission_token", limit: 255
     t.boolean "monitoring", default: true
     t.string "monitoring_reason"
@@ -391,7 +391,7 @@ ActiveRecord::Schema.define(version: 2021_04_21_171134) do
     t.datetime "latest_fever_or_fever_reducer_at"
     t.integer "negative_lab_count", default: 0
     t.datetime "latest_transfer_at"
-    t.integer "latest_transfer_from"
+    t.bigint "latest_transfer_from"
     t.string "gender_identity"
     t.string "sexual_orientation"
     t.boolean "user_defined_symptom_onset"
@@ -444,7 +444,7 @@ ActiveRecord::Schema.define(version: 2021_04_21_171134) do
   end
 
   create_table "stats", charset: "utf8", force: :cascade do |t|
-    t.integer "jurisdiction_id", null: false
+    t.bigint "jurisdiction_id", null: false
     t.json "contents", null: false
     t.string "tag", null: false
     t.datetime "created_at", precision: 6, null: false
@@ -458,7 +458,7 @@ ActiveRecord::Schema.define(version: 2021_04_21_171134) do
     t.boolean "bool_value"
     t.float "float_value"
     t.integer "int_value"
-    t.integer "condition_id"
+    t.bigint "condition_id"
     t.string "type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -471,9 +471,9 @@ ActiveRecord::Schema.define(version: 2021_04_21_171134) do
 
   create_table "transfers", charset: "utf8", force: :cascade do |t|
     t.bigint "patient_id"
-    t.integer "to_jurisdiction_id"
-    t.integer "from_jurisdiction_id"
-    t.integer "who_id"
+    t.bigint "to_jurisdiction_id"
+    t.bigint "from_jurisdiction_id"
+    t.bigint "who_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["from_jurisdiction_id"], name: "index_transfers_on_from_jurisdiction_id"
@@ -511,7 +511,7 @@ ActiveRecord::Schema.define(version: 2021_04_21_171134) do
     t.integer "failed_attempts", default: 0, null: false
     t.datetime "locked_at"
     t.boolean "force_password_change"
-    t.integer "jurisdiction_id"
+    t.bigint "jurisdiction_id"
     t.datetime "password_changed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
