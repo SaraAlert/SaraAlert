@@ -145,7 +145,7 @@ class ExtendedIsolation extends React.Component {
           ariaLabel="Extended Isolation to Date Input"
           isClearable
         />
-        {this.state.showExtendIsolationModal && this.createModal}
+        {this.state.showExtendIsolationModal && this.createModal()}
       </React.Fragment>
     );
   }
