@@ -256,7 +256,7 @@ class CacheAnalyticsJob < ApplicationJob
   def self.monitoree_counts_by_exposure_country(analytic_id, monitorees)
     counts = []
     exposure_countries = monitorees.monitoring_active(true)
-                                   .where.not(potential_exposure_country: nil)
+                                   .where.not(potential_exposure_country: [nil, ''])
                                    .group(:potential_exposure_country)
                                    .order(count_potential_exposure_country: :desc)
                                    .order(:potential_exposure_country)
