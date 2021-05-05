@@ -145,10 +145,10 @@ class Patient < ApplicationRecord
     where(purged: false)
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
-      .where('last_assessment_reminder_sent <= ? OR last_assessment_reminder_sent IS NULL', 12.hours.ago)
       .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
       .has_usable_preferred_contact_method
       .within_preferred_contact_time
+      .reminder_not_sent_recently
   }
 
   # Patients who are eligible for reminders
