@@ -67,8 +67,8 @@ Rails.application.routes.draw do
   post 'admin/email_all', to: 'admin#email_all'
 
   post '/histories', to: 'histories#create'
-  patch '/histories/:id/update', to: 'histories#update'
-  delete '/histories/:id/delete', to: 'histories#delete'
+  post '/histories/:id/edit', to: 'histories#edit'
+  post '/histories/:id/delete', to: 'histories#delete'
 
   resources :contact_attempts, only: [:create]
 

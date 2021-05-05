@@ -25,7 +25,7 @@ class HistoriesController < ApplicationController
   end
 
   # "Edits" a history comment - a new history comment is created with the updated comment text and a reference to the id of the original
-  def update
+  def edit
     redirect_to root_url unless current_user.can_create_subject_history?
 
     patient = current_user.viewable_patients.find_by(id: params.require(:patient_id))
