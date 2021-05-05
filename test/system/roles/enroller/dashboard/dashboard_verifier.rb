@@ -50,7 +50,7 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
     displayed_name = search_for_monitoree(new_monitoree, is_epi)
     click_on displayed_name
     @@enroller_patient_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, is_epi: is_epi)
-    click_on 'Click here to view that monitoree'
+    find('#dependent-hoh-link').click
     @@enroller_patient_page_verifier.verify_monitoree_info(existing_monitoree, is_epi: is_epi)
     @@system_test_utils.return_to_dashboard('exposure', is_epi: is_epi)
   end

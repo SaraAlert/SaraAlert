@@ -26,7 +26,7 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import AdvancedFilter from './query/AdvancedFilter';
-import BadgeHOH from '../patient/household/utils/BadgeHOH';
+import BadgeHoH from '../patient/household/utils/BadgeHoH';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import UpdateAssignedUser from './actions/UpdateAssignedUser';
@@ -467,7 +467,7 @@ class PatientsTable extends React.Component {
     if (rowData.is_hoh) {
       return (
         <div>
-          <BadgeHOH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
+          <BadgeHoH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
           <a href={`${window.BASE_PATH}/patients/${rowData.id}`}>{name}</a>
         </div>
       );

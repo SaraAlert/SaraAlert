@@ -1,23 +1,20 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Col, Collapse, Form, Row, Table } from 'react-bootstrap';
+import { Button, Col, Collapse, Form, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { convertLanguageCodesToNames } from '../../utils/Languages';
 
-import BadgeHOH from './household/utils/BadgeHOH';
-import ChangeHOH from './household/actions/ChangeHOH';
-import EnrollHouseholdMember from './household/actions/EnrollHouseholdMember';
-import MoveToHousehold from './household/actions/MoveToHousehold';
-import RemoveFromHousehold from './household/actions/RemoveFromHousehold';
+import BadgeHoH from './household/utils/BadgeHoH';
 import InfoTooltip from '../util/InfoTooltip';
+import { convertLanguageCodesToNames } from '../../utils/Languages';
+import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
 
 class Patient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: !props.hideBody,
+      expanded: props.edit_mode || !props.collapse,
       expandNotes: false,
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
@@ -45,49 +42,6 @@ class Patient extends React.Component {
       });
     }
   }
-
-  formatName = () => {
-    return `${this.props.details.first_name ? this.props.details.first_name : ''}${this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''}${
-      this.props.details.last_name ? ' ' + this.props.details.last_name : ''
-    }`;
-  };
-
-  formatPhoneNumber = phone => {
-    const match = phone
-      .replace('+1', '')
-      .replace(/\D/g, '')
-      .match(/^(\d{3})(\d{3})(\d{4})$/);
-    return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
-  };
-
-  formatRace = () => {
-    let raceArray = [];
-    if (this.props.details.white) {
-      raceArray.push('White');
-    }
-    if (this.props.details.black_or_african_american) {
-      raceArray.push('Black or African American');
-    }
-    if (this.props.details.asian) {
-      raceArray.push('Asian');
-    }
-    if (this.props.details.american_indian_or_alaska_native) {
-      raceArray.push('American Indian or Alaska Native');
-    }
-    if (this.props.details.native_hawaiian_or_other_pacific_islander) {
-      raceArray.push('Native Hawaiian or Other Pacific Islander');
-    }
-    if (this.props.details.race_other) {
-      raceArray.push('Other');
-    }
-    if (this.props.details.race_unknown) {
-      raceArray.push('Unknown');
-    }
-    if (this.props.details.race_refused_to_answer) {
-      raceArray.push('Refused to Answer');
-    }
-    return <span>{raceArray.length === 0 ? '--' : raceArray.join(', ')}</span>;
-  };
 
   /**
    * Renders the edit link depending on if the user is coming from the monitoree details section or summary of the enrollment wizard.
@@ -181,10 +135,10 @@ class Patient extends React.Component {
         <Row id="monitoree-details-header">
           <Col sm={12}>
             <h3>
-              <span aria-label={this.formatName()} className="pr-2">
-                {this.formatName()}
+              <span aria-label={formatName(this.props.details)} className="pr-2">
+                {formatName(this.props.details)}
               </span>
-              {this.props?.dependents && this.props?.dependents?.length > 0 && <BadgeHOH patientId={String(this.props.details.id)} location={'right'} />}
+              {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
           </Col>
           <Col sm={12}>
@@ -239,7 +193,7 @@ class Patient extends React.Component {
                   <b>Sexual Orientation:</b> <span>{this.props.details.sexual_orientation || '--'}</span>
                 </div>
                 <div>
-                  <b>Race:</b> {this.formatRace()}
+                  <b>Race:</b> <span>{formatRace(this.props.details)}</span>
                 </div>
                 <div>
                   <b>Ethnicity:</b> <span>{this.props.details.ethnicity || '--'}</span>
@@ -257,7 +211,7 @@ class Patient extends React.Component {
             </div>
             <div className="item-group">
               <div>
-                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${this.formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
+                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 {this.props.details.blocked_sms && (
                   <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
                     &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
@@ -707,92 +661,17 @@ class Patient extends React.Component {
             </Row>
           </div>
         </Collapse>
-        {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
-          <div id="household-member-not-hoh" className="household-info">
-            <Row>
-              The reporting responsibility for this monitoree is handled by another monitoree.&nbsp;
-              <a href={`${window.BASE_PATH}/patients/${this.props.details.responder_id}`}>Click here to view that monitoree</a>.
-            </Row>
-            <Row>
-              <RemoveFromHousehold patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
-            </Row>
-          </div>
-        )}
-        {this.props?.dependents && this.props?.dependents?.length > 0 && (
-          <Row id="head-of-household" className="household-info">
-            <Col>
-              <Row>This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
-              <Row className="pt-2">
-                <Table striped bordered hover size="sm">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Workflow</th>
-                      <th>Monitoring Status</th>
-                      <th>Continuous Exposure?</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {this.props?.dependents?.map((member, index) => {
-                      return (
-                        <tr key={`dl-${index}`}>
-                          <td>
-                            <a href={`${window.BASE_PATH}/patients/${member.id}`}>
-                              {member.last_name}, {member.first_name} {member.middle_name || ''}
-                            </a>
-                          </td>
-                          <td>{member.isolation ? 'Isolation' : 'Exposure'}</td>
-                          <td>{member.monitoring ? 'Actively Monitoring' : 'Not Monitoring'}</td>
-                          <td>{member.continuous_exposure ? 'Yes' : 'No'}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-              </Row>
-              <Row>
-                <ChangeHOH patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
-                {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.details.responder_id} isHoh={true} />}
-              </Row>
-            </Col>
-          </Row>
-        )}
-        {this.props?.dependents &&
-          this.props?.dependents?.length == 0 &&
-          this.props?.details?.responder_id &&
-          this.props.details.responder_id == this.props.details.id && (
-            <Row id="no-household" className="household-info">
-              <Col>
-                <Row>This monitoree is not a member of a household:</Row>
-                {this.props?.dependents?.map((member, index) => {
-                  return (
-                    <Row key={'gm' + index}>
-                      <a href={`${window.BASE_PATH}/patients/${member.id}`}>
-                        {member.last_name}, {member.first_name} {member.middle_name || ''}
-                      </a>
-                    </Row>
-                  );
-                })}
-                <Row>
-                  <MoveToHousehold patient={this.props?.details} authenticity_token={this.props.authenticity_token} />
-                  {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.details.responder_id} isHoh={false} />}
-                </Row>
-              </Col>
-            </Row>
-          )}
       </React.Fragment>
     );
   }
 }
 
 Patient.propTypes = {
-  dependents: PropTypes.array,
   details: PropTypes.object,
   jurisdiction_path: PropTypes.string,
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
-  can_add_group: PropTypes.bool,
-  hideBody: PropTypes.bool,
+  collapse: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };
 

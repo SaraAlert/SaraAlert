@@ -4,7 +4,7 @@ import { Form } from 'react-bootstrap';
 import _ from 'lodash';
 import ApplyToHousehold from '../../../../components/patient/household/actions/ApplyToHousehold';
 import CustomTable from '../../../../components/layout/CustomTable';
-import BadgeHOH from '../../../../components/patient/household/utils/BadgeHOH';
+import BadgeHoH from '../../../../components/patient/household/utils/BadgeHoH';
 import { mockUser1 } from '../../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../../mocks/mockJurisdiction';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../../mocks/mockPatients';
@@ -23,10 +23,6 @@ function getMountedWrapper() {
   return mount(<ApplyToHousehold household_members={householdMembers} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths}
     handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
 }
-
-beforeEach(() => {
-  window.BASE_PATH = ""
-})
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -102,9 +98,9 @@ describe('ApplyToHousehold', () => {
       expect(row.find('td').at(1).find('a').prop('href')).toEqual(`${window.BASE_PATH}/patients/${rowData.id}`);
       expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(rowData));
       if (rowData.id === rowData.responder_id) {
-        expect(row.find('td').at(1).find(BadgeHOH).exists()).toBeTruthy();
+        expect(row.find('td').at(1).find(BadgeHoH).exists()).toBeTruthy();
       } else {
-        expect(row.find('td').at(1).find(BadgeHOH).exists()).toBeFalsy();
+        expect(row.find('td').at(1).find(BadgeHoH).exists()).toBeFalsy();
       }
       expect(row.find('td').at(2).text()).toEqual(formatDate(rowData[wrapper.state('table').colData[1].field]));
       expect(row.find('td').at(3).text()).toEqual(rowData[wrapper.state('table').colData[2].field] ? 'Isolation' : 'Exposure');
