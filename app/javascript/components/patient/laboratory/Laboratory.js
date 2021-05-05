@@ -92,7 +92,7 @@ class Laboratory extends React.Component {
               aria-label={`vaccine-action-button-${this.props.lab.id}`}>
               <i className="fas fa-cogs fw"></i>
             </Dropdown.Toggle>
-            <Dropdown.Menu className="test-class" drop={'up'}>
+            <Dropdown.Menu>
               <Dropdown.Item className="px-4 hi" onClick={() => this.setState({ showEditModal: true, loading: false })}>
                 <i className="fas fa-edit fa-fw"></i>
                 <span className="ml-2">Edit</span>
