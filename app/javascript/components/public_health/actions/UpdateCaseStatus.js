@@ -19,7 +19,6 @@ class UpdateCaseStatus extends React.Component {
       apply_to_household: false,
       monitoring: false,
       monitoring_reason: '',
-      reasoning: '',
       loading: false,
     };
   }
@@ -105,7 +104,7 @@ class UpdateCaseStatus extends React.Component {
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
-          reasoning: this.state.monitoring_reason + (this.state.monitoring_reason !== '' && this.state.reasoning !== '' ? ', ' : '') + this.state.reasoning,
+          reasoning: this.state.isolation ? '' : this.state.monitoring_reason,
           apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
