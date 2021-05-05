@@ -143,6 +143,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           files << save_file(config, file)
         end
       else
+        # Do not create a file for an export that only has headers.
+        next if last_row_nums.values.all?(&:zero?)
+
         file = { filename: build_export_filename(config, nil, outer_batch_index, false), content: Base64.encode64(workbook.read_string) }
         files << save_file(config, file)
       end
