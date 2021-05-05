@@ -9,6 +9,8 @@ import { vaccineModalSelectStyling } from '../../../packs/stylesheets/ReactSelec
 
 import DateInput from '../../util/DateInput';
 
+const MAX_NOTES_LENGTH = 2000;
+
 class VaccineModal extends React.Component {
   constructor(props) {
     super(props);
@@ -22,7 +24,7 @@ class VaccineModal extends React.Component {
         : null,
       administration_date: this.props.currentVaccineData?.administration_date,
       dose_number: this.props.currentVaccineData?.dose_number,
-      notes: this.props.currentVaccineData?.notes,
+      notes: this.props.currentVaccineData?.notes || '',
       // Sorting so that the blank option shows up at the top
       sorted_dose_number_options: this.props.dose_number_options ? this.props.dose_number_options.sort() : [],
     };
@@ -186,12 +188,12 @@ class VaccineModal extends React.Component {
                   as="textarea"
                   rows="5"
                   className="form-square"
-                  value={this.state.notes || ''}
+                  value={this.state.notes}
                   placeholder={'Enter any additional information about this vaccination...'}
-                  maxLength="2000"
+                  maxLength={MAX_NOTES_LENGTH}
                   onChange={this.handleNotesChange}
                 />
-                <Form.Label className="notes-character-limit"> {this.state.notes ? 2000 - this.state.notes.length : 2000} characters remaining </Form.Label>
+                <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.notes.length} characters remaining </Form.Label>
               </Form.Group>
             </Row>
           </Form>

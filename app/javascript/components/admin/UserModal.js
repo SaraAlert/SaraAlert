@@ -5,6 +5,8 @@ import Select from 'react-select';
 import _ from 'lodash';
 import { cursorPointerStyle } from '../../packs/stylesheets/ReactSelectStyling';
 
+const MAX_NOTES_LENGTH = 2000;
+
 class UserModal extends React.Component {
   constructor(props) {
     super(props);
@@ -146,11 +148,11 @@ class UserModal extends React.Component {
                   rows="5"
                   className="form-square"
                   value={this.state.notes}
-                  maxLength="5000"
+                  maxLength={MAX_NOTES_LENGTH}
                   onChange={this.handleChange}
                 />
               </InputGroup>
-              <Form.Label className="notes-character-limit"> {5000 - this.state.notes.length} characters remaining </Form.Label>
+              <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.notes.length} characters remaining </Form.Label>
             </Form.Group>
           </Form>
         </Modal.Body>
