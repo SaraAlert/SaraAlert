@@ -305,6 +305,12 @@ select.form-control {
 }
 
 .edit-text {
-  color: #909090;
+  color: #909090 !important;
   font-size: .9em;
+}
+
+.edit-text:hover {
+  color: #404040 !important;
+  text-decoration: none;
+  cursor: pointer;
 }

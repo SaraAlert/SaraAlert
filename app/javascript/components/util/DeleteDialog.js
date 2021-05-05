@@ -29,7 +29,7 @@ class DeleteDialog extends React.Component {
   render() {
     return (
       <Modal size="lg" show centered onHide={this.props.toggle}>
-        <Modal.Header>
+        <Modal.Header closeButton>
           <Modal.Title>Delete {this.props.type}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -58,10 +58,10 @@ class DeleteDialog extends React.Component {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={this.props.toggle}>
+          <Button variant="secondary" onClick={this.props.toggle}>
             Cancel
           </Button>
-          <Button variant="danger btn-square" onClick={this.delete} disabled={this.state.disabled || this.state.loading}>
+          <Button variant="danger" onClick={this.delete} disabled={this.state.disabled || this.state.loading}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;

@@ -5,6 +5,7 @@ import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 
 import DeleteDialog from '../../util/DeleteDialog';
+import EditHistoryModal from './EditHistoryModal';
 import reportError from '../../util/ReportError';
 import { formatTimestamp, formatRelativePast } from '../../../utils/DateTime';
 
@@ -14,6 +15,7 @@ class History extends React.Component {
     this.state = {
       loading: false,
       editMode: false,
+      showEditHistoryModal: false,
       showDeleteModal: false,
       original_version: props.versions[0],
       latest_version: props.versions[props.versions.length - 1],
@@ -81,6 +83,26 @@ class History extends React.Component {
         });
     });
   };
+
+  renderEditedButton() {
+    return (
+      <React.Fragment>
+        <span data-for={`view-edit-history-item-${this.state.original_version.id}`} data-tip="">
+          <Button
+            variant="link"
+            className="history-edited-link p-0 ml-1"
+            onClick={() => {
+              this.setState({ showEditHistoryModal: true });
+            }}>
+            <i className="edit-text">(edited)</i>
+          </Button>
+        </span>
+        <ReactTooltip id={`view-edit-history-item-${this.state.original_version.id}`} place="bottom" type="dark" effect="solid">
+          <span>Click to view full edit history of comment</span>
+        </ReactTooltip>
+      </React.Fragment>
+    );
+  }
 
   renderEditMode() {
     return (
@@ -165,7 +187,7 @@ class History extends React.Component {
               <Row>
                 <Col xs="auto">
                   {this.state.comment}
-                  {this.state.latest_version.id !== this.state.original_version.id && <i className="edit-text"> (edited)</i>}
+                  {this.state.latest_version.id !== this.state.original_version.id && this.renderEditedButton()}
                 </Col>
                 {this.state.original_version.history_type === 'Comment' &&
                   this.state.original_version.created_by === this.props.current_user.email &&
@@ -174,6 +196,14 @@ class History extends React.Component {
             )}
           </Card.Body>
         </Card>
+        {this.state.showEditHistoryModal && (
+          <EditHistoryModal
+            versions={this.props.versions}
+            toggle={() => {
+              this.setState({ showEditHistoryModal: false });
+            }}
+          />
+        )}
         {this.state.showDeleteModal && (
           <DeleteDialog type={'Comment'} delete={this.handleDeleteSubmit} toggle={this.toggleDeleteModal} onChange={this.handleChange} />
         )}

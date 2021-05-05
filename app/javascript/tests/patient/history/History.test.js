@@ -76,15 +76,18 @@ describe('History', () => {
     expect(wrapper.find(Card.Header).find('.badge').text()).toEqual(mockCommentHistory2.history_type);
     expect(wrapper.find(Card.Body).find(Col).at(0).text().includes(mockCommentHistory2Edit2.comment)).toBeTruthy();
     expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.edit-text').text()).toEqual(' (edited)');
-    expect(wrapper.find(Card.Body).find(Button).length).toEqual(2);
+    expect(wrapper.find(Card.Body).find('.edit-text').text()).toEqual('(edited)');
+    expect(wrapper.find(Card.Body).find(Button).length).toEqual(3);
+    expect(wrapper.find(Card.Body).find(ReactTooltip).length).toEqual(3);
+    expect(wrapper.find(Card.Body).find('.history-edited-link').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('.history-edited-link').find('i').text()).toEqual('(edited)');
+    expect(wrapper.find(Card.Body).find(ReactTooltip).at(0).find('span').text()).toEqual('Click to view full edit history of comment');
     expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#edit-history-btn').find('i').hasClass('fa-edit')).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#delete-history-btn').exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find('#delete-history-btn').find('i').hasClass('fa-trash')).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(ReactTooltip).length).toEqual(2);
-    expect(wrapper.find(Card.Body).find(ReactTooltip).at(0).find('span').text()).toEqual('Edit comment');
-    expect(wrapper.find(Card.Body).find(ReactTooltip).at(1).find('span').text()).toEqual('Delete comment');
+    expect(wrapper.find(Card.Body).find(ReactTooltip).at(1).find('span').text()).toEqual('Edit comment');
+    expect(wrapper.find(Card.Body).find(ReactTooltip).at(2).find('span').text()).toEqual('Delete comment');
   });
 
   it('Clicking the edit button properly renders edit mode', () => {
