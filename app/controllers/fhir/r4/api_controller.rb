@@ -20,7 +20,8 @@ class Fhir::R4::ApiController < ApplicationApiController
       *RELATED_PERSON_READ_SCOPES,
       *IMMUNIZATION_READ_SCOPES,
       *OBSERVATION_READ_SCOPES,
-      *QUESTIONNAIRE_RESPONSE_READ_SCOPES
+      *QUESTIONNAIRE_RESPONSE_READ_SCOPES,
+      *PROVENANCE_READ_SCOPES
     )
   end
   before_action :check_client_type
@@ -57,10 +58,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       resource = get_record(Vaccine, params.permit(:id)[:id])
     when 'provenance'
-      return if doorkeeper_authorize!(
-        :'user/Provenance.read',
-        :'system/Provenance.read'
-      )
+      return if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
 
       resource = get_record(History, params.permit(:id)[:id])
     else
@@ -395,10 +393,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       resources = search_vaccines(search_params) || []
       resource_type = 'Immunization'
     when 'provenance'
-      return if doorkeeper_authorize!(
-        :'user/Provenance.read',
-        :'system/Provenance.read'
-      )
+      return if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
 
       resources = search_histories(search_params) ||[]
       resource_type = 'Provenance'
@@ -443,6 +438,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     return if doorkeeper_authorize!(*QUESTIONNAIRE_RESPONSE_READ_SCOPES)
     return if doorkeeper_authorize!(*RELATED_PERSON_READ_SCOPES)
     return if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
+    return if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
 
     status_not_acceptable && return unless accept_header?
 
