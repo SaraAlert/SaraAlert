@@ -67,6 +67,17 @@ class ActionController::TestCase
   include Devise::Test::ControllerHelpers
 end
 
+class ActionDispatch::IntegrationTest
+  def after_teardown
+    super
+    FileUtils.rm_rf(Rails.root.join('tmp', 'storage'))
+  end
+
+  def sign_in(user)
+    post user_session_path 'user[email]' => user.email, 'user[password]' => user.password
+  end
+end
+
 private
 
 def dst_info(patient, time)
