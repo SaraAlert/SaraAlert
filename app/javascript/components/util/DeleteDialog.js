@@ -20,6 +20,13 @@ class DeleteDialog extends React.Component {
     });
   };
 
+  handleTextChange = event => {
+    event.persist();
+    this.setState({ [event.target.id]: event.target.value }, () => {
+      this.props.onChange(event);
+    });
+  };
+
   delete = () => {
     this.setState({ loading: true }, () => {
       this.props.delete();
@@ -47,14 +54,19 @@ class DeleteDialog extends React.Component {
             <option>Other</option>
           </Form.Control>
           {this.state.showTextInput && (
-            <Form.Control
-              id="delete_reason_text"
-              as="textarea"
-              rows="4"
-              className="form-square"
-              placeholder="Please enter additional information about the reason for deletion"
-              onChange={this.props.onChange}
-            />
+            <React.Fragment>
+              <Form.Control
+                id="delete_reason_text"
+                as="textarea"
+                rows="2"
+                maxLength="200"
+                className="form-square"
+                placeholder="Please enter additional information about the reason for deletion"
+                value={this.state.delete_reason_text || ''}
+                onChange={this.handleTextChange}
+              />
+              <div className="character-limit-text">{200 - (this.state.delete_reason_text || '').length} characters remaining</div>
+            </React.Fragment>
           )}
         </Modal.Body>
         <Modal.Footer>

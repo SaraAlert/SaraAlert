@@ -81,9 +81,9 @@ describe('DeleteDialog', () => {
     expect(onChangeMock).toHaveBeenCalledTimes(0);
     wrapper.find('#delete_reason').simulate('change', { target: { id: 'delete_reason', value: 'Other' }, persist: jest.fn() });
     expect(onChangeMock).toHaveBeenCalledTimes(1);
-    wrapper.find('#delete_reason_text').simulate('change', { target: { id: 'delete_reason_text', value: 'some text here' } });
+    wrapper.find('#delete_reason_text').simulate('change', { target: { id: 'delete_reason_text', value: 'some text here' }, persist: jest.fn() });
     expect(onChangeMock).toHaveBeenCalledTimes(2);
-    wrapper.find('#delete_reason_text').simulate('change', { target: { id: 'delete_reason_text', value: 'some text here edited' } });
+    wrapper.find('#delete_reason_text').simulate('change', { target: { id: 'delete_reason_text', value: 'some text here edited' }, persist: jest.fn() });
     expect(onChangeMock).toHaveBeenCalledTimes(3);
   });
 
