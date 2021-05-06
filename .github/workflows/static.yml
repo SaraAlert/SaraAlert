@@ -60,5 +60,7 @@ jobs:
         run: bundle exec erblint --lint-all
       - name: Run ESLint
         run: ./node_modules/.bin/eslint app/javascript/components
+      - name: Run Prettier check
+        run: ./node_modules/.bin/pretty-quick --check --pattern "**/components/**/*.*(js|jsx)
       - name: Run Spellcheck
         run: bundle exec rails spellcheck
