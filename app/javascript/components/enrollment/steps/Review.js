@@ -90,12 +90,7 @@ class Review extends React.Component {
               </Button>
             )}
             {this.props.submit && (
-              <Button
-                variant="primary"
-                size="lg"
-                className="float-right btn-square px-5 mr-4"
-                disabled={this.state.disabled}
-                onClick={this.submit}>
+              <Button variant="primary" size="lg" className="float-right btn-square px-5 mr-4" disabled={this.state.disabled} onClick={this.submit}>
                 Finish
               </Button>
             )}
