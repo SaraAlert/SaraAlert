@@ -9,16 +9,16 @@ class AddAssessmentNote extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showAddAssessmentNoteModal: false,
+      showModal: false,
       comment: '',
       loading: false,
     };
   }
 
-  toggleAddAssessmentNoteModal = () => {
-    let current = this.state.showAddAssessmentNoteModal;
+  toggleModal = () => {
+    let current = this.state.showModal;
     this.setState({
-      showAddAssessmentNoteModal: !current,
+      showModal: !current,
     });
   };
 
@@ -26,14 +26,14 @@ class AddAssessmentNote extends React.Component {
     this.setState({ [event.target.id]: event.target.value });
   };
 
-  AddAssessmentNote = () => {
+  submit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/histories', {
           patient_id: this.props.patient.id,
           comment: 'User left a note for a report (ID: ' + this.props.assessment.id + '). Note is: ' + this.state.comment,
-          type: 'Report Note',
+          history_type: 'Report Note',
         })
         .then(() => {
           location.reload(true);
@@ -44,9 +44,9 @@ class AddAssessmentNote extends React.Component {
     });
   };
 
-  createModal(toggle, submit) {
+  createModal() {
     return (
-      <Modal size="lg" show centered onHide={toggle}>
+      <Modal size="lg" show centered onHide={this.toggleModal}>
         <Modal.Header>
           <Modal.Title>Add Note To Report</Modal.Title>
         </Modal.Header>
@@ -57,10 +57,10 @@ class AddAssessmentNote extends React.Component {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
+          <Button variant="secondary btn-square" onClick={this.toggleModal}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+          <Button variant="primary btn-square" onClick={this.submit} disabled={this.state.loading}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
@@ -76,10 +76,10 @@ class AddAssessmentNote extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button variant="link" onClick={this.toggleAddAssessmentNoteModal} className="dropdown-item">
+        <Button variant="link" onClick={this.toggleModal} className="dropdown-item">
           <i className="fas fa-comment-medical fa-fw"></i> Add Note
         </Button>
-        {this.state.showAddAssessmentNoteModal && this.createModal(this.toggleAddAssessmentNoteModal, this.AddAssessmentNote)}
+        {this.state.showModal && this.createModal()}
       </React.Fragment>
     );
   }

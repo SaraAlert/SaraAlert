@@ -72,10 +72,10 @@ describe('AddAssessmentNote', () => {
 
   it('Clicking the submit button calls the submit method', () => {
     const wrapper = getWrapper(mockPatient1);
-    const AddAssessmentNoteSpy = jest.spyOn(wrapper.instance(), 'AddAssessmentNote');
+    const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
     wrapper.find(Button).simulate('click');
-    expect(AddAssessmentNoteSpy).toHaveBeenCalledTimes(0);
+    expect(submitSpy).toHaveBeenCalledTimes(0);
     wrapper.find(Button).at(2).simulate('click');
-    expect(AddAssessmentNoteSpy).toHaveBeenCalled();
+    expect(submitSpy).toHaveBeenCalled();
   });
 });
