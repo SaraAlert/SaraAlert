@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import _ from 'lodash';
 import { Card, Col, Row } from 'react-bootstrap';
+import { formatPercentage } from '../../../utils/Analytics';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
 
@@ -29,31 +30,27 @@ class MonitoreeFlow extends React.Component {
           time_frame,
           new_enrollments: {
             value: thisTimeFrameData?.new_enrollments || 0,
-            percentage: thisTimeFrameData?.new_enrollments ? ((thisTimeFrameData?.new_enrollments / inTotal) * 100).toFixed(1).toString() + '%' : 'None',
+            percentage: formatPercentage(thisTimeFrameData?.new_enrollments, inTotal),
           },
           transferred_in: {
             value: thisTimeFrameData?.transferred_in || 0,
-            percentage: thisTimeFrameData?.transferred_in ? ((thisTimeFrameData?.transferred_in / inTotal) * 100).toFixed(1).toString() + '%' : 'None',
+            percentage: formatPercentage(thisTimeFrameData?.transferred_in, inTotal),
           },
           closed: {
             value: thisTimeFrameData?.closed || 0,
-            percentage: thisTimeFrameData?.closed ? ((thisTimeFrameData?.closed / outTotal) * 100).toFixed(1).toString() + '%' : 'None',
+            percentage: formatPercentage(thisTimeFrameData?.closed, outTotal),
           },
           transferred_out: {
             value: thisTimeFrameData?.transferred_out || 0,
-            percentage: thisTimeFrameData?.transferred_out ? ((thisTimeFrameData?.transferred_out / outTotal) * 100).toFixed(1).toString() + '%' : 'None',
+            percentage: formatPercentage(thisTimeFrameData?.transferred_out, outTotal),
           },
           exposure_to_isolation: {
             value: thisTimeFrameData?.exposure_to_isolation || 0,
-            percentage: thisTimeFrameData?.exposure_to_isolation
-              ? ((thisTimeFrameData?.exposure_to_isolation / (exposure ? outTotal : inTotal)) * 100).toFixed(1).toString() + '%'
-              : 'None',
+            percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation, exposure ? outTotal : inTotal),
           },
           isolation_to_exposure: {
             value: thisTimeFrameData?.isolation_to_exposure || 0,
-            percentage: thisTimeFrameData?.isolation_to_exposure
-              ? ((thisTimeFrameData?.isolation_to_exposure / (exposure ? inTotal : outTotal)) * 100).toFixed(1).toString() + '%'
-              : 'None',
+            percentage: formatPercentage(thisTimeFrameData?.isolation_to_exposure, exposure ? inTotal : outTotal),
           },
         };
       });
