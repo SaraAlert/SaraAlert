@@ -12,7 +12,8 @@ class Dependent extends React.Component {
           The reporting responsibility for this monitoree is handled by&nbsp;
           <a id="dependent-hoh-link" href={`${window.BASE_PATH}/patients/${this.props.patient.responder_id}`}>
             {this.props.hoh ? formatName(this.props.hoh) : 'this monitoree'}
-          </a>.
+          </a>
+          .
         </Row>
         <Row>
           <RemoveFromHousehold patient={this.props.patient} authenticity_token={this.props.authenticity_token} />

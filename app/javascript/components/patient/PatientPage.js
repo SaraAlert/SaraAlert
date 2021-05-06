@@ -31,7 +31,7 @@ class PatientPage extends React.Component {
                 />
               )}
               {this.props.patient.head_of_household && (
-               <HeadOfHousehold
+                <HeadOfHousehold
                   patient={this.props.patient}
                   dependents={this.props.other_household_members}
                   can_add_group={this.props.can_add_group}
@@ -39,11 +39,7 @@ class PatientPage extends React.Component {
                 />
               )}
               {!this.props.patient.head_of_household && this.props?.other_household_members?.length === 0 && (
-                <Individual
-                  patient={this.props.patient}
-                  can_add_group={this.props.can_add_group}
-                  authenticity_token={this.props.authenticity_token}
-                />
+                <Individual patient={this.props.patient} can_add_group={this.props.can_add_group} authenticity_token={this.props.authenticity_token} />
               )}
             </div>
           </Card.Body>

@@ -12,7 +12,7 @@ class ChangeHoH extends React.Component {
       disabled: true,
       showModal: false,
       loading: false,
-      hoh_selection: null
+      hoh_selection: null,
     };
   }
 
@@ -21,7 +21,7 @@ class ChangeHoH extends React.Component {
     this.setState({
       disabled: true,
       showModal: !current,
-      hoh_selection: null
+      hoh_selection: null,
     });
   };
 
@@ -68,7 +68,11 @@ class ChangeHoH extends React.Component {
                     --
                   </option>
                   {this.props?.dependents?.map((member, index) => {
-                    return <option key={`option-${index}`} value={member.id}>{formatNameAlt(member)}</option>;
+                    return (
+                      <option key={`option-${index}`} value={member.id}>
+                        {formatNameAlt(member)}
+                      </option>
+                    );
                   })}
                 </Form.Control>
               </Form.Group>
