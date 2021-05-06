@@ -25,9 +25,7 @@ class HeadOfHousehold extends React.Component {
                 return (
                   <tr key={`dl-${index}`}>
                     <td>
-                      <a href={`${window.BASE_PATH}/patients/${member.id}`}>
-                        {formatNameAlt(member)}
-                      </a>
+                      <a href={`${window.BASE_PATH}/patients/${member.id}`}>{formatNameAlt(member)}</a>
                     </td>
                     <td>{member.isolation ? 'Isolation' : 'Exposure'}</td>
                     <td>{member.monitoring ? 'Actively Monitoring' : 'Not Monitoring'}</td>
