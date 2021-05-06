@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable Metrics/ClassLength
+
 # ApiController: API for interacting with Sara Alert
 class Fhir::R4::ApiController < ApplicationApiController
   include ValidationHelper
@@ -8,7 +9,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   include ActionController::MimeResponds
 
   before_action :cors_headers
-  before_action only: %i[create update] do
+  before_action only: %i[create update transaction] do
     doorkeeper_authorize!(
       *PATIENT_WRITE_SCOPES,
       *RELATED_PERSON_WRITE_SCOPES,
@@ -242,13 +243,13 @@ class Fhir::R4::ApiController < ApplicationApiController
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(lab, :patient_id) && lab.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
           req_json = request.patch? ? lab.as_fhir.to_json : JSON.parse(request.body.string)
-          status_unprocessable_entity(lab, fhir_map, req_json) && return
+          status_unprocessable_entity(lab, fhir_map, req_json) && (raise SaveError)
         end
 
         Rails.logger.info "Updated Lab Result (ID: #{lab.id}) for Patient with ID: #{lab.patient_id}"
         History.lab_result_edit(patient: lab.patient_id,
-                                 created_by: @current_actor_label,
-                                 comment: "Lab Result edited via the API (ID: #{lab.id}).")
+                                created_by: @current_actor_label,
+                                comment: "Lab Result edited via the API (ID: #{lab.id}).")
       end
       status_ok(lab.as_fhir) && return
     else
@@ -256,6 +257,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     end
   rescue JSON::ParserError
     status_bad_request(['Invalid JSON in request body'])
+  rescue SaveError
+    nil
   end
 
   # Create History items corresponding to Patient changes from an update.
@@ -300,55 +303,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     when 'patient'
       return if doorkeeper_authorize!(*PATIENT_WRITE_SCOPES)
 
-      # Construct a Sara Alert Patient
-      # fhir_map is of the form:
-      # { attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element> } }
-      fhir_map = patient_from_fhir(contents, default_patient_jurisdiction_id)
-      vals = fhir_map.transform_values { |v| v[:value] }
-      resource = Patient.new(vals)
-
-      # Responder is self
-      resource.responder = resource
-
-      # Storing call method call in variable for efficiency
-      patients = accessible_patients
-
-      # Set the responder for this patient, this will link patients that have duplicate primary contact info
-      if ['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? resource[:preferred_contact_method]
-        if patients.responder_for_number(resource[:primary_telephone])&.exists?
-          resource.responder = patients.responder_for_number(resource[:primary_telephone]).first
-        end
-      elsif resource[:preferred_contact_method] == 'E-mailed Web Link'
-        resource.responder = patients.responder_for_email(resource[:email]).first if patients.responder_for_email(resource[:email])&.exists?
-      end
-
-      # Default responder to self if no responder condition met
-      resource.responder = resource if resource.responder.nil?
-
-      # Determine resource creator
-      resource.creator = @current_actor
-
-      # Generate submission token for monitoree
-      resource.submission_token = resource.new_submission_token
-
-      status_bad_request && return if resource.nil?
-
-      ActiveRecord::Base.transaction do
-        unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
-          req_json = JSON.parse(request.body.string)
-          status_unprocessable_entity(resource, fhir_map, req_json) && return
-        end
-
-        # Create a history for the enrollment
-        History.enrollment(patient: resource, created_by: @current_actor_label, comment: 'Monitoree enrolled via API.')
-      end
-
-      # This is necessary since the transaction will swallow an ActiveRecord::Rollback error
-      raise(StandardError, 'Error when saving Patient to the database') if resource.id.nil?
-
-      Rails.logger.info "Created Patient with ID: #{resource.id}"
-      # Send enrollment notification only to responders
-      resource.send_enrollment_notification if resource.self_reporter_or_proxy?
+      resource = save_patient(*build_patient(contents))
     when 'relatedperson'
       return if doorkeeper_authorize!(*RELATED_PERSON_WRITE_SCOPES)
 
@@ -388,14 +343,12 @@ class Fhir::R4::ApiController < ApplicationApiController
     when 'observation'
       return if doorkeeper_authorize!(*OBSERVATION_WRITE_SCOPES)
 
-      fhir_map = laboratory_from_fhir(contents)
-      vals = fhir_map.transform_values { |v| v[:value] }
-      resource = Laboratory.new(vals)
+      resource, fhir_map = build_laboratory(contents)
 
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
           req_json = JSON.parse(request.body.string)
-          status_unprocessable_entity(resource, fhir_map, req_json) && return
+          status_unprocessable_entity(resource, fhir_map, req_json) && (raise SaveError)
         end
 
         Rails.logger.info "Created Lab Result (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
@@ -409,6 +362,78 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_created(resource.as_fhir) && return
   rescue JSON::ParserError
     status_bad_request(['Invalid JSON in request body'])
+  rescue SaveError
+    nil
+  end
+
+  # Create a set of resources as an atomic action
+  #
+  # Supports (writing): Patient, Observation
+  #
+  # POST /fhir/r4
+  def transaction
+    status_unsupported_media_type && return unless content_type_header?('application/fhir+json')
+
+    # Must have both Observation and Patient write scopes, since both can be written
+    return if doorkeeper_authorize!(*OBSERVATION_WRITE_SCOPES)
+    return if doorkeeper_authorize!(*PATIENT_WRITE_SCOPES)
+
+    # Parse in the FHIR
+    contents = FHIR.from_contents(request.body.string)
+    errors = contents&.validate
+    status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
+
+    # Validate that we can go forward with processing the Bundle
+    error, path = validate_transaction_bundle(contents)
+    status_unprocessable_entity_with_custom_errors([error], path) && return unless error.nil?
+
+    # Transform all the Patients from FHIR
+    patients = []
+    contents.entry&.each_with_index do |entry, index|
+      next unless entry.resource&.resourceType&.downcase == 'patient'
+
+      resource, fhir_map = build_patient(entry&.resource)
+      change_fhir_map_context!(fhir_map, 'Patient', "Bundle.entry[#{index}].resource")
+      patients << { resource: resource, fhir_map: fhir_map, full_url: entry.fullUrl }
+    end
+
+    # Transform all of the Laboratories from FHIR
+    contents.entry&.each_with_index do |entry, index|
+      next unless entry.resource&.resourceType&.downcase == 'observation'
+
+      # We require that each Observation references a Patient in the same Bundle
+      referenced_patient = patients.find { |p| p[:full_url] == entry.resource&.subject&.reference }&.dig(:resource)
+      if referenced_patient.nil?
+        status_unprocessable_entity_with_custom_errors(
+          ['Observation resources must reference the fullUrl of a Patient in the same Bundle'],
+          "Bundle.entry[#{index}].resource.subject.reference"
+        ) && return
+      end
+
+      resource, fhir_map = build_laboratory(entry&.resource)
+      change_fhir_map_context!(fhir_map, 'Observation', "Bundle.entry[#{index}].resource")
+      referenced_patient.laboratories << resource
+      # Laboratory must be validated here since errors are inaccessible when saving Patient
+      unless resource.valid?(:api) && fhir_map.all? { |_k, v| v[:errors].blank? }
+        req_json = JSON.parse(request.body.string)
+        status_unprocessable_entity(resource, fhir_map, req_json) && return
+      end
+    end
+
+    # Save each Patient, along with its corresponding Labs
+    saved_patients = []
+    ActiveRecord::Base.transaction do
+      patients.each do |patient|
+        saved_patients << save_patient(patient[:resource], patient[:fhir_map])
+      end
+    end
+
+    # Generate the Bundle and return
+    status_ok(patients_to_fhir_bundle(saved_patients)) && return
+  rescue JSON::ParserError
+    status_bad_request(['Invalid JSON in request body'])
+  rescue SaveError
+    nil
   end
 
   # Return a FHIR Bundle containing results that match the given query.
@@ -707,6 +732,87 @@ class Fhir::R4::ApiController < ApplicationApiController
 
   private
 
+  class SaveError < StandardError; end
+
+  # Build a Patient and the corresponding fhir_map from FHIR contents
+  def build_patient(contents)
+    # Construct a Sara Alert Patient
+    # fhir_map is of the form:
+    # { attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element> } }
+    fhir_map = patient_from_fhir(contents, default_patient_jurisdiction_id)
+    vals = fhir_map.transform_values { |v| v[:value] }
+    resource = Patient.new(vals)
+
+    # Responder is self
+    resource.responder = resource
+
+    # Storing call method call in variable for efficiency
+    patients = accessible_patients
+
+    # Set the responder for this patient, this will link patients that have duplicate primary contact info
+    if ['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? resource[:preferred_contact_method]
+      if patients.responder_for_number(resource[:primary_telephone])&.exists?
+        resource.responder = patients.responder_for_number(resource[:primary_telephone]).first
+      end
+    elsif resource[:preferred_contact_method] == 'E-mailed Web Link'
+      resource.responder = patients.responder_for_email(resource[:email]).first if patients.responder_for_email(resource[:email])&.exists?
+    end
+
+    # Default responder to self if no responder condition met
+    resource.responder = resource if resource.responder.nil?
+
+    # Determine resource creator
+    resource.creator = @current_actor
+
+    # Generate submission token for monitoree
+    resource.submission_token = resource.new_submission_token
+
+    [resource, fhir_map]
+  end
+
+  # Save a Patient model
+  def save_patient(resource, fhir_map)
+    status_bad_request && (raise SaveError) if resource.nil?
+
+    ActiveRecord::Base.transaction do
+      unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
+        req_json = JSON.parse(request.body.string)
+        status_unprocessable_entity(resource, fhir_map, req_json) && (raise SaveError)
+      end
+
+      # Create a history for the enrollment
+      History.enrollment(patient: resource, created_by: @current_actor_label, comment: 'Monitoree enrolled via API.')
+
+      # And for any created laboratories
+      resource.laboratories.each do |lab|
+        History.lab_result(patient: resource.id,
+                           created_by: @current_actor_label,
+                           comment: "New lab result added via API (ID: #{lab.id}).")
+      end
+    end
+
+    # This is necessary since the transaction will swallow an ActiveRecord::Rollback error
+    raise(StandardError, 'Error when saving Patient to the database') if resource.id.nil?
+
+    Rails.logger.info "Created Patient with ID: #{resource.id}"
+    resource.laboratories.each do |lab|
+      Rails.logger.info "Created Lab Result (ID: #{lab.id}) for Patient with ID: #{resource.id}"
+    end
+    # Send enrollment notification only to responders
+    resource.send_enrollment_notification if resource.self_reporter_or_proxy?
+
+    resource
+  end
+
+  # Build a Laboratory and the corresponding fhir_map from FHIR contents
+  def build_laboratory(contents)
+    fhir_map = laboratory_from_fhir(contents)
+    vals = fhir_map.transform_values { |v| v[:value] }
+    resource = Laboratory.new(vals)
+
+    [resource, fhir_map]
+  end
+
   # Handle general unkown error. Log and serve a 500
   def handle_server_error(error)
     Rails.logger.error ([error.message] + error.backtrace).join("\n")
@@ -855,6 +961,24 @@ class Fhir::R4::ApiController < ApplicationApiController
   def status_bad_request(errors = [])
     respond_to do |format|
       format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :bad_request }
+    end
+  end
+
+  # Generic 404 not found response
+  def status_not_found(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :not_found }
+    end
+  end
+
+  # 422 response with custom error messages
+  def status_unprocessable_entity_with_custom_errors(errors, path)
+    outcome = FHIR::OperationOutcome.new(issue: [])
+    errors.each do |error|
+      outcome.issue << FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'processing', diagnostics: error, expression: path)
+    end
+    respond_to do |format|
+      format.any { render json: outcome.to_json, status: :unprocessable_entity }
     end
   end
 

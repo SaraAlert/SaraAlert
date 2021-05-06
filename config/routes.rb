@@ -32,6 +32,7 @@ Rails.application.routes.draw do
 
   namespace :fhir, defaults: { format: :json } do
     namespace :r4 do
+      post '', to: 'api#transaction'
       get '/metadata', to: 'api#capability_statement'
       get '/.well-known/smart-configuration', to: 'api#well_known'
       get '/:resource_type/:id', to: 'api#show'

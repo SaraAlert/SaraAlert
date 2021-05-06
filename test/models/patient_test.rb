@@ -2035,24 +2035,6 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-  test 'validates symptom_onset is present when isolation is true in api context' do
-    patient = valid_patient
-
-    patient.isolation = false
-    patient.symptom_onset = nil
-    assert patient.valid?(:api)
-
-    patient.isolation = true
-    patient.symptom_onset = Time.now - 1.day
-    assert patient.valid?(:api)
-
-    patient.isolation = true
-    patient.symptom_onset = nil
-    assert_not patient.valid?(:api)
-    assert patient.valid?(:import)
-    assert patient.valid?
-  end
-
   test 'validates last_date_of_exposure is present when isolation and continuous_exposure are false in api context' do
     patient = valid_patient
 
@@ -2093,6 +2075,27 @@ class PatientTest < ActiveSupport::TestCase
     patient.continuous_exposure = true
     patient.last_date_of_exposure = Time.now - 1.day
     assert_not patient.valid?(:api)
+  end
+
+  test 'validates symptom_onset or asymptomatic postive lab when in isolation' do
+    patient = valid_patient
+
+    patient.isolation = true
+    patient.symptom_onset = nil
+    assert_not patient.valid?(:api)
+
+    patient.symptom_onset = 1.day.ago
+    assert patient.valid?(:api)
+
+    patient.symptom_onset = nil
+    patient.laboratories << create(:laboratory, result: 'negative')
+    assert_not patient.valid?(:api)
+
+    patient.laboratories << create(:laboratory, result: 'positive')
+    assert_not patient.valid?(:api)
+
+    patient.laboratories << create(:laboratory, result: 'positive', specimen_collection: 1.day.ago)
+    assert patient.valid?(:api)
   end
 
   test 'ten_day_quarantine_candidates scope checks purged, monitoring, isolation, and continuous_exposure' do

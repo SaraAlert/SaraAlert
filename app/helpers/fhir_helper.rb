@@ -7,6 +7,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   OMB_URL = 'ombCategory'
   DETAILED_URL = 'detailed'
 
+  def change_fhir_map_context!(fhir_map, old_context, new_context)
+    fhir_map.transform_values! { |v| { path: v[:path].sub(old_context, new_context), value: v[:value], errors: v[:errors] } }
+  end
+
   # Returns a representative FHIR::Patient for an instance of a Sara Alert Patient. Uses US Core
   # extensions for sex, race, and ethnicity.
   # https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-patient.html
@@ -735,5 +739,52 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     return nil unless code_hash['system'] && code_hash['code']
 
     "#{code_hash['system']}##{code_hash['code']}"
+  end
+
+  def patients_to_fhir_bundle(patients)
+    results = []
+    patients.each do |patient|
+      patient_as_fhir = patient.as_fhir
+      results << FHIR::Bundle::Entry.new(fullUrl: full_url_helper(patient_as_fhir), resource: patient_as_fhir,
+                                         response: FHIR::Bundle::Entry::Response.new(status: '201 Created'))
+      patient.laboratories.each do |lab|
+        lab_as_fhir = lab.as_fhir
+        results << FHIR::Bundle::Entry.new(fullUrl: full_url_helper(lab_as_fhir), resource: lab_as_fhir,
+                                           response: FHIR::Bundle::Entry::Response.new(status: '201 Created'))
+      end
+    end
+
+    FHIR::Bundle.new(
+      id: SecureRandom.uuid,
+      meta: FHIR::Meta.new(lastUpdated: DateTime.now.strftime('%FT%T%:z')),
+      type: 'transaction-response',
+      entry: results
+    )
+  end
+
+  def validate_transaction_bundle(bundle)
+    # Only accept transaction Bundles
+    if bundle.resourceType&.downcase != 'bundle' || bundle.type&.downcase != 'transaction'
+      return ["Only Bundles of type 'transaction' are allowed", 'Bundle.type']
+    end
+
+    # Validate the entries
+    bundle.entry&.each_with_index do |entry, index|
+      resource_type = entry.resource&.resourceType&.downcase
+
+      # Check for valid resourceType
+      unless %w[observation patient].include?(resource_type)
+        return ["All entries must contain a resource of type 'Observation' or 'Patient'", "Bundle.entry[#{index}].resource"]
+      end
+
+      # Check for valid Bundle.entry.request
+      unless entry.request&.local_method == 'POST' && entry.request&.url&.downcase == resource_type
+        return [
+          "Invalid request method, request.method must be 'POST' and request.url must be 'Patient' or 'Observation",
+          "Bundle.entry[#{index}].request"
+        ]
+      end
+    end
+    []
   end
 end

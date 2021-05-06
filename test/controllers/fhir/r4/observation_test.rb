@@ -160,14 +160,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     # Verify that the updated Lab matches the original outside of updated fields
     %i[patient_id
-      lab_type
-      report
-      result].each do |field|
-     assert_equal original_lab[field], @lab_1[field]
-   end
+       lab_type
+       report
+       result].each do |field|
+      assert_equal original_lab[field], @lab_1[field]
+    end
 
-   # Verify that updated fields are updated
-   assert_equal new_specimen_collection, @lab_1.reload.specimen_collection
+    # Verify that updated fields are updated
+    assert_equal new_specimen_collection, @lab_1.reload.specimen_collection
   end
 
   test 'SYSTEM FLOW: should be unprocessable entity via Observation update with invalid Patient reference' do
