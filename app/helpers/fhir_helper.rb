@@ -252,7 +252,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         {
           text: history.comment
         }
-      ]
+      ],
       agent:[
         {
           who: FHIR::Reference.new(reference: "User/#{history.created_by}"),

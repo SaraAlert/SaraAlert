@@ -28,7 +28,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
   # Return a resource given a type and an id.
   #
-  # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization
+  # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization, Provenance
   #
   # GET /[:resource_type]/[:id]
   def show
@@ -58,7 +58,8 @@ class Fhir::R4::ApiController < ApplicationApiController
       resource = get_record(Vaccine, params.permit(:id)[:id])
     when 'provenance'
       return if doorkeeper_authorize!(
-        :'system/History.read'
+        :'user/Provenance.read',
+        :'system/Provenance.read'
       )
 
       resource = get_record(History, params.permit(:id)[:id])
@@ -393,6 +394,14 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       resources = search_vaccines(search_params) || []
       resource_type = 'Immunization'
+    when 'provenance'
+      return if doorkeeper_authorize!(
+        :'user/Provenance.read',
+        :'system/Provenance.read'
+      )
+
+      resources = search_histories(search_params) ||[]
+      resource_type = 'Provenance'
     else
       status_not_found && return
     end
@@ -446,7 +455,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     laboratories = patient.laboratories || []
     close_contacts = patient.close_contacts || []
     vaccines = patient.vaccines || []
-    all = [patient] + assessments.to_a + laboratories.to_a + close_contacts.to_a + vaccines.to_a
+    histories = patient.histories || []
+    all = [patient] + assessments.to_a + laboratories.to_a + close_contacts.to_a + vaccines.to_a + histories.to_a
     results = all.collect { |r| FHIR::Bundle::Entry.new(fullUrl: full_url_helper(r.as_fhir), resource: r.as_fhir) }
 
     # Construct bundle from monitoree and data
@@ -603,6 +613,7 @@ class Fhir::R4::ApiController < ApplicationApiController
         'user/Immunization.read',
         'user/Immunization.write',
         'user/Immunization.*',
+        'user/Provenance.read',
         'system/Patient.read',
         'system/Patient.write',
         'system/Patient.*',
@@ -613,7 +624,8 @@ class Fhir::R4::ApiController < ApplicationApiController
         'system/RelatedPerson.*',
         'system/Immunization.read',
         'system/Immunization.write',
-        'system/Immunization.*'
+        'system/Immunization.*',
+        'system/Provenance.read'
       ],
       capabilities: ['launch-standalone']
     }
@@ -924,6 +936,22 @@ class Fhir::R4::ApiController < ApplicationApiController
   # Search for Vaccines
   def search_vaccines(options)
     query = Vaccine.where(patient: accessible_patients)
+    options.each do |option, search|
+      next unless search.present?
+
+      case option
+      when 'patient'
+        query = query.where(patient_id: search.match(%r{^Patient/(\d+)$}).to_a[1])
+      when '_id'
+        query = query.where(id: search)
+      end
+    end
+    query
+  end
+
+  # Search for Histories
+  def search_histories(options)
+    query = History.where(patient: accessible_patients)
     options.each do |option, search|
       next unless search.present?
 
