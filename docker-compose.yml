@@ -16,6 +16,7 @@ services:
     command: "bin/bundle exec rails s -u puma -p 3000 -b 0.0.0.0"
     volumes:
       - '~/tls:/app/disease-trakker/tls:ro'
+      - 'sidekiq-enrollment-export:/app/disease-trakker/tmp/storage'
   sara-alert-assessment:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
@@ -111,6 +112,8 @@ services:
       - redis-enrollment
       - sara-alert-enrollment
       - mysql-enrollment
+    volumes:
+      - 'sidekiq-enrollment-export:/app/disease-trakker/tmp/storage'
   sidekiq-enrollment-default:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
@@ -178,6 +181,7 @@ volumes:
   redis-bridge:
   mysql-assessment:
   mysql-enrollment:
+  sidekiq-enrollment-export:
 
 networks:
   dt-net-enrollment:

@@ -15,14 +15,12 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
 
   def setup
     # Reset ENV variables and reload export job file which has constants dependent on these ENV variables
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10_000'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '500'
     load 'app/jobs/export_job.rb'
   end
 
   def teardown
     # Reset ENV variables and reload export job file which has constants dependent on these ENV variables
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = nil
     ENV['EXPORT_INNER_BATCH_SIZE'] = nil
     load 'app/jobs/export_job.rb'
 
@@ -198,7 +196,6 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
   # ---- Test the same exports but with smaller batching so that the batching functionality can be tested ----
 
   test 'export xlsx format with monitorees on current exposure symptomatic dashboard with all data types with all fields with batching' do
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
 
@@ -250,7 +247,6 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
   end
 
   test 'export xlsx format with monitorees on current isolation requires review dashboard with all data types with all fields with batching' do
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
 
@@ -302,7 +298,6 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
   end
 
   test 'export xlsx format with all monitorees with all data types with all fields with batching' do
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
 

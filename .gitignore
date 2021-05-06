@@ -37,6 +37,7 @@ config/local_env.yml
 .DS_Store
 
 .env-prod
+.aws-vars
 
 # Certs directory for building docker behind proxy
 certs/

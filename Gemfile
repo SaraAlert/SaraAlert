@@ -101,6 +101,9 @@ gem 'hana', '~> 1.3.7'
 # Auditing model changes
 gem 'audited'
 
+# Required for active storage
+gem 'aws-sdk-s3', require: false # Require false since this is only used in ExportJob
+
 # Easier ordering for queries
 gem 'order_as_specified'
 

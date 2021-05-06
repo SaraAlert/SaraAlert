@@ -17,102 +17,60 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     user = @@system_test_utils.get_user(user_label)
     export_type = "csv_linelist_#{workflow}".to_sym
     download_export_files(user, export_type)
-    patients = user.jurisdiction.all_patients_excluding_purged.where(isolation: workflow == :isolation)
+    patients = user.jurisdiction.all_patients_excluding_purged.where(isolation: workflow == :isolation).reorder('')
 
-    # Verify per outer batch (file)
-    patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
-      csv = get_csv(build_export_filename({ export_type: export_type, format: :csv }, nil, index, true))
-      verify_csv_linelist_export(csv, patients_group.order(:id))
-    end
+    csv = get_csv("Sara-Alert-Linelist-#{workflow.to_s.humanize}-????-??-??T??-??-?????-??.csv")
+    verify_csv_linelist_export(csv, patients.order(:id))
   end
 
   def verify_sara_alert_format(user_label, workflow)
     user = @@system_test_utils.get_user(user_label)
     export_type = "sara_alert_format_#{workflow}".to_sym
     download_export_files(user, export_type)
-    patients = user.jurisdiction.all_patients_excluding_purged.where(isolation: workflow == :isolation)
-
-    # Verify per outer batch (file)
-    patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
-      xlsx = get_xlsx(build_export_filename({ export_type: export_type, format: :xlsx }, nil, index, true))
-      verify_sara_alert_format_export(xlsx, patients_group.order(:id))
-    end
+    patients = user.jurisdiction.all_patients_excluding_purged.where(isolation: workflow == :isolation).reorder('')
+    xlsx = get_xlsx("Sara-Alert-Format-#{workflow.to_s.humanize}-????-??-??T??-??-?????-??.xlsx")
+    verify_sara_alert_format_export(xlsx, patients.order(:id))
   end
 
   def verify_full_history_patients(user_label, scope)
     user = @@system_test_utils.get_user(user_label)
     export_type = "full_history_patients_#{scope}".to_sym
-    config = {
-      export_type: export_type,
-      format: :xlsx,
-      filename_data_type: true,
-      data: {
-        patients: {
-          name: 'Monitorees'
-        },
-        assessments: {
-          name: 'Reports'
-        },
-        laboratories: {
-          name: 'Lab-Results'
-        },
-        vaccines: {
-          name: 'Vaccinations'
-        },
-        histories: {
-          name: 'Histories'
-        }
-      }
-    }
     download_export_files(user, export_type)
     patients = user.jurisdiction.all_patients_excluding_purged.order(:id)
-    patients = patients.purge_eligible if scope == :purgeable
-    patients = patients.order(:id)
-
-    # Verify per outer batch (file)
-    patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
-      xlsx_monitorees = get_xlsx(build_export_filename(config, :patients, index, true))
-      xlsx_assessments = get_xlsx(build_export_filename(config, :assessments, index, true))
-      xlsx_lab_results = get_xlsx(build_export_filename(config, :laboratories, index, true))
-      xlsx_vaccines = get_xlsx(build_export_filename(config, :vaccines, index, true))
-      xlsx_histories = get_xlsx(build_export_filename(config, :histories, index, true))
-      verify_full_history_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_vaccines, xlsx_histories, patients_group)
+    if scope == :purgeable
+      patients = patients.purge_eligible
+      xlsx_full_history = get_xlsx('Sara-Alert-Purge-Eligible-Export-????-??-??T??-??-?????-??.xlsx')
+    else
+      xlsx_full_history = get_xlsx('Sara-Alert-Full-Export-????-??-??T??-??-?????-??.xlsx')
     end
+    patients_group = patients.order(:id)
+
+    verify_full_history_export(xlsx_full_history, patients_group)
   end
 
   def verify_full_history_patient(patient_id)
     xlsx_all = get_xlsx("Sara-Alert-Monitoree-Export-#{patient_id}-????-??-??T??_??_?????_??.xlsx")
     patients = Patient.where(id: patient_id)
-    verify_full_history_export(xlsx_all, xlsx_all, xlsx_all, xlsx_all, xlsx_all, patients)
+    verify_full_history_export(xlsx_all, patients)
   end
 
   def verify_custom(user_label, settings)
     user = @@system_test_utils.get_user(user_label)
     export_type = :custom
-    config = {
-      export_type: export_type,
-      format: settings[:format],
-      filename_data_type: settings[:format] == :csv
-    }
     download_export_files(user, export_type)
 
     patients = patients_by_query(user, settings.dig(:data, :patients, :query) || {})
+    patients_group = patients.reorder('')
 
     if settings[:format] == :csv
-      # Verify per outer batch (file)
-      patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
-        export_files = {}
-        settings[:data]&.each_key do |data_type|
-          export_files[data_type] = get_csv(build_export_filename(config, data_type, index, true)) if settings.dig(:data, data_type, :checked)&.present?
-        end
-        verify_custom_export_csv(patients_group, settings, export_files)
+      export_files = {}
+      settings[:data]&.each_key do |data_type|
+        export_files[data_type] = get_csv('Sara-Alert-Custom-Export-????-??-??T??-??-?????-??.csv') if settings.dig(:data, data_type, :checked)&.present?
       end
+      verify_custom_export_csv(patients_group, settings, export_files)
     else
-      # Verify per outer batch (file)
-      patients.reorder('').in_batches(of: ENV['EXPORT_OUTER_BATCH_SIZE'].to_i).each_with_index do |patients_group, index|
-        xlsx = get_xlsx(build_export_filename(config, nil, index, true))
-        verify_custom_export_xlsx(patients_group.order(:id), settings, xlsx)
-      end
+      xlsx = get_xlsx('Sara-Alert-Custom-Export-????-??-??T??-??-?????-??.xlsx')
+      verify_custom_export_xlsx(patients_group.order(:id), settings, xlsx)
     end
   end
 
@@ -179,8 +137,10 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_full_history_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_vaccines, xlsx_histories, patients)
-    monitorees_list = xlsx_monitorees.sheet('Monitorees List')
+  def verify_full_history_export(xlsx_full_history, patients)
+    # Convert patients back into an AR collection for compatability
+    patients = Patient.where(id: patients.pluck(:id))
+    monitorees_list = xlsx_full_history.sheet('Monitorees List')
     assert_equal(patients.size, monitorees_list.last_row - 1, 'Number of patients in Monitorees List')
     FULL_HISTORY_PATIENTS_HEADERS.each_with_index do |header, col|
       assert_equal(header, monitorees_list.cell(1, col + 1), "For header: #{header} in Monitorees List")
@@ -203,7 +163,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
     patient_ids = patients.pluck(:id)
 
-    assessments = xlsx_assessments.sheet('Reports')
+    assessments = xlsx_full_history.sheet('Reports')
     symptom_labels = Patient.where(id: patient_ids)
                             .joins(assessments: [{ reported_condition: :symptoms }])
                             .select('symptoms.label')
@@ -230,7 +190,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
               end
             end
 
-    lab_results = xlsx_lab_results.sheet('Lab Results')
+    lab_results = xlsx_full_history.sheet('Lab Results')
     labs = Laboratory.where(patient_id: patient_ids)
     assert_equal(labs.size, lab_results.last_row - 1, 'Number of results in Lab Results')
     lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result', 'Created At', 'Updated At']
@@ -245,7 +205,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       end
     end
 
-    exported_vaccines = xlsx_vaccines.sheet('Vaccinations')
+    exported_vaccines = xlsx_full_history.sheet('Vaccinations')
     vaccines = Vaccine.where(patient_id: patient_ids).order(:patient_id)
     assert_equal(vaccines.size, exported_vaccines.last_row - 1, 'Number of results in Vaccinations')
     vaccine_headers = ['Patient ID', 'Vaccine Group', 'Product Name', 'Administration Date', 'Dose Number', 'Notes', 'Created At', 'Updated At']
@@ -260,7 +220,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       end
     end
 
-    edit_histories = xlsx_histories.sheet('Edit Histories')
+    edit_histories = xlsx_full_history.sheet('Edit Histories')
     histories = History.where(patient_id: patient_ids)
     assert_equal(histories.size, edit_histories.last_row - 1, 'Number of histories in Edit Histories')
     history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
@@ -458,7 +418,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   def download_export_files(user, export_type)
     sleep(2) # wait for export and download to complete
     Download.where(user_id: user.id, export_type: export_type.to_s).where('created_at > ?', 10.seconds.ago).find_each do |download|
-      visit "/export/download/#{download.lookup}"
+      visit rails_storage_proxy_url(download.export_files.first)
     end
   end
 

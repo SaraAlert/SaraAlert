@@ -9,7 +9,7 @@ class UserMailerTest < ActionMailer::TestCase
 
   test 'download email no lookups' do
     # When no monitorees match export criteria lookups = []
-    email = UserMailer.download_email(@user, 'Export Label', [], 10_000).deliver_now
+    email = UserMailer.download_email(@user, 'Export Label', []).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not(ActionMailer::Base.deliveries.empty?)
     assert_includes(email_body, 'Export Label')

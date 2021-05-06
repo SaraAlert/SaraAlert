@@ -16,111 +16,80 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   include Languages
 
   # Writes export data to file(s)
-  def write_export_data_to_files(config, patients, outer_batch_size, inner_batch_size)
+  def write_export_data_to_files(config, patients, inner_batch_size)
     case config[:format]
     when 'csv'
-      csv_export(config, patients, outer_batch_size, inner_batch_size)
+      csv_export(config, patients, inner_batch_size)
     when 'xlsx'
-      xlsx_export(config, patients, outer_batch_size, inner_batch_size)
+      xlsx_export(config, patients, inner_batch_size)
     end
   end
 
   # Creates a list of csv files from exported data
-  def csv_export(config, patients, outer_batch_size, inner_batch_size)
-    files = []
-
+  def csv_export(config, patients, inner_batch_size)
     # Determine selected data types for export
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
 
     # Get all of the field data based on the config
     field_data, symptom_names = get_field_data(config, patients)
 
-    # Declare variables in scope outside of batch loop
-    csvs = nil
-    packages = nil
-    inner_batch_iterations_per_outer_batch = outer_batch_size / inner_batch_size
-    total_inner_batches = (patients.size / inner_batch_size.to_f).ceil
+    files = []
+    csvs = {}
+    packages = {}
+
+    data_types.each do |data_type|
+      # Create CSV with column headers
+      package = CSV.generate(headers: true) do |csv|
+        csv << field_data.dig(data_type, :headers)
+        csvs[data_type] = csv
+      end
+      packages[data_type] = package
+    end
 
     # NOTE: in_batches appears to NOT sort within batches, so explicit ordering on ID is also done deeper down.
     # The reorder('') here allows this ordering done later on to work properly.
-    patients.reorder('').in_batches(of: inner_batch_size).each_with_index do |batch_group, inner_batch_index|
-      # 1) Create CSV files on the first inner batch iteration of each outer batch. If `outer_batch_size` is 10,000 and `inner_batch_size` is 100,
-      #    then this will create a new CSV every 100 batches, therefore handling the outer batching.
-      if (inner_batch_index % inner_batch_iterations_per_outer_batch).zero?
-        # One file for all data types, each data type in a different tab
-        csvs = {}
-        packages = {}
-        data_types.each do |data_type|
-          # Create CSV with column headers
-          package = CSV.generate(headers: true) do |csv|
-            csv << field_data.dig(data_type, :headers)
-            csvs[data_type] = csv
-          end
-          packages[data_type] = package
-        end
-      end
-
-      # 2) Get export data in batches to decrease size of export data hash maintained in memory
+    patients.reorder('').in_batches(of: inner_batch_size).each do |batch_group|
+      # Get export data in batches to decrease size of export data hash maintained in memory
       exported_data = get_export_data(batch_group.order(:id), config[:data], field_data, symptom_names)
       data_types.each do |data_type|
         exported_data[data_type]&.each { |record| csvs[data_type] << record }
       end
-
-      # 3) Check if the next inner_batch_index is the start of a new outer batch or if this current batch is the final batch
-      #    If so, save files to db as this is the end of the current outer batch
-      next unless ((inner_batch_index + 1) % inner_batch_iterations_per_outer_batch).zero? || inner_batch_index == total_inner_batches - 1
-
-      outer_batch_index = inner_batch_index * inner_batch_size / outer_batch_size
-      data_types.each do |data_type|
-        file = { filename: build_export_filename(config, data_type, outer_batch_index, false), content: Base64.encode64(packages[data_type]) }
-        files << save_file(config, file)
-      end
     end
 
+    data_types.each do |data_type|
+      files << { filename: build_export_filename(config, nil), content: StringIO.new(packages[data_type]) }
+    end
     files
   end
 
   # Creates a list of excel files from exported data
-  def xlsx_export(config, patients, outer_batch_size, inner_batch_size)
+  def xlsx_export(config, patients, inner_batch_size)
     files = []
-    separate_files = config[:separate_files].present?
 
     # Determine selected data types for export
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
 
     # Get all of the field data based on the config
     field_data, symptom_names = get_field_data(config, patients)
-
     # Declare variables in scope outside of batch loop
-    workbooks = nil if separate_files
-    workbook = nil unless separate_files
     sheets = nil
     last_row_nums = nil
-    inner_batch_iterations_per_outer_batch = outer_batch_size / inner_batch_size
-    total_inner_batches = (patients.size / inner_batch_size.to_f).ceil
+
+    # One file for all data types, each data type in a different tab
+    workbook = FastExcel.open(constant_memory: true)
+    sheets = {}
+    last_row_nums = {}
+    data_types.each do |data_type|
+      worksheet = workbook.add_worksheet(config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label))
+      worksheet.append_row(field_data.dig(data_type, :headers))
+      last_row_nums[data_type] = 0
+      sheets[data_type] = worksheet
+    end
 
     # NOTE: in_batches appears to NOT sort within batches, so explicit ordering on ID is also done deeper down.
     # The reorder('') here allows this ordering done later on to work properly.
-    patients.reorder('').in_batches(of: inner_batch_size).each_with_index do |batch_group, inner_batch_index|
-      # 1) Create excel file(s) on the first inner batch iteration of each outer batch. If `outer_batch_size` is 10,000 and `inner_batch_size` is 100,
-      #    then this will create a new excel file(s) every 100 batches, therefore handling the outer batching.
-      if (inner_batch_index % inner_batch_iterations_per_outer_batch).zero?
-        # One file for all data types, each data type in a different tab
-        workbooks = {} if separate_files
-        workbook = FastExcel.open(constant_memory: true) unless separate_files
-        sheets = {}
-        last_row_nums = {}
-        data_types.each do |data_type|
-          workbook = FastExcel.open(constant_memory: true) if separate_files
-          worksheet = workbook.add_worksheet(config.dig(:data, data_type, :tab) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label))
-          worksheet.append_row(field_data.dig(data_type, :headers))
-          last_row_nums[data_type] = 0
-          sheets[data_type] = worksheet
-          workbooks[data_type] = workbook if separate_files
-        end
-      end
-
-      # 2) Get export data in batches to decrease size of export data hash maintained in memory
+    patients.reorder('').in_batches(of: inner_batch_size).each do |batch_group|
+      # Get export data in batches to decrease size of export data hash maintained in memory
       exported_data = get_export_data(batch_group.order(:id), config[:data], field_data, symptom_names)
       data_types.each do |data_type|
         exported_data[data_type]&.each do |record|
@@ -131,27 +100,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           end
         end
       end
-
-      # 3) Check if the next inner_batch_index is the start of a new outer batch or if this current batch is the final batch
-      #    If so, save files to db as this is the end of the current outer batch
-      next unless ((inner_batch_index + 1) % inner_batch_iterations_per_outer_batch).zero? || inner_batch_index == total_inner_batches - 1
-
-      outer_batch_index = inner_batch_index * inner_batch_size / outer_batch_size
-      if separate_files
-        data_types.each do |data_type|
-          file = { filename: build_export_filename(config, data_type, outer_batch_index, false), content: Base64.encode64(workbooks[data_type].read_string) }
-          files << save_file(config, file)
-        end
-      else
-        # Do not create a file for an export that only has headers.
-        next if last_row_nums.values.all?(&:zero?)
-
-        file = { filename: build_export_filename(config, nil, outer_batch_index, false), content: Base64.encode64(workbook.read_string) }
-        files << save_file(config, file)
-      end
     end
 
-    files
+    workbook.close if workbook.is_open
+    # Do not create a file if there is no data
+    files << { filename: build_export_filename(config, nil), content: File.open(workbook.filename, 'rb') } unless last_row_nums.values.all?(&:zero?)
   end
 
   # Gets data for this batch of patients that may not have already been present in the export config (such as specific symptoms).
@@ -200,9 +153,15 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data[:assessments][:checked].delete(:symptoms)
     data[:assessments][:headers].delete('Symptoms Reported')
 
-    # Nested querying by id is faster than joining patients to assessments to conditions to symptoms
-    symptoms = Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: patients.pluck(:id)).pluck(:id)).pluck(:id))
-    symptom_names_and_labels = symptoms.where.not(name: nil).where.not(label: nil).distinct.order(:label).pluck(:name, :label).transpose
+    # For large queries (e.g. 100k patients) of the `Symptom.where(...) query below
+    # we saw MySQL give up on queries and throw an exception.
+    # The workaround for this is to collect the symptom ids in a set and find them
+    # using batches of patients.
+    symptom_ids = Set.new
+    patients.pluck(:id).in_groups_of(10_000, false) do |batch|
+      symptom_ids << Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: batch).pluck(:id)).pluck(:id)).pluck(:id)
+    end
+    symptom_names_and_labels = Symptom.where(id: symptom_ids).where.not(label: nil, name: nil).distinct.order(:label).pluck(:name, :label).transpose
 
     # Empty symptoms check
     return [] unless symptom_names_and_labels.present?
@@ -284,63 +243,65 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     # construct patient details
-    patients.map do |patient|
-      patient_details = {}
+    ActiveRecord::Base.uncached do
+      patients.map do |patient|
+        patient_details = {}
 
-      # populate inherent fields by type
-      (fields & PATIENT_FIELD_TYPES[:strings]).each { |field| patient_details[field] = remove_formula_start(patient[field]) }
-      (fields & PATIENT_FIELD_TYPES[:dates]).each { |field| patient_details[field] = patient[field]&.strftime('%F') }
-      (fields & PATIENT_FIELD_TYPES[:phones]).each { |field| patient_details[field] = format_phone_number(patient[field]) }
-      (fields & (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:timestamps])).each { |field| patient_details[field] = patient[field] }
-      (fields & (PATIENT_FIELD_TYPES[:booleans] + PATIENT_FIELD_TYPES[:races])).each { |field| patient_details[field] = patient[field] || false }
-      (fields & PATIENT_FIELD_TYPES[:languages]).each { |field| patient_details[field] = Languages.translate_code_to_display(patient[field]) }
+        # populate inherent fields by type
+        (fields & PATIENT_FIELD_TYPES[:strings]).each { |field| patient_details[field] = remove_formula_start(patient[field]) }
+        (fields & PATIENT_FIELD_TYPES[:dates]).each { |field| patient_details[field] = patient[field]&.strftime('%F') }
+        (fields & PATIENT_FIELD_TYPES[:phones]).each { |field| patient_details[field] = format_phone_number(patient[field]) }
+        (fields & (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:timestamps])).each { |field| patient_details[field] = patient[field] }
+        (fields & (PATIENT_FIELD_TYPES[:booleans] + PATIENT_FIELD_TYPES[:races])).each { |field| patient_details[field] = patient[field] || false }
+        (fields & PATIENT_FIELD_TYPES[:languages]).each { |field| patient_details[field] = Languages.translate_code_to_display(patient[field]) }
 
-      # populate computed fields
-      patient_details[:name] = patient.displayed_name if fields.include?(:name)
-      patient_details[:age] = patient.calc_current_age if fields.include?(:age)
-      patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
-      patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
-      patient_details[:no_reported_symptoms] = patient[:symptom_onset].nil?
-      patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
-      patient_details[:end_of_monitoring] = patient.end_of_monitoring if fields.include?(:end_of_monitoring)
-      patient_details[:expected_purge_ts] = patient.expected_purge_date_exp if fields.include?(:expected_purge_ts)
-      patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase if fields.include?(:full_status)
-      patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
+        # populate computed fields
+        patient_details[:name] = patient.displayed_name if fields.include?(:name)
+        patient_details[:age] = patient.calc_current_age if fields.include?(:age)
+        patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
+        patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
+        patient_details[:no_reported_symptoms] = patient[:symptom_onset].nil?
+        patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
+        patient_details[:end_of_monitoring] = patient.end_of_monitoring if fields.include?(:end_of_monitoring)
+        patient_details[:expected_purge_ts] = patient.expected_purge_date_exp if fields.include?(:expected_purge_ts)
+        patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase if fields.include?(:full_status)
+        patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
 
-      # populate creator if requested
-      patient_details[:creator] = patients_creators[patient.creator_id] if fields.include?(:creator)
+        # populate creator if requested
+        patient_details[:creator] = patients_creators[patient.creator_id] if fields.include?(:creator)
 
-      # populate jurisdiction if requested
-      patient_details[:jurisdiction_name] = jurisdiction_names[patient.jurisdiction_id] if fields.include?(:jurisdiction_name)
-      patient_details[:jurisdiction_path] = jurisdiction_paths[patient.jurisdiction_id] if fields.include?(:jurisdiction_path)
+        # populate jurisdiction if requested
+        patient_details[:jurisdiction_name] = jurisdiction_names[patient.jurisdiction_id] if fields.include?(:jurisdiction_name)
+        patient_details[:jurisdiction_path] = jurisdiction_paths[patient.jurisdiction_id] if fields.include?(:jurisdiction_path)
 
-      # populate latest transfer from and to if requested
-      if patient[:latest_transfer_from].present?
-        patient_details[:transferred_from] = jurisdiction_paths[patient.latest_transfer_from] if fields.include?(:transferred_from)
-        patient_details[:transferred_to] = jurisdiction_paths[patient.jurisdiction_id] if fields.include?(:transferred_to)
-      end
-
-      # populate labs if requested
-      if patients_laboratories&.key?(patient.id)
-        if patients_laboratories[patient.id]&.first&.present?
-          patient_details[:lab_1_type] = patients_laboratories[patient.id].first[:lab_type] if fields.include?(:lab_1_type)
-          if fields.include?(:lab_1_specimen_collection)
-            patient_details[:lab_1_specimen_collection] = patients_laboratories[patient.id].first[:specimen_collection]&.strftime('%F')
-          end
-          patient_details[:lab_1_report] = patients_laboratories[patient.id].first[:report]&.strftime('%F') if fields.include?(:lab_1_report)
-          patient_details[:lab_1_result] = patients_laboratories[patient.id].first[:result] if fields.include?(:lab_1_result)
+        # populate latest transfer from and to if requested
+        if patient[:latest_transfer_from].present?
+          patient_details[:transferred_from] = jurisdiction_paths[patient.latest_transfer_from] if fields.include?(:transferred_from)
+          patient_details[:transferred_to] = jurisdiction_paths[patient.jurisdiction_id] if fields.include?(:transferred_to)
         end
-        if patients_laboratories[patient.id]&.second&.present?
-          patient_details[:lab_2_type] = patients_laboratories[patient.id].second[:lab_type] if fields.include?(:lab_2_type)
-          if fields.include?(:lab_2_specimen_collection)
-            patient_details[:lab_2_specimen_collection] = patients_laboratories[patient.id].second[:specimen_collection]&.strftime('%F')
-          end
-          patient_details[:lab_2_report] = patients_laboratories[patient.id].second[:report]&.strftime('%F') if fields.include?(:lab_2_report)
-          patient_details[:lab_2_result] = patients_laboratories[patient.id].second[:result] if fields.include?(:lab_2_result)
-        end
-      end
 
-      fields.map { |field| patient_details[field] }
+        # populate labs if requested
+        if patients_laboratories&.key?(patient.id)
+          if patients_laboratories[patient.id]&.first&.present?
+            patient_details[:lab_1_type] = patients_laboratories[patient.id].first[:lab_type] if fields.include?(:lab_1_type)
+            if fields.include?(:lab_1_specimen_collection)
+              patient_details[:lab_1_specimen_collection] = patients_laboratories[patient.id].first[:specimen_collection]&.strftime('%F')
+            end
+            patient_details[:lab_1_report] = patients_laboratories[patient.id].first[:report]&.strftime('%F') if fields.include?(:lab_1_report)
+            patient_details[:lab_1_result] = patients_laboratories[patient.id].first[:result] if fields.include?(:lab_1_result)
+          end
+          if patients_laboratories[patient.id]&.second&.present?
+            patient_details[:lab_2_type] = patients_laboratories[patient.id].second[:lab_type] if fields.include?(:lab_2_type)
+            if fields.include?(:lab_2_specimen_collection)
+              patient_details[:lab_2_specimen_collection] = patients_laboratories[patient.id].second[:specimen_collection]&.strftime('%F')
+            end
+            patient_details[:lab_2_report] = patients_laboratories[patient.id].second[:report]&.strftime('%F') if fields.include?(:lab_2_report)
+            patient_details[:lab_2_result] = patients_laboratories[patient.id].second[:result] if fields.include?(:lab_2_result)
+          end
+        end
+
+        fields.map { |field| patient_details[field] }
+      end
     end
   end
 
@@ -372,7 +333,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     assessments = assessments.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
 
     # pluck selected fields
-    records = assessments.pluck(*plucked_fields)
+    records = ActiveRecord::Base.uncached { assessments.pluck(*plucked_fields) }
 
     # ensure that records is always a 2d array
     records = records.map { |record| [record] } if plucked_fields.size == 1
@@ -391,7 +352,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # validate and pluck selected fields
     plucked_fields = fields & LABORATORY_FIELD_NAMES.keys
-    records = laboratories.pluck(*plucked_fields)
+    records = ActiveRecord::Base.uncached { laboratories.pluck(*plucked_fields) }
 
     # ensure that records is always a 2d array
     records = records.map { |record| [record] } if plucked_fields.size == 1
@@ -406,7 +367,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # validate and pluck selected fields
     plucked_fields = fields & VACCINE_FIELD_NAMES.keys
-    records = vaccines.pluck(*plucked_fields)
+    records = ActiveRecord::Base.uncached { vaccines.pluck(*plucked_fields) }
 
     # ensure that records is always a 2d array
     records = records.map { |record| [record] } if plucked_fields.size == 1
@@ -425,7 +386,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # validate and pluck selected fields
     plucked_fields = fields & CLOSE_CONTACT_FIELD_NAMES.keys
-    records = close_contacts.pluck(*plucked_fields)
+    records = ActiveRecord::Base.uncached { close_contacts.pluck(*plucked_fields) }
 
     # ensure that records is always a 2d array
     records = records.map { |record| [record] } if plucked_fields.size == 1
@@ -468,7 +429,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     end
 
     # pluck selected fields
-    records = transfers.pluck(*plucked_fields)
+    records = ActiveRecord::Base.uncached { transfers.pluck(*plucked_fields) }
 
     # ensure that records is always a 2d array
     records = records.map { |record| [record] } if plucked_fields.size == 1
@@ -483,7 +444,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # validate and pluck selected fields
     plucked_fields = fields & HISTORY_FIELD_NAMES.keys
-    records = histories.pluck(*plucked_fields)
+    records = ActiveRecord::Base.uncached { histories.pluck(*plucked_fields) }
 
     # ensure that records is always a 2d array
     records = records.map { |record| [record] } if plucked_fields.size == 1
@@ -495,31 +456,15 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     records
   end
 
-  # Builds a file name using the base name, index, date, and extension.
-  # Ex: "Sara-Alert-Linelist-Isolation-2020-09-01T14:15:05-04:00-1"
-  def build_export_filename(config, data_type, index, glob)
+  # Builds a file name using the base name, date, and extension.
+  # Ex: "Sara-Alert-Linelist-Isolation-2020-09-01T14:15:05-04:00"
+  def build_export_filename(config, data_type)
     return unless config[:export_type].present? && EXPORT_TYPES.key?(config[:export_type])
 
     if config[:filename_data_type].present? && data_type.present? && CUSTOM_EXPORT_OPTIONS[data_type].present?
       data_type_name = config.dig(:data, data_type, :name) || CUSTOM_EXPORT_OPTIONS.dig(data_type, :label)&.gsub(' ', '-')
     end
     base_name = "#{EXPORT_TYPES.dig(config[:export_type], :filename)}#{data_type_name ? "-#{data_type_name}" : ''}"
-    timestamp = glob ? '????-??-??T??_??_?????_??' : DateTime.now
-    "#{base_name}-#{timestamp}#{index.present? ? "-#{index + 1}" : ''}.#{config[:format]}"
-  end
-
-  # Write file and create lookup
-  def save_file(config, file)
-    lookup = SecureRandom.uuid
-    if ActiveRecord::Base.logger.formatter.nil?
-      download = Download.insert(user_id: config[:user_id], export_type: config[:export_type], filename: file[:filename],
-                                 lookup: lookup, contents: file[:content], created_at: DateTime.now, updated_at: DateTime.now)
-    else
-      ActiveRecord::Base.logger.silence do
-        download = Download.insert(user_id: config[:user_id], export_type: config[:export_type], filename: file[:filename],
-                                   lookup: lookup, contents: file[:content], created_at: DateTime.now, updated_at: DateTime.now)
-      end
-    end
-    { lookup: lookup, filename: file[:filename] }
+    "#{base_name}-#{DateTime.now}.#{config[:format]}"
   end
 end

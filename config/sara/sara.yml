@@ -45,3 +45,7 @@ job_run_email: <%= ENV["JOB_RUN_EMAIL"] || '' %>
 
 # Maximum number of allowed user saved filters
 max_user_filters: <%= ENV["MAX_USER_FILTERS"] || 150 %>
+
+# How long to wait for downloads to complete // how long to wait before downloads are cleaned up after clicking the download link
+# in minutes
+download_destroy_wait_time: <%= ENV['SARA_ALERT_DOWNLOAD_DESTROY_WAIT_TIME']|| 60 %>

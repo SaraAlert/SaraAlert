@@ -31,7 +31,8 @@ Rails.application.configure do
   end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  config.active_storage.service = :development
+  config.active_storage.resolve_model_to_route = :rails_storage_proxy
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true
@@ -81,4 +82,6 @@ Rails.application.configure do
     Bullet.enable = true
     Bullet.bullet_logger = true
   end
+
+  config.x.executing_system_tests = false
 end
