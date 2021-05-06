@@ -5,12 +5,8 @@ class ExportJob < ApplicationJob
   queue_as :exports
   include ImportExport
 
-  # Limits number of Patient records to be considered for a single exported file to handle maximum file size limit.
-  # Adds additional files as needed if exceeds batch size.
-  OUTER_BATCH_SIZE = ENV['EXPORT_OUTER_BATCH_SIZE']&.to_i || 10_000
-
   # Inner batch size limits number of Patient records details help in memory at once before writing to file.
-  INNER_BATCH_SIZE = ENV['EXPORT_INNER_BATCH_SIZE']&.to_i || 500
+  INNER_BATCH_SIZE = ENV.fetch('EXPORT_INNER_BATCH_SIZE', 500).to_i unless const_defined?(:INNER_BATCH_SIZE)
 
   def perform(config)
     # Get user in order to query viewable patients
@@ -18,7 +14,8 @@ class ExportJob < ApplicationJob
     return if user.nil?
 
     # Delete any existing downloads of this type
-    user.downloads.where(export_type: config[:export_type]).delete_all
+    # Destroy all must be called on the downloads because the after destroy callback must be executed to remove the blobs from object storage
+    user.downloads.where(export_type: config[:export_type]).destroy_all
 
     # Extract data
     data = config[:data]
@@ -26,12 +23,33 @@ class ExportJob < ApplicationJob
 
     # Construct export
     patients = patients_by_query(user, data.dig(:patients, :query) || {})
-    files = write_export_data_to_files(config, patients, OUTER_BATCH_SIZE, INNER_BATCH_SIZE)
-
-    # Sort files by filename so that they are grouped together accordingly after batching
-    files = files.sort_by { |file| file[:filename] }
+    files = write_export_data_to_files(config, patients, INNER_BATCH_SIZE)
+    downloads = create_downloads(config, files).sort_by { |download| download[:filename] }
 
     # Send an email to user
-    UserMailer.download_email(user, EXPORT_TYPES[config[:export_type]][:label] || 'default', files, OUTER_BATCH_SIZE).deliver_later
+    UserMailer.download_email(user, EXPORT_TYPES[config[:export_type]][:label] || 'default', downloads).deliver_later
+  end
+
+  private
+
+  # Creates downloads for files
+  def create_downloads(config, files)
+    downloads = []
+    # Write
+    files&.each do |file|
+      content_type = config[:format] == 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      downloads << create_download(config[:user_id], file[:content], file[:filename], config[:export_type], content_type)
+    end
+    downloads
+  end
+
+  # Build and save the initial Download object and upload at least 1 export attachment to S3
+  # Additional attachments can be chained off the returned download object
+  def create_download(user_id, data, full_filename, export_type, content_type)
+    download = Download.create(user_id: user_id, export_type: export_type, filename: full_filename)
+    download.export_files.attach(io: data, filename: full_filename, content_type: content_type)
+    download
+  ensure
+    FileUtils.remove_entry(File.dirname(data)) if data.is_a?(File) && File.exist?(data)
   end
 end

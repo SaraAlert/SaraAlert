@@ -93,7 +93,6 @@ class ExportController < ApplicationController
       format: 'xlsx',
       filename: "Sara-Alert-#{params[:scope] == 'purgeable' ? 'Purge-Eligible' : 'Full'}-Export",
       filename_data_type: true,
-      separate_files: true,
       data: {
         patients: {
           checked: FULL_HISTORY_PATIENTS_FIELDS,

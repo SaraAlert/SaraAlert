@@ -538,7 +538,6 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
 
   FULL_HISTORY_PATIENT_CONFIG = {
     format: 'xlsx',
-    separate_files: false,
     data: {
       patients: {
         checked: FULL_HISTORY_PATIENTS_FIELDS,

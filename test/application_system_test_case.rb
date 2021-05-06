@@ -28,4 +28,9 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   rescue Webdrivers::BrowserNotFound
     driven_by :selenium, using: :firefox
   end
+
+  def after_teardown
+    super
+    FileUtils.rm_rf(Rails.root.join('tmp', 'test-storage'))
+  end
 end

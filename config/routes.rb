@@ -86,7 +86,6 @@ Rails.application.routes.draw do
   get '/export/full_history_patient/:patient_id', to: 'export#full_history_patient'
   post '/export/custom', to: 'export#custom_export'
   get '/export/nbs/patient/:patient_id', to: 'export#nbs_patient'
-  get '/export/download/:lookup', to: 'downloads#download', as: :export_download
 
   post '/import/:workflow/:format', to: 'import#import'
   get '/import/download_guidance', to: 'import#download_guidance'
