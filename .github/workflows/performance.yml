@@ -21,7 +21,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: 2.7.3
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
@@ -89,7 +89,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: 2.7.3
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
@@ -157,7 +157,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: 2.7.3
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
@@ -230,7 +230,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: 2.7.3
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
