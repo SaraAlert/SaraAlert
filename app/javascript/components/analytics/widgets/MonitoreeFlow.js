@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import _ from 'lodash';
 import { Card, Col, Row } from 'react-bootstrap';
+import { formatPercentage } from '../../../utils/Analytics';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
 
@@ -16,14 +17,41 @@ class MonitoreeFlow extends React.Component {
         let thisTimeFrameData = props.stats.monitoree_snapshots.find(
           monitoree_snapshot => monitoree_snapshot.status === workflow && monitoree_snapshot.time_frame === time_frame
         );
+        let exposure = workflow === 'Exposure';
+        let inTotal =
+          thisTimeFrameData?.new_enrollments +
+          thisTimeFrameData?.transferred_in +
+          (exposure ? thisTimeFrameData?.isolation_to_exposure : thisTimeFrameData?.exposure_to_isolation);
+        let outTotal =
+          thisTimeFrameData?.closed +
+          thisTimeFrameData?.transferred_out +
+          (exposure ? thisTimeFrameData?.exposure_to_isolation : thisTimeFrameData?.isolation_to_exposure);
         return {
           time_frame,
-          new_enrollments: thisTimeFrameData?.new_enrollments || 0,
-          transferred_in: thisTimeFrameData?.transferred_in || 0,
-          closed: thisTimeFrameData?.closed || 0,
-          transferred_out: thisTimeFrameData?.transferred_out || 0,
-          exposure_to_isolation: thisTimeFrameData?.exposure_to_isolation || 0,
-          isolation_to_exposure: thisTimeFrameData?.isolation_to_exposure || 0,
+          new_enrollments: {
+            value: thisTimeFrameData?.new_enrollments || 0,
+            percentage: formatPercentage(thisTimeFrameData?.new_enrollments, inTotal),
+          },
+          transferred_in: {
+            value: thisTimeFrameData?.transferred_in || 0,
+            percentage: formatPercentage(thisTimeFrameData?.transferred_in, inTotal),
+          },
+          closed: {
+            value: thisTimeFrameData?.closed || 0,
+            percentage: formatPercentage(thisTimeFrameData?.closed, outTotal),
+          },
+          transferred_out: {
+            value: thisTimeFrameData?.transferred_out || 0,
+            percentage: formatPercentage(thisTimeFrameData?.transferred_out, outTotal),
+          },
+          exposure_to_isolation: {
+            value: thisTimeFrameData?.exposure_to_isolation || 0,
+            percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation, exposure ? outTotal : inTotal),
+          },
+          isolation_to_exposure: {
+            value: thisTimeFrameData?.isolation_to_exposure || 0,
+            percentage: formatPercentage(thisTimeFrameData?.isolation_to_exposure, exposure ? inTotal : outTotal),
+          },
         };
       });
     });
@@ -38,7 +66,10 @@ class MonitoreeFlow extends React.Component {
             <tr>
               <th className="py-0"></th>
               {MONITOREE_FLOW_HEADERS.map((monitoreeFlowHeader, index) => (
-                <th key={index}>{monitoreeFlowHeader}</th>
+                <th key={index}>
+                  <div> {monitoreeFlowHeader} </div>
+                  <div className="text-secondary"> n (col %) </div>
+                </th>
               ))}
             </tr>
           </thead>
@@ -56,19 +87,30 @@ class MonitoreeFlow extends React.Component {
             <tr className="analytics-zebra-bg">
               <td className="text-right">NEW ENROLLMENTS</td>
               {data.map((x, index) => (
-                <td key={index}>{x.new_enrollments}</td>
+                <td key={index}>
+                  <div>{x.new_enrollments.value}</div>
+                  <span className="analytics-percentage"> {`(${x.new_enrollments.percentage})`}</span>
+                </td>
               ))}
             </tr>
             <tr>
               <td className="text-right">TRANSFERRED IN</td>
               {data.map((x, index) => (
-                <td key={index}>{x.transferred_in}</td>
+                <td key={index}>
+                  <div>{x.transferred_in.value}</div>
+                  <span className="analytics-percentage"> {`(${x.transferred_in.percentage})`}</span>
+                </td>
               ))}
             </tr>
             <tr className="analytics-zebra-bg">
               <td className="text-right">FROM {oppositeWorkflow} WORKFLOW</td>
               {data.map((x, index) => (
-                <td key={index}>{oppositeWorkflow === 'ISOLATION' ? x.isolation_to_exposure : x.exposure_to_isolation}</td>
+                <td key={index}>
+                  <div>{oppositeWorkflow === 'ISOLATION' ? x.isolation_to_exposure.value : x.exposure_to_isolation.value}</div>
+                  <span className="analytics-percentage">
+                    {` (${oppositeWorkflow === 'ISOLATION' ? x.isolation_to_exposure.percentage : x.exposure_to_isolation.percentage})`}
+                  </span>
+                </td>
               ))}
             </tr>
             <tr style={{ height: '25px' }}>
@@ -79,19 +121,30 @@ class MonitoreeFlow extends React.Component {
             <tr className="analytics-zebra-bg">
               <td className="text-right">CLOSED</td>
               {data.map((x, index) => (
-                <td key={index}>{x.closed}</td>
+                <td key={index}>
+                  <div>{x.closed.value}</div>
+                  <span className="analytics-percentage"> {`(${x.closed.percentage})`}</span>
+                </td>
               ))}
             </tr>
             <tr>
               <td className="text-right">TRANSFERRED OUT</td>
               {data.map((x, index) => (
-                <td key={index}>{x.transferred_out}</td>
+                <td key={index}>
+                  <div>{x.transferred_out.value}</div>
+                  <span className="analytics-percentage"> {`(${x.transferred_out.percentage})`}</span>
+                </td>
               ))}
             </tr>
             <tr className="analytics-zebra-bg">
               <td className="text-right">TO {oppositeWorkflow} WORKFLOW</td>
               {data.map((x, index) => (
-                <td key={index}>{oppositeWorkflow === 'ISOLATION' ? x.exposure_to_isolation : x.isolation_to_exposure}</td>
+                <td key={index}>
+                  <div>{oppositeWorkflow === 'ISOLATION' ? x.exposure_to_isolation.value : x.isolation_to_exposure.value}</div>
+                  <span className="analytics-percentage">
+                    {` (${oppositeWorkflow === 'ISOLATION' ? x.exposure_to_isolation.percentage : x.isolation_to_exposure.percentage})`}
+                  </span>
+                </td>
               ))}
             </tr>
           </tbody>
