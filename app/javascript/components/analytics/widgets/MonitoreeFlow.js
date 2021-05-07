@@ -17,15 +17,8 @@ class MonitoreeFlow extends React.Component {
         let thisTimeFrameData = props.stats.monitoree_snapshots.find(
           monitoree_snapshot => monitoree_snapshot.status === workflow && monitoree_snapshot.time_frame === time_frame
         );
-        let exposure = workflow === 'Exposure';
-        let inTotal =
-          thisTimeFrameData?.new_enrollments +
-          thisTimeFrameData?.transferred_in +
-          (exposure ? thisTimeFrameData?.isolation_to_exposure : thisTimeFrameData?.exposure_to_isolation);
-        let outTotal =
-          thisTimeFrameData?.closed +
-          thisTimeFrameData?.transferred_out +
-          (exposure ? thisTimeFrameData?.exposure_to_isolation : thisTimeFrameData?.isolation_to_exposure);
+        let inTotal = thisTimeFrameData?.new_enrollments + thisTimeFrameData?.transferred_in;
+        let outTotal = thisTimeFrameData?.closed + thisTimeFrameData?.transferred_out;
         return {
           time_frame,
           new_enrollments: {
@@ -44,21 +37,12 @@ class MonitoreeFlow extends React.Component {
             value: thisTimeFrameData?.transferred_out || 0,
             percentage: formatPercentage(thisTimeFrameData?.transferred_out, outTotal),
           },
-          exposure_to_isolation: {
-            value: thisTimeFrameData?.exposure_to_isolation || 0,
-            percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation, exposure ? outTotal : inTotal),
-          },
-          isolation_to_exposure: {
-            value: thisTimeFrameData?.isolation_to_exposure || 0,
-            percentage: formatPercentage(thisTimeFrameData?.isolation_to_exposure, exposure ? inTotal : outTotal),
-          },
         };
       });
     });
   }
 
   renderWorkflowTable(data, index) {
-    let oppositeWorkflow = _.upperCase(WORKFLOWS[Number(index == 0 ? 1 : 0)]);
     return (
       <Col lg="12" key={index} className="pb-3">
         <table className="analytics-table">
@@ -102,17 +86,6 @@ class MonitoreeFlow extends React.Component {
                 </td>
               ))}
             </tr>
-            <tr className="analytics-zebra-bg">
-              <td className="text-right">FROM {oppositeWorkflow} WORKFLOW</td>
-              {data.map((x, index) => (
-                <td key={index}>
-                  <div>{oppositeWorkflow === 'ISOLATION' ? x.isolation_to_exposure.value : x.exposure_to_isolation.value}</div>
-                  <span className="analytics-percentage">
-                    {` (${oppositeWorkflow === 'ISOLATION' ? x.isolation_to_exposure.percentage : x.exposure_to_isolation.percentage})`}
-                  </span>
-                </td>
-              ))}
-            </tr>
             <tr style={{ height: '25px' }}>
               <td className="font-weight-bold text-left analytics-mf-subheader align-bottom">
                 <u>OUTGOING</u>
@@ -133,17 +106,6 @@ class MonitoreeFlow extends React.Component {
                 <td key={index}>
                   <div>{x.transferred_out.value}</div>
                   <span className="analytics-percentage"> {`(${x.transferred_out.percentage})`}</span>
-                </td>
-              ))}
-            </tr>
-            <tr className="analytics-zebra-bg">
-              <td className="text-right">TO {oppositeWorkflow} WORKFLOW</td>
-              {data.map((x, index) => (
-                <td key={index}>
-                  <div>{oppositeWorkflow === 'ISOLATION' ? x.exposure_to_isolation.value : x.isolation_to_exposure.value}</div>
-                  <span className="analytics-percentage">
-                    {` (${oppositeWorkflow === 'ISOLATION' ? x.exposure_to_isolation.percentage : x.isolation_to_exposure.percentage})`}
-                  </span>
                 </td>
               ))}
             </tr>
