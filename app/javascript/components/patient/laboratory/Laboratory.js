@@ -117,7 +117,7 @@ class Laboratory extends React.Component {
             lab={this.props.lab}
             submit={this.handleLabSubmit}
             cancel={this.toggleLabModal}
-            edit_mode={!!this.props.lab.id}
+            editMode={!!this.props.lab.id}
             loading={this.state.loading}
           />
         )}
