@@ -8,7 +8,7 @@ class BadgeHoH extends React.Component {
     return (
       <React.Fragment>
         <span data-for={`${this.props.patientId}-hoh`} data-tip="" className={this.props.customClass}>
-          <Badge variant="dark">
+          <Badge variant="dark" className="badge-hoh">
             <span>HoH</span>
           </Badge>
         </span>

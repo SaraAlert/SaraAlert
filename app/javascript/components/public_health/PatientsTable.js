@@ -467,7 +467,7 @@ class PatientsTable extends React.Component {
     if (rowData.is_hoh) {
       return (
         <div>
-          <BadgeHoH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
+          <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />
           <a href={`${window.BASE_PATH}/patients/${rowData.id}`}>{name}</a>
         </div>
       );
