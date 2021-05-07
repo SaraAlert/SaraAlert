@@ -17,6 +17,8 @@ import InfoTooltip from '../../util/InfoTooltip';
 import PhoneInput from '../../util/PhoneInput';
 import reportError from '../../util/ReportError';
 
+const MAX_NOTES_LENGTH = 2000;
+
 class CloseContact extends React.Component {
   constructor(props) {
     super(props);
@@ -252,10 +254,10 @@ class CloseContact extends React.Component {
                 className="form-square"
                 value={this.state.notes || ''}
                 placeholder={this.closeContactNotePlaceholder}
-                maxLength="2000"
+                maxLength={MAX_NOTES_LENGTH}
                 onChange={this.handleChange}
               />
-              <Form.Label className="notes-character-limit"> {2000 - this.state.notes.length} characters remaining </Form.Label>
+              <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.notes.length} characters remaining </Form.Label>
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['notes']}
               </Form.Control.Feedback>

@@ -139,16 +139,16 @@ class Demographics extends React.Component {
                 <th>Total</th>
               </tr>
             </thead>
-            {_.initial(AGEGROUPS).map((val, index1) => (
-              <tbody key={`workflow-table-${index1}`}>
-                <tr className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
+            <tbody>
+              {_.initial(AGEGROUPS).map((val, index1) => (
+                <tr key={`workflow-table-${index1}`} className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
                   <td className="font-weight-bold"> {val} </td>
                   {this.ageData[Number(index1)].map((data, subIndex1) => (
                     <td key={subIndex1}> {data} </td>
                   ))}
                 </tr>
-              </tbody>
-            ))}
+              ))}
+            </tbody>
           </table>
           {this.hasFakeBirthdateData && (
             <div className="text-secondary fake-demographic-text mb-3">
@@ -172,16 +172,16 @@ class Demographics extends React.Component {
                 <th>Total</th>
               </tr>
             </thead>
-            {RACES.map((val, index4) => (
-              <tbody key={`workflow-table-${index4}`}>
-                <tr className={index4 % 2 ? '' : 'analytics-zebra-bg'}>
+            <tbody>
+              {RACES.map((val, index4) => (
+                <tr key={`workflow-table-${index4}`} className={index4 % 2 ? '' : 'analytics-zebra-bg'}>
                   <td className="font-weight-bold"> {val} </td>
                   {this.raceData[Number(index4)].map((data, subIndex4) => (
                     <td key={subIndex4}> {data} </td>
                   ))}
                 </tr>
-              </tbody>
-            ))}
+              ))}
+            </tbody>
           </table>
         </Col>
         <Col md="12">
@@ -199,16 +199,16 @@ class Demographics extends React.Component {
                 <th>Total</th>
               </tr>
             </thead>
-            {SEXES.map((val, index2) => (
-              <tbody key={`workflow-table-${index2}`}>
-                <tr className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
+            <tbody>
+              {SEXES.map((val, index2) => (
+                <tr key={`workflow-table-${index2}`} className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
                   <td className="font-weight-bold"> {val} </td>
                   {this.sexData[Number(index2)].map((data, subIndex2) => (
                     <td key={subIndex2}> {data} </td>
                   ))}
                 </tr>
-              </tbody>
-            ))}
+              ))}
+            </tbody>
           </table>
           <div className="text-left mt-3 mb-n1 h4">Ethnicity</div>
           <table className="analytics-table">
@@ -224,16 +224,16 @@ class Demographics extends React.Component {
                 <th>Total</th>
               </tr>
             </thead>
-            {ETHNICITIES.map((val, index3) => (
-              <tbody key={`workflow-table-${index3}`}>
-                <tr className={index3 % 2 ? '' : 'analytics-zebra-bg'}>
+            <tbody>
+              {ETHNICITIES.map((val, index3) => (
+                <tr key={`workflow-table-${index3}`} className={index3 % 2 ? '' : 'analytics-zebra-bg'}>
                   <td className="font-weight-bold"> {val} </td>
                   {this.ethnicityData[Number(index3)].map((data, subIndex3) => (
                     <td key={subIndex3}> {data} </td>
                   ))}
                 </tr>
-              </tbody>
-            ))}
+              ))}
+            </tbody>
           </table>
         </Col>
         <Col md="12">
@@ -253,16 +253,16 @@ class Demographics extends React.Component {
                     <th>Total</th>
                   </tr>
                 </thead>
-                {SEXUAL_ORIENTATIONS.map((val, index5) => (
-                  <tbody key={`workflow-table-${index5}`}>
-                    <tr className={index5 % 2 ? '' : 'analytics-zebra-bg'}>
+                <tbody>
+                  {SEXUAL_ORIENTATIONS.map((val, index5) => (
+                    <tr key={`workflow-table-${index5}`} className={index5 % 2 ? '' : 'analytics-zebra-bg'}>
                       <td className="font-weight-bold"> {val} </td>
                       {this.soData[Number(index5)].map((data, subIndex5) => (
                         <td key={subIndex5}> {data} </td>
                       ))}
                     </tr>
-                  </tbody>
-                ))}
+                  ))}
+                </tbody>
               </table>
             </div>
           )}
