@@ -285,7 +285,7 @@ class User < ApplicationRecord
 
   # Can this user send system email messages?
   def can_send_admin_emails?
-    (role?(Roles::ADMIN) || role?(Roles::SUPER_USER)) && jurisdiction&.name == 'USA'
+    (role?(Roles::ADMIN) || role?(Roles::SUPER_USER)) && jurisdiction&.name == 'USA' && jurisdiction&.is_root?
   end
 
   def can_access_admin_panel?
@@ -297,7 +297,7 @@ class User < ApplicationRecord
   end
 
   def usa_admin?
-    (role?(Roles::ADMIN) || role?(Roles::SUPER_USER)) && jurisdiction&.name == 'USA'
+    (role?(Roles::ADMIN) || role?(Roles::SUPER_USER)) && jurisdiction&.name == 'USA' && jurisdiction&.is_root?
   end
 
   def enroller?
