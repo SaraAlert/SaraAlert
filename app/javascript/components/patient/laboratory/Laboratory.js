@@ -10,13 +10,17 @@ class Laboratory extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showEditModal: false,
+      showLabModal: false,
       showDeleteModal: false,
       loading: false,
     };
   }
 
-  submit = lab => {
+  handleChange = event => {
+    this.setState({ [event.target.id]: event.target.value });
+  };
+
+  handleLabSubmit = lab => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -45,8 +49,12 @@ class Laboratory extends React.Component {
     });
   };
 
-  handleChange = event => {
-    this.setState({ [event.target.id]: event.target.value });
+  toggleLabModal = () => {
+    let current = this.state.showLabModal;
+    this.setState({
+      showLabModal: !current,
+      loading: false,
+    });
   };
 
   handleDeleteSubmit = () => {
@@ -78,7 +86,7 @@ class Laboratory extends React.Component {
     return (
       <React.Fragment>
         {!this.props.lab.id && (
-          <Button onClick={() => this.setState({ showEditModal: true, loading: false })}>
+          <Button onClick={this.toggleLabModal}>
             <i className="fas fa-plus fa-fw"></i>
             <span className="ml-2">Add New Lab Result</span>
           </Button>
@@ -93,7 +101,7 @@ class Laboratory extends React.Component {
               <i className="fas fa-cogs fw"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item className="px-4 hi" onClick={() => this.setState({ showEditModal: true, loading: false })}>
+              <Dropdown.Item className="px-4 hi" onClick={this.toggleLabModal}>
                 <i className="fas fa-edit fa-fw"></i>
                 <span className="ml-2">Edit</span>
               </Dropdown.Item>
@@ -104,11 +112,11 @@ class Laboratory extends React.Component {
             </Dropdown.Menu>
           </Dropdown>
         )}
-        {this.state.showEditModal && (
+        {this.state.showLabModal && (
           <LaboratoryModal
             lab={this.props.lab}
-            submit={this.submit}
-            cancel={() => this.setState({ showEditModal: false, loading: false })}
+            submit={this.handleLabSubmit}
+            cancel={this.toggleLabModal}
             edit_mode={!!this.props.lab.id}
             loading={this.state.loading}
           />
