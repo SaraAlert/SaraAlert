@@ -53,10 +53,15 @@ class LaboratoriesController < ApplicationController
     lab.destroy
     if lab.destroyed?
       reason = params.permit(:delete_reason)[:delete_reason]
+      comment = "User deleted a lab result (ID: #{lab.id}"
+      comment += ", Type: #{lab.lab_type}" unless lab.lab_type.blank?
+      comment += ", Specimen Collected: #{lab.specimen_collection}" unless lab.specimen_collection.blank?
+      comment += ", Report: #{lab.report}" unless lab.report.blank?
+      comment += ", Result: #{lab.result}" unless lab.result.blank?
+      comment += "). Reason: #{reason}."
       History.lab_result_edit(patient: params.permit(:patient_id)[:patient_id],
                               created_by: current_user.email,
-                              comment: "User deleted a lab result (ID: #{lab.id}, Type: #{lab.lab_type}, Specimen Collected: "\
-                              "#{lab.specimen_collection}, Report: #{lab.report}, Result: #{lab.result}). Reason: #{reason}.")
+                              comment: comment)
     else
       render status: 500
     end
