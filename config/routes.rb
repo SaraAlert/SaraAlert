@@ -56,6 +56,7 @@ Rails.application.routes.draw do
 
   resources :admin, only: [:index]
   get 'admin/users', to: 'admin#users'
+  get 'admin/counts', to: 'admin#counts'
 
   post 'users/audits/:id', to: 'users#audits'
 
