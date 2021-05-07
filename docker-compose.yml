@@ -5,6 +5,11 @@ services:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
       - REDIS_URL=redis://redis-enrollment:6379/1
+      - ACTIVE_STORAGE_DRIVER=minio
+      - MINIO_ACCESS_KEY=minio123
+      - MINIO_SECRET_KEY=minio456
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_BUCKET=sara
     env_file:
       - .env-prod-enrollment
     restart: unless-stopped
@@ -13,10 +18,10 @@ services:
     depends_on:
       - redis-enrollment
       - mysql-enrollment
+      - minio
     command: "bin/bundle exec rails s -u puma -p 3000 -b 0.0.0.0"
     volumes:
       - '~/tls:/app/disease-trakker/tls:ro'
-      - 'sidekiq-enrollment-export:/app/disease-trakker/tmp/storage'
   sara-alert-assessment:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
@@ -102,6 +107,11 @@ services:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
       - REDIS_URL=redis://redis-enrollment:6379/1
+      - ACTIVE_STORAGE_DRIVER=minio
+      - MINIO_ACCESS_KEY=minio123
+      - MINIO_SECRET_KEY=minio456
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_BUCKET=sara
     env_file:
       - .env-prod-enrollment
     restart: unless-stopped
@@ -112,8 +122,7 @@ services:
       - redis-enrollment
       - sara-alert-enrollment
       - mysql-enrollment
-    volumes:
-      - 'sidekiq-enrollment-export:/app/disease-trakker/tmp/storage'
+      - minio
   sidekiq-enrollment-default:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
@@ -175,13 +184,23 @@ services:
     networks:
       - dt-net-assessment
       - dt-net-enrollment
+  minio:
+    image: 'bitnami/minio:latest'
+    environment:
+      - MINIO_ACCESS_KEY=minio123
+      - MINIO_SECRET_KEY=minio456
+      - MINIO_DEFAULT_BUCKETS=sara
+    networks:
+      - dt-net-enrollment
+    volumes:
+      - minio-data:/data
 
 volumes:
   redis-enrollment:
   redis-bridge:
   mysql-assessment:
   mysql-enrollment:
-  sidekiq-enrollment-export:
+  minio-data:
 
 networks:
   dt-net-enrollment:

@@ -6,7 +6,7 @@ development:
   service: Disk
   root: <%= Rails.root.join('tmp', 'storage') %>
 
-production:
+amazon:
   service: S3
   access_key_id: <%= ENV.fetch("AWS_S3_ACCESS_KEY_ID") { '' } %>
   secret_access_key: <%= ENV.fetch("AWS_S3_SECRET_ACCESS_KEY") { '' } %>
@@ -14,6 +14,15 @@ production:
   region: <%= ENV.fetch("AWS_S3_REGION") { '' } %>
   upload:
     server_side_encryption: AES256
+
+minio:
+  service: S3
+  access_key_id: <%= ENV.fetch("MINIO_ACCESS_KEY") { '' } %>
+  secret_access_key: <%= ENV.fetch("MINIO_SECRET_KEY") { '' } %>
+  bucket: <%= ENV.fetch("MINIO_BUCKET") { '' } %>
+  region: us-east-1
+  endpoint: <%= ENV["MINIO_ENDPOINT"] %>
+  force_path_style: true
 
 # Examples of additional services below:
 

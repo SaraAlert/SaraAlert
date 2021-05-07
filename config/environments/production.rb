@@ -45,7 +45,7 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   # Defaults to :production (S3) driver if nothing provided.
   # Override allows using the local filesystem for demo/staging
-  config.active_storage.service = ENV['ACTIVE_STORAGE_DRIVER'].to_sym || :production
+  config.active_storage.service = ActiveModel::Type::Boolean.new.cast(ENV["SARA_ALERT_REPORT_MODE"]) ? nil : ENV['ACTIVE_STORAGE_DRIVER']&.to_sym
   config.active_storage.resolve_model_to_route = :rails_storage_proxy
 
   # Mount Action Cable outside main process or domain.

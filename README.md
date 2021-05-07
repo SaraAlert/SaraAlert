@@ -181,6 +181,8 @@ This application includes several Dockerfiles and Docker Compose configurations.
 * `docker-compose.yml`: This docker compose file sets up the numerous containers, networks, and volumes required for the split architecture.
 * `docker-compose.prod.yml`: The only difference between this file and the normal one is the overwriting of the `DevelopmentTest` image tag with the `latest` tag.
 
+NOTE: The provided docker compose configurations are meant to be examples of production style deployments ONLY. Do not use them verbatim in real production scenarios.
+
 ##### Amazon S3 Usage
 
 Amazon S3 is the currently used method for object storage within Sara Alert. Because object storage is integrated into Sara Alert using ActiveStorage, the object storage provider can be swapped out by updating `config/storage.yml` and following [the rails documentation](https://edgeguides.rubyonrails.org/active_storage_overview.html#s3-service-amazon-s3-and-s3-compatible-apis).
@@ -245,6 +247,15 @@ If not set, these variables will default to 10,000 and 500 respectively.
 
 * `EXPORT_INNER_BATCH_SIZE: number of Patient records to be considered at a given time when getting and writing data to files (for memory optimizations)`
 
+To bypass AWS S3 object storage and use local storage for development or test purposes, set `ACTIVE_STORAGE_DRIVER=development`. To use AWS S3, set this environment variable to `amazon`.
+
+Information on changing the Sara Alert storage backend can be found [here](https://edgeguides.rubyonrails.org/active_storage_overview.html#s3-service-amazon-s3-and-s3-compatible-apis). The following environment variables need to be set in the relevant containers, where exports will be created and/or served.
+* `ACTIVE_STORAGE_DRIVER=amazon`
+* `AWS_S3_ACCESS_KEY_ID=<Access Key ID generated from the AWS console or API that has access to the bucket provided below>`
+* `AWS_S3_SECRET_ACCESS_KEY=<Secret belonging to the Access Key ID above>`
+* `AWS_S3_BUCKET=<S3 bucket for Sara Alert export upload/download>`
+* `AWS_S3_REGION=<S3 region the above S3 bucket exists in>`
+
 ***Twilio/Authy Environment Variables***
 
 The following environment variables need to be set on the enrollment instances, which are the instances that will be dispatching the SMS/Voice assessments via Twilio and performing Two-Factor Authentication using Authy. These environment variables can be set in a `config/local_env.yml` file, or via a method provided by the deployment environment.
@@ -254,15 +265,6 @@ The following environment variables need to be set on the enrollment instances, 
 * `TWILLIO_STUDIO_FLOW: <Twilio Studio Flow ID for handling SMS/Voice Assessments>`
 * `AUTHY_API_KEY: <API key for Authy project>`
 * `TWILLIO_MESSAGING_SERVICE_SID=<SID of assigned messaging service>`
-
-**Amazon Web Services Environment Variables**
-To bypass AWS S3 object storage for local storage on staging or demonstration instance, set `ACTIVE_STORAGE_DRIVER=development`. To use AWS S3, do not set this environment variable as it defaults to using S3.
-
-The default configuration of Sara Alert uses AWS S3 for object storage. Information on changing the Sara Alert storage backend can be found [here](https://edgeguides.rubyonrails.org/active_storage_overview.html#s3-service-amazon-s3-and-s3-compatible-apis). The following environment variables need to be set on the enrollment instances, which are the instances that will be generating downloadable export spreadsheets.
-* `AWS_S3_ACCESS_KEY_ID=<Access Key ID generated from the AWS console or API that has access to the bucket provided below>`
-* `AWS_S3_SECRET_ACCESS_KEY=<Secret belonging to the Access Key ID above>`
-* `AWS_S3_BUCKET=<S3 bucket for Sara Alert export upload/download>`
-* `AWS_S3_REGION=<S3 region the above S3 bucket exists in>`
 
 **Container Dependencies**
 
