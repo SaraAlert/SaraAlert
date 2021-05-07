@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Row } from 'react-bootstrap';
+import BadgeHoH from './utils/BadgeHoH';
 import RemoveFromHousehold from './actions/RemoveFromHousehold';
 import { formatName } from '../../../utils/Patient';
 
@@ -13,7 +14,7 @@ class Dependent extends React.Component {
           <a id="dependent-hoh-link" href={`${window.BASE_PATH}/patients/${this.props.patient.responder_id}`}>
             {this.props.hoh ? formatName(this.props.hoh) : 'this monitoree'}
           </a>
-          .
+          <BadgeHoH patientId={this.props.patient.responder_id.toString()} customClass={'mt-1 ml-1'} location={'right'} />
         </Row>
         <Row>
           <RemoveFromHousehold patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
