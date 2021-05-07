@@ -273,8 +273,8 @@ Note: If you need to make live-changes to the jurisdictions loaded on they syste
 
 Setup the demonstration accounts and population if desired:
 
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml -e DISABLE_DATABASE_ENVIRONMENT_CHECK=true run sara-alert-enrollment bin/bundle exec rake demo:setup`
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml -e DISABLE_DATABASE_ENVIRONMENT_CHECK=true run sara-alert-enrollment bin/bundle exec rake demo:populate`
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run -e DISABLE_DATABASE_ENVIRONMENT_CHECK=true sara-alert-enrollment bin/bundle exec rake demo:setup`
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run -e DISABLE_DATABASE_ENVIRONMENT_CHECK=true sara-alert-enrollment bin/bundle exec rake demo:populate`
 
 The applications should be running on port 443 with Nginx proxying traffic between.
 
