@@ -41,6 +41,8 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
                           'somali, may maay', 'somali, may-maay'].freeze
 
   def up
+    ActiveRecord::Base.record_timestamps = false
+
     add_column :patients, :legacy_primary_language, :string
     add_column :patients, :legacy_secondary_language, :string
     execute <<-SQL.squish
@@ -109,9 +111,13 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
         end
       end
     end
+
+    ActiveRecord::Base.record_timestamps = true
   end
 
   def down
+    ActiveRecord::Base.record_timestamps = false
+
     execute <<-SQL.squish
         UPDATE patients SET primary_language = legacy_primary_language, secondary_language = legacy_secondary_language
     SQL
@@ -121,6 +127,8 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
 
     # Destroy all System Record Edits that contain the text `language was listed as`
     History.where('history_type = ? AND comment like ?', 'System Record Edit', '%language was listed as%').destroy_all
+
+    ActiveRecord::Base.record_timestamps = true
   end
 
   def insert_history_items(key, value, is_primary)

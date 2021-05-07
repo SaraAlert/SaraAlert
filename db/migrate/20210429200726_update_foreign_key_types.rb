@@ -13,11 +13,15 @@ class UpdateForeignKeyTypes < ActiveRecord::Migration[6.1]
   }.freeze
 
   def up
+    ActiveRecord::Base.record_timestamps = false
     change_column_type(TABLE_COLUMNS, :bigint)
+    ActiveRecord::Base.record_timestamps = true
   end
 
   def down
+    ActiveRecord::Base.record_timestamps = false
     change_column_type(TABLE_COLUMNS, :integer)
+    ActiveRecord::Base.record_timestamps = true
   end
 
   def change_column_type(table_columns, type)
