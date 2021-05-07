@@ -5,7 +5,7 @@ import Select from 'react-select';
 import _ from 'lodash';
 import { cursorPointerStyle } from '../../packs/stylesheets/ReactSelectStyling';
 
-const MAX_NOTES_LENGTH = 2000;
+const MAX_NOTES_LENGTH = 5000;
 
 class UserModal extends React.Component {
   constructor(props) {
