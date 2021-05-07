@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Form, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import _ from 'lodash';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -8,7 +9,14 @@ class JurisdictionFilter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      sorted_jurisdiction_paths: [],
       jurisdiction_path: props.jurisdiction_paths[props.jurisdiction] || '',
+    };
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    return {
+      sorted_jurisdiction_paths: _.values(nextProps.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
     };
   }
 
@@ -44,10 +52,10 @@ class JurisdictionFilter extends React.Component {
           onChange={event => this.handleJurisdictionChange(event?.target?.value)}
         />
         <datalist id="jurisdiction_paths">
-          {Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
+          {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
             return (
-              <option value={path} key={id}>
-                {path}
+              <option value={jurisdiction} key={index}>
+                {jurisdiction}
               </option>
             );
           })}
