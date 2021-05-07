@@ -36,11 +36,11 @@ body {
 }
 
 .btn.btn-circle {
-  width: 30px; 
-  height: 30px; 
-  padding: 2px 5px; 
-  border-radius: 15px !important; 
-  text-align: center; 
+  width: 30px;
+  height: 30px;
+  padding: 2px 5px;
+  border-radius: 15px !important;
+  text-align: center;
 }
 
 .react-datepicker-popper {
@@ -287,6 +287,11 @@ select.form-control {
   justify-content: unset;
 }
 
-.wrap {
+// Use this class to correctly word-break elements across all browsers
+.wrap-words {
+  // This somewhat hacky solution causes things to wrap on all browsers
+  // Not all browsers have these defined. The browser will select the ones it has defined
+  // This has been tested on Safari, IE11, MSEdge, Chrome, and Firefox and it behaves as expected
   word-break: break-all;
+  word-break: break-word;
 }

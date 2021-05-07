@@ -26,11 +26,3 @@
 .header-brand-text {
   font-size: 20px !important;
 }
-
-.cc-notes-wrap {
-  // This somewhat hacky solution causes things to wrap on all browsers
-  // Not all browsers have these defined. The browser will select the ones it has defined
-  // This has been tested on Safari, IE11, MSEdge, Chrome, and Firefox and it behaves as expected
-  word-break: break-all;
-  word-break: break-word;
-}
