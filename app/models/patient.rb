@@ -1347,8 +1347,7 @@ class Patient < ApplicationRecord
                 "System cleared Symptom Onset Date from #{patient_before[:symptom_onset].strftime('%m/%d/%Y')} to blank because monitoree was moved from
                 isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
               else
-                'System changed Symptom Onset Date because monitoree was moved from isolation to exposure workflow. This allows the system to show '\
-                'monitoree on appropriate line list based on daily reports.'
+                'Monitoree moved from isolation to exposure workflow.'
               end
     History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: comment)
   end
