@@ -3393,3 +3393,421 @@ GET `[base]/Patient?_count=2`
   </div>
 </details>
 
+## Transactions
+The API supports performing several actions as a single atomic "transaction" for which all of the individual changes succeed or fail together. 
+
+<a name="transaction-post"/>
+
+### POST `[base]`
+To perform a transaction, POST a FHIR [Bundle](https://www.hl7.org/fhir/bundle.html) resource to `[base]`. The Bundle must have `Bundle.type` set to `transaction`. Currently a transaction may only be used to create monitorees and lab results via the FHIR Patient and Observations resources, respectively. Additionally, if a transaction is used to create an Observation, that Observation must reference a Patient being created by the same transaction. Each entry in the `Bundle.entry` array should contain the following fields:
+
+* `fullUrl` - Must be an identifier for the resource. Since the resources are being created, they do not have a server assigned ID yet. To uniquely identify a resource, generate a UUID, for example: `urn:uuid:9c94a2bc-1929-4666-8099-9e8566b7d9ad`. An Observation should use the `fullUrl` of its corresponding Patient in `Observation.subject.reference`.
+* `resource` - Must contain the content of the Observation or Patient that is being created.
+* `request.method` - Must be `POST` as this is the only supported operation.
+* `request.url` - Must be `Patient` or `Observation`, depending on which resource is being created.
+
+See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) documentation for more details. An example request and response is shown below.
+
+**Request Body:**
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:17b6896d-9fd1-437f-a7bd-6ef7a66116ab",
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      },
+      "resource": {
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/report-date",
+            "valueDate": "2021-05-07"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94564-2"
+            }
+          ],
+          "text": "IgM Antibody"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "10828004"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:9c94a2bc-1929-4666-8099-9e8566b7d9ad"
+        },
+        "effectiveDateTime": "2021-05-06",
+
+        "resourceType": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9c94a2bc-1929-4666-8099-9e8566b7d9ad",
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      },
+      "resource": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2054-5",
+                  "display": "Black or African American"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Black or African American"
+              }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+          },
+          {
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2186-5",
+                  "display": "Not Hispanic or Latino"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Not Hispanic or Latino"
+              }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "M"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
+            "valueString": "Telephone call"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
+            "valueDate": "2020-05-18"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/isolation",
+            "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+            "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/continuous-exposure",
+            "valueBoolean": false
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Smith82",
+            "given": ["Malcolm94", "Bogan39"]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+13333333333",
+            "rank": 1
+          },
+          {
+            "system": "phone",
+            "value": "+13333333333",
+            "rank": 2
+          },
+          {
+            "system": "email",
+            "value": "22222222323222@example.com",
+            "rank": 1
+          }
+        ],
+        "birthDate": "1981-03-30",
+        "address": [
+          {
+            "line": ["22424 Daphne Key"],
+            "city": "West Gabrielmouth",
+            "state": "Maine",
+            "postalCode": "24683"
+          }
+        ],
+        "communication": [
+          {
+            "language": {
+              "coding": [
+                {
+                  "system": "urn:ietf:bcp:47",
+                  "display": "eng"
+                }
+              ]
+            }
+          }
+        ],
+        "resourceType": "Patient"
+      }
+    }
+  ]
+}
+```
+  </div>
+</details>
+
+**Response:**
+
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "id": "ea19333b-2b23-4150-be6d-5c666e8f4414",
+  "meta": {
+    "lastUpdated": "2021-05-07T14:03:24-04:00"
+  },
+  "type": "transaction-response",
+  "entry": [
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Patient/30",
+      "resource": {
+        "id": 30,
+        "meta": {
+          "lastUpdated": "2021-05-07T18:03:24+00:00"
+        },
+        "contained": [
+          {
+            "target": [
+              {
+                "reference": "/fhir/r4/Patient/30"
+              }
+            ],
+            "recorded": "2021-05-07T18:03:24+00:00",
+            "activity": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                  "code": "CREATE",
+                  "display": "create"
+                }
+              ]
+            },
+            "agent": [
+              {
+                "who": {
+                  "identifier": {
+                    "value": "ogsaC3PrRzsMZYa1LOXRdu6eJaCc7yWJViGudzNNHBc"
+                  },
+                  "display": "test-m2m-app"
+                }
+              }
+            ],
+            "resourceType": "Provenance"
+          }
+        ],
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2054-5",
+                  "display": "Black or African American"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Black or African American"
+              }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+          },
+          {
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2186-5",
+                  "display": "Not Hispanic or Latino"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Not Hispanic or Latino"
+              }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "M"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
+            "valueString": "Telephone call"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
+            "valueDate": "2020-05-18"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/isolation",
+            "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+            "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/continuous-exposure",
+            "valueBoolean": false
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Smith82",
+            "given": ["Malcolm94", "Bogan39"]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+13333333333",
+            "rank": 1
+          },
+          {
+            "system": "phone",
+            "value": "+13333333333",
+            "rank": 2
+          },
+          {
+            "system": "email",
+            "value": "22222222323222@example.com",
+            "rank": 1
+          }
+        ],
+        "birthDate": "1981-03-30",
+        "address": [
+          {
+            "line": ["22424 Daphne Key"],
+            "city": "West Gabrielmouth",
+            "state": "Maine",
+            "postalCode": "24683"
+          }
+        ],
+        "communication": [
+          {
+            "language": {
+              "coding": [
+                {
+                  "system": "urn:ietf:bcp:47",
+                  "code": "en",
+                  "display": "English"
+                }
+              ]
+            }
+          }
+        ],
+        "resourceType": "Patient"
+      },
+      "response": {
+        "status": "201 Created"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Observation/36",
+      "resource": {
+        "id": 36,
+        "meta": {
+          "lastUpdated": "2021-05-07T18:03:24+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/report-date",
+            "valueDate": "2021-05-07"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94564-2"
+            }
+          ],
+          "text": "IgM Antibody"
+        },
+        "subject": {
+          "reference": "Patient/30"
+        },
+        "effectiveDateTime": "2021-05-06T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "10828004"
+            }
+          ],
+          "text": "positive"
+        },
+        "resourceType": "Observation"
+      },
+      "response": {
+        "status": "201 Created"
+      }
+    }
+  ],
+  "resourceType": "Bundle"
+}
+```
+  </div>
+</details>
