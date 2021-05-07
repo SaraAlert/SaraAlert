@@ -60,8 +60,8 @@ class PatientMailer < ApplicationMailer
     return unless patient.last_assessment_reminder_sent_eligible?
 
     messages_array = []
+    lang = patient.select_language
     patient.active_dependents.uniq.each do |dependent|
-      lang = dependent.select_language
       url = new_patient_assessment_jurisdiction_lang_initials_url(dependent.submission_token, dependent.jurisdiction.unique_identifier, lang&.to_s,
                                                                   dependent&.initials_age)
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
