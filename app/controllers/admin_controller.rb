@@ -285,6 +285,7 @@ class AdminController < ApplicationController
     end
   end
 
+  # Format counts as a CSV
   def counts
     redirect_to(root_url) && return unless current_user.usa_admin?
 
