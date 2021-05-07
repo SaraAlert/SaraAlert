@@ -60,7 +60,7 @@ The examples above are in terms of Monitorees, but the API also supports reading
 
 
 ### For Lab Results
-**A client can read the following data elements:**<br>Report Date, Result
+**A client can read and write the following data elements:**<br>Report Date, Specimen Collection Date, Lab Type, Result, Patient ID
 
 **A client can search by the following data elements:**<br>ID, Patient ID
 

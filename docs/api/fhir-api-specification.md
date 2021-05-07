@@ -52,22 +52,24 @@ For applications following the [SMART-on-FHIR App Launch Framework "Standalone L
 
 For applications following the [SMART on FHIR Backend Services Workflow](#backend-services), these are the available scopes:
 
-* `system/Patient.read`,
-* `system/Patient.write`,
-* `system/Patient.*`, (for both read and write access to this resource)
-* `system/Observation.read`,
-* `system/QuestionnaireResponse.read`,
-* `system/RelatedPerson.read`,
-* `system/RelatedPerson.write`,
-* `system/RelatedPerson.*`,
-* `system/Immunization.read`,
-* `system/Immunization.write`,
-* `system/Immunization.*`,
+* `system/Patient.read`
+* `system/Patient.write`
+* `system/Patient.*` (for both read and write access to this resource)
+* `system/Observation.read`
+* `system/Observation.write`
+* `system/Observation.*`
+* `system/QuestionnaireResponse.read`
+* `system/RelatedPerson.read`
+* `system/RelatedPerson.write`
+* `system/RelatedPerson.*`
+* `system/Immunization.read`
+* `system/Immunization.write`
+* `system/Immunization.*`
 * `system/Provenance.read`
 
 Please note a given application and request for access token can have have multiple scopes, which must be space-separated. For example:
 ```
-`user/Patient.read system/Patient.read system/Observation.read`
+user/Patient.read system/Patient.read system/Observation.read
 ```
 
 <a name="cap"/>
@@ -87,11 +89,11 @@ A capability statement is available at `[base]/metadata`:
 ```json
 {
   "status": "active",
-  "date": "2021-04-01T00:00:00+00:00",
+  "date": "2021-05-04T00:00:00+00:00",
   "kind": "instance",
   "software": {
     "name": "Sara Alert",
-    "version": "v1.27.0"
+    "version": "v1.30"
   },
   "implementation": {
     "description": "Sara Alert API"
@@ -289,6 +291,15 @@ A capability statement is available at `[base]/metadata`:
               "code": "read"
             },
             {
+              "code": "update"
+            },
+            {
+              "code": "patch"
+            },
+            {
+              "code": "create"
+            },
+            {
               "code": "search-type"
             }
           ],
@@ -337,6 +348,7 @@ A capability statement is available at `[base]/metadata`:
   ],
   "resourceType": "CapabilityStatement"
 }
+
 ```
   </div>
 </details>
@@ -355,7 +367,10 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
 {
   "authorization_endpoint": "http://localhost:3000/oauth/authorize",
   "token_endpoint": "http://localhost:3000/oauth/token",
-  "token_endpoint_auth_methods_supported": ["client_secret_basic", "private_key_jwt"],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "private_key_jwt"
+  ],
   "token_endpoint_auth_signing_alg_values_supported": ["RS384"],
   "introspection_endpoint": "http://localhost:3000/oauth/introspect",
   "revocation_endpoint": "http://localhost:3000/oauth/revoke",
@@ -364,6 +379,7 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
     "user/Patient.write",
     "user/Patient.*",
     "user/Observation.read",
+    "user/Observation.*",
     "user/QuestionnaireResponse.read",
     "user/RelatedPerson.read",
     "user/RelatedPerson.write",
@@ -376,6 +392,7 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
     "system/Patient.write",
     "system/Patient.*",
     "system/Observation.read",
+    "system/Observation.*",
     "system/QuestionnaireResponse.read",
     "system/RelatedPerson.read",
     "system/RelatedPerson.write",
@@ -544,16 +561,49 @@ Get a monitoree lab result via an id, e.g.:
 
 ```json
 {
-  "id": 1,
+  "id": 11,
   "meta": {
-    "lastUpdated": "2020-05-29T00:49:33+00:00"
+    "lastUpdated": "2021-05-06T12:44:19+00:00"
   },
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/report-date",
+      "valueDate": "2021-05-07"
+    }
+  ],
   "status": "final",
-  "subject": {
-    "reference": "Patient/956"
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "94564-2"
+      }
+    ],
+    "text": "IgM Antibody"
   },
-  "effectiveDateTime": "2020-05-07T00:00:00+00:00",
-  "valueString": "negative",
+  "subject": {
+    "reference": "Patient/1"
+  },
+  "effectiveDateTime": "2021-05-06T00:00:00+00:00",
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "10828004"
+      }
+    ],
+    "text": "positive"
+  },
   "resourceType": "Observation"
 }
 ```
@@ -1751,6 +1801,52 @@ To create a new monitoree vaccination, simply POST a FHIR Immunization resource 
   </div>
 </details>
 
+### POST `[base]/Observation`
+
+<a name="create-post-immunization"/>
+
+To create a new monitoree lab result, simply POST a FHIR Observation resource that references the monitoree.
+
+**Request Body:**
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "status": "final",
+  "subject": {
+    "reference": "Patient/10"
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "94564-2"
+      }
+    ]
+  },
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "10828004"
+      }
+    ]
+  },
+  "effectiveDateTime": "2021-05-06",
+  "resourceType": "Observation",
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/report-date",
+      "valueDate": "2021-05-07"
+    }
+  ]
+}
+```
+  </div>
+</details>
+
 
 <a name="update"/>
 
@@ -2123,6 +2219,49 @@ On success, the server will update the existing resource given the id.
   </div>
 </details>
 
+<a name="update-put-observation"/>
+### PUT `[base]/Observation/[:id]`
+
+**Request Body:**
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "status": "final",
+  "subject": {
+    "reference": "Patient/10"
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "94564-2"
+      }
+    ]
+  },
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "10828004"
+      }
+    ]
+  },
+  "effectiveDateTime": "2021-05-06",
+  "resourceType": "Observation",
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/report-date",
+      "valueDate": "2021-05-07"
+    }
+  ]
+}
+```
+  </div>
+</details>
+
 <a name="update-patch-pat"/>
 
 ### PATCH `[base]/Patient/[:id]`
@@ -2317,6 +2456,31 @@ Content-Type: application/json-patch+json
 ```json
 [
   { "op": "replace", "path": "/note/0/text", "value": "Important notes" },
+]
+```
+  </div>
+</details>
+
+<a name="update-patch-observation"/>
+### PATCH `[base]/Observation/[:id]`
+
+**NOTE:** See the [Patient PATCH documentation](#update-patch-pat) for a more complete explanation of PATCH.
+
+**Request Headers:**
+```
+Content-Type: application/json-patch+json
+```
+
+**Request Body:**
+
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+[
+  { "op": "replace", "path": "/valueCodeableConcept/coding/0", "value":  { "system": "http://snomed.info/sct", "code": "260385009" }}
 ]
 ```
   </div>
@@ -2684,16 +2848,49 @@ GET `[base]/Observation?subject=Patient/[:id]`
     {
       "fullUrl": "http://localhost:3000/fhir/r4/Observation/1",
       "resource": {
-        "id": 1,
+        "id": 11,
         "meta": {
-          "lastUpdated": "2020-05-29T00:49:33+00:00"
+          "lastUpdated": "2021-05-06T12:44:19+00:00"
         },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/report-date",
+            "valueDate": "2021-05-07"
+          }
+        ],
         "status": "final",
-        "subject": {
-          "reference": "Patient/956"
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94564-2"
+            }
+          ],
+          "text": "IgM Antibody"
         },
-        "effectiveDateTime": "2020-05-07T00:00:00+00:00",
-        "valueString": "negative",
+        "subject": {
+          "reference": "Patient/1"
+        },
+        "effectiveDateTime": "2021-05-06T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "10828004"
+            }
+          ],
+          "text": "positive"
+        },
         "resourceType": "Observation"
       }
     }
