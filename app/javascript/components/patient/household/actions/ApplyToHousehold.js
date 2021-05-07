@@ -273,7 +273,7 @@ class ApplyToHousehold extends React.Component {
     if (rowData.id === rowData.responder_id) {
       return (
         <div>
-          <BadgeHoH patientId={rowData.id.toString()} customClass={'badge-hoh ml-1'} location={'right'} />
+          <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />
           {this.validJurisdiction(rowData) ? (
             <a href={`${window.BASE_PATH}/patients/${rowData.id}`} rel="noreferrer" target="_blank">
               {monitoreeName}
