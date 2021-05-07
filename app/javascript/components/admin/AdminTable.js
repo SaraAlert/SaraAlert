@@ -20,7 +20,7 @@ class AdminTable extends React.Component {
       table: {
         colData: [
           { label: 'Id', field: 'id', isSortable: true },
-          { label: 'Email', field: 'email', className: 'wrap', isSortable: true },
+          { label: 'Email', field: 'email', className: 'wrap-words', isSortable: true },
           { label: 'Jurisdiction', field: 'jurisdiction_path', isSortable: true },
           { label: 'Role', field: 'role_title', isSortable: false },
           { label: 'Status', field: 'is_locked', isSortable: false, options: { true: 'Locked', false: 'Unlocked' } },

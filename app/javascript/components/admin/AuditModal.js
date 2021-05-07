@@ -15,8 +15,8 @@ class AuditModal extends React.Component {
     this.state = {
       table: {
         colData: [
-          { label: 'Triggered by', field: 'user', className: 'wrap', isSortable: true, colWidth: '30%' },
-          { label: 'Action', field: 'change', className: 'wrap', filter: this.formatChange, isSortable: false, colWidth: '60%' },
+          { label: 'Triggered by', field: 'user', className: 'wrap-words', isSortable: true, colWidth: '30%' },
+          { label: 'Action', field: 'change', className: 'wrap-words', filter: this.formatChange, isSortable: false, colWidth: '60%' },
           { label: 'Timestamp', field: 'timestamp', filter: formatTimestamp, isSortable: true, colWidth: '10%' },
         ],
         rowData: [],
@@ -138,6 +138,22 @@ class AuditModal extends React.Component {
           return (
             <span>
               <b>Account Status</b>: {change.details[0] ? 'Unlocked' : 'Locked'}
+            </span>
+          );
+        }
+      case 'notes':
+        // Generic audit message in case before & after values not provided
+        if (!change.details || !Array.isArray(change.details) || !change.details.length) {
+          return (
+            <span>
+              <b>Notes</b>: Updated
+            </span>
+          );
+          // More detailed audit message when before & after values provided
+        } else {
+          return (
+            <span>
+              <b>Notes</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;
             </span>
           );
         }
