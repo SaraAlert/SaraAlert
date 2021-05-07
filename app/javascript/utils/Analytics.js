@@ -38,7 +38,18 @@ function mapToChartFormat (masterList, values) {
   });
 }
 
+/**
+ * Create a percentage string given a numerator and a denomenator
+ * @param {Number} count The numerator
+ * @param {Number} total The denomenator
+ * @returns A string representing the percentage to one decimal point, or 'None' if the numerator is 0
+ */
+function formatPercentage (count, total) {
+  return count ? ((count / total) * 100).toFixed(1).toString() + '%' : 'None';
+}
+
 export {
   parseOutFields,
-  mapToChartFormat
+  mapToChartFormat,
+  formatPercentage
 };
