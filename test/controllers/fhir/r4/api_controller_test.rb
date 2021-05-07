@@ -249,7 +249,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     @system_everything_token = Doorkeeper::AccessToken.create(
       application: @system_everything_app,
-      scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read system/RelatedPerson.* system/Immunization.*'
+      scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read system/RelatedPerson.* system/Immunization.* system/Provenance.read'
     )
   end
 
