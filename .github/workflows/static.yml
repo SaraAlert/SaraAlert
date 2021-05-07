@@ -49,7 +49,7 @@ jobs:
           bundle config path vendor/bundle
           bundle install
       - name: Run Yarn Audit
-        run: yarn audit
+        run: yarn audit --groups dependencies
       - name: Run Gemsurance
         run: bundle exec gemsurance
       - name: Run Brakeman
