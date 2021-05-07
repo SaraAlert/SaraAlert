@@ -5,6 +5,7 @@ import Patient from './Patient';
 import Dependent from './household/Dependent';
 import HeadOfHousehold from './household/HeadOfHousehold';
 import Individual from './household/Individual';
+import FollowUpFlag from './FollowUpFlag';
 
 class PatientPage extends React.Component {
   render() {
@@ -60,6 +61,7 @@ PatientPage.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   blocked_sms: PropTypes.bool,
+  follow_up_reasons: PropTypes.array,
 };
 
 export default PatientPage;

@@ -134,12 +134,33 @@ class Patient extends React.Component {
       <React.Fragment>
         <Row id="monitoree-details-header">
           <Col sm={12}>
-            <h3>
-              <span aria-label={formatName(this.props.details)} className="pr-2">
-                {formatName(this.props.details)}
-              </span>
-              {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
-            </h3>
+            <Row>
+              <h3>
+                <span aria-label={formatName(this.props.details)} className="pr-2">
+                  {formatName(this.props.details)}
+                </span>
+                {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
+              </h3>
+            </Row>
+            {this.props?.details?.follow_up_reason && (
+              <Row>
+                <div className="follow-up-flag-box">
+                  <Col>
+                    <i className="fas fa-flag"></i>
+                  </Col>
+                  <Col lg={20} className="col-xxl-12">
+                    <div>
+                      <b>Flagged for Follow-up</b>
+                    </div>
+                    <div>
+                      Reason: {this.props.details.follow_up_reason}
+                      {this.props.details.follow_up_note && ' - ' + this.props.details.follow_up_note}
+                    </div>
+                    <div>Clear Flag</div>
+                  </Col>
+                </div>
+              </Row>
+            )}
           </Col>
           <Col sm={12}>
             <div className="jurisdiction-user-box">

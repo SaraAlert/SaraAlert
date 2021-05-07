@@ -550,6 +550,92 @@ class PatientsController < ApplicationController
     patient.monitoring_history_edit(history_data, diff_state)
   end
 
+  def update_follow_up_flag
+    redirect_to(root_url) && return unless current_user.can_edit_patient?
+
+    patient = current_user.get_patient(params.permit(:id)[:id])
+    redirect_to(root_url) && return if patient.nil?
+
+    clear_flag = params.permit(:clear_flag)[:clear_flag]
+    history_data = {}
+    if clear_flag
+      clear_flag_reason = params.permit(:clear_flag_reason)[:clear_flag_reason]
+      clear_follow_up_flag(patient, clear_flag_reason)
+    else
+      follow_up_reason_before = patient.follow_up_reason
+      follow_up_note_before = patient.follow_up_note
+      follow_up_reason = params.permit(:follow_up_reason)[:follow_up_reason]
+      follow_up_note = params.permit(:follow_up_note)[:follow_up_note]
+
+      # Apply and save updates to the db
+      patient.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
+
+      # Handle creating history items based on the updates
+      history_data = {
+        created_by: current_user.email,
+        patient: patient,
+        follow_up_reason: follow_up_reason,
+        follow_up_note: follow_up_note,
+        follow_up_reason_before: follow_up_reason_before,
+        follow_up_note_before: follow_up_note_before
+      }
+
+      History.follow_up_flag_edit(history_data)
+    end
+
+    # If not applying to household, return
+    apply_to_household_ids = params.permit(apply_to_household_ids: [])[:apply_to_household_ids]
+    return unless params.permit(:apply_to_household)[:apply_to_household] && !apply_to_household_ids.nil?
+
+    # If a household member has been removed, they should not be updated
+    current_household_ids = patient.household.where(purged: false).where.not(id: patient.id).pluck(:id)
+    diff_household_array = apply_to_household_ids - current_household_ids
+    unless diff_household_array.empty?
+      error_message = 'Apply to household action failed: changes have been made to this household. Please refresh.'
+      render(json: { error: error_message }, status: :bad_request) && return
+    end
+
+    # Update selected group members if applying to household and ids are supplied
+    if clear_flag
+      apply_to_household_ids.each do |id|
+        member = current_user.get_patient(id)
+        next if member.nil?
+
+        clear_flag_reason = params.permit(:clear_flag_reason)[:clear_flag_reason]
+        clear_follow_up_flag(member, clear_flag_reason)
+      end
+    else
+      apply_to_household_ids.each do |id|
+        member = current_user.get_patient(id)
+        next if member.nil?
+
+        history_data[:patient] = member
+        history_data[:follow_up_reason_before] = member.follow_up_reason
+        history_data[:follow_up_note_before] = member.follow_up_note
+        member.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
+        History.follow_up_flag_edit(history_data)
+      end
+    end
+  end
+
+  def clear_follow_up_flag(patient, clear_flag_reason)
+    # Store the previous value to help determine if a history entry should be created or not
+    follow_up_reason_before = patient.follow_up_reason
+
+    # Apply and save updates to the db
+    patient.update!(follow_up_reason: nil, follow_up_note: nil)
+
+    # Handle creating history items based on the updates
+    history_data = {
+      created_by: current_user.email,
+      patient: patient,
+      clear_flag_reason: clear_flag_reason,
+      follow_up_reason_before: follow_up_reason_before
+    }
+
+    History.clear_follow_up_flag(history_data)
+  end
+
   def clear_assessments
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 

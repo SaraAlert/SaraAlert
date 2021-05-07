@@ -1,4 +1,5 @@
 $jurisdiction-box: #e9ecef;
+$follow-up-box: #fff2b6;
 $section-border: #ddd;
 
 #monitoree-details-header {
@@ -9,6 +10,12 @@ $section-border: #ddd;
   background-color: $jurisdiction-box;
   padding: 10px;
   float: right;
+}
+
+.follow-up-flag-box {
+  background-color: $follow-up-box;
+  padding: 10px;
+  float: left;
 }
 
 .section-header {

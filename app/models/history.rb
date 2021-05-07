@@ -15,6 +15,7 @@ class History < ApplicationRecord
     comment: 'Comment',
     enrollment: 'Enrollment',
     monitoring_change: 'Monitoring Change',
+    follow_up_flag: 'Follow-up Flag',
     monitoree_data_downloaded: 'Monitoree Data Downloaded',
     reports_reviewed: 'Reports Reviewed',
     report_reviewed: 'Report Reviewed',
@@ -393,6 +394,25 @@ class History < ApplicationRecord
     return if field[:old_value] == field[:new_value]
 
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
+  end
+
+  def self.follow_up_flag_edit(history)
+    return if history[:follow_up_reason] == history[:follow_up_reason_before] && history[:follow_up_note] == history[:follow_up_note_before]
+
+    comment = "Flagged for Follow-up. Reason: \"#{history[:follow_up_reason]}"
+    comment += " - #{history[:follow_up_note]}" unless history[:follow_up_note].blank?
+    comment += '"'
+
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment)
+  end
+
+  def self.clear_follow_up_flag(history)
+    return if history[:follow_up_reason_before].nil?
+
+    comment = 'User cleared flag for follow-up.'
+    comment += " Reason: #{history[:clear_flag_reason]}" unless history[:clear_flag_reason].blank?
+
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment)
   end
 
   private_class_method def self.create_history(patient, created_by, type, comment)
