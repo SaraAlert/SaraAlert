@@ -11,6 +11,8 @@ import History from './History';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
 
+const MAX_COMMENT_LENGTH = 10000;
+
 class HistoryList extends React.Component {
   constructor(props) {
     super(props);
@@ -177,12 +179,12 @@ class HistoryList extends React.Component {
                   aria-label="Add history comment input"
                   className="form-control"
                   rows="3"
-                  maxLength="10000"
+                  maxLength={MAX_COMMENT_LENGTH}
                   placeholder="enter comment here..."
                   value={this.state.comment}
                   onChange={this.handleChange}
                 />
-                <div className="character-limit-text">{10000 - this.state.comment.length} characters remaining</div>
+                <div className="character-limit-text">{MAX_COMMENT_LENGTH - this.state.comment.length} characters remaining</div>
                 <Button
                   variant="primary"
                   className="btn btn-square float-right mt-2"

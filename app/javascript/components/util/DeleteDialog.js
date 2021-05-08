@@ -2,6 +2,8 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Form, Modal } from 'react-bootstrap';
 
+const MAX_REASON_LENGTH = 200;
+
 class DeleteDialog extends React.Component {
   constructor(props) {
     super(props);
@@ -59,13 +61,13 @@ class DeleteDialog extends React.Component {
                 id="delete_reason_text"
                 as="textarea"
                 rows="2"
-                maxLength="200"
+                maxLength={MAX_REASON_LENGTH}
                 className="form-square"
                 placeholder="Please enter additional information about the reason for deletion"
                 value={this.state.delete_reason_text || ''}
                 onChange={this.handleTextChange}
               />
-              <div className="character-limit-text">{200 - (this.state.delete_reason_text || '').length} characters remaining</div>
+              <div className="character-limit-text">{MAX_REASON_LENGTH - (this.state.delete_reason_text || '').length} characters remaining</div>
             </React.Fragment>
           )}
         </Modal.Body>

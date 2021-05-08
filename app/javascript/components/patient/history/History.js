@@ -9,6 +9,8 @@ import EditHistoryModal from './EditHistoryModal';
 import reportError from '../../util/ReportError';
 import { formatTimestamp, formatRelativePast } from '../../../utils/DateTime';
 
+const MAX_COMMENT_LENGTH = 10000;
+
 class History extends React.Component {
   constructor(props) {
     super(props);
@@ -113,11 +115,11 @@ class History extends React.Component {
           className="form-control"
           aria-label="Edit comment input"
           rows="3"
-          maxLength="10000"
+          maxLength={MAX_COMMENT_LENGTH}
           value={this.state.comment}
           onChange={this.handleChange}
         />
-        <div className="character-limit-text">{10000 - this.state.comment.length} characters remaining</div>
+        <div className="character-limit-text">{MAX_COMMENT_LENGTH - this.state.comment.length} characters remaining</div>
         <Button
           id="update-edit-history-btn"
           variant="primary"
