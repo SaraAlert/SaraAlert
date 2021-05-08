@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Col, Collapse, Form, Row } from 'react-bootstrap';
+import { Button, Col, Collapse, Form, Modal, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
@@ -9,6 +9,7 @@ import BadgeHoH from './household/utils/BadgeHoH';
 import InfoTooltip from '../util/InfoTooltip';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
 import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
+import FollowUpFlag from './FollowUpFlag';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -156,7 +157,14 @@ class Patient extends React.Component {
                       Reason: {this.props.details.follow_up_reason}
                       {this.props.details.follow_up_note && ' - ' + this.props.details.follow_up_note}
                     </div>
-                    <div>Clear Flag</div>
+                    <Button
+                      id="clear-follow-up-flag-link"
+                      variant="link"
+                      className="p-0"
+                      aria-label="Clear Follow-up Flag"
+                      onClick={() => this.setState({ action: 'Flag for Follow-Up' })}>
+                      <span className="pl-2">Clear Flag</span>
+                    </Button>
                   </Col>
                 </div>
               </Row>
@@ -685,17 +693,37 @@ class Patient extends React.Component {
             </Row>
           </div>
         </Collapse>
+        <Modal size="lg" centered show={this.state.action !== undefined} onHide={() => this.setState({ action: undefined })}>
+          <Modal.Header closeButton>
+            <Modal.Title>{this.state.action}</Modal.Title>
+          </Modal.Header>
+          {this.state.action === 'Flag for Follow-Up' && (
+            <FollowUpFlag
+              patient={this.props.details}
+              current_user={this.props.current_user}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              authenticity_token={this.props.authenticity_token}
+              follow_up_reasons={this.props.follow_up_reasons}
+              other_household_members={this.props.other_household_members}
+              close={() => this.setState({ action: undefined })}
+              clear_flag={true}
+            />
+          )}
+        </Modal>
       </React.Fragment>
     );
   }
 }
 
 Patient.propTypes = {
+  current_user: PropTypes.object,
   details: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
   collapse: PropTypes.bool,
+  follow_up_reasons: PropTypes.array,
+  other_household_members: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card } from 'react-bootstrap';
+import { Button, Card, Modal } from 'react-bootstrap';
 import Patient from './Patient';
 import Dependent from './household/Dependent';
 import HeadOfHousehold from './household/HeadOfHousehold';
@@ -8,6 +8,13 @@ import Individual from './household/Individual';
 import FollowUpFlag from './FollowUpFlag';
 
 class PatientPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      action: undefined,
+    };
+  }
+
   render() {
     return (
       <Card id="patient-page" className="mx-2 my-4 card-square">

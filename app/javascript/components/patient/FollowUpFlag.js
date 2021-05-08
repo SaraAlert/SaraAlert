@@ -14,7 +14,7 @@ class FollowUpFlag extends React.Component {
       apply_to_household: false,
       apply_to_household_ids: [],
       cancelToken: axios.CancelToken.source(),
-      clear_flag: false,
+      clear_flag: this.props.clear_flag,
       clear_flag_reason: '',
       follow_up_reason: this.props.patient.follow_up_reason || '',
       follow_up_note: this.props.patient.follow_up_note || '',
@@ -23,19 +23,6 @@ class FollowUpFlag extends React.Component {
       noMembersSelected: false,
     };
   }
-
-  /**
-   * Toggles the Follow Up Flag modal.
-   */
-  toggleModal = () => {
-    let current = this.state.showModal;
-
-    if (current) {
-      this.setState({ showModal: false });
-    } else {
-      this.setState({ showModal: true });
-    }
-  };
 
   handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -96,12 +83,9 @@ class FollowUpFlag extends React.Component {
     }
   };
 
-  createModal() {
+  render() {
     return (
-      <Modal dialogClassName="modal-am" show centered onHide={this.toggleModal}>
-        <Modal.Header>
-          <Modal.Title>Flag for Follow-Up</Modal.Title>
-        </Modal.Header>
+      <React.Fragment>
         <Modal.Body className="modal-follow-up-flag-body">
           {this.props.patient.follow_up_reason && (
             <Form.Group>
@@ -164,7 +148,7 @@ class FollowUpFlag extends React.Component {
             id="follow-up-flag-cancel-button"
             variant="secondary btn-square"
             aria-label="Cancel button for Follow-up Flag modal"
-            onClick={this.toggleModal}>
+            onClick={this.props.close}>
             Cancel
           </Button>
           <Button
@@ -184,18 +168,6 @@ class FollowUpFlag extends React.Component {
             )}
           </Button>
         </Modal.Footer>
-      </Modal>
-    );
-  }
-
-  render() {
-    return (
-      <React.Fragment>
-        <Button size="md" className="my-2 mr-2" aria-label="Flag for follow up button" onClick={this.toggleModal}>
-          <i className="fas fa-flag"></i>
-          {this.props.patient.follow_up_reason && ' Edit'} Flag for Follow-up
-        </Button>
-        {this.state.showModal && this.createModal()}
       </React.Fragment>
     );
   }
@@ -208,6 +180,8 @@ FollowUpFlag.propTypes = {
   authenticity_token: PropTypes.string,
   follow_up_reasons: PropTypes.array,
   other_household_members: PropTypes.array,
+  clear_flag: PropTypes.bool,
+  close: PropTypes.func,
 };
 
 export default FollowUpFlag;
