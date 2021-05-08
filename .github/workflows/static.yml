@@ -1,6 +1,6 @@
 name: Static Analysis
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
   test:

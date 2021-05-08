@@ -1,15 +1,14 @@
 ![Sara Alert](https://user-images.githubusercontent.com/14923551/76420768-025c0880-6379-11ea-8342-0a9aebd9d287.png)
 
-[![Actions Tests](https://github.com/SaraAlert/SaraAlert/workflows/Tests/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions)
-[![Actions Static Analysis](https://github.com/SaraAlert/SaraAlert/workflows/Static%20Analysis/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions)
+[![Tests](https://github.com/SaraAlert/SaraAlert/actions/workflows/test.yml/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions/workflows/test.yml)
+[![Static Analysis](https://github.com/SaraAlert/SaraAlert/actions/workflows/static.yml/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions/workflows/static.yml)
+[![Performance](https://github.com/SaraAlert/SaraAlert/actions/workflows/performance.yml/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions/workflows/performance.yml)
 [![Release](https://img.shields.io/github/v/tag/SaraAlert/SaraAlert)](https://github.com/SaraAlert/SaraAlert/tags)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md)
 
 Sara Alert™ is an open source tool built to allow public health officials to monitor potentially exposed individuals (“monitorees”, e.g., contacts of cases or travelers from affected areas) over time for symptoms by enrolling them in the system. During enrollment, the potentially exposed individual indicates their preferred method for daily contact. The enrolled monitoree receives a daily reminder from Sara Alert to enter temperature and any symptoms. If any symptoms are reported, the public health official receives an alert in order to coordinate care. If the monitoree fails to report, the public health official can follow up after a pre-defined period. Public health officials have access to reports and aggregated data based on their level of access.
 
 Sara Alert was built in response to the COVID-19 outbreak, but was designed to be customizable such that it can be deployed to support future outbreaks.
-
-[![MITRE](https://user-images.githubusercontent.com/14923551/77707514-b4abe680-6f9b-11ea-98f6-0f062a71d89c.png)](https://www.mitre.org/)
 
 ## Installing and Running
 

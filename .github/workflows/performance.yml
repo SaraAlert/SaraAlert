@@ -1,6 +1,6 @@
 name: Performance
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
   close-patients-job-benchmark:
