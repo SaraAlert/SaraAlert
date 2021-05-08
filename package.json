@@ -40,6 +40,7 @@
     "prop-types": "^15.7.2",
     "rc-slider": "^9.2.2",
     "react": "^16.12.0",
+    "react-beforeunload": "^2.5.1",
     "react-bootstrap": "1.2.2",
     "react-checkbox-tree": "1.6.0",
     "react-confirm": "^0.1.20",

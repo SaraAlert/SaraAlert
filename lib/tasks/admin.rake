@@ -188,6 +188,16 @@ namespace :admin do
     PurgeJwtIdentifiersJob.perform_later
   end
 
+  desc 'Print out active redis cache keys'
+  task print_cache_keys: :environment do
+    puts Rails.cache&.redis&.keys
+  end
+
+  desc 'Clear redis cache'
+  task clear_cache_keys: :environment do
+    puts Rails.cache.clear
+  end
+
   desc 'Add API OAuth Application for Backend Services API Workflow'
   task create_oauth_app_for_backend_services_workflow: :environment do
     # Read from JSON file with needed information

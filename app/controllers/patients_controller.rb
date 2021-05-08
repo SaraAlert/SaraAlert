@@ -38,6 +38,10 @@ class PatientsController < ApplicationController
     @translations = Assessment.new.translations
 
     @history_types = History::HISTORY_TYPES
+
+    # Update viewer cache
+    @viewers = (Rails.cache.read("patient-view-#{@patient.id}")&.to_set || Set.new).delete(current_user.email)
+    Rails.cache.write("patient-view-#{@patient.id}", (@viewers + [current_user.email]).to_a, expires_in: 12.hours)
   end
 
   # Returns a new (unsaved) subject, for creating a new subject
@@ -619,6 +623,21 @@ class PatientsController < ApplicationController
   # Fetches table data for viable HoH options.
   def head_of_household_options
     patients_table_data(params)
+  end
+
+  # Keep track of users closing this patient in the front end
+  def on_unload
+    patient = current_user.get_patient(params.permit(:id)[:id])
+
+    redirect_to(root_url) && return if patient.nil?
+
+    # Update viewer cache
+    viewers = (Rails.cache.read("patient-view-#{patient.id}")&.to_set || Set.new).delete(current_user.email)
+    if viewers.size.zero?
+      Rails.cache.delete("patient-view-#{patient.id}")
+    else
+      Rails.cache.write("patient-view-#{patient.id}", viewers.to_a, expires_in: 12.hours)
+    end
   end
 
   # Parameters allowed for saving to database
