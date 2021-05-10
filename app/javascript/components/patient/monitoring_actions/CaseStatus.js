@@ -9,6 +9,8 @@ import ApplyToHousehold from '../household/actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
 
+const MAX_NOTES_LENGTH = 2000;
+
 class CaseStatus extends React.Component {
   constructor(props) {
     super(props);
@@ -24,6 +26,7 @@ class CaseStatus extends React.Component {
       monitoring_option: '',
       apply_to_household: false,
       apply_to_household_ids: [],
+      reasoning: '',
       loading: false,
       disabled: false,
       noMembersSelected: false,
@@ -165,9 +168,7 @@ class CaseStatus extends React.Component {
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
-          reasoning: this.state.reasoning
-            ? this.state.monitoring_reason + (this.state.monitoring_reason !== '' && this.state.reasoning !== '' ? ', ' : '') + this.state.reasoning
-            : null,
+          reasoning: this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', '),
           apply_to_household: this.state.apply_to_household,
           apply_to_household_ids: this.state.apply_to_household_ids,
           diffState: diffState,
@@ -224,7 +225,8 @@ class CaseStatus extends React.Component {
               </Form.Group>
               <Form.Group controlId="reasoning">
                 <Form.Label>Please include any additional details:</Form.Label>
-                <Form.Control as="textarea" rows="2" onChange={this.handleChange} />
+                <Form.Control as="textarea" maxLength={MAX_NOTES_LENGTH} rows="2" onChange={this.handleChange} />
+                <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </Form.Label>
               </Form.Group>
             </div>
           )}

@@ -6,6 +6,8 @@ import axios from 'axios';
 
 import reportError from '../../util/ReportError';
 
+const MAX_NOTES_LENGTH = 2000;
+
 class CloseRecords extends React.Component {
   constructor(props) {
     super(props);
@@ -76,7 +78,8 @@ class CloseRecords extends React.Component {
           </Form.Group>
           <Form.Group controlId="reasoning">
             <Form.Label>Please include any additional details:</Form.Label>
-            <Form.Control as="textarea" rows="2" onChange={this.handleChange} />
+            <Form.Control as="textarea" rows="2" maxLength={MAX_NOTES_LENGTH} onChange={this.handleChange} />
+            <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </Form.Label>
           </Form.Group>
           <Form.Group className="my-2">
             <Form.Check

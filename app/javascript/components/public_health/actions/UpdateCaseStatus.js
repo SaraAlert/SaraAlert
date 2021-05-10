@@ -6,10 +6,14 @@ import axios from 'axios';
 
 import reportError from '../../util/ReportError';
 
+const MAX_NOTES_LENGTH = 2000;
+
 class UpdateCaseStatus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      // The behavior for this modal changes if everyone that is selected is already `closed`
+      all_selected_are_closed: _.every(this.props.patients, p => !_.isNil(p.closed_at)),
       case_status: '',
       follow_up: '',
       isolation: undefined,
@@ -17,6 +21,7 @@ class UpdateCaseStatus extends React.Component {
       initialIsolation: undefined,
       initialMonitoring: undefined,
       apply_to_household: false,
+      reasoning: '',
       monitoring: false,
       monitoring_reason: '',
       loading: false,
@@ -104,7 +109,7 @@ class UpdateCaseStatus extends React.Component {
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
-          reasoning: this.state.isolation ? '' : this.state.monitoring_reason,
+          reasoning: this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', '),
           apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
@@ -116,6 +121,56 @@ class UpdateCaseStatus extends React.Component {
           this.setState({ loading: false });
         });
     });
+  };
+
+  // The logic for disabling the submit button is pretty complex
+  // Breaking it out into its own function makes it easier to read
+  disableSubmitButton = () => {
+    if (this.state.loading) {
+      return true;
+    }
+    if (this.state.all_selected_are_closed) {
+      return false;
+    }
+    if (
+      this.state.initialCaseStatus === this.state.case_status &&
+      this.state.initialIsolation === this.state.isolation &&
+      this.state.initialMonitoring === this.state.monitoring
+    ) {
+      return true;
+    }
+    if (['Confirmed', 'Probable'].includes(this.state.case_status)) {
+      if (!this.state.initialIsolation && this.state.confirmed === '') {
+        return true;
+      }
+      if (this.state.follow_up === '' && !this.state.all_selected_are_closed) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  renderReasons = () => {
+    return (
+      <div>
+        <Form.Group controlId="monitoring_reason">
+          <Form.Label>Please select reason for status change:</Form.Label>
+          <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange} defaultValue={'Meets Case Definition'}>
+            <option></option>
+            {this.props.monitoring_reasons.map((option, index) => (
+              <option key={`option-${index}`} value={option}>
+                {option}
+              </option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+        <Form.Group controlId="reasoning">
+          <Form.Label>Please include any additional details:</Form.Label>
+          <Form.Control as="textarea" maxLength={MAX_NOTES_LENGTH} rows="2" onChange={this.handleChange} />
+          <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </Form.Label>
+        </Form.Group>
+      </div>
+    );
   };
 
   render() {
@@ -137,91 +192,69 @@ class UpdateCaseStatus extends React.Component {
             <option>Unknown</option>
             <option>Not a Case</option>
           </Form.Control>
-          {this.state.case_status !== '' && (
-            <React.Fragment>
-              {['Confirmed', 'Probable'].includes(this.state.case_status) && !this.state.initialIsolation && (
-                <React.Fragment>
-                  <p>Please select what you would like to do:</p>
-                  <Form.Control
-                    as="select"
-                    className="form-control-lg mb-3"
-                    id="follow_up"
-                    onChange={this.handleChange}
-                    value={this.state.follow_up}
-                    aria-label="Case Status Follow Up Select">
-                    <option></option>
-                    <option>End Monitoring</option>
-                    <option>Continue Monitoring in Isolation Workflow</option>
-                  </Form.Control>
-                </React.Fragment>
-              )}
-              {['Confirmed', 'Probable'].includes(this.state.case_status) ? (
-                <React.Fragment>
-                  {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && [undefined, false].includes(this.state.initialIsolation) && (
-                    <p>
-                      The selected monitorees will be moved to the isolation workflow and placed in the requiring review, non-reporting, or reporting line list
-                      as appropriate.
-                    </p>
-                  )}
-                  {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && this.state.initialIsolation === true && (
-                    <p>The selected monitorees will remain in the isolation workflow.</p>
-                  )}
-                  {this.state.follow_up === 'End Monitoring' && (
-                    <div>
-                      <p>The selected monitorees will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
-                      <Form.Group controlId="monitoring_reason">
-                        <Form.Label>Please select reason for status change:</Form.Label>
-                        <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange} defaultValue={'Meets Case Definition'}>
-                          <option></option>
-                          {this.props.monitoring_reasons.map((option, index) => (
-                            <option key={`option-${index}`} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </Form.Control>
-                      </Form.Group>
-                    </div>
-                  )}
-                </React.Fragment>
-              ) : (
-                <React.Fragment>
-                  {[undefined, true].includes(this.state.initialIsolation) && (
-                    <p>
-                      The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or
-                      asymptomatic line list as appropriate.
-                    </p>
-                  )}
-                  {this.state.initialIsolation === false && <p>The selected cases will remain in the exposure workflow.</p>}
-                </React.Fragment>
-              )}
-              <Form.Group className="my-2">
-                <Form.Check
-                  type="switch"
-                  id="apply_to_household"
-                  label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
-                  checked={this.state.apply_to_household}
+          <React.Fragment>
+            {['Confirmed', 'Probable'].includes(this.state.case_status) && !this.state.all_selected_are_closed && !this.state.initialIsolation && (
+              <React.Fragment>
+                <p>Please select what you would like to do:</p>
+                <Form.Control
+                  as="select"
+                  className="form-control-lg mb-3"
+                  id="follow_up"
                   onChange={this.handleChange}
-                />
-              </Form.Group>
-            </React.Fragment>
-          )}
+                  value={this.state.follow_up}
+                  aria-label="Case Status Follow Up Select">
+                  <option></option>
+                  <option>End Monitoring</option>
+                  <option>Continue Monitoring in Isolation Workflow</option>
+                </Form.Control>
+              </React.Fragment>
+            )}
+            {['Confirmed', 'Probable'].includes(this.state.case_status) ? (
+              <React.Fragment>
+                {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && [undefined, false].includes(this.state.initialIsolation) && (
+                  <p>
+                    The selected monitorees will be moved to the isolation workflow and placed in the requiring review, non-reporting, or reporting line list as
+                    appropriate.
+                  </p>
+                )}
+                {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && this.state.initialIsolation === true && (
+                  <p>The selected monitorees will remain in the isolation workflow.</p>
+                )}
+                {this.state.follow_up === 'End Monitoring' && (
+                  <div>
+                    <p>The selected monitorees will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
+                    {this.renderReasons()}
+                  </div>
+                )}
+                {this.state.all_selected_are_closed && <div>{this.renderReasons()}</div>}
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                {[undefined, true].includes(this.state.initialIsolation) && (
+                  <p>
+                    The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or
+                    asymptomatic line list as appropriate.
+                  </p>
+                )}
+                {this.state.initialIsolation === false && <p>The selected cases will remain in the exposure workflow.</p>}
+              </React.Fragment>
+            )}
+            <Form.Group className="my-2">
+              <Form.Check
+                type="switch"
+                id="apply_to_household"
+                label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
+                checked={this.state.apply_to_household}
+                onChange={this.handleChange}
+              />
+            </Form.Group>
+          </React.Fragment>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary btn-square" onClick={this.props.close}>
             Cancel
           </Button>
-          <Button
-            variant="primary btn-square"
-            onClick={this.submit}
-            disabled={
-              ((this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') &&
-                !this.state.initialIsolation &&
-                this.state.confirmed === '') ||
-              this.state.loading ||
-              (this.state.initialCaseStatus === this.state.case_status && // checks if no changes have been made
-                this.state.initialIsolation === this.state.isolation &&
-                this.state.initialMonitoring === this.state.monitoring)
-            }>
+          <Button variant="primary btn-square" onClick={this.submit} disabled={this.disableSubmitButton()}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;

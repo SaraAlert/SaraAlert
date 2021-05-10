@@ -1264,8 +1264,8 @@ class Patient < ApplicationRecord
     # - case_status always comes before isolation, since a case_status change may trigger an isolation change from the front end
     # - continuous_exposure comes before last_date_of_exposure, since a continuous_exposure change may trigger an lde change from the front end
 
-    # When closing a monitoree via updating their case_status, the `reason` field will be set on both History items
-    # Keep track of when monitoring has been updating, and then dont include 'reason' for case_status
+    # When closing a monitoree via updating their case_status, the `reason` field will (incorrectly) be set on both History items
+    # To prevent this, we want to keep track of when monitoring has been updating, and then not include 'reason' for case_status History item
     has_updated_monitoring = false
     attribute_order = %i[monitoring case_status isolation continuous_exposure last_date_of_exposure]
     history_data[:updates].keys.sort_by { |key| attribute_order.index(key) || Float::INFINITY }&.each do |attribute|
