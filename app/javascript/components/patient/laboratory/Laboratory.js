@@ -20,6 +20,14 @@ class Laboratory extends React.Component {
     this.setState({ [event.target.id]: event.target.value });
   };
 
+  toggleLabModal = () => {
+    let current = this.state.showLabModal;
+    this.setState({
+      showLabModal: !current,
+      loading: false,
+    });
+  };
+
   handleLabSubmit = lab => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -46,14 +54,6 @@ class Laboratory extends React.Component {
       showDeleteModal: !current,
       delete_reason: null,
       delete_reason_text: null,
-    });
-  };
-
-  toggleLabModal = () => {
-    let current = this.state.showLabModal;
-    this.setState({
-      showLabModal: !current,
-      loading: false,
     });
   };
 
