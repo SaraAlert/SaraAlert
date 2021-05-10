@@ -2635,7 +2635,7 @@ class PatientTest < ActiveSupport::TestCase
     assert_match(/Case Status.*"Confirmed".*"Unknown"/, h.first.comment)
     assert_match(/Latest Public Health Action.*"Recommended laboratory testing".*"None"/, h.second.comment)
     # Symptom onset message must come after case status message
-    assert_match(/Symptom Onset Date/, h.third.comment)
+    assert_match(/isolation to exposure/, h.third.comment)
   end
 
   test 'monitoring_history_edit handles jurisdiction_id change' do
