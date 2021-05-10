@@ -43,9 +43,9 @@ class LaboratoryModal extends React.Component {
   render() {
     return (
       <Modal size="lg" show centered onHide={this.props.cancel}>
-        <h1 className="sr-only">Lab Result</h1>
+        <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Lab Result</h1>
         <Modal.Header>
-          <Modal.Title>Lab Result</Modal.Title>
+          <Modal.Title>{this.props.editMode ? 'Edit' : 'Add New'} Lab Result</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
