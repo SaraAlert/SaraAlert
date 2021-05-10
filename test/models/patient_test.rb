@@ -614,6 +614,23 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
+  test 'close eligible includes records that have been inactive for 30+ days' do
+    # 30 day border is sensitive to DST changes
+    patient = create(
+      :patient,
+      isolation: false,
+      monitoring: true,
+      purged: false,
+      public_health_action: 'None',
+      symptom_onset: nil
+    )
+    patient.update(created_at: 50.days.ago)
+    patient.update(updated_at: 31.days.ago)
+    assert_not_nil Patient.close_eligible.find_by(id: patient.id)
+    patient.update(updated_at: 50.days.ago)
+    assert_not_nil Patient.close_eligible.find_by(id: patient.id)
+  end
+
   # Patients who are eligible for reminders:
   #   - not purged AND
   #   - notifications not paused AND
@@ -3135,6 +3152,83 @@ class PatientTest < ActiveSupport::TestCase
       end
     end
     ADMIN_OPTIONS['reporting_period_minutes'] = original_reporting_period
+  end
+
+  test 'no_recent_activity scope in exposure' do
+    patient = create(:patient)
+    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+
+    patient.update(updated_at: 1.day.ago)
+    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+
+    patient.update(updated_at: 5.days.ago)
+    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+
+    patient.update(updated_at: 10.days.ago)
+    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+
+    patient.update(updated_at: 20.days.ago)
+    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+
+    patient.update(updated_at: 29.days.ago)
+    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+
+    # 30 day border is sensitive to DST changes
+    patient.update(updated_at: correct_dst_edge(patient, 30.days.ago))
+    assert_nil Patient.close_eligible.find_by(id: patient.id)
+
+    patient.update(updated_at: 31.days.ago)
+    assert_not_nil Patient.no_recent_activity.find_by(id: patient.id)
+
+    patient.update(updated_at: 300.days.ago)
+    assert_not_nil Patient.no_recent_activity.find_by(id: patient.id)
+  end
+
+  [
+    { isolation: true },
+    { isolation: false, monitoring: true, purged: false, public_health_action: 'Recommended medical evaluation of symptoms' },
+    { isolation: false, monitoring: true, purged: true, public_health_action: 'None' },
+    { isolation: false, monitoring: false, purged: false, public_health_action: 'None' },
+    {
+      isolation: false,
+      monitoring: true,
+      purged: false,
+      public_health_action: 'Recommended medical evaluation of symptoms',
+      latest_assessment_at: 400.days.ago
+    },
+    { isolation: false, monitoring: true, purged: true, public_health_action: 'None', latest_assessment_at: 400.days.ago },
+    { isolation: false, monitoring: false, purged: false, public_health_action: 'None', latest_assessment_at: 400.days.ago }
+  ].each do |invalid_attr|
+    test "close_eligible scope ineligible due to #{invalid_attr}" do
+      patient = create(:patient, invalid_attr)
+      patient.update(created_at: 50.days.ago)
+      assert_nil Patient.close_eligible.find_by(id: patient.id)
+
+      patient.update(updated_at: 1.day.ago)
+      assert_nil Patient.close_eligible.find_by(id: patient.id)
+
+      patient.update(updated_at: 5.days.ago)
+      assert_nil Patient.close_eligible.find_by(id: patient.id)
+
+      patient.update(updated_at: 10.days.ago)
+      assert_nil Patient.close_eligible.find_by(id: patient.id)
+
+      patient.update(updated_at: 20.days.ago)
+      assert_nil Patient.close_eligible.find_by(id: patient.id)
+
+      patient.update(updated_at: 29.days.ago)
+      assert_nil Patient.close_eligible.find_by(id: patient.id)
+
+      # 30 day border is sensitive to DST changes
+      patient.update(updated_at: correct_dst_edge(patient, 30.days.ago))
+      assert_nil Patient.close_eligible.find_by(id: patient.id)
+
+      patient.update(updated_at: 31.days.ago)
+      assert_nil Patient.close_eligible.find_by(id: patient.id)
+
+      patient.update(updated_at: 300.days.ago)
+      assert_nil Patient.close_eligible.find_by(id: patient.id)
+    end
   end
 end
 # rubocop:enable Metrics/ClassLength

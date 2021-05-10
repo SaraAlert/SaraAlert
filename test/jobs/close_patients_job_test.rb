@@ -122,7 +122,8 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
 
     ClosePatientsJob.perform_now
     assert_equal(ActionMailer::Base.deliveries.count, 2)
-    close_email = ActionMailer::Base.deliveries[-2]
+    closed_email = ActionMailer::Base.deliveries.find { |d| d.to.include? 'testpatient@example.com' }
+    assert_not_nil closed_email
     assert_includes(close_email.to_s, 'Sara Alert Reporting Complete')
     assert_equal(close_email.to[0], patient.email)
     assert_contains_history(patient, 'Monitoring Complete message was sent.')
@@ -162,5 +163,21 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes(email_body, patient.id.to_s)
     assert_includes(email_body, 'Test StandardError')
+  end
+
+  test 'sends a closed notification to inactive patient records' do
+    patient = create(:patient,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     public_health_action: 'None',
+                     preferred_contact_method: 'E-mailed Web Link',
+                     email: 'testpatient@example.com')
+    patient.update(updated_at: 31.days.ago, created_at: 50.days.ago)
+    email = ClosePatientsJob.perform_now
+    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    assert_includes(email_body, patient.id.to_s)
+    patient.reload
+    assert_equal 'No record activity for 30 days (system)', patient.monitoring_reason
   end
 end
