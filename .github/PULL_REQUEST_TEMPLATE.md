@@ -6,7 +6,7 @@ When assigning a reviewer, tag their GitHub username in the reviewer checklist s
 
 
 # Description
-Jira Ticket: SARAALERT-###
+Jira Ticket: [SARAALERT-###](https://tracker.codev.mitre.org/browse/SARAALERT-###)
 
 Write out a concise summary of this pull request and what it addresses.
 
