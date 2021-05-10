@@ -13,7 +13,7 @@ class UpdateCaseStatus extends React.Component {
     super(props);
     this.state = {
       // The behavior for this modal changes if everyone that is selected is already `closed`
-      all_selected_are_closed: _.every(this.props.patients, p => !_.isNil(p.closed_at)),
+      allSelectedAreClosed: _.every(this.props.patients, p => !_.isNil(p.closed_at)),
       case_status: '',
       follow_up: '',
       isolation: undefined,
@@ -129,7 +129,7 @@ class UpdateCaseStatus extends React.Component {
     if (this.state.loading) {
       return true;
     }
-    if (this.state.all_selected_are_closed) {
+    if (this.state.allSelectedAreClosed) {
       return false;
     }
     if (
@@ -143,7 +143,7 @@ class UpdateCaseStatus extends React.Component {
       if (!this.state.initialIsolation && this.state.confirmed === '') {
         return true;
       }
-      if (this.state.follow_up === '' && !this.state.all_selected_are_closed) {
+      if (this.state.follow_up === '' && !this.state.allSelectedAreClosed) {
         return true;
       }
     }
@@ -193,7 +193,7 @@ class UpdateCaseStatus extends React.Component {
             <option>Not a Case</option>
           </Form.Control>
           <React.Fragment>
-            {['Confirmed', 'Probable'].includes(this.state.case_status) && !this.state.all_selected_are_closed && !this.state.initialIsolation && (
+            {['Confirmed', 'Probable'].includes(this.state.case_status) && !this.state.allSelectedAreClosed && !this.state.initialIsolation && (
               <React.Fragment>
                 <p>Please select what you would like to do:</p>
                 <Form.Control
@@ -226,7 +226,7 @@ class UpdateCaseStatus extends React.Component {
                     {this.renderReasons()}
                   </div>
                 )}
-                {this.state.all_selected_are_closed && <div>{this.renderReasons()}</div>}
+                {this.state.allSelectedAreClosed && this.renderReasons()}
               </React.Fragment>
             ) : (
               <React.Fragment>
