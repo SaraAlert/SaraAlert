@@ -35,10 +35,11 @@ class VaccineTable extends React.Component {
       },
       entryOptions: [10, 15, 25],
       cancelToken: axios.CancelToken.source(),
-      isLoading: false,
-      editRow: null,
-      showEditModal: false,
+      loading: false,
+      activeRow: null,
       showAddModal: false,
+      showEditModal: false,
+      showDeleteModal: false,
     };
   }
 
@@ -58,7 +59,7 @@ class VaccineTable extends React.Component {
     // generate new cancel token for this request
     const cancelToken = axios.CancelToken.source();
 
-    this.setState({ query, cancelToken, isLoading: true }, () => {
+    this.setState({ query, cancelToken, loading: true }, () => {
       this.queryServer(query);
     });
   };
@@ -83,12 +84,12 @@ class VaccineTable extends React.Component {
           this.setState(state => {
             return {
               table: { ...state.table, rowData: [], totalRows: 0 },
-              isLoading: false,
+              loading: false,
             };
           });
         } else {
           reportError(error);
-          this.setState({ isLoading: false });
+          this.setState({ loading: false });
         }
       })
       .then(response => {
@@ -100,11 +101,11 @@ class VaccineTable extends React.Component {
                 rowData: response.data.table_data,
                 totalRows: response.data.total,
               },
-              isLoading: false,
+              loading: false,
             };
           });
         } else {
-          this.setState({ isLoading: false });
+          this.setState({ loading: false });
         }
       });
   }, 500);
@@ -181,7 +182,7 @@ class VaccineTable extends React.Component {
    * Gets the data for the current vaccine if there is one selected/being edited.
    */
   getCurrVaccine = () => {
-    return this.state.editRow !== null && !!this.state.table.rowData ? this.state.table.rowData[this.state.editRow] : {};
+    return this.state.activeRow !== null && !!this.state.table.rowData ? this.state.table.rowData[this.state.activeRow] : {};
   };
 
   /**
@@ -204,20 +205,10 @@ class VaccineTable extends React.Component {
   };
 
   /**
-   * Closes the Add New Vaccine modal and makes a request to add a new vaccine to the db.
-   * @param {*} newVaccineData - State from vaccine modal containing needed vaccine data.
-   */
-  handleAddSubmit = newVaccineData => {
-    this.setState({ showAddModal: false }, () => {
-      this.add(newVaccineData);
-    });
-  };
-
-  /**
    * Makes a request to create a new vaccine on the backend and reloads page once complete.
    * @param {*} newVaccineData
    */
-  add = newVaccineData => {
+  handleAddSubmit = newVaccineData => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .post(`${window.BASE_PATH}/vaccines`, {
@@ -244,7 +235,7 @@ class VaccineTable extends React.Component {
   handleEditClick = row => {
     this.setState({
       showEditModal: true,
-      editRow: row,
+      activeRow: row,
     });
   };
 
@@ -254,33 +245,16 @@ class VaccineTable extends React.Component {
   handleEditModalClose = () => {
     this.setState({
       showEditModal: false,
-      editRow: null,
+      activeRow: null,
     });
-  };
-
-  /**
-   * Closes the EditVaccine modal and makes a request to update an existing vaccine record.
-   * @param {*} updatedVaccineData - State from vaccine modal containing updated vaccine data.
-   */
-  handleEditSubmit = updatedVaccineData => {
-    const currVaccineId = this.state.table.rowData[this.state.editRow]?.id;
-
-    this.setState(
-      {
-        showEditModal: false,
-        editRow: null,
-      },
-      () => {
-        this.edit(updatedVaccineData, currVaccineId);
-      }
-    );
   };
 
   /**
    * Makes a request to update an existing vaccine record on the backend and reloads page once complete.
    * @param {*} newVaccineData
    */
-  edit = (updatedVaccineData, currVaccineId) => {
+   handleEditSubmit = (updatedVaccineData) => {
+    const currVaccineId = this.state.table.rowData[this.state.activeRow]?.id;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .put(`${window.BASE_PATH}/vaccines/${currVaccineId}`, {
@@ -304,6 +278,18 @@ class VaccineTable extends React.Component {
 
   // add delete stuff here
 
+  /**
+   * Called when the edit vaccine button is clicked.
+   * Updates the state to show the appropriate modal for editing a vaccine.
+   */
+  handleDeleteClick = row => {
+    console.log('deleting')
+    this.setState({
+      showDeleteModal: true,
+      activeRow: row,
+    });
+  };
+
 
 
   /**
@@ -326,6 +312,10 @@ class VaccineTable extends React.Component {
           <Dropdown.Item className="px-4" onClick={() => this.handleEditClick(rowIndex)}>
             <i className="fas fa-edit fa-fw"></i>
             <span className="ml-2">Edit</span>
+          </Dropdown.Item>
+          <Dropdown.Item className="px-4" onClick={() => this.handleDeleteClick(rowIndex)}>
+            <i className="fas fa-trash fa-fw"></i>
+            <span className="ml-2">Delete</span>
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
@@ -375,7 +365,7 @@ class VaccineTable extends React.Component {
               totalRows={this.state.table.totalRows}
               handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
               handleEntriesChange={this.handleEntriesChange}
-              isLoading={this.state.isLoading}
+              loading={this.state.loading}
               page={this.state.query.page}
               handlePageUpdate={this.handlePageUpdate}
               entryOptions={this.state.entryOptions}
@@ -394,6 +384,9 @@ class VaccineTable extends React.Component {
             additional_product_name_options={this.props.additional_product_name_options}
             dose_number_options={this.props.dose_number_options}
           />
+        )}
+        {this.state.showDeleteModal && (
+          <div>some delete modal here</div>
         )}
       </React.Fragment>
     );

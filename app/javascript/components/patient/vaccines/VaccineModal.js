@@ -15,6 +15,7 @@ class VaccineModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       product_name: this.props.currentVaccineData?.product_name,
       // If there is not already a group name, default to the first option
       group_name: this.props.currentVaccineData?.group_name
@@ -71,6 +72,12 @@ class VaccineModal extends React.Component {
     });
     return formattedOptions;
   };
+
+  submit = () => {
+    this.setState({ loading: true }, () => {
+      this.props.onSave(this.state);
+    });
+  }
 
   render() {
     const defaultGroupNameOption = this.props.group_name_options ? this.props.group_name_options[0] : '';
@@ -202,7 +209,12 @@ class VaccineModal extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disabled={!isValid} onClick={() => this.props.onSave(this.state)}>
+          <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
             <span data-for="submit-tooltip" data-tip="" className="ml-1">
               {this.props.editMode ? 'Update' : 'Create'}
             </span>
