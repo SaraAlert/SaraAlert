@@ -18,6 +18,7 @@ if (!Array.isArray(nodeModulesLoader.exclude)) {
 }
 
 nodeModulesLoader.exclude.push(/react-table/);
+nodeModulesLoader.exclude.push(/sanitize-html/);
 
 environment.splitChunks()
 
