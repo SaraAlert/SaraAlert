@@ -125,6 +125,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     close_email = ActionMailer::Base.deliveries[-2]
     assert_includes(close_email.to_s, 'Sara Alert Reporting Complete')
     assert_equal(close_email.to[0], patient.email)
+    assert_contains_history(patient, 'Monitoring Complete message was sent.')
   end
 
   test 'sends an admin email with all closed monitorees' do

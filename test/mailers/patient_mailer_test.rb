@@ -563,5 +563,6 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_includes email_body, I18n.t('assessments.email.closed.dear', locale: @patient.primary_language)
     assert_includes email_body, I18n.t('assessments.email.closed.thank-you', locale: @patient.primary_language)
     assert_includes email_body, I18n.t('assessments.email.closed.footer', locale: @patient.primary_language)
+    assert_contains_history(@patient, 'Monitoring Complete message was sent.')
   end
 end

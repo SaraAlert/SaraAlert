@@ -192,6 +192,7 @@ class PatientMailer < ApplicationMailer
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.closed.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
+    History.monitoring_complete_message_sent(patient: patient)
   end
 
   private
