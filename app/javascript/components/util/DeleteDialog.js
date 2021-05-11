@@ -41,8 +41,8 @@ class DeleteDialog extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to delete this {this.props.type}? This action cannot be undone. For auditing purposes, this deletion will be available in this
-            record&apos;s history export.
+            Are you sure you want to delete this {this.props.type}? This action cannot be undone. For auditing purposes, this deletion will be documented in the
+            record&apos;s history.
           </p>
           <p>Please select reason for deletion:</p>
           <Form.Control as="select" className="form-control-md mb-3" id="delete_reason" onChange={this.handleReasonChange} defaultValue={-1}>
