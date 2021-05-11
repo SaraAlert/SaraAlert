@@ -70,20 +70,18 @@ class History extends React.Component {
       deleteReason += ': ' + this.state.delete_reason_text;
     }
 
-    this.setState({ loading: true }, () => {
-      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .post(window.BASE_PATH + '/histories/' + this.state.latest_version.id + '/delete', {
-          patient_id: this.state.latest_version.patient_id,
-          delete_reason: deleteReason,
-        })
-        .then(() => {
-          location.reload(true);
-        })
-        .catch(error => {
-          reportError(error);
-        });
-    });
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios
+      .post(window.BASE_PATH + '/histories/' + this.state.latest_version.id + '/delete', {
+        patient_id: this.state.latest_version.patient_id,
+        delete_reason: deleteReason,
+      })
+      .then(() => {
+        location.reload(true);
+      })
+      .catch(error => {
+        reportError(error);
+      });
   };
 
   renderEditedButton() {
