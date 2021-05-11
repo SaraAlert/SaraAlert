@@ -72,11 +72,10 @@ class Laboratory extends React.Component {
           },
         })
         .then(() => {
-          this.setState({ loading: false, showDeleteModal: false });
+          this.setState({ showDeleteModal: false });
           location.reload(true);
         })
         .catch(error => {
-          this.setState({ loading: false, showDeleteModal: false });
           reportError(error);
         });
     });
