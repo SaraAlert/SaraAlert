@@ -62,23 +62,20 @@ class Laboratory extends React.Component {
     if (deleteReason === 'Other' && this.state.delete_reason_text) {
       deleteReason += ', ' + this.state.delete_reason_text;
     }
-    this.setState(() => {
-      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .delete(window.BASE_PATH + '/laboratories/' + this.props.lab.id, {
-          data: {
-            patient_id: this.props.patient.id,
-            delete_reason: deleteReason,
-          },
-        })
-        .then(() => {
-          this.setState({ showDeleteModal: false });
-          location.reload(true);
-        })
-        .catch(error => {
-          reportError(error);
-        });
-    });
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios
+      .delete(window.BASE_PATH + '/laboratories/' + this.props.lab.id, {
+        data: {
+          patient_id: this.props.patient.id,
+          delete_reason: deleteReason,
+        },
+      })
+      .then(() => {
+        location.reload(true);
+      })
+      .catch(error => {
+        reportError(error);
+      });
   };
 
   render() {
@@ -92,11 +89,7 @@ class Laboratory extends React.Component {
         )}
         {this.props.lab.id && (
           <Dropdown>
-            <Dropdown.Toggle
-              id={`laboratory-action-button-${this.props.lab.id}`}
-              size="sm"
-              variant="primary"
-              aria-label={`laboratory-action-button-${this.props.lab.id}`}>
+            <Dropdown.Toggle id={`laboratory-action-button-${this.props.lab.id}`} size="sm" variant="primary" aria-label="Lab Result Action Dropdown">
               <i className="fas fa-cogs fw"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu>
