@@ -28,7 +28,12 @@ require_relative '../config/environment'
 #
 # If `no_exit` is set to true, then the benchmark will not exit with an exit code at
 # the end of the benchmark. It will instead return true if passed and false if failed.
-def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exit: false, &block)
+def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exit: false, mode: :total, &block)
+  unless [:real, :total, :stime, :utime].include? mode
+    puts 'Mode argument must be any of the following: '
+    return
+  end
+
   warn_about_memprof
 
   if ENV['APP_IN_CI'].nil?
@@ -87,13 +92,14 @@ def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exi
 
   puts File.read(benchmark_file) if ENV['CAP_STDOUT']
 
+  elapsed_time = benchmark_report.send(mode)
   puts "\n\n"
-  puts "Acceptable total time threshold: #{format('%.3f', time_threshold).rjust(10, ' ')}"
-  puts "    Actual total time threshold: #{format('%.3f', benchmark_report.total).rjust(10, ' ')}"
+  puts "Acceptable #{mode.to_s} time threshold: #{format('%.3f', time_threshold).rjust(10, ' ')}"
+  puts "    Actual #{mode.to_s} time threshold: #{format('%.3f', elapsed_time).rjust(10, ' ')}"
 
   restore(ENV['MYSQL_PATH']) if ENV['APP_IN_CI'].nil?
 
-  if time_threshold < benchmark_report.total
+  if time_threshold < elapsed_time
     puts 'TEST FAILED'
     exit(1) unless no_exit
     false
