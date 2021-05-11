@@ -11,6 +11,7 @@ class DeleteDialog extends React.Component {
       loading: false,
       disabled: true,
       showTextInput: false,
+      delete_reason_text: ''
     };
   }
 
@@ -64,10 +65,10 @@ class DeleteDialog extends React.Component {
                 maxLength={MAX_REASON_LENGTH}
                 className="form-square"
                 placeholder="Please enter additional information about the reason for deletion"
-                value={this.state.delete_reason_text || ''}
+                value={this.state.delete_reason_text}
                 onChange={this.handleTextChange}
               />
-              <div className="character-limit-text">{MAX_REASON_LENGTH - (this.state.delete_reason_text || '').length} characters remaining</div>
+              <div className="character-limit-text">{MAX_REASON_LENGTH - this.state.delete_reason_text.length} characters remaining</div>
             </React.Fragment>
           )}
         </Modal.Body>

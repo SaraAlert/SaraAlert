@@ -3,15 +3,13 @@
 # HistoriesController: for keeping track of user actions over time
 class HistoriesController < ApplicationController
   before_action :authenticate_user!
+  before_action :check_role
+  before_action :check_patient
+  before_action :check_history, only: [:edit, :delete]
 
   # Create a new history route; this is used to create comments on subjects.
   def create
-    redirect_to root_url unless current_user.can_create_subject_history?
-
-    patient = current_user.viewable_patients.find_by(id: params.require(:patient_id))
-    redirect_to root_url && return if patient.nil?
-
-    history = History.new(patient_id: patient.id,
+    history = History.new(patient_id: @patient.id,
                           created_by: current_user.email,
                           comment: params.permit(:comment)[:comment],
                           history_type: params.permit(:history_type)[:history_type] || History::HISTORY_TYPES[:comment])
@@ -26,35 +24,33 @@ class HistoriesController < ApplicationController
 
   # "Edits" a history comment - a new history comment is created with the updated comment text and a reference to the id of the original
   def edit
-    redirect_to root_url unless current_user.can_create_subject_history?
-
-    patient = current_user.viewable_patients.find_by(id: params.require(:patient_id))
-    redirect_to root_url && return if patient.nil?
-
-    history = patient.histories.find_by(id: params.require(:id))
-    redirect_to root_url && return if history.nil? || history.history_type != History::HISTORY_TYPES[:comment]
-
-    History.create!(patient_id: patient.id,
+    History.create!(patient_id: @patient.id,
                     created_by: current_user.email,
                     comment: params.permit(:comment)[:comment],
                     history_type: History::HISTORY_TYPES[:comment],
-                    original_comment_id: history.original_comment_id)
+                    original_comment_id: @history.original_comment_id)
   end
 
   # "Deletes" a history comment - does not actually remove the comment from the database
   # but adds a deleted_by and deleted_reason that show the comment was deleted
   def delete
-    redirect_to root_url unless current_user.can_create_subject_history?
-
-    patient = current_user.viewable_patients.find_by(id: params.require(:patient_id))
-    redirect_to root_url && return if patient.nil?
-
-    history = patient.histories.find_by(id: params.require(:id))
-    redirect_to root_url && return if history.nil? || history.history_type != History::HISTORY_TYPES[:comment]
-
     # mark each version of the history as deleted, not just the most recent one
-    patient.histories
-           .where(original_comment_id: history.original_comment_id)
+    @patient.histories
+           .where(original_comment_id: @history.original_comment_id)
            .update_all({ deleted_by: current_user.email, delete_reason: params.permit(:delete_reason)[:delete_reason] })
+  end
+
+  def check_role
+    redirect_to root_url unless current_user.can_create_subject_history?
+  end
+
+  def check_patient
+    @patient = current_user.viewable_patients.find_by(id: params.require(:patient_id))
+    redirect_to root_url && return if @patient.nil?
+  end
+
+  def check_history
+    @history = @patient.histories.find_by(id: params.require(:id))
+    redirect_to root_url && return if @history.nil? || @history.history_type != History::HISTORY_TYPES[:comment]
   end
 end
