@@ -82,7 +82,7 @@ class UpdateCaseStatus extends React.Component {
       } else if (event.target.id === 'monitoring_reason') {
         this.setState({ monitoring_reason: event.target.value });
       } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
-        this.setState({ monitoring: true, isolation: false });
+        this.setState({ monitoring: true, isolation: false, monitoring_reason: '', reasoning: '' });
       }
 
       // If in isolation the follow up will not be displayed, ensure changed properties do not carry over
