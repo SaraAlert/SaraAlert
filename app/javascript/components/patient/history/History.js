@@ -28,11 +28,7 @@ class History extends React.Component {
   handleChange = event => {
     this.setState({ [event.target.id]: event.target.value });
   };
-
-  toggleEditMode = () => {
-    this.setState({ editMode: true });
-  };
-
+  
   toggleEditMode = () => {
     let current = this.state.editMode;
     this.setState({ editMode: !current, comment: this.state.latest_version.comment });
