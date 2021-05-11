@@ -16,7 +16,7 @@ class VaccineTable extends React.Component {
     this.state = {
       table: {
         colData: [
-          { label: 'Actions', field: '', isSortable: false, filter: this.createActionsButton },
+          { label: 'Actions', field: '', isSortable: false, filter: this.renderActionsDropdown },
           { label: 'ID', field: 'id', isSortable: true },
           { label: 'Vaccine Group', field: 'group_name', isSortable: true },
           { label: 'Product Name', field: 'product_name', isSortable: true },
@@ -37,8 +37,8 @@ class VaccineTable extends React.Component {
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
       editRow: null,
-      showEditVaccineModal: false,
-      showAddVaccineModal: false,
+      showEditModal: false,
+      showAddModal: false,
     };
   }
 
@@ -178,21 +178,28 @@ class VaccineTable extends React.Component {
   };
 
   /**
+   * Gets the data for the current vaccine if there is one selected/being edited.
+   */
+  getCurrVaccine = () => {
+    return this.state.editRow !== null && !!this.state.table.rowData ? this.state.table.rowData[this.state.editRow] : {};
+  };
+
+  /**
    * Called when the Add New Vaccine button is clicked.
    * Updates the state to show the appropriate modal for adding a vaccine.
    */
-  handleAddVaccineClick = () => {
+  handleAddClick = () => {
     this.setState({
-      showAddVaccineModal: true,
+      showAddModal: true,
     });
   };
 
   /**
    * Closes the Add New Vaccine modal by updating state.
    */
-  handleAddVaccineModalClose = () => {
+  handleAddModalClose = () => {
     this.setState({
-      showAddVaccineModal: false,
+      showAddModal: false,
     });
   };
 
@@ -200,9 +207,9 @@ class VaccineTable extends React.Component {
    * Closes the Add New Vaccine modal and makes a request to add a new vaccine to the db.
    * @param {*} newVaccineData - State from vaccine modal containing needed vaccine data.
    */
-  handleAddVaccineModalSave = newVaccineData => {
-    this.setState({ showAddVaccineModal: false }, () => {
-      this.addNewVaccine(newVaccineData);
+  handleAddSubmit = newVaccineData => {
+    this.setState({ showAddModal: false }, () => {
+      this.add(newVaccineData);
     });
   };
 
@@ -210,7 +217,7 @@ class VaccineTable extends React.Component {
    * Makes a request to create a new vaccine on the backend and reloads page once complete.
    * @param {*} newVaccineData
    */
-  addNewVaccine = newVaccineData => {
+  add = newVaccineData => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .post(`${window.BASE_PATH}/vaccines`, {
@@ -234,9 +241,9 @@ class VaccineTable extends React.Component {
    * Called when the edit vaccine button is clicked.
    * Updates the state to show the appropriate modal for editing a vaccine.
    */
-  handleEditVaccineClick = row => {
+  handleEditClick = row => {
     this.setState({
-      showEditVaccineModal: true,
+      showEditModal: true,
       editRow: row,
     });
   };
@@ -244,9 +251,9 @@ class VaccineTable extends React.Component {
   /**
    * Closes the edit vaccine modal by updating state.
    */
-  handleEditVaccineModalClose = () => {
+  handleEditModalClose = () => {
     this.setState({
-      showEditVaccineModal: false,
+      showEditModal: false,
       editRow: null,
     });
   };
@@ -255,16 +262,16 @@ class VaccineTable extends React.Component {
    * Closes the EditVaccine modal and makes a request to update an existing vaccine record.
    * @param {*} updatedVaccineData - State from vaccine modal containing updated vaccine data.
    */
-  handleEditVaccineModalSave = updatedVaccineData => {
+  handleEditSubmit = updatedVaccineData => {
     const currVaccineId = this.state.table.rowData[this.state.editRow]?.id;
 
     this.setState(
       {
-        showEditVaccineModal: false,
+        showEditModal: false,
         editRow: null,
       },
       () => {
-        this.editVaccine(updatedVaccineData, currVaccineId);
+        this.edit(updatedVaccineData, currVaccineId);
       }
     );
   };
@@ -273,9 +280,8 @@ class VaccineTable extends React.Component {
    * Makes a request to update an existing vaccine record on the backend and reloads page once complete.
    * @param {*} newVaccineData
    */
-  editVaccine = (updatedVaccineData, currVaccineId) => {
+  edit = (updatedVaccineData, currVaccineId) => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-
     axios
       .put(`${window.BASE_PATH}/vaccines/${currVaccineId}`, {
         group_name: updatedVaccineData.group_name,
@@ -294,11 +300,17 @@ class VaccineTable extends React.Component {
       });
   };
 
+
+
+  // add delete stuff here
+
+
+
   /**
    * Creates the action button & dropdown for each row in the table.
    * @param {Object} data - Data about the cell this filter is called on.
    */
-  createActionsButton = data => {
+  renderActionsDropdown = data => {
     const rowIndex = data.rowIndex;
     const rowData = data.rowData;
     // Set the direction to be "up" when there are not enough rows in the table to have space for the dropdown.
@@ -307,11 +319,11 @@ class VaccineTable extends React.Component {
     const direction = this.state.table.rowData && this.state.table.rowData.length > 2 ? null : 'up';
     return (
       <Dropdown drop={direction}>
-        <Dropdown.Toggle id={`vaccine-action-button-${rowData.id}`} size="sm" variant="primary" aria-label={`vaccine-action-button-${rowData.id}`}>
+        <Dropdown.Toggle id={`vaccine-action-button-${rowData.id}`} size="sm" variant="primary" aria-label="Vaccine Action Dropdown">
           <i className="fas fa-cogs fw"></i>
         </Dropdown.Toggle>
         <Dropdown.Menu className="test-class" drop={'up'}>
-          <Dropdown.Item className="px-4 hi" onClick={() => this.handleEditVaccineClick(rowIndex)}>
+          <Dropdown.Item className="px-4" onClick={() => this.handleEditClick(rowIndex)}>
             <i className="fas fa-edit fa-fw"></i>
             <span className="ml-2">Edit</span>
           </Dropdown.Item>
@@ -320,75 +332,63 @@ class VaccineTable extends React.Component {
     );
   };
 
-  /**
-   * Gets the data for the current vaccine if there is one selected/being edited.
-   */
-  getCurrVaccine = () => {
-    return this.state.editRow !== null && !!this.state.table.rowData ? this.state.table.rowData[this.state.editRow] : {};
-  };
-
   render() {
     return (
       <React.Fragment>
-        <Card id="vaccines" className="mx-2 mt-3 mb-4 card-square">
+        <Card id="vaccines" className="mx-2 my-4 card-square">
           <Card.Header className="h5">Vaccinations</Card.Header>
-          <Card.Body>
-            <div className="mt-4">
-              <Row className="my-4">
-                <Col>
-                  <Button variant="primary" className="mr-2" onClick={this.handleAddVaccineClick}>
-                    <i className="fas fa-plus fa-fw"></i>
-                    <span className="ml-2">Add New Vaccination</span>
-                  </Button>
-                </Col>
-                <Col lg={5}>
-                  <InputGroup size="md">
-                    <InputGroup.Prepend>
-                      <OverlayTrigger overlay={<Tooltip>Search by ID, Group Name, or Product Name.</Tooltip>}>
-                        <InputGroup.Text className="rounded-0">
-                          <i className="fas fa-search"></i>
-                          <label htmlFor="vaccines-search-input" className="ml-1 mb-0">
-                            Search
-                          </label>
-                        </InputGroup.Text>
-                      </OverlayTrigger>
-                    </InputGroup.Prepend>
-                    <Form.Control
-                      id="vaccines-search-input"
-                      autoComplete="off"
-                      size="md"
-                      name="search"
-                      onChange={this.handleSearchChange}
-                      aria-label="Search"
-                    />
-                  </InputGroup>
-                </Col>
-              </Row>
-              <div className="mb-4">
-                <CustomTable
-                  dataType="vaccines"
-                  columnData={this.state.table.colData}
-                  rowData={this.state.table.rowData}
-                  totalRows={this.state.table.totalRows}
-                  handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
-                  handleEntriesChange={this.handleEntriesChange}
-                  isLoading={this.state.isLoading}
-                  page={this.state.query.page}
-                  handlePageUpdate={this.handlePageUpdate}
-                  entryOptions={this.state.entryOptions}
-                  entries={this.state.query.entries}
-                />
-              </div>
-            </div>
+          <Card.Body className="my-1">
+            <Row className="mb-4">
+              <Col>
+                <Button variant="primary" className="mr-2" onClick={this.handleAddClick}>
+                  <i className="fas fa-plus fa-fw"></i>
+                  <span className="ml-2">Add New Vaccination</span>
+                </Button>
+              </Col>
+              <Col lg={5}>
+                <InputGroup size="md">
+                  <InputGroup.Prepend>
+                    <OverlayTrigger overlay={<Tooltip>Search by ID, Group Name, or Product Name.</Tooltip>}>
+                      <InputGroup.Text className="rounded-0">
+                        <i className="fas fa-search"></i>
+                        <label htmlFor="vaccines-search-input" className="ml-1 mb-0">
+                          Search
+                        </label>
+                      </InputGroup.Text>
+                    </OverlayTrigger>
+                  </InputGroup.Prepend>
+                  <Form.Control
+                    id="vaccines-search-input"
+                    autoComplete="off"
+                    size="md"
+                    name="search"
+                    onChange={this.handleSearchChange}
+                    aria-label="Search"
+                  />
+                </InputGroup>
+              </Col>
+            </Row>
+            <CustomTable
+              dataType="vaccines"
+              columnData={this.state.table.colData}
+              rowData={this.state.table.rowData}
+              totalRows={this.state.table.totalRows}
+              handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
+              handleEntriesChange={this.handleEntriesChange}
+              isLoading={this.state.isLoading}
+              page={this.state.query.page}
+              handlePageUpdate={this.handlePageUpdate}
+              entryOptions={this.state.entryOptions}
+              entries={this.state.query.entries}
+            />
           </Card.Body>
         </Card>
-        {(this.state.showAddVaccineModal || this.state.showEditVaccineModal) && (
+        {(this.state.showAddModal || this.state.showEditModal) && (
           <VaccineModal
-            title={this.state.showAddVaccineModal ? 'Add New Vaccination' : 'Edit Vaccination'}
-            currentVaccineData={this.state.showAddVaccineModal ? {} : this.getCurrVaccine()}
-            onClose={this.state.showAddVaccineModal ? this.handleAddVaccineModalClose : this.handleEditVaccineModalClose}
-            onSave={this.state.showAddVaccineModal ? this.handleAddVaccineModalSave : this.handleEditVaccineModalSave}
-            isEditing={this.state.showEditVaccineModal}
+            currentVaccineData={this.state.showAddModal ? {} : this.getCurrVaccine()}
+            onClose={this.state.showAddModal ? this.handleAddModalClose : this.handleEditModalClose}
+            onSave={this.state.showAddModal ? this.handleAddSubmit : this.handleEditSubmit}
+            editMode={this.state.showEditModal}
             vaccine_mapping={this.props.vaccine_mapping}
             group_name_options={this.props.group_name_options ? this.props.group_name_options : []}
             additional_product_name_options={this.props.additional_product_name_options}

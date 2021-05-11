@@ -60,7 +60,7 @@ class DownloadMonitoreeExcel extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button id="monitoree-excel-export" className="mx-2 mt-1 mb-4" onClick={this.downloadExcel} disabled={this.state.loadingExcel}>
+        <Button id="monitoree-excel-export" className="mx-2" onClick={this.downloadExcel} disabled={this.state.loadingExcel}>
           <i className="fas fa-download"></i> Download Excel Export
           {this.state.loadingExcel && (
             <React.Fragment>
@@ -68,7 +68,7 @@ class DownloadMonitoreeExcel extends React.Component {
             </React.Fragment>
           )}
         </Button>
-        <Button id="monitoree-nbs-export" className="mx-1 mt-1 mb-4" onClick={this.downloadNBS} disabled={this.state.loadingNBS}>
+        <Button id="monitoree-nbs-export" className="mx-1" onClick={this.downloadNBS} disabled={this.state.loadingNBS}>
           <i className="fas fa-download"></i> Download NBS Export
           {this.state.loadingNBS && (
             <React.Fragment>

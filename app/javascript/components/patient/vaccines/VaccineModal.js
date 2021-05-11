@@ -80,9 +80,9 @@ class VaccineModal extends React.Component {
 
     return (
       <Modal size="lg" show centered onHide={this.props.onClose}>
-        <h1 className="sr-only">{this.props.title}</h1>
+        <h1 className="sr-only">{this.props.editMode ? 'Edit Vaccination' : 'Add New Vaccination'}</h1>
         <Modal.Header>
-          <Modal.Title>{this.props.title}</Modal.Title>
+          <Modal.Title>{this.props.editMode ? 'Edit Vaccination' : 'Add New Vaccination'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -204,7 +204,7 @@ class VaccineModal extends React.Component {
           </Button>
           <Button variant="primary btn-square" disabled={!isValid} onClick={() => this.props.onSave(this.state)}>
             <span data-for="submit-tooltip" data-tip="" className="ml-1">
-              {this.props.isEditing ? 'Update' : 'Create'}
+              {this.props.editMode ? 'Update' : 'Create'}
             </span>
           </Button>
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
@@ -222,11 +222,10 @@ class VaccineModal extends React.Component {
 }
 
 VaccineModal.propTypes = {
-  title: PropTypes.string,
   currentVaccineData: PropTypes.object,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
-  isEditing: PropTypes.bool,
+  editMode: PropTypes.bool,
   vaccine_mapping: PropTypes.object,
   group_name_options: PropTypes.array,
   additional_product_name_options: PropTypes.array,
