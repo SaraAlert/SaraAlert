@@ -94,18 +94,18 @@ class Laboratory extends React.Component {
         {this.props.lab.id && (
           <Dropdown>
             <Dropdown.Toggle
-              id={`vaccine-action-button-${this.props.lab.id}`}
+              id={`laboratory-action-button-${this.props.lab.id}`}
               size="sm"
               variant="primary"
-              aria-label={`vaccine-action-button-${this.props.lab.id}`}>
+              aria-label={`laboratory-action-button-${this.props.lab.id}`}>
               <i className="fas fa-cogs fw"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item className="px-4 hi" onClick={this.toggleLabModal}>
+              <Dropdown.Item className="px-4" onClick={this.toggleLabModal}>
                 <i className="fas fa-edit fa-fw"></i>
                 <span className="ml-2">Edit</span>
               </Dropdown.Item>
-              <Dropdown.Item className="px-4 hi" onClick={this.toggleDeleteModal}>
+              <Dropdown.Item className="px-4" onClick={this.toggleDeleteModal}>
                 <i className="fas fa-trash fa-fw"></i>
                 <span className="ml-2">Delete</span>
               </Dropdown.Item>
@@ -122,13 +122,7 @@ class Laboratory extends React.Component {
           />
         )}
         {this.state.showDeleteModal && (
-          <DeleteDialog
-            type={'Lab Result'}
-            delete={this.handleDeleteSubmit}
-            toggle={this.toggleDeleteModal}
-            onChange={this.handleChange}
-            show_text_input={true}
-          />
+          <DeleteDialog type={'Lab Result'} delete={this.handleDeleteSubmit} toggle={this.toggleDeleteModal} onChange={this.handleChange} />
         )}
       </React.Fragment>
     );
