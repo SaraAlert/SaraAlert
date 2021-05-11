@@ -47,6 +47,8 @@ Rails.application.configure do
   # Override allows using the local filesystem for demo/staging
   config.active_storage.service = ActiveModel::Type::Boolean.new.cast(ENV["SARA_ALERT_REPORT_MODE"]) ? nil : ENV['ACTIVE_STORAGE_DRIVER']&.to_sym
   config.active_storage.resolve_model_to_route = :rails_storage_proxy
+  config.active_storage.routes_prefix = '/files'
+
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil

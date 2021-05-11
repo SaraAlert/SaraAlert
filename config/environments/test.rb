@@ -40,6 +40,7 @@ Rails.application.configure do
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test
   config.active_storage.resolve_model_to_route = :rails_storage_proxy
+  config.active_storage.routes_prefix = '/files'
 
   config.action_mailer.perform_caching = false
 
