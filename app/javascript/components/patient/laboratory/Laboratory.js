@@ -62,7 +62,7 @@ class Laboratory extends React.Component {
     if (deleteReason === 'Other' && this.state.delete_reason_text) {
       deleteReason += ', ' + this.state.delete_reason_text;
     }
-    this.setState({ loading: true }, () => {
+    this.setState(() => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .delete(window.BASE_PATH + '/laboratories/' + this.props.lab.id, {
