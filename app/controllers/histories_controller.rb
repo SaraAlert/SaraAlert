@@ -2,10 +2,10 @@
 
 # HistoriesController: for keeping track of user actions over time
 class HistoriesController < ApplicationController
-  before_action :authenticate_user!
-  before_action :check_role
-  before_action :check_patient
+  before_action :authenticate_user!, :check_role, :check_patient
   before_action :check_history, only: [:edit, :delete]
+  rescue_from ActiveRecord::RecordInvalid, with: :handle_validation_error
+
 
   # Create a new history route; this is used to create comments on subjects.
   def create
@@ -17,7 +17,7 @@ class HistoriesController < ApplicationController
     history.original_comment = history if history.history_type == History::HISTORY_TYPES[:comment]
 
     # Attempt to save and continue; else if failed redirect to index
-    render(json: history.errors, status: 422) && return unless history.save
+    history.save!
 
     render(json: history) && return
   end
@@ -40,6 +40,8 @@ class HistoriesController < ApplicationController
            .update_all({ deleted_by: current_user.email, delete_reason: params.permit(:delete_reason)[:delete_reason] })
   end
 
+  private
+
   def check_role
     redirect_to root_url unless current_user.can_create_subject_history?
   end
@@ -52,5 +54,9 @@ class HistoriesController < ApplicationController
   def check_history
     @history = @patient.histories.find_by(id: params.require(:id))
     redirect_to root_url && return if @history.nil? || @history.history_type != History::HISTORY_TYPES[:comment]
+  end
+
+  def handle_validation_error(error)
+    render(json: error.record.errors, status: 422)
   end
 end
