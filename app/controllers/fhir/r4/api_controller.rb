@@ -428,7 +428,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   end
 
   # Return a FHIR Bundle containing a monitoree and all their assessments, lab results,
-  # close contacts, and vaccinations
+  # close contacts, vaccinations, and histories
   #
   # GET /fhir/r4/Patient/[:id]/$everything
   def all

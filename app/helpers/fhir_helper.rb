@@ -242,22 +242,22 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def history_as_fhir(history)
+    history_creator_reference = FHIR::Reference.new
+    history_creator_reference.identifier = history.created_by
     FHIR::Provenance.new(
       meta: FHIR::Meta.new(lastUpdated: history.updated_at.strftime('%FT%T%:z')),
       id: history.id,
-      patient_id: history.patient_id,
-      occurrenceDateTime: history.created_at,
-      recorded: history.updated_at,
-      reason: [
-        {
-          text: history.comment
-        }
-      ],
+      target: FHIR::Reference.new(reference: "/fhir/r4/Patient/#{history.patient_id}")
+      recorded: history.created_at,
       agent:[
         {
-          who: FHIR::Reference.new(reference: "User/#{history.created_by}"),
-          onBehalfOf: FHIR::Reference.new(reference: "Patient/#{history.patient_id}")
+          who: history_creator_reference,
+          onBehalfOf: FHIR::Reference.new(reference: "/fhir/r4/Patient/#{history.patient_id}")
         }
+      ],
+      extension: [
+        to_string_extension(history.comment),
+        to_string_extension(history.history_type)
       ]
     )
   end
