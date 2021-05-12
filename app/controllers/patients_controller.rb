@@ -450,17 +450,23 @@ class PatientsController < ApplicationController
     end
     patients = current_user.get_patients(patient_ids)
 
-    # For Monitorees who are closed, we don't want to update their `monitoring` status
-    # Or their `isolation` value through the bulk action case status modal.
-    # It is slightly more performant to pre-calculate this outside the loop below
-    closed_params = params.except('monitoring', 'isolation')
-    closed_params[:diffState] = closed_params[:diffState]&.without('monitoring', 'isolation')
+    if params.permit(:bulk_edit_type)[:bulk_edit_type] == 'follow-up'
+      patients.each do |patient|
+        update_follow_up_flag_fields(patient, params)
+      end
+    else
+      # For Monitorees who are closed, we don't want to update their `monitoring` status
+      # Or their `isolation` value through the bulk action case status modal.
+      # It is slightly more performant to pre-calculate this outside the loop below
+      closed_params = params.except('monitoring', 'isolation')
+      closed_params[:diffState] = closed_params[:diffState]&.without('monitoring', 'isolation')
 
-    patients.each do |patient|
-      # We never want to update closed records monitoring status via the bulk_update
-      update_params = patient.monitoring ? params : closed_params
-      update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
-                               update_params[:apply_to_household] ? :group : :none)
+      patients.each do |patient|
+        # We never want to update closed records monitoring status via the bulk_update
+        update_params = patient.monitoring ? params : closed_params
+        update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
+                                update_params[:apply_to_household] ? :group : :none)
+      end
     end
   end
 
@@ -556,6 +562,10 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
 
+    update_follow_up_flag_fields(patient, params)
+  end
+
+  def update_follow_up_flag_fields(patient, params)
     clear_flag = params.permit(:clear_flag)[:clear_flag]
     history_data = {}
     if clear_flag

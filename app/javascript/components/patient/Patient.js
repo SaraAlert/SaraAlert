@@ -143,6 +143,19 @@ class Patient extends React.Component {
                 {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
               </h3>
             </Row>
+            {!this.props?.details?.follow_up_reason && (
+              <Button
+                id="follow-up-flag-link"
+                variant="link"
+                className="p-0"
+                aria-label="Flag for Follow-up"
+                onClick={() => this.setState({ action: 'Flag for Follow-Up' })}>
+                <span className="pl-2">
+                  {' '}
+                  <i className="fas fa-flag"></i> Flag for Follow-up
+                </span>
+              </Button>
+            )}
             {this.props?.details?.follow_up_reason && (
               <Row>
                 <div className="follow-up-flag-box">
@@ -152,19 +165,21 @@ class Patient extends React.Component {
                   <Col lg={20} className="col-xxl-12">
                     <div>
                       <b>Flagged for Follow-up</b>
+                      <div className="edit-link">
+                        <Button
+                          id="edit-follow-up-flag-link"
+                          variant="link"
+                          className="py-0"
+                          onClick={() => this.setState({ action: 'Flag for Follow-Up' })}
+                          aria-label={'Edit Follow-up Flag'}>
+                          <span className="pl-2">Edit Flag</span>
+                        </Button>
+                      </div>
                     </div>
                     <div>
                       Reason: {this.props.details.follow_up_reason}
                       {this.props.details.follow_up_note && ' - ' + this.props.details.follow_up_note}
                     </div>
-                    <Button
-                      id="clear-follow-up-flag-link"
-                      variant="link"
-                      className="p-0"
-                      aria-label="Clear Follow-up Flag"
-                      onClick={() => this.setState({ action: 'Flag for Follow-Up' })}>
-                      <span className="pl-2">Clear Flag</span>
-                    </Button>
                   </Col>
                 </div>
               </Row>
@@ -706,7 +721,7 @@ class Patient extends React.Component {
               follow_up_reasons={this.props.follow_up_reasons}
               other_household_members={this.props.other_household_members}
               close={() => this.setState({ action: undefined })}
-              clear_flag={true}
+              bulk_action={false}
             />
           )}
         </Modal>

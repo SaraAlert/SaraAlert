@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form, Button, Modal } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import ReactTooltip from 'react-tooltip';
 
@@ -13,15 +13,48 @@ class FollowUpFlag extends React.Component {
     this.state = {
       apply_to_household: false,
       apply_to_household_ids: [],
+      noMembersSelected: false,
+      bulk_action_apply_to_household: false,
       cancelToken: axios.CancelToken.source(),
-      clear_flag: this.props.clear_flag,
+      clear_flag_disabled: true,
+      clear_flag: false,
       clear_flag_reason: '',
-      follow_up_reason: this.props.patient.follow_up_reason || '',
-      follow_up_note: this.props.patient.follow_up_note || '',
+      follow_up_reason: '',
+      follow_up_note: '',
+      initial_follow_up_reason: '',
+      initial_follow_up_note: '',
       loading: false,
       showModal: false,
-      noMembersSelected: false,
     };
+  }
+
+  componentDidMount() {
+    var state_updates = {};
+    if (this.props.bulk_action) {
+      const distinctFollowUpReason = [...new Set(this.props.patients.map(x => x.flagged_for_follow_up.follow_up_reason))];
+      const distinctFollowUpNote = [...new Set(this.props.patients.map(x => x.flagged_for_follow_up.follow_up_note))];
+
+      if (!(distinctFollowUpReason.length === 1 && distinctFollowUpReason[0] === null)) {
+        state_updates.clear_flag_disabled = false;
+      }
+      if (distinctFollowUpReason.length === 1 && distinctFollowUpReason[0] !== null) {
+        state_updates.follow_up_reason = distinctFollowUpReason[0];
+      }
+      if (distinctFollowUpNote.length === 1 && distinctFollowUpNote[0] !== null) {
+        state_updates.follow_up_note = distinctFollowUpNote[0];
+      }
+
+      if (Object.keys(state_updates).length) {
+        this.setState(state_updates);
+      }
+    } else {
+      if (this.props.patient.follow_up_reason) {
+        state_updates.clear_flag_disabled = false;
+        state_updates.follow_up_reason = this.props.patient.follow_up_reason;
+        state_updates.follow_up_note = this.props.patient.follow_up_note;
+        this.setState(state_updates);
+      }
+    }
   }
 
   handleChange = event => {
@@ -32,8 +65,10 @@ class FollowUpFlag extends React.Component {
       this.setState({ follow_up_note: value });
     } else if (event.target.id === 'apply_to_household') {
       this.setState({ apply_to_household: value });
-    } else if (event.target.id == 'clear_flag') {
-      this.setState({ clear_flag: value });
+    } else if (event.target.id == 'set_flag_for_follow_up') {
+      this.setState({ clear_flag: false });
+    } else if (event.target.id == 'clear_flag_for_follow_up') {
+      this.setState({ clear_flag: true });
     } else if (event.target.id == 'clear_flag_reason') {
       this.setState({ clear_flag_reason: value });
     }
@@ -53,22 +88,43 @@ class FollowUpFlag extends React.Component {
   submit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/follow_up_flag', {
-          follow_up_reason: this.state.follow_up_reason,
-          follow_up_note: this.state.follow_up_note,
-          clear_flag: this.state.clear_flag,
-          clear_flag_reason: this.state.clear_flag_reason,
-          apply_to_household: this.state.apply_to_household,
-          apply_to_household_ids: this.state.apply_to_household_ids,
-        })
-        .then(() => {
-          // Reload the page to see the flag on the monitoree's page
-          location.reload();
-        })
-        .catch(err => {
-          reportError(err?.response?.data?.error ? err.response.data.error : err, false);
-        });
+      if (this.props.bulk_action) {
+        let idArray = this.props.patients.map(x => x['id']);
+        axios
+          .post(window.BASE_PATH + '/patients/bulk_edit', {
+            ids: idArray,
+            bulk_edit_type: 'follow-up',
+            follow_up_reason: this.state.follow_up_reason,
+            follow_up_note: this.state.follow_up_note,
+            clear_flag: this.state.clear_flag,
+            clear_flag_reason: this.state.clear_flag_reason,
+            apply_to_household: this.state.bulk_action_apply_to_household,
+          })
+          .then(() => {
+            location.href = window.BASE_PATH;
+          })
+          .catch(error => {
+            reportError(error);
+            this.setState({ loading: false });
+          });
+      } else {
+        axios
+          .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/follow_up_flag', {
+            follow_up_reason: this.state.follow_up_reason,
+            follow_up_note: this.state.follow_up_note,
+            clear_flag: this.state.clear_flag,
+            clear_flag_reason: this.state.clear_flag_reason,
+            apply_to_household: this.state.apply_to_household,
+            apply_to_household_ids: this.state.apply_to_household_ids,
+          })
+          .then(() => {
+            // Reload the page to see the flag on the monitoree's page
+            location.reload();
+          })
+          .catch(err => {
+            reportError(err?.response?.data?.error ? err.response.data.error : err, false);
+          });
+      }
     });
   };
 
@@ -87,28 +143,31 @@ class FollowUpFlag extends React.Component {
     return (
       <React.Fragment>
         <Modal.Body className="modal-follow-up-flag-body">
-          {this.props.patient.follow_up_reason && (
-            <Form.Group>
-              <Form.Label>Option to clear the flagged status:</Form.Label>
-              <Form.Check
-                size="lg"
-                label={`Clear Follow-up Flag`}
-                id="clear_flag"
-                className="ml-1 d-inline"
-                checked={this.state.clear_flag}
-                onChange={this.handleChange}
-              />
-              {!this.state.clear_flag && <Form.Label>Please update the reason and/or note for being flagged for follow-up.</Form.Label>}
-            </Form.Group>
-          )}
+          <Form.Group>
+            <Form.Check
+              type="radio"
+              name="flag_for_follow_up_option"
+              id="set_flag_for_follow_up"
+              label="Set Follow-up Flag"
+              onChange={this.handleChange}
+              checked={!this.state.clear_flag}
+            />
+            <Form.Check
+              type="radio"
+              name="flag_for_follow_up_option"
+              id="clear_flag_for_follow_up"
+              label="Clear Follow-up Flag"
+              disabled={this.state.clear_flag_disabled}
+              onChange={this.handleChange}
+              checked={this.state.clear_flag}
+            />
+          </Form.Group>
           {!this.state.clear_flag && (
             <Form.Group>
-              {!this.props.patient.follow_up_reason && (
-                <Form.Label>
-                  Please select a reason for being flagged for follow-up. If a monitoree is already flagged, this reason will replace any previously selected
-                  reason.
-                </Form.Label>
-              )}
+              <Form.Label>
+                Please select a reason for being flagged for follow-up. If a monitoree is already flagged, this reason will replace any previously selected
+                reason.
+              </Form.Label>
               <Form.Control
                 as="select"
                 size="lg"
@@ -123,17 +182,14 @@ class FollowUpFlag extends React.Component {
                   </option>
                 ))}
               </Form.Control>
-              <Form.Label>Please include any additional details:</Form.Label>
-              <Form.Control as="textarea" rows="2" id="follow_up_note" value={this.state.follow_up_note} onChange={this.handleChange} />
+              <br />
+              <Form.Group>
+                <Form.Label>Please include any additional details:</Form.Label>
+                <Form.Control as="textarea" rows="2" id="follow_up_note" value={this.state.follow_up_note} onChange={this.handleChange} />
+              </Form.Group>
             </Form.Group>
           )}
-          {this.state.clear_flag && (
-            <Form.Group>
-              <Form.Label>Please include any additional details:</Form.Label>
-              <Form.Control as="textarea" rows="2" id="clear_flag_reason" value={this.state.clear_flag_reason} onChange={this.handleChange} />
-            </Form.Group>
-          )}
-          {this.props.other_household_members.length > 0 && (
+          {this.props.other_household_members.length > 0 && !this.props.bulk_action && (
             <ApplyToHousehold
               household_members={this.props.other_household_members}
               current_user={this.props.current_user}
@@ -141,6 +197,25 @@ class FollowUpFlag extends React.Component {
               handleApplyHouseholdChange={this.handleApplyHouseholdChange}
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
             />
+          )}
+          {this.props.bulk_action && (
+            <React.Fragment>
+              <Form.Group className="my-2">
+                <Form.Check
+                  type="switch"
+                  id="bulk_action_apply_to_household"
+                  label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
+                  checked={this.state.bulk_action_apply_to_household}
+                  onChange={this.handleChange}
+                />
+              </Form.Group>
+            </React.Fragment>
+          )}
+          {this.state.clear_flag && (
+            <Form.Group className="mb-2">
+              <Form.Label>Please include any additional details for clearing the follow-up flag:</Form.Label>
+              <Form.Control as="textarea" rows="2" id="clear_flag_reason" value={this.state.clear_flag_reason} onChange={this.handleChange} />
+            </Form.Group>
           )}
         </Modal.Body>
         <Modal.Footer>
@@ -154,16 +229,23 @@ class FollowUpFlag extends React.Component {
           <Button
             variant="primary btn-square"
             onClick={this.submit}
-            disabled={this.state.follow_up_reason === '' || this.state.loading || this.state.noMembersSelected}>
+            disabled={(!this.state.clear_flag && this.state.follow_up_reason === '') || this.state.loading || this.state.noMembersSelected}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
               </React.Fragment>
             )}
-            Submit
+            <span data-for="follow-up-submit" data-tip="">
+              Submit
+            </span>
             {this.state.noMembersSelected && (
-              <ReactTooltip id="case-status-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
+              <ReactTooltip id="follow-up-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
                 <div>Please select at least one household member or change your selection to apply to this monitoree only</div>
+              </ReactTooltip>
+            )}
+            {!this.state.noMembersSelected && !this.state.clear_flag && this.state.follow_up_reason === '' && (
+              <ReactTooltip id="follow-up-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
+                <div>Please select a reason for follow-up</div>
               </ReactTooltip>
             )}
           </Button>
@@ -175,13 +257,14 @@ class FollowUpFlag extends React.Component {
 
 FollowUpFlag.propTypes = {
   patient: PropTypes.object,
+  patients: PropTypes.array,
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   authenticity_token: PropTypes.string,
   follow_up_reasons: PropTypes.array,
   other_household_members: PropTypes.array,
-  clear_flag: PropTypes.bool,
   close: PropTypes.func,
+  bulk_action: PropTypes.bool,
 };
 
 export default FollowUpFlag;

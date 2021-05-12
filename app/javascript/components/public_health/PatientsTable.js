@@ -27,6 +27,7 @@ import _ from 'lodash';
 
 import AdvancedFilter from './query/AdvancedFilter';
 import BadgeHoH from '../patient/household/utils/BadgeHoH';
+import FollowUpFlag from '../patient/FollowUpFlag';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import UpdateAssignedUser from './actions/UpdateAssignedUser';
@@ -44,6 +45,7 @@ class PatientsTable extends React.Component {
       table: {
         colData: [
           { field: 'name', label: 'Monitoree', isSortable: true, tooltip: null, filter: this.linkPatient },
+          { field: 'flagged_for_follow_up', label: '', isSortable: true, tooltip: null, filter: this.createFollowUpFlagTooltip, icon: 'fas fa-flag' },
           { field: 'jurisdiction', label: 'Jurisdiction', isSortable: true, tooltip: null },
           { field: 'transferred_from', label: 'From Jurisdiction', isSortable: true, tooltip: null },
           { field: 'transferred_to', label: 'To Jurisdiction', isSortable: true, tooltip: null },
@@ -518,6 +520,39 @@ class PatientsTable extends React.Component {
     return <EligibilityTooltip id={rowData.id.toString()} report_eligibility={reportEligibility} inline={false} />;
   };
 
+  createFollowUpFlagTooltip = data => {
+    const flaggedForFollowUp = data.value;
+    const rowData = data.rowData;
+    return (
+      <React.Fragment>
+        {flaggedForFollowUp.follow_up_reason && (
+          <React.Fragment>
+            <span key={`flagged-icon${rowData.id}`} data-for={`flagged${rowData.id}`} data-tip="">
+              <div className="text-center ml-0">
+                <i className="fa-fw fas fa-flag"></i>
+              </div>
+            </span>
+            <ReactTooltip
+              key={`flagged-tooltip${rowData.id}`}
+              id={`flagged${rowData.id}`}
+              multiline={true}
+              place="right"
+              type="dark"
+              effect="solid"
+              className="wide-tooltip-container">
+              <div>
+                Monitoree is flagged for follow-up.
+                <br />
+                {flaggedForFollowUp.follow_up_reason}
+                {flaggedForFollowUp.follow_up_note ? ` - ${flaggedForFollowUp.follow_up_note}` : ''}
+              </div>
+            </ReactTooltip>
+          </React.Fragment>
+        )}
+      </React.Fragment>
+    );
+  };
+
   /**
    * Get a local storage value
    * @param {String} key - relevant local storage key
@@ -673,6 +708,10 @@ class PatientsTable extends React.Component {
                         <i className="fas fa-users text-center" style={{ width: '1em' }}></i>
                         <span className="ml-2">Update Assigned User</span>
                       </Dropdown.Item>
+                      <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Flag for Follow-up' })}>
+                        <i className="fas fa-flag text-center" style={{ width: '1em' }}></i>
+                        <span className="ml-2">Flag for Follow-up</span>
+                      </Dropdown.Item>
                     </DropdownButton>
                   )}
                 </InputGroup>
@@ -729,6 +768,17 @@ class PatientsTable extends React.Component {
               assigned_users={this.state.assigned_users}
             />
           )}
+          {this.state.action === 'Flag for Follow-up' && (
+            <FollowUpFlag
+              patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              authenticity_token={this.props.authenticity_token}
+              follow_up_reasons={this.props.follow_up_reasons}
+              other_household_members={[]}
+              close={() => this.setState({ action: undefined })}
+              bulk_action={true}
+            />
+          )}
         </Modal>
         <ToastContainer position="top-center" autoClose={2000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
       </div>
@@ -748,6 +798,7 @@ PatientsTable.propTypes = {
   setQuery: PropTypes.func,
   setFilteredMonitoreesCount: PropTypes.func,
   monitoring_reasons: PropTypes.array,
+  follow_up_reasons: PropTypes.array,
 };
 
 export default PatientsTable;
