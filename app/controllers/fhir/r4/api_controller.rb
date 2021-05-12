@@ -107,13 +107,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       status_forbidden && return if patient.nil?
 
       # Get the contents from applying a patch, if needed
-      if request.patch? && !patient.nil?
-        begin
-          contents = apply_patch(patient, patch)
-        rescue StandardError => e
-          status_bad_request([['Unable to apply patch', e&.message].compact.join(': ')]) && return
-        end
-      end
+      contents = apply_patch(patient, patch) if request.patch?
 
       # Get patient values before updates occur for later comparison
       patient_before = patient.dup
@@ -156,13 +150,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       status_forbidden && return if close_contact.nil?
 
       # Get the contents from applying a patch, if needed
-      if request.patch? && !close_contact.nil?
-        begin
-          contents = apply_patch(close_contact, patch)
-        rescue StandardError => e
-          status_bad_request([['Unable to apply patch', e&.message].compact.join(': ')]) && return
-        end
-      end
+      contents = apply_patch(close_contact, patch) if request.patch?
 
       fhir_map = close_contact_from_fhir(contents)
       request_updates = fhir_map.transform_values { |v| v[:value] }
@@ -192,13 +180,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       status_forbidden && return if vaccine.nil?
 
       # Get the contents from applying a patch, if needed
-      if request.patch? && !vaccine.nil?
-        begin
-          contents = apply_patch(vaccine, patch)
-        rescue StandardError => e
-          status_bad_request([['Unable to apply patch', e&.message].compact.join(': ')]) && return
-        end
-      end
+      contents = apply_patch(vaccine, patch) if request.patch?
 
       fhir_map = vaccine_from_fhir(contents)
       request_updates = fhir_map.transform_values { |v| v[:value] }
@@ -831,6 +813,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     [resource, fhir_map]
   end
 
+  class ClientError < StandardError; end
+
   # Handle general unkown error. Log and serve a 500
   def handle_server_error(error)
     Rails.logger.error ([error.message] + error.backtrace).join("\n")
@@ -961,6 +945,8 @@ class Fhir::R4::ApiController < ApplicationApiController
   # Apply a patch to a resource that can be represented as FHIR
   def apply_patch(resource, patch)
     FHIR.from_contents(patch.apply(resource.as_fhir.to_hash).to_json)
+  rescue StandardError => e
+    status_bad_request([['Unable to apply patch', e&.message].compact.join(': ')]) && (raise ClientError)
   end
 
   # Check accept header for correct mime type (or allow fhir _format)
