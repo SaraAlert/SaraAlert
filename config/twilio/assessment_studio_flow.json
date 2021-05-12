@@ -1,5 +1,5 @@
 {
-  "description": "SaraAlertDemoFlow",
+  "description": "SaraAlertProdFlow",
   "states": [
     {
       "name": "Trigger",
@@ -1077,7 +1077,7 @@
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_sms\", \"error_code\": {{widgets.bad_response.outbound.ErrorCode}}, \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "body": "{\"response_status\": \"error_sms\", \"error_code\": \"{{widgets.bad_response.outbound.ErrorCode}}\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
         "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
@@ -1268,7 +1268,7 @@
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
         "body": "{% assign i=flow.variables.iterator | plus:0 %}\n{{flow.data.messages_array[i].prompt}}",
-        "timeout": "0"
+        "timeout": "10"
       }
     },
     {
