@@ -185,6 +185,13 @@ export const advancedFilterOptions = [
     type: 'select',
     options: ['High', 'Medium', 'Low', 'No Identified Risk', '']
   },
+  {
+    name: 'flagged-for-follow-up',
+    title: 'Flagged for Follow-up (Select)',
+    description: 'Monitoree flagged for follow-up',
+    type: 'select',
+    options: ['Any Reason', 'Deceased', 'Duplicate', 'High-Risk', 'Hospitalized', 'In Need of Follow-up', 'Lost to Follow-up', 'Needs Interpretation', 'Quality Assurance', 'Other']
+  },
 
   /* NUMBER FILTER OPTIONS */
   {

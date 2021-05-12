@@ -457,6 +457,12 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = advanced_filter_quarantine_option(patients, filter, tz_offset, :ten_day)
       when 'seven-day-quarantine'
         patients = advanced_filter_quarantine_option(patients, filter, tz_offset, :seven_day)
+      when 'flagged-for-follow-up'
+        patients = if filter[:value] == 'Any Reason'
+                     patients.where.not(follow_up_reason: [nil, ''])
+                   else
+                     patients.where(follow_up_reason: filter[:value])
+                   end
       end
     end
     patients
