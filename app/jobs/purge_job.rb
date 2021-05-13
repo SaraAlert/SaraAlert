@@ -5,10 +5,13 @@ class PurgeJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
+    job_info = {
+      start_time: DateTime.now
+    }
     eligible = Patient.purge_eligible
     purged = []
     not_purged = []
-    eligible_count = eligible.count
+    job_info[:eligible] = eligible.count
 
     # Loop through and purge
     eligible.find_each do |monitoree|
@@ -41,8 +44,21 @@ class PurgeJob < ApplicationJob
     ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged: true).ids).ids).delete_all
     Assessment.where(patient_id: Patient.where(purged: true).ids).delete_all
 
-    # Send results
-    UserMailer.purge_job_email(purged, not_purged, eligible_count).deliver_now
+    # Gather statistics
+    job_info[:end_time] = DateTime.now
+    job_info[:not_purged_count] = not_purged.length
+    job_info[:purged_count] = purged.length
+    total_purged_emails_to_send = calculate_total_emails(job_info[:not_purged_count] + job_info[:purged_count])
+
+    # in_groups_of will not perform an iteration if the array is empty.
+    if (job_info[:not_purged_count] + job_info[:purged_count]).zero?
+      UserMailer.purge_job_email([], { current: 1, total: total_purged_emails_to_send }, job_info).deliver_later
+    else
+      # Send results in batches to avoid emails that are too large to send
+      (purged | not_purged).in_groups_of(ADMIN_OPTIONS['job_run_email_group_size'].to_i, false) do |group, index|
+        UserMailer.purge_job_email([group], { current: index, total: total_purged_emails_to_send }, job_info).deliver_later
+      end
+    end
   end
 
   # Everything except these will be set to nil
@@ -57,5 +73,14 @@ class PurgeJob < ApplicationJob
        black_or_african_american american_indian_or_alaska_native asian
        native_hawaiian_or_other_pacific_islander race_other race_unknown
        race_refused_to_answer ethnicity purged continuous_exposure time_zone]
+  end
+
+  private
+
+  def calculate_total_emails(total_monitorees)
+    total_emails = (total_monitorees.to_f / ADMIN_OPTIONS['job_run_email_group_size'].to_i).ceil
+    return total_emails if total_emails > 1
+
+    1
   end
 end
