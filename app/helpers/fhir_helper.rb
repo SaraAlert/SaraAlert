@@ -7,6 +7,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   OMB_URL = 'ombCategory'
   DETAILED_URL = 'detailed'
 
+  # Switch the context of the paths on a fhir_map from old_context to new_context. For example
+  # A Patient resource may have paths such as Patient.birthDate, but if that Patient resource
+  # actually exists in an array of Bundle entries, the correct path is Bundle.entry[<index>].birthDate
   def change_fhir_map_context!(fhir_map, old_context, new_context)
     fhir_map.transform_values! { |v| { path: v[:path].sub(old_context, new_context), value: v[:value], errors: v[:errors] } }
   end
@@ -361,7 +364,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         ]
       ),
       subject: FHIR::Reference.new(reference: "Patient/#{laboratory.patient_id}"),
-      effectiveDateTime: laboratory.specimen_collection&.strftime('%FT%T%:z'),
+      effectiveDateTime: laboratory.specimen_collection,
       valueCodeableConcept: coded_result.nil? ? nil : FHIR::CodeableConcept.new(
         text: laboratory.result,
         coding: [

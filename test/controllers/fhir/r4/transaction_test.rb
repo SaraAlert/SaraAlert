@@ -68,6 +68,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be forbidden via transaction with only Patient scope' do
     post(
       '/fhir/r4',
+      params: @bundle.to_json,
       headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :forbidden

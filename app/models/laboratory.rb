@@ -11,7 +11,7 @@ class Laboratory < ApplicationRecord
     positive: { system: 'http://snomed.info/sct', code: '10828004' },
     negative: { system: 'http://snomed.info/sct', code: '260385009' },
     indeterminate: { system: 'http://snomed.info/sct', code: '82334004' },
-    other: { system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', code: 'oth' }
+    other: { system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', code: 'OTH' }
   }.freeze
   CODE_TO_RESULT = {
     **RESULT_TO_CODE
@@ -23,8 +23,8 @@ class Laboratory < ApplicationRecord
     'IgG Antibody': { system: 'http://loinc.org', code: '94563-4' },
     'IgM Antibody': { system: 'http://loinc.org', code: '94564-2' },
     'IgA Antibody': { system: 'http://loinc.org', code: '94562-6' },
-    Other: { system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', code: 'oth' },
-    '': { system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', code: 'unk' }
+    Other: { system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', code: 'OTH' },
+    '': { system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', code: 'UNK' }
   }.freeze
   CODE_TO_LAB_TYPE = {
     **LAB_TYPE_TO_CODE
@@ -55,7 +55,7 @@ class Laboratory < ApplicationRecord
   end
 
   def self.code_to_result(system, code)
-    CODE_TO_RESULT[{ system: system, code: code&.downcase }]
+    CODE_TO_RESULT[{ system: system, code: code&.upcase }]
   end
 
   def self.result_to_code(result)
@@ -63,12 +63,12 @@ class Laboratory < ApplicationRecord
   end
 
   def self.code_to_lab_type(system, code)
-    CODE_TO_LAB_TYPE[{ system: system, code: code&.downcase }]
+    CODE_TO_LAB_TYPE[{ system: system, code: code&.upcase }]
   end
 
   def self.lab_type_to_code(lab_type)
-    # The lab type must always be specified in FHIR, so when no code can be found, we default to 'unk'
-    LAB_TYPE_TO_CODE[lab_type&.to_sym] || { system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', code: 'unk' }
+    # The lab type must always be specified in FHIR, so when no code can be found, we default to 'UNK'
+    LAB_TYPE_TO_CODE[lab_type&.to_sym] || { system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', code: 'UNK' }
   end
 
   private

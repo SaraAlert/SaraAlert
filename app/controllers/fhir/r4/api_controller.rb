@@ -83,12 +83,14 @@ class Fhir::R4::ApiController < ApplicationApiController
       status_unsupported_media_type && return unless content_type_header?('application/json-patch+json')
 
       # Parse in the JSON patch
-      patch = Hana::Patch.new(JSON.parse(request.body.string))
+      request_body = request.body.read
+      patch = Hana::Patch.new(JSON.parse(request_body))
     else
       status_unsupported_media_type && return unless content_type_header?('application/fhir+json')
 
       # Parse in the FHIR
-      contents = FHIR.from_contents(request.body.string)
+      request_body = request.body.read
+      contents = FHIR.from_contents(request_body) if !request_body.blank?
       errors = contents&.validate
       status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
     end
@@ -130,7 +132,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       ActiveRecord::Base.transaction do
         # Verify that the updated jurisdiction and other updates are valid
         unless jurisdiction_valid_for_update?(patient) && patient.save(context: :api)
-          req_json = request.patch? ? patient.as_fhir.to_json : JSON.parse(request.body.string)
+          req_json = request.patch? ? patient.as_fhir.to_json : JSON.parse(request_body)
           status_unprocessable_entity(patient, fhir_map, req_json) && return
         end
 
@@ -170,7 +172,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       # Wrap updates to the CloseContact and History creation in a transaction
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(close_contact, :patient_id) && close_contact.save(context: :api)
-          req_json = request.patch? ? close_contact.as_fhir.to_json : JSON.parse(request.body.string)
+          req_json = request.patch? ? close_contact.as_fhir.to_json : JSON.parse(request_body)
           status_unprocessable_entity(close_contact, fhir_map, req_json) && return
         end
 
@@ -206,7 +208,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       # Wrap updates to the Vaccine and History creation in a transaction
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(vaccine, :patient_id) && vaccine.save
-          req_json = request.patch? ? vaccine.as_fhir.to_json : JSON.parse(request.body.string)
+          req_json = request.patch? ? vaccine.as_fhir.to_json : JSON.parse(request_body)
           status_unprocessable_entity(vaccine, fhir_map, req_json) && return
         end
 
@@ -242,7 +244,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       # Wrap updates to the Lab and History creation in a transaction
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(lab, :patient_id) && lab.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
-          req_json = request.patch? ? lab.as_fhir.to_json : JSON.parse(request.body.string)
+          req_json = request.patch? ? lab.as_fhir.to_json : JSON.parse(request_body)
           status_unprocessable_entity(lab, fhir_map, req_json) && (raise SaveError)
         end
 
@@ -294,7 +296,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_unsupported_media_type && return unless content_type_header?('application/fhir+json')
 
     # Parse in the FHIR
-    contents = FHIR.from_contents(request.body.string)
+    request_body = request.body.read
+    contents = FHIR.from_contents(request_body) if !request_body.blank?
     errors = contents&.validate
     status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
 
@@ -303,7 +306,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     when 'patient'
       return if doorkeeper_authorize!(*PATIENT_WRITE_SCOPES)
 
-      resource = save_patient(*build_patient(contents))
+      resource = save_patient(*build_patient(contents), request_body)
     when 'relatedperson'
       return if doorkeeper_authorize!(*RELATED_PERSON_WRITE_SCOPES)
 
@@ -313,7 +316,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api)
-          req_json = JSON.parse(request.body.string)
+          req_json = JSON.parse(request_body)
           status_unprocessable_entity(resource, fhir_map, req_json) && return
         end
 
@@ -331,7 +334,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save
-          req_json = JSON.parse(request.body.string)
+          req_json = JSON.parse(request_body)
           status_unprocessable_entity(resource, fhir_map, req_json) && return
         end
 
@@ -347,7 +350,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
-          req_json = JSON.parse(request.body.string)
+          req_json = JSON.parse(request_body)
           status_unprocessable_entity(resource, fhir_map, req_json) && (raise SaveError)
         end
 
@@ -374,12 +377,12 @@ class Fhir::R4::ApiController < ApplicationApiController
   def transaction
     status_unsupported_media_type && return unless content_type_header?('application/fhir+json')
 
-    # Must have both Observation and Patient write scopes, since both can be written
-    return if doorkeeper_authorize!(*OBSERVATION_WRITE_SCOPES)
+    # Must have Patient write scopes
     return if doorkeeper_authorize!(*PATIENT_WRITE_SCOPES)
 
     # Parse in the FHIR
-    contents = FHIR.from_contents(request.body.string)
+    request_body = request.body.read
+    contents = FHIR.from_contents(request_body) if !request_body.blank?
     errors = contents&.validate
     status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
 
@@ -398,8 +401,13 @@ class Fhir::R4::ApiController < ApplicationApiController
     end
 
     # Transform all of the Laboratories from FHIR
+    authorized = false
     contents.entry&.each_with_index do |entry, index|
       next unless entry.resource&.resourceType&.downcase == 'observation'
+
+      # If there are Observations, ensure user is authorized to write them
+      return if !authorized && doorkeeper_authorize!(*OBSERVATION_WRITE_SCOPES)
+      authorized = true
 
       # We require that each Observation references a Patient in the same Bundle
       referenced_patient = patients.find { |p| p[:full_url] == entry.resource&.subject&.reference }&.dig(:resource)
@@ -415,7 +423,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       referenced_patient.laboratories << resource
       # Laboratory must be validated here since errors are inaccessible when saving Patient
       unless resource.valid?(:api) && fhir_map.all? { |_k, v| v[:errors].blank? }
-        req_json = JSON.parse(request.body.string)
+        req_json = JSON.parse(request_body)
         status_unprocessable_entity(resource, fhir_map, req_json) && return
       end
     end
@@ -424,7 +432,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     saved_patients = []
     ActiveRecord::Base.transaction do
       patients.each do |patient|
-        saved_patients << save_patient(patient[:resource], patient[:fhir_map])
+        saved_patients << save_patient(patient[:resource], patient[:fhir_map], request_body)
       end
     end
 
@@ -771,12 +779,12 @@ class Fhir::R4::ApiController < ApplicationApiController
   end
 
   # Save a Patient model
-  def save_patient(resource, fhir_map)
+  def save_patient(resource, fhir_map, request_body)
     status_bad_request && (raise SaveError) if resource.nil?
 
     ActiveRecord::Base.transaction do
       unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
-        req_json = JSON.parse(request.body.string)
+        req_json = JSON.parse(request_body)
         status_unprocessable_entity(resource, fhir_map, req_json) && (raise SaveError)
       end
 
