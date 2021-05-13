@@ -565,12 +565,6 @@ Get a monitoree lab result via an id, e.g.:
   "meta": {
     "lastUpdated": "2021-05-06T12:44:19+00:00"
   },
-  "extension": [
-    {
-      "url": "http://saraalert.org/StructureDefinition/report-date",
-      "valueDate": "2021-05-07"
-    }
-  ],
   "status": "final",
   "category": [
     {
@@ -595,6 +589,7 @@ Get a monitoree lab result via an id, e.g.:
     "reference": "Patient/1"
   },
   "effectiveDateTime": "2021-05-06",
+  "issued": "2021-05-07T00:00:00+00:00",
   "valueCodeableConcept": {
     "coding": [
       {
@@ -1835,13 +1830,8 @@ To create a new monitoree lab result, simply POST a FHIR Observation resource th
     ]
   },
   "effectiveDateTime": "2021-05-06",
-  "resourceType": "Observation",
-  "extension": [
-    {
-      "url": "http://saraalert.org/StructureDefinition/report-date",
-      "valueDate": "2021-05-07"
-    }
-  ]
+  "issued": "2021-05-07T00:00:00+00:00",
+  "resourceType": "Observation"
 }
 ```
   </div>
@@ -2250,13 +2240,8 @@ On success, the server will update the existing resource given the id.
     ]
   },
   "effectiveDateTime": "2021-05-06",
+  "issued": "2021-05-07T00:00:00+00:00",
   "resourceType": "Observation",
-  "extension": [
-    {
-      "url": "http://saraalert.org/StructureDefinition/report-date",
-      "valueDate": "2021-05-07"
-    }
-  ]
 }
 ```
   </div>
@@ -2852,12 +2837,6 @@ GET `[base]/Observation?subject=Patient/[:id]`
         "meta": {
           "lastUpdated": "2021-05-06T12:44:19+00:00"
         },
-        "extension": [
-          {
-            "url": "http://saraalert.org/StructureDefinition/report-date",
-            "valueDate": "2021-05-07"
-          }
-        ],
         "status": "final",
         "category": [
           {
@@ -2882,6 +2861,7 @@ GET `[base]/Observation?subject=Patient/[:id]`
           "reference": "Patient/1"
         },
         "effectiveDateTime": "2021-05-06",
+        "issued": "2021-05-07T00:00:00+00:00",
         "valueCodeableConcept": {
           "coding": [
             {
@@ -3426,12 +3406,6 @@ See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) docum
         "url": "Observation"
       },
       "resource": {
-        "extension": [
-          {
-            "url": "http://saraalert.org/StructureDefinition/report-date",
-            "valueDate": "2021-05-07"
-          }
-        ],
         "status": "final",
         "category": [
           {
@@ -3464,7 +3438,7 @@ See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) docum
           "reference": "urn:uuid:9c94a2bc-1929-4666-8099-9e8566b7d9ad"
         },
         "effectiveDateTime": "2021-05-06",
-
+        "issued": "2021-05-07T00:00:00+00:00",
         "resourceType": "Observation"
       }
     },
@@ -3760,12 +3734,6 @@ See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) docum
         "meta": {
           "lastUpdated": "2021-05-07T18:03:24+00:00"
         },
-        "extension": [
-          {
-            "url": "http://saraalert.org/StructureDefinition/report-date",
-            "valueDate": "2021-05-07"
-          }
-        ],
         "status": "final",
         "category": [
           {
@@ -3790,6 +3758,7 @@ See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) docum
           "reference": "Patient/30"
         },
         "effectiveDateTime": "2021-05-06",
+        "issued": "2021-05-07T00:00:00+00:00",
         "valueCodeableConcept": {
           "coding": [
             {
