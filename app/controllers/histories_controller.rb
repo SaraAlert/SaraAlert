@@ -42,7 +42,7 @@ class HistoriesController < ApplicationController
   private
 
   def check_role
-    rreturn head :forbidden unless current_user.can_create_subject_history?
+    return head :forbidden unless current_user.can_create_subject_history?
   end
 
   def check_patient
