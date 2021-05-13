@@ -29,7 +29,7 @@ class PatientsController < ApplicationController
     @close_contacts = @patient.close_contacts.order(:created_at)
     @histories = @patient.histories.order(:created_at).where(deleted_by: nil).group_by { |h| h.original_comment_id || h.id }.values.reverse
 
-    @num_pos_labs = @laboratories.count { |lab| lab[:result] == 'positive' }
+    @num_pos_labs = @laboratories.count { |lab| lab[:result] == 'positive' && lab[:specimen_collection].present? }
     @calculated_symptom_onset = calculated_symptom_onset(@patient)
 
     @possible_jurisdiction_paths = current_user.jurisdictions_for_transfer
