@@ -1,0 +1,8 @@
+{
+  "low": true,
+  "package-manager": "yarn",
+  "allowlist": [
+    1693
+  ],
+  "registry": "https://registry.npmjs.org"
+}

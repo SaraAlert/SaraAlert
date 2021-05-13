@@ -48,8 +48,8 @@ jobs:
         run: |
           bundle config path vendor/bundle
           bundle install
-      - name: Run Yarn Audit
-        run: yarn audit --groups dependencies
+      - name: Run audit-ci
+        run: yarn run audit-ci --config audit-ci.json
       - name: Run Gemsurance
         run: bundle exec gemsurance
       - name: Run Brakeman
