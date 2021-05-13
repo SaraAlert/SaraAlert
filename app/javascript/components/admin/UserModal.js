@@ -152,7 +152,7 @@ class UserModal extends React.Component {
                   onChange={this.handleChange}
                 />
               </InputGroup>
-              <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.notes.length} characters remaining </Form.Label>
+              <div className="character-limit-text">{MAX_NOTES_LENGTH - this.state.notes.length} characters remaining</div>
             </Form.Group>
           </Form>
         </Modal.Body>
