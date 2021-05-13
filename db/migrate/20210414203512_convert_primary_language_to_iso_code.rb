@@ -8,7 +8,8 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
     'Acoli' => ['acholi'],
     'American Sign Language' => ['Sign Languages', 'asl', 'sign language'],
     'bilingual spanish/english' => ['dad span/eng', 'span/eng'],
-    'bilingual english/spanish' => ['ENG/SPAN', 'eng/braz'],
+    'bilingual english/spanish' => ['ENG/SPAN'],
+    'bilingual english/portuguese' => ['eng/braz'],
     'bosnian' => ['bos'],
     'Chinese' => ['Chinese (Cantonese)', 'Chinese (Mandarin)', 'Chinese (not specified)', 'Mandarin', 'manderin chinese'],
     'English' => ['E', 'ENGLIAH', 'ENHLISH', 'Emglish', 'Engiish', 'Engish', 'Englaih', 'England', 'Englislh', 'Englsh', 'Englsih', 'Englxish', 'Enlish',
@@ -62,7 +63,7 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
       key = nil if key == 'nil'
       normalized_key = Languages.normalize_and_get_language_code(key).to_s
       value.each do |language|
-        custom_translations[language.to_sym] = ['bilingual english/spanish', 'bilingual spanish/english', nil].include?(key) ? key : normalized_key
+        custom_translations[language.to_sym] = ['bilingual english/spanish', 'bilingual spanish/english', 'bilingual english/portuguese', nil].include?(key) ? key : normalized_key
       end
     end
 
@@ -103,6 +104,9 @@ class ConvertPrimaryLanguageToIsoCode < ActiveRecord::Migration[6.1]
         when 'bilingual spanish/english'
           insert_history_items(key, 'spa', true) if TRANSLATION_COMMENTS.include?(key)
           Patient.where(purged: false).where(primary_language: key).update_all({ primary_language: 'spa', secondary_language: 'eng' })
+        when 'bilingual english/portuguese'
+          insert_history_items(key, 'eng', true) if TRANSLATION_COMMENTS.include?(key)
+          Patient.where(purged: false).where(primary_language: key).update_all({ primary_language: 'eng', secondary_language: 'por' })
         else
           insert_history_items(key, value, true) if TRANSLATION_COMMENTS.include?(key)
           Patient.where(purged: false).where(primary_language: key).update_all(primary_language: value)
