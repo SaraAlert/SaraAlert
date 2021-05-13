@@ -44,6 +44,7 @@ def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exi
   ActionMailer::Base.perform_deliveries = false
 
   timestamp = Time.now.utc.iso8601
+  `mkdir -p performance/benchmarks/output` # Create the folder if it doesn't exist already
   stackprof_file = "performance/benchmarks/output/#{name}_#{timestamp}_CPU.dump".gsub(':', '-')
   flamegraph_file = "performance/benchmarks/output/#{name}_#{timestamp}_FLM".gsub(':', '-')
   memprof_file = "performance/benchmarks/output/#{name}_#{timestamp}_MEM.log".gsub(':', '-')
@@ -99,6 +100,8 @@ def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exi
 
   restore(ENV['MYSQL_PATH']) if ENV['APP_IN_CI'].nil?
 
+  write_benchmark_json(name, benchmark_report.total, time_threshold)
+
   if time_threshold < elapsed_time
     puts 'TEST FAILED'
     exit(1) unless no_exit
@@ -108,6 +111,21 @@ def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exi
     exit(0) unless no_exit
     true
   end
+end
+
+def write_benchmark_json(name, duration, threshold)
+  contents = JSON.pretty_generate({
+                                    name: name,
+                                    branch: `git rev-parse --abbrev-ref HEAD`.strip,
+                                    duration: duration,
+                                    threshold: threshold,
+                                    passed: duration < threshold,
+                                    stackprof_enabled: ENV['NO_STACKPROF'].nil?,
+                                    memprof_enabled: ENV['NO_MEMPROF'].nil?,
+                                    created_at: Time.now.iso8601
+                                  })
+  output_file = "performance/benchmarks/output/benchmark_result_#{Time.now.to_i}.json"
+  File.open(output_file, 'w') { |f| f.write(contents) }
 end
 
 def check_mysql_path_env
