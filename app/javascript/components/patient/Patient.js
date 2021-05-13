@@ -19,6 +19,7 @@ class Patient extends React.Component {
       expandNotes: false,
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
+      expandFollowUpNotes: false,
       primaryLanguageDisplayName: null,
     };
   }
@@ -137,7 +138,7 @@ class Patient extends React.Component {
           <Col sm={12}>
             <Row>
               <h3>
-                <span aria-label={formatName(this.props.details)} className="pr-2">
+                <span aria-label={formatName(this.props.details)} className="pr-2 ml-15">
                   {formatName(this.props.details)}
                 </span>
                 {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
@@ -150,39 +151,52 @@ class Patient extends React.Component {
                 className="p-0"
                 aria-label="Flag for Follow-up"
                 onClick={() => this.setState({ action: 'Flag for Follow-Up' })}>
-                <span className="pl-2">
+                <span>
                   {' '}
                   <i className="fas fa-flag"></i> Flag for Follow-up
                 </span>
               </Button>
             )}
             {this.props?.details?.follow_up_reason && (
-              <Row>
+              <React.Fragment>
                 <div className="follow-up-flag-box">
-                  <Col>
-                    <i className="fas fa-flag"></i>
-                  </Col>
-                  <Col lg={20} className="col-xxl-12">
-                    <div>
-                      <b>Flagged for Follow-up</b>
-                      <div className="edit-link">
+                  <i className="fas fa-flag"></i>
+                  <span className="pl-2">
+                    <b>Flagged for Follow-up</b>
+                    <div className="edit-link">
+                      <Button
+                        id="edit-follow-up-flag-link"
+                        variant="link"
+                        className="py-0"
+                        onClick={() => this.setState({ action: 'Flag for Follow-Up' })}
+                        aria-label={'Edit Follow-up Flag'}>
+                        <span className="pl-2">Edit Flag</span>
+                      </Button>
+                    </div>
+                  </span>
+                  <div className="flag-note">
+                    <b>{this.props.details.follow_up_reason}</b>
+                    {this.props.details.follow_up_note && this.props.details.follow_up_note.length < 150 && (
+                      <span className="wrap-words">{' - ' + this.props.details.follow_up_note}</span>
+                    )}
+                    {this.props.details.follow_up_note && this.props.details.follow_up_note.length >= 150 && (
+                      <React.Fragment>
+                        <span className="wrap-words">
+                          {this.state.expandFollowUpNotes
+                            ? ' - ' + this.props.details.follow_up_note
+                            : ' - ' + this.props.details.follow_up_note.slice(0, 150) + ' ...'}
+                        </span>
                         <Button
-                          id="edit-follow-up-flag-link"
                           variant="link"
-                          className="py-0"
-                          onClick={() => this.setState({ action: 'Flag for Follow-Up' })}
-                          aria-label={'Edit Follow-up Flag'}>
-                          <span className="pl-2">Edit Flag</span>
+                          className="notes-button p-0"
+                          onClick={() => this.setState({ expandFollowUpNotes: !this.state.expandFollowUpNotes })}>
+                          {this.state.expandFollowUpNotes ? '(Collapse)' : '(View all)'}
                         </Button>
-                      </div>
-                    </div>
-                    <div>
-                      Reason: {this.props.details.follow_up_reason}
-                      {this.props.details.follow_up_note && ' - ' + this.props.details.follow_up_note}
-                    </div>
-                  </Col>
+                      </React.Fragment>
+                    )}
+                  </div>
                 </div>
-              </Row>
+              </React.Fragment>
             )}
           </Col>
           <Col sm={12}>

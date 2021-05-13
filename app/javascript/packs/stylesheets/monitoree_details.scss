@@ -1,5 +1,6 @@
 $jurisdiction-box: #e9ecef;
 $follow-up-box: #fff2b6;
+$follow-up-box-border: #f6d43a;
 $section-border: #ddd;
 
 #monitoree-details-header {
@@ -10,12 +11,6 @@ $section-border: #ddd;
   background-color: $jurisdiction-box;
   padding: 10px;
   float: right;
-}
-
-.follow-up-flag-box {
-  background-color: $follow-up-box;
-  padding: 10px;
-  float: left;
 }
 
 .section-header {
@@ -99,4 +94,19 @@ $section-border: #ddd;
 .chevron-closed {
   transform: rotate(90deg);
   transition: transform .3s;
+}
+
+.follow-up-flag-box {
+  background-color: $follow-up-box;
+  border: 2px solid $follow-up-box-border;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  float: left;
+}
+
+.flag-note {
+  padding-top: 5px;
+  padding-left: 24px;
 }

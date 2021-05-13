@@ -65,6 +65,8 @@ class FollowUpFlag extends React.Component {
       this.setState({ follow_up_note: value });
     } else if (event.target.id === 'apply_to_household') {
       this.setState({ apply_to_household: value });
+    } else if (event.target.id === 'bulk_action_apply_to_household') {
+      this.setState({ bulk_action_apply_to_household: value });
     } else if (event.target.id == 'set_flag_for_follow_up') {
       this.setState({ clear_flag: false });
     } else if (event.target.id == 'clear_flag_for_follow_up') {
@@ -143,10 +145,11 @@ class FollowUpFlag extends React.Component {
     return (
       <React.Fragment>
         <Modal.Body className="modal-follow-up-flag-body">
-          <Form.Group>
+          <Form.Group className="flag-radio-buttons">
             <Form.Check
               type="radio"
               name="flag_for_follow_up_option"
+              className="pr-50"
               id="set_flag_for_follow_up"
               label="Set Follow-up Flag"
               onChange={this.handleChange}
@@ -171,7 +174,7 @@ class FollowUpFlag extends React.Component {
               <Form.Control
                 as="select"
                 size="lg"
-                className="form-square"
+                className="form-square mb-25"
                 id="follow_up_reason"
                 value={this.state.follow_up_reason}
                 onChange={this.handleChange}>
@@ -182,10 +185,10 @@ class FollowUpFlag extends React.Component {
                   </option>
                 ))}
               </Form.Control>
-              <br />
               <Form.Group>
                 <Form.Label>Please include any additional details:</Form.Label>
-                <Form.Control as="textarea" rows="2" id="follow_up_note" value={this.state.follow_up_note} onChange={this.handleChange} />
+                <Form.Control as="textarea" rows="4" id="follow_up_note" maxLength="2000" value={this.state.follow_up_note} onChange={this.handleChange} />
+                <Form.Label className="notes-character-limit mb-25"> 2000 character limit </Form.Label>
               </Form.Group>
             </Form.Group>
           )}
@@ -200,7 +203,7 @@ class FollowUpFlag extends React.Component {
           )}
           {this.props.bulk_action && (
             <React.Fragment>
-              <Form.Group className="my-2">
+              <Form.Group className="mb-25">
                 <Form.Check
                   type="switch"
                   id="bulk_action_apply_to_household"
@@ -212,7 +215,7 @@ class FollowUpFlag extends React.Component {
             </React.Fragment>
           )}
           {this.state.clear_flag && (
-            <Form.Group className="mb-2">
+            <Form.Group className="mb-25">
               <Form.Label>Please include any additional details for clearing the follow-up flag:</Form.Label>
               <Form.Control as="textarea" rows="2" id="clear_flag_reason" value={this.state.clear_flag_reason} onChange={this.handleChange} />
             </Form.Group>

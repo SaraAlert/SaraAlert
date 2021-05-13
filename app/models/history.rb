@@ -15,7 +15,7 @@ class History < ApplicationRecord
     comment: 'Comment',
     enrollment: 'Enrollment',
     monitoring_change: 'Monitoring Change',
-    follow_up_flag: 'Follow-up Flag',
+    follow_up_flag: 'Follow Up Flag',
     monitoree_data_downloaded: 'Monitoree Data Downloaded',
     reports_reviewed: 'Reports Reviewed',
     report_reviewed: 'Report Reviewed',
