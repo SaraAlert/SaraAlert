@@ -47,12 +47,12 @@ class HistoriesController < ApplicationController
 
   def check_patient
     @patient = current_user.viewable_patients.find_by(id: params.require(:patient_id))
-    return head :forbidden && return if @patient.nil?
+    return head :forbidden if @patient.nil?
   end
 
   def check_history
     @history = @patient.histories.find_by(id: params.require(:id))
-    return head :bad_request && return if @history.nil? || @history.history_type != History::HISTORY_TYPES[:comment]
+    return head :bad_request if @history.nil? || @history.history_type != History::HISTORY_TYPES[:comment]
   end
 
   def handle_validation_error(error)
