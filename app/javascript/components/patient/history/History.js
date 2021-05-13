@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Form, Row } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
+import _ from 'lodash';
 
 import DeleteDialog from '../../util/DeleteDialog';
 import EditHistoryModal from './EditHistoryModal';
@@ -19,16 +20,16 @@ class History extends React.Component {
       editMode: false,
       showEditHistoryModal: false,
       showDeleteModal: false,
-      original_version: props.versions[0],
-      latest_version: props.versions[props.versions.length - 1],
-      comment: props.versions[props.versions.length - 1].comment,
+      original_version: _.first(props.versions),
+      latest_version: _.last(props.versions),
+      comment: _.last(props.versions).comment,
     };
   }
 
   handleChange = event => {
     this.setState({ [event.target.id]: event.target.value });
   };
-  
+
   toggleEditMode = () => {
     let current = this.state.editMode;
     this.setState({ editMode: !current, comment: this.state.latest_version.comment });
