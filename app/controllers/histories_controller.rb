@@ -42,17 +42,17 @@ class HistoriesController < ApplicationController
   private
 
   def check_role
-    redirect_to root_url unless current_user.can_create_subject_history?
+    rreturn head :forbidden unless current_user.can_create_subject_history?
   end
 
   def check_patient
     @patient = current_user.viewable_patients.find_by(id: params.require(:patient_id))
-    redirect_to root_url && return if @patient.nil?
+    return head :forbidden && return if @patient.nil?
   end
 
   def check_history
     @history = @patient.histories.find_by(id: params.require(:id))
-    redirect_to root_url && return if @history.nil? || @history.history_type != History::HISTORY_TYPES[:comment]
+    return head :bad_request && return if @history.nil? || @history.history_type != History::HISTORY_TYPES[:comment]
   end
 
   def handle_validation_error(error)
