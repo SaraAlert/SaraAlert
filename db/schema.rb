@@ -435,7 +435,7 @@ ActiveRecord::Schema.define(version: 2021_06_14_190551) do
     t.date "first_positive_lab_at"
     t.string "legacy_primary_language"
     t.string "legacy_secondary_language"
-    t.boolean "asymptomatic"
+    t.boolean "asymptomatic", default: false
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"

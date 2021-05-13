@@ -108,7 +108,7 @@ class SymptomOnset extends React.Component {
               <p className="mt-4 mb-2">
                 {`Since this record has no symptomatic assessments, the Symptom Onset Date auto-populated by the system will be blank. Please indicate this case
                 as asymptomatic${
-                  this.props.numPosLabs === 0 ? 'and enter a positive lab result ' : ''
+                  this.props.numPosLabs === 0 ? ' and enter a positive lab result' : ''
                 } in order for this record to be eligible to appear on the Records Requiring Review line list.`}
               </p>
               <Form.Check
@@ -214,7 +214,7 @@ class SymptomOnset extends React.Component {
           />
           {symptom_onset_invalid && (
             <Form.Control.Feedback className="d-block" type="invalid">
-              {`Please enter a Symptom Onset Date OR select Asymptomatic${this.props.numPosLabs == 0 ? 'and enter a positive lab result' : ''}`}
+              {`Please enter a Symptom Onset Date OR select Asymptomatic${this.props.numPosLabs == 0 ? ' and enter a positive lab result' : ''}`}
             </Form.Control.Feedback>
           )}
           <OverlayTrigger
@@ -241,7 +241,7 @@ class SymptomOnset extends React.Component {
           <InfoTooltip tooltipTextKey="asymptomatic" location="right"></InfoTooltip>
           {asymptomatic_invalid && (
             <Form.Control.Feedback className="d-block" type="invalid">
-              Please enter a positive lab result if this record is asymptomatic or provide a Symptom Onset Date.
+              Please enter a positive lab result with a specimen collection date if this record is asymptomatic or provide a Symptom Onset Date.
             </Form.Control.Feedback>
           )}
         </Form.Group>

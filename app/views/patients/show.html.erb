@@ -95,7 +95,7 @@
                                     authenticity_token: form_authenticity_token,
                                     patient: @patient,
                                     lab: lab,
-                                    onlyPosLab: @patient[:symptom_onset].nil? && lab[:result] == 'positive' && @num_pos_labs == 1
+                                    onlyPosLab: @patient[:symptom_onset].nil? && lab[:result] == 'positive' && lab[:specimen_collection].present? && @num_pos_labs == 1
                                   }) %>
             </div>
           </td>
