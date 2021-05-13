@@ -1,17 +1,24 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form, Button, Modal } from 'react-bootstrap';
-import axios from 'axios';
+import { Button, Form, Modal } from 'react-bootstrap';
 
+import _ from 'lodash';
+import axios from 'axios';
+import moment from 'moment';
+
+import DateInput from '../../../util/DateInput';
 import reportError from '../../../util/ReportError';
 
 class ClearAssessments extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      user_defined_symptom_onset: false,
+      asymptomatic: false,
       showClearAssessmentsModal: false,
       loading: false,
     };
+    this.origState = Object.assign({}, this.state);
   }
 
   toggleClearAssessmentsModal = () => {
@@ -26,10 +33,15 @@ class ClearAssessments extends React.Component {
   };
 
   submit = () => {
+    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(`${window.BASE_PATH}/patients/${this.props.patient.id}/status/clear${this.props.assessment_id ? '/' + '${this.props.assessment_id}' : ''}`, {
+        .post(`${window.BASE_PATH}/patients/${this.props.patient.id}/status/clear${this.props.assessment_id ? '/' + this.props.assessment_id : ''}`, {
+          symptom_onset: this.state.symptom_onset,
+          user_defined_symptom_onset: this.state.user_defined_symptom_onset,
+          asymptomatic: this.state.asymptomatic,
+          diffState: diffState,
           reasoning: this.state.reasoning,
         })
         .then(() => {
@@ -90,6 +102,52 @@ class ClearAssessments extends React.Component {
             <Form.Label>Please describe your reasoning:</Form.Label>
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} aria-label="Reasoning Text Area" />
           </Form.Group>
+          {!this.props.patient.user_defined_symptom_onset && !this.props.patient.asymptomatic && (!this.props.assessment_id || this.props.onlySympAssessment) && (
+            <React.Fragment>
+              <p className="my-4">
+                {`Marking ${
+                  this.props.assessment_id ? 'this report' : 'all reports'
+                } as reviewed will result in the system populated Symptom Onset Date being cleared. Please provide a Symptom Onset Date or select Asymptomatic${
+                  this.props.numPosLabs === 0 ? ' and enter a positive lab result' : ''
+                } in order for this record to be eligible to appear on the Records Requiring Review line list.`}
+              </p>
+              <Form.Label className="nav-input-label">SYMPTOM ONSET</Form.Label>
+              <DateInput
+                id="symptom_onset_mark_as_reviewed"
+                date={this.state.symptom_onset}
+                minDate={'2020-01-01'}
+                maxDate={moment()
+                  .add(30, 'days')
+                  .format('YYYY-MM-DD')}
+                onChange={date =>
+                  this.setState({
+                    symptom_onset: date,
+                    user_defined_symptom_onset: !!date,
+                    asymptomatic: false,
+                  })
+                }
+                placement="bottom"
+                customClass="form-control-lg"
+                ariaLabel="Symptom Onset Date Input"
+              />
+              <Form.Check
+                size="lg"
+                label="ASYMPTOMATIC"
+                id="asymptomatic_mark_as_reviewed"
+                className="mt-2"
+                checked={this.state.asymptomatic}
+                onChange={() =>
+                  this.setState(state => {
+                    return {
+                      symptom_onset: null,
+                      user_defined_symptom_onset: false,
+                      asymptomatic: !state.asymptomatic,
+                    };
+                  })
+                }
+              />
+            </React.Fragment>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary btn-square" onClick={toggle}>
@@ -130,6 +188,8 @@ ClearAssessments.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   assessment_id: PropTypes.number,
+  numPosLabs: PropTypes.number,
+  onlySympAssessment: PropTypes.bool,
 };
 
 export default ClearAssessments;

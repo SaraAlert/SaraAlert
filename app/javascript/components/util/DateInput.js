@@ -168,13 +168,13 @@ DateInput.propTypes = {
       return new Error('Invalid prop `date` supplied to `DateInput`, `date` must be a valid date string in the `YYYY-MM-DD` format.');
     }
   },
-  minDate: function (props) {
-    if (props.date && !moment(props.date, 'YYYY-MM-DD').isValid()) {
+  minDate: function(props) {
+    if (props.minDate && !moment(props.minDate, 'YYYY-MM-DD').isValid()) {
       return new Error('Invalid prop `minDate` supplied to `DateInput`, `date` must be a valid date string in the `YYYY-MM-DD` format.');
     }
   },
-  maxDate: function (props) {
-    if (props.date && !moment(props.date, 'YYYY-MM-DD').isValid()) {
+  maxDate: function(props) {
+    if (props.maxDate && !moment(props.maxDate, 'YYYY-MM-DD').isValid()) {
       return new Error('Invalid prop `maxDate` supplied to `DateInput`, `date` must be a valid date string in the `YYYY-MM-DD` format.');
     }
   },

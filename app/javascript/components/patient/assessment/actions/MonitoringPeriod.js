@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Col, Row } from 'react-bootstrap';
+import moment from 'moment';
 import { formatDate } from '../../../../utils/DateTime';
 
 import ExtendedIsolation from './ExtendedIsolation';
@@ -26,6 +27,8 @@ class MonitoringPeriod extends React.Component {
             authenticity_token={this.props.authenticity_token}
             patient={this.props.patient}
             symptomatic_assessments_exist={this.props.symptomatic_assessments_exist}
+            numPosLabs={this.props.numPosLabs}
+            calculatedSymptomOnset={this.props.calculatedSymptomOnset}
           />
         </Col>
         {!this.props.patient.isolation && (
@@ -74,6 +77,14 @@ MonitoringPeriod.propTypes = {
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   symptomatic_assessments_exist: PropTypes.bool,
+  numPosLabs: PropTypes.number,
+  calculatedSymptomOnset: function(props) {
+    if (props.calculatedSymptomOnset && !moment(props.calculatedSymptomOnset, 'YYYY-MM-DD').isValid()) {
+      return new Error(
+        'Invalid prop `calculatedSymptomOnset` supplied to `DateInput`, `calculatedSymptomOnset` must be a valid date string in the `YYYY-MM-DD` format.'
+      );
+    }
+  },
 };
 
 export default MonitoringPeriod;
