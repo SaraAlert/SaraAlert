@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_08_141314) do
+ActiveRecord::Schema.define(version: 2021_05_11_185510) do
 
   create_table "active_storage_attachments", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -158,6 +158,9 @@ ActiveRecord::Schema.define(version: 2021_05_08_141314) do
     t.string "history_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "deleted_by"
+    t.string "delete_reason"
+    t.bigint "original_comment_id"
     t.index ["patient_id"], name: "index_histories_on_patient_id"
   end
 

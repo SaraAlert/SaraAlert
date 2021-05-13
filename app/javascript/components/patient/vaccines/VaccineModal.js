@@ -193,7 +193,7 @@ class VaccineModal extends React.Component {
                   maxLength={MAX_NOTES_LENGTH}
                   onChange={this.handleNotesChange}
                 />
-                <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.notes.length} characters remaining </Form.Label>
+                <div className="character-limit-text">{this.state.notes ? MAX_NOTES_LENGTH - this.state.notes.length : 2000} characters remaining</div>
               </Form.Group>
             </Row>
           </Form>

@@ -16,11 +16,12 @@
   white-space: normal !important;
 }
 
-.notes-character-limit {
+.character-limit-text {
+  width: 100%;
   font-size: 10px;
   color: dimgray;
   font-style: italic;
-  float: right;
+  text-align: right;
 }
 
 .header-brand-text {

@@ -516,7 +516,7 @@ class Exposure extends React.Component {
               value={this.state.current.patient.exposure_notes || ''}
               onChange={this.handleChange}
             />
-            <Form.Label className="notes-character-limit"> {2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining </Form.Label>
+            <div className="character-limit-text">{2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining</div>
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['exposure_notes']}
             </Form.Control.Feedback>
@@ -804,7 +804,7 @@ class Exposure extends React.Component {
               value={this.state.current.patient.exposure_notes || ''}
               onChange={this.handleChange}
             />
-            <Form.Label className="notes-character-limit"> {2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining </Form.Label>
+            <div className="character-limit-text">{2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining</div>
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['exposure_notes']}
             </Form.Control.Feedback>

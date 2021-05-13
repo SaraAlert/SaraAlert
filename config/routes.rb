@@ -66,7 +66,10 @@ Rails.application.routes.draw do
   post 'admin/reset_2fa', to: 'admin#reset_2fa'
   post 'admin/email_all', to: 'admin#email_all'
 
-  resources :histories, only: [:create]
+  post '/histories', to: 'histories#create'
+  post '/histories/:id/edit', to: 'histories#edit'
+  post '/histories/:id/delete', to: 'histories#delete'
+
   resources :contact_attempts, only: [:create]
 
   post '/laboratories', to: 'laboratories#create'

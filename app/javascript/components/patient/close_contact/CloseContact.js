@@ -257,7 +257,7 @@ class CloseContact extends React.Component {
                 maxLength={MAX_NOTES_LENGTH}
                 onChange={this.handleChange}
               />
-              <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.notes.length} characters remaining </Form.Label>
+              <div className="character-limit-text">{MAX_NOTES_LENGTH - this.state.notes.length} characters remaining</div>
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['notes']}
               </Form.Control.Feedback>

@@ -1,144 +1,253 @@
 public_health_action_patient_6:
   id: 2006
   patient_id: 6
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 19.hours.ago %>
   updated_at: <%= 19.hours.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_7:
   id: 2007
   patient_id: 7
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 4.days.ago %>
   updated_at: <%= 4.days.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_8:
   id: 2008
   patient_id: 8
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 15.hours.ago %>
   updated_at: <%= 15.hours.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_9:
   id: 2009
   patient_id: 9
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 7.days.ago %>
   updated_at: <%= 7.days.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_10:
   id: 2010
   patient_id: 10
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 3.hours.ago %>
   updated_at: <%= 3.hours.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_11:
   id: 2011
   patient_id: 11
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 2.days.ago %>
   updated_at: <%= 2.days.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_12:
   id: 2012
   patient_id: 12
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended laboratory testing". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 9.hours.ago %>
   updated_at: <%= 9.hours.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_13:
   id: 2013
   patient_id: 13
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended laboratory testing". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 9.days.ago %>
   updated_at: <%= 9.days.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_14:
   id: 2014
   patient_id: 14
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 12.hours.ago %>
   updated_at: <%= 12.hours.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_15:
   id: 2015
   patient_id: 15
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 12.days.ago %>
   updated_at: <%= 12.days.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_16:
   id: 2016
   patient_id: 16
+  original_comment_id: null
   comment: 'User changed latest public health action to "Document results of medical evaluation". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 2.hours.ago %>
   updated_at: <%= 2.hours.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_17:
   id: 2017
   patient_id: 17
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 3.hours.ago %>
   updated_at: <%= 3.hours.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_18:
   id: 2018
   patient_id: 18
+  original_comment_id: null
   comment: 'User changed latest public health action to "Document results of medical evaluation". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 10.days.ago %>
   updated_at: <%= 10.days.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_19:
   id: 2019
   patient_id: 19
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 7.days.ago %>
   updated_at: <%= 7.days.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_20:
   id: 2020
   patient_id: 20
+  original_comment_id: null
   comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 5.hours.ago %>
   updated_at: <%= 5.hours.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_20_secondary:
-  id: 20202
+  id: 20201
   patient_id: 20
+  original_comment_id: null
   comment: 'User changed latest public health action to "Document results of medical evaluation". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 3.hours.ago %>
   updated_at: <%= 3.hours.ago %>
-public_health_action_patient_53:
+  deleted_by: null
+  delete_reason: null
+public_health_action_patient_20_comment_1:
+  id: 20202
+  patient_id: 20
+  original_comment_id: 20202
+  comment: 'I am a comment'
+  created_by: 'state1_epi_enroller@example.com'
+  history_type: 'Comment'
+  created_at: <%= 3.hours.ago %>
+  updated_at: <%= 3.hours.ago %>
+  deleted_by: null
+  delete_reason: null
+public_health_action_patient_20_comment_1_edit_1:
   id: 20203
+  patient_id: 20
+  original_comment_id: 20202
+  comment: 'I am an edited comment'
+  created_by: 'state1_epi_enroller@example.com'
+  history_type: 'Comment'
+  created_at: <%= 2.hours.ago %>
+  updated_at: <%= 2.hours.ago %>
+  deleted_by: null
+  delete_reason: null
+public_health_action_patient_20_comment_1_edit_2:
+  id: 20204
+  patient_id: 20
+  original_comment_id: 20202
+  comment: 'I am an edited comment!'
+  created_by: 'state1_epi_enroller@example.com'
+  history_type: 'Comment'
+  created_at: <%= 1.hours.ago %>
+  updated_at: <%= 1.hours.ago %>
+  deleted_by: null
+  delete_reason: null
+public_health_action_patient_20_comment_2:
+  id: 20205
+  patient_id: 20
+  original_comment_id: 20205
+  comment: 'I am another comment'
+  created_by: 'state1_epi_enroller@example.com'
+  history_type: 'Comment'
+  created_at: <%= 3.hours.ago %>
+  updated_at: <%= 3.hours.ago %>
+  deleted_by: null
+  delete_reason: null
+public_health_action_patient_20_deleted_comment:
+  id: 20206
+  patient_id: 20
+  original_comment_id: 20206
+  comment: 'I am a deleted comment'
+  created_by: 'state1_epi_enroller@example.com'
+  history_type: 'Comment'
+  created_at: <%= 3.hours.ago %>
+  updated_at: <%= 1.hours.ago %>
+  deleted_by: 'state1_epi_enroller@example.com'
+  delete_reason: 'Duplicate entry'
+public_health_action_patient_53:
+  id: 2021
   patient_id: 53
+  original_comment_id: null
   comment: 'System changed Symptom Onset Date from 04/15/2021 to 04/15/2021 because monitoree was moved from isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports.'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 3.days.ago %>
   updated_at: <%= 3.days.ago %>
+  deleted_by: null
+  delete_reason: null
 public_health_action_patient_54:
-  id: 20204
+  id: 2022
   patient_id: 54
+  original_comment_id: null
   comment: 'User changed Case Status from "Not a Case" to "Probable", and chose to "Continue Monitoring in Isolation Workflow".'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: <%= 3.days.ago %>
   updated_at: <%= 3.days.ago %>
+  deleted_by: null
+  delete_reason: null

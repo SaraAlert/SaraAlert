@@ -43,6 +43,14 @@ body {
   text-align: center;
 }
 
+.icon-btn {
+  color: #808080 !important;
+}
+
+.icon-btn:hover {
+  color: #404040 !important;
+}
+
 .react-datepicker-popper {
   z-index: 100 !important
 }
@@ -294,4 +302,9 @@ select.form-control {
   // This has been tested on Safari, IE11, MSEdge, Chrome, and Firefox and it behaves as expected
   word-break: break-all;
   word-break: break-word;
+}
+
+.edit-text {
+  color: #707070 !important;
+  font-size: .9em;
 }
