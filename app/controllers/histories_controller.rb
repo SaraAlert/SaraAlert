@@ -3,9 +3,8 @@
 # HistoriesController: for keeping track of user actions over time
 class HistoriesController < ApplicationController
   before_action :authenticate_user!, :check_role, :check_patient
-  before_action :check_history, only: [:edit, :delete]
+  before_action :check_history, only: %i[edit delete]
   rescue_from ActiveRecord::RecordInvalid, with: :handle_validation_error
-
 
   # Create a new history route; this is used to create comments on subjects.
   def create
@@ -36,8 +35,8 @@ class HistoriesController < ApplicationController
   def delete
     # mark each version of the history as deleted, not just the most recent one
     @patient.histories
-           .where(original_comment_id: @history.original_comment_id)
-           .update_all({ deleted_by: current_user.email, delete_reason: params.permit(:delete_reason)[:delete_reason] })
+            .where(original_comment_id: @history.original_comment_id)
+            .update_all({ deleted_by: current_user.email, delete_reason: params.permit(:delete_reason)[:delete_reason] })
   end
 
   private
