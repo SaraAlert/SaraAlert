@@ -9,6 +9,7 @@ class PurgeJob < ApplicationJob
       start_time: DateTime.now
     }
     eligible = Patient.purge_eligible
+    # Change to hash
     purged = []
     not_purged = []
     job_info[:eligible] = eligible.count
