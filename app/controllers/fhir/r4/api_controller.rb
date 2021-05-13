@@ -784,7 +784,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_bad_request && (raise SaveError) if resource.nil?
 
     ActiveRecord::Base.transaction do
-      unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
+      unless jurisdiction_valid_for_client?(resource) && resource.save(context: %i[api api_create])
         req_json = JSON.parse(request_body)
         status_unprocessable_entity(resource, fhir_map, req_json) && (raise SaveError)
       end

@@ -2082,20 +2082,20 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.isolation = true
     patient.symptom_onset = nil
-    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:api_create)
 
     patient.symptom_onset = 1.day.ago
-    assert patient.valid?(:api)
+    assert patient.valid?(:api_create)
 
     patient.symptom_onset = nil
     patient.laboratories << create(:laboratory, result: 'negative')
-    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:api_create)
 
     patient.laboratories << create(:laboratory, result: 'positive')
-    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:api_create)
 
     patient.laboratories << create(:laboratory, result: 'positive', specimen_collection: 1.day.ago)
-    assert patient.valid?(:api)
+    assert patient.valid?(:api_create)
   end
 
   test 'ten_day_quarantine_candidates scope checks purged, monitoring, isolation, and continuous_exposure' do

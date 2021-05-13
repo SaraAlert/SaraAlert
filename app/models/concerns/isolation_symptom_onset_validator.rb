@@ -8,7 +8,6 @@ class IsolationSymptomOnsetValidator < ActiveModel::Validator
   def validate(record)
     return unless record.isolation &&
                   record.symptom_onset.nil? &&
-                  record.laboratories.where(result: 'positive').where.not(specimen_collection: [nil, '']).length.zero? &&
                   record.laboratories.find { |lab| lab.result == 'positive' && !lab.specimen_collection.blank? }.nil?
 
     record.errors.add(:base,
