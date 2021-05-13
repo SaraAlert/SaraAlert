@@ -492,7 +492,7 @@ class Exposure extends React.Component {
             onlyPositiveResult={true}
             submit={this.handleLabChange}
             cancel={() => this.setState({ showLabModal: false })}
-            edit_mode={!!this.state.current.first_positive_lab}
+            editMode={!!this.state.current.first_positive_lab}
             loading={false}
           />
         )}

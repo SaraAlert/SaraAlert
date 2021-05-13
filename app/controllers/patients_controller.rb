@@ -2,6 +2,7 @@
 
 # PatientsController: handles all subject actions
 class PatientsController < ApplicationController
+  include PatientHelper
   include PatientQueryHelper
 
   before_action :authenticate_user!
@@ -27,6 +28,9 @@ class PatientsController < ApplicationController
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
     @histories = @patient.histories.order(:created_at).where(deleted_by: nil).group_by { |h| h.original_comment_id || h.id }.values.reverse
+
+    @num_pos_labs = @laboratories.count { |lab| lab[:result] == 'positive' }
+    @calculated_symptom_onset = calculated_symptom_onset(@patient)
 
     @possible_jurisdiction_paths = current_user.jurisdictions_for_transfer
     @possible_assigned_users = @jurisdiction.assigned_users
@@ -659,27 +663,41 @@ class PatientsController < ApplicationController
   def clear_assessments
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
-    patient = current_user.get_patient(params.permit(:id)[:id])
-    patient.assessments.each do |assessment|
-      assessment.symptomatic = false
-      assessment.save!
-    end
-    comment = 'User reviewed all reports.'
-    comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
+    permitted_params = params.permit(:id, :symptom_onset, :user_defined_symptom_onset, :asymptomatic, :reasoning, diffState: [])
+
+    patient = current_user.get_patient(permitted_params[:id])
+    patient.assessments.update(symptomatic: false)
+
+    # Update symptom onset or asymptomatic when reviewing reports in isolation
+    isolation_updates = permitted_params[:diffState].map(&:to_sym) & %i[symptom_onset user_defined_symptom_onset asymptomatic]
+    patient.update(permitted_params.transform_keys(&:to_sym).slice(*isolation_updates)) if patient.isolation && isolation_updates.any?
+
+    comment = 'User reviewed all reports'
+    comment += " and updated Symptom Onset Date to #{patient[:symptom_onset]&.strftime('%m/%d/%Y')}" if isolation_updates.include?(:symptom_onset)
+    comment += ' and marked this record as Asymptomatic' if patient.asymptomatic && isolation_updates.include?(:asymptomatic)
+    comment += '.'
+    comment += ' Reason: ' + permitted_params[:reasoning] unless permitted_params[:reasoning].blank?
     History.reports_reviewed(patient: patient, created_by: current_user.email, comment: comment)
   end
 
   def clear_assessment
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
-    patient = current_user.get_patient(params.permit(:id)[:id])
-    assessment = patient.assessments.find_by(id: params.permit(:assessment_id)[:assessment_id])
+    permitted_params = params.permit(:id, :assessment_id, :symptom_onset, :user_defined_symptom_onset, :asymptomatic, :reasoning, diffState: [])
 
-    assessment.symptomatic = false
-    assessment.save!
+    patient = current_user.get_patient(permitted_params[:id])
+    assessment = patient.assessments.find_by(id: permitted_params[:assessment_id])
+    assessment.update(symptomatic: false)
 
-    comment = 'User reviewed a report (ID: ' + assessment.id.to_s + ').'
-    comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
+    # Update symptom onset or asymptomatic when reviewing reports in isolation
+    isolation_updates = permitted_params[:diffState].map(&:to_sym) & %i[symptom_onset user_defined_symptom_onset asymptomatic]
+    patient.update(permitted_params.transform_keys(&:to_sym).slice(*isolation_updates)) if patient.isolation && isolation_updates.any?
+
+    comment = 'User reviewed a report (ID: ' + assessment.id.to_s + ')'
+    comment += " and updated Symptom Onset Date to #{patient[:symptom_onset]&.strftime('%m/%d/%Y')}" if isolation_updates.include?(:symptom_onset)
+    comment += ' and marked this record as Asymptomatic' if patient.asymptomatic && isolation_updates.include?(:asymptomatic)
+    comment += '.'
+    comment += ' Reason: ' + permitted_params[:reasoning] unless permitted_params[:reasoning].blank?
     History.report_reviewed(patient: patient, created_by: current_user.email, comment: comment)
   end
 

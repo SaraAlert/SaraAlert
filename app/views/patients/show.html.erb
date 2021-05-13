@@ -58,6 +58,8 @@
                         authenticity_token: form_authenticity_token,
                         jurisdiction_paths: @possible_jurisdiction_paths,
                         workflow: @dashboard
+                        numPosLabs: @num_pos_labs,
+                        calculatedSymptomOnset: @calculated_symptom_onset
                       }) %>
 <% end %>
 
@@ -93,7 +95,7 @@
                                     authenticity_token: form_authenticity_token,
                                     patient: @patient,
                                     lab: lab,
-                                    asympWarning: @patient[:symptom_onset].nil? && lab[:result] == 'positive' && @laboratories.count { |l| l[:result] == 'positive' } == 1
+                                    onlyPosLab: @patient[:symptom_onset].nil? && lab[:result] == 'positive' && @num_pos_labs == 1
                                   }) %>
             </div>
           </td>

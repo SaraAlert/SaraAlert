@@ -131,6 +131,11 @@ module AssessmentQueryHelper
       table_data << details
     end
 
-    { table_data: table_data, symptoms: threshold_symptoms.values.flat_map { |s| s[:symptoms]&.values }.uniq(&:name) || [], total: assessments.total_entries }
+    {
+      table_data: table_data,
+      symptoms: threshold_symptoms.values.flat_map { |s| s[:symptoms]&.values }.uniq(&:name) || [],
+      total: assessments.total_entries,
+      symp_assessments: table_data.count { |details| details[:symptomatic] == 'Yes' }
+    }
   end
 end

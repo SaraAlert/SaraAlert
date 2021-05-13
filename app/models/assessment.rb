@@ -158,7 +158,9 @@ class Assessment < ApplicationRecord
 
   def update_patient_linelist_after_save
     latest_assessment = patient.assessments.order(:created_at).last
-    asymptomatic = patient.assessments.where(symptomatic: true).empty?
+
+    # only clear asymptomatic status if a symptomatic assessment now exists
+    asymptomatic = patient.assessments.where(symptomatic: true).empty? ? patient.asymptomatic : false
 
     if patient.user_defined_symptom_onset.present? && !patient.symptom_onset.nil?
       patient.update(
@@ -192,7 +194,9 @@ class Assessment < ApplicationRecord
 
   def update_patient_linelist_after_destroy
     latest_assessment = patient.assessments.where.not(id: id).order(:created_at).last
-    asymptomatic = patient.assessments.where.not(id: id).where(symptomatic: true).empty?
+
+    # only clear asymptomatic status if a symptomatic assessment now exists
+    asymptomatic = patient.assessments.where.not(id: id).where(symptomatic: true).empty? ? patient.asymptomatic : false
 
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
     if patient.user_defined_symptom_onset.present? && !patient.symptom_onset.nil?
