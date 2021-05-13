@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Dropdown, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
+import moment from 'moment';
 import _ from 'lodash';
 import { formatTimestamp } from '../../../utils/DateTime';
 
@@ -118,6 +119,7 @@ class AssessmentTable extends React.Component {
                 totalRows: response.data.total,
               },
               isLoading: false,
+              symp_assessments: response.data.symp_assessments || 0,
             };
           });
         } else {
@@ -290,7 +292,13 @@ class AssessmentTable extends React.Component {
             <span className="ml-2">Edit</span>
           </Dropdown.Item>
           <AddAssessmentNote assessment={rowData} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
-          <ClearAssessments assessment_id={rowData.id} patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+          <ClearAssessments
+            assessment_id={rowData.id}
+            patient={this.props.patient}
+            authenticity_token={this.props.authenticity_token}
+            numPosLabs={this.props.numPosLabs}
+            onlySympAssessment={this.state.symp_assessments === 1 && rowData.symptomatic === 'Yes'}
+          />
         </Dropdown.Menu>
       </Dropdown>
     );
@@ -319,7 +327,7 @@ class AssessmentTable extends React.Component {
                     <i className="fas fa-plus fa-fw"></i>
                     <span className="ml-2">Add New Report</span>
                   </Button>
-                  <ClearAssessments authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+                  <ClearAssessments authenticity_token={this.props.authenticity_token} patient={this.props.patient} numPosLabs={this.props.numPosLabs} />
                   <PauseNotifications authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
                   <ContactAttempt authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
                 </Col>
@@ -366,6 +374,8 @@ class AssessmentTable extends React.Component {
               monitoring_period_days={this.props.monitoring_period_days}
               workflow={this.props.workflow}
               symptomatic_assessments_exist={this.state.table.rowData.map(x => x.symptomatic).includes('Yes')}
+              numPosLabs={this.props.numPosLabs}
+              calculatedSymptomOnset={this.props.calculatedSymptomOnset}
             />
           </Card.Body>
         </Card>
@@ -422,6 +432,14 @@ AssessmentTable.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   workflow: PropTypes.string,
+  numPosLabs: PropTypes.number,
+  calculatedSymptomOnset: function(props) {
+    if (props.calculatedSymptomOnset && !moment(props.calculatedSymptomOnset, 'YYYY-MM-DD').isValid()) {
+      return new Error(
+        'Invalid prop `calculatedSymptomOnset` supplied to `DateInput`, `calculatedSymptomOnset` must be a valid date string in the `YYYY-MM-DD` format.'
+      );
+    }
+  },
 };
 
 export default AssessmentTable;
