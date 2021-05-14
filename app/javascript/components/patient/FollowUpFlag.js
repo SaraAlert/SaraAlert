@@ -188,7 +188,7 @@ class FollowUpFlag extends React.Component {
               <Form.Group>
                 <Form.Label>Please include any additional details:</Form.Label>
                 <Form.Control as="textarea" rows="4" id="follow_up_note" maxLength="2000" value={this.state.follow_up_note} onChange={this.handleChange} />
-                <Form.Label className="notes-character-limit mb-25"> 2000 character limit </Form.Label>
+                <Form.Label className="character-limit-text"> 2000 character limit </Form.Label>
               </Form.Group>
             </Form.Group>
           )}
@@ -203,7 +203,7 @@ class FollowUpFlag extends React.Component {
           )}
           {this.props.bulk_action && (
             <React.Fragment>
-              <Form.Group className="mb-25">
+              <Form.Group className="mb-25 mt-25">
                 <Form.Check
                   type="switch"
                   id="bulk_action_apply_to_household"
@@ -215,7 +215,7 @@ class FollowUpFlag extends React.Component {
             </React.Fragment>
           )}
           {this.state.clear_flag && (
-            <Form.Group className="mb-25">
+            <Form.Group>
               <Form.Label>Please include any additional details for clearing the follow-up flag:</Form.Label>
               <Form.Control as="textarea" rows="2" id="clear_flag_reason" value={this.state.clear_flag_reason} onChange={this.handleChange} />
             </Form.Group>
