@@ -17,8 +17,9 @@ class Assessment < ApplicationRecord
   has_one :reported_condition, class_name: 'ReportedCondition'
   belongs_to :patient, touch: true
 
-  after_save :update_patient_linelist_after_save
-  after_destroy :update_patient_linelist_after_destroy
+  after_create { update_patient_linelist_fields(:created) }
+  after_update { update_patient_linelist_fields(:updated) }
+  after_destroy { update_patient_linelist_fields(:removed) }
 
   # Assessments created in the last hour that are symptomatic
   scope :symptomatic_last_hour, lambda {
@@ -156,75 +157,28 @@ class Assessment < ApplicationRecord
 
   private
 
-  def update_patient_linelist_after_save
+  def update_patient_linelist_fields(action)
     latest_assessment = patient.assessments.order(:created_at).last
+    updates = { latest_assessment_at: latest_assessment&.created_at, latest_assessment_symptomatic: latest_assessment&.symptomatic }
 
     # only clear asymptomatic status if a symptomatic assessment now exists
-    asymptomatic = patient.assessments.where(symptomatic: true).empty? ? patient.asymptomatic : false
-
-    if patient.user_defined_symptom_onset.present? && !patient.symptom_onset.nil?
-      patient.update(
-        latest_assessment_at: latest_assessment&.created_at,
-        latest_assessment_symptomatic: latest_assessment&.symptomatic,
-        asymptomatic: asymptomatic
-      )
-    else
-      new_symptom_onset = patient.assessments.where(symptomatic: true).minimum(:created_at)&.to_date
-      unless new_symptom_onset == patient[:symptom_onset]
-        comment = if !patient[:symptom_onset].nil? && !new_symptom_onset.nil?
-                    "System changed symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to #{new_symptom_onset.strftime('%m/%d/%Y')}
-                     because a report meeting the symptomatic logic was created or updated."
-                  elsif patient[:symptom_onset].nil? && !new_symptom_onset.nil?
-                    "System changed symptom onset date from blank to #{new_symptom_onset.strftime('%m/%d/%Y')}
-                     because a report meeting the symptomatic logic was created or updated."
-                  elsif !patient[:symptom_onset].nil? && new_symptom_onset.nil?
-                    "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank
-                     because a report meeting the symptomatic logic was created or updated."
-                  end
-        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
-      end
-      patient.update(
-        latest_assessment_at: latest_assessment&.created_at,
-        latest_assessment_symptomatic: latest_assessment&.symptomatic,
-        symptom_onset: new_symptom_onset,
-        asymptomatic: asymptomatic
-      )
-    end
-  end
-
-  def update_patient_linelist_after_destroy
-    latest_assessment = patient.assessments.where.not(id: id).order(:created_at).last
-
-    # only clear asymptomatic status if a symptomatic assessment now exists
-    asymptomatic = patient.assessments.where.not(id: id).where(symptomatic: true).empty? ? patient.asymptomatic : false
+    updates[:asymptomatic] = false if patient.assessments.where(symptomatic: true).any?
 
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
-    if patient.user_defined_symptom_onset.present? && !patient.symptom_onset.nil?
-      patient.update(
-        asymptomatic: asymptomatic,
-        latest_assessment_at: latest_assessment&.created_at,
-        latest_assessment_symptomatic: latest_assessment&.symptomatic,
-        latest_fever_or_fever_reducer_at: patient.assessments
-                                                 .where.not(id: id)
-                                                 .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
-                                                 .maximum(:created_at)
-      )
-    else
-      new_symptom_onset = calculated_symptom_onset(patient)
-      unless new_symptom_onset == patient[:symptom_onset] || !new_symptom_onset.nil?
-        comment = "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank because a symptomatic report was removed."
-        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
+    if action == :removed
+      updates[:latest_fever_or_fever_reducer_at] = patient.assessments.where_assoc_exists(:reported_condition, &:fever_or_fever_reducer).maximum(:created_at)
+    end
+
+    # wrap patient and history updates in transaction for consistency
+    ActiveRecord::Base.transaction do
+      # only update symptom onset if it's system defined or nil
+      if !patient.user_defined_symptom_onset || patient.symptom_onset.nil?
+        new_symptom_onset = calculated_symptom_onset(patient)
+        updates[:symptom_onset] = new_symptom_onset
+        History.calculated_symptom_onset(patient: patient, new_symptom_onset: new_symptom_onset, action: action)
       end
-      patient.update(
-        symptom_onset: new_symptom_onset,
-        asymptomatic: asymptomatic,
-        latest_assessment_at: latest_assessment&.created_at,
-        latest_assessment_symptomatic: latest_assessment&.symptomatic,
-        latest_fever_or_fever_reducer_at: patient.assessments
-                                                 .where.not(id: id)
-                                                 .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
-                                                 .maximum(:created_at)
-      )
+
+      patient.update(updates)
     end
   end
 end
