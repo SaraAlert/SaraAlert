@@ -231,12 +231,7 @@ class Exposure extends React.Component {
         ...staticValidations,
         symptom_onset: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(
-            moment()
-              .add(30, 'days')
-              .toDate(),
-            'Date can not be more than 30 days in the future.'
-          )
+          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
           .required('Please enter a Symptom Onset Date OR select Asymptomatic and enter a first positive lab result')
           .nullable(),
         asymptomatic: yup.bool().nullable(),
@@ -244,32 +239,18 @@ class Exposure extends React.Component {
     } else if (!patient.symptom_onset && patient.asymptomatic) {
       schema = yup.object().shape({
         ...staticValidations,
-        symptom_onset: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .oneOf([null, undefined])
-          .nullable(),
-        asymptomatic: yup
-          .bool()
-          .oneOf([true])
-          .nullable(),
+        symptom_onset: yup.date('Date must correspond to the "mm/dd/yyyy" format.').oneOf([null, undefined]).nullable(),
+        asymptomatic: yup.bool().oneOf([true]).nullable(),
       });
     } else if (patient.symptom_onset && !patient.asymptomatic) {
       schema = yup.object().shape({
         ...staticValidations,
         symptom_onset: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(
-            moment()
-              .add(30, 'days')
-              .toDate(),
-            'Date can not be more than 30 days in the future.'
-          )
+          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
           .required('Please enter a Symptom Onset Date')
           .nullable(),
-        asymptomatic: yup
-          .bool()
-          .oneOf([null, undefined, false])
-          .nullable(),
+        asymptomatic: yup.bool().oneOf([null, undefined, false]).nullable(),
       });
     } else {
       schema = yup.object().shape({

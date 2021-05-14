@@ -469,20 +469,13 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = patients.where(isolation: true)
         patients = if filter[:value]
                      patients.where(symptom_onset: nil)
-                             .where(asymptomatic: true)
                              .where_assoc_not_exists(:laboratories, "laboratories.result = 'positive' AND laboratories.specimen_collection IS NOT NULL")
-                             .or(
-                               patients.where(symptom_onset: nil)
-                                       .where.not(asymptomatic: true)
-                             )
                    else
-                     patients.where(asymptomatic: true)
-                             .where_assoc_exists(:laboratories, "laboratories.result = 'positive' AND laboratories.specimen_collection IS NOT NULL")
+                     patients.where.not(symptom_onset: nil)
                              .or(
-                               patients.where.not(symptom_onset: nil)
+                               patients.where_assoc_exists(:laboratories, "laboratories.result = 'positive' AND laboratories.specimen_collection IS NOT NULL")
                              )
                    end
-
       end
     end
     patients
