@@ -120,12 +120,15 @@ class LaboratoryModal extends React.Component {
                 </Form.Control>
               </Form.Group>
             </Row>
-            {this.props.onlyPosLab && (this.state.result !== 'positive' || this.state.specimen_collection == null) && (
-              <Alert variant="warning">
-                Warning: This record does not have a Symptom Onset Date. Changing this lab result may result in the record not ever being eligible to appear on
-                the Records Requiring Review line list.
-              </Alert>
-            )}
+            {this.props.editMode &&
+              this.props.isolation &&
+              this.props.onlyPosLab &&
+              (this.state.result !== 'positive' || this.state.specimen_collection == null) && (
+                <Alert variant="warning">
+                  Warning: This record does not have a Symptom Onset Date. Changing this lab result may result in the record not ever being eligible to appear
+                  on the Records Requiring Review line list.
+                </Alert>
+              )}
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -153,6 +156,7 @@ LaboratoryModal.propTypes = {
   editMode: PropTypes.bool,
   loading: PropTypes.bool,
   onlyPosLab: PropTypes.bool,
+  isolation: PropTypes.bool,
 };
 
 export default LaboratoryModal;

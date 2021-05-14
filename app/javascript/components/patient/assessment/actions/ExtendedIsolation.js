@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment';
 

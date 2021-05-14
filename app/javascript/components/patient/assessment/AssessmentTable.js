@@ -433,7 +433,7 @@ AssessmentTable.propTypes = {
   jurisdiction_paths: PropTypes.object,
   workflow: PropTypes.string,
   numPosLabs: PropTypes.number,
-  calculatedSymptomOnset: function(props) {
+  calculatedSymptomOnset: function (props) {
     if (props.calculatedSymptomOnset && !moment(props.calculatedSymptomOnset, 'YYYY-MM-DD').isValid()) {
       return new Error(
         'Invalid prop `calculatedSymptomOnset` supplied to `DateInput`, `calculatedSymptomOnset` must be a valid date string in the `YYYY-MM-DD` format.'
