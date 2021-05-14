@@ -4,11 +4,11 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import DeleteDialog from '../../components/util/DeleteDialog';
 
-const mockType = 'Some Object Type'
+const mockType = 'Some Object Type';
 const deleteMock = jest.fn();
 const toggleMock = jest.fn();
 const onChangeMock = jest.fn();
-const deleteReasons = [ 'Duplicate entry', 'Entered in error', 'Other' ];
+const deleteReasons = ['Duplicate entry', 'Entered in error', 'Other'];
 
 function getWrapper() {
   return shallow(<DeleteDialog type={mockType} delete={deleteMock} toggle={toggleMock} onChange={onChangeMock} />);
@@ -33,8 +33,22 @@ describe('DeleteDialog', () => {
     expect(wrapper.find(Modal.Body).find('#delete_reason').find('option').at(0).text()).toEqual('--');
     expect(wrapper.find(Modal.Body).find('#delete_reason').find('option').at(0).prop('disabled')).toBeTruthy();
     deleteReasons.forEach((reason, index) => {
-      expect(wrapper.find(Modal.Body).find('#delete_reason').find('option').at(index+1).text()).toEqual(reason);
-      expect(wrapper.find(Modal.Body).find('#delete_reason').find('option').at(index+1).prop('disabled')).toBeFalsy();
+      expect(
+        wrapper
+          .find(Modal.Body)
+          .find('#delete_reason')
+          .find('option')
+          .at(index + 1)
+          .text()
+      ).toEqual(reason);
+      expect(
+        wrapper
+          .find(Modal.Body)
+          .find('#delete_reason')
+          .find('option')
+          .at(index + 1)
+          .prop('disabled')
+      ).toBeFalsy();
     });
     expect(wrapper.find(Modal.Body).find('#delete_reason_text').exists()).toBeFalsy();
     expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
@@ -62,8 +76,8 @@ describe('DeleteDialog', () => {
     expect(wrapper.find(Modal.Body).find('#delete_reason_text').exists()).toBeFalsy();
     _.times(5, () => {
       let random = _.random(deleteReasons.length - 1);
-      wrapper.find('#delete_reason').simulate('change', { target: { id: 'delete_reason', value: deleteReasons[random] }, persist: jest.fn() });
-      expect(wrapper.find(Modal.Body).find('#delete_reason_text').exists()).toEqual(deleteReasons[random] === 'Other');
+      wrapper.find('#delete_reason').simulate('change', { target: { id: 'delete_reason', value: deleteReasons[`${random}`] }, persist: jest.fn() });
+      expect(wrapper.find(Modal.Body).find('#delete_reason_text').exists()).toEqual(deleteReasons[`${random}`] === 'Other');
     });
   });
 

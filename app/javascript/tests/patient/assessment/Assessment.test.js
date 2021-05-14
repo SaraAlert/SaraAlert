@@ -12,16 +12,14 @@ import { mockTranslations } from '../../mocks/mockTranslations';
 const contactInfo = {
   email: 'email@example.com',
   phone: '1111111111',
-  webpage: 'somewebpage.com'
-}
+  webpage: 'somewebpage.com',
+};
 const patientSubmissionToken = 'SBjjR0SfMB';
-const thresholdHash = '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
-const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
+const thresholdHash = '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df';
+const mockToken = 'testMockTokenString12345';
 
 function getWrapper() {
-  return shallow(<Assessment report={mockAssessment1} symptoms={mockAssessment1.symptoms} current_user={mockUser1} patient={mockPatient1}
-    patient_initials={'AA'} patient_age={39} lang={'eng'} contact_info={contactInfo} translations={mockTranslations} reload={false} updateId={789}
-    idPre={'789'} authenticity_token={authyToken} threshold_hash={thresholdHash} patient_submission_token={patientSubmissionToken} />);
+  return shallow(<Assessment report={mockAssessment1} symptoms={mockAssessment1.symptoms} current_user={mockUser1} patient={mockPatient1} patient_initials={'AA'} patient_age={39} lang={'eng'} contact_info={contactInfo} translations={mockTranslations} reload={false} updateId={789} idPre={'789'} authenticity_token={mockToken} threshold_hash={thresholdHash} patient_submission_token={patientSubmissionToken} />);
 }
 
 describe('Report', () => {

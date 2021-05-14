@@ -21,22 +21,16 @@ const reportEligibility = {
   eligible: false,
   household: false,
   reported: false,
-  sent: false
-}
-const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
+  sent: false,
+};
+const mockToken = 'testMockTokenString12345';
 
 function getWrapperIsolation() {
-  return shallow(<AssessmentTable current_user={mockUser1} patient={mockPatient1} calculated_age={77} patient_initials={'MM'}
-    household_members={[ mockPatient2 ]} monitoring_period_days={14} symptoms={mockNewSymptoms} patient_status={'isolation_symp_non_test_based'}
-    report_eligibility={reportEligibility} translations={mockTranslations} authenticity_token={authyToken}
-    threshold_condition_hash={mockAssessment1.threshold_condition_hash} />);
+  return shallow(<AssessmentTable current_user={mockUser1} patient={mockPatient1} calculated_age={77} patient_initials={'MM'} household_members={[mockPatient2]} monitoring_period_days={14} symptoms={mockNewSymptoms} patient_status={'isolation_symp_non_test_based'} report_eligibility={reportEligibility} translations={mockTranslations} authenticity_token={mockToken} threshold_condition_hash={mockAssessment1.threshold_condition_hash} />);
 }
 
 function getWrapperExposure() {
-  return shallow(<AssessmentTable current_user={mockUser1} patient={mockPatient2} calculated_age={79} patient_initials={'MM'}
-    household_members={[ mockPatient1 ]} monitoring_period_days={14} symptoms={mockNewSymptoms} patient_status={'exposure_symptomatic'}
-    report_eligibility={reportEligibility} translations={mockTranslations} authenticity_token={authyToken}
-    threshold_condition_hash={mockAssessment1.threshold_condition_hash} />);
+  return shallow(<AssessmentTable current_user={mockUser1} patient={mockPatient2} calculated_age={79} patient_initials={'MM'} household_members={[mockPatient1]} monitoring_period_days={14} symptoms={mockNewSymptoms} patient_status={'exposure_symptomatic'} report_eligibility={reportEligibility} translations={mockTranslations} authenticity_token={mockToken} threshold_condition_hash={mockAssessment1.threshold_condition_hash} />);
 }
 
 describe('AssessmentTable', () => {

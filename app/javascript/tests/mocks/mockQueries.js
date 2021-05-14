@@ -7,8 +7,8 @@ const mockQuery1 = {
   tab: 'non_reporting',
   tz_offset: 300,
   user: null,
-  workflow: 'exposure'
-}
+  workflow: 'exposure',
+};
 
 const mockQuery2 = {
   entries: 25,
@@ -19,10 +19,7 @@ const mockQuery2 = {
   tab: 'non_reporting',
   tz_offset: 300,
   user: null,
-  workflow: 'isolation'
-}
+  workflow: 'isolation',
+};
 
-export {
-  mockQuery1,
-  mockQuery2
-}
+export { mockQuery1, mockQuery2 };

@@ -1,17 +1,17 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 import _ from 'lodash';
 import ChangeHoH from '../../../../components/patient/household/actions/ChangeHoH';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../../mocks/mockPatients';
 import { nameFormatterAlt } from '../../../util.js';
 
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
-const dependents = [ mockPatient2, mockPatient3, mockPatient4 ];
+const mockToken = 'testMockTokenString12345';
+const dependents = [mockPatient2, mockPatient3, mockPatient4];
 
 function getWrapper() {
-  return shallow(<ChangeHoH patient={mockPatient1} dependents={dependents} authenticity_token={authyToken} />);
+  return shallow(<ChangeHoH patient={mockPatient1} dependents={dependents} authenticity_token={mockToken} />);
 }
 
 describe('ChangeHoH', () => {
@@ -44,14 +44,32 @@ describe('ChangeHoH', () => {
     expect(wrapper.find(Modal.Body).find(Form.Label).at(1).text()).toEqual('Note: The selected monitoree will become the responder for the current monitoree and all others within the list');
     expect(wrapper.find('#hoh_selection').exists()).toBeTruthy();
     expect(wrapper.find('#hoh_selection').prop('defaultValue')).toEqual(-1);
-    expect(wrapper.find('#hoh_selection').find('option').length).toEqual(dependents.length+1);
+    expect(wrapper.find('#hoh_selection').find('option').length).toEqual(dependents.length + 1);
     expect(wrapper.find('#hoh_selection').find('option').at(0).prop('value')).toEqual(-1);
-    expect(wrapper.find('#hoh_selection').find('option').at(0).prop('disabled')).toBeTruthy();  
+    expect(wrapper.find('#hoh_selection').find('option').at(0).prop('disabled')).toBeTruthy();
     expect(wrapper.find('#hoh_selection').find('option').at(0).text()).toEqual('--');
     dependents.forEach((dependent, index) => {
-      expect(wrapper.find('#hoh_selection').find('option').at(index+1).prop('value')).toEqual(dependent.id);
-      expect(wrapper.find('#hoh_selection').find('option').at(index+1).prop('disabled')).toBeFalsy();
-      expect(wrapper.find('#hoh_selection').find('option').at(index+1).text()).toEqual(nameFormatterAlt(dependent));
+      expect(
+        wrapper
+          .find('#hoh_selection')
+          .find('option')
+          .at(index + 1)
+          .prop('value')
+      ).toEqual(dependent.id);
+      expect(
+        wrapper
+          .find('#hoh_selection')
+          .find('option')
+          .at(index + 1)
+          .prop('disabled')
+      ).toBeFalsy();
+      expect(
+        wrapper
+          .find('#hoh_selection')
+          .find('option')
+          .at(index + 1)
+          .text()
+      ).toEqual(nameFormatterAlt(dependent));
     });
     expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
@@ -66,14 +84,14 @@ describe('ChangeHoH', () => {
     let random = _.random(0, dependents.length - 1);
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('hoh_selection')).toEqual(null);
-    wrapper.find('#hoh_selection').simulate('change', { target: { id: 'hoh_selection', value: dependents[random].id } });
-    expect(wrapper.state('hoh_selection')).toEqual(dependents[random].id);
+    wrapper.find('#hoh_selection').simulate('change', { target: { id: 'hoh_selection', value: dependents[`${random}`].id } });
+    expect(wrapper.state('hoh_selection')).toEqual(dependents[`${random}`].id);
     random = _.random(0, dependents.length - 1);
-    wrapper.find('#hoh_selection').simulate('change', { target: { id: 'hoh_selection', value: dependents[random].id } });
-    expect(wrapper.state('hoh_selection')).toEqual(dependents[random].id);
+    wrapper.find('#hoh_selection').simulate('change', { target: { id: 'hoh_selection', value: dependents[`${random}`].id } });
+    expect(wrapper.state('hoh_selection')).toEqual(dependents[`${random}`].id);
     random = _.random(0, dependents.length - 1);
-    wrapper.find('#hoh_selection').simulate('change', { target: { id: 'hoh_selection', value: dependents[random].id } });
-    expect(wrapper.state('hoh_selection')).toEqual(dependents[random].id);
+    wrapper.find('#hoh_selection').simulate('change', { target: { id: 'hoh_selection', value: dependents[`${random}`].id } });
+    expect(wrapper.state('hoh_selection')).toEqual(dependents[`${random}`].id);
   });
 
   it('Selecting a dependent enables the update button', () => {

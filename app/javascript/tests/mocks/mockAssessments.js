@@ -1,4 +1,4 @@
-import { mockSymptoms1, mockSymptoms2 } from './mockSymptoms'
+import { mockSymptoms1, mockSymptoms2 } from './mockSymptoms';
 
 const mockAssessment1 = {
   chills: 'No',
@@ -33,7 +33,7 @@ const mockAssessment1 = {
     repeated_shaking_with_chills: false,
     shortness_of_breath: false,
     sore_throat: true,
-    used_a_fever_reducer: false
+    used_a_fever_reducer: false,
   },
   general_health: '',
   pulse_ox: '',
@@ -44,7 +44,7 @@ const mockAssessment1 = {
   symptoms: mockSymptoms1,
   threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df',
   used_a_fever_reducer: 'No',
-  who_reported: 'state1_epi_enroller@example.com'
+  who_reported: 'state1_epi_enroller@example.com',
 };
 
 const mockAssessment2 = {
@@ -80,7 +80,7 @@ const mockAssessment2 = {
     repeated_shaking_with_chills: false,
     shortness_of_breath: false,
     sore_throat: false,
-    used_a_fever_reducer: false
+    used_a_fever_reducer: false,
   },
   general_health: 5,
   pulse_ox: 1,
@@ -91,10 +91,7 @@ const mockAssessment2 = {
   symptoms: mockSymptoms2,
   threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df',
   used_a_fever_reducer: 'No',
-  who_reported: 'Monitoree'
+  who_reported: 'Monitoree',
 };
 
-export {
-  mockAssessment1,
-  mockAssessment2
-};
+export { mockAssessment1, mockAssessment2 };

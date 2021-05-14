@@ -53,10 +53,4 @@ const mockCommentHistory2Edit2 = {
   patient_id: 17,
 };
 
-export {
-  mockEnrollmentHistory,
-  mockCommentHistory1,
-  mockCommentHistory2,
-  mockCommentHistory2Edit1,
-  mockCommentHistory2Edit2,
-};
+export { mockEnrollmentHistory, mockCommentHistory1, mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2 };

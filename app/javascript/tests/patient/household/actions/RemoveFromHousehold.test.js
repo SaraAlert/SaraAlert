@@ -5,10 +5,10 @@ import ReactTooltip from 'react-tooltip';
 import RemoveFromHousehold from '../../../../components/patient/household/actions/RemoveFromHousehold';
 import { mockPatient1 } from '../../../mocks/mockPatients';
 
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+const mockToken = 'testMockTokenString12345';
 
 function getWrapper() {
-  return shallow(<RemoveFromHousehold patient={mockPatient1} authenticity_token={authyToken} />);
+  return shallow(<RemoveFromHousehold patient={mockPatient1} authenticity_token={mockToken} />);
 }
 
 describe('RemoveFromHousehold', () => {

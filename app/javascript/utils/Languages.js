@@ -1,19 +1,19 @@
-import axios from 'axios'
-import _ from 'lodash'
+import axios from 'axios';
+import _ from 'lodash';
 
-import reportError from '../components/util/ReportError'
+import reportError from '../components/util/ReportError';
 
 // Keep a small list of the most common languages on the front-end, and try to match them.
 // If we can great, it saves us a call to the back-end
 // Otherwise, make an async call to the back-end to do a lookup there
 const COMMON_LANGUAGES = {
-  'eng': 'English',
-  'fra': 'French',
-  'spa': 'Spanish',
+  eng: 'English',
+  fra: 'French',
+  spa: 'Spanish',
   'spa-pr': 'Spanish (Puerto Rican)',
-  'por': 'Portuguese',
-  'som': 'Somali'
-}
+  por: 'Portuguese',
+  som: 'Somali',
+};
 
 /**
  * This function attempts to convert an array of iso code strings to an array of iso display names
@@ -25,34 +25,34 @@ const COMMON_LANGUAGES = {
  * @param {Function} callback - a callback function to set the values on the front-end when this finishes
  * @return {Array} Returns array of translated language codes (leaves nulls as nulls)
  */
-function convertLanguageCodesToNames (languageCodes, authToken, callback) {
-  let names = new Array(languageCodes.length)
-  let unmatchabledLangs = []
+function convertLanguageCodesToNames(languageCodes, authToken, callback) {
+  let names = new Array(languageCodes.length);
+  let unmatchabledLangs = [];
   languageCodes.forEach((code, i) => {
     if (_.isNil(code)) {
-      names[i] = null
+      names[i] = null;
     } else if (Object.prototype.hasOwnProperty.call(COMMON_LANGUAGES, code)) {
-      names[i] = COMMON_LANGUAGES[`${code}`]
+      names[i] = COMMON_LANGUAGES[`${code}`];
     } else {
-      unmatchabledLangs.push(i)
+      unmatchabledLangs.push(i);
     }
-  })
+  });
   if (unmatchabledLangs.length > 0) {
     axios.defaults.headers.common['X-CSRF-Token'] = authToken;
     axios
-      .post(`${window.BASE_PATH}/languages/translate_languages`, {language_codes: unmatchabledLangs.map(i => languageCodes[i])})
+      .post(`${window.BASE_PATH}/languages/translate_languages`, { language_codes: unmatchabledLangs.map(i => languageCodes[i]) })
       .then(val => {
-        const res = val.data.display_names
+        const res = val.data.display_names;
         unmatchabledLangs.forEach((indexVal, responseIndex) => {
-          names[indexVal] = res[responseIndex]
-        })
-        callback(names)
+          names[indexVal] = res[responseIndex];
+        });
+        callback(names);
       })
       .catch(err => {
-        reportError(err)
+        reportError(err);
       });
   } else {
-    callback(names)
+    callback(names);
   }
 }
 
@@ -62,17 +62,20 @@ function convertLanguageCodesToNames (languageCodes, authToken, callback) {
  * @param {Function} callback - the callback to pass the results to
  * @return {Array of Strings} ["English","Chinese",..."Zulu"]
  */
-function getAllLanguageDisplayNames (authToken, callback) {
+function getAllLanguageDisplayNames(authToken, callback) {
   axios.defaults.headers.common['X-CSRF-Token'] = authToken;
-  axios.get(`${window.BASE_PATH}/languages/get_all_languages`)
+  axios
+    .get(`${window.BASE_PATH}/languages/get_all_languages`)
     .then(val => {
-      let languageDisplayNames = _.values(val.data).map(x => x.display).sort((a, b) => a.localeCompare(b))
-      callback(languageDisplayNames)
+      let languageDisplayNames = _.values(val.data)
+        .map(x => x.display)
+        .sort((a, b) => a.localeCompare(b));
+      callback(languageDisplayNames);
     })
     .catch(err => {
       reportError(err);
-    })
-  }
+    });
+}
 
 /**
  * Returns to the callback all languages from the backend (alphabetized), in the format of:
@@ -81,29 +84,25 @@ function getAllLanguageDisplayNames (authToken, callback) {
  * @param {Function} callback - the callback to pass the results to
  * @return {Array of Objects}
  */
-function getLanguageData (authToken, callback) {
+function getLanguageData(authToken, callback) {
   axios.defaults.headers.common['X-CSRF-Token'] = authToken;
-  axios.get(`${window.BASE_PATH}/languages/get_all_languages`)
+  axios
+    .get(`${window.BASE_PATH}/languages/get_all_languages`)
     .then(val => {
-      let languageData = []
+      let languageData = [];
       _.forIn(val.data, (value, key) => {
         languageData.push({
           code: key,
           display: value.display,
-          supported: value.supported || {}
-        })
+          supported: value.supported || {},
+        });
       });
-      languageData.sort((a, b) => a.display.localeCompare(b.display))
-      callback(languageData)
+      languageData.sort((a, b) => a.display.localeCompare(b.display));
+      callback(languageData);
     })
     .catch(err => {
       reportError(err);
     });
-};
+}
 
-
-export {
-  getAllLanguageDisplayNames,
-  getLanguageData,
-  convertLanguageCodesToNames
-};
+export { getAllLanguageDisplayNames, getLanguageData, convertLanguageCodesToNames };

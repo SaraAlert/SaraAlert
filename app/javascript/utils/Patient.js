@@ -4,15 +4,15 @@
  */
 function formatName(patient) {
   return `${patient.first_name || ''}${patient.middle_name ? ' ' + patient.middle_name : ''}${patient.last_name ? ' ' + patient.last_name : ''}`;
-};
+}
 
 /**
  * Formats a patient's name (last, first middle) as a string.
  * @param {Object} patient - patient object
  */
- function formatNameAlt(patient) {
+function formatNameAlt(patient) {
   return `${patient.last_name || ''}, ${patient.first_name || ''}${patient.middle_name ? ' ' + patient.middle_name : ''}`;
-};
+}
 
 /**
  * Formats patient's phone number in E164 format.
@@ -24,7 +24,7 @@ function formatPhoneNumber(phone) {
     .replace(/\D/g, '')
     .match(/^(\d{3})(\d{3})(\d{4})$/);
   return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
-};
+}
 
 /**
  * Formats patient's races as a string.
@@ -57,11 +57,6 @@ function formatRace(patient) {
     raceArray.push('Refused to Answer');
   }
   return raceArray.length === 0 ? '--' : raceArray.join(', ');
-};
+}
 
-export {
-  formatName,
-  formatNameAlt,
-  formatPhoneNumber,
-  formatRace
-};
+export { formatName, formatNameAlt, formatPhoneNumber, formatRace };

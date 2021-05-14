@@ -137,9 +137,7 @@ class LastDateExposure extends React.Component {
               <DateInput
                 id="last_date_of_exposure"
                 date={this.state.last_date_of_exposure}
-                maxDate={moment()
-                  .add(30, 'days')
-                  .format('YYYY-MM-DD')}
+                maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
                 onChange={date => this.setState({ last_date_of_exposure: date })}
                 placement="top"
                 customClass="form-control-lg"
@@ -213,9 +211,7 @@ class LastDateExposure extends React.Component {
                   id="last_date_of_exposure"
                   date={this.state.last_date_of_exposure}
                   minDate={'2020-01-01'}
-                  maxDate={moment()
-                    .add(30, 'days')
-                    .format('YYYY-MM-DD')}
+                  maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
                   onChange={this.openLastDateOfExposureModal}
                   placement="top"
                   customClass="form-control-lg"

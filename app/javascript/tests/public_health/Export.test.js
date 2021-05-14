@@ -8,18 +8,16 @@ import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdict
 import { mockQuery1, mockQuery2 } from '../mocks/mockQueries';
 import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs';
 import { mockExportPresets } from '../mocks/mockExportPresets';
-  
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
-const dropdownOptions = [ 'Line list CSV', 'Sara Alert Format', 'Excel Export For Purge-Eligible Monitorees', 'Excel Export For All Monitorees', 'Custom Format...' ];
+
+const mockToken = 'testMockTokenString12345';
+const dropdownOptions = ['Line list CSV', 'Sara Alert Format', 'Excel Export For Purge-Eligible Monitorees', 'Excel Export For All Monitorees', 'Custom Format...'];
 
 function getExposureWrapper() {
-  return shallow(<Export all_monitorees_count={200} authenticity_token={authyToken} current_monitorees_count={32} custom_export_options={{}}
-    jurisdiction_paths={mockJurisdictionPaths} jurisdiction={mockJurisdiction1} query={mockQuery1} tabs={mockExposureTabs} />);
+  return shallow(<Export all_monitorees_count={200} authenticity_token={mockToken} current_monitorees_count={32} custom_export_options={{}} jurisdiction_paths={mockJurisdictionPaths} jurisdiction={mockJurisdiction1} query={mockQuery1} tabs={mockExposureTabs} />);
 }
 
 function getIsolationWrapper() {
-  return shallow(<Export all_monitorees_count={200} authenticity_token={authyToken} current_monitorees_count={32} custom_export_options={{}}
-    jurisdiction_paths={mockJurisdictionPaths} jurisdiction={mockJurisdiction1} query={mockQuery2} tabs={mockIsolationTabs} />);
+  return shallow(<Export all_monitorees_count={200} authenticity_token={mockToken} current_monitorees_count={32} custom_export_options={{}} jurisdiction_paths={mockJurisdictionPaths} jurisdiction={mockJurisdiction1} query={mockQuery2} tabs={mockIsolationTabs} />);
 }
 
 describe('Export', () => {
@@ -34,7 +32,7 @@ describe('Export', () => {
 
   it('Properly renders dropdown in exposure workflow', () => {
     const wrapper = getExposureWrapper();
-    dropdownOptions.forEach(function(option, index) {
+    dropdownOptions.forEach((option, index) => {
       if (index < 2) {
         option += ' (exposure)';
       }
@@ -44,7 +42,7 @@ describe('Export', () => {
 
   it('Properly renders dropdown in isolation workflow', () => {
     const wrapper = getIsolationWrapper();
-    dropdownOptions.forEach(function(option, index) {
+    dropdownOptions.forEach((option, index) => {
       if (index < 2) {
         option += ' (isolation)';
       }
@@ -105,11 +103,11 @@ describe('Export', () => {
   });
 
   it('Calls reloadExportPresets method when component mounts', () => {
-    const instance  = getExposureWrapper().instance();
+    const instance = getExposureWrapper().instance();
     const reloadPresetsSpy = jest.spyOn(instance, 'reloadExportPresets');
-    expect(reloadPresetsSpy).toHaveBeenCalledTimes(0); 
+    expect(reloadPresetsSpy).toHaveBeenCalledTimes(0);
     instance.componentDidMount();
-    expect(reloadPresetsSpy).toHaveBeenCalledTimes(1); 
+    expect(reloadPresetsSpy).toHaveBeenCalledTimes(1);
   });
 
   it('Adds export presets to dropdown list', () => {

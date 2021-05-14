@@ -9,12 +9,11 @@ import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../mo
 import { mockUser1 } from '../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 
-const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const monitoringPlanOptions = [ '', 'None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision', 'Self-observation' ];
+const mockToken = 'testMockTokenString12345';
+const monitoringPlanOptions = ['', 'None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision', 'Self-observation'];
 
 function getWrapper() {
-  return shallow(<MonitoringPlan patient={mockPatient1} household_members={[]} current_user={mockUser1}
-    jurisdiction_paths={mockJurisdictionPaths}authenticity_token={authyToken} />);
+  return shallow(<MonitoringPlan patient={mockPatient1} household_members={[]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
 }
 
 describe('MonitoringPlan', () => {
@@ -25,8 +24,8 @@ describe('MonitoringPlan', () => {
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('monitoringPlan');
     expect(wrapper.find('#monitoring_plan').exists()).toBeTruthy();
     expect(wrapper.find('option').length).toEqual(6);
-    monitoringPlanOptions.forEach(function(value, index) {
-        expect(wrapper.find('option').at(index).text()).toEqual(value);
+    monitoringPlanOptions.forEach((value, index) => {
+      expect(wrapper.find('option').at(index).text()).toEqual(value);
     });
     expect(wrapper.find('#monitoring_plan').prop('value')).toEqual(mockPatient1.monitoring_plan);
   });
@@ -41,7 +40,7 @@ describe('MonitoringPlan', () => {
   it('Properly renders modal and sets state correctly', () => {
     const wrapper = getWrapper();
     wrapper.find('#monitoring_plan').simulate('change', { target: { id: 'monitoring_plan', value: 'None' } });
-    
+
     // renders properly
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Title).text()).toEqual('Monitoring Plan');
@@ -61,9 +60,11 @@ describe('MonitoringPlan', () => {
   });
 
   it('Toggling HoH radio buttons hides/shows household members table and updates state', () => {
-    const wrapper = mount(<MonitoringPlan patient={mockPatient1} household_members={[ mockPatient2, mockPatient3, mockPatient4 ]}
-      current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths}authenticity_token={authyToken} />);
-    wrapper.find('#monitoring_plan').at(1).simulate('change', { target: { id: 'monitoring_plan', value: 'None' } });
+    const wrapper = mount(<MonitoringPlan patient={mockPatient1} household_members={[mockPatient2, mockPatient3, mockPatient4]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+    wrapper
+      .find('#monitoring_plan')
+      .at(1)
+      .simulate('change', { target: { id: 'monitoring_plan', value: 'None' } });
 
     // initial radio button state
     expect(wrapper.find(ApplyToHousehold).exists()).toBeTruthy();
@@ -73,14 +74,20 @@ describe('MonitoringPlan', () => {
     expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeFalsy();
 
     // change to apply to all of household
-    wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
+    wrapper
+      .find('#apply_to_household_yes')
+      .at(1)
+      .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     expect(wrapper.find(CustomTable).exists()).toBeTruthy();
     expect(wrapper.state('apply_to_household')).toBeTruthy();
     expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeFalsy();
     expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeTruthy();
 
     // change back to just this monitoree
-    wrapper.find('#apply_to_household_no').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
+    wrapper
+      .find('#apply_to_household_no')
+      .at(1)
+      .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
     expect(wrapper.find(CustomTable).exists()).toBeFalsy();
     expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeTruthy();

@@ -199,9 +199,7 @@ class CloseContact extends React.Component {
                 id="last_date_of_exposure"
                 date={this.state.last_date_of_exposure}
                 minDate={'2020-01-01'}
-                maxDate={moment()
-                  .add(30, 'days')
-                  .format('YYYY-MM-DD')}
+                maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
                 onChange={this.handleDateChange}
                 placement="top"
                 isInvalid={!!this.state.errors['last_date_of_exposure']}
@@ -340,7 +338,7 @@ class CloseContact extends React.Component {
   }
 }
 
-yup.addMethod(yup.string, 'phone', function() {
+yup.addMethod(yup.string, 'phone', function () {
   return this.test({
     name: 'phone',
     exclusive: true,
@@ -360,33 +358,14 @@ yup.addMethod(yup.string, 'phone', function() {
 });
 
 const schema = yup.object().shape({
-  first_name: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  last_name: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  primary_telephone: yup
-    .string()
-    .phone()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  email: yup
-    .string()
-    .email('Please enter a valid email.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
+  first_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  last_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  email: yup.string().email('Please enter a valid email.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   last_date_of_exposure: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .min(moment('2020-01-01'), 'Last Date of Exposure must fall after January 1, 2020.')
-    .max(
-      moment()
-        .add(30, 'days')
-        .toDate(),
-      'Date can not be more than 30 days in the future.'
-    )
+    .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
     .nullable(),
   assigned_user: yup
     .number()
@@ -395,10 +374,7 @@ const schema = yup.object().shape({
     .max(999999)
     .positive('Please enter a valid Assigned User')
     .nullable(),
-  notes: yup
-    .string()
-    .max(2000, 'Max length exceeded, please limit to 2000 characters.')
-    .nullable(),
+  notes: yup.string().max(2000, 'Max length exceeded, please limit to 2000 characters.').nullable(),
 });
 
 CloseContact.propTypes = {

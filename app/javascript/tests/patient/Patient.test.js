@@ -6,14 +6,14 @@ import _ from 'lodash';
 import Patient from '../../components/patient/Patient';
 import BadgeHoH from '../../components/patient/household/utils/BadgeHoH';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankMockPatient } from '../mocks/mockPatients';
-import { nameFormatter, formatDate } from '../util.js'
+import { nameFormatter, formatDate } from '../util.js';
 
 const goToMock = jest.fn();
-const identificationFields = [ 'DOB', 'Age', 'Language', 'Sara Alert ID', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality' ];
-const contactFields = [ 'Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Reporting Method' ];
-const domesticAddressFields = [ 'Address 1', 'Address 2', 'Town/City', 'State', 'Zip', 'County'];
-const foreignAddressFields = [ 'Address 1', 'Address 2', 'Address 3', 'Town/City', 'State', 'Zip', 'Country' ];
-const additionalTravelFields = [ 'Type', 'Place', 'Port of Departure', 'Start Date', 'End Date' ];
+const identificationFields = ['DOB', 'Age', 'Language', 'Sara Alert ID', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality'];
+const contactFields = ['Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Reporting Method'];
+const domesticAddressFields = ['Address 1', 'Address 2', 'Town/City', 'State', 'Zip', 'County'];
+const foreignAddressFields = ['Address 1', 'Address 2', 'Address 3', 'Town/City', 'State', 'Zip', 'Country'];
+const additionalTravelFields = ['Type', 'Place', 'Port of Departure', 'Start Date', 'End Date'];
 const riskFactors = [
   { key: 'Close Contact with a Known Case', val: mockPatient2.contact_of_known_case_id },
   { key: 'Member of a Common Exposure Cohort', val: mockPatient2.member_of_a_common_exposure_cohort_type },
@@ -26,7 +26,7 @@ const riskFactors = [
 
 describe('Patient', () => {
   it('Properly renders all main components when not in edit mode', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
     expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient1));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHoH).exists()).toBeTruthy();
@@ -45,7 +45,7 @@ describe('Patient', () => {
   });
 
   it('Properly renders all main components when in edit mode', () => {
-    const wrapper = shallow(<Patient details={mockPatient4} goto={goToMock} collapse={true} edit_mode={true} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient4} goto={goToMock} collapse={true} edit_mode={true} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
     expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient4));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHoH).exists()).toBeFalsy();
@@ -64,27 +64,27 @@ describe('Patient', () => {
   });
 
   it('Properly renders identification section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#identification');
     expect(section.find('h4').text()).toEqual('Identification');
     expect(section.find('.edit-link').exists()).toBeTruthy();
-    identificationFields.forEach(function(field, index) {
+    identificationFields.forEach((field, index) => {
       expect(section.find('b').at(index).text()).toEqual(field + ':');
     });
   });
 
   it('Properly renders contact information section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#contact-information');
     expect(section.find('h4').text()).toEqual('Contact Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
-    contactFields.forEach(function(field, index) {
+    contactFields.forEach((field, index) => {
       expect(section.find('b').at(index).text()).toEqual(field + ':');
     });
   });
 
   it('Properly renders show/hide divider when props.collapse is true', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('.details-expander').exists()).toBeTruthy();
     expect(wrapper.find('#details-expander-link').exists()).toBeTruthy();
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).exists()).toBeTruthy();
@@ -94,7 +94,7 @@ describe('Patient', () => {
   });
 
   it('Properly renders show/hide divider when props.collapse is false', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={false} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={false} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('.details-expander').exists()).toBeTruthy();
     expect(wrapper.find('#details-expander-link').exists()).toBeTruthy();
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).exists()).toBeTruthy();
@@ -104,7 +104,7 @@ describe('Patient', () => {
   });
 
   it('Clicking show/hide divider updates label and expands or collapses details', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find(Collapse).prop('in')).toBeFalsy();
     expect(wrapper.state('expanded')).toBeFalsy();
     wrapper.find('#details-expander-link').simulate('click');
@@ -116,7 +116,7 @@ describe('Patient', () => {
   });
 
   it('Properly renders address section for domestic address with no monitoring address', () => {
-    const wrapper = shallow(<Patient details={mockPatient2} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient2} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#address');
     expect(section.find('h4').text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -124,13 +124,13 @@ describe('Patient', () => {
     const domesticAddressColumn = section.find(Row).find(Col);
     expect(domesticAddressColumn.prop('sm')).toEqual(24);
     expect(domesticAddressColumn.find('p').text()).toEqual('Home Address (USA)');
-    domesticAddressFields.forEach(function(field, index) {
+    domesticAddressFields.forEach((field, index) => {
       expect(domesticAddressColumn.find('b').at(index).text()).toEqual(field + ':');
     });
   });
 
   it('Properly renders address section for domestic address and monitoring address', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#address');
     expect(section.find('h4').text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -139,18 +139,18 @@ describe('Patient', () => {
     const monitoringAddressColumn = section.find(Row).find(Col).at(1);
     expect(domesticAddressColumn.prop('sm')).toEqual(12);
     expect(domesticAddressColumn.find('p').text()).toEqual('Home Address (USA)');
-    domesticAddressFields.forEach(function(field, index) {
+    domesticAddressFields.forEach((field, index) => {
       expect(domesticAddressColumn.find('b').at(index).text()).toEqual(field + ':');
     });
     expect(monitoringAddressColumn.prop('sm')).toEqual(12);
     expect(monitoringAddressColumn.find('p').text()).toEqual('Monitoring Address');
-    domesticAddressFields.forEach(function(field, index) {
+    domesticAddressFields.forEach((field, index) => {
       expect(monitoringAddressColumn.find('b').at(index).text()).toEqual(field + ':');
     });
   });
 
   it('Properly renders address section for foreign address with no monitoring address', () => {
-    const wrapper = shallow(<Patient details={mockPatient5} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient5} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#address');
     expect(section.find('h4').text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -158,13 +158,13 @@ describe('Patient', () => {
     const foreignAddressColumn = section.find(Row).find(Col);
     expect(foreignAddressColumn.prop('sm')).toEqual(24);
     expect(foreignAddressColumn.find('p').text()).toEqual('Home Address (Foreign)');
-    foreignAddressFields.forEach(function(field, index) {
+    foreignAddressFields.forEach((field, index) => {
       expect(foreignAddressColumn.find('b').at(index).text()).toEqual(field + ':');
     });
   });
 
   it('Properly renders address section for foreign address and monitoring address', () => {
-    const wrapper = shallow(<Patient details={mockPatient4} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient4} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#address');
     expect(section.find('h4').text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -173,18 +173,18 @@ describe('Patient', () => {
     const monitoringAddressColumn = section.find(Row).find(Col).at(1);
     expect(foreignAddressColumn.prop('sm')).toEqual(12);
     expect(foreignAddressColumn.find('p').text()).toEqual('Home Address (Foreign)');
-    foreignAddressFields.forEach(function(field, index) {
+    foreignAddressFields.forEach((field, index) => {
       expect(foreignAddressColumn.find('b').at(index).text()).toEqual(field + ':');
     });
     expect(monitoringAddressColumn.prop('sm')).toEqual(12);
     expect(monitoringAddressColumn.find('p').text()).toEqual('Monitoring Address');
-    domesticAddressFields.forEach(function(field, index) {
+    domesticAddressFields.forEach((field, index) => {
       expect(monitoringAddressColumn.find('b').at(index).text()).toEqual(field + ':');
     });
   });
 
   it('Properly renders arrival information section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#arrival-information');
     expect(section.find('h4').text()).toEqual('Arrival Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -213,26 +213,23 @@ describe('Patient', () => {
   });
 
   it('Collapses/expands travel related notes if longer than 400 characters', () => {
-    const wrapper = shallow(<Patient details={mockPatient3} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient3} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('#arrival-information').find('.notes-section').find(Button).exists()).toBeTruthy();
     expect(wrapper.state('expandArrivalNotes')).toBeFalsy();
     expect(wrapper.find('#arrival-information').find('.notes-section').find(Button).text()).toEqual('(View all)');
-    expect(wrapper.find('#arrival-information').find('.notes-section').find('.notes-text').find('div').text())
-      .toEqual(mockPatient3.travel_related_notes.slice(0, 400) + ' ...');
+    expect(wrapper.find('#arrival-information').find('.notes-section').find('.notes-text').find('div').text()).toEqual(mockPatient3.travel_related_notes.slice(0, 400) + ' ...');
     wrapper.find('#arrival-information').find('.notes-section').find(Button).simulate('click');
     expect(wrapper.state('expandArrivalNotes')).toBeTruthy();
     expect(wrapper.find('#arrival-information').find('.notes-section').find(Button).text()).toEqual('(Collapse)');
-    expect(wrapper.find('#arrival-information').find('.notes-section').find('.notes-text').find('div').text())
-      .toEqual(mockPatient3.travel_related_notes);
+    expect(wrapper.find('#arrival-information').find('.notes-section').find('.notes-text').find('div').text()).toEqual(mockPatient3.travel_related_notes);
     wrapper.find('#arrival-information').find('.notes-section').find(Button).simulate('click');
     expect(wrapper.state('expandArrivalNotes')).toBeFalsy();
     expect(wrapper.find('#arrival-information').find('.notes-section').find(Button).text()).toEqual('(View all)');
-    expect(wrapper.find('#arrival-information').find('.notes-section').find('.notes-text').find('div').text())
-      .toEqual(mockPatient3.travel_related_notes.slice(0, 400) + ' ...');
+    expect(wrapper.find('#arrival-information').find('.notes-section').find('.notes-text').find('div').text()).toEqual(mockPatient3.travel_related_notes.slice(0, 400) + ' ...');
   });
 
   it('Displays "None" if arrival information has no information', () => {
-    const wrapper = shallow(<Patient details={blankMockPatient} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={blankMockPatient} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#arrival-information');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();
@@ -240,12 +237,12 @@ describe('Patient', () => {
   });
 
   it('Properly renders planned travel section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#planned-travel');
     expect(section.find('h4').text()).toEqual('Additional Planned Travel');
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeFalsy();
-    additionalTravelFields.forEach(function(field, index) {
+    additionalTravelFields.forEach((field, index) => {
       expect(section.find('b').at(index).text()).toEqual(field + ':');
     });
     expect(section.find('.notes-section').exists()).toBeTruthy();
@@ -255,26 +252,23 @@ describe('Patient', () => {
   });
 
   it('Collapses/expands additional planned travel notes if longer than 400 characters', () => {
-    const wrapper = shallow(<Patient details={mockPatient3} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient3} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('#planned-travel').find('.notes-section').find(Button).exists()).toBeTruthy();
     expect(wrapper.state('expandPlannedTravelNotes')).toBeFalsy();
     expect(wrapper.find('#planned-travel').find('.notes-section').find(Button).text()).toEqual('(View all)');
-    expect(wrapper.find('#planned-travel').find('.notes-section').find('.notes-text').find('div').text())
-      .toEqual(mockPatient3.additional_planned_travel_related_notes.slice(0, 400) + ' ...');
+    expect(wrapper.find('#planned-travel').find('.notes-section').find('.notes-text').find('div').text()).toEqual(mockPatient3.additional_planned_travel_related_notes.slice(0, 400) + ' ...');
     wrapper.find('#planned-travel').find('.notes-section').find(Button).simulate('click');
     expect(wrapper.state('expandPlannedTravelNotes')).toBeTruthy();
     expect(wrapper.find('#planned-travel').find('.notes-section').find(Button).text()).toEqual('(Collapse)');
-    expect(wrapper.find('#planned-travel').find('.notes-section').find('.notes-text').find('div').text())
-      .toEqual(mockPatient3.additional_planned_travel_related_notes);
+    expect(wrapper.find('#planned-travel').find('.notes-section').find('.notes-text').find('div').text()).toEqual(mockPatient3.additional_planned_travel_related_notes);
     wrapper.find('#planned-travel').find('.notes-section').find(Button).simulate('click');
     expect(wrapper.state('expandPlannedTravelNotes')).toBeFalsy();
     expect(wrapper.find('#planned-travel').find('.notes-section').find(Button).text()).toEqual('(View all)');
-    expect(wrapper.find('#planned-travel').find('.notes-section').find('.notes-text').find('div').text())
-      .toEqual(mockPatient3.additional_planned_travel_related_notes.slice(0, 400) + ' ...');
+    expect(wrapper.find('#planned-travel').find('.notes-section').find('.notes-text').find('div').text()).toEqual(mockPatient3.additional_planned_travel_related_notes.slice(0, 400) + ' ...');
   });
 
   it('Displays "None" if planned travel has no information', () => {
-    const wrapper = shallow(<Patient details={blankMockPatient} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={blankMockPatient} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#planned-travel');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();
@@ -282,7 +276,7 @@ describe('Patient', () => {
   });
 
   it('Properly renders potential exposure information section', () => {
-    const wrapper = shallow(<Patient details={mockPatient2} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient2} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.find('h4').text()).toEqual('Potential Exposure Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -294,7 +288,7 @@ describe('Patient', () => {
     expect(section.find('.item-group').find('b').at(2).text()).toEqual('Exposure Country:');
     expect(section.find('.item-group').find('span').at(2).text()).toEqual(mockPatient2.potential_exposure_country);
     expect(section.find('.risk-factors').exists()).toBeTruthy();
-    riskFactors.forEach(function(field, index) {
+    riskFactors.forEach((field, index) => {
       expect(section.find('li').at(index).find('.risk-factor').text()).toEqual(field.key);
       if (field.val) {
         expect(section.find('li').at(index).find('.risk-val').text()).toEqual(field.val);
@@ -308,7 +302,7 @@ describe('Patient', () => {
   it('Properly renders notes in potential exposure information section if the rest of the section is empty', () => {
     let newMockPatient5 = _.cloneDeep(mockPatient5);
     newMockPatient5.exposure_notes = 'new exposure note';
-    const wrapper = shallow(<Patient details={newMockPatient5} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={newMockPatient5} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.find('.item-group').exists()).toBeFalsy();
     expect(section.find('.risk-factors').exists()).toBeFalsy();
@@ -319,7 +313,7 @@ describe('Patient', () => {
   });
 
   it('Collapses/expands exposure notes in potential exposure information section if longer than 400 characters', () => {
-    const wrapper = shallow(<Patient details={mockPatient5} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient5} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('#potential-exposure-information').find(Button).exists()).toBeTruthy();
     expect(wrapper.find('#potential-exposure-information').find(Button).text()).toEqual('(View all)');
     expect(wrapper.find('#potential-exposure-information').find('.notes-text').text()).toEqual(mockPatient5.exposure_notes.slice(0, 400) + ' ...');
@@ -332,7 +326,7 @@ describe('Patient', () => {
   });
 
   it('Displays "None" if potential exposure information has no information', () => {
-    const wrapper = shallow(<Patient details={blankMockPatient} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={blankMockPatient} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();
@@ -343,7 +337,7 @@ describe('Patient', () => {
   });
 
   it('Properly renders case information section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#case-information');
     expect(section.find('h4').text()).toEqual('Case Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
@@ -356,12 +350,12 @@ describe('Patient', () => {
   });
 
   it('Hides case information section when monitoree is in the exposure workflow', () => {
-    const wrapper = shallow(<Patient details={mockPatient2} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />)
+    const wrapper = shallow(<Patient details={mockPatient2} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('#case-information').exists()).toBeFalsy();
   });
 
   it('Properly renders notes section', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#exposure-notes');
     expect(section.find('h4').text()).toEqual('Notes');
     expect(section.find('.none-text').exists()).toBeFalsy();
@@ -371,7 +365,7 @@ describe('Patient', () => {
   });
 
   it('Collapses/expands exposure notes if longer than 400 characters', () => {
-    const wrapper = shallow(<Patient details={mockPatient3} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient3} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('#exposure-notes').find(Button).exists()).toBeTruthy();
     expect(wrapper.find('#exposure-notes').find(Button).text()).toEqual('(View all)');
     expect(wrapper.find('#exposure-notes').find('.notes-text').text()).toEqual(mockPatient3.exposure_notes.slice(0, 400) + ' ...');
@@ -384,7 +378,7 @@ describe('Patient', () => {
   });
 
   it('Displays "None" if exposure notes is null', () => {
-    const wrapper = shallow(<Patient details={mockPatient4} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient4} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
     const section = wrapper.find('#exposure-notes');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();
@@ -399,31 +393,40 @@ describe('Patient', () => {
   });
 
   it('Renders edit buttons if props.goto is defined', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} collapse={true} edit_mode={true} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} collapse={true} edit_mode={true} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('.edit-link').find(Button).length).toEqual(7);
     expect(wrapper.find('.edit-link').find('a').exists()).toBeFalsy();
-    wrapper.find('.edit-link').find(Button).forEach(function(btn) {
-      expect(btn.text()).toEqual('Edit');
-    });
+    wrapper
+      .find('.edit-link')
+      .find(Button)
+      .forEach(btn => {
+        expect(btn.text()).toEqual('Edit');
+      });
   });
 
   it('Renders edit hrefs if props.goto is not defined', () => {
-    const stepIds = [ 0, 2, 1, 3, 4, 5, 5]
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={true} jurisdiction_path='USA, State 1, County 2' />);
+    const stepIds = [0, 2, 1, 3, 4, 5, 5];
+    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={true} jurisdiction_path="USA, State 1, County 2" />);
     expect(wrapper.find('.edit-link').find(Button).exists()).toBeFalsy();
     expect(wrapper.find('.edit-link').find('a').length).toEqual(7);
-    wrapper.find('.edit-link').find('a').forEach(function(link, index) {
-      expect(link.text()).toEqual('Edit');
-      expect(link.prop('href')).toEqual(`${window.BASE_PATH}/patients/${mockPatient1.id}/edit?step=${stepIds[index]}`);
-    });
+    wrapper
+      .find('.edit-link')
+      .find('a')
+      .forEach((link, index) => {
+        expect(link.text()).toEqual('Edit');
+        expect(link.prop('href')).toEqual(`${window.BASE_PATH}/patients/${mockPatient1.id}/edit?step=${stepIds[Number(index)]}`);
+      });
   });
 
   it('Calls props goto method when the edit buttons are clicked', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} collapse={true} edit_mode={true} jurisdiction_path='USA, State 1, County 2' />);
+    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} collapse={true} edit_mode={true} jurisdiction_path="USA, State 1, County 2" />);
     expect(goToMock).toHaveBeenCalledTimes(0);
-    wrapper.find('.edit-link').find(Button).forEach(function(btn, index) {
-      btn.simulate('click');
-      expect(goToMock).toHaveBeenCalledTimes(index+1);
-    });
+    wrapper
+      .find('.edit-link')
+      .find(Button)
+      .forEach((btn, index) => {
+        btn.simulate('click');
+        expect(goToMock).toHaveBeenCalledTimes(index + 1);
+      });
   });
 });

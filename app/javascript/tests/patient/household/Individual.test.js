@@ -6,13 +6,13 @@ import MoveToHousehold from '../../../components/patient/household/actions/MoveT
 import EnrollHouseholdMember from '../../../components/patient/household/actions/EnrollHouseholdMember';
 import { mockPatient3 } from '../../mocks/mockPatients';
 
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+const mockToken = 'testMockTokenString12345';
 
 describe('Individual', () => {
   it('Properly renders all main components', () => {
-    const wrapper = shallow(<Individual patient={mockPatient3} can_add_group={true} authenticity_token={authyToken} />);
-    const wrapper2 = shallow(<Individual patient={mockPatient3} can_add_group={false} authenticity_token={authyToken} />);
-    
+    const wrapper = shallow(<Individual patient={mockPatient3} can_add_group={true} authenticity_token={mockToken} />);
+    const wrapper2 = shallow(<Individual patient={mockPatient3} can_add_group={false} authenticity_token={mockToken} />);
+
     // if user can add group
     expect(wrapper.find(Row).length).toEqual(2);
     expect(wrapper.find(Row).at(0).text()).toEqual('This monitoree is not a member of a household.');
