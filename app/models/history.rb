@@ -240,6 +240,23 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment)
   end
 
+  def self.calculated_symptom_onset(patient: nil, created_by: 'Sara Alert System', new_symptom_onset: nil, action: 'created')
+    return if patient[:symptom_onset] == new_symptom_onset
+
+    comment = if patient[:symptom_onset].present? && new_symptom_onset.present?
+                "System changed symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to #{new_symptom_onset.strftime('%m/%d/%Y')}
+                because a report meeting the symptomatic logic was #{action}."
+              elsif patient[:symptom_onset].nil? && new_symptom_onset.present?
+                "System changed symptom onset date from blank to #{new_symptom_onset.strftime('%m/%d/%Y')}
+                because a report meeting the symptomatic logic was #{action}."
+              elsif patient[:symptom_onset].present? && new_symptom_onset.nil?
+                "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank
+                because a report meeting the symptomatic logic was #{action}."
+              end
+
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
+  end
+
   def self.monitoring_status(history)
     field = {
       name: 'Monitoring Status',
