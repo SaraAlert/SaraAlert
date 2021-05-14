@@ -87,7 +87,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal('Lab Result cannot be created for unknown monitoree with ID: test', JSON.parse(response.body)['error'])
+    assert_equal("Lab Result cannot be created for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
     assert_equal(lab_count_before, Laboratory.count)
     assert_equal(history_count_before, History.count)
 
@@ -186,7 +186,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal('Lab Result cannot be updated for unknown monitoree with ID: test', JSON.parse(response.body)['error'])
+    assert_equal("Lab Result cannot be updated for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
     assert_equal(last_updated, laboratory.updated_at) # assert not updated
     assert_equal(0, patient.histories.count)
 
@@ -286,7 +286,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal('Lab Result cannot be deleted for unknown monitoree with ID: test', JSON.parse(response.body)['error'])
+    assert_equal("Lab Result cannot be deleted for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
     assert_equal(last_updated, laboratory.updated_at) # assert not updated
     assert_equal(0, patient.histories.count)
 

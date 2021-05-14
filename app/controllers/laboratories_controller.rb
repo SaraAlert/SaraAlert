@@ -8,7 +8,7 @@ class LaboratoriesController < ApplicationController
   def create
     redirect_to(root_url) && return unless current_user.can_create_patient_laboratories?
 
-    patient_id = params.permit(:patient_id)[:patient_id]
+    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
 
     redirect_to(root_url) && return if patient_id.nil?
 
@@ -40,7 +40,7 @@ class LaboratoriesController < ApplicationController
   def update
     redirect_to(root_url) && return unless current_user.can_edit_patient_laboratories?
 
-    patient_id = params.permit(:patient_id)[:patient_id]
+    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
 
     redirect_to(root_url) && return if patient_id.nil?
 
@@ -72,7 +72,7 @@ class LaboratoriesController < ApplicationController
   def destroy
     redirect_to(root_url) && return unless current_user.can_edit_patient_laboratories?
 
-    patient_id = params.permit(:patient_id)[:patient_id]
+    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
 
     # Check if Patient ID is valid
     unless Patient.exists?(patient_id)
