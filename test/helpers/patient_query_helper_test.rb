@@ -42,22 +42,24 @@ class PatientQueryHelperTest < ActionView::TestCase
     patient_1 = create(:patient, creator: user, isolation: true, symptom_onset: '2020-02-02')
     patient_2 = create(:patient, creator: user, isolation: true, asymptomatic: true)
     create(:laboratory, patient: patient_2, result: 'positive', specimen_collection: '2020-02-02')
+    patient_3 = create(:patient, creator: user, isolation: true)
+    create(:laboratory, patient: patient_3, result: 'positive', specimen_collection: '2020-02-02')
 
     # records ineligible for recovery definition
-    patient_3 = create(:patient, creator: user, isolation: true)
-    patient_4 = create(:patient, creator: user, isolation: true, asymptomatic: true)
+    patient_4 = create(:patient, creator: user, isolation: true)
     patient_5 = create(:patient, creator: user, isolation: true, asymptomatic: true)
-    create(:laboratory, patient: patient_5, result: 'positive')
     patient_6 = create(:patient, creator: user, isolation: true, asymptomatic: true)
-    create(:laboratory, patient: patient_6, specimen_collection: '2020-02-02')
+    create(:laboratory, patient: patient_6, result: 'positive')
     patient_7 = create(:patient, creator: user, isolation: true, asymptomatic: true)
-    create(:laboratory, patient: patient_7, result: 'negative', specimen_collection: '2020-02-02')
+    create(:laboratory, patient: patient_7, specimen_collection: '2020-02-02')
+    patient_8 = create(:patient, creator: user, isolation: true, asymptomatic: true)
+    create(:laboratory, patient: patient_8, result: 'negative', specimen_collection: '2020-02-02')
 
     # records in exposure should not be returned whether filter value is true or false
     create(:patient, creator: user, isolation: false)
     create(:patient, creator: user, isolation: false, symptom_onset: '2020-02-02')
-    patient_8 = create(:patient, creator: user, isolation: false, asymptomatic: true)
-    create(:laboratory, patient: patient_8, result: 'positive', specimen_collection: '2020-02-02')
+    patient_9 = create(:patient, creator: user, isolation: false, asymptomatic: true)
+    create(:laboratory, patient: patient_9, result: 'positive', specimen_collection: '2020-02-02')
 
     patients = Patient.all
     filters = [{ filterOption: {}, additionalFilterOption: nil, value: nil }]
@@ -67,13 +69,13 @@ class PatientQueryHelperTest < ActionView::TestCase
     # Check for monitorees who are ineligible for any recovery definition
     filters[0][:value] = true
     filtered_patients = advanced_filter(patients, filters, tz_offset)
-    filtered_patients_array = [patient_3, patient_4, patient_5, patient_6, patient_7]
+    filtered_patients_array = [patient_4, patient_5, patient_6, patient_7, patient_8]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
 
     # Check for monitorees who are NOT ineligible for any recovery definition
     filters[0][:value] = false
     filtered_patients = advanced_filter(patients, filters, tz_offset)
-    filtered_patients_array = [patient_1, patient_2]
+    filtered_patients_array = [patient_1, patient_2, patient_3]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 
