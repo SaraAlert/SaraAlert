@@ -30,6 +30,8 @@ class Fhir::R4::ApiController < ApplicationApiController
   before_action :check_client_type
   rescue_from StandardError, with: :handle_server_error
 
+  MAX_TRANSACTION_ENTRIES = 50
+
   # Return a resource given a type and an id.
   #
   # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization, Provenance
@@ -383,6 +385,15 @@ class Fhir::R4::ApiController < ApplicationApiController
     # Parse in the FHIR
     request_body = request.body.read
     contents = FHIR.from_contents(request_body) unless request_body.blank?
+
+    # Only allow a maximum batch size of MAX_TRANSACTION_ENTRIES
+    if !contents&.entry.nil? && contents.entry.length > MAX_TRANSACTION_ENTRIES
+      status_unprocessable_entity_with_custom_errors(
+        ["Bundle.entry can contain at most #{MAX_TRANSACTION_ENTRIES} entries"],
+        'Bundle.entry'
+      ) && return
+    end
+
     errors = contents&.validate
     status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
 

@@ -6,7 +6,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   DATA_ABSENT_URL = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
   OMB_URL = 'ombCategory'
   DETAILED_URL = 'detailed'
-  MAX_TRANSACTION_ENTRIES = 50
 
   # Switch the context of the paths on a fhir_map from old_context to new_context. For example
   # A Patient resource may have paths such as Patient.birthDate, but if that Patient resource
@@ -768,12 +767,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     # Only accept transaction Bundles
     if bundle.resourceType&.downcase != 'bundle' || bundle.type&.downcase != 'transaction'
       return ["Only Bundles of type 'transaction' are allowed", 'Bundle.type']
-    end
-
-    # Only allow a maximum batch size of MAX_TRANSACTION_ENTRIES
-    if !bundle&.entry.nil? && bundle.entry.length > MAX_TRANSACTION_ENTRIES
-      return ["Bundle.entry can contain at most #{MAX_TRANSACTION_ENTRIES} entries",
-              'Bundle.entry']
     end
 
     # Validate the entries
