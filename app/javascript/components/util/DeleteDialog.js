@@ -2,6 +2,8 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Form, Modal } from 'react-bootstrap';
 
+const MAX_REASON_LENGTH = 200;
+
 class DeleteDialog extends React.Component {
   constructor(props) {
     super(props);
@@ -9,6 +11,7 @@ class DeleteDialog extends React.Component {
       loading: false,
       disabled: true,
       showTextInput: false,
+      delete_reason_text: '',
     };
   }
 
@@ -41,8 +44,8 @@ class DeleteDialog extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to delete this {this.props.type}? This action cannot be undone. For auditing purposes, this deletion will be documented in the
-            record&apos;s history.
+            Are you sure you want to delete this {this.props.type}? This action cannot be undone. For auditing purposes, this deletion will be available in this
+            record&apos;s history export.
           </p>
           <p>Please select reason for deletion:</p>
           <Form.Control as="select" className="form-control-md mb-3" id="delete_reason" onChange={this.handleReasonChange} defaultValue={-1}>
@@ -59,13 +62,13 @@ class DeleteDialog extends React.Component {
                 id="delete_reason_text"
                 as="textarea"
                 rows="2"
-                maxLength="200"
+                maxLength={MAX_REASON_LENGTH}
                 className="form-square"
                 placeholder="Please enter additional information about the reason for deletion"
-                value={this.state.delete_reason_text || ''}
+                value={this.state.delete_reason_text}
                 onChange={this.handleTextChange}
               />
-              <div className="character-limit-text">{200 - (this.state.delete_reason_text || '').length} characters remaining</div>
+              <div className="character-limit-text">{MAX_REASON_LENGTH - this.state.delete_reason_text.length} characters remaining</div>
             </React.Fragment>
           )}
         </Modal.Body>
