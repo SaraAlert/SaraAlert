@@ -78,7 +78,7 @@ MonitoringPeriod.propTypes = {
   jurisdiction_paths: PropTypes.object,
   symptomatic_assessments_exist: PropTypes.bool,
   numPosLabs: PropTypes.number,
-  calculatedSymptomOnset: function(props) {
+  calculatedSymptomOnset: function (props) {
     if (props.calculatedSymptomOnset && !moment(props.calculatedSymptomOnset, 'YYYY-MM-DD').isValid()) {
       return new Error(
         'Invalid prop `calculatedSymptomOnset` supplied to `DateInput`, `calculatedSymptomOnset` must be a valid date string in the `YYYY-MM-DD` format.'
