@@ -139,11 +139,8 @@ class UpdateCaseStatus extends React.Component {
     ) {
       return true;
     }
-    if (['Confirmed', 'Probable'].includes(this.state.case_status)) {
-      if (!this.state.initialIsolation && this.state.confirmed === '') {
-        return true;
-      }
-      if (this.state.follow_up === '' && !this.state.allSelectedAreClosed) {
+    if (['Confirmed', 'Probable'].includes(this.state.case_status) && !this.state.initialIsolation) {
+      if (this.state.confirmed === '' || (this.state.follow_up === '' && !this.state.allSelectedAreClosed)) {
         return true;
       }
     }
