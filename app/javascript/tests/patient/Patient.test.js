@@ -4,10 +4,13 @@ import { Button, Col, Collapse, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import Patient from '../../components/patient/Patient';
+import FollowUpFlag from '../../components/patient/FollowUpFlag';
 import BadgeHoH from '../../components/patient/household/utils/BadgeHoH';
+import { mockUser1 } from '../mocks/mockUsers';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankMockPatient } from '../mocks/mockPatients';
 import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 import { nameFormatter, formatDate } from '../util.js';
+import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 
 const goToMock = jest.fn();
 const identificationFields = ['DOB', 'Age', 'Language', 'Sara Alert ID', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality'];
@@ -31,6 +34,9 @@ describe('Patient', () => {
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
     expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient1));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHoH).exists()).toBeTruthy();
+    expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeTruthy();
+    expect(wrapper.find('.follow-up-flag-box').exists()).toBeFalsy();
+    expect(wrapper.find('#edit-follow-up-flag-link').exists()).toBeFalsy();
     expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
     expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
     expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient1.assigned_user);
@@ -43,6 +49,8 @@ describe('Patient', () => {
     expect(wrapper.find('#potential-exposure-information').exists()).toBeTruthy();
     expect(wrapper.find('#exposure-notes').exists()).toBeTruthy();
     expect(wrapper.find('#case-information').exists()).toBeTruthy();
+    expect(wrapper.find('#follow-up-flag-modal').exists()).toBeTruthy();
+    expect(wrapper.find('#follow-up-flag-modal').find(FollowUpFlag).exists()).toBeFalsy();
   });
 
   it('Properly renders all main components when in edit mode', () => {
@@ -50,6 +58,9 @@ describe('Patient', () => {
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
     expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient4));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHoH).exists()).toBeFalsy();
+    expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeTruthy();
+    expect(wrapper.find('.follow-up-flag-box').exists()).toBeFalsy();
+    expect(wrapper.find('#edit-follow-up-flag-link').exists()).toBeFalsy();
     expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
     expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
     expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient4.assigned_user);
@@ -62,6 +73,8 @@ describe('Patient', () => {
     expect(wrapper.find('#potential-exposure-information').exists()).toBeTruthy();
     expect(wrapper.find('#exposure-notes').exists()).toBeTruthy();
     expect(wrapper.find('#case-information').exists()).toBeTruthy();
+    expect(wrapper.find('#follow-up-flag-modal').exists()).toBeTruthy();
+    expect(wrapper.find('#follow-up-flag-modal').find(FollowUpFlag).exists()).toBeFalsy();
   });
 
   it('Properly renders identification section', () => {
@@ -429,5 +442,46 @@ describe('Patient', () => {
         btn.simulate('click');
         expect(goToMock).toHaveBeenCalledTimes(index + 1);
       });
+  });
+
+  it('Properly renders follow-up flag box when flag set', () => {
+    const wrapper = shallow(<Patient details={mockPatient5} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' current_user={mockUser1}
+      jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} other_household_members={[]} />);
+    expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeFalsy();
+    expect(wrapper.find('.follow-up-flag-box').exists()).toBeTruthy();
+    const section = wrapper.find('.follow-up-flag-box');
+    expect(section.find('i').exists()).toBeTruthy();
+    expect(section.find(Button).exists()).toBeTruthy();
+    expect(section.find('b').at(1).text()).toEqual(mockPatient5.follow_up_reason);
+    expect(section.find('.wrap-words').text()).toEqual(' - ' + mockPatient5.follow_up_note);
+  });
+
+  it('Collapses/expands follow-up flag notes if longer than 150 characters', () => {
+    const wrapper = shallow(<Patient details={mockPatient3} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' current_user={mockUser1}
+      jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} other_household_members={[]} />);
+    expect(wrapper.find('.flag-note').find(Button).exists()).toBeTruthy();
+    expect(wrapper.state('expandFollowUpNotes')).toBeFalsy();
+    expect(wrapper.find('.flag-note').find(Button).text()).toEqual('(View all)');
+    expect(wrapper.find('.flag-note').find('.wrap-words').text())
+      .toEqual(' - ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
+    wrapper.find('.flag-note').find(Button).simulate('click');
+    expect(wrapper.state('expandFollowUpNotes')).toBeTruthy();
+    expect(wrapper.find('.flag-note').find(Button).text()).toEqual('(Collapse)');
+    expect(wrapper.find('.flag-note').find('.wrap-words').text())
+      .toEqual(' - ' + mockPatient3.follow_up_note);
+    wrapper.find('.flag-note').find(Button).simulate('click');
+    expect(wrapper.state('expandFollowUpNotes')).toBeFalsy();
+    expect(wrapper.find('.flag-note').find(Button).text()).toEqual('(View all)');
+    expect(wrapper.find('.flag-note').find('.wrap-words').text())
+      .toEqual(' - ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
+  });
+
+  it('Enrollers cannot view follow-up flag components', () => {
+    mockUser1.role = 'enroller';
+    const wrapper = shallow(<Patient details={mockPatient3} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' current_user={mockUser1}
+      jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} other_household_members={[]} />);
+    expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeFalsy();
+    expect(wrapper.find('.follow-up-flag-box').exists()).toBeFalsy();
+    expect(wrapper.find('#edit-follow-up-flag-link').exists()).toBeFalsy();
   });
 });
