@@ -557,7 +557,7 @@ class PatientsController < ApplicationController
   end
 
   def update_follow_up_flag
-    redirect_to(root_url) && return unless current_user.can_edit_patient?
+    redirect_to(root_url) && return unless current_user.can_edit_patient? && !current_user.role?(Roles::ENROLLER)
 
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?

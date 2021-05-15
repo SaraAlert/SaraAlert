@@ -7,13 +7,15 @@ import ReactTooltip from 'react-tooltip';
 import ApplyToHousehold from './household/actions/ApplyToHousehold';
 import reportError from '../util/ReportError';
 
+const MAX_NOTES_LENGTH = 2000;
+
 class FollowUpFlag extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       apply_to_household: false,
       apply_to_household_ids: [],
-      noMembersSelected: false,
+      no_members_selected: false,
       bulk_action_apply_to_household: false,
       cancelToken: axios.CancelToken.source(),
       clear_flag_disabled: true,
@@ -24,7 +26,6 @@ class FollowUpFlag extends React.Component {
       initial_follow_up_reason: '',
       initial_follow_up_note: '',
       loading: false,
-      showModal: false,
     };
   }
 
@@ -77,13 +78,13 @@ class FollowUpFlag extends React.Component {
   };
 
   handleApplyHouseholdChange = apply_to_household => {
-    const noMembersSelected = apply_to_household && this.state.apply_to_household_ids.length === 0;
-    this.setState({ apply_to_household, noMembersSelected });
+    const no_members_selected = apply_to_household && this.state.apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household, no_members_selected });
   };
 
   handleApplyHouseholdIdsChange = apply_to_household_ids => {
-    const noMembersSelected = this.state.apply_to_household && apply_to_household_ids.length === 0;
-    this.setState({ apply_to_household_ids, noMembersSelected });
+    const no_members_selected = this.state.apply_to_household && apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household_ids, no_members_selected });
   };
 
   // Makes a POST to update the follow-up flag for the current patient.
@@ -187,8 +188,15 @@ class FollowUpFlag extends React.Component {
               </Form.Control>
               <Form.Group>
                 <Form.Label>Please include any additional details:</Form.Label>
-                <Form.Control as="textarea" rows="4" id="follow_up_note" maxLength="2000" value={this.state.follow_up_note} onChange={this.handleChange} />
-                <Form.Label className="character-limit-text"> 2000 character limit </Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows="4"
+                  id="follow_up_note"
+                  maxLength={MAX_NOTES_LENGTH}
+                  value={this.state.follow_up_note}
+                  onChange={this.handleChange}
+                />
+                <div className="character-limit-text">{MAX_NOTES_LENGTH - this.state.follow_up_note.length} characters remaining</div>
               </Form.Group>
             </Form.Group>
           )}
@@ -222,31 +230,28 @@ class FollowUpFlag extends React.Component {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            id="follow-up-flag-cancel-button"
-            variant="secondary btn-square"
-            aria-label="Cancel button for Follow-up Flag modal"
-            onClick={this.props.close}>
+          <Button id="follow_up_flag_cancel_button" variant="secondary btn-square" onClick={this.props.close}>
             Cancel
           </Button>
           <Button
+            id="follow_up_flag_submit_button"
             variant="primary btn-square"
             onClick={this.submit}
-            disabled={(!this.state.clear_flag && this.state.follow_up_reason === '') || this.state.loading || this.state.noMembersSelected}>
+            disabled={(!this.state.clear_flag && this.state.follow_up_reason === '') || this.state.loading || this.state.no_members_selected}>
             {this.state.loading && (
               <React.Fragment>
-                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
               </React.Fragment>
             )}
             <span data-for="follow-up-submit" data-tip="">
               Submit
             </span>
-            {this.state.noMembersSelected && (
+            {this.state.no_members_selected && (
               <ReactTooltip id="follow-up-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
                 <div>Please select at least one household member or change your selection to apply to this monitoree only</div>
               </ReactTooltip>
             )}
-            {!this.state.noMembersSelected && !this.state.clear_flag && this.state.follow_up_reason === '' && (
+            {!this.state.no_members_selected && !this.state.clear_flag && this.state.follow_up_reason === '' && (
               <ReactTooltip id="follow-up-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
                 <div>Please select a reason for follow-up</div>
               </ReactTooltip>
