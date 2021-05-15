@@ -1047,5 +1047,88 @@ class PatientsControllerTest < ActionController::TestCase
     h = History.where(patient: patient)
     assert_match(/changed Symptom Onset Date/, h.second.comment)
   end
+
+  test 'setting and clearing follow up flag for an individual patient with no other household members' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    patient = create(:patient, creator: user, monitoring: true, continuous_exposure: true)
+
+    post :update_follow_up_flag, params: {
+      id: patient.id,
+      follow_up_reason: 'Hospitalized',
+      follow_up_note: 'Test Note',
+      clear_flag: false,
+      clear_flag_reason: '',
+      apply_to_household: false,
+      apply_to_household_ids: []
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_match('Hospitalized', patient.follow_up_reason)
+    assert_match('Test Note', patient.follow_up_note)
+    assert_match('Flagged for Follow-up. Reason: "Hospitalized - Test Note"', History.where(patient: patient, created_by: user.email)[0].comment)
+
+    post :update_follow_up_flag, params: {
+      id: patient.id,
+      follow_up_reason: '',
+      follow_up_note: '',
+      clear_flag: true,
+      clear_flag_reason: 'Test Note',
+      apply_to_household: false,
+      apply_to_household_ids: []
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_nil patient.follow_up_reason
+    assert_nil patient.follow_up_note
+    assert_match('User cleared flag for follow-up. Reason: Test Note', History.where(patient: patient, created_by: user.email)[1].comment)
+  end
+
+  test 'bulk action for setting and clearing follow up flag for patients ' do
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    patient_2 = create(:patient, creator: user)
+    sign_in user
+
+    post :bulk_update, params: {
+      ids: [patient_1.id, patient_2.id],
+      bulk_edit_type: 'follow-up',
+      apply_to_household: false,
+      follow_up_reason: 'In Need of Follow-up',
+      follow_up_note: 'Test Note',
+      clear_flag: false,
+      clear_flag_reason: ''
+    }, as: :json
+    assert_response :success
+    patient_1.reload
+    assert_match('In Need of Follow-up', patient_1.follow_up_reason)
+    assert_match('Test Note', patient_1.follow_up_note)
+    assert_match('Flagged for Follow-up. Reason: "In Need of Follow-up - Test Note"', History.where(patient: patient_1, created_by: user.email)[0].comment)
+    patient_2.reload
+    assert_match('In Need of Follow-up', patient_2.follow_up_reason)
+    assert_match('Test Note', patient_2.follow_up_note)
+    assert_match('Flagged for Follow-up. Reason: "In Need of Follow-up - Test Note"', History.where(patient: patient_2, created_by: user.email)[0].comment)
+
+    post :bulk_update, params: {
+      ids: [patient_1.id, patient_2.id],
+      bulk_edit_type: 'follow-up',
+      apply_to_household: false,
+      follow_up_reason: '',
+      follow_up_note: '',
+      clear_flag: true,
+      clear_flag_reason: 'This is a test'
+    }, as: :json
+    assert_response :success
+    patient_1.reload
+    assert_nil patient_1.follow_up_reason
+    assert_nil patient_1.follow_up_note
+    assert_match('User cleared flag for follow-up. Reason: This is a test', History.where(patient: patient_1, created_by: user.email)[1].comment)
+    patient_2.reload
+    assert_nil patient_2.follow_up_reason
+    assert_nil patient_2.follow_up_note
+    assert_match('User cleared flag for follow-up. Reason: This is a test', History.where(patient: patient_2, created_by: user.email)[1].comment)
+  end
 end
 # rubocop:enable Metrics/ClassLength
