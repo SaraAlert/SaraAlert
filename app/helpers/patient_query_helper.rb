@@ -656,7 +656,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
       # populate fields specific to this linelist only if relevant
       details[:jurisdiction] = patient[:jurisdiction_name] || '' if fields.include?(:jurisdiction)
-      details[:flagged_for_follow_up] = { follow_up_reason: patient[:follow_up_reason], follow_up_note: patient[:follow_up_note]} if fields.include?(:flagged_for_follow_up)
+      flagged_for_follow_up = { follow_up_reason: patient[:follow_up_reason], follow_up_note: patient[:follow_up_note] }
+      details[:flagged_for_follow_up] = flagged_for_follow_up if fields.include?(:flagged_for_follow_up)
       details[:transferred_from] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_from)
       details[:transferred_to] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_to)
       details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
@@ -688,16 +689,22 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     if workflow == :isolation
       if tab == :all
-        return %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report status report_eligibility]
+        return %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan
+                  latest_report status report_eligibility]
       end
       return %i[flagged_for_follow_up transferred_from monitoring_plan transferred_at] if tab == :transferred_in
       return %i[transferred_to monitoring_plan transferred_at] if tab == :transferred_out
 
-      return %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
+      return %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan
+                latest_report report_eligibility]
     end
 
-    return %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility] if tab == :all
-    return %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility] if tab == :pui
+    case tab
+    when :all
+      return %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility]
+    when :pui
+      return %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility]
+    end
     return %i[flagged_for_follow_up transferred_from end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_in
     return %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_out
 

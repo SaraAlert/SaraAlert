@@ -446,7 +446,7 @@ describe('Patient', () => {
 
   it('Properly renders follow-up flag box when flag set', () => {
     const wrapper = shallow(<Patient details={mockPatient5} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' current_user={mockUser1}
-      jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} other_household_members={[]} />);
+      jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} other_household_members={[]} display_follow_up_flag={true} />);
     expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeFalsy();
     expect(wrapper.find('.follow-up-flag-box').exists()).toBeTruthy();
     const section = wrapper.find('.follow-up-flag-box');
@@ -458,7 +458,7 @@ describe('Patient', () => {
 
   it('Collapses/expands follow-up flag notes if longer than 150 characters', () => {
     const wrapper = shallow(<Patient details={mockPatient3} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' current_user={mockUser1}
-      jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} other_household_members={[]} />);
+      jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} other_household_members={[]} display_follow_up_flag={true} />);
     expect(wrapper.find('.flag-note').find(Button).exists()).toBeTruthy();
     expect(wrapper.state('expandFollowUpNotes')).toBeFalsy();
     expect(wrapper.find('.flag-note').find(Button).text()).toEqual('(View all)');
@@ -476,10 +476,9 @@ describe('Patient', () => {
       .toEqual(' - ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
   });
 
-  it('Enrollers cannot view follow-up flag components', () => {
-    mockUser1.role = 'enroller';
+  it('Follow-up flag components are hidden when display flag is false', () => {
     const wrapper = shallow(<Patient details={mockPatient3} collapse={true} edit_mode={false} jurisdiction_path='USA, State 1, County 2' current_user={mockUser1}
-      jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} other_household_members={[]} />);
+      jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} other_household_members={[]} display_follow_up_flag={false} />);
     expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeFalsy();
     expect(wrapper.find('.follow-up-flag-box').exists()).toBeFalsy();
     expect(wrapper.find('#edit-follow-up-flag-link').exists()).toBeFalsy();

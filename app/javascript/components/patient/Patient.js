@@ -144,7 +144,7 @@ class Patient extends React.Component {
                 {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
               </h3>
             </Row>
-            {this.props.current_user.role != 'enroller' && (
+            {this.props.display_follow_up_flag && (
               <React.Fragment>
                 {!this.props?.details?.follow_up_reason && (
                   <Button
@@ -726,7 +726,7 @@ class Patient extends React.Component {
             </Row>
           </div>
         </Collapse>
-        {this.props.current_user.role != 'enroller' && (
+        {this.props.display_follow_up_flag && (
           <Modal id="follow-up-flag-modal" size="lg" centered show={this.state.action !== undefined} onHide={() => this.setState({ action: undefined })}>
             <Modal.Header closeButton>
               <Modal.Title>{this.state.action}</Modal.Title>
@@ -759,6 +759,7 @@ Patient.propTypes = {
   collapse: PropTypes.bool,
   follow_up_reasons: PropTypes.array,
   other_household_members: PropTypes.array,
+  display_follow_up_flag: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };
 

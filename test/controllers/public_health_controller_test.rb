@@ -146,14 +146,16 @@ class PublicHealthControllerTest < ActionController::TestCase
       patients = user.viewable_patients.monitoring_closed_without_purged.where(isolation: false)
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
-      assert_equal common_fields + %w[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at], json_response['fields']
+      expected_fields = common_fields + %w[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
+      assert_equal expected_fields, json_response['fields']
 
       post :patients, params: { query: { workflow: 'exposure', tab: 'transferred_in' } }, as: :json
       json_response = JSON.parse(response.body)
       patients = user_jur.transferred_in_patients.where(isolation: false)
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
-      assert_equal common_fields + %w[flagged_for_follow_up transferred_from end_of_monitoring risk_level monitoring_plan transferred_at], json_response['fields']
+      expected_fields = common_fields + %w[flagged_for_follow_up transferred_from end_of_monitoring risk_level monitoring_plan transferred_at]
+      assert_equal expected_fields, json_response['fields']
 
       post :patients, params: { query: { workflow: 'exposure', tab: 'transferred_out' } }, as: :json
       json_response = JSON.parse(response.body)
@@ -199,7 +201,8 @@ class PublicHealthControllerTest < ActionController::TestCase
       patients = user.viewable_patients.monitoring_closed_without_purged.where(isolation: true)
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
-      assert_equal common_fields + %w[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at], json_response['fields']
+      expected_fields = common_fields + %w[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
+      assert_equal expected_fields, json_response['fields']
 
       post :patients, params: { query: { workflow: 'isolation', tab: 'transferred_in' } }, as: :json
       json_response = JSON.parse(response.body)
