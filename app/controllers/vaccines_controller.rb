@@ -5,7 +5,9 @@ class VaccinesController < ApplicationController
   include VaccineQueryHelper
   include ValidationHelper
 
-  before_action :authenticate_user!, :check_role
+  before_action :authenticate_user!
+  before_action :check_can_create, only: %i[create]
+  before_action :check_can_edit, only: %i[update destroy]
   before_action :check_patient, only: %i[create update destroy]
   before_action :check_vaccine, only: %i[update destroy]
 
@@ -91,7 +93,7 @@ class VaccinesController < ApplicationController
     else
       # Handle case where vaccine update failed
       error_message = 'Vaccination was unable to be updated. '
-      error_message += "Errors: #{format_model_validation_errors(vaccine).join(', ')}" if @vaccine&.errors
+      error_message += "Errors: #{format_model_validation_errors(@vaccine).join(', ')}" if @vaccine&.errors
       render(json: { error: error_message }, status: :bad_request) && return
     end
   end
@@ -116,7 +118,11 @@ class VaccinesController < ApplicationController
 
   private
 
-  def check_role
+  def check_can_create
+    return head :forbidden unless current_user.can_create_patient_vaccines?
+  end
+
+  def check_can_edit
     return head :forbidden unless current_user.can_edit_patient_vaccines?
   end
 
@@ -125,7 +131,7 @@ class VaccinesController < ApplicationController
 
     # Check if Patient ID is valid
     unless Patient.exists?(@patient_id)
-      error_message = "Vaccination cannot be created for unknown monitoree with ID: #{@patient_id}"
+      error_message = "Vaccination cannot be modified for unknown monitoree with ID: #{@patient_id}"
       render(json: { error: error_message }, status: :bad_request) && return
     end
 
@@ -137,7 +143,8 @@ class VaccinesController < ApplicationController
   end
 
   def check_vaccine
-    @vaccine = Vaccine.find_by(id: params.require(:id)&.to_i)
-    render(json: { error: "Vaccination with ID #{@vaccine.ids} cannot be found." }, status: :bad_request) && return unless @vaccine
+    vaccine_id = params.require(:id)&.to_i
+    @vaccine = Vaccine.find_by(id: vaccine_id)
+    render(json: { error: "Vaccination with ID #{vaccine_id} cannot be found." }, status: :bad_request) && return unless @vaccine
   end
 end

@@ -7,7 +7,9 @@ class VaccinesControllerTest < ActionController::TestCase
 
   def teardown; end
 
-  test 'before action authenticate user' do
+  # --- BEFORE ACTION --- #
+
+  test 'before action: authenticate user' do
     get :index
     assert_redirected_to(new_user_session_path)
 
@@ -16,9 +18,92 @@ class VaccinesControllerTest < ActionController::TestCase
 
     put :update, params: { id: 'test' }
     assert_redirected_to(new_user_session_path)
+
+    put :destroy, params: { id: 'test' }
+    assert_redirected_to(new_user_session_path)
+  end
+
+  test 'before action: check user can create' do
+    user = create(:enroller_user)
+    sign_in user
+
+    post :create, params: {}
+    assert_response(:forbidden)
+
+    sign_out user
+  end
+
+  test 'before action: check user can edit' do
+    user = create(:enroller_user)
+    sign_in user
+
+    put :update, params: { id: 'test' }
+    assert_response(:forbidden)
+
+    put :destroy, params: { id: 'test' }
+    assert_response(:forbidden)
+
+    sign_out user
+  end
+
+  test 'before action: check patient valid (patient exists)' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+
+    post :create, params: { patient_id: 'test' }
+    assert_response(:bad_request)
+    assert_equal("Vaccination cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+
+    put :update, params: { id: 'test', patient_id: 'test' }
+    assert_response(:bad_request)
+    assert_equal("Vaccination cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+
+    put :destroy, params: { id: 'test', patient_id: 'test' }
+    assert_response(:bad_request)
+    assert_equal("Vaccination cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+
+    sign_out user
+  end
+
+  test 'before action: check patient (current user can view patient)' do
+    user = create(:public_health_enroller_user)
+    user_2 = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user_2)
+    sign_in user
+
+    post :create, params: { patient_id: patient.id }
+    assert_response(:forbidden)
+    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
+
+    put :update, params: { id: 'test', patient_id: patient.id }
+    assert_response(:forbidden)
+    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
+
+    put :destroy, params: { id: 'test', patient_id: patient.id }
+    assert_response(:forbidden)
+    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
+
+    sign_out user
+  end
+
+  test 'before action: check vaccine' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    sign_in user
+
+    put :update, params: { id: 'test', patient_id: patient.id }
+    assert_response(:bad_request)
+    assert_equal("Vaccination with ID #{'test'.to_i} cannot be found.", JSON.parse(response.body)['error'])
+
+    put :destroy, params: { id: 'test', patient_id: patient.id }
+    assert_response(:bad_request)
+    assert_equal("Vaccination with ID #{'test'.to_i} cannot be found.", JSON.parse(response.body)['error'])
+
+    sign_out user
   end
 
   # --- INDEX --- #
+
   test 'index: returns error if params cannot be validated' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
@@ -39,26 +124,6 @@ class VaccinesControllerTest < ActionController::TestCase
 
     assert_response(:bad_request)
     assert_equal("Invalid pagination options. Number of entries: #{params[:entries]}. Page: #{params[:page]}", JSON.parse(response.body)['error'])
-
-    sign_out user
-  end
-
-  test 'index: redirects if current user cannot view vaccines' do
-    user = create(:enroller_user)
-    patient = create(:patient, creator: user)
-
-    sign_in user
-
-    get :index, params: {
-      patient_id: patient.id,
-      entries: 10,
-      page: 0,
-      search: '',
-      order: nil,
-      direction: nil
-    }
-
-    assert_redirected_to(@controller.root_url)
 
     sign_out user
   end
@@ -151,78 +216,6 @@ class VaccinesControllerTest < ActionController::TestCase
 
   # --- CREATE --- #
 
-  test 'create: redirects if current user cannot edit vaccines' do
-    user = create(:enroller_user)
-    patient = create(:patient, creator: user)
-
-    sign_in user
-    group_name = Vaccine::VACCINE_STANDARDS.keys.sample
-    post :create, params: {
-      group_name: group_name,
-      product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-01-12',
-      dose_number: 'Unknown',
-      notes: 'Test notes',
-      patient_id: patient.id
-    }
-
-    assert_redirected_to(@controller.root_url)
-    assert_equal(0, patient.vaccines.count)
-    assert_equal(0, patient.histories.count)
-
-    sign_out user
-  end
-
-  test 'create: checks for valid patient ID and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    history_count_before = History.count
-    vaccine_count_before = Vaccine.count
-
-    sign_in user
-    group_name = Vaccine::VACCINE_STANDARDS.keys.sample
-    post :create, params: {
-      group_name: group_name,
-      product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-01-12',
-      dose_number: 'Unknown',
-      notes: 'Test notes',
-      patient_id: 'test'
-    }
-
-    assert_response(:bad_request)
-    assert_equal("Vaccination cannot be created for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
-    assert_equal(vaccine_count_before, Vaccine.count)
-    assert_equal(history_count_before, History.count)
-
-    sign_out user
-  end
-
-  test 'create: checks if user access to patient and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    patient = create(:patient) # patient has different creator
-
-    history_count_before = History.count
-    vaccine_count_before = Vaccine.count
-
-    sign_in user
-    group_name = Vaccine::VACCINE_STANDARDS.keys.sample
-    post :create, params: {
-      group_name: group_name,
-      product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-01-12',
-      dose_number: 'Unknown',
-      notes: 'Test notes',
-      patient_id: patient.id
-    }
-
-    assert_response(:forbidden)
-    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
-    assert_equal(vaccine_count_before, Vaccine.count)
-    assert_equal(history_count_before, History.count)
-
-    sign_out user
-  end
-
   test 'create: creates new vaccine and creates related history item' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
@@ -291,112 +284,7 @@ class VaccinesControllerTest < ActionController::TestCase
 
   # --- UPDATE --- #
 
-  test 'update: redirects if current user cannot edit vaccines' do
-    user = create(:enroller_user)
-    patient = create(:patient)
-    vaccine = create(:vaccine, patient: patient, updated_at: 2.days.ago)
-    last_updated = vaccine.updated_at
-
-    sign_in user
-    group_name = Vaccine::VACCINE_STANDARDS.keys.sample
-    put :update, params: {
-      id: vaccine.id,
-      group_name: group_name,
-      product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-01-12',
-      dose_number: 'Unknown',
-      notes: 'Test notes',
-      patient_id: patient.id
-    }
-
-    assert_redirected_to(@controller.root_url)
-    assert_equal(last_updated, vaccine.updated_at) # assert not updated
-    assert_equal(0, patient.histories.count)
-
-    sign_out user
-  end
-
-  test 'update: checks for valid patient ID and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    patient = create(:patient, creator: user)
-    vaccine = create(:vaccine, patient: patient, updated_at: 2.days.ago)
-    last_updated = vaccine.updated_at
-
-    sign_in user
-    group_name = Vaccine::VACCINE_STANDARDS.keys.sample
-    put :update, params: {
-      id: vaccine.id,
-      group_name: group_name,
-      product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-01-12',
-      dose_number: 'Unknown',
-      notes: 'Test notes',
-      patient_id: 'test'
-    }
-
-    assert_response(:bad_request)
-    assert_equal("Vaccination cannot be created for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
-    assert_equal(last_updated, vaccine.updated_at) # assert not updated
-    assert_equal(0, patient.histories.count)
-
-    sign_out user
-  end
-
-  test 'update: checks if user access to patient and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    patient = create(:patient) # patient has different creator
-    vaccine = create(:vaccine, patient: patient, updated_at: 2.days.ago)
-    last_updated = vaccine.updated_at
-
-    history_count_before = History.count
-
-    sign_in user
-    group_name = Vaccine::VACCINE_STANDARDS.keys.sample
-    put :update, params: {
-      id: vaccine.id,
-      group_name: group_name,
-      product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-01-12',
-      dose_number: 'Unknown',
-      notes: 'Test notes',
-      patient_id: patient.id
-    }
-
-    assert_response(:forbidden)
-    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
-    assert_equal(last_updated, vaccine.updated_at) # assert not updated
-    assert_equal(history_count_before, History.count)
-
-    sign_out user
-  end
-
-  test 'update: checks for valid vaccine ID and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    patient = create(:patient, creator: user)
-    vaccine = create(:vaccine, patient: patient, updated_at: 2.days.ago)
-    last_updated = vaccine.updated_at
-
-    sign_in user
-    group_name = Vaccine::VACCINE_STANDARDS.keys.sample
-    put :update, params: {
-      id: 'test',
-      group_name: group_name,
-      product_name: Vaccine.product_name_options(group_name).sample,
-      administration_date: '2021-01-12',
-      dose_number: 'Unknown',
-      notes: 'Test notes',
-      patient_id: patient.id
-    }
-
-    assert_response(:bad_request)
-    assert_equal("Vaccination with ID #{'test'.to_i} cannot be found.", JSON.parse(response.body)['error'])
-    assert_equal(last_updated, vaccine.updated_at) # assert not updated
-    assert_equal(0, patient.histories.count)
-
-    sign_out user
-  end
-
-  test 'update: updates new vaccine and creates related history item' do
+  test 'update: updates existing vaccine and creates related history item' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
     vaccine = create(:vaccine, patient: patient, updated_at: 2.days.ago)
@@ -464,6 +352,39 @@ class VaccinesControllerTest < ActionController::TestCase
       " acceptable values for vaccine group #{group_name} are: '#{Vaccine.product_name_options(group_name).join("', '")}'", JSON.parse(response.body)['error'])
     assert_equal(last_updated, vaccine.updated_at) # assert not updated
     assert_equal(0, patient.histories.count)
+
+    sign_out user
+  end
+
+  # --- DESTROY --- #
+
+  test 'destroy: destroys existing vaccine and creates related history item' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    vaccine = create(:vaccine, patient: patient, updated_at: 2.days.ago)
+    delete_reason = 'some delete reason'
+
+    sign_in user
+    put :destroy, params: {
+      id: vaccine.id,
+      patient_id: patient.id,
+      delete_reason: delete_reason
+    }
+
+    assert_response(:success)
+    assert_equal(1, patient.histories.count)
+
+    assert_raises(ActiveRecord::RecordNotFound) do
+      vaccine = Vaccine.find(vaccine.id)
+    end
+
+    history = patient.histories.first
+    assert_equal(History::HISTORY_TYPES[:vaccination_edit], history[:history_type])
+    assert_equal(user.email, history[:created_by])
+    assert_equal(
+      "User deleted a vaccine (ID: #{vaccine.id}, Vaccine Group: #{vaccine.group_name}, Product Name: #{vaccine.product_name}). Reason: #{delete_reason}.",
+      history[:comment]
+    )
 
     sign_out user
   end
