@@ -202,77 +202,77 @@ class LastDateExposure extends React.Component {
           )}
         <Row>
           <SymptomOnset authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
-          {!this.props.patient.isolation && (
-            <Form.Group as={Col} controlId="last_date_of_exposure">
-              <Row className="reports-actions-title">
-                <Col>
-                  <Form.Label className="nav-input-label h6">
-                    LAST DATE OF EXPOSURE
-                    <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
-                  </Form.Label>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <DateInput
-                    id="last_date_of_exposure"
-                    date={this.state.last_date_of_exposure}
-                    minDate={'2020-01-01'}
-                    maxDate={moment()
-                      .add(30, 'days')
-                      .format('YYYY-MM-DD')}
-                    onChange={this.openLastDateOfExposureModal}
-                    placement="top"
-                    customClass="form-control-lg"
-                    ariaLabel="Last Date of Exposure Input"
-                    isClearable
-                  />
-                </Col>
-              </Row>
-              <Row className="pt-2">
-                <Col>
-                  <OverlayTrigger
-                    key="tooltip-ot-ce"
-                    placement="left"
-                    overlay={
-                      <Tooltip id="tooltip-ce" style={this.props.patient.monitoring ? { display: 'none' } : {}}>
-                        Continuous Exposure cannot be turned on or off for records on the Closed line list. If this monitoree requires monitoring due to a
-                        Continuous Exposure, you may update this field after changing Monitoring Status to &quot;Actively Monitoring&quot;
-                      </Tooltip>
-                    }>
-                    <span className="d-inline-block">
-                      <Form.Check
-                        size="lg"
-                        label="CONTINUOUS EXPOSURE"
-                        id="continuous_exposure"
-                        disabled={!this.props.patient.monitoring}
-                        checked={this.state.continuous_exposure}
-                        onChange={() => this.openContinuousExposureModal()}
-                      />
-                    </span>
-                  </OverlayTrigger>
-                  <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
-                </Col>
-              </Row>
-            </Form.Group>
-          )}
-          {this.props.patient.isolation ? (
-            <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+          {!this.props.patient.isolation ? (
+            <>
+              <Form.Group as={Col} controlId="last_date_of_exposure">
+                <Row className="reports-actions-title">
+                  <Col>
+                    <Form.Label className="nav-input-label h6">
+                      LAST DATE OF EXPOSURE
+                      <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
+                    </Form.Label>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <DateInput
+                      id="last_date_of_exposure"
+                      date={this.state.last_date_of_exposure}
+                      minDate={'2020-01-01'}
+                      maxDate={moment()
+                        .add(30, 'days')
+                        .format('YYYY-MM-DD')}
+                      onChange={this.openLastDateOfExposureModal}
+                      placement="top"
+                      customClass="form-control-lg"
+                      ariaLabel="Last Date of Exposure Input"
+                      isClearable
+                    />
+                  </Col>
+                </Row>
+                <Row className="pt-2">
+                  <Col>
+                    <OverlayTrigger
+                      key="tooltip-ot-ce"
+                      placement="left"
+                      overlay={
+                        <Tooltip id="tooltip-ce" style={this.props.patient.monitoring ? { display: 'none' } : {}}>
+                          Continuous Exposure cannot be turned on or off for records on the Closed line list. If this monitoree requires monitoring due to a
+                          Continuous Exposure, you may update this field after changing Monitoring Status to &quot;Actively Monitoring&quot;
+                        </Tooltip>
+                      }>
+                      <span className="d-inline-block">
+                        <Form.Check
+                          size="lg"
+                          label="CONTINUOUS EXPOSURE"
+                          id="continuous_exposure"
+                          disabled={!this.props.patient.monitoring}
+                          checked={this.state.continuous_exposure}
+                          onChange={() => this.openContinuousExposureModal()}
+                        />
+                      </span>
+                    </OverlayTrigger>
+                    <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
+                  </Col>
+                </Row>
+              </Form.Group>
+              <Col>
+                <Row className="reports-actions-title">
+                  <Col>
+                    <span className="nav-input-label">END OF MONITORING</span>
+                    <InfoTooltip getCustomText={this.endOfMonitoringTooltipText} location="right"></InfoTooltip>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>{this.formatEndOfMonitoringDate()}</Col>
+                </Row>
+                <Row>
+                  <Col></Col>
+                </Row>
+              </Col>
+            </>
           ) : (
-            <Col>
-              <Row className="reports-actions-title">
-                <Col>
-                  <span className="nav-input-label">END OF MONITORING</span>
-                  <InfoTooltip getCustomText={this.endOfMonitoringTooltipText} location="right"></InfoTooltip>
-                </Col>
-              </Row>
-              <Row>
-                <Col>{this.formatEndOfMonitoringDate()}</Col>
-              </Row>
-              <Row>
-                <Col></Col>
-              </Row>
-            </Col>
+            <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
           )}
         </Row>
       </React.Fragment>
