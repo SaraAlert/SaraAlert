@@ -64,7 +64,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
       sleep(1.5) # wait for data to load
       if verify_scope && tab == :all
         page.all('tbody tr').each do |row|
-          assigned_jurisdiction_cell = row.all('td')[1]
+          assigned_jurisdiction_cell = row.all('td')[2]
           assert_equal(jur[:name], assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
         end
       end
