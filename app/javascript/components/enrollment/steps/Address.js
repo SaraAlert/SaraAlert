@@ -87,6 +87,13 @@ class Address extends React.Component {
           });
         })
         .catch(err => {
+          // Even though domestic is invalid, if foreign is valid, still move on, otherwise show
+          // errors for current (domestic) tab
+          schemaForeign.validate(this.state.current.patient, { abortEarly: false }).then(() => {
+            self.setState({ errors: {} }, () => {
+              callback();
+            });
+          });
           // Validation errors, update state to display to user
           if (err && err.inner) {
             let issues = {};
@@ -106,6 +113,13 @@ class Address extends React.Component {
           });
         })
         .catch(err => {
+          // Even though foreign is invalid, if domestic is valid, still move on, otherwise show
+          // errors for current (foreign) tab
+          schemaDomestic.validate(this.state.current.patient, { abortEarly: false }).then(() => {
+            self.setState({ errors: {} }, () => {
+              callback();
+            });
+          });
           // Validation errors, update state to display to user
           if (err && err.inner) {
             let issues = {};

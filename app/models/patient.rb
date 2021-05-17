@@ -73,11 +73,6 @@ class Patient < ApplicationRecord
     validates required_field, on: :api, presence: { message: 'is required' }
   end
 
-  validates :address_state,
-            on: :api,
-            presence: { message: "is required unless a 'Foreign Address Country' is specified" },
-            unless: -> { foreign_address_country.present? }
-
   validates :symptom_onset,
             on: :api,
             presence: { message: "is required when 'Isolation' is 'true'" },
@@ -103,6 +98,7 @@ class Patient < ApplicationRecord
 
   validates_with PrimaryContactValidator, on: %i[api import]
   validates_with RaceValidator, on: %i[api import]
+  validates_with RequiredAddressValidator, on: :api
 
   # NOTE: Commented out until additional testing
   # validates_with PatientDateValidator
