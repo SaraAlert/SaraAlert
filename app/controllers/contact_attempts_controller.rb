@@ -13,6 +13,10 @@ class ContactAttemptsController < ApplicationController
     successful = permitted_params[:successful]
     note = permitted_params[:note]
 
+    redirect_to(root_url) && return if patient_id.nil?
+
+    redirect_to(root_url) && return unless current_user.viewable_patients.where(id: patient_id).exists?
+
     ContactAttempt.create!(patient_id: patient_id,
                            user_id: current_user.id,
                            successful: successful,

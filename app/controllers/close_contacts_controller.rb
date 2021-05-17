@@ -8,6 +8,12 @@ class CloseContactsController < ApplicationController
   def create
     redirect_to(root_url) && return unless current_user.can_create_patient_close_contacts?
 
+    patient_id = params.permit(:patient_id)[:patient_id]
+
+    redirect_to(root_url) && return if patient_id.nil?
+
+    redirect_to(root_url) && return unless current_user.viewable_patients.where(id: patient_id).exists?
+
     cc = CloseContact.new(first_name: params.permit(:first_name)[:first_name],
                           last_name: params.permit(:last_name)[:last_name],
                           primary_telephone: params.permit(:primary_telephone)[:primary_telephone],
@@ -17,7 +23,7 @@ class CloseContactsController < ApplicationController
                           notes: params.permit(:notes)[:notes],
                           enrolled_id: nil,
                           contact_attempts: 0)
-    cc.patient_id = params.permit(:patient_id)[:patient_id]
+    cc.patient_id = patient_id
     cc.save
     History.close_contact(patient: params.permit(:patient_id)[:patient_id],
                           created_by: current_user.email,
@@ -27,6 +33,12 @@ class CloseContactsController < ApplicationController
   # Update an existing close contact
   def update
     redirect_to(root_url) && return unless current_user.can_edit_patient_close_contacts?
+
+    patient_id = params.permit(:patient_id)[:patient_id]
+
+    redirect_to(root_url) && return if patient_id.nil?
+
+    redirect_to(root_url) && return unless current_user.viewable_patients.where(id: patient_id).exists?
 
     cc = CloseContact.find_by(id: params.permit(:id)[:id])
     cc.update(first_name: params.permit(:first_name)[:first_name],
@@ -38,7 +50,7 @@ class CloseContactsController < ApplicationController
               notes: params.permit(:notes)[:notes],
               contact_attempts: params.permit(:contact_attempts)[:contact_attempts])
     cc.save
-    History.close_contact_edit(patient: params.permit(:patient_id)[:patient_id],
+    History.close_contact_edit(patient: patient_id,
                                created_by: current_user.email,
                                comment: "User edited a close contact (ID: #{cc.id}).")
   end
