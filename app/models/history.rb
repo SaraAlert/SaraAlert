@@ -29,7 +29,8 @@ class History < ApplicationRecord
     close_contact_edit: 'Close Contact Edit',
     contact_attempt: 'Contact Attempt',
     welcome_message_sent: 'Welcome Message Sent',
-    record_automatically_closed: 'Record Automatically Closed'
+    record_automatically_closed: 'Record Automatically Closed',
+    monitoring_complete_message_sent: 'Monitoring Complete Message Sent'
   }.freeze
 
   columns.each do |column|
@@ -227,6 +228,10 @@ class History < ApplicationRecord
 
   def self.record_automatically_closed(patient: nil, created_by: 'Sara Alert System', comment: 'Monitoree has completed monitoring.')
     create_history(patient, created_by, HISTORY_TYPES[:record_automatically_closed], comment)
+  end
+
+  def self.monitoring_complete_message_sent(patient: nil, created_by: 'Sara Alert System', comment: 'Monitoring Complete message was sent.')
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment)
   end
 
   def self.monitoring_status(history)

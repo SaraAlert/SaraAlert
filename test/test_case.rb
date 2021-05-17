@@ -14,6 +14,19 @@ class ActiveSupport::TestCase
     Sidekiq::Worker.clear_all
   end
 
+  def assert_contains_history(patient, history_comment_substring)
+    patient.histories.each do |history|
+      return if history.comment.include? history_comment_substring # rubocop:disable Lint/NonLocalExitFromIterator
+    end
+    assert false, "Expected patient to have a history that contains: #{history_comment_substring}"
+  end
+
+  def assert_not_contains_history(patient, history_comment_substring)
+    patient.histories.each do |history|
+      assert false, "Expected patient to NOT have a history that contains: #{history_comment_substring}" if history.comment.include? history_comment_substring
+    end
+  end
+
   # Make corrections for the edge of DST.
   #
   # NOTE: One main assumption of this function is that `time` will only ever
