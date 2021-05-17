@@ -107,8 +107,8 @@ class VaccinesController < ApplicationController
       comment += ", Dose Number: #{@vaccine.dose_number}" unless @vaccine.dose_number.blank?
       comment += "). Reason: #{reason}."
       History.vaccination_edit(patient: @patient_id,
-                              created_by: current_user.email,
-                              comment: comment)
+                               created_by: current_user.email,
+                               comment: comment)
     else
       render status: 500
     end
@@ -130,10 +130,10 @@ class VaccinesController < ApplicationController
     end
 
     # Check if user has access to patient
-    unless current_user.get_patient(@patient_id)
-      error_message = "User does not have access to Patient with ID: #{@patient_id}"
-      render(json: { error: error_message }, status: :forbidden) && return
-    end
+    return if current_user.get_patient(@patient_id)
+
+    error_message = "User does not have access to Patient with ID: #{@patient_id}"
+    render(json: { error: error_message }, status: :forbidden) && return
   end
 
   def check_vaccine
