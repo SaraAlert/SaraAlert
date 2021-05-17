@@ -30,7 +30,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
       patient_id: patient.id
     }
 
-    assert_redirected_to(@controller.root_url)
+    assert_response(:forbidden)
     assert_equal(0, patient.laboratories.count)
     assert_equal(0, patient.histories.count)
 
@@ -120,7 +120,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
 
   # --- UPDATE --- #
 
-  test 'update: redirects if current user cannot edit laboratories' do
+  test 'update: forbidden response if current user cannot edit laboratories' do
     user = create(:enroller_user)
     patient = create(:patient)
     laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
@@ -136,7 +136,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
       patient_id: patient.id
     }
 
-    assert_redirected_to(@controller.root_url)
+    assert_response(:forbidden)
     assert_equal(last_updated, laboratory.updated_at) # assert not updated
     assert_equal(0, patient.histories.count)
 
@@ -233,7 +233,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
 
   # --- DESTROY --- #
 
-  test 'destroy: redirects if current user cannot edit laboratories' do
+  test 'destroy: forbidden response if current user cannot edit laboratories' do
     user = create(:enroller_user)
     patient = create(:patient)
     laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
@@ -241,10 +241,11 @@ class LaboratoriesControllerTest < ActionController::TestCase
 
     sign_in user
     put :destroy, params: {
-      id: laboratory.id
+      id: laboratory.id,
+      patient_id: patient.id
     }
 
-    assert_redirected_to(@controller.root_url)
+    assert_response(:forbidden)
     assert_equal(last_updated, laboratory.updated_at) # assert not updated
     assert_equal(0, patient.histories.count)
 

@@ -2,42 +2,38 @@
 
 # LaboratoriesController: lab results
 class LaboratoriesController < ApplicationController
-  before_action :authenticate_user!, :check_role, :check_patient
+  before_action :authenticate_user!, :check_patient
+  before_action :check_can_edit, only: %i[edit delete]
+  before_action :check_can_create, only: %i[create]
 
   # Create a new lab result
   def create
-    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
-
     lab = Laboratory.new(lab_type: params.permit(:lab_type)[:lab_type],
                          specimen_collection: params.permit(:specimen_collection)[:specimen_collection],
                          report: params.permit(:report)[:report],
                          result: params.permit(:result)[:result])
-    lab.patient_id = patient_id
+    lab.patient_id = @patient_id
     lab.save!
-    History.lab_result(patient: patient_id,
+    History.lab_result(patient: @patient_id,
                        created_by: current_user.email,
                        comment: "User added a new lab result (ID: #{lab.id}).")
   end
 
   # Update an existing lab result
   def update
-    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
-
     lab = Laboratory.find_by(id: params.permit(:id)[:id])
     lab.update!(lab_type: params.permit(:lab_type)[:lab_type],
                 specimen_collection: params.permit(:specimen_collection)[:specimen_collection],
                 report: params.permit(:report)[:report],
                 result: params.permit(:result)[:result])
 
-    History.lab_result_edit(patient: patient_id,
+    History.lab_result_edit(patient: @patient_id,
                             created_by: current_user.email,
                             comment: "User edited a lab result (ID: #{lab.id}).")
   end
 
   # Delete an existing lab result
   def destroy
-    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
-
     lab = Laboratory.find_by(id: params.permit(:id)[:id])
     lab.destroy
     if lab.destroyed?
@@ -48,7 +44,7 @@ class LaboratoriesController < ApplicationController
       comment += ", Report: #{lab.report}" unless lab.report.blank?
       comment += ", Result: #{lab.result}" unless lab.result.blank?
       comment += "). Reason: #{reason}."
-      History.lab_result_edit(patient: patient_id,
+      History.lab_result_edit(patient: @patient_id,
                               created_by: current_user.email,
                               comment: comment)
     else
@@ -58,22 +54,31 @@ class LaboratoriesController < ApplicationController
 
   private
 
-  def check_role
-    redirect_to(root_url) && return unless current_user.can_edit_patient_laboratories?
+  def check_can_edit
+    return head :forbidden unless current_user.can_edit_patient_laboratories?
+  end
+
+  def check_can_create
+    return head :forbidden unless current_user.can_create_patient_laboratories?
+  end
+
+  def check_lab_exists
+    @lab = Laboratories.find(id: params.permit(:id)[:id])
+    return head :bad_request if @lab.nil?
   end
 
   def check_patient
-    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
+    @patient_id = params.permit(:patient_id)[:patient_id]&.to_i
     # Check if Patient ID is valid
-    unless Patient.exists?(patient_id)
-      error_message = "Lab Result cannot be modified for unknown monitoree with ID: #{patient_id}"
+    unless Patient.exists?(@patient_id)
+      error_message = "Lab Result cannot be modified for unknown monitoree with ID: #{@patient_id}"
       render(json: { error: error_message }, status: :bad_request) && return
     end
 
     # Check if user has access to patient
-    unless current_user.get_patient(patient_id)
-      error_message = "User does not have access to Patient with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :forbidden) && return
-    end
+    return if current_user.get_patient(@patient_id)
+
+    error_message = "User does not have access to Patient with ID: #{@patient_id}"
+    render(json: { error: error_message }, status: :forbidden) && return
   end
 end
