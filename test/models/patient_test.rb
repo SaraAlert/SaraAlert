@@ -1904,18 +1904,26 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-  test 'validates address_state is required unless foreign_address_country in api context' do
+  test 'validates one of address_state or foreign_address_country is required in api context' do
     patient = valid_patient
 
+    patient.address_state = 'Ohio'
+    patient.foreign_address_country = nil
+    assert patient.valid?(:api)
+
+    patient.foreign_address_country = 'UK'
+    patient.address_state = nil
+    assert patient.valid?(:api)
+
+    patient.foreign_address_country = 'UK'
+    patient.address_state = 'Ohio'
     assert patient.valid?(:api)
 
     patient.address_state = nil
+    patient.foreign_address_country = nil
     assert_not patient.valid?(:api)
     assert patient.valid?(:import)
     assert patient.valid?
-
-    patient.foreign_address_country = 'UK'
-    assert patient.valid?(:api)
   end
 
   test 'validates date_of_birth is required in api context' do
