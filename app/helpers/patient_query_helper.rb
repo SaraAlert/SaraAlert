@@ -525,14 +525,14 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           vaccines = vaccines.where('vaccines.administration_date > ?', field[:value][:date])
         end
       when 'dose-number'
-        if field[:value].blank?
-          vaccines = vaccines.where('vaccines.dose_number IS NULL')
+        vaccines = if field[:value].blank?
+                     vaccines.where('vaccines.dose_number IS NULL')
                              .or(
                                vaccines.where('vaccines.dose_number = ?', '')
                              )
-        else
-          vaccines = vaccines.where('vaccines.dose_number = ?', field[:value])
-        end
+                   else
+                     vaccines.where('vaccines.dose_number = ?', field[:value])
+                   end
       end
     end
 
