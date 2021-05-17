@@ -74,7 +74,7 @@ Rails.application.routes.draw do
 
   post '/laboratories', to: 'laboratories#create'
   post '/laboratories/:id', to: 'laboratories#update'
-  delete '/laboratories/:id', to: 'laboratories#delete'
+  delete '/laboratories/:id', to: 'laboratories#destroy'
 
   get '/jurisdictions/paths', to: 'jurisdictions#jurisdiction_paths', as: :jurisdiction_paths
   get '/jurisdictions/allpaths', to: 'jurisdictions#all_jurisdiction_paths', as: :all_jurisdiction_paths

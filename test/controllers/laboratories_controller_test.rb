@@ -7,35 +7,97 @@ class LaboratoriesControllerTest < ActionController::TestCase
 
   def teardown; end
 
-  test 'before action authenticate user' do
+  # --- BEFORE ACTION --- #
+
+  test 'before action: authenticate user' do
     post :create, params: {}
     assert_redirected_to(new_user_session_path)
 
-    put :update, params: { id: 'test' }
+    put :update, params: { id: 0 }
+    assert_redirected_to(new_user_session_path)
+
+    put :destroy, params: { id: 0 }
     assert_redirected_to(new_user_session_path)
   end
 
-  # --- CREATE --- #
-
-  test 'create: redirects if current user cannot edit laboratories' do
+  test 'before action: check user can create' do
     user = create(:enroller_user)
-    patient = create(:patient, creator: user)
-
     sign_in user
-    post :create, params: {
-      lab_type: 'PCR',
-      specimen_collection: '2021-01-11',
-      report: '2021-01-12',
-      result: 'negative',
-      patient_id: patient.id
-    }
 
+    post :create, params: {}
     assert_response(:forbidden)
-    assert_equal(0, patient.laboratories.count)
-    assert_equal(0, patient.histories.count)
 
     sign_out user
   end
+
+  test 'before action: check user can edit' do
+    user = create(:enroller_user)
+    sign_in user
+
+    put :update, params: { id: 'test' }
+    assert_response(:forbidden)
+
+    put :destroy, params: { id: 'test' }
+    assert_response(:forbidden)
+
+    sign_out user
+  end
+
+  test 'before action: check patient valid (patient exists)' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+
+    post :create, params: { patient_id: 'test' }
+    assert_response(:bad_request)
+    assert_equal("Lab result cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+
+    put :update, params: { id: 'test', patient_id: 'test' }
+    assert_response(:bad_request)
+    assert_equal("Lab result cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+
+    put :destroy, params: { id: 'test', patient_id: 'test' }
+    assert_response(:bad_request)
+    assert_equal("Lab result cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+
+    sign_out user
+  end
+
+  test 'before action: check patient (current user can view patient)' do
+    user = create(:public_health_enroller_user)
+    user_2 = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user_2)
+    sign_in user
+
+    post :create, params: { patient_id: patient.id }
+    assert_response(:forbidden)
+    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
+
+    put :update, params: { id: 'test', patient_id: patient.id }
+    assert_response(:forbidden)
+    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
+
+    put :destroy, params: { id: 'test', patient_id: patient.id }
+    assert_response(:forbidden)
+    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
+
+    sign_out user
+  end
+
+  test 'before action: check lab' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    sign_in user
+
+    put :update, params: { id: 'test', patient_id: patient.id }
+    assert_response(:bad_request)
+
+    put :destroy, params: { id: 'test', patient_id: patient.id }
+    assert_response(:bad_request)
+
+    sign_out user
+  end
+
+  # --- CREATE --- #
 
   test 'create: creates new laboratory and creates related history item' do
     user = create(:public_health_enroller_user)
@@ -72,126 +134,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
     sign_out user
   end
 
-  test 'create: checks for valid patient ID and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    history_count_before = History.count
-    lab_count_before = Laboratory.count
-
-    sign_in user
-    post :create, params: {
-      lab_type: 'PCR',
-      specimen_collection: '2021-01-11',
-      report: '2021-01-12',
-      result: 'negative',
-      patient_id: 'test'
-    }
-
-    assert_response(:bad_request)
-    assert_equal("Lab Result cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
-    assert_equal(lab_count_before, Laboratory.count)
-    assert_equal(history_count_before, History.count)
-
-    sign_out user
-  end
-
-  test 'create: checks if user access to patient and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    patient = create(:patient) # patient has different creator
-
-    history_count_before = History.count
-    lab_count_before = Laboratory.count
-
-    sign_in user
-    post :create, params: {
-      lab_type: 'PCR',
-      specimen_collection: '2021-01-11',
-      report: '2021-01-12',
-      result: 'negative',
-      patient_id: patient.id
-    }
-
-    assert_response(:forbidden)
-    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
-    assert_equal(lab_count_before, Laboratory.count)
-    assert_equal(history_count_before, History.count)
-
-    sign_out user
-  end
-
   # --- UPDATE --- #
-
-  test 'update: forbidden response if current user cannot edit laboratories' do
-    user = create(:enroller_user)
-    patient = create(:patient)
-    laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
-    last_updated = laboratory.updated_at
-
-    sign_in user
-    put :update, params: {
-      id: laboratory.id,
-      lab_type: 'PCR',
-      specimen_collection: '2021-01-11',
-      report: '2021-01-12',
-      result: 'negative',
-      patient_id: patient.id
-    }
-
-    assert_response(:forbidden)
-    assert_equal(last_updated, laboratory.updated_at) # assert not updated
-    assert_equal(0, patient.histories.count)
-
-    sign_out user
-  end
-
-  test 'update: checks if user access to patient and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    patient = create(:patient)
-    laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
-    last_updated = laboratory.updated_at
-
-    history_count_before = History.count
-
-    sign_in user
-    put :update, params: {
-      id: laboratory.id,
-      lab_type: 'PCR',
-      specimen_collection: '2021-01-11',
-      report: '2021-01-12',
-      result: 'negative',
-      patient_id: patient.id
-    }
-
-    assert_response(:forbidden)
-    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
-    assert_equal(last_updated, laboratory.updated_at) # assert not updated
-    assert_equal(history_count_before, History.count)
-
-    sign_out user
-  end
-
-  test 'update: checks for valid patient ID and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    patient = create(:patient)
-    laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
-    last_updated = laboratory.updated_at
-
-    sign_in user
-    put :update, params: {
-      id: laboratory.id,
-      lab_type: 'PCR',
-      specimen_collection: '2021-01-11',
-      report: '2021-01-12',
-      result: 'negative',
-      patient_id: 'test'
-    }
-
-    assert_response(:bad_request)
-    assert_equal("Lab Result cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
-    assert_equal(last_updated, laboratory.updated_at) # assert not updated
-    assert_equal(0, patient.histories.count)
-
-    sign_out user
-  end
 
   test 'update: updates new laboratory and creates related history item' do
     user = create(:public_health_enroller_user)
@@ -233,78 +176,17 @@ class LaboratoriesControllerTest < ActionController::TestCase
 
   # --- DESTROY --- #
 
-  test 'destroy: forbidden response if current user cannot edit laboratories' do
-    user = create(:enroller_user)
-    patient = create(:patient)
-    laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
-    last_updated = laboratory.updated_at
-
-    sign_in user
-    put :delete, params: {
-      id: laboratory.id,
-      patient_id: patient.id
-    }
-
-    assert_response(:forbidden)
-    assert_equal(last_updated, laboratory.updated_at) # assert not updated
-    assert_equal(0, patient.histories.count)
-
-    sign_out user
-  end
-
-  test 'destroy: checks if user access to patient and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    patient = create(:patient)
-    laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
-    last_updated = laboratory.updated_at
-
-    history_count_before = History.count
-
-    sign_in user
-    put :delete, params: {
-      id: laboratory.id,
-      patient_id: patient.id
-    }
-
-    assert_response(:forbidden)
-    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
-    assert_equal(last_updated, laboratory.updated_at) # assert not updated
-    assert_equal(history_count_before, History.count)
-
-    sign_out user
-  end
-
-  test 'destroy: checks for valid patient ID and returns error otherwise' do
-    user = create(:public_health_enroller_user)
-    patient = create(:patient)
-    laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
-    last_updated = laboratory.updated_at
-
-    sign_in user
-    put :delete, params: {
-      id: laboratory.id,
-      patient_id: 'test'
-    }
-
-    assert_response(:bad_request)
-    assert_equal("Lab Result cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
-    assert_equal(last_updated, laboratory.updated_at) # assert not updated
-    assert_equal(0, patient.histories.count)
-
-    sign_out user
-  end
-
   test 'destroy: destroys laboratory and creates related history item' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
     laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
-
     delete_reason = 'Other'
+
     sign_in user
-    put :delete, params: {
+    put :destroy, params: {
       id: laboratory.id,
-      delete_reason: delete_reason,
-      patient_id: patient.id
+      patient_id: patient.id,
+      delete_reason: delete_reason
     }
 
     assert_response(:success)
