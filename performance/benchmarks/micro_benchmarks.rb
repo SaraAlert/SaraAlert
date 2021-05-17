@@ -14,6 +14,7 @@ micro_results = []
 micro_results << benchmark(
   name: 'PatientCountBaseline',
   time_threshold: 15,
+  mode: :real,
   no_exit: true
 ) { Patient.count }
 
@@ -26,6 +27,7 @@ micro_results << benchmark(
   name: 'PatientReminderEligible',
   time_threshold: 7,
   no_exit: true,
+  mode: :real,
   setup: proc { Timecop.travel(Time.now.utc.change(hour: 18)) },
   teardown: proc { Timecop.return }
 ) { Patient.reminder_eligible.count }
@@ -77,6 +79,7 @@ micro_results << benchmark(
   name: 'PatientCloseEligible',
   time_threshold: 7,
   no_exit: true,
+  mode: :real,
   setup: proc {
     puts 'updating patients'
     max_num_to_close = 20_000
