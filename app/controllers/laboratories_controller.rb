@@ -2,28 +2,11 @@
 
 # LaboratoriesController: lab results
 class LaboratoriesController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, :check_role, :check_patient
 
   # Create a new lab result
   def create
-    redirect_to(root_url) && return unless current_user.can_create_patient_laboratories?
-
     patient_id = params.permit(:patient_id)[:patient_id]&.to_i
-
-    redirect_to(root_url) && return if patient_id.nil?
-
-    redirect_to(root_url) && return unless current_user.viewable_patients.where(id: patient_id).exists?
-    # Check if Patient ID is valid
-    unless Patient.exists?(patient_id)
-      error_message = "Lab Result cannot be created for unknown monitoree with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :bad_request) && return
-    end
-
-    # Check if user has access to patient
-    unless current_user.get_patient(patient_id)
-      error_message = "User does not have access to Patient with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :forbidden) && return
-    end
 
     lab = Laboratory.new(lab_type: params.permit(:lab_type)[:lab_type],
                          specimen_collection: params.permit(:specimen_collection)[:specimen_collection],
@@ -38,24 +21,7 @@ class LaboratoriesController < ApplicationController
 
   # Update an existing lab result
   def update
-    redirect_to(root_url) && return unless current_user.can_edit_patient_laboratories?
-
     patient_id = params.permit(:patient_id)[:patient_id]&.to_i
-
-    redirect_to(root_url) && return if patient_id.nil?
-
-    redirect_to(root_url) && return unless current_user.viewable_patients.where(id: patient_id).exists?
-    # Check if Patient ID is valid
-    unless Patient.exists?(patient_id)
-      error_message = "Lab Result cannot be updated for unknown monitoree with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :bad_request) && return
-    end
-
-    # Check if user has access to patient
-    unless current_user.get_patient(patient_id)
-      error_message = "User does not have access to Patient with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :forbidden) && return
-    end
 
     lab = Laboratory.find_by(id: params.permit(:id)[:id])
     lab.update!(lab_type: params.permit(:lab_type)[:lab_type],
@@ -70,21 +36,7 @@ class LaboratoriesController < ApplicationController
 
   # Delete an existing lab result
   def destroy
-    redirect_to(root_url) && return unless current_user.can_edit_patient_laboratories?
-
     patient_id = params.permit(:patient_id)[:patient_id]&.to_i
-
-    # Check if Patient ID is valid
-    unless Patient.exists?(patient_id)
-      error_message = "Lab Result cannot be deleted for unknown monitoree with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :bad_request) && return
-    end
-
-    # Check if user has access to patient
-    unless current_user.get_patient(patient_id)
-      error_message = "User does not have access to Patient with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :forbidden) && return
-    end
 
     lab = Laboratory.find_by(id: params.permit(:id)[:id])
     lab.destroy
@@ -101,6 +53,27 @@ class LaboratoriesController < ApplicationController
                               comment: comment)
     else
       render status: 500
+    end
+  end
+
+  private
+
+  def check_role
+    redirect_to(root_url) && return unless current_user.can_edit_patient_laboratories?
+  end
+
+  def check_patient
+    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
+    # Check if Patient ID is valid
+    unless Patient.exists?(patient_id)
+      error_message = "Lab Result cannot be modified for unknown monitoree with ID: #{patient_id}"
+      render(json: { error: error_message }, status: :bad_request) && return
+    end
+
+    # Check if user has access to patient
+    unless current_user.get_patient(patient_id)
+      error_message = "User does not have access to Patient with ID: #{patient_id}"
+      render(json: { error: error_message }, status: :forbidden) && return
     end
   end
 end
