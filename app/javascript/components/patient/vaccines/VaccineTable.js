@@ -7,6 +7,7 @@ import axios from 'axios';
 import _ from 'lodash';
 
 import CustomTable from '../../layout/CustomTable';
+import DeleteDialog from '../../util/DeleteDialog';
 import reportError from '../../util/ReportError';
 import VaccineModal from './VaccineModal';
 
@@ -186,21 +187,20 @@ class VaccineTable extends React.Component {
   };
 
   /**
-   * Called when the Add New Vaccine button is clicked.
-   * Updates the state to show the appropriate modal for adding a vaccine.
+   * Event handler for when dropdown and text input values change
    */
-  handleAddClick = () => {
-    this.setState({
-      showAddModal: true,
-    });
+  handleChange = event => {
+    this.setState({ [event.target.id]: event.target.value });
   };
 
   /**
-   * Closes the Add New Vaccine modal by updating state.
+   * Called when the Add New Vaccine button is clicked or when the add modal is closed
+   * Updates the state to show/hide the appropriate modal for adding a vaccine.
    */
-  handleAddModalClose = () => {
+  toggleAddModal = () => {
+    let current = this.state.showAddModal;
     this.setState({
-      showAddModal: false,
+      showAddModal: !current,
     });
   };
 
@@ -229,23 +229,14 @@ class VaccineTable extends React.Component {
   };
 
   /**
-   * Called when the edit vaccine button is clicked.
-   * Updates the state to show the appropriate modal for editing a vaccine.
+   * Called when the edit vaccine button is clicked or when the edit modal is closed.
+   * Updates the state to show/hide the appropriate modal for editing a vaccine.
    */
-  handleEditClick = row => {
+  toggleEditModal = row => {
+    let current = this.state.showEditModal;
     this.setState({
-      showEditModal: true,
+      showEditModal: !current,
       activeRow: row,
-    });
-  };
-
-  /**
-   * Closes the edit vaccine modal by updating state.
-   */
-  handleEditModalClose = () => {
-    this.setState({
-      showEditModal: false,
-      activeRow: null,
     });
   };
 
@@ -253,7 +244,7 @@ class VaccineTable extends React.Component {
    * Makes a request to update an existing vaccine record on the backend and reloads page once complete.
    * @param {*} newVaccineData
    */
-   handleEditSubmit = (updatedVaccineData) => {
+   handleEditSubmit = updatedVaccineData => {
     const currVaccineId = this.state.table.rowData[this.state.activeRow]?.id;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
@@ -274,23 +265,46 @@ class VaccineTable extends React.Component {
       });
   };
 
-
-
-  // add delete stuff here
-
   /**
-   * Called when the edit vaccine button is clicked.
-   * Updates the state to show the appropriate modal for editing a vaccine.
+   * Called when the delete vaccine button is clicked or when the delete dialog is closed.
+   * Updates the state to show/hide the appropriate modal for deleting a vaccine.
    */
-  handleDeleteClick = row => {
-    console.log('deleting')
+  toggleDeleteModal = row => {
+    let current = this.state.showDeleteModal;
     this.setState({
-      showDeleteModal: true,
+      showDeleteModal: !current,
       activeRow: row,
+      delete_reason: null,
+      delete_reason_text: null,
     });
   };
 
+  /**
+   * Makes a request to delete an existing vaccine record on the backend and reloads page once complete.
+   */
+  handleDeleteSubmit = () => {
+    const currVaccineId = this.state.table.rowData[this.state.activeRow]?.id;
+    let deleteReason = this.state.delete_reason;
+    if (deleteReason === 'Other' && this.state.delete_reason_text) {
+      deleteReason += ', ' + this.state.delete_reason_text;
+    }
 
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios
+      .delete(`${window.BASE_PATH}/vaccines/${currVaccineId}`, {
+        data: {
+          patient_id: this.props.patient.id,
+          delete_reason: deleteReason,
+        },
+      })
+      .then(() => {
+        // Refresh the page to see the updated table data
+        location.reload();
+      })
+      .catch(error => {
+        reportError(error);
+      });
+  }
 
   /**
    * Creates the action button & dropdown for each row in the table.
@@ -309,11 +323,11 @@ class VaccineTable extends React.Component {
           <i className="fas fa-cogs fw"></i>
         </Dropdown.Toggle>
         <Dropdown.Menu className="test-class" drop={'up'}>
-          <Dropdown.Item className="px-4" onClick={() => this.handleEditClick(rowIndex)}>
+          <Dropdown.Item className="px-4" onClick={() => this.toggleEditModal(rowIndex)}>
             <i className="fas fa-edit fa-fw"></i>
             <span className="ml-2">Edit</span>
           </Dropdown.Item>
-          <Dropdown.Item className="px-4" onClick={() => this.handleDeleteClick(rowIndex)}>
+          <Dropdown.Item className="px-4" onClick={() => this.toggleDeleteModal(rowIndex)}>
             <i className="fas fa-trash fa-fw"></i>
             <span className="ml-2">Delete</span>
           </Dropdown.Item>
@@ -330,7 +344,7 @@ class VaccineTable extends React.Component {
           <Card.Body className="my-1">
             <Row className="mb-4">
               <Col>
-                <Button variant="primary" className="mr-2" onClick={this.handleAddClick}>
+                <Button variant="primary" className="mr-2" onClick={this.toggleAddModal}>
                   <i className="fas fa-plus fa-fw"></i>
                   <span className="ml-2">Add New Vaccination</span>
                 </Button>
@@ -376,7 +390,7 @@ class VaccineTable extends React.Component {
         {(this.state.showAddModal || this.state.showEditModal) && (
           <VaccineModal
             currentVaccineData={this.state.showAddModal ? {} : this.getCurrVaccine()}
-            onClose={this.state.showAddModal ? this.handleAddModalClose : this.handleEditModalClose}
+            onClose={this.state.showAddModal ? this.toggleAddModal : this.toggleEditModal}
             onSave={this.state.showAddModal ? this.handleAddSubmit : this.handleEditSubmit}
             editMode={this.state.showEditModal}
             vaccine_mapping={this.props.vaccine_mapping}
@@ -386,7 +400,7 @@ class VaccineTable extends React.Component {
           />
         )}
         {this.state.showDeleteModal && (
-          <div>some delete modal here</div>
+          <DeleteDialog type={'Vaccination'} delete={this.handleDeleteSubmit} toggle={this.toggleDeleteModal} onChange={this.handleChange} />
         )}
       </React.Fragment>
     );
