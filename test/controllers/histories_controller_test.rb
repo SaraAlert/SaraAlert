@@ -3,7 +3,93 @@
 require 'test_case'
 
 class HistoriesControllerTest < ActionController::TestCase
-  test 'successfully create comment' do
+
+  # --- BEFORE ACTION --- #
+
+  test 'before action: authenticate user' do
+    post :create, params: {}
+    assert_redirected_to(new_user_session_path)
+
+    put :edit, params: { id: 'test' }
+    assert_redirected_to(new_user_session_path)
+
+    put :delete, params: { id: 'test' }
+    assert_redirected_to(new_user_session_path)
+  end
+
+  test 'before action: check user role' do
+    user = create(:enroller_user)
+    sign_in user
+
+    post :create, params: {}
+    assert_response(:forbidden)
+
+    put :edit, params: { id: 'test' }
+    assert_response(:forbidden)
+
+    put :delete, params: { id: 'test' }
+    assert_response(:forbidden)
+
+    sign_out user
+  end
+
+  test 'before action: check patient valid (patient exists)' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+
+    post :create, params: { patient_id: 'test' }
+    assert_response(:bad_request)
+    assert_equal("History comment cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+
+    put :edit, params: { id: 'test', patient_id: 'test' }
+    assert_response(:bad_request)
+    assert_equal("History comment cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+
+    put :delete, params: { id: 'test', patient_id: 'test' }
+    assert_response(:bad_request)
+    assert_equal("History comment cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+
+    sign_out user
+  end
+
+  test 'before action: check patient (current user can view patient)' do
+    user = create(:public_health_enroller_user)
+    user_2 = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user_2)
+    sign_in user
+
+    post :create, params: { patient_id: patient.id }
+    assert_response(:forbidden)
+    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
+
+    put :edit, params: { id: 'test', patient_id: patient.id }
+    assert_response(:forbidden)
+    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
+
+    put :delete, params: { id: 'test', patient_id: patient.id }
+    assert_response(:forbidden)
+    assert_equal("User does not have access to Patient with ID: #{patient.id}", JSON.parse(response.body)['error'])
+
+    sign_out user
+  end
+
+  test 'before action: check history' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    sign_in user
+
+    put :edit, params: { id: 'test', patient_id: patient.id }
+    assert_response(:bad_request)
+
+    put :delete, params: { id: 'test', patient_id: patient.id }
+    assert_response(:bad_request)
+
+    sign_out user
+  end
+
+  # --- CREATE --- #
+
+  test 'create: creates new history comment' do
     user = users(:usa_super_user)
     sign_in user
 
@@ -25,7 +111,9 @@ class HistoriesControllerTest < ActionController::TestCase
     assert_equal History::HISTORY_TYPES[:comment], new_history.history_type
   end
 
-  test 'successfully edit comment' do
+  # --- EDIT --- #
+
+  test 'edit: edits existing history comment by creating a new version linked to the original' do
     user = users(:usa_super_user)
     sign_in user
 
@@ -55,7 +143,9 @@ class HistoriesControllerTest < ActionController::TestCase
     assert_equal History::HISTORY_TYPES[:comment], old_history.history_type
   end
 
-  test 'successfully deletes comment with no edits' do
+  # --- DELETE --- #
+
+  test 'delete: deletes history comment by flagging it as deleted' do
     user = users(:usa_super_user)
     sign_in user
 
@@ -75,7 +165,7 @@ class HistoriesControllerTest < ActionController::TestCase
     assert_equal delete_reason, deleted_history.delete_reason
   end
 
-  test 'successfully delete comment with edits' do
+  test 'delete: deletes all versions of a history comment by flagging them as deleted' do
     user = users(:usa_super_user)
     sign_in user
 
