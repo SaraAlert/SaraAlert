@@ -3,7 +3,7 @@
 # LaboratoriesController: lab results
 class LaboratoriesController < ApplicationController
   before_action :authenticate_user!, :check_patient
-  before_action :check_can_edit, only: %i[edit delete]
+  before_action :check_can_edit, :check_lab_exists, only: %i[update delete]
   before_action :check_can_create, only: %i[create]
 
   # Create a new lab result
@@ -21,28 +21,26 @@ class LaboratoriesController < ApplicationController
 
   # Update an existing lab result
   def update
-    lab = Laboratory.find_by(id: params.permit(:id)[:id])
-    lab.update!(lab_type: params.permit(:lab_type)[:lab_type],
-                specimen_collection: params.permit(:specimen_collection)[:specimen_collection],
-                report: params.permit(:report)[:report],
-                result: params.permit(:result)[:result])
+    @lab.update!(lab_type: params.permit(:lab_type)[:lab_type],
+                 specimen_collection: params.permit(:specimen_collection)[:specimen_collection],
+                 report: params.permit(:report)[:report],
+                 result: params.permit(:result)[:result])
 
     History.lab_result_edit(patient: @patient_id,
                             created_by: current_user.email,
-                            comment: "User edited a lab result (ID: #{lab.id}).")
+                            comment: "User edited a lab result (ID: #{@lab.id}).")
   end
 
   # Delete an existing lab result
-  def destroy
-    lab = Laboratory.find_by(id: params.permit(:id)[:id])
-    lab.destroy
-    if lab.destroyed?
+  def delete
+    @lab.destroy
+    if @lab.destroyed?
       reason = params.permit(:delete_reason)[:delete_reason]
-      comment = "User deleted a lab result (ID: #{lab.id}"
-      comment += ", Type: #{lab.lab_type}" unless lab.lab_type.blank?
-      comment += ", Specimen Collected: #{lab.specimen_collection}" unless lab.specimen_collection.blank?
-      comment += ", Report: #{lab.report}" unless lab.report.blank?
-      comment += ", Result: #{lab.result}" unless lab.result.blank?
+      comment = "User deleted a lab result (ID: #{@lab.id}"
+      comment += ", Type: #{@lab.lab_type}" unless @lab.lab_type.blank?
+      comment += ", Specimen Collected: #{@lab.specimen_collection}" unless @lab.specimen_collection.blank?
+      comment += ", Report: #{@lab.report}" unless @lab.report.blank?
+      comment += ", Result: #{@lab.result}" unless @lab.result.blank?
       comment += "). Reason: #{reason}."
       History.lab_result_edit(patient: @patient_id,
                               created_by: current_user.email,
@@ -63,7 +61,7 @@ class LaboratoriesController < ApplicationController
   end
 
   def check_lab_exists
-    @lab = Laboratories.find(id: params.permit(:id)[:id])
+    @lab = Laboratory.find(params.permit(:id)[:id])
     return head :bad_request if @lab.nil?
   end
 

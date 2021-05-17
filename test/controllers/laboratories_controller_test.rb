@@ -240,7 +240,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
     last_updated = laboratory.updated_at
 
     sign_in user
-    put :destroy, params: {
+    put :delete, params: {
       id: laboratory.id,
       patient_id: patient.id
     }
@@ -261,7 +261,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
     history_count_before = History.count
 
     sign_in user
-    put :destroy, params: {
+    put :delete, params: {
       id: laboratory.id,
       patient_id: patient.id
     }
@@ -281,7 +281,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
     last_updated = laboratory.updated_at
 
     sign_in user
-    put :destroy, params: {
+    put :delete, params: {
       id: laboratory.id,
       patient_id: 'test'
     }
@@ -301,7 +301,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
 
     delete_reason = 'Other'
     sign_in user
-    put :destroy, params: {
+    put :delete, params: {
       id: laboratory.id,
       delete_reason: delete_reason,
       patient_id: patient.id
