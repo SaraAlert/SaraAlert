@@ -4,6 +4,11 @@ title: Release Notes
 parent: API
 nav_order: 1
 ---
+# 1.29.0
+*  Support for bulk export of Public Health Document Container (PHDC) representations of Monitorees via an API endpoint. The Monitorees to export can be filtered by Workflow, Case Status, Monitoring Status, and date most recently updated. See the [NBS documentation](nbs-api-specification) for more details.
+* More strict validation validation of the `communication.language` field on the FHIR Patient Resource. The `communication.language.coding.code` must now be a 2-letter ISO 639-1 code (for example, “en” for “English”) or a 3-letter ISO 639-2 code (for example, “ace” for “Achinese”). See the [Sara Alert Language ValueSet](https://saraalert.github.io/saraalert-fhir-ig/ValueSet-SaraAlertLanguage.html) for a full list of allowed codes.
+
+***
 
 # 1.28.0
 * Support for reading and writing Vaccines via a FHIR Immunization.
