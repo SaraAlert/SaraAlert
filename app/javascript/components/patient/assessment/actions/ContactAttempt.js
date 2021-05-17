@@ -37,7 +37,7 @@ class ContactAttempt extends React.Component {
           comment: this.state.attempt + ' contact attempt.' + (this.state.comment ? ' Note: ' + this.state.comment : ''),
         })
         .then(() => {
-          location.reload(true);
+          location.reload();
         })
         .catch(error => {
           reportError(error);

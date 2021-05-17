@@ -126,7 +126,7 @@ class CloseContact extends React.Component {
               contact_attempts: this.state.contact_attempts || 0,
             })
             .then(() => {
-              location.reload(true);
+              location.reload();
             })
             .catch(error => {
               reportError(error);

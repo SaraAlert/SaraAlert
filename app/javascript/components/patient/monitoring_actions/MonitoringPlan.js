@@ -72,7 +72,7 @@ class MonitoringPlan extends React.Component {
           diffState: diffState,
         })
         .then(() => {
-          location.reload(true);
+          location.reload();
         })
         .catch(err => {
           reportError(err?.response?.data?.error ? err.response.data.error : err, false);

@@ -53,7 +53,7 @@ class SymptomOnset extends React.Component {
           diffState: ['symptom_onset', 'user_defined_symptom_onset'],
         })
         .then(() => {
-          location.reload(true);
+          location.reload();
         })
         .catch(error => {
           reportError(error);

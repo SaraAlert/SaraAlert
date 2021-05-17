@@ -44,7 +44,7 @@ class History extends React.Component {
           comment: this.state.comment,
         })
         .then(() => {
-          location.reload(true);
+          location.reload();
         })
         .catch(error => {
           reportError(error);
@@ -74,7 +74,7 @@ class History extends React.Component {
         delete_reason: deleteReason,
       })
       .then(() => {
-        location.reload(true);
+        location.reload();
       })
       .catch(error => {
         reportError(error);
