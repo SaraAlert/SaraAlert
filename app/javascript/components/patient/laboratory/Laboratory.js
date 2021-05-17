@@ -1,30 +1,34 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button } from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
 import axios from 'axios';
-
 import LaboratoryModal from './LaboratoryModal';
 import reportError from '../../util/ReportError';
+import DeleteDialog from '../../util/DeleteDialog';
 
 class Laboratory extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false,
+      showLabModal: false,
+      showDeleteModal: false,
       loading: false,
     };
   }
 
-  toggleModal = () => {
-    this.setState(state => {
-      return {
-        showModal: !state.showModal,
-        loading: false,
-      };
+  handleChange = event => {
+    this.setState({ [event.target.id]: event.target.value });
+  };
+
+  toggleLabModal = () => {
+    let current = this.state.showLabModal;
+    this.setState({
+      showLabModal: !current,
+      loading: false,
     });
   };
 
-  submit = lab => {
+  handleLabSubmit = lab => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -44,28 +48,73 @@ class Laboratory extends React.Component {
     });
   };
 
+  toggleDeleteModal = () => {
+    let current = this.state.showDeleteModal;
+    this.setState({
+      showDeleteModal: !current,
+      delete_reason: null,
+      delete_reason_text: null,
+    });
+  };
+
+  handleDeleteSubmit = () => {
+    let deleteReason = this.state.delete_reason;
+    if (deleteReason === 'Other' && this.state.delete_reason_text) {
+      deleteReason += ', ' + this.state.delete_reason_text;
+    }
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios
+      .delete(window.BASE_PATH + '/laboratories/' + this.props.lab.id, {
+        data: {
+          patient_id: this.props.patient.id,
+          delete_reason: deleteReason,
+        },
+      })
+      .then(() => {
+        location.reload(true);
+      })
+      .catch(error => {
+        reportError(error);
+      });
+  };
+
   render() {
     return (
       <React.Fragment>
         {!this.props.lab.id && (
-          <Button onClick={() => this.setState({ showModal: true, loading: false })}>
+          <Button onClick={this.toggleLabModal}>
             <i className="fas fa-plus fa-fw"></i>
             <span className="ml-2">Add New Lab Result</span>
           </Button>
         )}
         {this.props.lab.id && (
-          <Button variant="link" onClick={() => this.setState({ showModal: true, loading: false })} className="btn btn-link py-0" size="sm">
-            <i className="fas fa-edit"></i> Edit
-          </Button>
+          <Dropdown>
+            <Dropdown.Toggle id={`laboratory-action-button-${this.props.lab.id}`} size="sm" variant="primary" aria-label="Lab Result Action Dropdown">
+              <i className="fas fa-cogs fw"></i>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item className="px-4" onClick={this.toggleLabModal}>
+                <i className="fas fa-edit fa-fw"></i>
+                <span className="ml-2">Edit</span>
+              </Dropdown.Item>
+              <Dropdown.Item className="px-4" onClick={this.toggleDeleteModal}>
+                <i className="fas fa-trash fa-fw"></i>
+                <span className="ml-2">Delete</span>
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         )}
-        {this.state.showModal && (
+        {this.state.showLabModal && (
           <LaboratoryModal
             lab={this.props.lab}
-            submit={this.submit}
-            cancel={() => this.setState({ showModal: false, loading: false })}
+            submit={this.handleLabSubmit}
+            cancel={this.toggleLabModal}
             editMode={!!this.props.lab.id}
             loading={this.state.loading}
           />
+        )}
+        {this.state.showDeleteModal && (
+          <DeleteDialog type={'Lab Result'} delete={this.handleDeleteSubmit} toggle={this.toggleDeleteModal} onChange={this.handleChange} />
         )}
       </React.Fragment>
     );

@@ -11,7 +11,7 @@ class DeleteDialog extends React.Component {
       loading: false,
       disabled: true,
       showTextInput: false,
-      delete_reason_text: ''
+      delete_reason_text: '',
     };
   }
 
