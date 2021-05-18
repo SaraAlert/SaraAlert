@@ -17,15 +17,17 @@ class LaboratoriesController < ApplicationController
                          patient_id: @patient_id)
 
     # Handle lab creation success or failure
-    if lab.save
-      # Create history item on successful create
-      History.lab_result(patient: @patient_id,
-                         created_by: current_user.email,
-                         comment: "User added a new lab result (ID: #{lab.id}).")
-    else
-      # Handle case where lab create failed
-      error_message = 'Lab result was unable to be created.'
-      render(json: { error: error_message }, status: :bad_request) && return
+    ActiveRecord::Base.transaction do
+      if lab.save
+        # Create history item on successful create
+        History.lab_result(patient: @patient_id,
+                           created_by: current_user.email,
+                           comment: "User added a new lab result (ID: #{lab.id}).")
+      else
+        # Handle case where lab create failed
+        error_message = 'Lab result was unable to be created.'
+        render(json: { error: error_message }, status: :bad_request) && return
+      end
     end
   end
 
@@ -39,35 +41,39 @@ class LaboratoriesController < ApplicationController
     }
 
     # Handle lab update success or failure
-    if @lab.update(update_params)
-      # Create history item on successful update
-      History.lab_result_edit(patient: @patient_id,
-                              created_by: current_user.email,
-                              comment: "User edited a lab result (ID: #{@lab.id}).")
-    else
-      # Handle case where lab update failed
-      error_message = 'Lab result was unable to be updated.'
-      render(json: { error: error_message }, status: :bad_request) && return
+    ActiveRecord::Base.transaction do
+      if @lab.update(update_params)
+        # Create history item on successful update
+        History.lab_result_edit(patient: @patient_id,
+                                created_by: current_user.email,
+                                comment: "User edited a lab result (ID: #{@lab.id}).")
+      else
+        # Handle case where lab update failed
+        error_message = 'Lab result was unable to be updated.'
+        render(json: { error: error_message }, status: :bad_request) && return
+      end
     end
   end
 
   # Destroy an existing lab result
   def destroy
-    if @lab.destroy
-      reason = params.permit(:delete_reason)[:delete_reason]
-      comment = "User deleted a lab result (ID: #{@lab.id}"
-      comment += ", Type: #{@lab.lab_type}" unless @lab.lab_type.blank?
-      comment += ", Specimen Collected: #{@lab.specimen_collection}" unless @lab.specimen_collection.blank?
-      comment += ", Report: #{@lab.report}" unless @lab.report.blank?
-      comment += ", Result: #{@lab.result}" unless @lab.result.blank?
-      comment += "). Reason: #{reason}."
-      History.lab_result_edit(patient: @patient_id,
-                              created_by: current_user.email,
-                              comment: comment)
-    else
-      # Handle case where lab delete failed
-      error_message = 'Lab result was unable to be deleted.'
-      render(json: { error: error_message }, status: :bad_request) && return
+    ActiveRecord::Base.transaction do
+      if @lab.destroy
+        reason = params.permit(:delete_reason)[:delete_reason]
+        comment = "User deleted a lab result (ID: #{@lab.id}"
+        comment += ", Type: #{@lab.lab_type}" unless @lab.lab_type.blank?
+        comment += ", Specimen Collected: #{@lab.specimen_collection}" unless @lab.specimen_collection.blank?
+        comment += ", Report: #{@lab.report}" unless @lab.report.blank?
+        comment += ", Result: #{@lab.result}" unless @lab.result.blank?
+        comment += "). Reason: #{reason}."
+        History.lab_result_edit(patient: @patient_id,
+                                created_by: current_user.email,
+                                comment: comment)
+      else
+        # Handle case where lab delete failed
+        error_message = 'Lab result was unable to be deleted.'
+        render(json: { error: error_message }, status: :bad_request) && return
+      end
     end
   end
 
@@ -86,19 +92,17 @@ class LaboratoriesController < ApplicationController
 
     # Check if Patient ID is valid
     unless Patient.exists?(@patient_id)
-      error_message = "Lab result cannot be modified for unknown monitoree with ID: #{@patient_id}"
-      render(json: { error: error_message }, status: :bad_request) && return
+      render(json: { error: "Lab result cannot be modified for unknown monitoree with ID: #{@patient_id}" }, status: :bad_request) && return
     end
 
     # Check if user has access to patient
-    return if current_user.get_patient(@patient_id)
+    return if current_user.viewable_patients.find_by_id(@patient_id)
 
-    error_message = "User does not have access to Patient with ID: #{@patient_id}"
-    render(json: { error: error_message }, status: :forbidden) && return
+    render(json: { error: "User does not have access to Patient with ID: #{@patient_id}" }, status: :forbidden) && return
   end
 
   def check_lab
-    @lab = Laboratory.find_by(id: params.permit(:id)[:id])
+    @lab = Laboratory.find_by_id(params.permit(:id)[:id])
     return head :bad_request if @lab.nil?
   end
 end

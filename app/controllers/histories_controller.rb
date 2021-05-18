@@ -46,24 +46,20 @@ class HistoriesController < ApplicationController
   end
 
   def check_patient
-    patient_id = params.require(:patient_id)&.to_i
-
     # Check if Patient ID is valid
+    patient_id = params.require(:patient_id)&.to_i
     unless Patient.exists?(patient_id)
-      error_message = "History comment cannot be modified for unknown monitoree with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :bad_request) && return
+      render(json: { error: "History comment cannot be modified for unknown monitoree with ID: #{patient_id}" },
+             status: :bad_request) && return
     end
 
     # Check if user has access to patient
-    @patient = current_user.viewable_patients.find_by(id: patient_id)
-    return if @patient
-
-    error_message = "User does not have access to Patient with ID: #{patient_id}"
-    render(json: { error: error_message }, status: :forbidden) && return
+    @patient = current_user.viewable_patients.find_by_id(patient_id)
+    render(json: { error: "User does not have access to Patient with ID: #{patient_id}" }, status: :forbidden) && return unless @patient
   end
 
   def check_history
-    @history = @patient.histories.find_by(id: params.require(:id))
+    @history = @patient.histories.find_by_id(params.require(:id))
     return head :bad_request if @history.nil? || @history.history_type != History::HISTORY_TYPES[:comment]
   end
 end
