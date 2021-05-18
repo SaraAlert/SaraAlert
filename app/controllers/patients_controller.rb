@@ -556,6 +556,7 @@ class PatientsController < ApplicationController
     patient.monitoring_history_edit(history_data, diff_state)
   end
 
+  # Update the patient's follow-up flag fields
   def update_follow_up_flag
     redirect_to(root_url) && return unless current_user.can_edit_patient? && !current_user.role?(Roles::ENROLLER)
 
@@ -565,6 +566,10 @@ class PatientsController < ApplicationController
     update_follow_up_flag_fields(patient, params)
   end
 
+  # Make updates to follow-up flag reason and/or note and create corresponding History items.
+  #
+  # patient - The Patient to update.
+  # params - The request params.
   def update_follow_up_flag_fields(patient, params)
     clear_flag = params.permit(:clear_flag)[:clear_flag]
     history_data = {}
@@ -628,6 +633,10 @@ class PatientsController < ApplicationController
     end
   end
 
+  # Clear the patient's follow-up flag reason and/or note and create corresponding History items.
+  #
+  # patient - The Patient to update.
+  # clear_flag_reason - The note to include in the history item
   def clear_follow_up_flag(patient, clear_flag_reason)
     # Store the previous value to help determine if a history entry should be created or not
     follow_up_reason_before = patient.follow_up_reason

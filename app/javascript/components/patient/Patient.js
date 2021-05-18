@@ -136,14 +136,12 @@ class Patient extends React.Component {
       <React.Fragment>
         <Row id="monitoree-details-header">
           <Col sm={12}>
-            <Row>
-              <h3>
-                <span aria-label={formatName(this.props.details)} className="pr-2 ml-15">
-                  {formatName(this.props.details)}
-                </span>
-                {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
-              </h3>
-            </Row>
+            <h3>
+              <span aria-label={formatName(this.props.details)} className="pr-2">
+                {formatName(this.props.details)}
+              </span>
+              {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
+            </h3>
             {this.props.display_follow_up_flag && (
               <React.Fragment>
                 {!this.props?.details?.follow_up_reason && (

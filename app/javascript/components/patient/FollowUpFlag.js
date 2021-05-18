@@ -32,9 +32,11 @@ class FollowUpFlag extends React.Component {
   componentDidMount() {
     var state_updates = {};
     if (this.props.bulk_action) {
+      // When the selected monitorees share the same follow up reason/note, pre-populate the modal with those values
       const distinctFollowUpReason = [...new Set(this.props.patients.map(x => x.flagged_for_follow_up.follow_up_reason))];
       const distinctFollowUpNote = [...new Set(this.props.patients.map(x => x.flagged_for_follow_up.follow_up_note))];
 
+      // If at least one monitoree has a follow up flag set, enable the clear flag option
       if (!(distinctFollowUpReason.length === 1 && distinctFollowUpReason[0] === null)) {
         state_updates.clear_flag_disabled = false;
       }
@@ -50,6 +52,7 @@ class FollowUpFlag extends React.Component {
       }
     } else {
       if (this.props.patient.follow_up_reason) {
+        // If the monitoree has a follow up flag set, enable the clear flag option
         state_updates.clear_flag_disabled = false;
         state_updates.follow_up_reason = this.props.patient.follow_up_reason;
         state_updates.follow_up_note = this.props.patient.follow_up_note;
@@ -91,6 +94,8 @@ class FollowUpFlag extends React.Component {
   submit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+
+      // Different POST requests are used depending on whether this action is triggered via the dashboard or monitoree page
       if (this.props.bulk_action) {
         let idArray = this.props.patients.map(x => x['id']);
         axios
