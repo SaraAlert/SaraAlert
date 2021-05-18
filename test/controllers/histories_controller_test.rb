@@ -3,7 +3,6 @@
 require 'test_case'
 
 class HistoriesControllerTest < ActionController::TestCase
-
   # --- BEFORE ACTION --- #
 
   test 'before action: authenticate user' do
@@ -98,7 +97,7 @@ class HistoriesControllerTest < ActionController::TestCase
     post :create, params: {
       patient_id: patient.id,
       history_type: History::HISTORY_TYPES[:comment],
-      comment: comment,
+      comment: comment
     }
 
     assert_response :success
@@ -121,7 +120,7 @@ class HistoriesControllerTest < ActionController::TestCase
     post :create, params: {
       patient_id: patient.id,
       history_type: History::HISTORY_TYPES[:comment],
-        comment: comment,
+      comment: comment
     }
 
     assert_response(:bad_request)
@@ -173,7 +172,7 @@ class HistoriesControllerTest < ActionController::TestCase
     post :edit, params: {
       id: history.id,
       patient_id: patients(:patient_20).id,
-      comment: comment,
+      comment: comment
     }
 
     assert_response(:bad_request)
