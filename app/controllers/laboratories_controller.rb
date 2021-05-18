@@ -14,13 +14,13 @@ class LaboratoriesController < ApplicationController
                          specimen_collection: params.permit(:specimen_collection)[:specimen_collection],
                          report: params.permit(:report)[:report],
                          result: params.permit(:result)[:result],
-                         patient_id: @patient_id)
+                         patient_id: @patient.id)
 
     # Handle lab creation success or failure
     ActiveRecord::Base.transaction do
       if lab.save
         # Create history item on successful create
-        History.lab_result(patient: @patient_id,
+        History.lab_result(patient: @patient.id,
                            created_by: current_user.email,
                            comment: "User added a new lab result (ID: #{lab.id}).")
       else
@@ -44,7 +44,7 @@ class LaboratoriesController < ApplicationController
     ActiveRecord::Base.transaction do
       if @lab.update(update_params)
         # Create history item on successful update
-        History.lab_result_edit(patient: @patient_id,
+        History.lab_result_edit(patient: @patient.id,
                                 created_by: current_user.email,
                                 comment: "User edited a lab result (ID: #{@lab.id}).")
       else
@@ -66,7 +66,7 @@ class LaboratoriesController < ApplicationController
         comment += ", Report: #{@lab.report}" unless @lab.report.blank?
         comment += ", Result: #{@lab.result}" unless @lab.result.blank?
         comment += "). Reason: #{reason}."
-        History.lab_result_edit(patient: @patient_id,
+        History.lab_result_edit(patient: @patient.id,
                                 created_by: current_user.email,
                                 comment: comment)
       else
@@ -88,21 +88,19 @@ class LaboratoriesController < ApplicationController
   end
 
   def check_patient
-    @patient_id = params.permit(:patient_id)[:patient_id]&.to_i
-
     # Check if Patient ID is valid
-    unless Patient.exists?(@patient_id)
-      render(json: { error: "Lab result cannot be modified for unknown monitoree with ID: #{@patient_id}" }, status: :bad_request) && return
+    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
+    unless Patient.exists?(patient_id)
+      render(json: { error: "Lab result cannot be modified for unknown monitoree with ID: #{patient_id}" }, status: :bad_request) && return
     end
 
     # Check if user has access to patient
-    return if current_user.viewable_patients.find_by_id(@patient_id)
-
-    render(json: { error: "User does not have access to Patient with ID: #{@patient_id}" }, status: :forbidden) && return
+    @patient = current_user.viewable_patients.find_by_id(patient_id)
+    render(json: { error: "User does not have access to Patient with ID: #{patient_id}" }, status: :forbidden) && return unless @patient
   end
 
   def check_lab
-    @lab = Laboratory.find_by_id(params.permit(:id)[:id])
+    @lab = @patient.laboratories.find_by_id(params.permit(:id)[:id])
     return head :bad_request if @lab.nil?
   end
 end
