@@ -13,10 +13,10 @@ class LaboratoriesControllerTest < ActionController::TestCase
     post :create, params: {}
     assert_redirected_to(new_user_session_path)
 
-    put :update, params: { id: 0 }
+    put :update, params: { id: 'test' }
     assert_redirected_to(new_user_session_path)
 
-    put :destroy, params: { id: 0 }
+    put :destroy, params: { id: 'test' }
     assert_redirected_to(new_user_session_path)
   end
 
@@ -134,20 +134,18 @@ class LaboratoriesControllerTest < ActionController::TestCase
     sign_out user
   end
 
-  # --- UPDATE --- #
-
-  test 'update: updates new laboratory and creates related history item' do
+  test 'create: handles failure on create and fires error' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
-    laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
 
+    allow_any_instance_of(Laboratory).to receive(:save).and_return(false)
     sign_in user
+
     lab_type = 'PCR'
     specimen_collection = '2021-01-11'
     report = '2021-01-12'
     result = 'negative'
-    put :update, params: {
-      id: laboratory.id,
+    put :create, params: {
       lab_type: lab_type,
       specimen_collection: specimen_collection,
       report: report,
@@ -155,36 +153,95 @@ class LaboratoriesControllerTest < ActionController::TestCase
       patient_id: patient.id
     }
 
-    laboratory.reload
+    assert_response(:bad_request)
+    assert_equal('Lab result was unable to be created.', JSON.parse(response.body)['error'])
+    assert_equal(0, patient.laboratories.count)
+    assert_equal(0, patient.histories.count)
+
+    sign_out user
+  end
+
+  # --- UPDATE --- #
+
+  test 'update: updates existing laboratory and creates related history item' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    lab = create(:laboratory, patient: patient, updated_at: 2.days.ago)
+
+    sign_in user
+    lab_type = 'PCR'
+    specimen_collection = '2021-01-11'
+    report = '2021-01-12'
+    result = 'negative'
+    put :update, params: {
+      id: lab.id,
+      lab_type: lab_type,
+      specimen_collection: specimen_collection,
+      report: report,
+      result: result,
+      patient_id: patient.id
+    }
+
+    lab.reload
     assert_response(:success)
-    assert_in_delta(Time.now, laboratory.updated_at, 1) # assert updated
+    assert_in_delta(Time.now, lab.updated_at, 1) # assert updated
     assert_equal(1, patient.histories.count)
 
-    laboratory = Laboratory.find(laboratory.id)
-    assert_equal(lab_type, laboratory[:lab_type])
-    assert_equal(specimen_collection, laboratory[:specimen_collection].strftime('%F'))
-    assert_equal(report.to_date, laboratory[:report])
-    assert_equal(result, laboratory[:result])
+    lab = Laboratory.find(lab.id)
+    assert_equal(lab_type, lab[:lab_type])
+    assert_equal(specimen_collection, lab[:specimen_collection].strftime('%F'))
+    assert_equal(report.to_date, lab[:report])
+    assert_equal(result, lab[:result])
 
     history = patient.histories.first
     assert_equal(History::HISTORY_TYPES[:lab_result_edit], history[:history_type])
     assert_equal(user.email, history[:created_by])
-    assert_equal("User edited a lab result (ID: #{laboratory.id}).", history[:comment])
+    assert_equal("User edited a lab result (ID: #{lab.id}).", history[:comment])
+
+    sign_out user
+  end
+
+  test 'update: handles failure on update and fires error' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    lab = create(:laboratory, patient: patient, updated_at: 2.days.ago)
+
+    allow_any_instance_of(Laboratory).to receive(:update).and_return(false)
+    sign_in user
+
+    lab_type = 'PCR'
+    specimen_collection = '2021-01-11'
+    report = '2021-01-12'
+    result = 'negative'
+    put :update, params: {
+      id: lab.id,
+      lab_type: lab_type,
+      specimen_collection: specimen_collection,
+      report: report,
+      result: result,
+      patient_id: patient.id
+    }
+
+    assert_response(:bad_request)
+    assert_equal('Lab result was unable to be updated.', JSON.parse(response.body)['error'])
+    assert_equal(1, patient.laboratories.count)
+    assert_equal(0, patient.histories.count)
+    assert_equal(Laboratory.find(lab.id), lab)
 
     sign_out user
   end
 
   # --- DESTROY --- #
 
-  test 'destroy: destroys laboratory and creates related history item' do
+  test 'destroy: destroys existing laboratory and creates related history item' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
-    laboratory = create(:laboratory, patient: patient, updated_at: 2.days.ago)
-    delete_reason = 'Other'
+    lab = create(:laboratory, patient: patient, updated_at: 2.days.ago)
+    delete_reason = 'some delete reason'
 
     sign_in user
     put :destroy, params: {
-      id: laboratory.id,
+      id: lab.id,
       patient_id: patient.id,
       delete_reason: delete_reason
     }
@@ -193,13 +250,35 @@ class LaboratoriesControllerTest < ActionController::TestCase
     assert_equal(1, patient.histories.count)
 
     assert_raises(ActiveRecord::RecordNotFound) do
-      laboratory = Laboratory.find(laboratory.id)
+      lab = Laboratory.find(lab.id)
     end
 
     history = patient.histories.first
     assert_equal(History::HISTORY_TYPES[:lab_result_edit], history[:history_type])
     assert_equal(user.email, history[:created_by])
-    assert_equal("User deleted a lab result (ID: #{laboratory.id}). Reason: #{delete_reason}.", history[:comment])
+    assert_equal("User deleted a lab result (ID: #{lab.id}). Reason: #{delete_reason}.", history[:comment])
+
+    sign_out user
+  end
+
+  test 'destroy: handles failure on destroy and fires error' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    lab = create(:laboratory, patient: patient, updated_at: 2.days.ago)
+
+    allow_any_instance_of(Laboratory).to receive(:destroy).and_return(false)
+    sign_in user
+    put :destroy, params: {
+      id: lab.id,
+      patient_id: patient.id,
+      delete_reason: 'some delete reason'
+    }
+
+    assert_response(:bad_request)
+    assert_equal('Lab result was unable to be deleted.', JSON.parse(response.body)['error'])
+    assert_equal(1, patient.laboratories.count)
+    assert_equal(0, patient.histories.count)
+    assert_equal(Laboratory.find(lab.id), lab)
 
     sign_out user
   end
