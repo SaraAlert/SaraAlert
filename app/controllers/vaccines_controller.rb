@@ -66,19 +66,12 @@ class VaccinesController < ApplicationController
 
   # Update an existing vaccine record
   def update
-    group_name = params.permit(:group_name)[:group_name]
-    product_name = params.permit(:product_name)[:product_name]
-    administration_date = params.permit(:administration_date)[:administration_date]
-    dose_number = params.permit(:dose_number)[:dose_number]
-    notes = params.permit(:notes)[:notes]
-
-    # Update the vaccine record
     update_params = {
-      group_name: group_name,
-      product_name: product_name,
-      administration_date: administration_date,
-      dose_number: dose_number,
-      notes: notes,
+      group_name: params.permit(:group_name)[:group_name],
+      product_name: params.permit(:product_name)[:product_name],
+      administration_date: params.permit(:administration_date)[:administration_date],
+      dose_number: params.permit(:dose_number)[:dose_number],
+      notes: params.permit(:notes)[:notes],
       patient_id: @patient_id
     }
 
@@ -99,8 +92,7 @@ class VaccinesController < ApplicationController
   end
 
   def destroy
-    @vaccine.destroy
-    if @vaccine.destroyed?
+    if @vaccine.destroy
       reason = params.permit(:delete_reason)[:delete_reason]
       comment = "User deleted a vaccine (ID: #{@vaccine.id}"
       comment += ", Vaccine Group: #{@vaccine.group_name}" unless @vaccine.group_name.blank?
@@ -112,7 +104,9 @@ class VaccinesController < ApplicationController
                                created_by: current_user.email,
                                comment: comment)
     else
-      render status: 500
+      # Handle case where vaccine update failed
+      error_message = 'Vaccination was unable to be deleted.'
+      render(json: { error: error_message }, status: :bad_request) && return
     end
   end
 

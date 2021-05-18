@@ -372,6 +372,7 @@ class VaccinesControllerTest < ActionController::TestCase
     }
 
     assert_response(:success)
+    assert_equal(0, patient.vaccines.count)
     assert_equal(1, patient.histories.count)
 
     assert_raises(ActiveRecord::RecordNotFound) do
@@ -385,6 +386,28 @@ class VaccinesControllerTest < ActionController::TestCase
       "User deleted a vaccine (ID: #{vaccine.id}, Vaccine Group: #{vaccine.group_name}, Product Name: #{vaccine.product_name}). Reason: #{delete_reason}.",
       history[:comment]
     )
+
+    sign_out user
+  end
+
+  test 'destroy: handles failure on destroy and fires error' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    vaccine = create(:vaccine, patient: patient, updated_at: 2.days.ago)
+
+    allow_any_instance_of(Vaccine).to receive(:destroy).and_return(false)
+    sign_in user
+    put :destroy, params: {
+      id: vaccine.id,
+      patient_id: patient.id,
+      delete_reason: 'some delete reason'
+    }
+
+    assert_response(:bad_request)
+    assert_equal('Vaccination was unable to be deleted.', JSON.parse(response.body)['error'])
+    assert_equal(1, patient.vaccines.count)
+    assert_equal(0, patient.histories.count)
+    assert_equal(Vaccine.find(vaccine.id), vaccine)
 
     sign_out user
   end
