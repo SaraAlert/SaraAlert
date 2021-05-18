@@ -40,37 +40,26 @@ class ExtendedIsolation extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Col>
-          <Row className="reports-actions-title">
-            <Col>
-              <Form.Label className="nav-input-label">
-                EXTEND ISOLATION TO
-                <InfoTooltip tooltipTextKey="extendedIsolation" location="right"></InfoTooltip>
-              </Form.Label>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <DateInput
-                id="extended_isolation"
-                date={this.state.extended_isolation}
-                minDate={moment()
-                  .subtract(30, 'days')
-                  .format('YYYY-MM-DD')}
-                maxDate={moment()
-                  .add(30, 'days')
-                  .format('YYYY-MM-DD')}
-                onChange={date => this.setState({ extended_isolation: date, showExtendIsolationModal: true, reasoning: '' })}
-                placement="bottom"
-                customClass="form-control-lg"
-                ariaLabel="Extended Isolation to Date Input"
-                isClearable
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col></Col>
-          </Row>
+        <Col md={12} xl={8}>
+          <Form.Label className="nav-input-label">
+            EXTEND ISOLATION TO
+            <InfoTooltip tooltipTextKey="extendedIsolation" location="right"></InfoTooltip>
+          </Form.Label>
+          <DateInput
+            id="extended_isolation"
+            date={this.state.extended_isolation}
+            minDate={moment()
+              .subtract(30, 'days')
+              .format('YYYY-MM-DD')}
+            maxDate={moment()
+              .add(30, 'days')
+              .format('YYYY-MM-DD')}
+            onChange={date => this.setState({ extended_isolation: date, showExtendIsolationModal: true, reasoning: '' })}
+            placement="bottom"
+            customClass="form-control-lg"
+            ariaLabel="Extended Isolation to Date Input"
+            isClearable
+          />
         </Col>
         {this.state.showExtendIsolationModal && (
           <Modal

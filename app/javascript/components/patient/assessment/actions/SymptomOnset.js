@@ -64,50 +64,39 @@ class SymptomOnset extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Form.Group as={Col} controlId="symptom_onset">
-          <Row className="reports-actions-title">
-            <Col>
-              <Form.Label className="nav-input-label">
-                SYMPTOM ONSET
-                <InfoTooltip tooltipTextKey={this.props.patient.isolation ? 'isolationSymptomOnset' : 'exposureSymptomOnset'} location="right"></InfoTooltip>
-                <div style={{ display: 'inline' }}>
-                  <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-2">
-                    {this.props.patient.user_defined_symptom_onset ? <i className="fas fa-user"></i> : <i className="fas fa-desktop"></i>}
+        <Form.Group as={Col} md={this.props.patient.isolation ? 12 : 8} xl={8} controlId="symptom_onset">
+          <Form.Label className="nav-input-label">
+            SYMPTOM ONSET
+            <InfoTooltip tooltipTextKey={this.props.patient.isolation ? 'isolationSymptomOnset' : 'exposureSymptomOnset'} location="right"></InfoTooltip>
+            <div style={{ display: 'inline' }}>
+              <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-2">
+                {this.props.patient.user_defined_symptom_onset ? <i className="fas fa-user"></i> : <i className="fas fa-desktop"></i>}
+              </span>
+              <ReactTooltip id="user_defined_symptom_onset_tooltip" multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+                {this.props.patient.user_defined_symptom_onset ? (
+                  <span>This date was set by a user</span>
+                ) : (
+                  <span>
+                    This date is auto-populated by the system as the date of the earliest report flagged as symptomatic (red highlight) in the reports
+                    table. Field is blank when there are no symptomatic reports.
                   </span>
-                  <ReactTooltip id="user_defined_symptom_onset_tooltip" multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
-                    {this.props.patient.user_defined_symptom_onset ? (
-                      <span>This date was set by a user</span>
-                    ) : (
-                      <span>
-                        This date is auto-populated by the system as the date of the earliest report flagged as symptomatic (red highlight) in the reports
-                        table. Field is blank when there are no symptomatic reports.
-                      </span>
-                    )}
-                  </ReactTooltip>
-                </div>
-              </Form.Label>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <DateInput
-                id="symptom_onset"
-                date={this.state.symptom_onset}
-                minDate={'2020-01-01'}
-                maxDate={moment()
-                  .add(30, 'days')
-                  .format('YYYY-MM-DD')}
-                onChange={this.handleDateChange}
-                placement="bottom"
-                isClearable={this.props.patient.user_defined_symptom_onset}
-                customClass="form-control-lg"
-                ariaLabel="Symptom Onset Date Input"
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col></Col>
-          </Row>
+                )}
+              </ReactTooltip>
+            </div>
+          </Form.Label>
+          <DateInput
+            id="symptom_onset"
+            date={this.state.symptom_onset}
+            minDate={'2020-01-01'}
+            maxDate={moment()
+              .add(30, 'days')
+              .format('YYYY-MM-DD')}
+            onChange={this.handleDateChange}
+            placement="bottom"
+            isClearable={this.props.patient.user_defined_symptom_onset}
+            customClass="form-control-lg"
+            ariaLabel="Symptom Onset Date Input"
+          />
         </Form.Group>
       </React.Fragment>
     );
