@@ -451,8 +451,10 @@ class PatientsController < ApplicationController
     patients = current_user.get_patients(patient_ids)
 
     patients.each do |patient|
-      update_monitoring_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
-                               params[:apply_to_household] ? :group : :none)
+      # We never want to update closed records monitoring status via the bulk_update
+      update_params = patient.monitoring ? params : params.except('monitoring')
+      update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
+                               update_params[:apply_to_household] ? :group : :none)
     end
   end
 

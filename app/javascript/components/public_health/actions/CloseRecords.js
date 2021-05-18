@@ -18,6 +18,7 @@ class CloseRecords extends React.Component {
       monitoring_reason: '',
       reasoning: '',
     };
+    this.origState = Object.assign({}, this.state);
   }
 
   handleChange = event => {

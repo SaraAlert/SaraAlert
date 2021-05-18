@@ -16,6 +16,7 @@ class UpdateAssignedUser extends React.Component {
       apply_to_household: false,
       loading: false,
     };
+    this.origState = Object.assign({}, this.state);
   }
 
   componentDidMount() {

@@ -13,7 +13,8 @@ class UpdateCaseStatus extends React.Component {
     super(props);
     this.state = {
       // The behavior for this modal changes if everyone that is selected is already `closed`
-      allSelectedAreClosed: _.every(this.props.patients, p => !_.isNil(p.closed_at)),
+      allSelectedAreClosed: _.every(this.props.patients, p => !_.isNil(p.closed_at) || p.status === 'closed'),
+      someSelectedAreClosed: _.some(this.props.patients, p => !_.isNil(p.closed_at) || p.status === 'closed'),
       case_status: '',
       follow_up: '',
       isolation: undefined,
@@ -26,6 +27,7 @@ class UpdateCaseStatus extends React.Component {
       monitoring_reason: '',
       loading: false,
     };
+    this.origState = Object.assign({}, this.state);
   }
 
   componentDidMount() {
@@ -164,7 +166,7 @@ class UpdateCaseStatus extends React.Component {
         <Form.Group controlId="reasoning">
           <Form.Label>Please include any additional details:</Form.Label>
           <Form.Control as="textarea" maxLength={MAX_NOTES_LENGTH} rows="2" onChange={this.handleChange} />
-          <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </Form.Label>
+          <div className="character-limit-text"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </div>
         </Form.Group>
       </div>
     );
@@ -211,11 +213,19 @@ class UpdateCaseStatus extends React.Component {
                 {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && [undefined, false].includes(this.state.initialIsolation) && (
                   <p>
                     The selected monitorees will be moved to the isolation workflow and placed in the requiring review, non-reporting, or reporting line list as
-                    appropriate.
+                    appropriate.{' '}
+                    {this.state.someSelectedAreClosed && (
+                      <span>For records on the Closed line list, updating this value will not move the record to another line list.</span>
+                    )}
                   </p>
                 )}
                 {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && this.state.initialIsolation === true && (
-                  <p>The selected monitorees will remain in the isolation workflow.</p>
+                  <p>
+                    The selected monitorees will remain in the isolation workflow.{' '}
+                    {this.state.someSelectedAreClosed && (
+                      <span>For records on the Closed line list, updating this value will not move the record to another line list.</span>
+                    )}
+                  </p>
                 )}
                 {this.state.follow_up === 'End Monitoring' && (
                   <div>
