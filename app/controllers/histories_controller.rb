@@ -4,7 +4,6 @@
 class HistoriesController < ApplicationController
   before_action :authenticate_user!, :check_role, :check_patient
   before_action :check_history, only: %i[edit delete]
-  rescue_from ActiveRecord::RecordInvalid, with: :handle_validation_error
 
   # Create a new history route; this is used to create comments on subjects.
   def create
@@ -15,19 +14,20 @@ class HistoriesController < ApplicationController
 
     history.original_comment = history if history.history_type == History::HISTORY_TYPES[:comment]
 
-    # Attempt to save and continue; else if failed redirect to index
-    history.save!
-
-    render(json: history) && return
+    # Handle case where history comment create failed
+    render(json: { error: 'Comment was unable to be created.' }, status: :bad_request) && return unless history.save
   end
 
   # "Edits" a history comment - a new history comment is created with the updated comment text and a reference to the id of the original
   def edit
-    History.create!(patient_id: @patient.id,
-                    created_by: current_user.email,
-                    comment: params.permit(:comment)[:comment],
-                    history_type: History::HISTORY_TYPES[:comment],
-                    original_comment_id: @history.original_comment_id)
+    history = History.new(patient_id: @patient.id,
+                          created_by: current_user.email,
+                          comment: params.permit(:comment)[:comment],
+                          history_type: History::HISTORY_TYPES[:comment],
+                          original_comment_id: @history.original_comment_id)
+
+    # Handle case where history comment edit failed
+    render(json: { error: 'Comment was unable to be edited.' }, status: :bad_request) && return unless history.save
   end
 
   # "Deletes" a history comment - does not actually remove the comment from the database
@@ -54,21 +54,16 @@ class HistoriesController < ApplicationController
       render(json: { error: error_message }, status: :bad_request) && return
     end
 
-    @patient = current_user.viewable_patients.find_by(id: patient_id)
-
     # Check if user has access to patient
-    unless @patient
-      error_message = "User does not have access to Patient with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :forbidden) && return
-    end
+    @patient = current_user.viewable_patients.find_by(id: patient_id)
+    return if @patient
+
+    error_message = "User does not have access to Patient with ID: #{patient_id}"
+    render(json: { error: error_message }, status: :forbidden) && return
   end
 
   def check_history
     @history = @patient.histories.find_by(id: params.require(:id))
     return head :bad_request if @history.nil? || @history.history_type != History::HISTORY_TYPES[:comment]
-  end
-
-  def handle_validation_error(error)
-    render(json: error.record.errors, status: 422)
   end
 end

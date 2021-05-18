@@ -91,18 +91,18 @@ class HistoriesControllerTest < ActionController::TestCase
 
   test 'create: creates new history comment' do
     user = users(:usa_super_user)
+    patient = create(:patient, creator: user)
+    comment = 'test comment'
     sign_in user
 
-    comment = 'test comment'
-
     post :create, params: {
-      patient_id: patients(:patient_20).id,
+      patient_id: patient.id,
+      history_type: History::HISTORY_TYPES[:comment],
       comment: comment,
-      history_type: History::HISTORY_TYPES[:comment]
     }
 
     assert_response :success
-    assert patients(:patient_20).histories.where(comment: comment).exists?
+    assert patient.histories.where(comment: comment).exists?
 
     new_history = History.last
     assert_equal new_history.id, new_history.original_comment_id
@@ -111,14 +111,33 @@ class HistoriesControllerTest < ActionController::TestCase
     assert_equal History::HISTORY_TYPES[:comment], new_history.history_type
   end
 
+  test 'create: handles failure on create and fires error' do
+    user = users(:usa_super_user)
+    patient = create(:patient, creator: user)
+    comment = 'test comment'
+    allow_any_instance_of(History).to receive(:save).and_return(false)
+    sign_in user
+
+    post :create, params: {
+      patient_id: patient.id,
+      history_type: History::HISTORY_TYPES[:comment],
+        comment: comment,
+    }
+
+    assert_response(:bad_request)
+    assert_equal('Comment was unable to be created.', JSON.parse(response.body)['error'])
+    assert_equal(0, patient.histories.count)
+
+    sign_out user
+  end
+
   # --- EDIT --- #
 
   test 'edit: edits existing history comment by creating a new version linked to the original' do
     user = users(:usa_super_user)
-    sign_in user
-
-    comment = 'test comment edit'
     history = histories(:public_health_action_patient_20_comment_2)
+    comment = 'test comment edit'
+    sign_in user
 
     post :edit, params: {
       id: history.id,
@@ -143,14 +162,35 @@ class HistoriesControllerTest < ActionController::TestCase
     assert_equal History::HISTORY_TYPES[:comment], old_history.history_type
   end
 
+  test 'edit: handles failure on edit and fires error' do
+    user = users(:usa_super_user)
+    history = histories(:public_health_action_patient_20_comment_2)
+    comment = 'test comment edit'
+
+    allow_any_instance_of(History).to receive(:save).and_return(false)
+    sign_in user
+
+    post :edit, params: {
+      id: history.id,
+      patient_id: patients(:patient_20).id,
+      comment: comment,
+    }
+
+    assert_response(:bad_request)
+    assert_equal('Comment was unable to be edited.', JSON.parse(response.body)['error'])
+    assert_not patients(:patient_20).histories.where(original_comment_id: history.id, comment: comment).exists?
+    assert_equal 1, patients(:patient_20).histories.where(original_comment_id: history.id).length
+
+    sign_out user
+  end
+
   # --- DELETE --- #
 
   test 'delete: deletes history comment by flagging it as deleted' do
     user = users(:usa_super_user)
-    sign_in user
-
     history = histories(:public_health_action_patient_20_comment_2)
     delete_reason = 'test delete reason'
+    sign_in user
 
     post :delete, params: {
       id: history.id,
@@ -167,10 +207,9 @@ class HistoriesControllerTest < ActionController::TestCase
 
   test 'delete: deletes all versions of a history comment by flagging them as deleted' do
     user = users(:usa_super_user)
-    sign_in user
-
     history = histories(:public_health_action_patient_20_comment_1)
     delete_reason = 'test delete reason'
+    sign_in user
 
     post :delete, params: {
       id: history.id,
