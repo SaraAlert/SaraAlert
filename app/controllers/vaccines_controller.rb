@@ -97,7 +97,7 @@ class VaccinesController < ApplicationController
       comment = "User deleted a vaccine (ID: #{@vaccine.id}"
       comment += ", Vaccine Group: #{@vaccine.group_name}" unless @vaccine.group_name.blank?
       comment += ", Product Name: #{@vaccine.product_name}" unless @vaccine.product_name.blank?
-      comment += ", Administration Date: #{@vaccine.administration_date}" unless @vaccine.administration_date.blank?
+      comment += ", Administration Date: #{@vaccine.administration_date.strftime('%m/%d/%Y')}" unless @vaccine.administration_date.blank?
       comment += ", Dose Number: #{@vaccine.dose_number}" unless @vaccine.dose_number.blank?
       comment += "). Reason: #{reason}."
       History.vaccination_edit(patient: @patient_id,
