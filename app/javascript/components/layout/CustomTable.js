@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Spinner, Table, Form, InputGroup } from 'react-bootstrap';
+import { Col, Form, InputGroup, Row, Spinner, Table } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import ReactTooltip from 'react-tooltip';
 import InfoTooltip from '../util/InfoTooltip';
@@ -264,8 +264,8 @@ class CustomTable extends React.Component {
           </Table>
         </div>
         {this.props.showPagination && (
-          <div id="pagination-container" className="row-container">
-            <div className="left-container">
+          <Row id="pagination-container">
+            <Col className="mt-2">
               <div className="left-box-1">
                 <InputGroup>
                   <InputGroup.Prepend>
@@ -294,8 +294,8 @@ class CustomTable extends React.Component {
               <div className="left-box-2">
                 <span className="ml-0 ml-md-2 text-nowrap align-self-center">{`Displaying ${this.props.rowData.length} out of ${this.props.totalRows} rows.`}</span>
               </div>
-            </div>
-            <div className="right-container">
+            </Col>
+            <Col xs="auto" className="mt-2">
               {this.props.totalRows > 0 && (
                 <div style={{ float: 'right' }}>
                   <ReactPaginate
@@ -324,8 +324,8 @@ class CustomTable extends React.Component {
                   />
                 </div>
               )}
-            </div>
-          </div>
+            </Col>
+          </Row>
         )}
       </React.Fragment>
     );
