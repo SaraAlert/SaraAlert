@@ -7,6 +7,6 @@ require_relative '../benchmark'
 benchmark(
   name: 'SendAssessmentsJob',
   time_threshold: 200,
-  setup: proc { Timecop.travel(Time.now.utc.change(hour: 21)) },
+  setup: proc { Timecop.travel(Time.now.utc.change(hour: 18)) },
   teardown: proc { Timecop.return }
 ) { SendAssessmentsJob.perform_now }
