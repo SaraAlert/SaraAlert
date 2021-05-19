@@ -89,18 +89,6 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     'Other'
   ].freeze
 
-  USER_SELECTABLE_FOLLOW_UP_REASONS = [
-    'Deceased',
-    'Duplicate',
-    'High-Risk',
-    'Hospitalized',
-    'In Need of Follow-up',
-    'Lost to Follow-up',
-    'Needs Interpretation',
-    'Quality Assurance',
-    'Other'
-  ].freeze
-
   RACE_OPTIONS = {
     non_exclusive: [
       { race: :white, label: 'WHITE' },

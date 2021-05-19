@@ -14,7 +14,6 @@ import UpdateAssignedUser from '../../components/public_health/actions/UpdateAss
 import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs';
 import { mockMonitoringReasons } from '../mocks/mockMonitoringReasons';
-import { mockFollowUpReasons } from '../mocks/mockFollowUpReasons';
 
 const mockToken = 'testMockTokenString12345';
 const setQueryMock = jest.fn();

@@ -45,7 +45,7 @@ class PatientsTable extends React.Component {
       table: {
         colData: [
           { field: 'name', label: 'Monitoree', isSortable: true, tooltip: null, filter: this.linkPatient },
-          { field: 'flagged_for_follow_up', label: '', isSortable: true, tooltip: null, filter: this.createFollowUpFlagTooltip, icon: 'fas fa-flag' },
+          { field: 'flagged_for_follow_up', label: '', isSortable: true, tooltip: null, filter: this.renderFollowUpTooltip, icon: 'fas fa-flag' },
           { field: 'jurisdiction', label: 'Jurisdiction', isSortable: true, tooltip: null },
           { field: 'transferred_from', label: 'From Jurisdiction', isSortable: true, tooltip: null },
           { field: 'transferred_to', label: 'To Jurisdiction', isSortable: true, tooltip: null },
@@ -520,14 +520,14 @@ class PatientsTable extends React.Component {
     return <EligibilityTooltip id={rowData.id.toString()} report_eligibility={reportEligibility} inline={false} />;
   };
 
-  createFollowUpFlagTooltip = data => {
+  renderFollowUpTooltip = data => {
     const flaggedForFollowUp = data.value;
     const rowData = data.rowData;
     return (
       <React.Fragment>
         {flaggedForFollowUp.follow_up_reason && (
           <React.Fragment>
-            <span key={`flagged-icon${rowData.id}`} data-for={`flagged${rowData.id}`} data-tip="">
+            <span key={`flagged-icon-${rowData.id}`} data-for={`flagged${rowData.id}`} data-tip="">
               <div className="text-center ml-0">
                 <i className="fa-fw fas fa-flag"></i>
               </div>
@@ -539,7 +539,7 @@ class PatientsTable extends React.Component {
               place="right"
               type="dark"
               effect="solid"
-              className="wide-tooltip-container">
+              className="tooltip-container">
               <div>
                 Monitoree is flagged for follow-up.
                 <br />
@@ -774,7 +774,6 @@ class PatientsTable extends React.Component {
               patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
               jurisdiction_paths={this.props.jurisdiction_paths}
               authenticity_token={this.props.authenticity_token}
-              follow_up_reasons={this.props.follow_up_reasons}
               other_household_members={[]}
               close={() => this.setState({ action: undefined })}
               bulk_action={true}
@@ -799,7 +798,6 @@ PatientsTable.propTypes = {
   setQuery: PropTypes.func,
   setFilteredMonitoreesCount: PropTypes.func,
   monitoring_reasons: PropTypes.array,
-  follow_up_reasons: PropTypes.array,
 };
 
 export default PatientsTable;

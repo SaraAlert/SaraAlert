@@ -15,10 +15,13 @@ class PatientPage extends React.Component {
         </Card.Header>
         <Card.Body>
           <Patient
+            current_user={this.props.current_user}
             jurisdiction_paths={this.props.jurisdiction_paths}
             details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
             collapse={this.props.can_modify_subject_status}
             edit_mode={false}
+            other_household_members={this.props.other_household_members}
+            can_modify_subject_status={this.props.can_modify_subject_status}
             authenticity_token={this.props.authenticity_token}
           />
           <div className="household-info">
@@ -60,7 +63,6 @@ PatientPage.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   blocked_sms: PropTypes.bool,
-  follow_up_reasons: PropTypes.array,
 };
 
 export default PatientPage;

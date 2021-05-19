@@ -142,7 +142,7 @@ class Patient extends React.Component {
               </span>
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
-            {this.props.display_follow_up_flag && (
+            {this.props.can_modify_subject_status && (
               <React.Fragment>
                 {!this.props?.details?.follow_up_reason && (
                   <Button
@@ -724,7 +724,7 @@ class Patient extends React.Component {
             </Row>
           </div>
         </Collapse>
-        {this.props.display_follow_up_flag && (
+        {this.props.can_modify_subject_status && (
           <Modal id="follow-up-flag-modal" size="lg" centered show={this.state.action !== undefined} onHide={() => this.setState({ action: undefined })}>
             <Modal.Header closeButton>
               <Modal.Title>{this.state.action}</Modal.Title>
@@ -735,7 +735,6 @@ class Patient extends React.Component {
                 current_user={this.props.current_user}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 authenticity_token={this.props.authenticity_token}
-                follow_up_reasons={this.props.follow_up_reasons}
                 other_household_members={this.props.other_household_members}
                 close={() => this.setState({ action: undefined })}
                 bulk_action={false}
@@ -755,9 +754,8 @@ Patient.propTypes = {
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
   collapse: PropTypes.bool,
-  follow_up_reasons: PropTypes.array,
   other_household_members: PropTypes.array,
-  display_follow_up_flag: PropTypes.bool,
+  can_modify_subject_status: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };
 

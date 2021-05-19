@@ -63,20 +63,12 @@ class FollowUpFlag extends React.Component {
 
   handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    if (event.target.id === 'follow_up_reason') {
-      this.setState({ follow_up_reason: value });
-    } else if (event.target.id === 'follow_up_note') {
-      this.setState({ follow_up_note: value });
-    } else if (event.target.id === 'apply_to_household') {
-      this.setState({ apply_to_household: value });
-    } else if (event.target.id === 'bulk_action_apply_to_household') {
-      this.setState({ bulk_action_apply_to_household: value });
-    } else if (event.target.id == 'set_flag_for_follow_up') {
+    if (event.target.id == 'set_flag_for_follow_up') {
       this.setState({ clear_flag: false });
     } else if (event.target.id == 'clear_flag_for_follow_up') {
       this.setState({ clear_flag: true });
-    } else if (event.target.id == 'clear_flag_reason') {
-      this.setState({ clear_flag_reason: value });
+    } else {
+      this.setState({ [event.target.id]: value });
     }
   };
 
@@ -88,6 +80,17 @@ class FollowUpFlag extends React.Component {
   handleApplyHouseholdIdsChange = apply_to_household_ids => {
     const no_members_selected = this.state.apply_to_household && apply_to_household_ids.length === 0;
     this.setState({ apply_to_household_ids, no_members_selected });
+  };
+
+  /**
+   * Handles a key press event on the search form control.
+   * Checks for enter button press and prevents submisson event.
+   * @param {Object} event
+   */
+  handleKeyPress = event => {
+    if (event.which === 13) {
+      event.preventDefault();
+    }
   };
 
   // Makes a POST to update the follow-up flag for the current patient.
@@ -136,17 +139,6 @@ class FollowUpFlag extends React.Component {
     });
   };
 
-  /**
-   * Handles a key press event on the search form control.
-   * Checks for enter button press and prevents submisson event.
-   * @param {Object} event
-   */
-  handleKeyPress = event => {
-    if (event.which === 13) {
-      event.preventDefault();
-    }
-  };
-
   render() {
     return (
       <React.Fragment>
@@ -185,11 +177,15 @@ class FollowUpFlag extends React.Component {
                 value={this.state.follow_up_reason}
                 onChange={this.handleChange}>
                 <option></option>
-                {this.props.follow_up_reasons.map((option, index) => (
-                  <option key={`option-${index}`} value={option}>
-                    {option}
-                  </option>
-                ))}
+                <option>Deceased</option>
+                <option>Duplicate</option>
+                <option>High-Risk</option>
+                <option>Hospitalized</option>
+                <option>In Need of Follow-up</option>
+                <option>Lost to Follow-up</option>
+                <option>Needs Interpretation</option>
+                <option>Quality Assurance</option>
+                <option>Other</option>
               </Form.Control>
               <Form.Group>
                 <Form.Label>Please include any additional details:</Form.Label>
@@ -274,7 +270,6 @@ FollowUpFlag.propTypes = {
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   authenticity_token: PropTypes.string,
-  follow_up_reasons: PropTypes.array,
   other_household_members: PropTypes.array,
   close: PropTypes.func,
   bulk_action: PropTypes.bool,

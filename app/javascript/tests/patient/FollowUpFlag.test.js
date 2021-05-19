@@ -6,18 +6,19 @@ import ApplyToHousehold from '../../components/patient/household/actions/ApplyTo
 import { mockUser1 } from '../mocks/mockUsers';
 import { mockPatient1, mockPatient3, mockPatient5} from '../mocks/mockPatients';
 import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
-import { mockFollowUpReasons } from '../mocks/mockFollowUpReasons';
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+const followUpFlagOptions = [ '', 'Deceased', 'Duplicate', 'High-Risk', 'Hospitalized', 'In Need of Follow-up', 'Lost to Follow-up', 'Needs Interpretation', 'Quality Assurance', 'Other' ];
+
 
 function getWrapperIndividual(patient, householdMembers) {
   return shallow(<FollowUpFlag bulk_action={false} current_user={mockUser1} patient={patient} patients={[]} other_household_members={householdMembers}
-    jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} authenticity_token={authyToken} />);
+    jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} />);
 }
 
 function getWrapperBulkAction(patients) {
   return shallow(<FollowUpFlag bulk_action={true} current_user={mockUser1} patients={patients} other_household_members={[]} jurisdiction_path="USA, State 1, County 2"
-    jurisdiction_paths={mockJurisdictionPaths} follow_up_reasons={mockFollowUpReasons} authenticity_token={authyToken} />);
+    jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} />);
 }
 
 
@@ -32,8 +33,8 @@ describe('FollowUpFlag', () => {
     expect(wrapper.find('#clear_flag_for_follow_up').prop('checked')).toBeFalsy();
     expect(wrapper.find('#follow_up_reason').exists()).toBeTruthy();
     expect(wrapper.find('option').length).toEqual(10);
-    mockFollowUpReasons.forEach(function(value, index) {
-      expect(wrapper.find('option').at(index+1).prop('value')).toEqual(value);
+    followUpFlagOptions.forEach(function(value, index) {
+      expect(wrapper.find('option').at(index).text()).toEqual(value);
     });
     expect(wrapper.find('#follow_up_note').exists()).toBeTruthy();
     expect(wrapper.find(ApplyToHousehold).exists()).toBeFalsy();
@@ -55,8 +56,8 @@ describe('FollowUpFlag', () => {
     expect(wrapper.find('#clear_flag_for_follow_up').prop('disabled')).toBeTruthy();
     expect(wrapper.find('#follow_up_reason').exists()).toBeTruthy();
     expect(wrapper.find('option').length).toEqual(10);
-    mockFollowUpReasons.forEach(function(value, index) {
-      expect(wrapper.find('option').at(index+1).prop('value')).toEqual(value);
+    followUpFlagOptions.forEach(function(value, index) {
+      expect(wrapper.find('option').at(index).text()).toEqual(value);
     });
     expect(wrapper.find('#follow_up_note').exists()).toBeTruthy();
     expect(wrapper.find(ApplyToHousehold).exists()).toBeFalsy();
