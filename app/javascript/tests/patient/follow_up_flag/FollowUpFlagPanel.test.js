@@ -36,7 +36,7 @@ describe('FollowUpFlagPanel', () => {
     expect(section.find(Button).exists()).toBeTruthy();
     expect(section.find(Button).text()).toEqual('Edit Flag');
     expect(section.find('b').at(1).text()).toEqual(mockPatient5.follow_up_reason);
-    expect(section.find('.wrap-words').text()).toEqual(' - ' + mockPatient5.follow_up_note);
+    expect(section.find('.wrap-words').text()).toEqual(': ' + mockPatient5.follow_up_note);
     expect(wrapper.find(FollowUpFlagModal).exists()).toBeFalsy();
   });
 
@@ -46,16 +46,16 @@ describe('FollowUpFlagPanel', () => {
     expect(wrapper.state('expandFollowUpNotes')).toBeFalsy();
     expect(wrapper.find('.flag-note').find(Button).text()).toEqual('(View all)');
     expect(wrapper.find('.flag-note').find('.wrap-words').text())
-      .toEqual(' - ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
+      .toEqual(': ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
     wrapper.find('.flag-note').find(Button).simulate('click');
     expect(wrapper.state('expandFollowUpNotes')).toBeTruthy();
     expect(wrapper.find('.flag-note').find(Button).text()).toEqual('(Collapse)');
     expect(wrapper.find('.flag-note').find('.wrap-words').text())
-      .toEqual(' - ' + mockPatient3.follow_up_note);
+      .toEqual(': ' + mockPatient3.follow_up_note);
     wrapper.find('.flag-note').find(Button).simulate('click');
     expect(wrapper.state('expandFollowUpNotes')).toBeFalsy();
     expect(wrapper.find('.flag-note').find(Button).text()).toEqual('(View all)');
     expect(wrapper.find('.flag-note').find('.wrap-words').text())
-      .toEqual(' - ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
+      .toEqual(': ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
   });
 });

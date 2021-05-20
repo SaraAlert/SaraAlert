@@ -400,7 +400,7 @@ class History < ApplicationRecord
     return if history[:follow_up_reason] == history[:follow_up_reason_before] && history[:follow_up_note] == history[:follow_up_note_before]
 
     comment = "Flagged for Follow-up. Reason: \"#{history[:follow_up_reason]}"
-    comment += " - #{history[:follow_up_note]}" unless history[:follow_up_note].blank?
+    comment += ": #{history[:follow_up_note]}" unless history[:follow_up_note].blank?
     comment += '"'
 
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment)
