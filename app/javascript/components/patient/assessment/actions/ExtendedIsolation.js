@@ -29,7 +29,7 @@ class ExtendedIsolation extends React.Component {
           diffState: ['extended_isolation'],
         })
         .then(() => {
-          location.reload(true);
+          location.reload();
         })
         .catch(error => {
           reportError(error);

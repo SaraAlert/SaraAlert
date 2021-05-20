@@ -96,7 +96,7 @@ class Jurisdiction extends React.Component {
           if (!this.state.jurisdiction_path.startsWith(currentUserJurisdictionString)) {
             location.assign(`${window.BASE_PATH}/public_health${this.state.isolation ? '/isolation' : ''}`);
           } else {
-            location.reload(true);
+            location.reload();
           }
         })
         .catch(err => {

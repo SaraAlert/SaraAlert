@@ -40,7 +40,7 @@ class Laboratory extends React.Component {
           result: lab.result,
         })
         .then(() => {
-          location.reload(true);
+          location.reload();
         })
         .catch(error => {
           reportError(error);
@@ -71,7 +71,7 @@ class Laboratory extends React.Component {
         },
       })
       .then(() => {
-        location.reload(true);
+        location.reload();
       })
       .catch(error => {
         reportError(error);

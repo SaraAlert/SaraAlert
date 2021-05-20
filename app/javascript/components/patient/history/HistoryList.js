@@ -66,7 +66,7 @@ class HistoryList extends React.Component {
           comment: this.state.comment,
         })
         .then(() => {
-          location.reload(true);
+          location.reload();
         })
         .catch(error => {
           reportError(error);

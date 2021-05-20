@@ -36,7 +36,7 @@ class AddAssessmentNote extends React.Component {
           history_type: 'Report Note',
         })
         .then(() => {
-          location.reload(true);
+          location.reload();
         })
         .catch(error => {
           reportError(error);
