@@ -23,7 +23,7 @@ class UpdateCaseStatus extends React.Component {
       initialMonitoring: undefined,
       apply_to_household: false,
       reasoning: '',
-      monitoring: false,
+      monitoring: null,
       monitoring_reason: '',
       loading: false,
     };
@@ -103,6 +103,12 @@ class UpdateCaseStatus extends React.Component {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
 
     this.setState({ loading: true }, () => {
+      // Per feedback, include the monitoring_reason in the reasoning text, as the user might not inlude any text
+      let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
+      // Add a period at the end of the Reasoning (if it's not already included)
+      if (_.last(reasoning) !== '.') {
+        reasoning += '.';
+      }
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/bulk_edit', {
@@ -111,7 +117,7 @@ class UpdateCaseStatus extends React.Component {
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
-          reasoning: this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', '),
+          reasoning,
           apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
@@ -149,7 +155,7 @@ class UpdateCaseStatus extends React.Component {
     return false;
   };
 
-  renderReasons = () => {
+  renderReasonsSection = () => {
     return (
       <div>
         <Form.Group controlId="monitoring_reason">
@@ -230,10 +236,10 @@ class UpdateCaseStatus extends React.Component {
                 {this.state.follow_up === 'End Monitoring' && (
                   <div>
                     <p>The selected monitorees will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
-                    {this.renderReasons()}
+                    {this.renderReasonsSection()}
                   </div>
                 )}
-                {this.state.allSelectedAreClosed && this.renderReasons()}
+                {this.state.allSelectedAreClosed && this.renderReasonsSection()}
               </React.Fragment>
             ) : (
               <React.Fragment>

@@ -35,7 +35,6 @@ class CaseStatus extends React.Component {
   }
 
   handleCaseStatusChange = event => {
-    event.persist();
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     const confirmedOrProbable = value === 'Confirmed' || value === 'Probable';
 
@@ -161,6 +160,12 @@ class CaseStatus extends React.Component {
   submit = () => {
     const diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
+      // Per feedback, include the monitoring_reason in the reasoning text, as the user might not inlude any text
+      let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
+      // Add a period at the end of the Reasoning (if it's not already included)
+      if (_.last(reasoning) !== '.') {
+        reasoning += '.';
+      }
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
@@ -168,7 +173,7 @@ class CaseStatus extends React.Component {
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
-          reasoning: this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', '),
+          reasoning,
           apply_to_household: this.state.apply_to_household,
           apply_to_household_ids: this.state.apply_to_household_ids,
           diffState: diffState,
@@ -226,7 +231,7 @@ class CaseStatus extends React.Component {
               <Form.Group controlId="reasoning">
                 <Form.Label>Please include any additional details:</Form.Label>
                 <Form.Control as="textarea" maxLength={MAX_NOTES_LENGTH} rows="2" onChange={this.handleChange} />
-                <Form.Label className="notes-character-limit"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </Form.Label>
+                <div className="character-limit-text"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </div>
               </Form.Group>
             </div>
           )}
