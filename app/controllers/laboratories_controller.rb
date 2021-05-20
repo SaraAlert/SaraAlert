@@ -89,7 +89,7 @@ class LaboratoriesController < ApplicationController
 
   def check_patient
     # Check if Patient ID is valid
-    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
+    patient_id = params.require(:patient_id)&.to_i
     unless Patient.exists?(patient_id)
       render(json: { error: "Lab result cannot be modified for unknown monitoree with ID: #{patient_id}" }, status: :bad_request) && return
     end
@@ -100,7 +100,7 @@ class LaboratoriesController < ApplicationController
   end
 
   def check_lab
-    @lab = @patient.laboratories.find_by_id(params.permit(:id)[:id])
+    @lab = @patient.laboratories.find_by_id(params.require(:id))
     return head :bad_request if @lab.nil?
   end
 end
