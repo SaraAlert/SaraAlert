@@ -239,6 +239,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       case filter[:filterOption]['name']
       when 'lab-result'
         patients = advanced_filter_lab_result(patients, filter)
+      when 'vaccination'
+        patients = advanced_filter_vaccines(patients, filter)
       when 'sent-today'
         patients = if filter[:value].present?
                      patients.where('last_assessment_reminder_sent >= ?', 24.hours.ago)
@@ -505,6 +507,36 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     end
 
     patients.where(id: labs)
+  end
+
+  def advanced_filter_vaccines(patients, filter)
+    vaccines = patients.joins(:vaccines)
+    filter[:value].each do |field|
+      case field[:name]
+      when 'vaccine-group'
+        vaccines = vaccines.where('vaccines.group_name = ?', field[:value])
+      when 'product-name'
+        vaccines = vaccines.where('vaccines.product_name = ?', field[:value])
+      when 'administration-date'
+        case field[:value][:when]
+        when 'before'
+          vaccines = vaccines.where('vaccines.administration_date < ?', field[:value][:date])
+        when 'after'
+          vaccines = vaccines.where('vaccines.administration_date > ?', field[:value][:date])
+        end
+      when 'dose-number'
+        vaccines = if field[:value].blank?
+                     vaccines.where('vaccines.dose_number IS NULL')
+                             .or(
+                               vaccines.where('vaccines.dose_number = ?', '')
+                             )
+                   else
+                     vaccines.where('vaccines.dose_number = ?', field[:value])
+                   end
+      end
+    end
+
+    patients.where(id: vaccines)
   end
 
   # Filter patients by a set time range for the given field

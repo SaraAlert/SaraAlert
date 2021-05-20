@@ -289,5 +289,37 @@ export const advancedFilterOptions = [
         type: 'date'
       }
     ]
+  },
+  {
+    name: 'vaccination',
+    title: 'Vaccination (Multi-select)',
+    description: 'Monitorees with specified Vaccination criteria',
+    type: 'multi',
+    tooltip: 'Returns records that contain at least one Vaccination entry that meets all user-specified criteria (e.g., searching for a specific Vaccination Product Name and Administration Date will only return records containing at least one Vaccination entry with matching values in both fields).',
+    fields: [
+      {
+        name: 'vaccine-group',
+        title: 'vaccine group',
+        type: 'select',
+        options: ['COVID-19']
+      },
+      {
+        name: 'product-name',
+        title: 'product name',
+        type: 'select',
+        options: ['Moderna COVID-19 Vaccine', 'Pfizer-BioNTech COVID-19 Vaccine', 'Janssen (J&J) COVID-19 Vaccine', 'Unknown']
+      },
+      {
+        name: 'administration-date',
+        title: 'administration date',
+        type: 'date'
+      },
+      {
+        name: 'dose-number',
+        title: 'dose number',
+        type: 'select',
+        options: ['', '1', '2', 'Unknown']
+      }
+    ]
   }
 ]

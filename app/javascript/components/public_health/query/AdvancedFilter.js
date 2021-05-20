@@ -1171,7 +1171,7 @@ class AdvancedFilter extends React.Component {
                     type="dark"
                     effect="solid"
                     className="tooltip-container">
-                    <span>Select to add multiple Lab Result search criteria.</span>
+                    <span>Select to add multiple {filter.title.replace(' (Multi-select)', '')} search criteria.</span>
                   </ReactTooltip>
                 </React.Fragment>
               )}
