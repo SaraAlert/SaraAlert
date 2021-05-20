@@ -247,7 +247,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(lab, :patient_id) && lab.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
           req_json = request.patch? ? lab.as_fhir.to_json : JSON.parse(request_body)
-          status_unprocessable_entity(lab, fhir_map, req_json) && (raise SaveError)
+          status_unprocessable_entity(lab, fhir_map, req_json) && (raise ClientError)
         end
 
         Rails.logger.info "Updated Lab Result (ID: #{lab.id}) for Patient with ID: #{lab.patient_id}"
@@ -261,8 +261,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     end
   rescue JSON::ParserError
     status_bad_request(['Invalid JSON in request body'])
-  rescue SaveError
-    nil
+  rescue ClientError
+    nil # If we reach here, we've already rendered a 422 response
   end
 
   # Create History items corresponding to Patient changes from an update.
@@ -353,7 +353,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       ActiveRecord::Base.transaction do
         unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
           req_json = JSON.parse(request_body)
-          status_unprocessable_entity(resource, fhir_map, req_json) && (raise SaveError)
+          status_unprocessable_entity(resource, fhir_map, req_json) && (raise ClientError)
         end
 
         Rails.logger.info "Created Lab Result (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
@@ -367,8 +367,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_created(resource.as_fhir) && return
   rescue JSON::ParserError
     status_bad_request(['Invalid JSON in request body'])
-  rescue SaveError
-    nil
+  rescue ClientError
+    nil # If we reach here, we've already rendered a 422 response
   end
 
   # Create a set of resources as an atomic action
@@ -452,8 +452,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_ok(patients_to_fhir_bundle(saved_patients)) && return
   rescue JSON::ParserError
     status_bad_request(['Invalid JSON in request body'])
-  rescue SaveError
-    nil
+  rescue ClientError
+    nil # If we reach here, we've already rendered a 422 response
   end
 
   # Return a FHIR Bundle containing results that match the given query.
@@ -752,8 +752,6 @@ class Fhir::R4::ApiController < ApplicationApiController
 
   private
 
-  class SaveError < StandardError; end
-
   # Build a Patient and the corresponding fhir_map from FHIR contents
   def build_patient(contents)
     # Construct a Sara Alert Patient
@@ -792,12 +790,12 @@ class Fhir::R4::ApiController < ApplicationApiController
 
   # Save a Patient model
   def save_patient(resource, fhir_map, request_body)
-    status_bad_request && (raise SaveError) if resource.nil?
+    status_bad_request && (raise ClientError) if resource.nil?
 
     ActiveRecord::Base.transaction do
       unless jurisdiction_valid_for_client?(resource) && resource.save(context: %i[api api_create])
         req_json = JSON.parse(request_body)
-        status_unprocessable_entity(resource, fhir_map, req_json) && (raise SaveError)
+        status_unprocessable_entity(resource, fhir_map, req_json) && (raise ClientError)
       end
 
       # Create a history for the enrollment
