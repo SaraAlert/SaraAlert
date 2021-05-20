@@ -4,6 +4,7 @@
 class PatientsController < ApplicationController
   include PatientHelper
   include PatientQueryHelper
+  include Orchestration::Orchestrator
 
   before_action :authenticate_user!
 
@@ -12,6 +13,8 @@ class PatientsController < ApplicationController
     @title = 'Enroller Dashboard'
     @enrolled_patients = current_user.enrolled_patients.eager_load(:jurisdiction)
     redirect_to(root_url) && return unless current_user.can_create_patient?
+
+    @playbook = default_playbook
   end
 
   def monitoree_unavailable
@@ -52,6 +55,13 @@ class PatientsController < ApplicationController
     @translations = Assessment.new.translations
 
     @history_types = History::HISTORY_TYPES
+
+    @playbook = default_playbook
+
+    @available_workflows = available_workflows(@playbook)
+    @continuous_exposure_enabled = continuous_exposure_enabled?(@playbook)
+
+    dashboard_crumb(params.permit(:nav)[:nav], @playbook, @patient)
   end
 
   # Returns a new (unsaved) subject, for creating a new subject
@@ -76,6 +86,13 @@ class PatientsController < ApplicationController
                            contact_of_known_case_id: @close_contact.nil? ? '' : @close_contact.patient_id,
                            exposure_notes: @close_contact.nil? ? '' : @close_contact.notes,
                            preferred_contact_method: 'Unknown')
+
+    @playbook = default_playbook
+    @available_workflows = available_workflows(@playbook)
+
+    @continuous_exposure_enabled = continuous_exposure_enabled?(@playbook)
+
+    dashboard_crumb(params.permit(:nav)[:nav] || (params.permit(:isolation)[:isolation] ? 'isolation' : 'global'), @playbook, nil)
   end
 
   # Similar to 'new', except used for creating a new group member
@@ -90,14 +107,19 @@ class PatientsController < ApplicationController
     # If we failed to find the parent given the id, redirect to index
     redirect_to(root_url) && return if parent.nil?
 
-    dashboard_crumb(params.permit(:nav)[:nav], parent)
-
     @patient = Patient.new(parent.attributes.slice(*group_member_subset.map(&:to_s)))
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
     @parent_id = parent.id
+
+    @playbook = default_playbook
+    @available_workflows = available_workflows(@playbook)
+
+    @continuous_exposure_enabled = continuous_exposure_enabled?(@playbook)
+
+    dashboard_crumb(params.permit(:nav)[:nav], @playbook, parent)
   end
 
   # Editing a patient
@@ -116,6 +138,13 @@ class PatientsController < ApplicationController
     @dependents_exclude_hoh = @patient.dependents_exclude_self
     @propagated_fields = group_member_subset.collect { |field| [field, false] }.to_h
     @enrollment_step = params.permit(:step)[:step]&.to_i
+
+    @playbook = default_playbook
+    @available_workflows = available_workflows(@playbook)
+
+    @continuous_exposure_enabled = continuous_exposure_enabled?(@playbook)
+
+    dashboard_crumb(params.permit(:nav)[:nav], @playbook, @patient)
   end
 
   # This follows 'new', this will receive the subject details and save a new subject
@@ -1023,16 +1052,16 @@ class PatientsController < ApplicationController
   private
 
   # Set the instance variables necessary for rendering the breadcrumbs
-  def dashboard_crumb(dashboard, patient)
+  def dashboard_crumb(dashboard, playbook, patient)
     unless current_user.enroller?
       @dashboard = %w[global isolation exposure].include?(dashboard) ? dashboard : (patient&.isolation ? 'isolation' : 'exposure')
     end
 
     @dashboard_path = case @dashboard
                       when 'isolation'
-                        public_health_isolation_path
+                        "/dashboard/#{playbook}/isolation"
                       when 'exposure'
-                        public_health_exposure_path
+                        "/dashboard/#{playbook}/exposure"
                       else
                         current_user.enroller? ? patients_path : public_health_global_path
                       end

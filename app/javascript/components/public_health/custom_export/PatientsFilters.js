@@ -61,9 +61,13 @@ class PatientsFilters extends React.Component {
                   this.props.onQueryChange('tab', 'all');
                 }}
                 value={this.props.query?.workflow}>
-                <option value="global">Global</option>
-                <option value="exposure">Exposure</option>
-                <option value="isolation">Isolation</option>
+                {this.props.available_workflows.length > 1 && <option value="global">Global</option>}
+                {this.props.available_workflows.map(wf => (
+                  <option key={wf.name} value={wf.name}>
+                    {' '}
+                    {wf.label}{' '}
+                  </option>
+                ))}
               </Form.Control>
             </InputGroup>
           </Col>
@@ -84,28 +88,6 @@ class PatientsFilters extends React.Component {
                 className="form-square"
                 onChange={event => this.props.onQueryChange('tab', event?.target?.value)}
                 value={this.props.query?.tab}>
-                <option value="all">All</option>
-                {this.props.query?.workflow === 'exposure' && (
-                  <React.Fragment>
-                    <option value="symptomatic">Symptomatic</option>
-                    <option value="non_reporting">Non-Reporting</option>
-                    <option value="asymptomatic">Asymptomatic</option>
-                    <option value="pui">PUI</option>
-                    <option value="closed">Closed</option>
-                    <option value="transferred_in">Transferred In</option>
-                    <option value="transferred_out">Transferred Out</option>
-                  </React.Fragment>
-                )}
-                {this.props.query?.workflow === 'isolation' && (
-                  <React.Fragment>
-                    <option value="requiring_review">Records Requiring Review</option>
-                    <option value="non_reporting">Non-Reporting</option>
-                    <option value="reporting">Reporting</option>
-                    <option value="closed">Closed</option>
-                    <option value="transferred_in">Transferred In</option>
-                    <option value="transferred_out">Transferred Out</option>
-                  </React.Fragment>
-                )}
                 {this.props.query?.workflow === 'global' && (
                   <React.Fragment>
                     <option value="active">Active</option>
@@ -114,6 +96,14 @@ class PatientsFilters extends React.Component {
                     <option value="closed">Closed</option>
                   </React.Fragment>
                 )}
+                {this.props.query?.workflow != 'global' &&
+                  Object.entries(this.props.available_line_lists[this.props.query?.workflow]).map(([ll, llProps]) => {
+                    return (
+                      <option key={ll} value={ll}>
+                        {llProps.label}
+                      </option>
+                    );
+                  })}
               </Form.Control>
             </InputGroup>
           </Col>
@@ -189,6 +179,8 @@ PatientsFilters.propTypes = {
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
   jurisdiction: PropTypes.object,
+  available_workflows: PropTypes.array,
+  available_line_lists: PropTypes.object,
   query: PropTypes.object,
   onQueryChange: PropTypes.func,
 };

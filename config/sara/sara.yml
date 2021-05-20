@@ -4,6 +4,9 @@ version: v1.37
 # Base path (useful for WARP or similar environments)
 base_path: ''
 
+# Active playbook
+playbook_name: <%= ENV["ACTIVE_PLAYBOOK"] || 'covid_19' %>
+
 # How many days an enrolled monitoree should be monitored
 monitoring_period_days: <%= ENV["MONITORING_PERIOD_DAYS"] || 14 %>
 

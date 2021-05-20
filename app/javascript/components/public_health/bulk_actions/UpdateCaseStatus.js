@@ -27,6 +27,11 @@ class UpdateCaseStatus extends React.Component {
       monitoring: null,
       monitoring_reason: '',
       loading: false,
+      isolationWorkflowAvailable:
+        -1 <
+        props.available_workflows.findIndex(w => {
+          if (w.name.toLowerCase() == 'isolation') return true;
+        }),
     };
     this.origState = Object.assign({}, this.state);
   }
@@ -248,7 +253,7 @@ class UpdateCaseStatus extends React.Component {
                   aria-label="Case Status Follow Up Select">
                   <option></option>
                   <option>End Monitoring</option>
-                  <option>Continue Monitoring in Isolation Workflow</option>
+                  {this.state.isolationWorkflowAvailable && <option>Continue Monitoring in Isolation Workflow</option>}
                 </Form.Control>
               </React.Fragment>
             )}
@@ -323,6 +328,7 @@ UpdateCaseStatus.propTypes = {
   patients: PropTypes.array,
   close: PropTypes.func,
   monitoring_reasons: PropTypes.array,
+  available_workflows: PropTypes.array,
 };
 
 export default UpdateCaseStatus;

@@ -16,6 +16,13 @@ class PublicHealthHeader extends React.Component {
       showUploadModal: false,
       showImportModal: false,
       uploading: false,
+      workflowIcons: {
+        exposure: 'fa-people-arrows',
+        isolation: 'fa-street-view',
+        global: 'fa-globe',
+      },
+      workflowsToShow:
+        props.available_workflows.length > 1 ? [...props.available_workflows, ...[{ name: 'global', label: 'Global' }]] : props.available_workflows,
     };
   }
 
@@ -73,7 +80,7 @@ class PublicHealthHeader extends React.Component {
               additionalNote: 'Records imported prior to clicking "X" will not be deleted from the system.',
             };
             if (await confirmDialog(confirmText, options)) {
-              location.href = `${window.BASE_PATH}/public_health/${this.props.workflow}`;
+              location.href = `${window.BASE_PATH}/dashboard/${this.props.playbook}/${this.props.workflow}`;
             }
           } else {
             const confirmText = 'You are about to cancel the import process. Are you sure you want to do this?';
@@ -104,6 +111,7 @@ class PublicHealthHeader extends React.Component {
         <Modal.Body>
           {this.state.importData && this.state.importData.patients && this.state.importData.errors && (
             <Import
+              playbook={this.props.playbook}
               workflow={this.props.workflow}
               patients={this.state.importData.patients}
               errors={this.state.importData.errors}
@@ -177,6 +185,8 @@ class PublicHealthHeader extends React.Component {
                   jurisdiction_paths={this.props.jurisdiction_paths}
                   all_assigned_users={this.props.all_assigned_users}
                   jurisdiction={this.props.jurisdiction}
+                  available_workflows={this.props.available_workflows}
+                  available_line_lists={this.props.available_line_lists}
                   tabs={this.props.tabs}
                   workflow={this.props.workflow}
                   query={this.props.query}
@@ -203,18 +213,16 @@ class PublicHealthHeader extends React.Component {
               )}
             </ButtonGroup>
             <ButtonGroup className="float-right mb-2">
-              <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/exposure`}>
-                <i className="fas fa-people-arrows"></i> Exposure <span className="d-none d-xl-inline"> Monitoring</span>{' '}
-                {this.state.counts.exposure !== undefined && <span id="exposureCount">({this.state.counts.exposure})</span>}
-              </Button>
-              <Button variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/isolation`}>
-                <i className="fas fa-street-view"></i> Isolation <span className="d-none d-xl-inline"> Monitoring</span>{' '}
-                {this.state.counts.isolation !== undefined && <span id="isolationCount">({this.state.counts.isolation})</span>}
-              </Button>
-              <Button variant={this.props.workflow === 'global' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/global`}>
-                <i className="fas fa-globe"></i> Global<span className="d-none d-xl-inline"> Dashboard</span>{' '}
-                {this.state.counts.exposure !== undefined && <span id="globalCount">({this.state.counts.global})</span>}
-              </Button>
+              {this.state.workflowsToShow.map(value => {
+                return (
+                  <Button
+                    key={value.name}
+                    variant={this.props.workflow === value.name ? 'primary' : 'outline-primary'}
+                    href={`${window.BASE_PATH}/dashboard/${this.props.playbook}/${value.name}`}>
+                    <i className={`fas ${this.state.workflowIcons[value.name]}`} /> {value.label} Monitoring{' '}
+                  </Button>
+                );
+              })}
             </ButtonGroup>
           </Col>
         </Row>
@@ -241,6 +249,9 @@ PublicHealthHeader.propTypes = {
   query: PropTypes.object,
   current_monitorees_count: PropTypes.number,
   custom_export_options: PropTypes.object,
+  available_workflows: PropTypes.array,
+  available_line_lists: PropTypes.object,
+  playbook: PropTypes.string,
 };
 
 export default PublicHealthHeader;

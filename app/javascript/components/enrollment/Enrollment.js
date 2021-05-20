@@ -233,6 +233,7 @@ class Enrollment extends React.Component {
               currentState={this.state.enrollmentState}
               race_options={this.props.race_options}
               authenticity_token={this.props.authenticity_token}
+              available_workflows={this.props.available_workflows}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -286,6 +287,9 @@ class Enrollment extends React.Component {
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
               showPreviousButton={!this.props.edit_mode && !this.state.review_mode}
+              symptomatic_assessments_exist={this.props.symptomatic_assessments_exist}
+              continuous_exposure_enabled={this.props.continuous_exposure_enabled}
+              edit_mode={this.props.edit_mode}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
@@ -342,6 +346,8 @@ Enrollment.propTypes = {
   blocked_sms: PropTypes.bool,
   first_positive_lab: PropTypes.object,
   workflow: PropTypes.string,
+  available_workflows: PropTypes.array,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default Enrollment;

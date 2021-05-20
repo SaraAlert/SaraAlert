@@ -1,6 +1,7 @@
 <%= render partial: 'layouts/breadcrumb', locals: {
       jurisdiction_path: current_user.jurisdiction_path,
-      crumbs: [{ value: dashboard_crumb_title(@dashboard), href: @dashboard_path }, { value: 'Enroll New Monitoree', href: nil }]
+      crumbs: [{ value: dashboard_crumb_title(@dashboard, @playbook), href: @dashboard_path },
+               { value: 'Enroll New Monitoree', href: nil }]
     } %>
 
 <%= react_component('enrollment/Enrollment', {
@@ -17,7 +18,9 @@
                       cc_id: @close_contact&.id,
                       first_positive_lab: nil,
                       symptomatic_assessments_exist: false,
-                      workflow: @dashboard
+                      workflow: @dashboard,
+                      available_workflows: @available_workflows,
+                      continuous_exposure_enabled: @continuous_exposure_enabled
                     }) %>
 
 <div class="pb-4"></div>

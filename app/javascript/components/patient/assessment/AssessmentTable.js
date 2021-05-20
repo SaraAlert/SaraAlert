@@ -383,6 +383,7 @@ class AssessmentTable extends React.Component {
               symptomatic_assessments_exist={this.state.table.rowData.map(x => x.symptomatic).includes('Yes')}
               num_pos_labs={this.props.num_pos_labs}
               calculated_symptom_onset={this.props.calculated_symptom_onset}
+              continuous_exposure_enabled={this.props.continuous_exposure_enabled}
             />
           </Card.Body>
         </Card>
@@ -447,6 +448,7 @@ AssessmentTable.propTypes = {
       );
     }
   },
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default AssessmentTable;

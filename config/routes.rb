@@ -142,6 +142,10 @@ Rails.application.routes.draw do
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
+  get '/dashboard/:playbook/:workflow', to: 'dashboard#dashboard'
+  get '/dashboard/:playbook', to: 'dashboard#index'
+  get '/dashboard', to: 'dashboard#index', as: :dashboard
+
   get '/public_health', to: redirect('/public_health/exposure')
   get '/public_health/global', to: 'public_health#global', as: :public_health_global
   get '/public_health/exposure', to: 'public_health#exposure', as: :public_health_exposure

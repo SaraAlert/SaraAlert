@@ -30,6 +30,11 @@ class CaseStatus extends React.Component {
       loading: false,
       disabled: false,
       noMembersSelected: false,
+      isolationWorkflowAvailable:
+        -1 <
+        props.available_workflows.findIndex(w => {
+          if (w.name.toLowerCase() == 'isolation') return true;
+        }),
     };
     this.origState = Object.assign({}, this.state);
   }
@@ -214,7 +219,7 @@ class CaseStatus extends React.Component {
                 value={this.state.monitoring_option}>
                 <option></option>
                 <option>End Monitoring</option>
-                <option>Continue Monitoring in Isolation Workflow</option>
+                {this.state.isolationWorkflowAvailable && <option>Continue Monitoring in Isolation Workflow</option>}
               </Form.Control>
             </React.Fragment>
           )}
@@ -247,6 +252,7 @@ class CaseStatus extends React.Component {
               handleApplyHouseholdChange={this.handleApplyHouseholdChange}
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
               workflow={this.props.workflow}
+              continuous_exposure_enabled={this.props.continuous_exposure_enabled}
             />
           )}
         </Modal.Body>
@@ -311,6 +317,8 @@ CaseStatus.propTypes = {
   jurisdiction_paths: PropTypes.object,
   monitoring_reasons: PropTypes.array,
   workflow: PropTypes.string,
+  continuous_exposure_enabled: PropTypes.bool,
+  available_workflows: PropTypes.array,
 };
 
 export default CaseStatus;

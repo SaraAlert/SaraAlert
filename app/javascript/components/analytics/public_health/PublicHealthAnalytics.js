@@ -112,12 +112,12 @@ class PublicHealthAnalytics extends React.Component {
           </Row>
           <Row className="mx-2">
             <Col className="mx-0 my-3 p-0">
-              <PreferredReportingMethod stats={this.props.stats} />
+              <PreferredReportingMethod stats={this.props.stats} available_workflows={this.props.available_workflows} />
             </Col>
           </Row>
           <Row className="mx-2">
             <Col className="mx-0 my-3 p-0">
-              <MonitoreeFlow stats={this.props.stats} />
+              <MonitoreeFlow stats={this.props.stats} available_workflows={this.props.available_workflows} />
             </Col>
           </Row>
           <Row className="mx-2 mt-3">
@@ -147,22 +147,26 @@ class PublicHealthAnalytics extends React.Component {
           </Row>
           <Row className="mx-2">
             <Col className="mx-0 my-3 p-0">
-              <Demographics stats={this.props.stats} showGraphs={this.state.showGraphs} />
+              <Demographics stats={this.props.stats} available_workflows={this.props.available_workflows} showGraphs={this.state.showEpidemiologicalGraphs} />
             </Col>
           </Row>
           <Row className="mx-2">
             <Col className="mx-0 my-3 p-0">
-              <ExposureSummary stats={this.props.stats} showGraphs={this.state.showGraphs} />
+              <ExposureSummary
+                stats={this.props.stats}
+                available_workflows={this.props.available_workflows}
+                showGraphs={this.state.showEpidemiologicalGraphs}
+              />
             </Col>
           </Row>
           <Row className="mx-2">
             <Col className="mx-0 my-3 p-0">
-              <MonitoreesByEventDate stats={this.props.stats} />
+              <MonitoreesByEventDate stats={this.props.stats} available_workflows={this.props.available_workflows} />
             </Col>
           </Row>
           <Row className="mx-2">
             <Col className="mx-0 my-3 p-0">
-              <GeographicSummary stats={this.props.stats} />
+              <GeographicSummary stats={this.props.stats} available_workflows={this.props.available_workflows} />
             </Col>
           </Row>
         </React.Fragment>
@@ -174,6 +178,7 @@ class PublicHealthAnalytics extends React.Component {
 PublicHealthAnalytics.propTypes = {
   stats: PropTypes.object,
   current_user: PropTypes.object,
+  available_workflows: PropTypes.array,
 };
 
 export default PublicHealthAnalytics;

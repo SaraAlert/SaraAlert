@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+include Orchestration::Orchestrator
+
 # Constants for imports and exports
 module ImportExportConstants # rubocop:todo Metrics/ModuleLength
+  CONTINUOUS_EXPOSURE_AVAILABLE = continuous_exposure_enabled?(default_playbook).freeze
+
   EXPORT_TYPES = {
     csv_linelist_exposure: { label: 'Line list CSV (exposure)', filename: 'Sara-Alert-Linelist-Exposure' },
     csv_linelist_isolation: { label: 'Line list CSV (isolation)', filename: 'Sara-Alert-Linelist-Isolation' },
@@ -484,8 +488,11 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
               rct_node(:patients, 'Linelist Info', %i[workflow status]),
               rct_node(:patients, 'Monitoring Actions', %i[monitoring_status exposure_risk_assessment monitoring_plan case_status public_health_action
                                                            jurisdiction_path jurisdiction_name assigned_user]),
-              rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset symptom_onset_defined_by first_positive_lab_at
-                                                          extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_ts]),
+              rct_node(:patients, 'Monitoring Period',
+                       [*%i[last_date_of_exposure],
+                        *(%i[continuous_exposure] if CONTINUOUS_EXPOSURE_AVAILABLE),
+                        *%i[symptom_onset symptom_onset_defined_by first_positive_lab_at
+                            extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_ts]]),
               rct_node(:patients, 'Reporting Info', %i[responder_id head_of_household pause_notifications last_assessment_reminder_sent]),
               rct_node(:patients, 'Follow-up Flag', %i[follow_up_reason follow_up_note])
             ]

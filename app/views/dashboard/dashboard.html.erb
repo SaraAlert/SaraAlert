@@ -1,0 +1,31 @@
+<% content_for :assets do %>
+  <%= javascript_packs_with_chunks_tag 'moment' %>
+<% end %>
+
+<%= render partial: 'layouts/breadcrumb',
+    locals: {
+      jurisdiction_path: current_user.jurisdiction_path,
+      crumbs: [{ value: @workflow_label + ' Dashboard (' + @playbook_label + ')', href: nil }]
+    } %>
+
+
+<%= react_component('public_health/Workflow', {
+                      authenticity_token: form_authenticity_token,
+                      abilities: {
+                        analytics: current_user.can_view_analytics?,
+                        enrollment: current_user.can_create_patient?,
+                        export: current_user.can_export?,
+                        import: current_user.can_import?
+                      },
+                      jurisdiction: {
+                        id: current_user.jurisdiction_id,
+                        path: current_user.jurisdiction[:path]
+                      },
+                      workflow: @path_params[:workflow],
+                      tabs: @tabs,
+                      custom_export_options: ImportExport::CUSTOM_EXPORT_OPTIONS,
+                      monitoring_reasons: ValidationHelper::USER_SELECTABLE_MONITORING_REASONS,
+                      playbook: @path_params[:playbook],
+                      available_workflows: @available_workflows,
+                      available_line_lists: @available_line_lists
+                    }) %>

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Card } from 'react-bootstrap';
 import { formatPercentage } from '../../../../utils/Analytics';
 
-const WORKFLOWS = ['Exposure', 'Isolation'];
+let WORKFLOWS;
 
 // Provide a separate array, as object-iteration order is not guaranteed in JS
 const CONTACT_METHOD_HEADERS = ['Email', 'SMS Weblink', 'SMS Text', 'Phone Call', 'Opt-Out', 'Unknown', 'Missing', 'Total'];
@@ -53,6 +53,7 @@ const LINELIST_STYLE_OPTIONS = [
 class PreferredReportingMethod extends React.Component {
   constructor(props) {
     super(props);
+    WORKFLOWS = this.props.available_workflows.map(wf => wf.label);
     let contactMethodMonitoreeCounts = props.stats.monitoree_counts.filter(x => x.category_type === 'Contact Method');
     const linelistOptions = _.uniq(props.stats.monitoree_counts.filter(x => x.category_type === 'Contact Method').map(x => x.status));
     this.tableData = WORKFLOWS.map(workflow => {
@@ -154,6 +155,7 @@ class PreferredReportingMethod extends React.Component {
 
 PreferredReportingMethod.propTypes = {
   stats: PropTypes.object,
+  available_workflows: PropTypes.array,
 };
 
 export default PreferredReportingMethod;

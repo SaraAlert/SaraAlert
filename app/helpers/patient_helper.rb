@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+include Orchestration::Orchestrator
+
 # Helper methods for the patient model
 module PatientHelper
   # This list contains all of the same states listed in app/javascript/components/data.js
@@ -47,8 +49,9 @@ module PatientHelper
     tz.utc_to_local(symptom_onset_ts).to_date
   end
 
-  def dashboard_crumb_title(dashboard)
-    dashboard.nil? ? 'Return To Dashboard' : "Return to #{dashboard.titleize} Dashboard"
+  def dashboard_crumb_title(dashboard, playbook)
+    title = dashboard.nil? ? 'Return To Dashboard' : "Return to #{dashboard.titleize} Dashboard"
+    return title + playbook.nil? ? '' : " (#{playbook_label(playbook)})"
   end
 
   def self.monitoring_fields

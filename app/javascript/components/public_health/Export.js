@@ -125,6 +125,8 @@ class Export extends React.Component {
             jurisdiction_paths={this.props.jurisdiction_paths}
             all_assigned_users={this.props.all_assigned_users}
             jurisdiction={this.props.jurisdiction}
+            available_workflows={this.props.available_workflows}
+            available_line_lists={this.props.available_line_lists}
             tabs={this.props.tabs}
             preset={this.state.savedPreset}
             presets={this.state.savedExportPresets}
@@ -148,6 +150,8 @@ Export.propTypes = {
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
   jurisdiction: PropTypes.object,
+  available_workflows: PropTypes.array,
+  available_line_lists: PropTypes.object,
   tabs: PropTypes.object,
   query: PropTypes.object,
   all_monitorees_count: PropTypes.number,

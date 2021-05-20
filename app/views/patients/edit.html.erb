@@ -1,7 +1,7 @@
 <%= render partial: 'layouts/breadcrumb', locals: {
       jurisdiction_path: current_user.jurisdiction_path,
       crumbs: [
-        { value: dashboard_crumb_title(@dashboard), href: @dashboard_path },
+        { value: dashboard_crumb_title(@dashboard, @playbook), href: @dashboard_path },
         { value: 'Return to Monitoree Details', href: patient_path(@patient.id) + (@dashboard ? "?nav=#{@dashboard}" : '') },
         { value: 'Edit Monitoree', href: nil }
       ]
@@ -22,5 +22,7 @@
                       blocked_sms: @patient.blocked_sms,
                       first_positive_lab: @patient.laboratories.where(result: 'positive').order(:specimen_collection).first,
                       symptomatic_assessments_exist: @patient.assessments.where(symptomatic: true).any?,
-                      workflow: @dashboard
+                      workflow: @dashboard,
+                      available_workflows: @available_workflows,
+                      continuous_exposure_enabled: @continuous_exposure_enabled
                     }) %>

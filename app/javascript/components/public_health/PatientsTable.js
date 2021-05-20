@@ -779,6 +779,7 @@ class PatientsTable extends React.Component {
               patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
               monitoring_reasons={this.props.monitoring_reasons}
               close={() => this.setState({ action: undefined })}
+              available_workflows={this.props.available_workflows}
             />
           )}
           {this.state.action === 'Update Assigned User' && (
@@ -820,6 +821,7 @@ PatientsTable.propTypes = {
   setQuery: PropTypes.func,
   setFilteredMonitoreesCount: PropTypes.func,
   monitoring_reasons: PropTypes.array,
+  available_workflows: PropTypes.array,
 };
 
 export default PatientsTable;
