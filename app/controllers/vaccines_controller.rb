@@ -98,6 +98,7 @@ class VaccinesController < ApplicationController
         comment += ", Product Name: #{@vaccine.product_name}" unless @vaccine.product_name.blank?
         comment += ", Administration Date: #{@vaccine.administration_date.strftime('%m/%d/%Y')}" unless @vaccine.administration_date.blank?
         comment += ", Dose Number: #{@vaccine.dose_number}" unless @vaccine.dose_number.blank?
+        comment += ", Notes: #{@vaccine.notes}" unless @vaccine.notes.blank?
         comment += "). Reason: #{reason}."
         History.vaccination_edit(patient: @patient.id,
                                  created_by: current_user.email,
