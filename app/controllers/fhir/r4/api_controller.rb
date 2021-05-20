@@ -395,7 +395,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     when 'provenance'
       return if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
 
-      resources = search_histories(search_params) ||[]
+      resources = search_histories(search_params) || []
       resource_type = 'Provenance'
     else
       status_not_found && return

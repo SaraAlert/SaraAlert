@@ -247,11 +247,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       id: history.id,
       target: FHIR::Reference.new(reference: "Patient/#{history.patient_id}"),
       recorded: history.created_at.strftime('%FT%T%:z'),
-      agent:[
+      agent: [
         {
           who: FHIR::Reference.new(identifier: FHIR::Identifier.new(value: history.created_by)),
 
-          onBehalfOf: FHIR::Reference.new(reference: "Patient/#{history.patient_id}"),
+          onBehalfOf: FHIR::Reference.new(reference: "Patient/#{history.patient_id}")
         }
       ],
       extension: [

@@ -148,7 +148,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       user_id: shadow_user.id
     )
 
-
     @system_observation_read_app = OauthApplication.create(
       name: 'system-test-observation-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',

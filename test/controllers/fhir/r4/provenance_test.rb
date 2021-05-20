@@ -14,7 +14,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { Authorization: "Bearer #{@system_provenance_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
-    json_response = JSON.parse(response.body)
     assert_equal JSON.parse(History.find_by_id(history_id).as_fhir.to_json), JSON.parse(response.body)
   end
 
@@ -26,13 +25,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-
   #----- search tests -----
 
   test 'should find Provenances for a Patient via search' do
     patient = Patient.find_by_id(6)
     get(
-      "/fhir/r4/Provenance?patient=Patient/6",
+      '/fhir/r4/Provenance?patient=Patient/6',
       headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
