@@ -3,7 +3,7 @@
 require 'test_case'
 
 class PatientQueryHelperTest < ActionView::TestCase
-  # BOOLEAN ADVANCED FILTER QUERIES
+  # --- BOOLEAN ADVANCED FILTER QUERIES --- #
 
   test 'advanced filter blocked sms properly filters those with blocked numbers' do
     Patient.destroy_all
@@ -33,7 +33,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 
-  # SEARCH ADVANCED FILTER QUERIES
+  # --- SEARCH ADVANCED FILTER QUERIES --- #
 
   test 'advanced filter close contact with known case id exact match single value' do
     Patient.destroy_all
@@ -138,7 +138,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 
-  # MULTI ADVANCED FILTER QUERIES
+  # --- MULTI ADVANCED FILTER QUERIES --- #
 
   test 'advanced filter laboratory single filter option results' do
     Patient.destroy_all
@@ -436,6 +436,364 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_6]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter vaccination single filter option vaccine group' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_1, group_name: 'COVID-19')
+    create(:vaccine, patient: patient_1, group_name: 'COVID-19')
+    patient_2 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_2, group_name: 'COVID-19')
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    filters = [{ filterOption: {}, value: [{ name: 'vaccine-group', value: 'COVID-19' }] }]
+    filters[0][:filterOption]['name'] = 'vaccination'
+    tz_offset = 300
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter vaccination single filter option product name' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_1, product_name: 'Moderna COVID-19 Vaccine')
+    create(:vaccine, patient: patient_1, product_name: 'Pfizer-BioNTech COVID-19 Vaccine')
+    patient_2 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_2, product_name: 'Janssen (J&J) COVID-19 Vaccine')
+    patient_3 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_3, product_name: 'Moderna COVID-19 Vaccine')
+    patient_4 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_4, product_name: 'Unknown')
+    patient_5 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_5, product_name: 'Pfizer-BioNTech COVID-19 Vaccine')
+    create(:vaccine, patient: patient_5, product_name: 'Pfizer-BioNTech COVID-19 Vaccine')
+    patient_6 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_6, product_name: 'Moderna COVID-19 Vaccine')
+    create(:vaccine, patient: patient_6, product_name: 'Moderna COVID-19 Vaccine')
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    filters = [{ filterOption: {}, value: [{ name: 'product-name', value: 'Moderna COVID-19 Vaccine' }] }]
+    filters[0][:filterOption]['name'] = 'vaccination'
+    tz_offset = 300
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_3, patient_6]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter vaccination single filter option administration date before' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_1, administration_date: DateTime.new(2021, 3, 1))
+    create(:vaccine, patient: patient_1, administration_date: DateTime.new(2021, 4, 1))
+    patient_2 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_2, administration_date: DateTime.new(2021, 3, 24))
+    patient_3 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_3, administration_date: DateTime.new(2021, 3, 25))
+    patient_4 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_4, administration_date: DateTime.new(2021, 3, 26))
+    patient_5 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_5, administration_date: DateTime.new(2021, 3, 1))
+    create(:vaccine, patient: patient_5, administration_date: DateTime.new(2021, 3, 15))
+    patient_6 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_6, administration_date: DateTime.new(2021, 4, 1))
+    create(:vaccine, patient: patient_6, administration_date: DateTime.new(2021, 4, 3))
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    filters = [{ filterOption: {}, value: [{ name: 'administration-date', value: { when: 'before', date: '2021-03-25' } }] }]
+    filters[0][:filterOption]['name'] = 'vaccination'
+    tz_offset = 300
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_5]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter vaccination single filter option administration date after' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_1, administration_date: DateTime.new(2021, 3, 1))
+    create(:vaccine, patient: patient_1, administration_date: DateTime.new(2021, 4, 1))
+    patient_2 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_2, administration_date: DateTime.new(2021, 3, 24))
+    patient_3 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_3, administration_date: DateTime.new(2021, 3, 25))
+    patient_4 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_4, administration_date: DateTime.new(2021, 3, 26))
+    patient_5 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_5, administration_date: DateTime.new(2021, 3, 1))
+    create(:vaccine, patient: patient_5, administration_date: DateTime.new(2021, 3, 15))
+    patient_6 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_6, administration_date: DateTime.new(2021, 4, 1))
+    create(:vaccine, patient: patient_6, administration_date: DateTime.new(2021, 4, 3))
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    filters = [{ filterOption: {}, value: [{ name: 'administration-date', value: { when: 'after', date: '2021-03-25' } }] }]
+    filters[0][:filterOption]['name'] = 'vaccination'
+    tz_offset = 300
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_4, patient_6]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter vaccination single filter option dose number blank' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_1, dose_number: '1')
+    create(:vaccine, patient: patient_1, dose_number: '2')
+    patient_2 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_2, dose_number: 'Unknown')
+    patient_3 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_3, dose_number: nil)
+    patient_4 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_4, dose_number: '')
+    patient_5 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_5, dose_number: '')
+    create(:vaccine, patient: patient_5, dose_number: nil)
+    patient_6 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_6, dose_number: '1')
+    create(:vaccine, patient: patient_6, dose_number: '')
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    filters = [{ filterOption: {}, value: [{ name: 'dose-number', value: '' }] }]
+    filters[0][:filterOption]['name'] = 'vaccination'
+    tz_offset = 300
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_3, patient_4, patient_5, patient_6]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter vaccination single filter option dose number not blank' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_1, dose_number: '1')
+    create(:vaccine, patient: patient_1, dose_number: '2')
+    patient_2 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_2, dose_number: '1')
+    patient_3 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_3, dose_number: '')
+    patient_4 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_4, dose_number: 'Unknown')
+    patient_5 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_5, dose_number: '1')
+    create(:vaccine, patient: patient_5, dose_number: nil)
+    patient_6 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_6, dose_number: '1')
+    create(:vaccine, patient: patient_6, dose_number: '1')
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    filters = [{ filterOption: {}, value: [{ name: 'dose-number', value: '1' }] }]
+    filters[0][:filterOption]['name'] = 'vaccination'
+    tz_offset = 300
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_5, patient_6]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter vaccination single filter option muliple values' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_1, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '1')
+    create(:vaccine, patient: patient_1, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '2')
+    patient_2 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_2, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: 'Unknown')
+    patient_3 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_3, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: nil)
+    patient_4 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_4, product_name: 'Janssen (J&J) COVID-19 Vaccine', dose_number: '1')
+    patient_5 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_5, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '1')
+    create(:vaccine, patient: patient_5, product_name: 'Janssen (J&J) COVID-19 Vaccine', dose_number: '1')
+    create(:vaccine, patient: patient_5, product_name: 'Unknown', dose_number: 'Unknown')
+    create(:vaccine, patient: patient_5, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '2')
+    patient_6 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_6, product_name: 'Moderna COVID-19 Vaccine', dose_number: '1')
+    create(:vaccine, patient: patient_6, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '2')
+    patient_7 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_7, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '1')
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    filters = [{ filterOption: {}, value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine' }, { name: 'dose-number', value: '1' }] }]
+    filters[0][:filterOption]['name'] = 'vaccination'
+    tz_offset = 300
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_5, patient_7]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter vaccination single filter option all values' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_1, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
+    create(:vaccine, patient: patient_1, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 4, 11), dose_number: '2')
+    patient_2 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_2, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: 'Unknown')
+    patient_3 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_3, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 25), dose_number: '1')
+    patient_4 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_4, group_name: 'COVID-19', product_name: 'Janssen (J&J) COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
+    patient_5 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Janssen (J&J) COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 24),
+                     dose_number: 'Unknown')
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 4, 13), dose_number: '2')
+    patient_6 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_6, group_name: 'COVID-19', product_name: 'Moderna COVID-19 Vaccine', administration_date: DateTime.new(2021, 3, 24),
+                     dose_number: '1')
+    create(:vaccine, patient: patient_6, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 4, 11), dose_number: '2')
+    patient_7 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    filters = [{ filterOption: {},
+                 value: [{ name: 'vaccine-group', value: 'COVID-19' }, { name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine' },
+                         { name: 'administration-date', value: { when: 'before', date: '2021-03-25' } },
+                         { name: 'dose-number', value: '1' }] }]
+    filters[0][:filterOption]['name'] = 'vaccination'
+    tz_offset = 300
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_5, patient_7]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter vaccination multiple filter options some values' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_1, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '1')
+    create(:vaccine, patient: patient_1, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '2')
+    patient_2 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_2, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: 'Unknown')
+    patient_3 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_3, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: nil)
+    patient_4 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_4, product_name: 'Janssen (J&J) COVID-19 Vaccine', dose_number: '1')
+    patient_5 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_5, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '1')
+    create(:vaccine, patient: patient_5, product_name: 'Janssen (J&J) COVID-19 Vaccine', dose_number: '1')
+    create(:vaccine, patient: patient_5, product_name: 'Unknown', dose_number: 'Unknown')
+    create(:vaccine, patient: patient_5, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '2')
+    patient_6 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_6, product_name: 'Moderna COVID-19 Vaccine', dose_number: '1')
+    create(:vaccine, patient: patient_6, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '2')
+    patient_7 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_7, product_name: 'Pfizer-BioNTech COVID-19 Vaccine', dose_number: '1')
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    filter_option_1 = { filterOption: {}, value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine' }, { name: 'dose-number', value: '1' }] }
+    filter_option_2 = { filterOption: {}, value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine' }, { name: 'dose-number', value: '2' }] }
+    filter_option_1[:filterOption]['name'] = 'vaccination'
+    filter_option_2[:filterOption]['name'] = 'vaccination'
+    filters = [filter_option_1, filter_option_2]
+    tz_offset = 300
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_5]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter vaccination multiple filter options all values' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_1, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
+    create(:vaccine, patient: patient_1, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 4, 11), dose_number: '2')
+    patient_2 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_2, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
+    patient_3 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_3, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 26),
+                     dose_number: 'Unknown')
+    patient_4 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_4, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
+    create(:vaccine, patient: patient_4, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 26), dose_number: nil)
+    patient_5 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 25), dose_number: '1')
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 4, 18), dose_number: '2')
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: 'Unknown')
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: nil)
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Moderna COVID-19 Vaccine', administration_date: DateTime.new(2021, 3, 25),
+                     dose_number: '1')
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 26), dose_number: nil)
+    patient_6 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_6, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
+    create(:vaccine, patient: patient_6, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 26), dose_number: nil)
+    create(:vaccine, patient: patient_6, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 25), dose_number: nil)
+    create(:vaccine, patient: patient_6, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 5), dose_number: nil)
+    create(:vaccine, patient: patient_6, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 26), dose_number: '2')
+    patient_7 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 25), dose_number: '1')
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 4, 18), dose_number: '2')
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: 'Unknown')
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: nil)
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Moderna COVID-19 Vaccine', administration_date: DateTime.new(2021, 3, 25),
+                     dose_number: '1')
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine',
+                     administration_date: DateTime.new(2021, 3, 26), dose_number: nil)
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 25), dose_number: nil)
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 5), dose_number: nil)
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 26), dose_number: '2')
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 26), dose_number: '')
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    filter_option_1 = { filterOption: {},
+                        value: [{ name: 'vaccine-group', value: 'COVID-19' }, { name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine' },
+                                { name: 'administration-date', value: { when: 'before', date: '2021-03-25' } },
+                                { name: 'dose-number', value: '1' }] }
+    filter_option_2 = { filterOption: {},
+                        value: [{ name: 'vaccine-group', value: 'COVID-19' }, { name: 'product-name', value: 'Unknown' },
+                                { name: 'administration-date', value: { when: 'after', date: '2021-03-25' } },
+                                { name: 'dose-number', value: '' }] }
+    filter_option_1[:filterOption]['name'] = 'vaccination'
+    filter_option_2[:filterOption]['name'] = 'vaccination'
+    filters = [filter_option_1, filter_option_2]
+    tz_offset = 300
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_4, patient_7]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 end
