@@ -793,6 +793,25 @@ class Patient < ApplicationRecord
     order(Arel.sql(asc ? order_by : order_by_rev))
   end
 
+  # Order individuals based if they are or are not flagged for follow-up
+  def self.order_by_follow_up_flag(asc: true)
+    order_by = <<~SQL
+      CASE
+      WHEN follow_up_reason IS NOT NULL THEN 0
+      WHEN follow_up_reason IS NULL THEN 1
+      END
+    SQL
+
+    order_by_rev = <<~SQL
+      CASE
+      WHEN follow_up_reason IS NOT NULL THEN 1
+      WHEN follow_up_reason IS NULL THEN 0
+      END
+    SQL
+
+    order(Arel.sql(asc ? order_by : order_by_rev))
+  end
+
   # Check for potential duplicate records. Duplicate criteria is as follows:
   # - matching values of first name and last name. Optionally sex and DoB can also match for more detailed messaging
   # e.g. Jon Smith M null would be a duplicate of Jon Smith M 1/1/2000

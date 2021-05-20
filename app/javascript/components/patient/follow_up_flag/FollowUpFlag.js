@@ -4,8 +4,8 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import ReactTooltip from 'react-tooltip';
 
-import ApplyToHousehold from './household/actions/ApplyToHousehold';
-import reportError from '../util/ReportError';
+import ApplyToHousehold from '../household/actions/ApplyToHousehold';
+import reportError from '../../util/ReportError';
 
 const MAX_NOTES_LENGTH = 2000;
 

@@ -8,7 +8,7 @@ import AssignedUserFilter from '../../components/public_health/query/AssignedUse
 import AdvancedFilter from '../../components/public_health/query/AdvancedFilter';
 import CustomTable from '../../components/layout/CustomTable';
 import CloseRecords from '../../components/public_health/actions/CloseRecords';
-import FollowUpFlag from '../../components/patient/FollowUpFlag';
+import FollowUpFlag from '../../components/patient/follow_up_flag/FollowUpFlag';
 import UpdateCaseStatus from '../../components/public_health/actions/UpdateCaseStatus';
 import UpdateAssignedUser from '../../components/public_health/actions/UpdateAssignedUser';
 import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction';

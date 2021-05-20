@@ -183,7 +183,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     when 'name'
       patients = patients.order(last_name: dir, first_name: dir, id: dir)
     when 'flagged_for_follow_up'
-      patients = patients.order(Arel.sql('CASE WHEN follow_up_reason IS NULL THEN 1 ELSE 0 END, follow_up_reason ' + dir), id: dir)
+      patients = patients.order_by_follow_up_flag(asc: dir == 'asc').order(id: dir)
     when 'jurisdiction'
       patients = patients.includes(:jurisdiction).order('jurisdictions.name ' + dir, id: dir)
     when 'transferred_from'

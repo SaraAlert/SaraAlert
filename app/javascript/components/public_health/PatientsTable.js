@@ -27,7 +27,7 @@ import _ from 'lodash';
 
 import AdvancedFilter from './query/AdvancedFilter';
 import BadgeHoH from '../patient/household/utils/BadgeHoH';
-import FollowUpFlag from '../patient/FollowUpFlag';
+import FollowUpFlag from '../patient/follow_up_flag/FollowUpFlag';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import UpdateAssignedUser from './actions/UpdateAssignedUser';
@@ -527,19 +527,12 @@ class PatientsTable extends React.Component {
       <React.Fragment>
         {flaggedForFollowUp.follow_up_reason && (
           <React.Fragment>
-            <span key={`flagged-icon-${rowData.id}`} data-for={`flagged${rowData.id}`} data-tip="">
+            <span key={`flagged-icon-${rowData.id}`} data-for={`flagged-${rowData.id}`} data-tip="">
               <div className="text-center ml-0">
                 <i className="fa-fw fas fa-flag"></i>
               </div>
             </span>
-            <ReactTooltip
-              key={`flagged-tooltip${rowData.id}`}
-              id={`flagged${rowData.id}`}
-              multiline={true}
-              place="right"
-              type="dark"
-              effect="solid"
-              className="tooltip-container">
+            <ReactTooltip key={`flagged-tooltip-${rowData.id}`} id={`flagged-${rowData.id}`} multiline={true} place="right" type="dark" effect="solid">
               <div>
                 Monitoree is flagged for follow-up.
                 <br />

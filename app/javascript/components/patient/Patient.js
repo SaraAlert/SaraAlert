@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Col, Collapse, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Collapse, Form, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
@@ -9,7 +9,7 @@ import BadgeHoH from './household/utils/BadgeHoH';
 import InfoTooltip from '../util/InfoTooltip';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
 import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
-import FollowUpFlag from './FollowUpFlag';
+import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -142,63 +142,15 @@ class Patient extends React.Component {
               </span>
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
-            {this.props.can_modify_subject_status && (
-              <React.Fragment>
-                {!this.props?.details?.follow_up_reason && (
-                  <Button
-                    id="set-follow-up-flag-link"
-                    variant="link"
-                    className="p-0"
-                    aria-label="Set Flag for Follow-up"
-                    onClick={() => this.setState({ action: 'Flag for Follow-Up' })}>
-                    <span>
-                      {' '}
-                      <i className="fas fa-flag"></i> Flag for Follow-up
-                    </span>
-                  </Button>
-                )}
-                {this.props?.details?.follow_up_reason && (
-                  <React.Fragment>
-                    <div className="follow-up-flag-box">
-                      <i className="fas fa-flag"></i>
-                      <span className="pl-2">
-                        <b>Flagged for Follow-up</b>
-                        <div className="edit-link">
-                          <Button
-                            id="edit-follow-up-flag-link"
-                            variant="link"
-                            className="py-0"
-                            onClick={() => this.setState({ action: 'Flag for Follow-Up' })}
-                            aria-label="Edit Flag for Follow-up">
-                            <span className="pl-2">Edit Flag</span>
-                          </Button>
-                        </div>
-                      </span>
-                      <div className="flag-note">
-                        <b>{this.props.details.follow_up_reason}</b>
-                        {this.props.details.follow_up_note && this.props.details.follow_up_note.length < 150 && (
-                          <span className="wrap-words">{' - ' + this.props.details.follow_up_note}</span>
-                        )}
-                        {this.props.details.follow_up_note && this.props.details.follow_up_note.length >= 150 && (
-                          <React.Fragment>
-                            <span className="wrap-words">
-                              {this.state.expandFollowUpNotes
-                                ? ' - ' + this.props.details.follow_up_note
-                                : ' - ' + this.props.details.follow_up_note.slice(0, 150) + ' ...'}
-                            </span>
-                            <Button
-                              variant="link"
-                              className="notes-button p-0"
-                              onClick={() => this.setState({ expandFollowUpNotes: !this.state.expandFollowUpNotes })}>
-                              {this.state.expandFollowUpNotes ? '(Collapse)' : '(View all)'}
-                            </Button>
-                          </React.Fragment>
-                        )}
-                      </div>
-                    </div>
-                  </React.Fragment>
-                )}
-              </React.Fragment>
+            {this.props.can_modify_subject_status && !this.props.edit_mode && (
+              <FollowUpFlagPanel
+                patient={this.props.details}
+                current_user={this.props.current_user}
+                jurisdiction_paths={this.props.jurisdiction_paths}
+                authenticity_token={this.props.authenticity_token}
+                other_household_members={this.props.other_household_members}
+                bulk_action={false}
+              />
             )}
           </Col>
           <Col sm={12}>
@@ -724,24 +676,6 @@ class Patient extends React.Component {
             </Row>
           </div>
         </Collapse>
-        {this.props.can_modify_subject_status && (
-          <Modal id="follow-up-flag-modal" size="lg" centered show={this.state.action !== undefined} onHide={() => this.setState({ action: undefined })}>
-            <Modal.Header closeButton>
-              <Modal.Title>{this.state.action}</Modal.Title>
-            </Modal.Header>
-            {this.state.action === 'Flag for Follow-Up' && (
-              <FollowUpFlag
-                patient={this.props.details}
-                current_user={this.props.current_user}
-                jurisdiction_paths={this.props.jurisdiction_paths}
-                authenticity_token={this.props.authenticity_token}
-                other_household_members={this.props.other_household_members}
-                close={() => this.setState({ action: undefined })}
-                bulk_action={false}
-              />
-            )}
-          </Modal>
-        )}
       </React.Fragment>
     );
   }

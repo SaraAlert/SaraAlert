@@ -69,7 +69,6 @@ class Review extends React.Component {
               edit_mode={true}
               jurisdiction_paths={this.props.jurisdiction_paths}
               details={{ ...this.props.currentState.patient, blocked_sms: this.props.currentState.blocked_sms } || {}}
-              can_modify_subject_status={false}
               authenticity_token={this.props.authenticity_token}
             />
             <div className="pb-4"></div>

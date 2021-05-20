@@ -1,15 +1,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import ReactTooltip from 'react-tooltip';
-import FollowUpFlag from '../../components/patient/FollowUpFlag';
-import ApplyToHousehold from '../../components/patient/household/actions/ApplyToHousehold';
-import { mockUser1 } from '../mocks/mockUsers';
-import { mockPatient1, mockPatient3, mockPatient5} from '../mocks/mockPatients';
-import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
+import FollowUpFlag from '../../../components/patient/follow_up_flag/FollowUpFlag';
+import ApplyToHousehold from '../../../components/patient/household/actions/ApplyToHousehold';
+import { mockUser1 } from '../../mocks/mockUsers';
+import { mockPatient1, mockPatient3, mockPatient5 } from '../../mocks/mockPatients';
+import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 const followUpFlagOptions = [ '', 'Deceased', 'Duplicate', 'High-Risk', 'Hospitalized', 'In Need of Follow-up', 'Lost to Follow-up', 'Needs Interpretation', 'Quality Assurance', 'Other' ];
-
 
 function getWrapperIndividual(patient, householdMembers) {
   return shallow(<FollowUpFlag bulk_action={false} current_user={mockUser1} patient={patient} patients={[]} other_household_members={householdMembers}
@@ -20,7 +19,6 @@ function getWrapperBulkAction(patients) {
   return shallow(<FollowUpFlag bulk_action={true} current_user={mockUser1} patients={patients} other_household_members={[]} jurisdiction_path="USA, State 1, County 2"
     jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} />);
 }
-
 
 describe('FollowUpFlag', () => {
   it('Properly renders all main components when not a bulk action', () => {
