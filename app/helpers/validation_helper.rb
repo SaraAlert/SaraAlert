@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+include Orchestration::Orchestrator
+
 # ValidationHelper: Helper constants and methods for validation.
 module ValidationHelper # rubocop:todo Metrics/ModuleLength
   SEX_ABBREVIATIONS = {
@@ -73,22 +75,24 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
 
   VALID_STATES = STATE_ABBREVIATIONS.values
 
+  ISOLATION_AVAILABLE = isolation_available?(default_playbook).freeze
+
   USER_SELECTABLE_MONITORING_REASONS = [
-    'Completed Monitoring',
-    'Meets criteria to shorten quarantine',
-    'Does not meet criteria for monitoring',
-    'Meets Case Definition',
-    'Lost to follow-up during monitoring period',
-    'Lost to follow-up (contact never established)',
-    'Transferred to another jurisdiction',
-    'Person Under Investigation (PUI)',
-    'Case confirmed',
-    'Past monitoring period',
-    'Meets criteria to discontinue isolation',
-    'Fully Vaccinated',
-    'Deceased',
-    'Duplicate',
-    'Other'
+    *['Completed Monitoring',
+      'Meets criteria to shorten quarantine',
+      'Does not meet criteria for monitoring',
+      'Meets Case Definition',
+      'Lost to follow-up during monitoring period',
+      'Lost to follow-up (contact never established)',
+      'Transferred to another jurisdiction',
+      'Person Under Investigation (PUI)',
+      'Case confirmed',
+      'Past monitoring period'],
+    *(['Meets criteria to discontinue isolation'] if ISOLATION_AVAILABLE),
+    *['Fully Vaccinated',
+      'Deceased',
+      'Duplicate',
+      'Other']
   ].freeze
 
   # Please note, this array is only used for the demo.rake file.

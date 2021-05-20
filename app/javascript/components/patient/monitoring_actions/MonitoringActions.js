@@ -29,6 +29,7 @@ class MonitoringActions extends React.Component {
                 current_user={this.props.current_user}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 workflow={this.props.workflow}
+                continuous_exposure_enabled={this.props.continuous_exposure_enabled}
               />
             </Form.Group>
             <Form.Group as={Col} md="12" lg="8" className="pt-2">
@@ -39,6 +40,7 @@ class MonitoringActions extends React.Component {
                 current_user={this.props.current_user}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 workflow={this.props.workflow}
+                continuous_exposure_enabled={this.props.continuous_exposure_enabled}
               />
             </Form.Group>
             <Form.Group as={Col} md="12" lg="8" className="pt-2">
@@ -49,6 +51,7 @@ class MonitoringActions extends React.Component {
                 current_user={this.props.current_user}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 workflow={this.props.workflow}
+                continuous_exposure_enabled={this.props.continuous_exposure_enabled}
               />
             </Form.Group>
             <Form.Group as={Col} md="12" lg="8" className="pt-2">
@@ -60,6 +63,8 @@ class MonitoringActions extends React.Component {
                 current_user={this.props.current_user}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 workflow={this.props.workflow}
+                continuous_exposure_enabled={this.props.continuous_exposure_enabled}
+                available_workflows={this.props.available_workflows}
               />
             </Form.Group>
             <Form.Group as={Col} md="12" lg="8" className="pt-2">
@@ -70,6 +75,7 @@ class MonitoringActions extends React.Component {
                 current_user={this.props.current_user}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 workflow={this.props.workflow}
+                continuous_exposure_enabled={this.props.continuous_exposure_enabled}
               />
             </Form.Group>
             <Form.Group as={Col} md="12" lg="8" className="pt-2">
@@ -81,6 +87,7 @@ class MonitoringActions extends React.Component {
                 current_user={this.props.current_user}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 workflow={this.props.workflow}
+                continuous_exposure_enabled={this.props.continuous_exposure_enabled}
               />
             </Form.Group>
             <Form.Group as={Col} lg="24" className="pt-2">
@@ -91,6 +98,7 @@ class MonitoringActions extends React.Component {
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 current_user={this.props.current_user}
                 workflow={this.props.workflow}
+                continuous_exposure_enabled={this.props.continuous_exposure_enabled}
               />
             </Form.Group>
           </Form.Row>
@@ -110,6 +118,8 @@ MonitoringActions.propTypes = {
   household_members: PropTypes.array,
   monitoring_reasons: PropTypes.array,
   workflow: PropTypes.string,
+  continuous_exposure_enabled: PropTypes.bool,
+  available_workflows: PropTypes.array,
 };
 
 export default MonitoringActions;

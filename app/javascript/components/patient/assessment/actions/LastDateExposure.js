@@ -111,6 +111,7 @@ class LastDateExposure extends React.Component {
               handleApplyHouseholdChange={this.handleApplyHouseholdChange}
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
               workflow={this.props.workflow}
+              continuous_exposure_enabled={this.props.continuous_exposure_enabled}
             />
           )}
           {!!this.props.patient.continuous_exposure && !this.state.continuous_exposure && (
@@ -163,9 +164,13 @@ class LastDateExposure extends React.Component {
             'Last Date of Exposure',
             `Are you sure you want to ${this.state.last_date_of_exposure ? 'modify' : 'clear'} the Last Date of Exposure${
               this.state.last_date_of_exposure ? ` to ${moment(this.state.last_date_of_exposure).format('MM/DD/YYYY')}` : ''
-            }? The Last Date of Exposure will be updated ${this.state.last_date_of_exposure ? '' : 'to blank '}${
-              this.props.patient.monitoring ? `and Continuous Exposure will be turned ${this.state.last_date_of_exposure ? 'OFF' : 'ON'}` : ''
-            } for the selected record${this.props.household_members.length > 1 ? '(s):' : '.'}`,
+            }? ${this.props.continuous_exposure_enabled ?
+                `The Last Date of Exposure will be updated ${this.state.last_date_of_exposure ? '' : 'to blank '} ${
+                 this.props.patient.monitoring ?
+                    `and Continuous Exposure will be turned ${this.state.last_date_of_exposure ? 'OFF' : 'ON'}` : ''
+                      } for the selected record${this.props.household_members.length > 1 ? '(s):' : '.'
+                } ` : ''
+               }`,
             this.closeModal,
             this.submit
           )}
@@ -196,6 +201,8 @@ class LastDateExposure extends React.Component {
             ariaLabel="Last Date of Exposure Input"
             isClearable
           />
+          { this.props.continuous_exposure_enabled && (
+          <div>
           <OverlayTrigger
             key="tooltip-ot-ce"
             placement="left"
@@ -217,8 +224,10 @@ class LastDateExposure extends React.Component {
               />
             </span>
           </OverlayTrigger>
-          <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
-        </Form.Group>
+            <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
+          </div>
+          )}
+          </Form.Group>
       </React.Fragment>
     );
   }
@@ -231,6 +240,7 @@ LastDateExposure.propTypes = {
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   workflow: PropTypes.string,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default LastDateExposure;

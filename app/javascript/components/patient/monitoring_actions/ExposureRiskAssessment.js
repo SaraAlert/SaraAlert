@@ -99,6 +99,7 @@ class ExposureRiskAssessment extends React.Component {
               current_user={this.props.current_user}
               jurisdiction_paths={this.props.jurisdiction_paths}
               workflow={this.props.workflow}
+              continuous_exposure_enabled={this.props.continuous_exposure_enabled}
             />
           )}
           <Form.Group>
@@ -164,6 +165,7 @@ ExposureRiskAssessment.propTypes = {
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   workflow: PropTypes.string,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default ExposureRiskAssessment;

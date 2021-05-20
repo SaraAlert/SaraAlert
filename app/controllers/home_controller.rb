@@ -8,7 +8,7 @@ class HomeController < ApplicationController
     if current_user.enroller?
       redirect_to patients_url
     elsif current_user.public_health? || current_user.public_health_enroller? || current_user.contact_tracer? || current_user.super_user?
-      redirect_to public_health_url
+      redirect_to dashboard_url
     elsif current_user.analyst?
       redirect_to analytics_url
     elsif current_user.admin?

@@ -17,6 +17,7 @@ class HeadOfHousehold extends React.Component {
             jurisdiction_paths={this.props.jurisdiction_paths}
             isSelectable={false}
             workflow={this.props.workflow}
+            continuous_exposure_enabled={this.props.continuous_exposure_enabled}
           />
         </Row>
         <Row>
@@ -36,6 +37,7 @@ HeadOfHousehold.propTypes = {
   jurisdiction_paths: PropTypes.object,
   authenticity_token: PropTypes.string,
   workflow: PropTypes.string,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default HeadOfHousehold;

@@ -108,6 +108,7 @@ class AssignedUser extends React.Component {
               handleApplyHouseholdChange={this.handleApplyHouseholdChange}
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
               workflow={this.props.workflow}
+              continuous_exposure_enabled={this.props.continuous_exposure_enabled}
             />
           )}
           <Form.Group>
@@ -189,6 +190,7 @@ AssignedUser.propTypes = {
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   workflow: PropTypes.string,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default AssignedUser;

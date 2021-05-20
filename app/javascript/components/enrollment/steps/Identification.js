@@ -12,10 +12,7 @@ import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
 import { getLanguageData } from '../../../utils/Languages';
 
-const WORKFLOW_OPTIONS = [
-  { label: 'Exposure (contact)', value: 'exposure' },
-  { label: 'Isolation (case)', value: 'isolation' },
-];
+let workflow_options;
 
 class Identification extends React.Component {
   constructor(props) {
@@ -29,6 +26,7 @@ class Identification extends React.Component {
       secondaryLanguageData: {},
       languageOptions: [], // store these on state so the component re-renders when they are returned asynchronously
     };
+    workflow_options = props.available_workflows.map(wf => ({ value: wf.name, label: wf.label }));
   }
 
   componentDidMount() {
@@ -142,8 +140,9 @@ class Identification extends React.Component {
       }
     );
   };
-
-  getWorkflowValue = () => (this.state.current.isolation ? WORKFLOW_OPTIONS[1] : WORKFLOW_OPTIONS[0]);
+  // TODO: At the current moment, it is assumed that at least one of `isolation` and `exposure` will be an available workflow option.
+  getWorkflowValue = () =>
+    this.state.current.isolation ? workflow_options.find(wf => wf.value === 'isolation') : workflow_options.find(wf => wf.value === 'exposure');
 
   handleDOBChange = date => {
     const date_of_birth = date;
@@ -307,7 +306,7 @@ class Identification extends React.Component {
                     inputId="workflow-select"
                     styles={cursorPointerStyle}
                     value={this.getWorkflowValue()}
-                    options={WORKFLOW_OPTIONS}
+                    options={workflow_options}
                     onChange={e => this.handleWorkflowChange(e)}
                     placeholder=""
                     theme={theme => ({
@@ -641,6 +640,7 @@ Identification.propTypes = {
   next: PropTypes.func,
   setEnrollmentState: PropTypes.func,
   authenticity_token: PropTypes.string,
+  available_workflows: PropTypes.array,
 };
 
 export default Identification;

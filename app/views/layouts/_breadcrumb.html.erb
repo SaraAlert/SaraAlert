@@ -1,1 +1,1 @@
-<%= react_component('layout/Breadcrumb', { crumbs: crumbs || [], jurisdiction: jurisdiction_path.join(', '), enroller: current_user.role?(Roles::ENROLLER) }) %>
+<%= react_component('layout/Breadcrumb', { playbook: (defined?(playbook) ? playbook : ''), crumbs: crumbs || [], jurisdiction: jurisdiction_path.join(', '), enroller: current_user.role?(Roles::ENROLLER) }) %>

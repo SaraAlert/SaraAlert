@@ -35,6 +35,9 @@ class Workflow extends React.Component {
           query={this.state.query}
           current_monitorees_count={this.state.current_monitorees_count}
           custom_export_options={this.props.custom_export_options}
+          available_workflows={this.props.available_workflows}
+          available_line_lists={this.props.available_line_lists}
+          playbook={this.props.playbook}
         />
         <PatientsTable
           authenticity_token={this.props.authenticity_token}
@@ -46,6 +49,7 @@ class Workflow extends React.Component {
           monitoring_reasons={this.props.monitoring_reasons}
           setQuery={query => this.setState({ query })}
           setFilteredMonitoreesCount={current_monitorees_count => this.setState({ current_monitorees_count })}
+          available_workflows={this.props.available_workflows}
         />
       </React.Fragment>
     );
@@ -61,6 +65,9 @@ Workflow.propTypes = {
   default_tab: PropTypes.string,
   custom_export_options: PropTypes.object,
   monitoring_reasons: PropTypes.array,
+  available_workflows: PropTypes.array,
+  available_line_lists: PropTypes.object,
+  playbook: PropTypes.string,
 };
 
 export default Workflow;

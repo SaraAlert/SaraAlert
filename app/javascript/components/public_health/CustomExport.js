@@ -29,7 +29,7 @@ class CustomExport extends React.Component {
       custom_patient_query: props.preset?.config?.data?.patients?.query
         ? _.clone(props.preset.config.data.patients.query)
         : {
-            workflow: 'global',
+            workflow: props.available_workflows.length > 1 ? 'global' : props.available_workflows[0].name,
             tab: 'all',
             jurisdiction: props.jurisdiction.id,
             scope: 'all',
@@ -334,6 +334,8 @@ class CustomExport extends React.Component {
                       authenticity_token={this.props.authenticity_token}
                       jurisdiction_paths={this.props.jurisdiction_paths}
                       jurisdiction={this.props.jurisdiction}
+                      available_workflows={this.props.available_workflows}
+                      available_line_lists={this.props.available_line_lists}
                       query={this.state.custom_patient_query}
                       onQueryChange={(field, value, cb) =>
                         this.setState(
@@ -578,6 +580,8 @@ CustomExport.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   jurisdiction: PropTypes.object,
+  available_workflows: PropTypes.array,
+  available_line_lists: PropTypes.object,
   tabs: PropTypes.object,
   preset: PropTypes.object,
   presets: PropTypes.array,

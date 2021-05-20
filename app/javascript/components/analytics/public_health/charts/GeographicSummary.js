@@ -12,11 +12,13 @@ import { stateOptions } from '../../../../data/stateOptions';
 import CountyLevelMaps from '../maps/CountyLevelMaps';
 
 const TERRITORY_GEOJSON_FILE = 'usaTerritories.json';
+let WORKFLOWS;
 
 class GeographicSummary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { loading: true };
+    WORKFLOWS = this.props.available_workflows.map(wf => wf.label);
   }
 
   componentDidMount() {
@@ -316,33 +318,37 @@ class GeographicSummary extends React.Component {
           <div className="map-panel-mount-point">
             {this.renderSpinner()}
             <Row>
-              <Col md="12" className="pr-0">
-                <div className="map-title text-center">Active Records in Exposure Workflow</div>
-                <CountyLevelMaps
-                  id={1} // Some code requires a specific id (e.g. which div to mount the chart on)
-                  style={{ borderRight: '1px solid #dcdcdc' }}
-                  jurisdictionToShow={this.state.jurisdictionToShow}
-                  jurisdictionData={this.state.exposureMapData}
-                  mapObject={this.state.mapObject}
-                  handleJurisdictionChange={this.handleJurisdictionChange}
-                  decrementSpinnerCount={this.decrementSpinnerCount}
-                  jurisdictionsNotInUse={this.state.jurisdictionsNotInUse}
-                  jurisdictionsPermittedToView={this.state.jurisdictionsPermittedToView}
-                />
-              </Col>
-              <Col md="12" className="pl-0">
-                <div className="map-title text-center">Active Records in Isolation Workflow</div>
-                <CountyLevelMaps
-                  id={2}
-                  jurisdictionToShow={this.state.jurisdictionToShow}
-                  jurisdictionData={this.state.isolationMapData}
-                  mapObject={this.state.mapObject}
-                  handleJurisdictionChange={this.handleJurisdictionChange}
-                  decrementSpinnerCount={this.decrementSpinnerCount}
-                  jurisdictionsNotInUse={this.state.jurisdictionsNotInUse}
-                  jurisdictionsPermittedToView={this.state.jurisdictionsPermittedToView}
-                />
-              </Col>
+              {WORKFLOWS.includes('Exposure') && (
+                <Col className="pr-0">
+                  <div className="map-title text-center">Active Records in Exposure Workflow</div>
+                  <CountyLevelMaps
+                    id={1} // Some code requires a specific id (e.g. which div to mount the chart on)
+                    style={{ borderRight: '1px solid #dcdcdc' }}
+                    jurisdictionToShow={this.state.jurisdictionToShow}
+                    jurisdictionData={this.state.exposureMapData}
+                    mapObject={this.state.mapObject}
+                    handleJurisdictionChange={this.handleJurisdictionChange}
+                    decrementSpinnerCount={this.decrementSpinnerCount}
+                    jurisdictionsNotInUse={this.state.jurisdictionsNotInUse}
+                    jurisdictionsPermittedToView={this.state.jurisdictionsPermittedToView}
+                  />
+                </Col>
+              )}
+              {WORKFLOWS.includes('Isolation') && (
+                <Col className="pl-0">
+                  <div className="map-title text-center">Active Records in Isolation Workflow</div>
+                  <CountyLevelMaps
+                    id={2}
+                    jurisdictionToShow={this.state.jurisdictionToShow}
+                    jurisdictionData={this.state.isolationMapData}
+                    mapObject={this.state.mapObject}
+                    handleJurisdictionChange={this.handleJurisdictionChange}
+                    decrementSpinnerCount={this.decrementSpinnerCount}
+                    jurisdictionsNotInUse={this.state.jurisdictionsNotInUse}
+                    jurisdictionsPermittedToView={this.state.jurisdictionsPermittedToView}
+                  />
+                </Col>
+              )}
             </Row>
           </div>
           <Row className="mx-0 map-panel-controls">
@@ -405,6 +411,7 @@ class GeographicSummary extends React.Component {
 
 GeographicSummary.propTypes = {
   stats: PropTypes.object,
+  available_workflows: PropTypes.array,
 };
 
 export default GeographicSummary;

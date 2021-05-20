@@ -46,6 +46,7 @@ class PatientPage extends React.Component {
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 authenticity_token={this.props.authenticity_token}
                 workflow={this.props.workflow}
+                continuous_exposure_enabled={this.props.continuous_exposure_enabled}
               />
             )}
             {!this.props.patient.head_of_household && this.props?.other_household_members?.length === 0 && (
@@ -73,6 +74,7 @@ PatientPage.propTypes = {
   jurisdiction_paths: PropTypes.object,
   blocked_sms: PropTypes.bool,
   workflow: PropTypes.string,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default PatientPage;

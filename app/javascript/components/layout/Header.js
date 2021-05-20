@@ -15,9 +15,9 @@ class Header extends React.Component {
    * Finds the "activeKey" for the nav bar based on current path.
    */
   getActiveTabKey = () => {
-    // Active tab should still be the tab for the monitoring dashboards when viewing the isolation workflow
-    if (window.location.pathname === `${window.BASE_PATH}/public_health/isolation`) {
-      return `${window.BASE_PATH}/public_health`;
+    // Active tab should still be the tab for the monitoring dashboards regardless of workflow
+    if (window.location.pathname.startsWith(`${window.BASE_PATH}/dashboard`)) {
+      return `${window.BASE_PATH}/dashboard`;
     }
     return window.location.pathname;
   };
@@ -41,8 +41,8 @@ class Header extends React.Component {
                 )}
                 {this.props.current_user?.can_see_monitoring_dashboards_tab && (
                   <Nav.Link
-                    className={`${this.state.activeKey === '/public_health' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3`}
-                    href={`${window.BASE_PATH}/public_health`}>
+                    className={`${this.state.activeKey === '/dashboard' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3`}
+                    href={`${window.BASE_PATH}/dashboard`}>
                     <i className="fas fa-table fa-fw mr-2"></i>Monitoring Dashboards
                   </Nav.Link>
                 )}

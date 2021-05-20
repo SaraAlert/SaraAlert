@@ -2,6 +2,8 @@
 
 # AnalyticsController: for analytics actions
 class AnalyticsController < ApplicationController
+  include Orchestration::Orchestrator
+
   before_action :authenticate_user!
 
   def index
@@ -16,6 +18,11 @@ class AnalyticsController < ApplicationController
     # Stats for public health & analysts (store @can_view_epi_analytics in class variable to prevent duplicate query from view)
     @can_view_epi_analytics = current_user.can_view_epi_analytics?
     @stats = epi_stats if @can_view_epi_analytics
+
+    playbook = default_playbook
+    @workflow_label = default_workflow(playbook)[:label]
+
+    @available_workflows = available_workflows(playbook)
 
     redirect_to(root_url) && return if @stats.nil?
   end

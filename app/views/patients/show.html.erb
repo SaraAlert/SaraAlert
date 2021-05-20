@@ -5,7 +5,8 @@
 <%= render partial: 'layouts/breadcrumb',
            locals: {
              jurisdiction_path: current_user.jurisdiction_path,
-             crumbs: [{ value: dashboard_crumb_title(@dashboard), href: @dashboard_path }, { value: 'Monitoree Details', href: nil }]
+             crumbs: [{ value: dashboard_crumb_title(@dashboard, @playbook), href: @dashboard_path },
+                      { value: 'Monitoree Details', href: nil }]
            } %>
 
 <% if current_user.can_download_monitoree_data? %>
@@ -21,8 +22,9 @@
                       authenticity_token: form_authenticity_token,
                       jurisdiction_paths: @possible_jurisdiction_paths,
                       blocked_sms: @patient.blocked_sms,
-                      workflow: @dashboard
-                    }) %>
+                      workflow: @dashboard,
+                      continuous_exposure_enabled: @continuous_exposure_enabled
+                      }) %>
 
 <% if current_user.can_modify_subject_status? %>
 <div id="monitoring-actions" class="card mx-2 my-4 card-square">
@@ -36,7 +38,9 @@
                         jurisdiction_paths: @possible_jurisdiction_paths,
                         assigned_users: @possible_assigned_users,
                         monitoring_reasons: ValidationHelper::USER_SELECTABLE_MONITORING_REASONS,
-                        workflow: @dashboard
+                        workflow: @dashboard,
+                        continuous_exposure_enabled: @continuous_exposure_enabled,
+                        available_workflows: @available_workflows
                       }) %>
 </div>
 <% end %>
@@ -59,7 +63,8 @@
                         jurisdiction_paths: @possible_jurisdiction_paths,
                         workflow: @dashboard,
                         num_pos_labs: @num_pos_labs,
-                        calculated_symptom_onset: @calculated_symptom_onset
+                        calculated_symptom_onset: @calculated_symptom_onset,
+                        continuous_exposure_enabled: @continuous_exposure_enabled
                       }) %>
 <% end %>
 

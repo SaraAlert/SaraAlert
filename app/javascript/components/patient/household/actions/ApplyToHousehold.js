@@ -67,6 +67,7 @@ ApplyToHousehold.propTypes = {
   handleApplyHouseholdChange: PropTypes.func,
   handleApplyHouseholdIdsChange: PropTypes.func,
   workflow: PropTypes.string,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default ApplyToHousehold;

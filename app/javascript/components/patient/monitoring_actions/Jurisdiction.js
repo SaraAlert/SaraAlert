@@ -125,6 +125,7 @@ class Jurisdiction extends React.Component {
               handleApplyHouseholdChange={this.handleApplyHouseholdChange}
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
               workflow={this.props.workflow}
+              continuous_exposure_enabled={this.props.continuous_exposure_enabled}
             />
           )}
           <Form.Group>
@@ -208,6 +209,7 @@ Jurisdiction.propTypes = {
   current_user: PropTypes.object,
   user_can_transfer: PropTypes.bool,
   workflow: PropTypes.string,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default Jurisdiction;
