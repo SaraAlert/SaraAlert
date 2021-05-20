@@ -77,7 +77,7 @@ class VaccineModal extends React.Component {
     this.setState({ loading: true }, () => {
       this.props.onSave(this.state);
     });
-  }
+  };
 
   render() {
     const defaultGroupNameOption = this.props.group_name_options ? this.props.group_name_options[0] : '';
@@ -222,7 +222,7 @@ class VaccineModal extends React.Component {
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
-          {!this.state.isValid && (
+          {!isValid && (
             <ReactTooltip id="submit-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
               Please select at least a Vaccine Group and a Product Name.
             </ReactTooltip>
