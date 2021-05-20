@@ -21,6 +21,7 @@ function getWrapper(patient) {
 describe('CaseStatus', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper(mockPatient1);
+
     expect(wrapper.find(Form.Label).text().includes('CASE STATUS')).toBeTruthy();
     expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('caseStatus');
@@ -175,6 +176,15 @@ describe('CaseStatus', () => {
     expect(wrapper.state('monitoring')).toBeFalsy();
     expect(wrapper.find(Button).at(1).prop('disabled')).toBeFalsy();
     expect(wrapper.find('p').at(1).text()).toEqual('The case status for the selected record will be updated to Confirmed and moved to the closed line list in the current workflow.');
+    expect(wrapper.find('ModalBody').find('p').at(0).text()).toContain('Please select what you would like to do:');
+    const monitoringReasonOptions = [''].concat(mockMonitoringReasons);
+    wrapper
+      .find('FormGroup')
+      .at(0)
+      .find('option')
+      .forEach((option, index) => {
+        expect(option.text()).toEqual(monitoringReasonOptions[Number(index)]);
+      });
 
     // change monitoring option to Continue Monitoring in Isolation Workflow
     wrapper.find('#monitoring_option').simulate('change', { target: { id: 'monitoring_option', value: 'Continue Monitoring in Isolation Workflow' }, persist: jest.fn() });
