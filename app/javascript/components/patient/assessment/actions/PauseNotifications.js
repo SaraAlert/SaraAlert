@@ -26,7 +26,7 @@ class PauseNotifications extends React.Component {
           diffState: ['pause_notifications'],
         })
         .then(() => {
-          location.reload(true);
+          location.reload();
         })
         .catch(error => {
           reportError(error);

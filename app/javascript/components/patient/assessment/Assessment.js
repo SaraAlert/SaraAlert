@@ -38,7 +38,7 @@ class Assessment extends React.Component {
     })
       .then(() => {
         if (this.props.reload) {
-          location.reload(true);
+          location.reload();
         }
       })
       .catch(error => {
