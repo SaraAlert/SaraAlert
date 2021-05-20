@@ -42,6 +42,8 @@ class DashboardController < ApplicationController
 
     redirect_to ("/dashboard/#{playbook}/" + workflow[:name].to_s)
 
+    @tabs = custom_configuration(playbook, workflow, :dashboard_tabs)
+    @available_workflows = available_workflows(playbook)
   end
 
   def authenticate_user_role
