@@ -12,9 +12,7 @@ const mockMonitoringReasons = [
   'Meets criteria to discontinue isolation',
   'Deceased',
   'Duplicate',
-  'Other'
-]
+  'Other',
+];
 
-export {
-  mockMonitoringReasons,
-}
+export { mockMonitoringReasons };

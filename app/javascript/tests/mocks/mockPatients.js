@@ -1,4 +1,4 @@
-import { mockNote } from './mockNote'
+import { mockNote } from './mockNote';
 
 const blankMockPatient = {
   additional_planned_travel_destination: null,
@@ -140,8 +140,8 @@ const blankMockPatient = {
   user_defined_symptom_onset: null,
   was_in_health_care_facility_with_known_cases: false,
   was_in_health_care_facility_with_known_cases_facility_name: null,
-  white: null
-}
+  white: null,
+};
 
 const mockPatient1 = {
   additional_planned_travel_destination: 'Kokomo',
@@ -857,11 +857,4 @@ const mockPatient5 = {
   white: null,
 };
 
-export {
-  blankMockPatient,
-  mockPatient1,
-  mockPatient2,
-  mockPatient3,
-  mockPatient4,
-  mockPatient5
-};
+export { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 };

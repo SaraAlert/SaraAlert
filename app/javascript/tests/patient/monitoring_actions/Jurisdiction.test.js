@@ -9,11 +9,10 @@ import { mockUser1 } from '../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../mocks/mockPatients';
 
-const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
+const mockToken = 'testMockTokenString12345';
 
 function getWrapper() {
-  return shallow(<Jurisdiction patient={mockPatient1} current_user={mockUser1} household_members={[]}
-    jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} user_can_transfer={true} />);
+  return shallow(<Jurisdiction patient={mockPatient1} current_user={mockUser1} household_members={[]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} user_can_transfer={true} />);
 }
 
 describe('Jurisdiction', () => {
@@ -25,8 +24,13 @@ describe('Jurisdiction', () => {
     expect(wrapper.find('#jurisdiction_id').exists()).toBeTruthy();
     expect(wrapper.find('option').length).toEqual(6);
     for (var key of Object.keys(mockJurisdictionPaths)) {
-      expect(wrapper.find('option').at(key-2).text()).toEqual(mockJurisdictionPaths[key]);
-    };
+      expect(
+        wrapper
+          .find('option')
+          .at(key - 2)
+          .text()
+      ).toEqual(mockJurisdictionPaths[`${key}`]);
+    }
     expect(wrapper.find('#jurisdiction_id').prop('value')).toEqual(mockJurisdictionPaths[mockPatient1.jurisdiction_id]);
     expect(wrapper.find(Button).exists()).toBeTruthy();
     expect(wrapper.find(Button).text().includes('Change Jurisdiction')).toBeTruthy();
@@ -86,9 +90,11 @@ describe('Jurisdiction', () => {
   });
 
   it('Toggling HoH radio buttons hides/shows household members table and updates state', () => {
-    const wrapper = mount(<Jurisdiction patient={mockPatient1} current_user={mockUser1} household_members={[ mockPatient2, mockPatient3, mockPatient4 ]}
-      jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} user_can_transfer={true} />);
-    wrapper.find('#jurisdiction_id').at(1).simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
+    const wrapper = mount(<Jurisdiction patient={mockPatient1} current_user={mockUser1} household_members={[mockPatient2, mockPatient3, mockPatient4]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} user_can_transfer={true} />);
+    wrapper
+      .find('#jurisdiction_id')
+      .at(1)
+      .simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
     wrapper.find(Button).simulate('click');
 
     // initial radio button state
@@ -99,20 +105,25 @@ describe('Jurisdiction', () => {
     expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeFalsy();
 
     // change to apply to all of household
-    wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
+    wrapper
+      .find('#apply_to_household_yes')
+      .at(1)
+      .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     expect(wrapper.find(CustomTable).exists()).toBeTruthy();
     expect(wrapper.state('apply_to_household')).toBeTruthy();
     expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeFalsy();
     expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeTruthy();
 
     // change back to just this monitoree
-    wrapper.find('#apply_to_household_no').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
+    wrapper
+      .find('#apply_to_household_no')
+      .at(1)
+      .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
     expect(wrapper.find(CustomTable).exists()).toBeFalsy();
     expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeTruthy();
     expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeFalsy();
   });
-
 
   it('Adding reasoning updates state', () => {
     const wrapper = getWrapper();
@@ -120,7 +131,10 @@ describe('Jurisdiction', () => {
     wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
     wrapper.find(Button).simulate('click');
     expect(wrapper.find(Modal.Body).find('#reasoning').exists()).toBeTruthy();
-    wrapper.find(Modal.Body).find('#reasoning').simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
+    wrapper
+      .find(Modal.Body)
+      .find('#reasoning')
+      .simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
     expect(handleChangeSpy).toHaveBeenCalled();
     expect(wrapper.state('reasoning')).toEqual('insert reasoning text here');
   });

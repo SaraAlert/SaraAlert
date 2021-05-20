@@ -5,10 +5,10 @@ import ReactTooltip from 'react-tooltip';
 import PauseNotifications from '../../../../components/patient/assessment/actions/PauseNotifications';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../../mocks/mockPatients';
 
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+const mockToken = 'testMockTokenString12345';
 
 function getWrapper(patient) {
-  return shallow(<PauseNotifications patient={patient} authenticity_token={authyToken} />);
+  return shallow(<PauseNotifications patient={patient} authenticity_token={mockToken} />);
 }
 
 describe('PauseNotifications', () => {
@@ -34,12 +34,12 @@ describe('PauseNotifications', () => {
     expect(wrapper.find(Button).text().includes('Pause Notifications')).toBeTruthy();
     expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
     expect(wrapper.find(ReactTooltip)).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Notifications cannot be paused for records on the Closed line list. You may update this field after changing Monitoring Status to "Actively Monitoring"`)
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Notifications cannot be paused for records on the Closed line list. You may update this field after changing Monitoring Status to "Actively Monitoring"`);
   });
 
   it('Clicking the pause notifications button calls handle submit function', () => {
     const wrapper = getWrapper(mockPatient1);
-    const handleSubmitSpy = jest.spyOn(wrapper.instance(), "handleSubmit");
+    const handleSubmitSpy = jest.spyOn(wrapper.instance(), 'handleSubmit');
     expect(handleSubmitSpy).toHaveBeenCalledTimes(0);
     wrapper.find(Button).simulate('click');
     expect(handleSubmitSpy).toHaveBeenCalledTimes(1);
@@ -56,7 +56,7 @@ describe('PauseNotifications', () => {
 
   it('Disables the resume notifications button and renders tooltip if HH dependent', () => {
     let newPatient = mockPatient4;
-    newPatient.responder_id = mockPatient4.id+1;
+    newPatient.responder_id = mockPatient4.id + 1;
     const wrapper = getWrapper(newPatient);
     expect(wrapper.find(Button).text().includes('Resume Notifications')).toBeTruthy();
     expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
@@ -71,12 +71,12 @@ describe('PauseNotifications', () => {
     expect(wrapper.find(Button).text().includes('Resume Notifications')).toBeTruthy();
     expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
     expect(wrapper.find(ReactTooltip)).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Notifications cannot be resumed for records on the Closed line list. You may update this field after changing Monitoring Status to "Actively Monitoring"`)
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Notifications cannot be resumed for records on the Closed line list. You may update this field after changing Monitoring Status to "Actively Monitoring"`);
   });
 
   it('Clicking the resume notifications button calls handle submit function', () => {
     const wrapper = getWrapper(mockPatient4);
-    const handleSubmitSpy = jest.spyOn(wrapper.instance(), "handleSubmit");
+    const handleSubmitSpy = jest.spyOn(wrapper.instance(), 'handleSubmit');
     expect(handleSubmitSpy).toHaveBeenCalledTimes(0);
     wrapper.find(Button).simulate('click');
     expect(handleSubmitSpy).toHaveBeenCalledTimes(1);

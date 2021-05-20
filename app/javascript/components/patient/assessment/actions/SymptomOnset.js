@@ -77,8 +77,8 @@ class SymptomOnset extends React.Component {
                   <span>This date was set by a user</span>
                 ) : (
                   <span>
-                    This date is auto-populated by the system as the date of the earliest report flagged as symptomatic (red highlight) in the reports
-                    table. Field is blank when there are no symptomatic reports.
+                    This date is auto-populated by the system as the date of the earliest report flagged as symptomatic (red highlight) in the reports table.
+                    Field is blank when there are no symptomatic reports.
                   </span>
                 )}
               </ReactTooltip>
@@ -88,9 +88,7 @@ class SymptomOnset extends React.Component {
             id="symptom_onset"
             date={this.state.symptom_onset}
             minDate={'2020-01-01'}
-            maxDate={moment()
-              .add(30, 'days')
-              .format('YYYY-MM-DD')}
+            maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
             onChange={this.handleDateChange}
             placement="bottom"
             isClearable={this.props.patient.user_defined_symptom_onset}

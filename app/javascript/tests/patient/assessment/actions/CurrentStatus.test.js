@@ -9,8 +9,8 @@ const reportEligibility = {
   eligible: false,
   household: false,
   reported: false,
-  sent: false
-}
+  sent: false,
+};
 
 function getWrapper(status, isolation) {
   return shallow(<CurrentStatus status={status} isolation={isolation} report_eligibility={reportEligibility} />);
@@ -106,7 +106,9 @@ describe('CurrentStatus', () => {
     expect(wrapper.find(Badge).text()).toEqual('requires review (test based)');
     expect(wrapper.find(Badge).prop('variant')).toEqual('danger');
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('Two negative laboratory results have been documented and at least 24 hours have passed since the case last reported “Yes” for fever or use of fever-reducing medicine to the system. The system does not validate the type of test, time between specimen collection, or if the tests were consecutive. Public health will need to validate that the test results meet the latest guidance prior to discontinuing isolation. The system does not collect information on severity of symptoms. Public health will also need to validate if other symptoms have improved.');
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(
+      'Two negative laboratory results have been documented and at least 24 hours have passed since the case last reported “Yes” for fever or use of fever-reducing medicine to the system. The system does not validate the type of test, time between specimen collection, or if the tests were consecutive. Public health will need to validate that the test results meet the latest guidance prior to discontinuing isolation. The system does not collect information on severity of symptoms. Public health will also need to validate if other symptoms have improved.'
+    );
   });
 
   it('Correctly renders isolation non-reporting status', () => {

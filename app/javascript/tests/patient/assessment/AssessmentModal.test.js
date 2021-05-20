@@ -9,18 +9,14 @@ import { mockUser1 } from '../../mocks/mockUsers';
 import { mockTranslations } from '../../mocks/mockTranslations';
 
 const onCloseMock = jest.fn();
-const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
+const mockToken = 'testMockTokenString12345';
 
 function getWrapper(showModal) {
-  return shallow(<AssessmentModal show={showModal} onClose={onCloseMock} current_user={mockUser1} patient={mockPatient1} calculated_age={76}
-    patient_initials={'MM'} assessment={mockAssessment1} symptoms={mockAssessment1.symptoms} threshold_condition_hash={mockAssessment1.threshold_condition_hash}
-    translations={mockTranslations} updateId={13} idPre={'13'} authenticity_token={authyToken} />);
+  return shallow(<AssessmentModal show={showModal} onClose={onCloseMock} current_user={mockUser1} patient={mockPatient1} calculated_age={76} patient_initials={'MM'} assessment={mockAssessment1} symptoms={mockAssessment1.symptoms} threshold_condition_hash={mockAssessment1.threshold_condition_hash} translations={mockTranslations} updateId={13} idPre={'13'} authenticity_token={mockToken} />);
 }
 
 function getMountedWrapper() {
-  return mount(<AssessmentModal show={true} onClose={onCloseMock} current_user={mockUser1} patient={mockPatient1} calculated_age={76}
-    patient_initials={'MM'} report={mockAssessment1} symptoms={mockAssessment1.symptoms} threshold_condition_hash={mockAssessment1.threshold_condition_hash}
-    translations={mockTranslations} updateId={13} idPre={'13'} authenticity_token={authyToken} />);
+  return mount(<AssessmentModal show={true} onClose={onCloseMock} current_user={mockUser1} patient={mockPatient1} calculated_age={76} patient_initials={'MM'} report={mockAssessment1} symptoms={mockAssessment1.symptoms} threshold_condition_hash={mockAssessment1.threshold_condition_hash} translations={mockTranslations} updateId={13} idPre={'13'} authenticity_token={mockToken} />);
 }
 
 describe('AssessmentModal', () => {

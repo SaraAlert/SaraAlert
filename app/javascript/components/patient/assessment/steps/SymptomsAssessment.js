@@ -235,7 +235,7 @@ class SymptomsAssessment extends React.Component {
     return (
       <Card className="mx-0 card-square">
         <Card.Header className="h4">
-          {this.props.translations[this.props.lang]['web']['title']}&nbsp;
+          {this.props.translations[this.props.lang]['web']['title']}{' '}
           {this.props.patient_initials && this.props.patient_age !== null && (
             <span>
               ({this.props.patient_initials}-{this.props.patient_age})

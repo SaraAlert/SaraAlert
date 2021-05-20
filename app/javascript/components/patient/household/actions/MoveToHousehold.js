@@ -281,8 +281,8 @@ class MoveToHousehold extends React.Component {
                   Please select the new monitoree that will respond for <b>{formatNameAlt(this.props.patient)}</b>.
                 </Form.Label>
                 <p>
-                  You may select from the provided existing Head of Households and monitorees who are self reporting.&nbsp;
-                  {formatNameAlt(this.props.patient)} will be immediately moved into the selected monitoree&apos;s household.
+                  You may select from the provided existing Head of Households and monitorees who are self reporting. {formatNameAlt(this.props.patient)} will
+                  be immediately moved into the selected monitoree&apos;s household.
                 </p>
                 <InputGroup size="md">
                   <InputGroup.Prepend>

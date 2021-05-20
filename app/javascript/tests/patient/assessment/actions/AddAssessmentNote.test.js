@@ -5,10 +5,10 @@ import AddAssessmentNote from '../../../../components/patient/assessment/actions
 import { mockPatient1 } from '../../../mocks/mockPatients';
 import { mockAssessment1 } from '../../../mocks/mockAssessments';
 
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+const mockToken = 'testMockTokenString12345';
 
 function getWrapper(patient) {
-    return shallow(<AddAssessmentNote patient={patient} assessment={mockAssessment1} authenticity_token={authyToken} />);
+  return shallow(<AddAssessmentNote patient={patient} assessment={mockAssessment1} authenticity_token={mockToken} />);
 }
 
 describe('AddAssessmentNote', () => {

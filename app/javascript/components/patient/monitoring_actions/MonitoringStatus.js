@@ -177,9 +177,7 @@ class MonitoringStatus extends React.Component {
                           id="apply_to_household_cm_exp_only_date"
                           date={this.state.apply_to_household_cm_exp_only_date}
                           minDate={'2020-01-01'}
-                          maxDate={moment()
-                            .add(30, 'days')
-                            .format('YYYY-MM-DD')}
+                          maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
                           onChange={date => this.setState({ apply_to_household_cm_exp_only_date: date })}
                           placement="bottom"
                           customClass="form-control-lg"

@@ -9,8 +9,7 @@ import { mockTranslations } from '../../../mocks/mockTranslations';
 const submitMock = jest.fn();
 
 function getWrapper(assessment, symptoms, idPre) {
-  return shallow(<SymptomsAssessment assessment={assessment} symptoms={symptoms} patient_initials={'AA'} patient_age={39} lang={'eng'}
-    translations={mockTranslations} submit={submitMock} idPre={idPre} />);
+  return shallow(<SymptomsAssessment assessment={assessment} symptoms={symptoms} patient_initials={'AA'} patient_age={39} lang={'eng'} translations={mockTranslations} submit={submitMock} idPre={idPre} />);
 }
 
 afterEach(() => {
@@ -21,7 +20,7 @@ describe('SymptomsAssessment', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
     expect(wrapper.find(Card.Header).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).text()).toEqual(`${mockTranslations['eng']['web']['title']} (AA-39)`);
+    expect(wrapper.find(Card.Header).text()).toEqual(`${mockTranslations['eng']['web']['title']} (AA-39)`);
     expect(wrapper.find(Card.Body).exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find(Form.Row).at(0).text()).toEqual(mockTranslations['eng']['web']['bool-title']);
     expect(wrapper.find(Card.Body).find(Form.Group).exists()).toBeTruthy();
@@ -46,8 +45,14 @@ describe('SymptomsAssessment', () => {
 
   it('Properly renders checked bool symptoms when editing a report', () => {
     const wrapper = getWrapper(mockAssessment1, mockSymptoms1, '777');
-    const boolSymptoms = mockSymptoms1.filter(x => { return x.type === 'BoolSymptom'; }).sort((a, b) => {return a?.name?.localeCompare(b?.name); });
-    boolSymptoms.forEach(function(symp, index) {
+    const boolSymptoms = mockSymptoms1
+      .filter(x => {
+        return x.type === 'BoolSymptom';
+      })
+      .sort((a, b) => {
+        return a?.name?.localeCompare(b?.name);
+      });
+    boolSymptoms.forEach((symp, index) => {
       expect(wrapper.find(Form.Check).at(index).prop('checked')).toEqual(symp.value);
       expect(wrapper.find(Form.Check).at(index).prop('disabled')).toBeFalsy();
     });

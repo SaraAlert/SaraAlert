@@ -194,12 +194,7 @@ class Exposure extends React.Component {
         ...staticValidations,
         last_date_of_exposure: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(
-            moment()
-              .add(30, 'days')
-              .toDate(),
-            'Date can not be more than 30 days in the future.'
-          )
+          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
           .required('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
           .nullable(),
         continuous_exposure: yup.bool().nullable(),
@@ -207,32 +202,18 @@ class Exposure extends React.Component {
     } else if (!patient.last_date_of_exposure && patient.continuous_exposure) {
       schema = yup.object().shape({
         ...staticValidations,
-        last_date_of_exposure: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .oneOf([null, undefined])
-          .nullable(),
-        continuous_exposure: yup
-          .bool()
-          .oneOf([true])
-          .nullable(),
+        last_date_of_exposure: yup.date('Date must correspond to the "mm/dd/yyyy" format.').oneOf([null, undefined]).nullable(),
+        continuous_exposure: yup.bool().oneOf([true]).nullable(),
       });
     } else if (patient.last_date_of_exposure && !patient.continuous_exposure) {
       schema = yup.object().shape({
         ...staticValidations,
         last_date_of_exposure: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(
-            moment()
-              .add(30, 'days')
-              .toDate(),
-            'Date can not be more than 30 days in the future.'
-          )
+          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
           .required('Please enter a Last Date of Exposure')
           .nullable(),
-        continuous_exposure: yup
-          .bool()
-          .oneOf([null, undefined, false])
-          .nullable(),
+        continuous_exposure: yup.bool().oneOf([null, undefined, false]).nullable(),
       });
     } else {
       schema = yup.object().shape({
@@ -258,12 +239,7 @@ class Exposure extends React.Component {
         ...staticValidations,
         symptom_onset: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(
-            moment()
-              .add(30, 'days')
-              .toDate(),
-            'Date can not be more than 30 days in the future.'
-          )
+          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
           .required('Please enter a Symptom Onset Date') // NOTE: replace this line with the commented out line below when first positive lab is enabled
           // .required('Please enter a Symptom Onset Date OR select No Reported Symptoms and enter a first positive lab result')
           .nullable(),
@@ -272,32 +248,18 @@ class Exposure extends React.Component {
     } else if (!patient.symptom_onset && patient.no_reported_symptoms) {
       schema = yup.object().shape({
         ...staticValidations,
-        symptom_onset: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .oneOf([null, undefined])
-          .nullable(),
-        no_reported_symptoms: yup
-          .bool()
-          .oneOf([true])
-          .nullable(),
+        symptom_onset: yup.date('Date must correspond to the "mm/dd/yyyy" format.').oneOf([null, undefined]).nullable(),
+        no_reported_symptoms: yup.bool().oneOf([true]).nullable(),
       });
     } else if (patient.symptom_onset && !patient.no_reported_symptoms) {
       schema = yup.object().shape({
         ...staticValidations,
         symptom_onset: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(
-            moment()
-              .add(30, 'days')
-              .toDate(),
-            'Date can not be more than 30 days in the future.'
-          )
+          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
           .required('Please enter a Symptom Onset Date')
           .nullable(),
-        no_reported_symptoms: yup
-          .bool()
-          .oneOf([null, undefined, false])
-          .nullable(),
+        no_reported_symptoms: yup.bool().oneOf([null, undefined, false]).nullable(),
       });
     } else {
       schema = yup.object().shape({
@@ -376,9 +338,7 @@ class Exposure extends React.Component {
               aria-label="Symptom Onset Date"
               date={this.state.current.patient.symptom_onset}
               minDate={'2020-01-01'}
-              maxDate={moment()
-                .add(30, 'days')
-                .format('YYYY-MM-DD')}
+              maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
               onChange={date => this.handleDateChange('symptom_onset', date)}
               placement="bottom"
               isInvalid={!!this.state.errors['symptom_onset']}
@@ -557,9 +517,7 @@ class Exposure extends React.Component {
               aria-label="Last Date of Exposure"
               date={this.state.current.patient.last_date_of_exposure}
               minDate={'2020-01-01'}
-              maxDate={moment()
-                .add(30, 'days')
-                .format('YYYY-MM-DD')}
+              maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
               onChange={date => this.handleDateChange('last_date_of_exposure', date)}
               placement="bottom"
               isInvalid={!!this.state.errors['last_date_of_exposure']}
@@ -979,60 +937,24 @@ class Exposure extends React.Component {
 }
 
 const staticValidations = {
-  potential_exposure_location: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  potential_exposure_country: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
+  potential_exposure_location: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  potential_exposure_country: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   contact_of_known_case: yup.boolean().nullable(),
-  contact_of_known_case_id: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  healthcare_personnel_facility_name: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  laboratory_personnel_facility_name: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  was_in_health_care_facility_with_known_cases_facility_name: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  member_of_a_common_exposure_cohort_type: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
+  contact_of_known_case_id: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  healthcare_personnel_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  laboratory_personnel_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  was_in_health_care_facility_with_known_cases_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  member_of_a_common_exposure_cohort_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   travel_to_affected_country_or_area: yup.boolean().nullable(),
   was_in_health_care_facility_with_known_cases: yup.boolean().nullable(),
   crew_on_passenger_or_cargo_flight: yup.boolean().nullable(),
   laboratory_personnel: yup.boolean().nullable(),
   healthcare_personnel: yup.boolean().nullable(),
-  exposure_risk_assessment: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  monitoring_plan: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  jurisdiction_id: yup
-    .number()
-    .positive('Please enter a valid Assigned Jurisdiction.')
-    .required(),
-  assigned_user: yup
-    .number()
-    .positive('Please enter a valid Assigned User')
-    .nullable(),
-  exposure_notes: yup
-    .string()
-    .max(2000, 'Max length exceeded, please limit to 2000 characters.')
-    .nullable(),
+  exposure_risk_assessment: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  monitoring_plan: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  jurisdiction_id: yup.number().positive('Please enter a valid Assigned Jurisdiction.').required(),
+  assigned_user: yup.number().positive('Please enter a valid Assigned User').nullable(),
+  exposure_notes: yup.string().max(2000, 'Max length exceeded, please limit to 2000 characters.').nullable(),
 };
 
 var schema = yup.object().shape(staticValidations);

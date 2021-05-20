@@ -8,8 +8,8 @@ const mockFilterMonitoringStatusTrue = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'monitoring-status'),
   numberOption: null,
   relativeOption: null,
-  value: true
-}
+  value: true,
+};
 
 const mockFilterMonitoringStatusFalse = {
   additionalFilterOption: null,
@@ -17,8 +17,8 @@ const mockFilterMonitoringStatusFalse = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'monitoring-status'),
   numberOption: null,
   relativeOption: null,
-  value: false
-}
+  value: false,
+};
 
 const mockFilterSevenDayQuarantine = {
   additionalFilterOption: null,
@@ -26,8 +26,8 @@ const mockFilterSevenDayQuarantine = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'seven-day-quarantine'),
   numberOption: null,
   relativeOption: null,
-  value: false
-}
+  value: false,
+};
 
 /* SELECT TYPE MOCK FILTERS */
 const mockFilterPreferredContactTime = {
@@ -36,8 +36,8 @@ const mockFilterPreferredContactTime = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'preferred-contact-time'),
   numberOption: null,
   relativeOption: null,
-  value: 'Morning'
-}
+  value: 'Morning',
+};
 
 /* NUMBER TYPE MOCK FILTERS */
 const mockFilterAgeEqual = {
@@ -46,8 +46,8 @@ const mockFilterAgeEqual = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'age'),
   numberOption: 'equal',
   relativeOption: null,
-  value: 0
-}
+  value: 0,
+};
 
 const mockFilterAgeBetween = {
   additionalFilterOption: null,
@@ -55,8 +55,8 @@ const mockFilterAgeBetween = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'age'),
   numberOption: 'between',
   relativeOption: null,
-  value: {firstBound: 20, secondBound: 30}
-}
+  value: { firstBound: 20, secondBound: 30 },
+};
 
 const mockFilterManualContactAttemptsEqual = {
   additionalFilterOption: 'Successful',
@@ -64,8 +64,8 @@ const mockFilterManualContactAttemptsEqual = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'manual-contact-attempts'),
   numberOption: 'equal',
   relativeOption: null,
-  value: 0
-}
+  value: 0,
+};
 
 const mockFilterManualContactAttemptsLessThan = {
   additionalFilterOption: 'All',
@@ -73,8 +73,8 @@ const mockFilterManualContactAttemptsLessThan = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'manual-contact-attempts'),
   numberOption: 'less-than',
   relativeOption: null,
-  value: 2
-}
+  value: 2,
+};
 
 /* DATE TYPE MOCK FILTERS */
 const mockFilterEnrolledDateWithin = {
@@ -83,11 +83,11 @@ const mockFilterEnrolledDateWithin = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'enrolled'),
   numberOption: null,
   relativeOption: null,
-  value: { 
-    start: moment(new Date()).subtract(3,'d').format('YYYY-MM-DD'),
-    end: moment(new Date()).format('YYYY-MM-DD')
-  }
-}
+  value: {
+    start: moment(new Date()).subtract(3, 'd').format('YYYY-MM-DD'),
+    end: moment(new Date()).format('YYYY-MM-DD'),
+  },
+};
 
 const mockFilterEnrolledDateBefore = {
   additionalFilterOption: null,
@@ -95,8 +95,8 @@ const mockFilterEnrolledDateBefore = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'enrolled'),
   numberOption: null,
   relativeOption: null,
-  value: '2020-12-30'
-}
+  value: '2020-12-30',
+};
 
 /* RELATIVE TYPE MOCK FILTERS */
 const mockFilterLatestReportRelativeToday = {
@@ -105,8 +105,8 @@ const mockFilterLatestReportRelativeToday = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'latest-report-relative'),
   numberOption: null,
   relativeOption: 'today',
-  value: 'today'
-}
+  value: 'today',
+};
 
 const mockFilterLatestReportRelativeYesterday = {
   additionalFilterOption: null,
@@ -114,8 +114,8 @@ const mockFilterLatestReportRelativeYesterday = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'latest-report-relative'),
   numberOption: null,
   relativeOption: 'yesterday',
-  value: 'yesterday'
-}
+  value: 'yesterday',
+};
 
 const mockFilterLatestReportRelativeCustomPast = {
   additionalFilterOption: null,
@@ -127,9 +127,9 @@ const mockFilterLatestReportRelativeCustomPast = {
     operator: 'less-than',
     number: 1,
     unit: 'days',
-    when: 'past'
-  }
-}
+    when: 'past',
+  },
+};
 
 const mockFilterLatestReportRelativeCustomFuture = {
   additionalFilterOption: null,
@@ -141,9 +141,9 @@ const mockFilterLatestReportRelativeCustomFuture = {
     operator: 'more-than',
     number: 2,
     unit: 'weeks',
-    when: 'next'
-  }
-}
+    when: 'next',
+  },
+};
 
 const mockFilterSymptomOnsetRelativeCustomPast = {
   additionalFilterOption: null,
@@ -155,9 +155,9 @@ const mockFilterSymptomOnsetRelativeCustomPast = {
     operator: 'less-than',
     number: 1,
     unit: 'days',
-    when: 'past'
-  }
-}
+    when: 'past',
+  },
+};
 
 /* SEARCH TYPE MOCK FILTERS */
 const mockFilterAddressForeignEmpty = {
@@ -166,8 +166,8 @@ const mockFilterAddressForeignEmpty = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'address-foreign'),
   numberOption: null,
   relativeOption: null,
-  value: ''
-}
+  value: '',
+};
 
 const mockFilterAddressForeign = {
   additionalFilterOption: null,
@@ -175,8 +175,8 @@ const mockFilterAddressForeign = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'address-foreign'),
   numberOption: null,
   relativeOption: null,
-  value: '42 Wallaby Way'
-}
+  value: '42 Wallaby Way',
+};
 
 /* MULTI TYPE MOCK FILTERS */
 const mockFilterLabResults = {
@@ -185,29 +185,29 @@ const mockFilterLabResults = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'lab-result'),
   numberOption: null,
   relativeOption: null,
-  value: [ {name: 'result', value: 'positive'} ]
-}
+  value: [{ name: 'result', value: 'positive' }],
+};
 
 /* MOCK SAVED FILTERS */
 const mockFilter1 = {
-  contents: [ mockFilterAddressForeign ],
+  contents: [mockFilterAddressForeign],
   created_at: '2021-01-11T14:04:32.994Z',
   id: 2,
   name: 'my new filter',
   updated_at: '2021-01-11T14:04:32.994Z',
-  user_id: 15
-}
+  user_id: 15,
+};
 
 const mockFilter2 = {
-  contents: [ mockFilterMonitoringStatusFalse, mockFilterEnrolledDateBefore],
+  contents: [mockFilterMonitoringStatusFalse, mockFilterEnrolledDateBefore],
   created_at: '2020-11-11T02:43:56.234Z',
   id: 1,
   name: 'my filter',
   updated_at: '2020-12-10T19:31:12.784Z',
-  user_id: 15
-}
+  user_id: 15,
+};
 
-const mockSavedFilters = [ mockFilter1, mockFilter2 ]
+const mockSavedFilters = [mockFilter1, mockFilter2];
 
 export {
   mockFilterMonitoringStatusTrue,
@@ -230,5 +230,5 @@ export {
   mockFilterLabResults,
   mockFilter1,
   mockFilter2,
-  mockSavedFilters
-}
+  mockSavedFilters,
+};

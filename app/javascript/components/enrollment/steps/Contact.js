@@ -106,29 +106,17 @@ class Contact extends React.Component {
             .phone()
             .required('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone: yup
-            .string()
-            .phone()
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
+          secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
           primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          email: yup
-            .string()
-            .email('Please enter a valid Email.')
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
+          email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.'),
           confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
           preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       } else if (event?.currentTarget.value === 'E-mailed Web Link') {
         schema = yup.object().shape({
-          primary_telephone: yup
-            .string()
-            .phone()
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone: yup
-            .string()
-            .phone()
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
+          primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
+          secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
           primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           email: yup
@@ -144,20 +132,11 @@ class Contact extends React.Component {
         });
       } else {
         schema = yup.object().shape({
-          primary_telephone: yup
-            .string()
-            .phone()
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone: yup
-            .string()
-            .phone()
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
+          primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
+          secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
           primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          email: yup
-            .string()
-            .email('Please enter a valid Email.')
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
+          email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.'),
           confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
           preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
@@ -171,22 +150,13 @@ class Contact extends React.Component {
           .nullable()
           .when('preferred_contact_method', pcm => {
             if (pcm && ['Telephone call', 'SMS Text-message', 'SMS Texted Weblink'].includes(pcm)) {
-              return yup
-                .string()
-                .phone()
-                .required('Please provide a Primary Telephone Number, or change Preferred Reporting Method.');
+              return yup.string().phone().required('Please provide a Primary Telephone Number, or change Preferred Reporting Method.');
             }
           }),
-        secondary_telephone: yup
-          .string()
-          .phone()
-          .max(200, 'Max length exceeded, please limit to 200 characters.'),
+        secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
         primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-        email: yup
-          .string()
-          .email('Please enter a valid Email.')
-          .max(200, 'Max length exceeded, please limit to 200 characters.'),
+        email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.'),
         confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
         preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
       });
@@ -471,7 +441,7 @@ class Contact extends React.Component {
   }
 }
 
-yup.addMethod(yup.string, 'phone', function() {
+yup.addMethod(yup.string, 'phone', function () {
   return this.test({
     name: 'phone',
     exclusive: true,
@@ -491,41 +461,17 @@ yup.addMethod(yup.string, 'phone', function() {
 });
 
 var schema = yup.object().shape({
-  primary_telephone: yup
-    .string()
-    .phone()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  secondary_telephone: yup
-    .string()
-    .phone()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  primary_telephone_type: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  secondary_telephone_type: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  email: yup
-    .string()
-    .email('Please enter a valid Email.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
+  primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   confirm_email: yup
     .string()
     .oneOf([yup.ref('email'), null], 'Confirm Email must match.')
     .nullable(),
-  preferred_contact_method: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  preferred_contact_time: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
+  preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  preferred_contact_time: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
 });
 
 Contact.propTypes = {
