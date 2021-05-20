@@ -104,7 +104,7 @@ class VaccinesController < ApplicationController
                                  created_by: current_user.email,
                                  comment: comment)
       else
-        # Handle case where vaccine update failed
+        # Handle case where vaccine destroy failed
         error_message = 'Vaccination was unable to be deleted.'
         render(json: { error: error_message }, status: :bad_request) && return
       end
