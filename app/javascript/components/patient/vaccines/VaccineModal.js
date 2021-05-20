@@ -15,6 +15,7 @@ class VaccineModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       product_name: this.props.currentVaccineData?.product_name,
       // If there is not already a group name, default to the first option
       group_name: this.props.currentVaccineData?.group_name
@@ -72,6 +73,12 @@ class VaccineModal extends React.Component {
     return formattedOptions;
   };
 
+  submit = () => {
+    this.setState({ loading: true }, () => {
+      this.props.onSave(this.state);
+    });
+  };
+
   render() {
     const defaultGroupNameOption = this.props.group_name_options ? this.props.group_name_options[0] : '';
 
@@ -80,9 +87,9 @@ class VaccineModal extends React.Component {
 
     return (
       <Modal size="lg" show centered onHide={this.props.onClose}>
-        <h1 className="sr-only">{this.props.title}</h1>
+        <h1 className="sr-only">{this.props.editMode ? 'Edit Vaccination' : 'Add New Vaccination'}</h1>
         <Modal.Header>
-          <Modal.Title>{this.props.title}</Modal.Title>
+          <Modal.Title>{this.props.editMode ? 'Edit Vaccination' : 'Add New Vaccination'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -202,15 +209,20 @@ class VaccineModal extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disabled={!isValid} onClick={() => this.props.onSave(this.state)}>
+          <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
             <span data-for="submit-tooltip" data-tip="" className="ml-1">
-              {this.props.isEditing ? 'Update' : 'Create'}
+              {this.props.editMode ? 'Update' : 'Create'}
             </span>
           </Button>
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
-          {!this.state.isValid && (
+          {!isValid && (
             <ReactTooltip id="submit-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
               Please select at least a Vaccine Group and a Product Name.
             </ReactTooltip>
@@ -222,11 +234,10 @@ class VaccineModal extends React.Component {
 }
 
 VaccineModal.propTypes = {
-  title: PropTypes.string,
   currentVaccineData: PropTypes.object,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
-  isEditing: PropTypes.bool,
+  editMode: PropTypes.bool,
   vaccine_mapping: PropTypes.object,
   group_name_options: PropTypes.array,
   additional_product_name_options: PropTypes.array,

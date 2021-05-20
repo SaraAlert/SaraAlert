@@ -24,7 +24,7 @@
                     }) %>
 
 <% if current_user.can_modify_subject_status? %>
-<div id="monitoring-actions" class="card mx-2 mt-4 mb-4 card-square">
+<div id="monitoring-actions" class="card mx-2 my-4 card-square">
   <div class="card-header h5">Monitoring Actions</div>
   <%= react_component('patient/monitoring_actions/MonitoringActions', {
                         current_user: current_user,
@@ -59,7 +59,7 @@
 <% end %>
 
 <% if current_user.can_view_patient_laboratories? %>
-<div id="labs-table" class="card mx-2 mt-3 mb-4 card-square">
+<div id="labs-table" class="card mx-2 my-4 card-square">
   <div class="card-header h5">
     Lab Results
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
@@ -118,7 +118,7 @@
 <% end %>
 
 <% if current_user.can_view_patient_close_contacts? %>
-<div id="close-contacts-table" class="card mx-2 mt-3 mb-4 card-square">
+<div id="close-contacts-table" class="card mx-2 my-4 card-square">
   <div class="card-header h5">
     Close Contacts
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'closeContacts', location: 'right' }, { style: 'display:inline' }) %>

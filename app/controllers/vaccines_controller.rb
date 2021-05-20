@@ -6,10 +6,12 @@ class VaccinesController < ApplicationController
   include ValidationHelper
 
   before_action :authenticate_user!
+  before_action :check_can_create, only: %i[create]
+  before_action :check_can_edit, only: %i[update destroy]
+  before_action :check_patient, only: %i[create update destroy]
+  before_action :check_vaccine, only: %i[update destroy]
 
   def index
-    redirect_to(root_url) && return unless current_user&.can_view_patient_vaccines?
-
     # Validate params and handle errors if invalid
     begin
       data = validate_vaccines_query(params)
@@ -32,104 +34,108 @@ class VaccinesController < ApplicationController
 
   # Create a new vaccine record
   def create
-    redirect_to(root_url) && return unless current_user.can_create_patient_vaccines?
-
-    group_name = params.permit(:group_name)[:group_name]
-    product_name = params.permit(:product_name)[:product_name]
-    administration_date = params.permit(:administration_date)[:administration_date]
-    dose_number = params.permit(:dose_number)[:dose_number]
-    notes = params.permit(:notes)[:notes]
-    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
-
-    # Check if Patient ID is valid
-    unless Patient.exists?(patient_id)
-      error_message = "Vaccination cannot be created for unknown monitoree with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :bad_request) && return
-    end
-
-    # Check if user has access to patient
-    unless current_user.get_patient(patient_id)
-      error_message = "User does not have access to Patient with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :forbidden) && return
-    end
-
     # Create the new vaccine
     vaccine = Vaccine.create(
-      group_name: group_name,
-      product_name: product_name,
-      administration_date: administration_date,
-      dose_number: dose_number,
-      notes: notes,
-      patient_id: patient_id
+      group_name: params.permit(:group_name)[:group_name],
+      product_name: params.permit(:product_name)[:product_name],
+      administration_date: params.permit(:administration_date)[:administration_date],
+      dose_number: params.permit(:dose_number)[:dose_number],
+      notes: params.permit(:notes)[:notes],
+      patient_id: @patient.id
     )
 
     # Handle vaccine creation success or failure
-    if vaccine.valid?
-      # Create history item on successful record creation
-      History.vaccination(patient: patient_id,
-                          created_by: current_user.email,
-                          comment: "User added a new vaccination (ID: #{vaccine.id}).")
-    else
-      # Handle case where vaccine create failed
-      error_message = 'Vaccination was unable to be created.'
-      error_message += " Errors: #{format_model_validation_errors(vaccine).join(', ')}" if vaccine&.errors
-      render(json: { error: error_message }, status: :bad_request) && return
+    ActiveRecord::Base.transaction do
+      if vaccine.valid?
+        # Create history item on successful record creation
+        History.vaccination(patient: @patient.id,
+                            created_by: current_user.email,
+                            comment: "User added a new vaccination (ID: #{vaccine.id}).")
+      else
+        # Handle case where vaccine create failed
+        error_message = 'Vaccination was unable to be created.'
+        error_message += " Errors: #{format_model_validation_errors(vaccine).join(', ')}" if vaccine&.errors
+        render(json: { error: error_message }, status: :bad_request) && return
+      end
     end
   end
 
   # Update an existing vaccine record
   def update
-    redirect_to(root_url) && return unless current_user.can_edit_patient_vaccines?
-
-    vaccine_id = params.require(:id)&.to_i
-    group_name = params.permit(:group_name)[:group_name]
-    product_name = params.permit(:product_name)[:product_name]
-    administration_date = params.permit(:administration_date)[:administration_date]
-    dose_number = params.permit(:dose_number)[:dose_number]
-    notes = params.permit(:notes)[:notes]
-    patient_id = params.permit(:patient_id)[:patient_id]&.to_i
-
-    # Check if Patient ID is valid
-    unless Patient.exists?(patient_id)
-      error_message = "Vaccination cannot be created for unknown monitoree with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :bad_request) && return
-    end
-
-    # Check if user has access to patient
-    unless current_user.get_patient(patient_id)
-      error_message = "User does not have access to Patient with ID: #{patient_id}"
-      render(json: { error: error_message }, status: :forbidden) && return
-    end
-
-    # Get vaccine to update
-    vaccine = Vaccine.find_by(id: vaccine_id)
-
-    # Handle case where vaccine cannot be found
-    render(json: { error: "Vaccination with ID #{vaccine_id} cannot be found." }, status: :bad_request) && return unless vaccine
-
-    # Update the vaccine record
     update_params = {
-      group_name: group_name,
-      product_name: product_name,
-      administration_date: administration_date,
-      dose_number: dose_number,
-      notes: notes,
-      patient_id: patient_id
+      group_name: params.permit(:group_name)[:group_name],
+      product_name: params.permit(:product_name)[:product_name],
+      administration_date: params.permit(:administration_date)[:administration_date],
+      dose_number: params.permit(:dose_number)[:dose_number],
+      notes: params.permit(:notes)[:notes],
+      patient_id: @patient.id
     }
 
     # Handle vaccine update success or failure
-    if vaccine.update(update_params)
-      # Create history item on successful update
-      History.vaccination_edit(
-        patient: params.permit(:patient_id)[:patient_id],
-        created_by: current_user.email,
-        comment: "User edited a vaccination (ID: #{vaccine_id})."
-      )
-    else
-      # Handle case where vaccine update failed
-      error_message = 'Vaccination was unable to be updated. '
-      error_message += "Errors: #{format_model_validation_errors(vaccine).join(', ')}" if vaccine&.errors
-      render(json: { error: error_message }, status: :bad_request) && return
+    ActiveRecord::Base.transaction do
+      if @vaccine.update(update_params)
+        # Create history item on successful update
+        History.vaccination_edit(
+          patient: @patient.id,
+          created_by: current_user.email,
+          comment: "User edited a vaccination (ID: #{@vaccine.id})."
+        )
+      else
+        # Handle case where vaccine update failed
+        error_message = 'Vaccination was unable to be updated. '
+        error_message += "Errors: #{format_model_validation_errors(@vaccine).join(', ')}" if @vaccine&.errors
+        render(json: { error: error_message }, status: :bad_request) && return
+      end
     end
+  end
+
+  def destroy
+    ActiveRecord::Base.transaction do
+      if @vaccine.destroy
+        reason = params.permit(:delete_reason)[:delete_reason]
+        comment = "User deleted a vaccine (ID: #{@vaccine.id}"
+        comment += ", Vaccine Group: #{@vaccine.group_name}" unless @vaccine.group_name.blank?
+        comment += ", Product Name: #{@vaccine.product_name}" unless @vaccine.product_name.blank?
+        comment += ", Administration Date: #{@vaccine.administration_date.strftime('%m/%d/%Y')}" unless @vaccine.administration_date.blank?
+        comment += ", Dose Number: #{@vaccine.dose_number}" unless @vaccine.dose_number.blank?
+        comment += ", Notes: #{@vaccine.notes}" unless @vaccine.notes.blank?
+        comment += "). Reason: #{reason}."
+        History.vaccination_edit(patient: @patient.id,
+                                 created_by: current_user.email,
+                                 comment: comment)
+      else
+        # Handle case where vaccine destroy failed
+        error_message = 'Vaccination was unable to be deleted.'
+        render(json: { error: error_message }, status: :bad_request) && return
+      end
+    end
+  end
+
+  private
+
+  def check_can_create
+    return head :forbidden unless current_user.can_create_patient_vaccines?
+  end
+
+  def check_can_edit
+    return head :forbidden unless current_user.can_edit_patient_vaccines?
+  end
+
+  def check_patient
+    # Check if Patient ID is valid
+    patient_id = params.require(:patient_id)&.to_i
+    unless Patient.exists?(patient_id)
+      render(json: { error: "Vaccination cannot be modified for unknown monitoree with ID: #{patient_id}" }, status: :bad_request) && return
+    end
+
+    # Check if user has access to patient
+    @patient = current_user.viewable_patients.find_by_id(patient_id)
+    render(json: { error: "User does not have access to Patient with ID: #{patient_id}" }, status: :forbidden) && return unless @patient
+  end
+
+  def check_vaccine
+    vaccine_id = params.require(:id)&.to_i
+    @vaccine = @patient.vaccines.find_by_id(vaccine_id)
+    render(json: { error: "Vaccination with ID #{vaccine_id} cannot be found." }, status: :bad_request) && return unless @vaccine
   end
 end
