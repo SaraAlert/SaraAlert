@@ -9,16 +9,15 @@ import InfoTooltip from '../../../components/util/InfoTooltip';
 import { mockUser1 } from '../../mocks/mockUsers';
 import { mockEnrollmentHistory, mockCommentHistory1, mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2 } from '../../mocks/mockHistories';
 
-const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const histories = [ [ mockEnrollmentHistory ], [ mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2 ], [ mockCommentHistory1 ] ];
+const mockToken = 'testMockTokenString12345';
+const histories = [[mockEnrollmentHistory], [mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2], [mockCommentHistory1]];
 let historyCreators = histories.map(history_group => history_group[0].created_by);
 historyCreators = historyCreators.filter((creator, index) => historyCreators.includes(creator) && index === historyCreators.indexOf(creator));
 let historyTypes = histories.map(history_group => history_group[0].history_type);
 historyTypes = historyTypes.filter((type, index) => historyTypes.includes(type) && index === historyTypes.indexOf(type));
 
 function getWrapper() {
-  return shallow(<HistoryList patient_id={17} histories={histories} current_user={mockUser1}
-    authenticity_token={authyToken} history_types={{enrollment: 'Enrollment', comment: 'Comment'}} />);
+  return shallow(<HistoryList patient_id={17} histories={histories} current_user={mockUser1} authenticity_token={mockToken} history_types={{ enrollment: 'Enrollment', comment: 'Comment' }} />);
 }
 
 describe('HistoryList', () => {
@@ -32,16 +31,24 @@ describe('HistoryList', () => {
     expect(wrapper.find(Select).length).toEqual(2);
     expect(wrapper.find(Select).at(0).prop('placeholder')).toEqual('Filter by Creator');
     expect(wrapper.find(Select).at(0).prop('options')[0].label).toEqual('History Creator');
-    wrapper.find(Select).at(0).prop('options')[0].options.forEach((option, index) => {
-      expect(option.label).toEqual(historyCreators[index]);
-      expect(option.value).toEqual(historyCreators[index]);
-    });
+    wrapper
+      .find(Select)
+      .at(0)
+      .prop('options')[0]
+      .options.forEach((option, index) => {
+        expect(option.label).toEqual(historyCreators[Number(index)]);
+        expect(option.value).toEqual(historyCreators[Number(index)]);
+      });
     expect(wrapper.find(Select).at(1).prop('placeholder')).toEqual('Filter by Type');
     expect(wrapper.find(Select).at(1).prop('options')[0].label).toEqual('History Type');
-    wrapper.find(Select).at(1).prop('options')[0].options.forEach((option, index) => {
-      expect(option.label).toEqual(historyTypes[index]);
-      expect(option.value).toEqual(historyTypes[index]);
-    });
+    wrapper
+      .find(Select)
+      .at(1)
+      .prop('options')[0]
+      .options.forEach((option, index) => {
+        expect(option.label).toEqual(historyTypes[Number(index)]);
+        expect(option.value).toEqual(historyTypes[Number(index)]);
+      });
     expect(wrapper.find(Card.Body).find(History).exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find(Pagination).exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find(Card).exists()).toBeTruthy();
@@ -60,7 +67,7 @@ describe('HistoryList', () => {
     expect(wrapper.state('filters').creatorFilters).toEqual(filterValue);
     filterValue.push({ label: historyCreators[0], value: historyCreators[0] });
     wrapper.find(Select).at(0).simulate('change', filterValue);
-    expect(wrapper.state('filters').creatorFilters).toEqual(historyCreators.slice(0,1));
+    expect(wrapper.state('filters').creatorFilters).toEqual(historyCreators.slice(0, 1));
     filterValue.push({ label: historyCreators[1], value: historyCreators[1] });
     wrapper.find(Select).at(0).simulate('change', filterValue);
     expect(wrapper.state('filters').creatorFilters).toEqual(historyCreators);
@@ -72,7 +79,7 @@ describe('HistoryList', () => {
     expect(wrapper.state('filters').typeFilters).toEqual(filterValue);
     filterValue.push({ label: historyTypes[0], value: historyTypes[0] });
     wrapper.find(Select).at(1).simulate('change', filterValue);
-    expect(wrapper.state('filters').typeFilters).toEqual(historyTypes.slice(0,1));
+    expect(wrapper.state('filters').typeFilters).toEqual(historyTypes.slice(0, 1));
     filterValue.push({ label: historyTypes[1], value: historyTypes[1] });
     wrapper.find(Select).at(1).simulate('change', filterValue);
     expect(wrapper.state('filters').typeFilters).toEqual(historyTypes);
@@ -85,13 +92,19 @@ describe('HistoryList', () => {
     expect(wrapper.state('displayedHistories')).toEqual(histories);
 
     let filteredHistories = histories.filter(history_group => history_group[0].created_by === historyCreators[0]);
-    wrapper.find(Select).at(0).simulate('change', [{ label: historyCreators[0], value: historyCreators[0] }]);
+    wrapper
+      .find(Select)
+      .at(0)
+      .simulate('change', [{ label: historyCreators[0], value: historyCreators[0] }]);
     expect(wrapper.find(History).length).toEqual(filteredHistories.length);
     expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
     filteredHistories = filteredHistories.filter(history_group => history_group[0].history_type === historyTypes[0]);
-    wrapper.find(Select).at(1).simulate('change', [{ label: historyTypes[0], value: historyTypes[0] }]);
+    wrapper
+      .find(Select)
+      .at(1)
+      .simulate('change', [{ label: historyTypes[0], value: historyTypes[0] }]);
     expect(wrapper.find(History).length).toEqual(filteredHistories.length);
     expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
@@ -103,7 +116,13 @@ describe('HistoryList', () => {
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
     filteredHistories = histories.filter(history_group => history_group[0].history_type === historyTypes[0] || history_group[0].history_type === historyTypes[1]);
-    wrapper.find(Select).at(1).simulate('change', [{ label: historyTypes[0], value: historyTypes[0] }, { label: historyTypes[1], value: historyTypes[1] }]);
+    wrapper
+      .find(Select)
+      .at(1)
+      .simulate('change', [
+        { label: historyTypes[0], value: historyTypes[0] },
+        { label: historyTypes[1], value: historyTypes[1] },
+      ]);
     expect(wrapper.find(History).length).toEqual(filteredHistories.length);
     expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
@@ -138,7 +157,7 @@ describe('HistoryList', () => {
   it('Clicking the "Add Comment" button calls the submit method', () => {
     const wrapper = getWrapper();
     const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
-    wrapper.find('#comment').simulate('change', { target: { id: 'comment', value: 'adding a comment'} });
+    wrapper.find('#comment').simulate('change', { target: { id: 'comment', value: 'adding a comment' } });
     expect(submitSpy).toHaveBeenCalledTimes(0);
     wrapper.find(Button).simulate('click');
     expect(submitSpy).toHaveBeenCalledTimes(1);
@@ -146,7 +165,7 @@ describe('HistoryList', () => {
 
   it('Clicking the "Add Comment" button disables the button and updates state', () => {
     const wrapper = getWrapper();
-    wrapper.find('#comment').simulate('change', { target: { id: 'comment', value: 'adding a comment'} });
+    wrapper.find('#comment').simulate('change', { target: { id: 'comment', value: 'adding a comment' } });
     expect(wrapper.state('loading')).toBeFalsy();
     expect(wrapper.find(Button).prop('disabled')).toBeFalsy();
     wrapper.find(Button).simulate('click');

@@ -163,17 +163,17 @@ class DateInput extends React.Component {
 
 DateInput.propTypes = {
   id: PropTypes.string,
-  date: function(props) {
+  date: function (props) {
     if (props.date && !moment(props.date, 'YYYY-MM-DD').isValid()) {
       return new Error('Invalid prop `date` supplied to `DateInput`, `date` must be a valid date string in the `YYYY-MM-DD` format.');
     }
   },
-  minDate: function(props) {
+  minDate: function (props) {
     if (props.date && !moment(props.date, 'YYYY-MM-DD').isValid()) {
       return new Error('Invalid prop `minDate` supplied to `DateInput`, `date` must be a valid date string in the `YYYY-MM-DD` format.');
     }
   },
-  maxDate: function(props) {
+  maxDate: function (props) {
     if (props.date && !moment(props.date, 'YYYY-MM-DD').isValid()) {
       return new Error('Invalid prop `maxDate` supplied to `DateInput`, `date` must be a valid date string in the `YYYY-MM-DD` format.');
     }

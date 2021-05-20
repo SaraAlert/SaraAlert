@@ -348,9 +348,7 @@ class AdvancedFilter extends React.Component {
     } else if (filterOption.type === 'date') {
       // Default to "within" type
       value = {
-        start: moment()
-          .add(-72, 'hours')
-          .format('YYYY-MM-DD'),
+        start: moment().add(-72, 'hours').format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
       };
     } else if (filterOption.type === 'relative') {
@@ -410,9 +408,7 @@ class AdvancedFilter extends React.Component {
     let defaultValue = null;
     if (dateOption === 'within') {
       defaultValue = {
-        start: moment()
-          .subtract(3, 'days')
-          .format('YYYY-MM-DD'),
+        start: moment().subtract(3, 'days').format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
       };
     } else {
@@ -549,44 +545,30 @@ class AdvancedFilter extends React.Component {
 
     if (value.operator === 'more-than') {
       if (value.when === 'past') {
-        before = moment()
-          .subtract(value.number, value.unit)
-          .format('MM/DD/YY');
+        before = moment().subtract(value.number, value.unit).format('MM/DD/YY');
       } else {
-        after = moment()
-          .add(value.number, value.unit)
-          .format('MM/DD/YY');
+        after = moment().add(value.number, value.unit).format('MM/DD/YY');
       }
     } else if (value.operator === 'less-than') {
       // set variables for date options including a time stamp
       if (filter.hasTimestamp) {
         if (value.when === 'past') {
-          after = moment()
-            .subtract(value.number, value.unit)
-            .format('MM/DD/YY');
+          after = moment().subtract(value.number, value.unit).format('MM/DD/YY');
           before = 'now';
         } else {
           after = 'now';
-          before = moment()
-            .add(value.number, value.unit)
-            .format('MM/DD/YY');
+          before = moment().add(value.number, value.unit).format('MM/DD/YY');
         }
       }
 
       // set variables for date options without a timestamp
       else {
         if (value.when === 'past') {
-          after = moment()
-            .subtract(value.number, value.unit)
-            .add(1, 'days')
-            .format('MM/DD/YY');
+          after = moment().subtract(value.number, value.unit).add(1, 'days').format('MM/DD/YY');
           before = moment().format('MM/DD/YY');
         } else {
           after = moment().format('MM/DD/YY');
-          before = moment()
-            .add(value.number, value.unit)
-            .subtract(1, 'days')
-            .format('MM/DD/YY');
+          before = moment().add(value.number, value.unit).subtract(1, 'days').format('MM/DD/YY');
         }
       }
     }
@@ -939,9 +921,7 @@ class AdvancedFilter extends React.Component {
                 customClass="form-control-md"
                 ariaLabel="Advanced Filter Date Input"
                 minDate={'1900-01-01'}
-                maxDate={moment()
-                  .add(2, 'years')
-                  .format('YYYY-MM-DD')}
+                maxDate={moment().add(2, 'years').format('YYYY-MM-DD')}
                 replaceBlank={true}
               />
             </div>
@@ -958,9 +938,7 @@ class AdvancedFilter extends React.Component {
                   customClass="form-control-md"
                   ariaLabel="Advanced Filter Start Date Input"
                   minDate={'1900-01-01'}
-                  maxDate={moment()
-                    .add(2, 'years')
-                    .format('YYYY-MM-DD')}
+                  maxDate={moment().add(2, 'years').format('YYYY-MM-DD')}
                   replaceBlank={true}
                 />
               </div>
@@ -977,9 +955,7 @@ class AdvancedFilter extends React.Component {
                   customClass="form-control-md"
                   ariaLabel="Advanced Filter End Date Input"
                   minDate={'1900-01-01'}
-                  maxDate={moment()
-                    .add(2, 'years')
-                    .format('YYYY-MM-DD')}
+                  maxDate={moment().add(2, 'years').format('YYYY-MM-DD')}
                   replaceBlank={true}
                 />
               </div>
@@ -1143,9 +1119,7 @@ class AdvancedFilter extends React.Component {
                       customClass="form-control-md"
                       ariaLabel="Advanced Filter Date Input"
                       minDate={'1900-01-01'}
-                      maxDate={moment()
-                        .add(2, 'years')
-                        .format('YYYY-MM-DD')}
+                      maxDate={moment().add(2, 'years').format('YYYY-MM-DD')}
                       replaceBlank={true}
                     />
                   </div>

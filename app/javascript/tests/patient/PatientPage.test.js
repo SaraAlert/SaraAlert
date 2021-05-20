@@ -7,17 +7,16 @@ import HeadOfHousehold from '../../components/patient/household/HeadOfHousehold'
 import Individual from '../../components/patient/household/Individual';
 import { mockPatient1, mockPatient2, mockPatient3 } from '../mocks/mockPatients';
 
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+const mockToken = 'testMockTokenString12345';
 
 function getWrapper(patient, householdMembers) {
-  return shallow(<PatientPage patient={patient} other_household_members={householdMembers} blocked_sms={false} can_add_group={true}
-    can_modify_subject_status={true} jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
+  return shallow(<PatientPage patient={patient} other_household_members={householdMembers} blocked_sms={false} can_add_group={true} can_modify_subject_status={true} jurisdiction_path="USA, State 1, County 2" authenticity_token={mockToken} />);
 }
 
 describe('PatientPage', () => {
-  const wrapper = getWrapper(mockPatient1, [ mockPatient2 ]); // uses mockPatient1 as patient
-  const wrapper2 = getWrapper(mockPatient2, [ mockPatient1 ]); // uses mockPatient2 as patient
-  const wrapper3 = getWrapper(mockPatient3, [ ]); // uses mockPatient3 as patient
+  const wrapper = getWrapper(mockPatient1, [mockPatient2]); // uses mockPatient1 as patient
+  const wrapper2 = getWrapper(mockPatient2, [mockPatient1]); // uses mockPatient2 as patient
+  const wrapper3 = getWrapper(mockPatient3, []); // uses mockPatient3 as patient
 
   it('Properly renders all main components', () => {
     expect(wrapper.find('#patient-info-header').exists()).toBeTruthy();

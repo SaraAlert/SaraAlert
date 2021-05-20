@@ -14,19 +14,17 @@ import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdict
 import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs';
 import { mockMonitoringReasons } from '../mocks/mockMonitoringReasons';
 
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+const mockToken = 'testMockTokenString12345';
 const setQueryMock = jest.fn();
 const setMonitoreeCountMock = jest.fn();
-const dropdownOptions = [ 'Close Records', 'Update Case Status', 'Update Assigned User' ];
+const dropdownOptions = ['Close Records', 'Update Case Status', 'Update Assigned User'];
 
 function getExposureWrapper() {
-  return shallow(<PatientsTable authenticity_token={authyToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'exposure'} jurisdiction={mockJurisdiction1}
-    tabs={mockExposureTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock}/>);
+  return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'exposure'} jurisdiction={mockJurisdiction1} tabs={mockExposureTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} />);
 }
 
 function getIsolationWrapper() {
-  return shallow(<PatientsTable authenticity_token={authyToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'isolation'} jurisdiction={mockJurisdiction1}
-    tabs={mockIsolationTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock}/>);
+  return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'isolation'} jurisdiction={mockJurisdiction1} tabs={mockIsolationTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} />);
 }
 
 afterEach(() => {
@@ -46,9 +44,8 @@ describe('PatientsTable', () => {
     expect(wrapper.containsMatchingElement(DropdownButton)).toBeTruthy();
     expect(wrapper.find(Dropdown.Item).length).toEqual(3);
 
-    const defaultTab = Object.keys(mockExposureTabs)[0]
-    expect(wrapper.find('#tab-description').text())
-        .toEqual(mockExposureTabs[defaultTab]['description'] + ' You are currently in the exposure workflow.');
+    const defaultTab = Object.keys(mockExposureTabs)[0];
+    expect(wrapper.find('#tab-description').text()).toEqual(mockExposureTabs[`${defaultTab}`]['description'] + ' You are currently in the exposure workflow.');
   });
 
   it('Properly renders all main components for the isolation workflow', () => {
@@ -63,9 +60,8 @@ describe('PatientsTable', () => {
     expect(wrapper.containsMatchingElement(DropdownButton)).toBeTruthy();
     expect(wrapper.find(Dropdown.Item).length).toEqual(3);
 
-    const defaultTab = Object.keys(mockIsolationTabs)[0]
-    expect(wrapper.find('#tab-description').text())
-        .toEqual(mockIsolationTabs[defaultTab]['description'] + ' You are currently in the isolation workflow.');
+    const defaultTab = Object.keys(mockIsolationTabs)[0];
+    expect(wrapper.find('#tab-description').text()).toEqual(mockIsolationTabs[`${defaultTab}`]['description'] + ' You are currently in the isolation workflow.');
   });
 
   it('Sets intial state after mount correctly', () => {
@@ -73,7 +69,7 @@ describe('PatientsTable', () => {
 
     // componentDidMount is called when mounted and that calls an async method (updateTable),
     // as a result, we added a timeout to give it time to resolve.
-    setTimeout (() => {
+    setTimeout(() => {
       expect(_.size(wrapper.state('table').colData)).toEqual(20);
       expect(_.size(wrapper.state('table').displayedColData)).toEqual(0);
       expect(_.size(wrapper.state('table').rowData)).toEqual(0);
@@ -93,13 +89,12 @@ describe('PatientsTable', () => {
       expect(wrapper.state('query').page).toEqual(0);
       expect(wrapper.state('query').entries).toEqual(25);
       expect(_.size(wrapper.state('entryOptions'))).toEqual(5);
-    }, 500)
-
+    }, 500);
   });
 
   it('Properly renders dropdown', () => {
     const wrapper = getExposureWrapper();
-    dropdownOptions.forEach(function(option, index) {
+    dropdownOptions.forEach((option, index) => {
       expect(wrapper.find(Dropdown.Item).at(index).text()).toEqual(option);
     });
   });
@@ -114,7 +109,7 @@ describe('PatientsTable', () => {
     expect(handleSearchChangeSpy).toHaveBeenCalledTimes(1);
   });
 
-  it ('Clicking "Close Records" option displays Close Records modal', () => {
+  it('Clicking "Close Records" option displays Close Records modal', () => {
     const wrapper = getExposureWrapper();
     expect(wrapper.find(CloseRecords).exists()).toBeFalsy();
     expect(wrapper.find(Dropdown.Item).at(0).text().includes(dropdownOptions[0])).toBeTruthy();
@@ -122,7 +117,7 @@ describe('PatientsTable', () => {
     expect(wrapper.find(CloseRecords).exists()).toBeTruthy();
   });
 
-  it ('Clicking "Update Case Status" option displays Update Case Status modal', () => {
+  it('Clicking "Update Case Status" option displays Update Case Status modal', () => {
     const wrapper = getExposureWrapper();
     expect(wrapper.find(UpdateCaseStatus).exists()).toBeFalsy();
     expect(wrapper.find(Dropdown.Item).at(1).text().includes(dropdownOptions[1])).toBeTruthy();
@@ -130,7 +125,7 @@ describe('PatientsTable', () => {
     expect(wrapper.find(UpdateCaseStatus).exists()).toBeTruthy();
   });
 
-  it ('Clicking "Update Assigned User" option displays Update Assigned User modal', () => {
+  it('Clicking "Update Assigned User" option displays Update Assigned User modal', () => {
     const wrapper = getExposureWrapper();
     expect(wrapper.find(UpdateAssignedUser).exists()).toBeFalsy();
     expect(wrapper.find(Dropdown.Item).at(2).text().includes(dropdownOptions[2])).toBeTruthy();
@@ -150,7 +145,7 @@ describe('PatientsTable', () => {
     const wrapper = getExposureWrapper();
     for (var key of Object.keys(mockExposureTabs)) {
       expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockExposureTabs[key]['label']);
+      expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockExposureTabs[`${key}`]['label']);
     }
   });
 
@@ -158,7 +153,7 @@ describe('PatientsTable', () => {
     const wrapper = getIsolationWrapper();
     for (var key of Object.keys(mockIsolationTabs)) {
       expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockIsolationTabs[key]['label']);
+      expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockIsolationTabs[`${key}`]['label']);
     }
   });
 });

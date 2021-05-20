@@ -6,7 +6,7 @@ import { mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2
 import { formatRelativePast } from '../../../utils/DateTime';
 
 const toggleMock = jest.fn();
-const historyVersions = [ mockCommentHistory2Edit2, mockCommentHistory2Edit1, mockCommentHistory2 ];
+const historyVersions = [mockCommentHistory2Edit2, mockCommentHistory2Edit1, mockCommentHistory2];
 
 function getWrapper() {
   return shallow(<EditHistoryModal versions={historyVersions} toggle={toggleMock} />);
@@ -23,8 +23,7 @@ describe('EditHistoryModal', () => {
     expect(wrapper.find(Modal.Body).find(ListGroup.Item).length).toEqual(historyVersions.length);
     historyVersions.forEach((history, index) => {
       expect(wrapper.find(Modal.Body).find(ListGroup.Item).at(index).find('div').text()).toEqual(history.comment);
-      expect(wrapper.find(Modal.Body).find(ListGroup.Item).at(index).find('i').text())
-        .toEqual(`${history.created_by} ${index === historyVersions.length-1 ? 'created' : 'edited'} ${formatRelativePast(history.created_at)}`);
+      expect(wrapper.find(Modal.Body).find(ListGroup.Item).at(index).find('i').text()).toEqual(`${history.created_by} ${index === historyVersions.length - 1 ? 'created' : 'edited'} ${formatRelativePast(history.created_at)}`);
     });
     expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(1);

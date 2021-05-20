@@ -14,7 +14,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -31,7 +31,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -48,7 +48,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -65,7 +65,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -82,7 +82,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -99,7 +99,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -116,7 +116,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -133,7 +133,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -150,7 +150,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -167,7 +167,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -184,7 +184,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -201,7 +201,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -218,7 +218,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -235,7 +235,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -252,7 +252,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -269,7 +269,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: null,
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -286,7 +286,7 @@ const mockNewSymptoms = [
     threshold_operator: 'Less Than',
     type: 'FloatSymptom',
     updated_at: null,
-    value: null
+    value: null,
   },
   {
     bool_value: null,
@@ -303,8 +303,8 @@ const mockNewSymptoms = [
     threshold_operator: 'Greater Than',
     type: 'IntegerSymptom',
     updated_at: null,
-    value: null
-  }
+    value: null,
+  },
 ];
 
 const mockSymptoms1 = [
@@ -323,7 +323,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: true,
@@ -340,7 +340,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: true
+    value: true,
   },
   {
     bool_value: false,
@@ -357,7 +357,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -374,7 +374,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -391,7 +391,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: true,
@@ -408,7 +408,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: true
+    value: true,
   },
   {
     bool_value: false,
@@ -425,7 +425,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -442,7 +442,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -459,7 +459,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -476,7 +476,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -493,7 +493,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: true,
@@ -510,7 +510,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: true
+    value: true,
   },
   {
     bool_value: false,
@@ -527,7 +527,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -544,7 +544,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: true,
@@ -561,7 +561,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: true
+    value: true,
   },
   {
     bool_value: false,
@@ -578,7 +578,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -595,7 +595,7 @@ const mockSymptoms1 = [
     threshold_operator: 'Less Than',
     type: 'FloatSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: null
+    value: null,
   },
   {
     bool_value: null,
@@ -612,8 +612,8 @@ const mockSymptoms1 = [
     threshold_operator: 'Greater Than',
     type: 'IntegerSymptom',
     updated_at: '2020-12-23T15:12:53.000Z',
-    value: null
-  }
+    value: null,
+  },
 ];
 
 const mockSymptoms2 = [
@@ -632,7 +632,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -649,7 +649,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -666,7 +666,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -683,7 +683,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -700,7 +700,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -717,7 +717,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -734,7 +734,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -751,7 +751,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -768,7 +768,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -785,7 +785,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -802,7 +802,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -819,7 +819,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -836,7 +836,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -853,7 +853,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -870,7 +870,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: false,
@@ -887,7 +887,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'BoolSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: false
+    value: false,
   },
   {
     bool_value: null,
@@ -904,7 +904,7 @@ const mockSymptoms2 = [
     threshold_operator: 'Less Than',
     type: 'FloatSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: 1
+    value: 1,
   },
   {
     bool_value: null,
@@ -921,12 +921,8 @@ const mockSymptoms2 = [
     threshold_operator: 'Greater Than',
     type: 'IntegerSymptom',
     updated_at: '2020-12-22T08:57:53.000Z',
-    value: 5
-  }
+    value: 5,
+  },
 ];
 
-export {
-  mockNewSymptoms,
-  mockSymptoms1,
-  mockSymptoms2
-};
+export { mockNewSymptoms, mockSymptoms1, mockSymptoms2 };

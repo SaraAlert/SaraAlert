@@ -40,8 +40,9 @@ class CaseStatus extends React.Component {
       // changing case status of monitoree in the closed line list (either workflow)
       if (!this.props.patient.monitoring) {
         this.setState({
-          modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status} to ${value ||
-            'blank'}? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`,
+          modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status} to ${
+            value || 'blank'
+          }? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`,
         });
 
         // changing case status to blank from any other case status and either workflow

@@ -9,17 +9,15 @@ import { mockUser1 } from '../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../mocks/mockPatients';
 
-const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const publicHealthActionOptions = [ 'None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing' ];
+const mockToken = 'testMockTokenString12345';
+const publicHealthActionOptions = ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing'];
 
 function getWrapper(patient) {
-  return shallow(<PublicHealthAction patient={patient} household_members={[]} current_user={mockUser1}
-    jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} />);
+  return shallow(<PublicHealthAction patient={patient} household_members={[]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
 }
 
 function getMountedWrapper(patient) {
-  return mount(<PublicHealthAction patient={patient} household_members={[ mockPatient3, mockPatient4 ]}
-    current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} />);
+  return mount(<PublicHealthAction patient={patient} household_members={[mockPatient3, mockPatient4]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
 }
 
 describe('PublicHealthAction', () => {
@@ -30,8 +28,8 @@ describe('PublicHealthAction', () => {
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('latestPublicHealthActionInIsolation');
     expect(wrapper.find('#public_health_action').exists()).toBeTruthy();
     expect(wrapper.find('option').length).toEqual(4);
-    publicHealthActionOptions.forEach(function(value, index) {
-        expect(wrapper.find('option').at(index).text()).toEqual(value);
+    publicHealthActionOptions.forEach((value, index) => {
+      expect(wrapper.find('option').at(index).text()).toEqual(value);
     });
     expect(wrapper.find('#public_health_action').prop('value')).toEqual(mockPatient1.public_health_action);
   });
@@ -68,7 +66,10 @@ describe('PublicHealthAction', () => {
 
   it('Properly renders modal and sets state correctly for monitorees in the isolation workflow', () => {
     const wrapper = getMountedWrapper(mockPatient1);
-    wrapper.find('#public_health_action').at(1).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
+    wrapper
+      .find('#public_health_action')
+      .at(1)
+      .simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
 
     // renders properly
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
@@ -90,13 +91,19 @@ describe('PublicHealthAction', () => {
     expect(wrapper.state('reasoning')).toEqual('');
 
     // renders household warning if apply_to_household selected
-    wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
+    wrapper
+      .find('#apply_to_household_yes')
+      .at(1)
+      .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     expect(wrapper.find(Modal.Body).find(Form.Group).at(1).find('i').text()).toEqual(`If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.`);
   });
 
   it('Properly renders modal and sets state correctly for monitorees in the exposure workflow', () => {
     const wrapper = getMountedWrapper(mockPatient2);
-    wrapper.find('#public_health_action').at(1).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
+    wrapper
+      .find('#public_health_action')
+      .at(1)
+      .simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
 
     // renders properly
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
@@ -117,13 +124,19 @@ describe('PublicHealthAction', () => {
     expect(wrapper.state('reasoning')).toEqual('');
 
     // renders household warning if apply_to_household selected
-    wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
+    wrapper
+      .find('#apply_to_household_yes')
+      .at(1)
+      .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     expect(wrapper.find(Modal.Body).find(Form.Group).at(1).find('i').text()).toEqual(`If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.`);
   });
 
   it('Toggling HoH radio buttons hides/shows household members table and updates state', () => {
     const wrapper = getMountedWrapper(mockPatient1);
-    wrapper.find('#public_health_action').at(1).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
+    wrapper
+      .find('#public_health_action')
+      .at(1)
+      .simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
 
     // initial radio button state
     expect(wrapper.find(ApplyToHousehold).exists()).toBeTruthy();
@@ -133,20 +146,25 @@ describe('PublicHealthAction', () => {
     expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeFalsy();
 
     // change to apply to all of household
-    wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
+    wrapper
+      .find('#apply_to_household_yes')
+      .at(1)
+      .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     expect(wrapper.find(CustomTable).exists()).toBeTruthy();
     expect(wrapper.state('apply_to_household')).toBeTruthy();
     expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeFalsy();
     expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeTruthy();
 
     // change back to just this monitoree
-    wrapper.find('#apply_to_household_no').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
+    wrapper
+      .find('#apply_to_household_no')
+      .at(1)
+      .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
     expect(wrapper.find(CustomTable).exists()).toBeFalsy();
     expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeTruthy();
     expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeFalsy();
   });
-
 
   it('Adding reasoning updates state', () => {
     const wrapper = getWrapper(mockPatient1);

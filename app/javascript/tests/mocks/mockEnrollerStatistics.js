@@ -7,8 +7,6 @@ const mockEnrollerStatistics1 = {
   user_subjects_last_24: 13,
   user_assessments: 262,
   user_assessments_last_24: 65,
-}
+};
 
-export {
-  mockEnrollerStatistics1
-}
+export { mockEnrollerStatistics1 };

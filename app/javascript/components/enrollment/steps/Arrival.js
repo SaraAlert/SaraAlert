@@ -91,9 +91,7 @@ class Arrival extends React.Component {
                     id="date_of_departure"
                     date={this.state.current.patient.date_of_departure}
                     minDate={'2020-01-01'}
-                    maxDate={moment()
-                      .add(30, 'days')
-                      .format('YYYY-MM-DD')}
+                    maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('date_of_departure', date)}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_departure']}
@@ -158,9 +156,7 @@ class Arrival extends React.Component {
                     id="date_of_arrival"
                     date={this.state.current.patient.date_of_arrival}
                     minDate={'2020-01-01'}
-                    maxDate={moment()
-                      .add(30, 'days')
-                      .format('YYYY-MM-DD')}
+                    maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('date_of_arrival', date)}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_arrival']}
@@ -251,34 +247,13 @@ class Arrival extends React.Component {
 }
 
 const schema = yup.object().shape({
-  port_of_origin: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  date_of_departure: yup
-    .date('Date must correspond to the "mm/dd/yyyy" format.')
-    .max(new Date(), 'Date can not be in the future.')
-    .nullable(),
-  source_of_report: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  flight_or_vessel_number: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  source_of_report_specify: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  flight_or_vessel_carrier: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  port_of_entry_into_usa: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
+  port_of_origin: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  date_of_departure: yup.date('Date must correspond to the "mm/dd/yyyy" format.').max(new Date(), 'Date can not be in the future.').nullable(),
+  source_of_report: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  flight_or_vessel_number: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  source_of_report_specify: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  flight_or_vessel_carrier: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  port_of_entry_into_usa: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   date_of_arrival: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .when('date_of_departure', dod => {
@@ -287,10 +262,7 @@ const schema = yup.object().shape({
       }
     })
     .nullable(),
-  travel_related_notes: yup
-    .string()
-    .max(2000, 'Max length exceeded, please limit to 2000 characters.')
-    .nullable(),
+  travel_related_notes: yup.string().max(2000, 'Max length exceeded, please limit to 2000 characters.').nullable(),
 });
 
 Arrival.propTypes = {

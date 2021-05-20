@@ -9,13 +9,12 @@ import { mockUser1 } from '../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
 
-const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const caseStatusValues = [ '', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case' ];
-const monitoringOptionValues = [ '', 'End Monitoring', 'Continue Monitoring in Isolation Workflow' ];
+const mockToken = 'testMockTokenString12345';
+const caseStatusValues = ['', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'];
+const monitoringOptionValues = ['', 'End Monitoring', 'Continue Monitoring in Isolation Workflow'];
 
 function getWrapper(patient) {
-    return shallow(<CaseStatus patient={patient} current_user={mockUser1} household_members={[]}
-      jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} />);
+  return shallow(<CaseStatus patient={patient} current_user={mockUser1} household_members={[]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
 }
 
 describe('CaseStatus', () => {
@@ -26,7 +25,7 @@ describe('CaseStatus', () => {
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('caseStatus');
     expect(wrapper.find('#case_status').exists()).toBeTruthy();
     expect(wrapper.find('option').length).toEqual(6);
-    caseStatusValues.forEach(function(value, index) {
+    caseStatusValues.forEach((value, index) => {
       expect(wrapper.find('option').at(index).text()).toEqual(value);
     });
     expect(wrapper.find('#case_status').prop('value')).toEqual(mockPatient1.case_status);
@@ -153,7 +152,7 @@ describe('CaseStatus', () => {
     expect(modalBody.find('p').text()).toEqual('Please select what you would like to do:');
     expect(modalBody.find('#monitoring_option').exists()).toBeTruthy();
     expect(modalBody.find('option').length).toEqual(3);
-    monitoringOptionValues.forEach(function(value, index) {
+    monitoringOptionValues.forEach((value, index) => {
       expect(modalBody.find('option').at(index).text()).toEqual(value);
     });
     expect(wrapper.find(Button).at(1).prop('disabled')).toBeTruthy();
@@ -192,9 +191,11 @@ describe('CaseStatus', () => {
   });
 
   it('Toggling HoH radio buttons hides/shows household members table and updates state', () => {
-    const wrapper = mount(<CaseStatus patient={mockPatient1} current_user={mockUser1} household_members={[ mockPatient2, mockPatient3, mockPatient4 ]}
-      jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} />);
-    wrapper.find('#case_status').at(1).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
+    const wrapper = mount(<CaseStatus patient={mockPatient1} current_user={mockUser1} household_members={[mockPatient2, mockPatient3, mockPatient4]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+    wrapper
+      .find('#case_status')
+      .at(1)
+      .simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
 
     // initial radio button state
     expect(wrapper.find(ApplyToHousehold).exists()).toBeTruthy();
@@ -204,14 +205,20 @@ describe('CaseStatus', () => {
     expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeFalsy();
 
     // change to apply to all of household
-    wrapper.find('#apply_to_household_yes').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
+    wrapper
+      .find('#apply_to_household_yes')
+      .at(1)
+      .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     expect(wrapper.find(CustomTable).exists()).toBeTruthy();
     expect(wrapper.state('apply_to_household')).toBeTruthy();
     expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeFalsy();
     expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeTruthy();
 
     // change back to just this monitoree
-    wrapper.find('#apply_to_household_no').at(1).simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
+    wrapper
+      .find('#apply_to_household_no')
+      .at(1)
+      .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
     expect(wrapper.find(CustomTable).exists()).toBeFalsy();
     expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeTruthy();
