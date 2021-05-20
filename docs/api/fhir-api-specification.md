@@ -343,6 +343,7 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
     "user/Immunization.read",
     "user/Immunization.write",
     "user/Immunization.*",
+    "user/Provenance.read",
     "system/Patient.read",
     "system/Patient.write",
     "system/Patient.*",
@@ -353,7 +354,8 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
     "system/RelatedPerson.*",
     "system/Immunization.read",
     "system/Immunization.write",
-    "system/Immunization.*"
+    "system/Immunization.*",
+    "system/Provenance.read"
   ],
   "capabilities": ["launch-standalone"]
 }
@@ -757,6 +759,56 @@ Get a monitoree vaccination via an id, e.g.:
     }
   ],
   "resourceType": "Immunization"
+}
+```
+  </div>
+</details>
+
+<a name="read-get-provenance"/>
+
+### GET `[base]/Provenance/[:id]`
+
+Get a monitoree provenance via an id, e.g.:
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "id": 2006, 
+  "meta": {
+    "lastUpdated": "2021-05-20T02:09:38+00:00"
+  },
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/comment", 
+      "valueString": "User changed latest public health action to \"Recommended medical evaluation of symptoms\". Reason: Lost to follow-up during monitoring period, details"
+    }, 
+    {
+      "url": "http://saraalert.org/StructureDefinition/history_type", 
+      "valueString": "Monitoring Change"
+    }
+  ], 
+  "target": [
+    {
+      "reference": "Patient/6"
+    }
+  ], 
+  "recorded": "2021-05-20T02:09:38+00:00", 
+  "agent": [
+    {
+      "who": {
+        "identifier": {
+          "value": "state1_epi_enroller@example.com"
+        }
+      }, 
+      "onBehalfOf": {
+        "reference": "Patient/6"
+      }
+    }
+  ], 
+  "resourceType": "Provenance"
 }
 ```
   </div>

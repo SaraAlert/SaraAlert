@@ -579,6 +579,18 @@ class Fhir::R4::ApiController < ApplicationApiController
               FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_id', type: 'string'),
               FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_count', type: 'string')
             ]
+          ),
+          FHIR::CapabilityStatement::Rest::Resource.new(
+            type: 'Provenance',
+            interaction: [
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'read'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'search-type')
+            ],
+            searchParam: [
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: 'patient', type: 'reference'),
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_id', type: 'string'),
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_count', type: 'string')
+            ]
           )
         ]
       )
