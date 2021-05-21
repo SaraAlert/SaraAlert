@@ -116,6 +116,7 @@ group :development, :test do
   gem 'ffi-hunspell'
   gem 'gemsurance'
   gem 'memory_profiler'
+  gem 'octokit', '~> 4.0'
   gem 'rubocop'
   gem 'ruby-jmeter'
   gem 'stackprof'
