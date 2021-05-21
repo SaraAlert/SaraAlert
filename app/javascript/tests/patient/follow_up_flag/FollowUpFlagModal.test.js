@@ -7,11 +7,10 @@ import { mockUser1 } from '../../mocks/mockUsers';
 import { mockPatient1 } from '../../mocks/mockPatients';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+const mockToken = 'testMockTokenString12345';
 
 function getWrapper() {
-  return shallow(<FollowUpFlagModal show={true} bulk_action={false} current_user={mockUser1} patient={mockPatient1} other_household_members={[]}
-    jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} authenticity_token={authyToken} />);
+  return shallow(<FollowUpFlagModal show={true} bulk_action={false} current_user={mockUser1} patient={mockPatient1} other_household_members={[]} jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
 }
 
 describe('FollowUpFlag', () => {
