@@ -3,17 +3,13 @@
 # CloseContactsController: close contacts
 class CloseContactsController < ApplicationController
   before_action :authenticate_user!
+  before_action :check_can_create, only: %i[create]
+  before_action :check_can_edit, only: %i[update destroy]
+  before_action :check_patient
+  before_action :check_close_contact, only: %i[update destroy]
 
   # Create a new close contact
   def create
-    redirect_to(root_url) && return unless current_user.can_create_patient_close_contacts?
-
-    patient_id = params.permit(:patient_id)[:patient_id]
-
-    redirect_to(root_url) && return if patient_id.nil?
-
-    redirect_to(root_url) && return unless current_user.viewable_patients.where(id: patient_id).exists?
-
     cc = CloseContact.new(first_name: params.permit(:first_name)[:first_name],
                           last_name: params.permit(:last_name)[:last_name],
                           primary_telephone: params.permit(:primary_telephone)[:primary_telephone],
@@ -23,35 +19,97 @@ class CloseContactsController < ApplicationController
                           notes: params.permit(:notes)[:notes],
                           enrolled_id: nil,
                           contact_attempts: 0)
-    cc.patient_id = patient_id
-    cc.save
-    History.close_contact(patient: params.permit(:patient_id)[:patient_id],
-                          created_by: current_user.email,
-                          comment: "User added a new close contact (ID: #{cc.id}).")
+    cc.patient_id = @patient.id
+    ActiveRecord::Base.transaction do
+      if cc.save
+        History.close_contact(patient: params.permit(:patient_id)[:patient_id],
+                              created_by: current_user.email,
+                              comment: "User added a new close contact (ID: #{cc.id}).")
+      else
+        # Handle case where close contact create failed
+        error_message = 'Close Contact was unable to be created.'
+        render(json: { error: error_message }, status: :bad_request) && return
+      end
+    end
   end
 
   # Update an existing close contact
   def update
-    redirect_to(root_url) && return unless current_user.can_edit_patient_close_contacts?
+    update_params = {
+      first_name: params.permit(:first_name)[:first_name],
+      last_name: params.permit(:last_name)[:last_name],
+      primary_telephone: params.permit(:primary_telephone)[:primary_telephone],
+      email: params.permit(:email)[:email],
+      last_date_of_exposure: params.permit(:last_date_of_exposure)[:last_date_of_exposure],
+      assigned_user: params.permit(:assigned_user)[:assigned_user],
+      notes: params.permit(:notes)[:notes],
+      contact_attempts: params.permit(:contact_attempts)[:contact_attempts]
+    }
+    ActiveRecord::Base.transaction do
+      if @close_contact.update(update_params)
+        History.close_contact_edit(patient: @patient.id,
+                                   created_by: current_user.email,
+                                   comment: "User edited a close contact (ID: #{@close_contact.id}).")
+      else
+        # Handle case where close contact update failed
+        error_message = 'Close Contact was unable to be updated.'
+        render(json: { error: error_message }, status: :bad_request) && return
+      end
+    end
+  end
 
-    patient_id = params.permit(:patient_id)[:patient_id]
+  # Delete an existing close contact record
+  def destroy
+    ActiveRecord::Base.transaction do
+      if @close_contact.destroy
+        reason = params.require(:delete_reason)
+        comment = "User deleted a close contact (ID: #{@close_contact.id}"
+        comment += ", Name: #{@close_contact.first_name} #{@close_contact.last_name}" unless (@close_contact.first_name + @close_contact.last_name).blank?
+        comment += ", Primary Telephone: #{@close_contact.primary_telephone}" unless @close_contact.primary_telephone.blank?
+        comment += ", Email: #{@close_contact.email}" unless @close_contact.email.blank?
+        unless @close_contact.last_date_of_exposure.blank?
+          comment += ", Last Date of Exposure: #{@close_contact.last_date_of_exposure.to_date.strftime('%m/%d/%Y')}"
+        end
+        comment += ", Assigned User: #{@close_contact.assigned_user}" unless @close_contact.assigned_user.blank?
+        comment += ", Notes: #{@close_contact.notes}" unless @close_contact.notes.blank?
+        comment += ", Contact Attempts: #{@close_contact.contact_attempts}" unless @close_contact.contact_attempts.blank?
+        comment += "). Reason: #{reason}."
+        History.close_contact_edit(patient: @patient.id,
+                                   created_by: current_user.email,
+                                   comment: comment)
+      else
+        # Handle case where close contact delete failed
+        error_message = 'Close Contact was unable to be deleted.'
+        render(json: { error: error_message }, status: :bad_request) && return
+      end
+    end
+  end
 
-    redirect_to(root_url) && return if patient_id.nil?
+  private
 
-    redirect_to(root_url) && return unless current_user.viewable_patients.where(id: patient_id).exists?
+  def check_can_create
+    return head :forbidden unless current_user.can_create_patient_close_contacts?
+  end
 
-    cc = CloseContact.find_by(id: params.permit(:id)[:id])
-    cc.update(first_name: params.permit(:first_name)[:first_name],
-              last_name: params.permit(:last_name)[:last_name],
-              primary_telephone: params.permit(:primary_telephone)[:primary_telephone],
-              email: params.permit(:email)[:email],
-              last_date_of_exposure: params.permit(:last_date_of_exposure)[:last_date_of_exposure],
-              assigned_user: params.permit(:assigned_user)[:assigned_user],
-              notes: params.permit(:notes)[:notes],
-              contact_attempts: params.permit(:contact_attempts)[:contact_attempts])
-    cc.save
-    History.close_contact_edit(patient: patient_id,
-                               created_by: current_user.email,
-                               comment: "User edited a close contact (ID: #{cc.id}).")
+  def check_can_edit
+    return head :forbidden unless current_user.can_edit_patient_close_contacts?
+  end
+
+  def check_patient
+    patient_id = params.require(:patient_id).to_i
+    # Check if Patient ID is valid
+    unless Patient.exists?(patient_id)
+      error_message = "Close Contact cannot be modified for unknown monitoree with ID: #{patient_id}"
+      render(json: { error: error_message }, status: :bad_request) && return
+    end
+
+    # Check if user has access to patient
+    @patient = current_user.viewable_patients.find_by_id(patient_id)
+    render(json: { error: "User does not have access to Patient with ID: #{patient_id}" }, status: :forbidden) && return unless @patient
+  end
+
+  def check_close_contact
+    @close_contact = @patient.close_contacts.find_by_id(params.require(:id))
+    return head :bad_request if @close_contact.nil?
   end
 end

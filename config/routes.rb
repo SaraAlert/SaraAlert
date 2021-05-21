@@ -82,6 +82,7 @@ Rails.application.routes.draw do
 
   post '/close_contacts', to: 'close_contacts#create'
   post '/close_contacts/:id', to: 'close_contacts#update'
+  delete '/close_contacts/:id', to: 'close_contacts#destroy'
 
   get '/patients/:id/group', to: 'patients#new_group_member'
 

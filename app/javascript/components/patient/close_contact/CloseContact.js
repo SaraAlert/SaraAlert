@@ -16,6 +16,7 @@ import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
 import PhoneInput from '../../util/PhoneInput';
 import reportError from '../../util/ReportError';
+import DeleteDialog from '../../util/DeleteDialog';
 
 const MAX_NOTES_LENGTH = 2000;
 
@@ -23,7 +24,8 @@ class CloseContact extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false,
+      showCloseContactModal: false,
+      showDeleteModal: false,
       disableCreate:
         (!this.props.close_contact.first_name && !this.props.close_contact.last_name) ||
         (!this.props.close_contact.primary_telephone && !this.props.close_contact.email),
@@ -33,8 +35,8 @@ class CloseContact extends React.Component {
       last_name: this.props.close_contact.last_name || '',
       primary_telephone: this.props.close_contact.primary_telephone || '',
       email: this.props.close_contact.email || '',
-      last_date_of_exposure: this.props.close_contact.last_date_of_exposure || null,
-      assigned_user: this.props.close_contact.assigned_user || null,
+      cc_last_date_of_exposure: this.props.close_contact.last_date_of_exposure || null,
+      cc_assigned_user: this.props.close_contact.assigned_user || null,
       notes: this.props.close_contact.notes || '',
       enrolled_id: this.props.close_contact.enrolled_id || null,
       contact_attempts: this.props.close_contact.contact_attempts || 0,
@@ -44,35 +46,7 @@ class CloseContact extends React.Component {
       : 'enter additional information about monitoree’s potential exposure';
   }
 
-  toggleModal = () => {
-    let newState = {
-      showModal: !this.state.showModal,
-    };
-    if (this.state.showModal) {
-      // if we currently are showing the modal, that means they clicked cancel
-      // (because the rest of this method hasnt had time to fire, and change 'show' to false)
-      // When they click cancel, we want to null out all of the fields
-      newState = {
-        disableCreate:
-          (!this.props.close_contact.first_name && !this.props.close_contact.last_name) ||
-          (!this.props.close_contact.primary_telephone && !this.props.close_contact.email),
-        errors: {},
-        first_name: this.props.close_contact.first_name || '',
-        last_name: this.props.close_contact.last_name || '',
-        primary_telephone: this.props.close_contact.primary_telephone || '',
-        email: this.props.close_contact.email || '',
-        last_date_of_exposure: this.props.close_contact.last_date_of_exposure || null,
-        assigned_user: this.props.close_contact.assigned_user || null,
-        notes: this.props.close_contact.notes || '',
-        enrolled_id: this.props.close_contact.enrolled_id || null,
-        contact_attempts: this.props.close_contact.contact_attempts || 0,
-        ...newState, // merge in the flip-flopped value of showModal
-      };
-    }
-    this.setState(newState);
-  };
-
-  handleDateChange = event => this.setState({ last_date_of_exposure: event });
+  handleLDEChange = date => this.setState({ cc_last_date_of_exposure: date });
 
   handleChange = event => {
     if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.match(/^\s*$/) !== null) {
@@ -81,7 +55,7 @@ class CloseContact extends React.Component {
       event.target.value = '';
     }
     let value;
-    if (event?.target?.id && event.target.id === 'assigned_user') {
+    if (event?.target?.id && event.target.id === 'cc_assigned_user') {
       if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
       // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
       value = _.trim(event.target.value) === '' ? null : parseInt(event.target.value);
@@ -106,7 +80,35 @@ class CloseContact extends React.Component {
     }
   };
 
-  submit = () => {
+  toggleCloseContactModal = () => {
+    let newState = {
+      showCloseContactModal: !this.state.showCloseContactModal,
+    };
+    if (this.state.showCloseContactModal) {
+      // if we currently are showing the modal, that means they clicked cancel
+      // (because the rest of this method hasnt had time to fire, and change 'show' to false)
+      // When they click cancel, we want to null out all of the fields
+      newState = {
+        disableCreate:
+          (!this.props.close_contact.first_name && !this.props.close_contact.last_name) ||
+          (!this.props.close_contact.primary_telephone && !this.props.close_contact.email),
+        errors: {},
+        first_name: this.props.close_contact.first_name || '',
+        last_name: this.props.close_contact.last_name || '',
+        primary_telephone: this.props.close_contact.primary_telephone || '',
+        email: this.props.close_contact.email || '',
+        cc_last_date_of_exposure: this.props.close_contact.last_date_of_exposure || null,
+        cc_assigned_user: this.props.close_contact.assigned_user || null,
+        notes: this.props.close_contact.notes || '',
+        enrolled_id: this.props.close_contact.enrolled_id || null,
+        contact_attempts: this.props.close_contact.contact_attempts || 0,
+        ...newState, // merge in the flip-flopped value of showCloseContactModal
+      };
+    }
+    this.setState(newState);
+  };
+
+  handleCloseContactSubmit = () => {
     schema
       .validate({ ...this.state }, { abortEarly: false })
       .then(() => {
@@ -119,8 +121,8 @@ class CloseContact extends React.Component {
               last_name: this.state.last_name || '',
               primary_telephone: this.state.primary_telephone ? phoneUtil.format(phoneUtil.parse(this.state.primary_telephone, 'US'), PNF.E164) : '',
               email: this.state.email || '',
-              last_date_of_exposure: this.state.last_date_of_exposure || null,
-              assigned_user: this.state.assigned_user || null,
+              last_date_of_exposure: this.state.cc_last_date_of_exposure || null,
+              assigned_user: this.state.cc_assigned_user || null,
               notes: this.state.notes || '',
               enrolled_id: this.state.enrolled_id || null,
               contact_attempts: this.state.contact_attempts || 0,
@@ -145,12 +147,44 @@ class CloseContact extends React.Component {
       });
   };
 
-  createModal(title, toggle, submit) {
+  toggleDeleteModal = () => {
+    let current = this.state.showDeleteModal;
+    this.setState({
+      showDeleteModal: !current,
+      delete_reason: null,
+      delete_reason_text: null,
+    });
+  };
+
+  handleDeleteSubmit = () => {
+    let deleteReason = this.state.delete_reason;
+    if (deleteReason === 'Other' && this.state.delete_reason_text) {
+      deleteReason += ', ' + this.state.delete_reason_text;
+    }
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .delete(window.BASE_PATH + '/close_contacts/' + this.props.close_contact.id, {
+          data: {
+            patient_id: this.props.patient.id,
+            delete_reason: deleteReason,
+          },
+        })
+        .then(() => {
+          location.reload();
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
+  };
+
+  createModal() {
     return (
-      <Modal size="lg" show centered onHide={toggle}>
-        <h1 className="sr-only">{title}</h1>
+      <Modal size="lg" show centered onHide={this.toggleCloseContactModal}>
+        <h1 className="sr-only">{this.props.close_contact.id ? 'Update' : 'Create'} Close Contact</h1>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>{this.props.close_contact.id ? 'Update' : 'Create'} Close Contact</Modal.Title>
         </Modal.Header>
         <Modal.Body className="px-5">
           <Row className="mt-3">
@@ -193,39 +227,38 @@ class CloseContact extends React.Component {
           </Row>
           <hr></hr>
           <Row>
-            <Form.Group as={Col} lg="12" controlId="last_date_of_exposure">
-              <Form.Label className="nav-input-label">Last Date of Exposure {schema?.fields?.last_date_of_exposure?._exclusive?.required && '*'}</Form.Label>
+            <Form.Group as={Col} lg="12" controlId="cc_last_date_of_exposure">
+              <Form.Label className="nav-input-label">Last Date of Exposure {schema?.fields?.cc_last_date_of_exposure?._exclusive?.required && '*'}</Form.Label>
               <DateInput
-                id="last_date_of_exposure"
-                date={this.state.last_date_of_exposure}
+                id="cc_last_date_of_exposure"
+                date={this.state.cc_last_date_of_exposure}
                 minDate={'2020-01-01'}
                 maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
-                onChange={this.handleDateChange}
+                onChange={this.handleLDEChange}
                 placement="top"
-                isInvalid={!!this.state.errors['last_date_of_exposure']}
+                isInvalid={!!this.state.errors['cc_last_date_of_exposure']}
                 customClass="form-control-lg"
-                ariaLabel="Last Date of Exposure Input"
               />
               <Form.Control.Feedback className="d-block" type="invalid">
-                {this.state.errors['last_date_of_exposure']}
+                {this.state.errors['cc_last_date_of_exposure']}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} lg="12" controlId="assigned_user">
+            <Form.Group as={Col} lg="12" controlId="cc_assigned_user">
               <Form.Label className="nav-input-label">
-                Assigned User {schema?.fields?.assigned_user?._exclusive?.required && '*'}
+                Assigned User {schema?.fields?.cc_assigned_user?._exclusive?.required && '*'}
                 <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
               </Form.Label>
               <Form.Control
-                isInvalid={this.state.errors['assigned_user']}
+                isInvalid={this.state.errors['cc_assigned_user']}
                 as="input"
-                list="assigned_users"
+                list="cc_assigned_users"
                 autoComplete="off"
                 size="lg"
                 className="d-block"
                 onChange={this.handleChange}
-                value={this.state.assigned_user || ''}
+                value={this.state.cc_assigned_user || ''}
               />
-              <datalist id="assigned_users">
+              <datalist id="cc_assigned_users">
                 {this.props.assigned_users?.map(num => {
                   return (
                     <option value={num} key={num}>
@@ -235,7 +268,7 @@ class CloseContact extends React.Component {
                 })}
               </datalist>
               <Form.Control.Feedback className="d-block" type="invalid">
-                {this.state.errors['assigned_user']}
+                {this.state.errors['cc_assigned_user']}
               </Form.Control.Feedback>
             </Form.Group>
           </Row>
@@ -263,10 +296,10 @@ class CloseContact extends React.Component {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
+          <Button variant="secondary btn-square" onClick={this.toggleCloseContactModal}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={this.state.disableCreate || this.state.loading}>
+          <Button variant="primary btn-square" onClick={this.handleCloseContactSubmit} disabled={this.state.disableCreate || this.state.loading}>
             <span data-for="create-tooltip" data-tip="" className="ml-1">
               {this.props.close_contact.id ? 'Update' : 'Create'}
             </span>
@@ -288,7 +321,7 @@ class CloseContact extends React.Component {
     return (
       <React.Fragment>
         {!this.props.close_contact.id && (
-          <Button onClick={this.toggleModal}>
+          <Button onClick={this.toggleCloseContactModal}>
             <i className="fas fa-plus fa-fw"></i>
             <span className="ml-2">Add New Close Contact</span>
           </Button>
@@ -296,12 +329,16 @@ class CloseContact extends React.Component {
         {this.props.close_contact.id && (
           <div className="pl-2">
             <React.Fragment>
-              <Button variant="link" onClick={this.toggleModal} className="btn btn-link py-0" size="sm">
+              <Button variant="link" onClick={this.toggleCloseContactModal} className="btn btn-link py-0" size="sm">
                 <i className="fas fa-edit"></i> Edit
               </Button>
               <div className="pl-2"></div>
               <Button variant="link" onClick={this.contactAttempt} className="btn btn-link py-0" size="sm">
                 <i className="fas fa-phone fa-flip-horizontal"></i> Contact Attempt
+              </Button>
+              <div className="pl-2"></div>
+              <Button variant="link" onClick={this.toggleDeleteModal} className="btn btn-link py-0" size="sm">
+                <i className="fas fa-trash"></i> Delete
               </Button>
             </React.Fragment>
           </div>
@@ -332,7 +369,16 @@ class CloseContact extends React.Component {
             </Button>
           </div>
         )}
-        {this.state.showModal && this.createModal('Close Contact', this.toggleModal, this.submit)}
+        {this.state.showCloseContactModal && this.createModal()}
+        {this.state.showDeleteModal && (
+          <DeleteDialog
+            type={'Close Contact'}
+            delete={this.handleDeleteSubmit}
+            toggle={this.toggleDeleteModal}
+            onChange={this.handleChange}
+            show_text_input={true}
+          />
+        )}
       </React.Fragment>
     );
   }
@@ -362,12 +408,12 @@ const schema = yup.object().shape({
   last_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   email: yup.string().email('Please enter a valid email.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  last_date_of_exposure: yup
+  cc_last_date_of_exposure: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .min(moment('2020-01-01'), 'Last Date of Exposure must fall after January 1, 2020.')
     .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
     .nullable(),
-  assigned_user: yup
+  cc_assigned_user: yup
     .number()
     .typeError('Assigned User must be a number (or left blank)')
     .min(1)
