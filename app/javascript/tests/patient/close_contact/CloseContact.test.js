@@ -31,13 +31,14 @@ describe('CloseContact', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
     expect(emptyCCWrapper.find(Button).length).toEqual(1);
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.state('first_name')).toEqual('');
     expect(emptyCCWrapper.state('last_name')).toEqual('');
     expect(emptyCCWrapper.state('primary_telephone')).toEqual('');
     expect(emptyCCWrapper.state('email')).toEqual('');
-    expect(emptyCCWrapper.state('last_date_of_exposure')).toEqual(null);
-    expect(emptyCCWrapper.state('assigned_user')).toEqual(null);
+    expect(emptyCCWrapper.state('cc_last_date_of_exposure')).toEqual(null);
+    expect(emptyCCWrapper.state('cc_assigned_user')).toEqual(null);
     expect(emptyCCWrapper.state('notes')).toEqual('');
     expect(emptyCCWrapper.state('enrolled_id')).toEqual(null);
     expect(emptyCCWrapper.state('contact_attempts')).toEqual(0);
@@ -45,47 +46,51 @@ describe('CloseContact', () => {
 
   it('Properly renders all main components for already existing enrolled close contact', () => {
     const alreadyExistingCCWrapper = getShallowWrapper(mockCloseContact2);
-    expect(alreadyExistingCCWrapper.find(Button).length).toEqual(3);
+    expect(alreadyExistingCCWrapper.find(Button).length).toEqual(4);
     expect(alreadyExistingCCWrapper.find(Button).at(0).text()).toContain('Edit');
     expect(alreadyExistingCCWrapper.find(Button).at(1).text()).toContain('Contact Attempt');
-    expect(alreadyExistingCCWrapper.find(Button).at(2).text()).toContain('View Record');
-    expect(alreadyExistingCCWrapper.state('showModal')).toBeFalsy();
+    expect(alreadyExistingCCWrapper.find(Button).at(2).text()).toContain('Delete');
+    expect(alreadyExistingCCWrapper.find(Button).at(3).text()).toContain('View Record');
+
+    expect(alreadyExistingCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(alreadyExistingCCWrapper.state('first_name')).toEqual(mockCloseContact2.first_name || '');
     expect(alreadyExistingCCWrapper.state('last_name')).toEqual(mockCloseContact2.last_name || '');
     expect(alreadyExistingCCWrapper.state('primary_telephone')).toEqual(mockCloseContact2.primary_telephone || '');
     expect(alreadyExistingCCWrapper.state('email')).toEqual(mockCloseContact2.email || '');
-    expect(alreadyExistingCCWrapper.state('last_date_of_exposure')).toEqual(mockCloseContact2.last_date_of_exposure || null);
-    expect(alreadyExistingCCWrapper.state('assigned_user')).toEqual(mockCloseContact2.assigned_user || null);
+    expect(alreadyExistingCCWrapper.state('cc_last_date_of_exposure')).toEqual(mockCloseContact2.last_date_of_exposure || null);
+    expect(alreadyExistingCCWrapper.state('cc_assigned_user')).toEqual(mockCloseContact2.assigned_user || null);
     expect(alreadyExistingCCWrapper.state('notes')).toEqual(mockCloseContact2.notes || '');
     expect(alreadyExistingCCWrapper.state('contact_attempts')).toEqual(mockCloseContact2.contact_attempts || 0);
   });
 
   it('Properly renders all main components for already existing unenrolled close contact', () => {
     const alreadyExistingCCWrapper = getShallowWrapper(mockCloseContact3);
-    expect(alreadyExistingCCWrapper.find(Button).length).toEqual(3);
+    expect(alreadyExistingCCWrapper.find(Button).length).toEqual(4);
     expect(alreadyExistingCCWrapper.find(Button).at(0).text()).toContain('Edit');
     expect(alreadyExistingCCWrapper.find(Button).at(1).text()).toContain('Contact Attempt');
-    expect(alreadyExistingCCWrapper.find(Button).at(2).text()).toContain('Enroll');
-    expect(alreadyExistingCCWrapper.state('showModal')).toBeFalsy();
+    expect(alreadyExistingCCWrapper.find(Button).at(2).text()).toContain('Delete');
+    expect(alreadyExistingCCWrapper.find(Button).at(3).text()).toContain('Enroll');
+
+    expect(alreadyExistingCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(alreadyExistingCCWrapper.state('first_name')).toEqual(mockCloseContact3.first_name || '');
     expect(alreadyExistingCCWrapper.state('last_name')).toEqual(mockCloseContact3.last_name || '');
     expect(alreadyExistingCCWrapper.state('primary_telephone')).toEqual(mockCloseContact3.primary_telephone || '');
     expect(alreadyExistingCCWrapper.state('email')).toEqual(mockCloseContact3.email || '');
-    expect(alreadyExistingCCWrapper.state('last_date_of_exposure')).toEqual(mockCloseContact3.last_date_of_exposure || null);
-    expect(alreadyExistingCCWrapper.state('assigned_user')).toEqual(mockCloseContact3.assigned_user || null);
+    expect(alreadyExistingCCWrapper.state('cc_last_date_of_exposure')).toEqual(mockCloseContact3.last_date_of_exposure || null);
+    expect(alreadyExistingCCWrapper.state('cc_assigned_user')).toEqual(mockCloseContact3.assigned_user || null);
     expect(alreadyExistingCCWrapper.state('notes')).toEqual(mockCloseContact3.notes || '');
     expect(alreadyExistingCCWrapper.state('contact_attempts')).toEqual(mockCloseContact3.contact_attempts || 0);
   });
 
   it('Properly renders the modal if button is clicked', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
-    expect(emptyCCWrapper.state('showModal')).toBeTruthy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeTruthy();
     expect(emptyCCWrapper.find(Modal.Header).exists()).toBeTruthy();
-    expect(emptyCCWrapper.find(Modal).find('.sr-only').text()).toEqual('Close Contact');
-    expect(emptyCCWrapper.find(Modal.Header).find('ModalTitle').text()).toEqual('Close Contact');
+    expect(emptyCCWrapper.find(Modal).find('.sr-only').text()).toEqual('Create Close Contact');
+    expect(emptyCCWrapper.find(Modal.Header).find('ModalTitle').text()).toEqual('Create Close Contact');
     expect(emptyCCWrapper.find(Modal.Body).exists()).toBeTruthy();
     // Using 'toContain' instead of 'toEqual' to avoid any whitespace issues
     expect(emptyCCWrapper.find(Modal.Body).find('Row').at(0).find(Form.Label).at(0).text()).toContain('First Name');
@@ -114,12 +119,12 @@ describe('CloseContact', () => {
   it('Can properly set fields when an empty close contact is used as a prop', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
     const handleChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleChange');
-    const handleDateChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleDateChange');
+    const handleLDEChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleLDEChange');
 
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
-    expect(emptyCCWrapper.state('showModal')).toBeTruthy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeTruthy();
 
     let value;
     value = testInputValues.find(x => x.field === 'first_name').value;
@@ -169,21 +174,21 @@ describe('CloseContact', () => {
     expect(emptyCCWrapper.state('email')).toEqual(value);
 
     value = testInputValues.find(x => x.field === 'last_date_of_exposure').value;
-    expect(emptyCCWrapper.state('last_date_of_exposure')).toBeFalsy();
+    expect(emptyCCWrapper.state('cc_last_date_of_exposure')).toBeFalsy();
     emptyCCWrapper.find(Modal.Body).find('Row').at(2).find('DateInput').simulate('change', value);
-    expect(handleDateChangeSpy).toHaveBeenCalled();
-    expect(emptyCCWrapper.state('last_date_of_exposure')).toEqual(value);
+    expect(handleLDEChangeSpy).toHaveBeenCalled();
+    expect(emptyCCWrapper.state('cc_last_date_of_exposure')).toEqual(value);
 
     value = testInputValues.find(x => x.field === 'assigned_user').value;
-    expect(emptyCCWrapper.state('assigned_user')).toBeFalsy();
+    expect(emptyCCWrapper.state('cc_assigned_user')).toBeFalsy();
     emptyCCWrapper
       .find(Modal.Body)
       .find('Row')
       .at(2)
       .find(Form.Control)
-      .simulate('change', { target: { id: 'assigned_user', value: value } });
+      .simulate('change', { target: { id: 'cc_assigned_user', value: value } });
     expect(handleChangeSpy).toHaveBeenCalled();
-    expect(emptyCCWrapper.state('assigned_user')).toEqual(value);
+    expect(emptyCCWrapper.state('cc_assigned_user')).toEqual(value);
 
     value = testInputValues.find(x => x.field === 'notes').value;
     expect(emptyCCWrapper.state('notes')).toBeFalsy();
@@ -208,10 +213,10 @@ describe('CloseContact', () => {
 
   it('Properly clears any values in the modal on close (when adding a new close contact)', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
-    expect(emptyCCWrapper.state('showModal')).toBeTruthy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeTruthy();
 
     let value;
     value = testInputValues.find(x => x.field === 'first_name').value;
@@ -252,7 +257,7 @@ describe('CloseContact', () => {
       .find('Row')
       .at(2)
       .find(Form.Control)
-      .simulate('change', { target: { id: 'assigned_user', value: value } });
+      .simulate('change', { target: { id: 'cc_assigned_user', value: value } });
     value = testInputValues.find(x => x.field === 'notes').value;
     emptyCCWrapper
       .find(Modal.Body)
@@ -263,21 +268,21 @@ describe('CloseContact', () => {
 
     emptyCCWrapper.find(Button).at(1).simulate('click');
     // Once the modal is closed, the values should default back to their nulled out original values
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.state('first_name')).toEqual(mockCloseContact1.first_name || '');
     expect(emptyCCWrapper.state('last_name')).toEqual(mockCloseContact1.last_name || '');
     expect(emptyCCWrapper.state('primary_telephone')).toEqual(mockCloseContact1.primary_telephone || '');
     expect(emptyCCWrapper.state('email')).toEqual(mockCloseContact1.email || '');
-    expect(emptyCCWrapper.state('last_date_of_exposure')).toEqual(mockCloseContact1.last_date_of_exposure || null);
-    expect(emptyCCWrapper.state('assigned_user')).toEqual(mockCloseContact1.assigned_user || null);
+    expect(emptyCCWrapper.state('cc_last_date_of_exposure')).toEqual(mockCloseContact1.cc_last_date_of_exposure || null);
+    expect(emptyCCWrapper.state('cc_assigned_user')).toEqual(mockCloseContact1.assigned_user || null);
     expect(emptyCCWrapper.state('notes')).toEqual(mockCloseContact1.notes || '');
   });
 
   it('Properly resets any values in the modal to the default (when editing an existing close contact)', () => {
     const existingCCWrapper = getShallowWrapper(mockCloseContact2);
-    expect(existingCCWrapper.state('showModal')).toBeFalsy();
+    expect(existingCCWrapper.state('showCloseContactModal')).toBeFalsy();
     existingCCWrapper.find(Button).at(0).simulate('click');
-    expect(existingCCWrapper.state('showModal')).toBeTruthy();
+    expect(existingCCWrapper.state('showCloseContactModal')).toBeTruthy();
 
     let value;
     value = testInputValues.find(x => x.field === 'first_name').value;
@@ -318,7 +323,7 @@ describe('CloseContact', () => {
       .find('Row')
       .at(2)
       .find(Form.Control)
-      .simulate('change', { target: { id: 'assigned_user', value: value } });
+      .simulate('change', { target: { id: 'cc_assigned_user', value: value } });
     value = testInputValues.find(x => x.field === 'notes').value;
     existingCCWrapper
       .find(Modal.Body)
@@ -327,35 +332,35 @@ describe('CloseContact', () => {
       .find(Form.Control)
       .simulate('change', { target: { id: 'notes', value: value } });
 
-    existingCCWrapper.find(Button).at(3).simulate('click');
+    existingCCWrapper.find(Button).at(4).simulate('click');
     // Once the modal is closed, the values should default back to their nulled out original values
-    expect(existingCCWrapper.state('showModal')).toBeFalsy();
+    expect(existingCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(existingCCWrapper.state('first_name')).toEqual(mockCloseContact2.first_name || '');
     expect(existingCCWrapper.state('last_name')).toEqual(mockCloseContact2.last_name || '');
     expect(existingCCWrapper.state('primary_telephone')).toEqual(mockCloseContact2.primary_telephone || '');
     expect(existingCCWrapper.state('email')).toEqual(mockCloseContact2.email || '');
-    expect(existingCCWrapper.state('last_date_of_exposure')).toEqual(mockCloseContact2.last_date_of_exposure || null);
-    expect(existingCCWrapper.state('assigned_user')).toEqual(mockCloseContact2.assigned_user || null);
+    expect(existingCCWrapper.state('cc_last_date_of_exposure')).toEqual(mockCloseContact2.last_date_of_exposure || null);
+    expect(existingCCWrapper.state('cc_assigned_user')).toEqual(mockCloseContact2.assigned_user || null);
     expect(existingCCWrapper.state('notes')).toEqual(mockCloseContact2.notes || '');
   });
 
-  it('Properly calls submit when the button is clicked', () => {
+  it('Properly calls handleCloseContactSubmit when the button is clicked', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
-    const submitSpy = jest.spyOn(emptyCCWrapper.instance(), 'submit');
+    const handleCloseContactSubmitSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleCloseContactSubmit');
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
     expect(emptyCCWrapper.find(Button).at(2).text()).toContain('Create');
-    emptyCCWrapper.find(Button).at(2).simulate('click'); //click submit
-    expect(submitSpy).toHaveBeenCalledTimes(1);
+    emptyCCWrapper.find(Button).at(2).simulate('click'); //click handleCloseContactSubmit
+    expect(handleCloseContactSubmitSpy).toHaveBeenCalledTimes(1);
   });
 
   it('Properly renders accurate count of characters remaining for notes field', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
     const testNoteString = 'The Strongest Avenger';
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
-    expect(emptyCCWrapper.state('showModal')).toBeTruthy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeTruthy();
     expect(emptyCCWrapper.find(Modal.Body).find('Row').at(3).find(Form.Label).text()).toContain('Notes');
     expect(emptyCCWrapper.find(Modal.Body).find('Row').at(3).find('.character-limit-text').text()).toContain('2000 characters remaining');
     emptyCCWrapper
@@ -370,7 +375,7 @@ describe('CloseContact', () => {
   it('Properly enables and disables the submit/create button when First Name and Phone is entered', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
 
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
 
@@ -414,7 +419,7 @@ describe('CloseContact', () => {
   it('Properly enables and disables the submit/create button when First Name and Email is entered', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
 
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
 
@@ -458,7 +463,7 @@ describe('CloseContact', () => {
   it('Properly enables and disables the submit/create button when Last Name and Phone is entered', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
 
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
 
@@ -502,7 +507,7 @@ describe('CloseContact', () => {
   it('Properly enables and disables the submit/create button when Last Name and Email is entered', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
 
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
 
@@ -546,7 +551,7 @@ describe('CloseContact', () => {
   it('Properly keeps the buttons disabled when all the required fields are not added', () => {
     const emptyCCWrapper = getShallowWrapper(mockCloseContact1);
 
-    expect(emptyCCWrapper.state('showModal')).toBeFalsy();
+    expect(emptyCCWrapper.state('showCloseContactModal')).toBeFalsy();
     expect(emptyCCWrapper.find(Button).at(0).text()).toContain('Add New Close Contact');
     emptyCCWrapper.find(Button).at(0).simulate('click');
     let value;

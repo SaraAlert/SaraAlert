@@ -48,7 +48,13 @@ class DeleteDialog extends React.Component {
             record&apos;s history export.
           </p>
           <p>Please select reason for deletion:</p>
-          <Form.Control as="select" className="form-control-md mb-3" id="delete_reason" onChange={this.handleReasonChange} defaultValue={-1}>
+          <Form.Control
+            as="select"
+            className="form-control-md mb-3"
+            id="delete_reason"
+            onChange={this.handleReasonChange}
+            defaultValue={-1}
+            aria-label="Delete reason select">
             <option disabled value={-1}>
               --
             </option>
@@ -65,6 +71,7 @@ class DeleteDialog extends React.Component {
                 maxLength={MAX_REASON_LENGTH}
                 className="form-square"
                 placeholder="Please enter additional information about the reason for deletion"
+                aria-label="Delete reason additional text input"
                 value={this.state.delete_reason_text}
                 onChange={this.handleTextChange}
               />
