@@ -3,23 +3,27 @@
 # API::ApiExportController: for exporting subjects via the API
 class Api::ApiExportController < ApplicationApiController
   before_action do
+    raise ClientError if
     doorkeeper_authorize!(
       :'system/Patient.read',
       :'system/Patient.*'
-    )
+    ) ||
     doorkeeper_authorize!(
       :'system/QuestionnaireResponse.read'
     )
+
     set_client_app
   end
 
   before_action only: %i[nbs_patients] do
-    status_not_acceptable unless request.headers['Accept']&.include?('application/zip')
+    status_not_acceptable && (raise ClientError) unless request.headers['Accept']&.include?('application/zip')
   end
+
+  rescue_from ClientError, with: proc {}
 
   def set_client_app
     @current_client_app = OauthApplication.find_by(id: doorkeeper_token&.application_id)
-    status_unauthorized if @current_client_app.nil?
+    status_unauthorized && (raise ClientError) if @current_client_app.nil?
   end
 
   # Multi patient PHDC export
