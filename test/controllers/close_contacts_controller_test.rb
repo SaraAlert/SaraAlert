@@ -246,7 +246,7 @@ class CloseContactsControllerTest < ActionController::TestCase
     history = patient.histories.first
     assert_equal(History::HISTORY_TYPES[:close_contact_edit], history[:history_type])
     assert_equal(user.email, history[:created_by])
-    assert_equal("User deleted a close contact (ID: #{close_contact.id}, Name: #{close_contact.first_name} #{close_contact.last_name}"\
+    assert_equal("User deleted a close contact (ID: #{close_contact.id}, Name: #{close_contact.first_name} #{close_contact.last_name}, Enrolled: No"\
       "). Reason: #{delete_reason}.", history[:comment])
 
     sign_out user
