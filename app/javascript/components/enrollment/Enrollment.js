@@ -171,6 +171,7 @@ class Enrollment extends React.Component {
   };
 
   next = () => {
+    window.scroll(0, 0);
     let index = this.state.index;
     let lastIndex = this.state.lastIndex;
     if (lastIndex) {
@@ -185,6 +186,7 @@ class Enrollment extends React.Component {
   };
 
   previous = () => {
+    window.scroll(0, 0);
     let index = this.state.index;
     this.setState({ direction: 'prev' }, () => {
       this.setState({ index: index - 1, lastIndex: null });
@@ -192,6 +194,7 @@ class Enrollment extends React.Component {
   };
 
   goto = targetIndex => {
+    window.scroll(0, 0);
     let index = this.state.index;
     if (targetIndex > index) {
       this.setState({ direction: 'next' }, () => {
