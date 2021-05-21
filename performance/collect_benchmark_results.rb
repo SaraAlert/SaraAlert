@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'octokit'
+require 'open-uri'
+require 'zip'
 
 if ENV['PERSONAL_TOKEN'].nil?
   puts '$PERSONAL_TOKEN must be set and token must have "workflow" permissions!'
@@ -11,14 +14,12 @@ end
 # Get artifact information so that ones we are interested in can be downloaded.
 #
 # https://docs.github.com/en/rest/reference/actions
+# https://github.com/octokit/octokit.rb/pull/1236
 #
 def get_artifact_info(page)
   print "\rFetching artifacts page: #{page}         "
-  artifacts = `curl -s \
-    -H "Authorization: token $PERSONAL_TOKEN" \
-    -H "Accept: application/vnd.github.v3+json" \
-    https://api.github.com/repos/SaraAlert/SaraAlert/actions/artifacts?page=#{page}`
-  JSON.parse(artifacts)
+  client = Octokit::Client.new(access_token: ENV['PERSONAL_TOKEN'], per_page: 100)
+  client.get("https://api.github.com/repos/SaraAlert/SaraAlert/actions/artifacts?page=#{page}")
 end
 
 ##
@@ -27,20 +28,32 @@ end
 # https://docs.github.com/en/rest/reference/actions
 #
 def fetch_artifact_zip(download_path, url)
-  `curl \
-    -sLJo #{download_path} \
-    -H "Authorization: token $PERSONAL_TOKEN" \
-    -H "Accept: application/vnd.github.v3+json" \
-    -H 'Accept: application/octet-stream' \
-    #{url}`
+  # rubocop:disable Security/Open
+  open(download_path, 'wb') do |file|
+    file.print URI.open(url, 'Authorization' => "token #{ENV['PERSONAL_TOKEN']}").read
+  end
+  # rubocop:enable Security/Open
+end
+
+# https://stackoverflow.com/questions/9204423/how-to-unzip-a-file-in-ruby-on-rails
+def extract_zip(file, destination)
+  Zip::File.open(file) do |zip_file|
+    zip_file.each do |f|
+      fpath = File.join(destination, f.name)
+      zip_file.extract(f, fpath) unless File.exist?(fpath)
+    end
+  end
 end
 
 path_prefix = 'performance/github_artifacts'
+zip_folder = "#{path_prefix}/zip"
+json_folder = "#{path_prefix}/json"
 
 # Downloaded artifact zips are stored here.
-`mkdir -p #{path_prefix}/zip`
+FileUtils.mkdir_p(zip_folder)
+
 # The extracted results JSON are extracted here.
-`mkdir -p #{path_prefix}/json`
+FileUtils.mkdir_p(json_folder)
 
 # These are the job names that artifact zips will be downloaded for.
 interested_names = Set.new(%w[
@@ -55,7 +68,7 @@ interested_artifact_info = []
 
 # Will stop the script from collecting more artifact metadata if the size of
 # `interested_artifact_info` becomes larger than this threshold.
-max_artifacts_to_download = 100
+max_artifacts_to_download = ENV['MAX_ARTIFACTS']&.to_i || 100
 
 # Tracks the page we want to fetch from `get_artifact_info`.
 page = 1
@@ -76,9 +89,9 @@ while total_artifact_count.nil? || total_artifact_seen < total_artifact_count
   break if interested_artifact_info.size >= max_artifacts_to_download
 
   artifacts = get_artifact_info(page)
-  total_artifact_count ||= artifacts['total_count']
-  total_artifact_seen += artifacts['artifacts'].size
-  interested_artifact_info += artifacts['artifacts'].filter { |artifact| interested_names.include? artifact['name'] }
+  total_artifact_count ||= artifacts[:total_count]
+  total_artifact_seen += artifacts[:artifacts].size
+  interested_artifact_info += artifacts[:artifacts].filter { |artifact| interested_names.include? artifact[:name] }
 
   # Increment the page number
   page += 1
@@ -88,14 +101,14 @@ puts 'Got all artifact info!'
 
 # Download each interested artifact zip only if we do not have it yet.
 interested_artifact_info.each_with_index do |artifact, index|
-  if File.file?("#{path_prefix}/zip/#{artifact['id']}.zip")
+  if File.file?("#{zip_folder}/#{artifact[:id]}.zip")
     print "\r(#{index + 1}/#{interested_artifact_info.size}) Already have artifacts for job: #{artifact['id']}         "
     next
   end
 
   print "\r(#{index + 1}/#{interested_artifact_info.size}) Fetching artifact zip for job: #{artifact['id']}            "
   fetch_artifact_zip(
-    "#{path_prefix}/zip/#{artifact['id']}.zip",
+    "#{zip_folder}/#{artifact['id']}.zip",
     artifact['archive_download_url']
   )
 end
@@ -105,6 +118,6 @@ puts 'Got all artifact zips!'
 # Extract the artifact zips into the json folder,
 # but hide all of the zip command's output.
 print 'Extracting all zips'
-`unzip -qq -o #{path_prefix}/zip/\\*.zip -d #{path_prefix}/json &> /dev/null`
-`rm -f #{path_prefix}/json/.gitignore` # some artifacts may have a gitignore file present in them
+Dir.glob("#{zip_folder}/*.zip").each { |zip_path| extract_zip(zip_path, json_folder) }
+FileUtils.rm("#{json_folder}/.gitignore", force: true) # some artifacts may have a gitignore file present in them
 puts 'Extracted all zips!'

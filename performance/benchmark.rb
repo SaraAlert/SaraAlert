@@ -44,7 +44,7 @@ def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exi
   ActionMailer::Base.perform_deliveries = false
 
   timestamp = Time.now.utc.iso8601
-  `mkdir -p performance/benchmarks/output` # Create the folder if it doesn't exist already
+  FileUtils.mkdir_p('performance/benchmarks/output') # Create the folder if it doesn't exist already
   stackprof_file = "performance/benchmarks/output/#{name}_#{timestamp}_CPU.dump".gsub(':', '-')
   flamegraph_file = "performance/benchmarks/output/#{name}_#{timestamp}_FLM".gsub(':', '-')
   memprof_file = "performance/benchmarks/output/#{name}_#{timestamp}_MEM.log".gsub(':', '-')

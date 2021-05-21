@@ -11,11 +11,11 @@ json_folder = "#{path_prefix}/json"
 xlsx_folder = "#{path_prefix}/xlsx"
 
 # Ensure folders exist
-`mkdir -p #{json_folder}`
-`mkdir -p #{xlsx_folder}`
+FileUtils.mkdir_p(json_folder)
+FileUtils.mkdir_p(xlsx_folder)
 
 # Find all JSON files
-json_files = `ls #{json_folder}`.split("\n").map { |p| "#{json_folder}/#{p}" }
+json_files = Dir.glob("#{json_folder}/*.json")
 
 # Parse all JSON contents
 all_json_contents = json_files.map { |json_path| JSON.parse(File.read(json_path)) }

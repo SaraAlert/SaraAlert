@@ -116,6 +116,7 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'ffi-hunspell'
   gem 'memory_profiler'
+  gem 'octokit', '~> 4.0'
   gem 'rubocop'
   gem 'ruby-jmeter'
   gem 'stackprof'
