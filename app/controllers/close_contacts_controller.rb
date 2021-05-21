@@ -73,7 +73,7 @@ class CloseContactsController < ApplicationController
         comment += ", Assigned User: #{@close_contact.assigned_user}" unless @close_contact.assigned_user.blank?
         comment += ", Notes: #{@close_contact.notes}" unless @close_contact.notes.blank?
         comment += ", Contact Attempts: #{@close_contact.contact_attempts}" unless @close_contact.contact_attempts.blank?
-        comment += ", Enrolled: #{@close_contact.enrolled_id}" unless @close_contact.enrolled_id.blank?
+        comment += ", Enrolled: #{@close_contact.enrolled_id.blank? ? "No" : "Yes, Sara Alert ID " + @close_contact.enrolled_id.to_s}" 
         comment += "). Reason: #{reason}."
         History.close_contact_edit(patient: @patient.id,
                                    created_by: current_user.email,
