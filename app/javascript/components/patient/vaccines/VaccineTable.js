@@ -244,7 +244,7 @@ class VaccineTable extends React.Component {
    * Makes a request to update an existing vaccine record on the backend and reloads page once complete.
    * @param {*} newVaccineData
    */
-   handleEditSubmit = updatedVaccineData => {
+  handleEditSubmit = updatedVaccineData => {
     const currVaccineId = this.state.table.rowData[this.state.activeRow]?.id;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
@@ -304,7 +304,7 @@ class VaccineTable extends React.Component {
       .catch(error => {
         reportError(error);
       });
-  }
+  };
 
   /**
    * Creates the action button & dropdown for each row in the table.
@@ -361,14 +361,7 @@ class VaccineTable extends React.Component {
                       </InputGroup.Text>
                     </OverlayTrigger>
                   </InputGroup.Prepend>
-                  <Form.Control
-                    id="vaccines-search-input"
-                    autoComplete="off"
-                    size="md"
-                    name="search"
-                    onChange={this.handleSearchChange}
-                    aria-label="Search"
-                  />
+                  <Form.Control id="vaccines-search-input" autoComplete="off" size="md" name="search" onChange={this.handleSearchChange} aria-label="Search" />
                 </InputGroup>
               </Col>
             </Row>
