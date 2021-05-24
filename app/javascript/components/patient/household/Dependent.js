@@ -10,20 +10,14 @@ class Dependent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      hoh: props.other_household_members.find(patient => patient.head_of_household)
+      hoh: props.other_household_members.find(patient => patient.head_of_household),
     };
   }
 
   render() {
     return (
       <div id="household-member-not-hoh">
-        <Row>
-          The reporting responsibility for this monitoree is handled by&nbsp;
-          <a id="dependent-hoh-link" href={`${window.BASE_PATH}/patients/${this.props.patient.responder_id}`}>
-            {this.state.hoh ? formatName(this.state.hoh) : 'this monitoree'}
-          </a>
-          <BadgeHoH patientId={this.props.patient.responder_id.toString()} customClass={'mt-1 ml-1'} location={'right'} />
-        </Row>
+        <Row>This monitoree is a member of the following household:</Row>
         <Row className="pt-2">
           <HouseholdMemberTable
             household_members={this.props.other_household_members}
