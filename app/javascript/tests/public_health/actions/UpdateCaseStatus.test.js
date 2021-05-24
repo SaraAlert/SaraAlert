@@ -33,15 +33,15 @@ function simulateStateChange(patientsArray) {
 }
 
 function getWrapper(patientsArray) {
-  let instance = shallow(<UpdateCaseStatus authenticity_token={mockToken} patients={patientsArray} monitoring_reasons={mockMonitoringReasons} close={onCloseMock} />);
+  let wrapper = shallow(<UpdateCaseStatus authenticity_token={mockToken} patients={patientsArray} monitoring_reasons={mockMonitoringReasons} close={onCloseMock} />);
 
   let state_updates = simulateStateChange(patientsArray);
   if (Object.keys(state_updates).length) {
-    instance.setState(state_updates);
+    wrapper.setState(state_updates);
     // no need to use a callback here as the state changes
     // appear to be performed serially
   }
-  return instance;
+  return wrapper;
 }
 
 afterEach(() => {
@@ -95,7 +95,6 @@ describe('UpdateCaseStatus', () => {
   });
 
   it('Properly does not display any follow-up options when the empty string is selected', () => {
-    // have to `mount` the wrapper so the event object is properly created when simulating change below
     const wrapper = getWrapper([mockPatient1, mockPatient2, mockPatient3, mockPatient4]);
     const option = '';
     wrapper
@@ -205,7 +204,6 @@ describe('UpdateCaseStatus', () => {
   });
 
   it('Properly sets the correct follow-up options for "Suspect", "Unknown, and "Not a Case"', () => {
-    // have to `mount` the wrapper so the event object is properly created when simulating change below
     const wrapper = getWrapper([mockPatient1, mockPatient2, mockPatient3, mockPatient4]);
     // "Suspect", "Unknown" and "Not a Case" have identical behavior in the modal
     ['Suspect', 'Unknown', 'Not a Case'].forEach(case_status_option => {
@@ -226,7 +224,6 @@ describe('UpdateCaseStatus', () => {
 
   it('Properly calls the close method', () => {
     const wrapper = getWrapper([mockPatient1, mockPatient2, mockPatient3, mockPatient4]);
-
     expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
     expect(onCloseMock).toHaveBeenCalledTimes(0);
     wrapper.find('Button').at(0).simulate('click');

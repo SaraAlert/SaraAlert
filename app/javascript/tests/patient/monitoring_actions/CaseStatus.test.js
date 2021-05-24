@@ -21,7 +21,6 @@ function getWrapper(patient) {
 describe('CaseStatus', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper(mockPatient1);
-
     expect(wrapper.find(Form.Label).text().includes('CASE STATUS')).toBeTruthy();
     expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('caseStatus');
@@ -88,6 +87,7 @@ describe('CaseStatus', () => {
     expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
     expect(wrapper.state('isolation')).toBeFalsy();
     expect(modalBody.find('p').text()).toEqual('This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.');
+    expect(modalBody.children().length).toEqual(1); // Ensure no monitoring options dropdowns are present
   });
 
   it('Correctly renders modal body and does not change workflow or line list when updating Case Status to Confirmed from Probable or vice versa for a record in the Isolation workflow', () => {
