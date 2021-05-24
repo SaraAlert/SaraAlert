@@ -147,7 +147,7 @@ class Patient extends React.Component {
                 <b>
                   <span className="d-none d-md-inline">Assigned</span> Jurisdiction:
                 </b>{' '}
-                {this.props.jurisdiction_path || '--'}
+                {this.props.jurisdiction_paths[this.props.details.jurisdiction_id] || '--'}
               </div>
               <div id="assigned-user">
                 <b>Assigned User:</b> {this.props.details.assigned_user || '--'}
@@ -671,7 +671,7 @@ class Patient extends React.Component {
 
 Patient.propTypes = {
   details: PropTypes.object,
-  jurisdiction_path: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
   collapse: PropTypes.bool,

@@ -15,7 +15,7 @@ class PatientPage extends React.Component {
         </Card.Header>
         <Card.Body>
           <Patient
-            jurisdiction_path={this.props.jurisdiction_path}
+            jurisdiction_paths={this.props.jurisdiction_paths}
             details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
             collapse={this.props.can_modify_subject_status}
             edit_mode={false}
@@ -58,7 +58,6 @@ PatientPage.propTypes = {
   patient: PropTypes.object,
   other_household_members: PropTypes.array,
   authenticity_token: PropTypes.string,
-  jurisdiction_path: PropTypes.string, // to do: refactor and remove me
   jurisdiction_paths: PropTypes.object,
   blocked_sms: PropTypes.bool,
 };
