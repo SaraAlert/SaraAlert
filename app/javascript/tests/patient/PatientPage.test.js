@@ -6,11 +6,13 @@ import Dependent from '../../components/patient/household/Dependent';
 import HeadOfHousehold from '../../components/patient/household/HeadOfHousehold';
 import Individual from '../../components/patient/household/Individual';
 import { mockPatient1, mockPatient2, mockPatient3 } from '../mocks/mockPatients';
+import { mockUser1 } from '../mocks/mockUsers';
+import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 
 const mockToken = 'testMockTokenString12345';
 
 function getWrapper(patient, householdMembers) {
-  return shallow(<PatientPage patient={patient} other_household_members={householdMembers} blocked_sms={false} can_add_group={true} can_modify_subject_status={true} jurisdiction_path="USA, State 1, County 2" authenticity_token={mockToken} />);
+  return shallow(<PatientPage patient={patient} other_household_members={householdMembers} blocked_sms={false} current_user={mockUser1} can_add_group={true} can_modify_subject_status={true} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
 }
 
 describe('PatientPage', () => {
