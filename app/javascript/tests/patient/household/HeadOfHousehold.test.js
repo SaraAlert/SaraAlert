@@ -1,39 +1,33 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Row, Table } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
 import HeadOfHousehold from '../../../components/patient/household/HeadOfHousehold';
 import ChangeHoH from '../../../components/patient/household/actions/ChangeHoH';
 import EnrollHouseholdMember from '../../../components/patient/household/actions/EnrollHouseholdMember';
+import HouseholdMemberTable from '../../../components/patient/household/utils/HouseholdMemberTable';
 import { mockPatient1, mockPatient2 } from '../../mocks/mockPatients';
+import { mockUser1 } from '../../mocks/mockUsers';
+import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 
-const tableHeaders = ['Name', 'Workflow', 'Monitoring Status', 'Continuous Exposure?'];
 const mockToken = 'testMockTokenString12345';
 
 describe('HeadOfHousehold', () => {
   it('Properly renders all main components', () => {
-    const wrapper = shallow(<HeadOfHousehold patient={mockPatient1} dependents={[mockPatient2]} can_add_group={true} authenticity_token={mockToken} />);
-    const wrapper2 = shallow(<HeadOfHousehold patient={mockPatient1} dependents={[mockPatient2]} can_add_group={false} authenticity_token={mockToken} />);
+    const wrapper1 = shallow(<HeadOfHousehold patient={mockPatient1} other_household_members={[mockPatient2]} can_add_group={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+    const wrapper2 = shallow(<HeadOfHousehold patient={mockPatient1} other_household_members={[mockPatient2]} can_add_group={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
 
     // if user can add group
-    expect(wrapper.find(Row).length).toEqual(3);
-    expect(wrapper.find(Row).at(0).text()).toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
-    expect(wrapper.find(Table).exists()).toBeTruthy();
-    tableHeaders.forEach((header, index) => {
-      expect(wrapper.find('thead th').at(index).text()).toEqual(header);
-    });
-    expect(wrapper.find('tbody tr').length).toEqual(1);
-    expect(wrapper.find(ChangeHoH).exists()).toBeTruthy();
-    expect(wrapper.find(EnrollHouseholdMember).exists()).toBeTruthy();
-    expect(wrapper.find(EnrollHouseholdMember).prop('isHoh')).toBeTruthy();
+    expect(wrapper1.find(Row).length).toEqual(3);
+    expect(wrapper1.find(Row).at(0).text()).toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
+    expect(wrapper1.find(HouseholdMemberTable).exists()).toBeTruthy();
+    expect(wrapper1.find(ChangeHoH).exists()).toBeTruthy();
+    expect(wrapper1.find(EnrollHouseholdMember).exists()).toBeTruthy();
+    expect(wrapper1.find(EnrollHouseholdMember).prop('isHoh')).toBeTruthy();
 
     // if user can't add group
     expect(wrapper2.find(Row).length).toEqual(3);
     expect(wrapper2.find(Row).at(0).text()).toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
-    expect(wrapper2.find(Table).exists()).toBeTruthy();
-    tableHeaders.forEach((header, index) => {
-      expect(wrapper2.find('thead th').at(index).text()).toEqual(header);
-    });
-    expect(wrapper2.find('tbody tr').length).toEqual(1);
+    expect(wrapper2.find(HouseholdMemberTable).exists()).toBeTruthy();
     expect(wrapper2.find(ChangeHoH).exists()).toBeTruthy();
     expect(wrapper2.find(EnrollHouseholdMember).exists()).toBeFalsy();
   });

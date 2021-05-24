@@ -8,7 +8,7 @@ class ApplyToHousehold extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      applyToHousehold: false
+      applyToHousehold: false,
     };
   }
 
