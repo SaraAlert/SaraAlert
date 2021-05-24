@@ -25,15 +25,19 @@ class PatientPage extends React.Component {
             {!this.props.patient.head_of_household && this.props?.other_household_members?.length > 0 && (
               <Dependent
                 patient={this.props.patient}
-                hoh={this.props.other_household_members.find(patient => patient.head_of_household)}
+                other_household_members={this.props.other_household_members}
+                current_user={this.props.current_user}
+                jurisdiction_paths={this.props.jurisdiction_paths}
                 authenticity_token={this.props.authenticity_token}
               />
             )}
             {this.props.patient.head_of_household && (
               <HeadOfHousehold
                 patient={this.props.patient}
-                dependents={this.props.other_household_members}
+                other_household_members={this.props.other_household_members}
                 can_add_group={this.props.can_add_group}
+                current_user={this.props.current_user}
+                jurisdiction_paths={this.props.jurisdiction_paths}
                 authenticity_token={this.props.authenticity_token}
               />
             )}
@@ -48,12 +52,14 @@ class PatientPage extends React.Component {
 }
 
 PatientPage.propTypes = {
+  current_user: PropTypes.object,
   can_add_group: PropTypes.bool,
   can_modify_subject_status: PropTypes.bool,
   patient: PropTypes.object,
   other_household_members: PropTypes.array,
   authenticity_token: PropTypes.string,
-  jurisdiction_path: PropTypes.string,
+  jurisdiction_path: PropTypes.string, // to do: refactor and remove me
+  jurisdiction_paths: PropTypes.object,
   blocked_sms: PropTypes.bool,
 };
 

@@ -14,12 +14,14 @@
 <% end %>
 
 <%= react_component('patient/PatientPage', {
+                      current_user: current_user,
                       can_add_group: current_user.can_create_patient?,
                       can_modify_subject_status: current_user.can_modify_subject_status?,
                       patient: @patient,
                       other_household_members: @household_members_exclude_self,
                       authenticity_token: form_authenticity_token,
                       jurisdiction_path: @jurisdiction[:path],
+                      jurisdiction_paths: @possible_jurisdiction_paths,
                       blocked_sms: @patient.blocked_sms
                     }) %>
 
