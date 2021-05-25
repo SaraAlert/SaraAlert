@@ -18,7 +18,7 @@ import { mockMonitoringReasons } from '../mocks/mockMonitoringReasons';
 const mockToken = 'testMockTokenString12345';
 const setQueryMock = jest.fn();
 const setMonitoreeCountMock = jest.fn();
-const dropdownOptions = ['Close Records', 'Update Case Status', 'Update Assigned User', 'Flag for Follow-up' ];
+const dropdownOptions = ['Close Records', 'Update Case Status', 'Update Assigned User', 'Flag for Follow-up'];
 
 function getExposureWrapper() {
   return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'exposure'} jurisdiction={mockJurisdiction1} tabs={mockExposureTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} />);
@@ -70,7 +70,7 @@ describe('PatientsTable', () => {
 
     // componentDidMount is called when mounted and that calls an async method (updateTable),
     // as a result, we added a timeout to give it time to resolve.
-    setTimeout (() => {
+    setTimeout(() => {
       expect(_.size(wrapper.state('table').colData)).toEqual(21);
       expect(_.size(wrapper.state('table').displayedColData)).toEqual(0);
       expect(_.size(wrapper.state('table').rowData)).toEqual(0);
@@ -134,7 +134,7 @@ describe('PatientsTable', () => {
     expect(wrapper.find(UpdateAssignedUser).exists()).toBeTruthy();
   });
 
-  it ('Clicking "Flag for Follow-up" option displays Flag for Follow-up modal', () => {
+  it('Clicking "Flag for Follow-up" option displays Flag for Follow-up modal', () => {
     const wrapper = getExposureWrapper();
     expect(wrapper.find(FollowUpFlag).exists()).toBeFalsy();
     expect(wrapper.find(Dropdown.Item).at(3).text().includes(dropdownOptions[3])).toBeTruthy();

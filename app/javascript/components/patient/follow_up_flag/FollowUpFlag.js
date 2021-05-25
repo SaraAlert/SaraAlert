@@ -142,12 +142,12 @@ class FollowUpFlag extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Modal.Body className="modal-follow-up-flag-body">
-          <Form.Group className="flag-radio-buttons">
+        <Modal.Body>
+          <Form.Group style={{ display: 'inline-flex' }}>
             <Form.Check
               type="radio"
               name="flag_for_follow_up_option"
-              className="pr-50"
+              className="pr-5"
               id="set_flag_for_follow_up"
               label="Set Follow-up Flag"
               onChange={this.handleChange}
@@ -172,7 +172,7 @@ class FollowUpFlag extends React.Component {
               <Form.Control
                 as="select"
                 size="lg"
-                className="form-square mb-25"
+                className="form-square mb-3"
                 id="follow_up_reason"
                 value={this.state.follow_up_reason}
                 onChange={this.handleChange}>
@@ -187,16 +187,9 @@ class FollowUpFlag extends React.Component {
                 <option>Quality Assurance</option>
                 <option>Other</option>
               </Form.Control>
-              <Form.Group>
+              <Form.Group controlId="follow_up_note">
                 <Form.Label>Please include any additional details:</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows="4"
-                  id="follow_up_note"
-                  maxLength={MAX_NOTES_LENGTH}
-                  value={this.state.follow_up_note}
-                  onChange={this.handleChange}
-                />
+                <Form.Control as="textarea" rows="4" maxLength={MAX_NOTES_LENGTH} value={this.state.follow_up_note} onChange={this.handleChange} />
                 <div className="character-limit-text">{MAX_NOTES_LENGTH - this.state.follow_up_note.length} characters remaining</div>
               </Form.Group>
             </Form.Group>
@@ -212,7 +205,7 @@ class FollowUpFlag extends React.Component {
           )}
           {this.props.bulk_action && (
             <React.Fragment>
-              <Form.Group className="mb-25 mt-25">
+              <Form.Group>
                 <Form.Check
                   type="switch"
                   id="bulk_action_apply_to_household"
@@ -224,9 +217,9 @@ class FollowUpFlag extends React.Component {
             </React.Fragment>
           )}
           {this.state.clear_flag && (
-            <Form.Group>
+            <Form.Group controlId="clear_flag_reason">
               <Form.Label>Please include any additional details for clearing the follow-up flag:</Form.Label>
-              <Form.Control as="textarea" rows="2" id="clear_flag_reason" value={this.state.clear_flag_reason} onChange={this.handleChange} />
+              <Form.Control as="textarea" rows="2" value={this.state.clear_flag_reason} onChange={this.handleChange} />
             </Form.Group>
           )}
         </Modal.Body>

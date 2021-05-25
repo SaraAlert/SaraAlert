@@ -764,11 +764,11 @@ class PatientsTable extends React.Component {
           )}
           {this.state.action === 'Flag for Follow-up' && (
             <FollowUpFlag
-              patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
-              jurisdiction_paths={this.props.jurisdiction_paths}
               authenticity_token={this.props.authenticity_token}
-              other_household_members={[]}
+              patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
               close={() => this.setState({ action: undefined })}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              other_household_members={[]}
               bulk_action={true}
             />
           )}

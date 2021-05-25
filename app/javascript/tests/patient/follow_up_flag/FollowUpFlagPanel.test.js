@@ -19,12 +19,7 @@ describe('FollowUpFlagPanel', () => {
     expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeTruthy();
     expect(wrapper.find(Button).exists()).toBeTruthy();
     expect(wrapper.find(Button).text()).toContain('Flag for Follow-up');
-    expect(
-      wrapper
-        .find(Button)
-        .find('i')
-        .exists()
-    ).toBeTruthy();
+    expect(wrapper.find(Button).find('i').exists()).toBeTruthy();
     expect(wrapper.find('.follow-up-flag-box').exists()).toBeFalsy();
     expect(wrapper.find('#edit-follow-up-flag-link').exists()).toBeFalsy();
     expect(wrapper.find(FollowUpFlagModal).exists()).toBeFalsy();
@@ -39,70 +34,24 @@ describe('FollowUpFlagPanel', () => {
     expect(section.find('i').exists()).toBeTruthy();
     expect(section.find(Button).exists()).toBeTruthy();
     expect(section.find(Button).text()).toEqual('Edit Flag');
-    expect(
-      section
-        .find('b')
-        .at(1)
-        .text()
-    ).toEqual(mockPatient5.follow_up_reason);
+    expect(section.find('b').at(1).text()).toEqual(mockPatient5.follow_up_reason);
     expect(section.find('.wrap-words').text()).toEqual(': ' + mockPatient5.follow_up_note);
     expect(wrapper.find(FollowUpFlagModal).exists()).toBeFalsy();
   });
 
   it('Collapses/expands follow-up flag notes if longer than 150 characters', () => {
     const wrapper = getWrapper(mockPatient3, []);
-    expect(
-      wrapper
-        .find('.flag-note')
-        .find(Button)
-        .exists()
-    ).toBeTruthy();
+    expect(wrapper.find('.flag-note').find(Button).exists()).toBeTruthy();
     expect(wrapper.state('expandFollowUpNotes')).toBeFalsy();
-    expect(
-      wrapper
-        .find('.flag-note')
-        .find(Button)
-        .text()
-    ).toEqual('(View all)');
-    expect(
-      wrapper
-        .find('.flag-note')
-        .find('.wrap-words')
-        .text()
-    ).toEqual(': ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
-    wrapper
-      .find('.flag-note')
-      .find(Button)
-      .simulate('click');
+    expect(wrapper.find('.flag-note').find(Button).text()).toEqual('(View all)');
+    expect(wrapper.find('.flag-note').find('.wrap-words').text()).toEqual(': ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
+    wrapper.find('.flag-note').find(Button).simulate('click');
     expect(wrapper.state('expandFollowUpNotes')).toBeTruthy();
-    expect(
-      wrapper
-        .find('.flag-note')
-        .find(Button)
-        .text()
-    ).toEqual('(Collapse)');
-    expect(
-      wrapper
-        .find('.flag-note')
-        .find('.wrap-words')
-        .text()
-    ).toEqual(': ' + mockPatient3.follow_up_note);
-    wrapper
-      .find('.flag-note')
-      .find(Button)
-      .simulate('click');
+    expect(wrapper.find('.flag-note').find(Button).text()).toEqual('(Collapse)');
+    expect(wrapper.find('.flag-note').find('.wrap-words').text()).toEqual(': ' + mockPatient3.follow_up_note);
+    wrapper.find('.flag-note').find(Button).simulate('click');
     expect(wrapper.state('expandFollowUpNotes')).toBeFalsy();
-    expect(
-      wrapper
-        .find('.flag-note')
-        .find(Button)
-        .text()
-    ).toEqual('(View all)');
-    expect(
-      wrapper
-        .find('.flag-note')
-        .find('.wrap-words')
-        .text()
-    ).toEqual(': ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
+    expect(wrapper.find('.flag-note').find(Button).text()).toEqual('(View all)');
+    expect(wrapper.find('.flag-note').find('.wrap-words').text()).toEqual(': ' + mockPatient3.follow_up_note.slice(0, 150) + ' ...');
   });
 });

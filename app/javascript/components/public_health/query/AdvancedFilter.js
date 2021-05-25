@@ -803,7 +803,7 @@ class AdvancedFilter extends React.Component {
   renderSelectStatement = (filter, index, value) => {
     return (
       <React.Fragment>
-        <div style={{ display: 'flex' }}>
+        <div className="d-flex justify-content-between">
           <Form.Control
             as="select"
             value={value}

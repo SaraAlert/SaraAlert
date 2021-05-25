@@ -22,24 +22,9 @@ describe('PatientPage', () => {
 
   it('Properly renders all main components', () => {
     expect(wrapper.find('#patient-info-header').exists()).toBeTruthy();
-    expect(
-      wrapper
-        .find('#patient-info-header')
-        .text()
-        .includes('Monitoree Details')
-    ).toBeTruthy();
-    expect(
-      wrapper
-        .find('#patient-info-header')
-        .text()
-        .includes(`(ID: ${mockPatient1.user_defined_id})`)
-    ).toBeFalsy();
-    expect(
-      wrapper2
-        .find('#patient-info-header')
-        .text()
-        .includes(`Monitoree Details (ID: ${mockPatient2.user_defined_id})`)
-    ).toBeTruthy();
+    expect(wrapper.find('#patient-info-header').text().includes('Monitoree Details')).toBeTruthy();
+    expect(wrapper.find('#patient-info-header').text().includes(`(ID: ${mockPatient1.user_defined_id})`)).toBeFalsy();
+    expect(wrapper2.find('#patient-info-header').text().includes(`Monitoree Details (ID: ${mockPatient2.user_defined_id})`)).toBeTruthy();
     expect(wrapper.find(Patient).exists()).toBeTruthy();
     expect(wrapper.find('.household-info').exists()).toBeTruthy();
   });

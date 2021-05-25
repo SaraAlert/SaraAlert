@@ -656,8 +656,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
       # populate fields specific to this linelist only if relevant
       details[:jurisdiction] = patient[:jurisdiction_name] || '' if fields.include?(:jurisdiction)
-      flagged_for_follow_up = { follow_up_reason: patient[:follow_up_reason], follow_up_note: patient[:follow_up_note] }
-      details[:flagged_for_follow_up] = flagged_for_follow_up if fields.include?(:flagged_for_follow_up)
+      if fields.include?(:flagged_for_follow_up)
+        details[:flagged_for_follow_up] = { follow_up_reason: patient[:follow_up_reason], follow_up_note: patient[:follow_up_note] }
+      end
       details[:transferred_from] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_from)
       details[:transferred_to] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_to)
       details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
@@ -672,8 +673,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       details[:reason_for_closure] = patient[:monitoring_reason] || '' if fields.include?(:reason_for_closure)
       details[:closed_at] = patient[:closed_at]&.rfc2822 || '' if fields.include?(:closed_at)
       details[:transferred_at] = patient[:latest_transfer_at]&.rfc2822 || '' if fields.include?(:transferred_at)
-      latest_report = { timestamp: patient[:latest_assessment_at]&.rfc2822, symptomatic: patient[:latest_assessment_symptomatic] }
-      details[:latest_report] = latest_report || '' if fields.include?(:latest_report)
+      if fields.include?(:latest_report)
+        details[:latest_report] = { timestamp: patient[:latest_assessment_at]&.rfc2822, symptomatic: patient[:latest_assessment_symptomatic] }
+      end
       details[:status] = patient.status.to_s.gsub('_', ' ').sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
       details[:report_eligibility] = patient.report_eligibility if fields.include?(:report_eligibility)
       details[:is_hoh] = patient.head_of_household?

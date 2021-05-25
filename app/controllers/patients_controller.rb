@@ -426,7 +426,7 @@ class PatientsController < ApplicationController
   end
 
   def bulk_update
-    redirect_to(root_url) && return unless current_user.can_edit_patient?
+    redirect_to(root_url) && return unless current_user.can_edit_patient_monitoring_info?
 
     # Nothing to do in this function if there isn't a list of patient ids.
     patient_ids = params.require(:ids)
@@ -558,7 +558,7 @@ class PatientsController < ApplicationController
 
   # Update the patient's follow-up flag fields
   def update_follow_up_flag
-    redirect_to(root_url) && return unless current_user.can_edit_patient? && !current_user.role?(Roles::ENROLLER)
+    redirect_to(root_url) && return unless current_user.can_edit_patient_monitoring_info?
 
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
@@ -577,13 +577,8 @@ class PatientsController < ApplicationController
       clear_flag_reason = params.permit(:clear_flag_reason)[:clear_flag_reason]
       clear_follow_up_flag(patient, clear_flag_reason)
     else
-      follow_up_reason_before = patient.follow_up_reason
-      follow_up_note_before = patient.follow_up_note
       follow_up_reason = params.permit(:follow_up_reason)[:follow_up_reason]
       follow_up_note = params.permit(:follow_up_note)[:follow_up_note]
-
-      # Apply and save updates to the db
-      patient.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
 
       # Handle creating history items based on the updates
       history_data = {
@@ -591,16 +586,27 @@ class PatientsController < ApplicationController
         patient: patient,
         follow_up_reason: follow_up_reason,
         follow_up_note: follow_up_note,
-        follow_up_reason_before: follow_up_reason_before,
-        follow_up_note_before: follow_up_note_before
+        follow_up_reason_before: patient.follow_up_reason,
+        follow_up_note_before: patient.follow_up_note
       }
 
-      History.follow_up_flag_edit(history_data)
+      # Handle success or failure of updating a follow-up flag
+      ActiveRecord::Base.transaction do
+        # Apply and save updates to the db
+        if patient.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
+          # Create history item on successful update
+          History.follow_up_flag_edit(history_data)
+        else
+          # Handle case where follow-up flag update failed
+          error_message = 'Unable to update Follow-up Flag.'
+          render(json: { error: error_message }, status: :bad_request) && return
+        end
+      end
     end
 
     # If not applying to household, return
     apply_to_household_ids = params.permit(apply_to_household_ids: [])[:apply_to_household_ids]
-    return unless params.permit(:apply_to_household)[:apply_to_household] && !apply_to_household_ids.nil?
+    return unless params.permit(:apply_to_household)[:apply_to_household] && apply_to_household_ids.present?
 
     # If a household member has been removed, they should not be updated
     current_household_ids = patient.household.where(purged: false).where.not(id: patient.id).pluck(:id)
@@ -638,21 +644,26 @@ class PatientsController < ApplicationController
   # patient - The Patient to update.
   # clear_flag_reason - The note to include in the history item
   def clear_follow_up_flag(patient, clear_flag_reason)
-    # Store the previous value to help determine if a history entry should be created or not
-    follow_up_reason_before = patient.follow_up_reason
-
-    # Apply and save updates to the db
-    patient.update!(follow_up_reason: nil, follow_up_note: nil)
-
-    # Handle creating history items based on the updates
+    # Prep data needed to create history items based on this update
     history_data = {
       created_by: current_user.email,
       patient: patient,
       clear_flag_reason: clear_flag_reason,
-      follow_up_reason_before: follow_up_reason_before
+      follow_up_reason_before: patient.follow_up_reason
     }
 
-    History.clear_follow_up_flag(history_data)
+    # Handle success or failure of clearing a follow-up flag
+    ActiveRecord::Base.transaction do
+      # Apply and save updates to the db
+      if patient.update!(follow_up_reason: nil, follow_up_note: nil)
+        # Create history item on successful update
+        History.clear_follow_up_flag(history_data)
+      else
+        # Handle case where follow-up flag clear failed
+        error_message = 'Unable to clear Follow-up Flag.'
+        render(json: { error: error_message }, status: :bad_request) && return
+      end
+    end
   end
 
   def clear_assessments
