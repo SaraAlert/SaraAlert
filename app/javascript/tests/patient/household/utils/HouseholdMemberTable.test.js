@@ -77,7 +77,7 @@ describe('HouseholdMemberTable', () => {
       expect(row.find('td').at(1).find('a').exists()).toBeTruthy();
       expect(row.find('td').at(1).find('a').prop('href')).toEqual(`${window.BASE_PATH}/patients/${rowData.id}`);
       expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(rowData));
-      if (rowData.id === rowData.responder_id) {
+      if (rowData.head_of_household) {
         expect(row.find('td').at(1).find(BadgeHoH).exists()).toBeTruthy();
       } else {
         expect(row.find('td').at(1).find(BadgeHoH).exists()).toBeFalsy();
