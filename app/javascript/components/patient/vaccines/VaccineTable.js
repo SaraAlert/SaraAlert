@@ -377,6 +377,7 @@ class VaccineTable extends React.Component {
               handlePageUpdate={this.handlePageUpdate}
               entryOptions={this.state.entryOptions}
               entries={this.state.query.entries}
+              tableCustomClass="table-has-dropdown"
             />
           </Card.Body>
         </Card>

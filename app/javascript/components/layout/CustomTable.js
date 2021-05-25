@@ -204,7 +204,7 @@ class CustomTable extends React.Component {
         )}
         <div
           className={
-            this.props.getCustomTableClassName ? `table-responsive custom-table ${this.props.getCustomTableClassName()}` : 'table-responsive custom-table'
+            this.props.tableCustomClass ? `table-responsive ${this.props.tableCustomClass}` : 'table-responsive'
           }>
           <Table striped bordered hover size="sm" id={`${this.props.dataType}-table`} className="opaque-table">
             <thead>
@@ -355,8 +355,8 @@ CustomTable.propTypes = {
   page: PropTypes.number,
   entries: PropTypes.number,
   entryOptions: PropTypes.array,
+  tableCustomClass: PropTypes.string,
   getRowClassName: PropTypes.func,
-  getCustomTableClassName: PropTypes.func,
   getRowCheckboxAriaLabel: PropTypes.func,
   orderBy: PropTypes.string,
   sortDirection: PropTypes.string,
