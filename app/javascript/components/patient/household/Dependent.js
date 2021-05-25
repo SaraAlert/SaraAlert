@@ -1,24 +1,17 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Row } from 'react-bootstrap';
-import BadgeHoH from './utils/BadgeHoH';
 import HouseholdMemberTable from './utils/HouseholdMemberTable';
 import RemoveFromHousehold from './actions/RemoveFromHousehold';
-import { formatName } from '../../../utils/Patient';
 
 class Dependent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      hoh: props.other_household_members.find(patient => patient.head_of_household),
-    };
-  }
-
   render() {
     return (
       <div id="household-member-not-hoh">
-        <Row>This monitoree is a member of the following household:</Row>
-        <Row className="pt-2">
+        <Row>
+          <div className="pb-2">
+            This monitoree is a member of the following Household where the reporting responsibility is handled by the designated Head of Household:
+          </div>
           <HouseholdMemberTable
             household_members={this.props.other_household_members}
             current_user={this.props.current_user}

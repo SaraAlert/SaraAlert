@@ -13,8 +13,8 @@ const mockToken = 'testMockTokenString12345';
 describe('Dependent', () => {
   it('Properly renders all main components', () => {
     const wrapper = shallow(<Dependent patient={mockPatient2} other_household_members={[mockPatient1]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
-    expect(wrapper.find(Row).length).toEqual(3);
-    expect(wrapper.find(Row).at(0).text()).toEqual('This monitoree is a member of the following household:');
+    expect(wrapper.find(Row).length).toEqual(2);
+    expect(wrapper.find(Row).at(0).find('div').text()).toEqual('This monitoree is a member of the following Household where the reporting responsibility is handled by the designated Head of Household:');
     expect(wrapper.find(HouseholdMemberTable).exists()).toBeTruthy();
     expect(wrapper.find(RemoveFromHousehold).exists()).toBeTruthy();
   });
