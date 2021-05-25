@@ -263,7 +263,7 @@ class HouseholdMemberTable extends React.Component {
         <div>
           <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />
           {this.validJurisdiction(rowData) ? (
-            <a href={`${window.BASE_PATH}/patients/${rowData.id}`} rel="noreferrer" target="_blank">
+            <a id="dependent-hoh-link" href={`${window.BASE_PATH}/patients/${rowData.id}`} rel="noreferrer" target="_blank">
               {monitoreeName}
             </a>
           ) : (
