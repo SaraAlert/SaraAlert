@@ -605,7 +605,7 @@ class PatientsControllerTest < ActionController::TestCase
   # ------- End Household Updates -----
 
   test 'bulk update status' do
-    %i[admin_user analyst_user].each do |role|
+    %i[admin_user analyst_user enroller_user].each do |role|
       user = create(role)
       sign_in user
       post :bulk_update
@@ -614,7 +614,7 @@ class PatientsControllerTest < ActionController::TestCase
     end
 
     # public_health_enroller_user public_health_user
-    %i[enroller_user].each do |role|
+    %i[public_health_enroller_user public_health_user].each do |role|
       user = create(role)
       patient = create(:patient, creator: user)
       sign_in user
@@ -1067,7 +1067,7 @@ class PatientsControllerTest < ActionController::TestCase
     patient.reload
     assert_match('Hospitalized', patient.follow_up_reason)
     assert_match('Test Note', patient.follow_up_note)
-    assert_match('Flagged for Follow-up. Reason: "Hospitalized - Test Note"', History.where(patient: patient, created_by: user.email)[0].comment)
+    assert_match('Flagged for Follow-up. Reason: "Hospitalized: Test Note"', History.where(patient: patient, created_by: user.email)[0].comment)
 
     post :update_follow_up_flag, params: {
       id: patient.id,
@@ -1105,11 +1105,11 @@ class PatientsControllerTest < ActionController::TestCase
     patient_1.reload
     assert_match('In Need of Follow-up', patient_1.follow_up_reason)
     assert_match('Test Note', patient_1.follow_up_note)
-    assert_match('Flagged for Follow-up. Reason: "In Need of Follow-up - Test Note"', History.where(patient: patient_1, created_by: user.email)[0].comment)
+    assert_match('Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"', History.where(patient: patient_1, created_by: user.email)[0].comment)
     patient_2.reload
     assert_match('In Need of Follow-up', patient_2.follow_up_reason)
     assert_match('Test Note', patient_2.follow_up_note)
-    assert_match('Flagged for Follow-up. Reason: "In Need of Follow-up - Test Note"', History.where(patient: patient_2, created_by: user.email)[0].comment)
+    assert_match('Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"', History.where(patient: patient_2, created_by: user.email)[0].comment)
 
     post :bulk_update, params: {
       ids: [patient_1.id, patient_2.id],
