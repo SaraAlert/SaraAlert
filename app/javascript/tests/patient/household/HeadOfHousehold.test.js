@@ -17,16 +17,16 @@ describe('HeadOfHousehold', () => {
     const wrapper2 = shallow(<HeadOfHousehold patient={mockPatient1} other_household_members={[mockPatient2]} can_add_group={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
 
     // if user can add group
-    expect(wrapper1.find(Row).length).toEqual(3);
-    expect(wrapper1.find(Row).at(0).text()).toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
+    expect(wrapper1.find(Row).length).toEqual(2);
+    expect(wrapper1.find(Row).at(0).find('div').text()).toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
     expect(wrapper1.find(HouseholdMemberTable).exists()).toBeTruthy();
     expect(wrapper1.find(ChangeHoH).exists()).toBeTruthy();
     expect(wrapper1.find(EnrollHouseholdMember).exists()).toBeTruthy();
     expect(wrapper1.find(EnrollHouseholdMember).prop('isHoh')).toBeTruthy();
 
     // if user can't add group
-    expect(wrapper2.find(Row).length).toEqual(3);
-    expect(wrapper2.find(Row).at(0).text()).toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
+    expect(wrapper2.find(Row).length).toEqual(2);
+    expect(wrapper2.find(Row).at(0).find('div').text()).toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
     expect(wrapper2.find(HouseholdMemberTable).exists()).toBeTruthy();
     expect(wrapper2.find(ChangeHoH).exists()).toBeTruthy();
     expect(wrapper2.find(EnrollHouseholdMember).exists()).toBeFalsy();

@@ -9,8 +9,8 @@ class HeadOfHousehold extends React.Component {
   render() {
     return (
       <div id="head-of-household">
-        <Row>This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
-        <Row className="pt-2">
+        <Row>
+          <div className="pb-2">This monitoree is responsible for handling the reporting of the following other monitorees:</div>
           <HouseholdMemberTable
             household_members={this.props.other_household_members}
             current_user={this.props.current_user}
