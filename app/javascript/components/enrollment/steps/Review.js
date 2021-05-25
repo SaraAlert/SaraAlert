@@ -67,7 +67,7 @@ class Review extends React.Component {
             <Patient
               goto={this.props.goto}
               edit_mode={true}
-              jurisdiction_path={this.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id]}
+              jurisdiction_paths={this.props.jurisdiction_paths}
               details={{ ...this.props.currentState.patient, blocked_sms: this.props.currentState.blocked_sms } || {}}
               authenticity_token={this.props.authenticity_token}
             />
