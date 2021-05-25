@@ -258,26 +258,20 @@ class HouseholdMemberTable extends React.Component {
     const rowData = data.rowData;
     const monitoreeName = formatNameAlt(rowData);
 
-    if (rowData.id === rowData.responder_id) {
-      return (
-        <div>
-          <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />
-          {this.validJurisdiction(rowData) ? (
-            <a id="dependent-hoh-link" href={`${window.BASE_PATH}/patients/${rowData.id}`} rel="noreferrer" target="_blank">
-              {monitoreeName}
-            </a>
-          ) : (
-            <div>{monitoreeName}</div>
-          )}
-        </div>
-      );
-    }
-    return this.validJurisdiction(rowData) ? (
-      <a href={`${window.BASE_PATH}/patients/${rowData.id}`} rel="noreferrer" target="_blank">
-        {monitoreeName}
-      </a>
-    ) : (
-      <div>{monitoreeName}</div>
+    return (
+      <React.Fragment>
+        {rowData.head_of_household && <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />}
+        {this.validJurisdiction(rowData) ? (
+          <a
+            id={rowData.head_of_household ? 'dependent-hoh-link' : null}
+            href={`${window.BASE_PATH}/patients/${rowData.id}`}
+            target={this.props.isSelectable ? '_blank' : '_self'}>
+            {monitoreeName}
+          </a>
+        ) : (
+          <div>{monitoreeName}</div>
+        )}
+      </React.Fragment>
     );
   };
 
