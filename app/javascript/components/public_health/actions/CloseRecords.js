@@ -34,6 +34,15 @@ class CloseRecords extends React.Component {
   submit = () => {
     let idArray = this.props.patients.map(x => x['id']);
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
+    // Because the behavior of CloseRecords is to always set monitoring to false, the diffState will never detect
+    // a difference in the `monitoring` field, so manually add it now.
+    diffState.push('monitoring');
+
+    let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
+    // Add a period at the end of the Reasoning (if it's not already included)
+    if (_.last(reasoning) !== '.') {
+      reasoning += '.';
+    }
 
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -42,7 +51,7 @@ class CloseRecords extends React.Component {
           ids: idArray,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
-          reasoning: this.state.monitoring_reason + (this.state.monitoring_reason !== '' && this.state.reasoning !== '' ? ', ' : '') + this.state.reasoning,
+          reasoning,
           apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
