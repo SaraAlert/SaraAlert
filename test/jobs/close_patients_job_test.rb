@@ -121,11 +121,11 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      email: 'testpatient@example.com')
 
     ClosePatientsJob.perform_now
-    assert_equal(ActionMailer::Base.deliveries.count, 2)
+    assert_not_nil(ActionMailer::Base.deliveries.find { |d| d.to.include? 'test@test.com' })
     closed_email = ActionMailer::Base.deliveries.find { |d| d.to.include? 'testpatient@example.com' }
     assert_not_nil closed_email
-    assert_includes(close_email.to_s, 'Sara Alert Reporting Complete')
-    assert_equal(close_email.to[0], patient.email)
+    assert_includes(closed_email.to_s, 'Sara Alert Reporting Complete')
+    assert_equal(closed_email.to[0], patient.email)
     assert_contains_history(patient, 'Monitoring Complete message was sent.')
   end
 
