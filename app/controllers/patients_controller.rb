@@ -452,6 +452,8 @@ class PatientsController < ApplicationController
 
     # Slightly more performant to calculate this outside the loop below
     params_without_monitoring = params.except('monitoring')
+    params_without_monitoring[:diffState] = params_without_monitoring[:diffState].without('monitoring')
+
     patients.each do |patient|
       # We never want to update closed records monitoring status via the bulk_update
       update_params = patient.monitoring ? params : params_without_monitoring
