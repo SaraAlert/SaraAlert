@@ -494,17 +494,10 @@ class PatientsController < ApplicationController
     # Update patient
     update_monitoring_fields(patient, params, :patient, :none)
 
+    # Grab the patient IDs of houshold members to also update
+    apply_to_household_ids = find_household_ids(patient, params)
     # If not applying to household, return
-    apply_to_household_ids = params.permit(apply_to_household_ids: [])[:apply_to_household_ids]
-    return unless params.permit(:apply_to_household)[:apply_to_household] && !apply_to_household_ids.nil?
-
-    # If a household member has been removed, they should not be updated
-    current_household_ids = patient.household.where(purged: false).where.not(id: patient.id).pluck(:id)
-    diff_household_array = apply_to_household_ids - current_household_ids
-    unless diff_household_array.empty?
-      error_message = 'Apply to household action failed: changes have been made to this household. Please refresh.'
-      render(json: { error: error_message }, status: :bad_request) && return
-    end
+    return if apply_to_household_ids.empty?
 
     # Update selected group members if applying to household and ids are supplied
     apply_to_household_ids.each do |id|
@@ -604,17 +597,10 @@ class PatientsController < ApplicationController
       end
     end
 
+    # Grab the patient IDs of houshold members to also update
+    apply_to_household_ids = find_household_ids(patient, params)
     # If not applying to household, return
-    apply_to_household_ids = params.permit(apply_to_household_ids: [])[:apply_to_household_ids]
-    return unless params.permit(:apply_to_household)[:apply_to_household] && apply_to_household_ids.present?
-
-    # If a household member has been removed, they should not be updated
-    current_household_ids = patient.household.where(purged: false).where.not(id: patient.id).pluck(:id)
-    diff_household_array = apply_to_household_ids - current_household_ids
-    unless diff_household_array.empty?
-      error_message = 'Apply to household action failed: changes have been made to this household. Please refresh.'
-      render(json: { error: error_message }, status: :bad_request) && return
-    end
+    return if apply_to_household_ids.empty?
 
     # Update selected group members if applying to household and ids are supplied
     if clear_flag
@@ -691,6 +677,28 @@ class PatientsController < ApplicationController
     comment = 'User reviewed a report (ID: ' + assessment.id.to_s + ').'
     comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
     History.report_reviewed(patient: patient, created_by: current_user.email, comment: comment)
+  end
+
+  # Return the patient IDs of household members that need to be updated
+  #
+  # patient - The Patient being updated
+  # params - The request params.
+  def find_household_ids(patient, params)
+    apply_to_household_ids = params.permit(apply_to_household_ids: [])[:apply_to_household_ids]
+    if params.permit(:apply_to_household)[:apply_to_household] && !apply_to_household_ids.nil?
+      # If a household member has been removed, they should not be updated
+      current_household_ids = patient.household.where(purged: false).where.not(id: patient.id).pluck(:id)
+      diff_household_array = apply_to_household_ids - current_household_ids
+      unless diff_household_array.empty?
+        error_message = 'Apply to household action failed: changes have been made to this household. Please refresh.'
+        render(json: { error: error_message }, status: :bad_request)
+        apply_to_household_ids = []
+      end
+    else
+      # When not applying the change to other household members, don't return any household IDs
+      apply_to_household_ids = []
+    end
+    apply_to_household_ids
   end
 
   # A patient is eligible to be removed from a household if their responder doesn't have the same contact

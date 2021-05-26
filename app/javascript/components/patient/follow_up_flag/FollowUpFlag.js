@@ -133,7 +133,7 @@ class FollowUpFlag extends React.Component {
             location.reload();
           })
           .catch(error => {
-            reportError('Failed to update the Follow-up Flag.');
+            reportError(error?.response?.data?.error ? error.response.data.error : error, false);
             console.log(error);
           });
       }
