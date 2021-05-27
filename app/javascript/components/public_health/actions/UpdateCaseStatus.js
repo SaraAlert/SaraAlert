@@ -20,11 +20,12 @@ class UpdateCaseStatus extends React.Component {
       isolation: undefined,
       initialCaseStatus: undefined,
       initialIsolation: undefined,
+      initialMonitoringReason: undefined,
       initialMonitoring: undefined,
       apply_to_household: false,
       reasoning: '',
       monitoring: null,
-      monitoring_reason: '',
+      monitoring_reason: 'Meets Case Definition',
       loading: false,
     };
     this.origState = Object.assign({}, this.state);
@@ -55,6 +56,7 @@ class UpdateCaseStatus extends React.Component {
           state_updates.monitoring = distinctMonitoring[0];
         }
         if (distinctMonitoringReason.length === 1 && distinctMonitoringReason[0] !== null) {
+          state_updates.initialMonitoringReason = distinctMonitoringReason[0];
           state_updates.monitoring_reason = distinctMonitoringReason[0];
         }
 
@@ -105,7 +107,14 @@ class UpdateCaseStatus extends React.Component {
   submit = () => {
     let idArray = this.props.patients.map(x => x['id']);
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
-
+    if (this.state.monitoring_reason !== this.state.initialMonitoringReason && !diffState.includes('monitoring_reason')) {
+      // Handles the case where the user goes with the default monitoring_reason
+      diffState.push('monitoring_reason');
+    }
+    // We dont want to touch `monitoring_reason` if the case status has been changed to any of the following
+    if (['Suspect', 'Not a Case', 'Unknown', ''].includes(this.state.case_status)) {
+      diffState = diffState.filter(x => x !== 'monitoring_reason');
+    }
     this.setState({ loading: true }, () => {
       // Per feedback, include the monitoring_reason in the reasoning text, as the user might not inlude any text
       let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
@@ -164,12 +173,7 @@ class UpdateCaseStatus extends React.Component {
       <div>
         <Form.Group controlId="monitoring_reason">
           <Form.Label>Please select reason for status change:</Form.Label>
-          <Form.Control
-            as="select"
-            size="lg"
-            className="form-square"
-            onChange={this.handleChange}
-            value={this.state.monitoring_reason || 'Meets Case Definition'}>
+          <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange} value={this.state.monitoring_reason}>
             <option></option>
             {this.props.monitoring_reasons.map((option, index) => (
               <option key={`option-${index}`} value={option}>
