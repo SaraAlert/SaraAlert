@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Form, InputGroup, Spinner, Table } from 'react-bootstrap';
+import { Button, Form, InputGroup, Row, Spinner, Table } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import ReactTooltip from 'react-tooltip';
 import InfoTooltip from '../util/InfoTooltip';
@@ -265,9 +265,9 @@ class CustomTable extends React.Component {
           </Table>
         </div>
         {this.props.showPagination && (
-          <div id="pagination-container" className="row-container">
-            <div className="left-container">
-              <div className="left-box-1">
+          <Row>
+            <div className="col-mdlg-13">
+              <div className="mb-2">
                 <InputGroup>
                   <InputGroup.Prepend>
                     <InputGroup.Text className="rounded-0">
@@ -281,7 +281,8 @@ class CustomTable extends React.Component {
                     name="entries"
                     value={this.props.entries}
                     onChange={this.props.handleEntriesChange}
-                    aria-label="Adjust number of records">
+                    aria-label="Adjust number of records"
+                    style={{ minWidth: '4rem', maxWidth: '4rem' }}>
                     {this.props.entryOptions.map(num => {
                       return (
                         <option key={num} value={num}>
@@ -290,43 +291,41 @@ class CustomTable extends React.Component {
                       );
                     })}
                   </Form.Control>
+                  <InputGroup.Append>
+                    <InputGroup.Text className="num-rows-displayed-text">{`Displaying ${this.props.rowData.length} out of ${this.props.totalRows} rows.`}</InputGroup.Text>
+                  </InputGroup.Append>
                 </InputGroup>
               </div>
-              <div className="left-box-2">
-                <span className="ml-0 ml-md-2 text-nowrap align-self-center">{`Displaying ${this.props.rowData.length} out of ${this.props.totalRows} rows.`}</span>
-              </div>
             </div>
-            <div className="right-container">
+            <div className="col-mdlg-11">
               {this.props.totalRows > 0 && (
-                <div style={{ float: 'right' }}>
-                  <ReactPaginate
-                    disableInitialCallback={true}
-                    pageCount={Math.ceil(this.props.totalRows / this.props.entries)}
-                    pageRangeDisplayed={4}
-                    marginPagesDisplayed={1}
-                    initialPage={this.props.page}
-                    forcePage={this.props.page}
-                    onPageChange={this.props.handlePageUpdate}
-                    previousLabel="Previous"
-                    nextLabel="Next"
-                    breakLabel="..."
-                    containerClassName="pagination mb-0"
-                    activeClassName="active"
-                    disabledClassName="disabled"
-                    pageClassName="paginate_button page-item"
-                    previousClassName="paginate_button page-item"
-                    nextClassName="paginate_button page-item"
-                    breakClassName="paginate_button page-item"
-                    pageLinkClassName="page-link text-primary"
-                    previousLinkClassName={this.props.page === 0 ? 'page-link' : 'page-link text-primary'}
-                    nextLinkClassName={this.props.page === Math.ceil(this.props.totalRows / this.props.entries) - 1 ? 'page-link' : 'page-link text-primary'}
-                    activeLinkClassName="page-link text-light"
-                    breakLinkClassName="page-link text-primary"
-                  />
-                </div>
+                <ReactPaginate
+                  disableInitialCallback={true}
+                  pageCount={Math.ceil(this.props.totalRows / this.props.entries)}
+                  pageRangeDisplayed={4}
+                  marginPagesDisplayed={1}
+                  initialPage={this.props.page}
+                  forcePage={this.props.page}
+                  onPageChange={this.props.handlePageUpdate}
+                  previousLabel="Previous"
+                  nextLabel="Next"
+                  breakLabel="..."
+                  containerClassName="pagination mb-0 float-right"
+                  activeClassName="active"
+                  disabledClassName="disabled"
+                  pageClassName="paginate_button page-item"
+                  previousClassName="paginate_button page-item"
+                  nextClassName="paginate_button page-item"
+                  breakClassName="paginate_button page-item"
+                  pageLinkClassName="page-link text-primary"
+                  previousLinkClassName={this.props.page === 0 ? 'page-link' : 'page-link text-primary'}
+                  nextLinkClassName={this.props.page === Math.ceil(this.props.totalRows / this.props.entries) - 1 ? 'page-link' : 'page-link text-primary'}
+                  activeLinkClassName="page-link text-light"
+                  breakLinkClassName="page-link text-primary"
+                />
               )}
             </div>
-          </div>
+          </Row>
         )}
       </React.Fragment>
     );

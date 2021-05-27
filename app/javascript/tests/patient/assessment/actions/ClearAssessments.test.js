@@ -1,13 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Button, Modal } from 'react-bootstrap';
+import { Alert, Button, Modal } from 'react-bootstrap';
 import ClearAssessments from '../../../../components/patient/assessment/actions/ClearAssessments';
 import { mockPatient1, mockPatient2 } from '../../../mocks/mockPatients';
 
 const mockToken = 'testMockTokenString12345';
 
-function getWrapper(patient, assessment_id, onlySympAssessment) {
-  return assessment_id ? shallow(<ClearAssessments patient={patient} authenticity_token={mockToken} assessment_id={assessment_id} onlySympAssessment={onlySympAssessment} />) : shallow(<ClearAssessments patient={patient} authenticity_token={mockToken} />);
+function getWrapper(patient, assessment_id) {
+  return shallow(<ClearAssessments patient={patient} authenticity_token={mockToken} assessment_id={assessment_id} />);
 }
 
 describe('ClearAssessments', () => {
@@ -151,37 +151,32 @@ describe('ClearAssessments', () => {
     expect(wrapper.find(Modal).exists()).toBeFalsy();
   });
 
-  it('Symptom Onset and Asymptomatic should be prompted if clearing all assessments', () => {
-    let wrapper = getWrapper(mockPatient1);
+  it('Symptom Onset should be prompted if clearing all assessments', () => {
+    let wrapper = shallow(<ClearAssessments patient={mockPatient1} authenticity_token={mockToken} num_pos_labs={0} />);
     wrapper.find(Button).simulate('click');
-    expect(wrapper.find('p').at(1).text()).toEqual('Marking all reports as reviewed will result in the system populated Symptom Onset Date being cleared. Please provide a Symptom Onset Date or select Asymptomatic in order for this record to be eligible to appear on the Records Requiring Review line list.');
+    expect(wrapper.find(Alert).text()).toEqual('Warning: Marking all reports as reviewed will result in the system populated Symptom Onset Date being cleared. Please consider providing a Symptom Onset Date or entering a positive lab result in order for this record to be eligible to appear on the Records Requiring Review line list.');
     expect(wrapper.find('#symptom_onset_mark_as_reviewed').exists()).toBeTruthy();
-    expect(wrapper.find('#asymptomatic_mark_as_reviewed').exists()).toBeTruthy();
 
     // should not show up in exposure
     wrapper = getWrapper({ ...Object.assign({}, mockPatient1), isolation: false });
     wrapper.find(Button).simulate('click');
     expect(wrapper.find('#symptom_onset_mark_as_reviewed').exists()).toBeFalsy();
-    expect(wrapper.find('#asymptomatic_mark_as_reviewed').exists()).toBeFalsy();
   });
 
-  it('Symptom Onset and Asymptomatic should be prompted if the only remaining symptomatic assessment is cleared', () => {
-    let wrapper = getWrapper(mockPatient1, 1, true);
+  it('Symptom Onset should be prompted if the only remaining symptomatic assessment is cleared', () => {
+    let wrapper = shallow(<ClearAssessments patient={mockPatient1} authenticity_token={mockToken} assessment_id={1} num_pos_labs={0} onlySympAssessment={true} />);
     wrapper.find(Button).simulate('click');
-    expect(wrapper.find('p').at(1).text()).toEqual('Marking this report as reviewed will result in the system populated Symptom Onset Date being cleared. Please provide a Symptom Onset Date or select Asymptomatic in order for this record to be eligible to appear on the Records Requiring Review line list.');
+    expect(wrapper.find(Alert).text()).toEqual('Warning: Marking this report as reviewed will result in the system populated Symptom Onset Date being cleared. Please consider providing a Symptom Onset Date or entering a positive lab result in order for this record to be eligible to appear on the Records Requiring Review line list.');
     expect(wrapper.find('#symptom_onset_mark_as_reviewed').exists()).toBeTruthy();
-    expect(wrapper.find('#asymptomatic_mark_as_reviewed').exists()).toBeTruthy();
 
     // should not appear when assessment being cleared is not the only remaining symptomatic assessment
     wrapper = getWrapper(mockPatient1, 1, false);
     wrapper.find(Button).simulate('click');
     expect(wrapper.find('#symptom_onset_mark_as_reviewed').exists()).toBeFalsy();
-    expect(wrapper.find('#asymptomatic_mark_as_reviewed').exists()).toBeFalsy();
 
     // should not appear in exposure
     wrapper = getWrapper({ ...Object.assign({}, mockPatient1), isolation: false }, 1, true);
     wrapper.find(Button).simulate('click');
     expect(wrapper.find('#symptom_onset_mark_as_reviewed').exists()).toBeFalsy();
-    expect(wrapper.find('#asymptomatic_mark_as_reviewed').exists()).toBeFalsy();
   });
 });

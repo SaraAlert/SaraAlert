@@ -122,10 +122,10 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan exposure_notes case_status gender_identity
                 sexual_orientation risk_level monitoring_reason public_health_action],
     dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
-              symptom_onset extended_isolation],
+              symptom_onset first_positive_lab_at extended_isolation],
     timestamps: %i[created_at updated_at closed_at latest_assessment_at latest_transfer_at last_assessment_reminder_sent],
     phones: %i[primary_telephone secondary_telephone],
-    booleans: %i[interpretation_required isolation continuous_exposure asymptomatic contact_of_known_case travel_to_affected_country_or_area
+    booleans: %i[interpretation_required isolation continuous_exposure contact_of_known_case travel_to_affected_country_or_area
                  was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
                  member_of_a_common_exposure_cohort head_of_household pause_notifications],
     races: %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander race_other race_unknown
@@ -263,7 +263,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     continuous_exposure: 'Continuous Exposure',
     symptom_onset: 'Symptom Onset Date',
     symptom_onset_defined_by: 'Symptom Onset Defined By',
-    asymptomatic: 'Asymptomatic',
+    first_positive_lab_at: 'First Positive Lab',
     extended_isolation: 'Extended Isolation Date',
     end_of_monitoring: 'End of Monitoring',
     closed_at: 'Closure Date',
@@ -469,7 +469,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
               rct_node(:patients, 'Linelist Info', %i[workflow status]),
               rct_node(:patients, 'Monitoring Actions', %i[monitoring_status exposure_risk_assessment monitoring_plan case_status public_health_action
                                                            jurisdiction_path jurisdiction_name assigned_user]),
-              rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset symptom_onset_defined_by asymptomatic
+              rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset symptom_onset_defined_by first_positive_lab_at
                                                           extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_ts]),
               rct_node(:patients, 'Reporting Info', %i[responder_id head_of_household pause_notifications last_assessment_reminder_sent])
             ]

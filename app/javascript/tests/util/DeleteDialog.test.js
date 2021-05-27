@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import DeleteDialog from '../../components/util/DeleteDialog';
 
@@ -130,5 +130,17 @@ describe('DeleteDialog', () => {
     expect(wrapper.state('disabled')).toBeFalsy();
     expect(wrapper.state('loading')).toBeTruthy();
     expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBeTruthy();
+  });
+
+  it('Prompts the user for symptom onset if necessary', () => {
+    const wrapper = shallow(<DeleteDialog type={mockType} delete={deleteMock} toggle={toggleMock} onChange={onChangeMock} showSymptomOnsetInput={true} />);
+    expect(wrapper.find(Alert).text()).toEqual('Warning: Since this record does not have a Symptom Onset Date, deleting this positive lab result may result in the record not ever being eligible to appear on the Records Requiring Review line list. Please consider entering a symptom onset date to prevent this from happening:');
+    expect(wrapper.find(Form.Label).text()).toEqual('SYMPTOM ONSET');
+    expect(wrapper.find('#symptom_onset_delete_dialog').exists()).toBeTruthy();
+  });
+
+  it('Does not prompt the user for symptom onset if not necessary', () => {
+    const wrapper = shallow(<DeleteDialog type={mockType} delete={deleteMock} toggle={toggleMock} onChange={onChangeMock} showSymptomOnsetInput={false} />);
+    expect(wrapper.find('#symptom_onset_delete_dialog').exists()).toBeFalsy();
   });
 });

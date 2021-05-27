@@ -161,9 +161,6 @@ class Assessment < ApplicationRecord
     latest_assessment = patient.assessments.order(:created_at).last
     updates = { latest_assessment_at: latest_assessment&.created_at, latest_assessment_symptomatic: latest_assessment&.symptomatic }
 
-    # only clear asymptomatic status if a symptomatic assessment now exists
-    updates[:asymptomatic] = false if patient.assessments.where(symptomatic: true).any?
-
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
     if action == :removed
       updates[:latest_fever_or_fever_reducer_at] = patient.assessments.where_assoc_exists(:reported_condition, &:fever_or_fever_reducer).maximum(:created_at)

@@ -61,7 +61,6 @@ module PatientHelper
       isolation
       pause_notifications
       symptom_onset
-      asymptomatic
       case_status
       assigned_user
       last_date_of_exposure
