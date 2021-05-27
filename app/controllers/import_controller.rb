@@ -50,21 +50,21 @@ class ImportController < ApplicationController
         ext = File.extname(params[:file].tempfile.path)
         raise FileFormatError.new('File format must be .csv', ext) unless ext == '.csv'
 
-        csv = CSV.parse(File.read(params[:file].tempfile.path), headers: true)
+        csv = CSV.read(params[:file].tempfile.path, headers: true, skip_blanks: true, skip_lines: /^(?:,\s*)+$/)
         validate_headers(format, csv.headers)
       else
         xlsx = Roo::Excelx.new(params[:file].tempfile.path, file_warning: :ignore)
         validate_headers(format, xlsx.sheet(0).row(1))
       end
 
-      num_rows = format == :epix ? csv.length : xlsx.sheet(0).last_row
-      raise ValidationError.new('File must contain at least one monitoree to import', 2) if num_rows < 2
-      raise ValidationError.new('Please limit each import to 1000 monitorees.', 1000) if num_rows > 1001
+      num_rows = format == :epix ? csv.length : xlsx.sheet(0).last_row - 1
+      raise ValidationError.new('File must contain at least one monitoree to import', 2) if num_rows < 1
+      raise ValidationError.new('Please limit each import to 1000 monitorees.', 1000) if num_rows > 1000
 
       # Define patients for duplicate detection here to avoid duplicate queries
       patients_for_duplicate_detection = current_user.viewable_patients
 
-      records = format == :sara_alert_format ? xlsx.sheet(0) : csv
+      records = format == :epix ? csv : xlsx.sheet(0)
       records.each_with_index do |row, row_ind|
         next if row_ind.zero? && format == :sara_alert_format # Skip headers for excel file
 
@@ -142,7 +142,8 @@ class ImportController < ApplicationController
 
   def import_sara_alert_format_field(patient, field, row, row_ind, col_num, workflow, valid_jurisdiction_ids)
     if field == :jurisdiction_path
-      patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
+      patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[SARA_ALERT_FORMAT_FIELDS.index(:jurisdiction_path)],
+                                                                                     row_ind, valid_jurisdiction_ids)
     elsif field == :assigned_user
       patient[:assigned_user] = import_assigned_user(row[SARA_ALERT_FORMAT_FIELDS.index(:assigned_user)])
     elsif field == :symptom_onset && workflow == :isolation
