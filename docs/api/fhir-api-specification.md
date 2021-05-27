@@ -46,7 +46,8 @@ For applications following the [SMART-on-FHIR App Launch Framework "Standalone L
 * `user/RelatedPerson.*`
 * `user/Immunization.read`
 * `user/Immunization.write`
-* `user/Immunization.*`
+* `user/Immunization.*`,
+* `user/Provenance.read`
 
 For applications following the [SMART on FHIR Backend Services Workflow](#backend-services), these are the available scopes:
 
@@ -60,7 +61,8 @@ For applications following the [SMART on FHIR Backend Services Workflow](#backen
 * `system/RelatedPerson.*`,
 * `system/Immunization.read`,
 * `system/Immunization.write`,
-* `system/Immunization.*`
+* `system/Immunization.*`,
+* `system/Provenance.read`
 
 Please note a given application and request for access token can have have multiple scopes, which must be space-separated. For example:
 ```
@@ -234,6 +236,31 @@ A capability statement is available at `[base]/metadata`:
             },
             {
               "code": "create"
+            },
+            {
+              "code": "search-type"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "patient",
+              "type": "reference"
+            },
+            {
+              "name": "_id",
+              "type": "string"
+            },
+            {
+              "name": "_count",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "type": "Provenance",
+          "interaction": [
+            {
+              "code": "read"
             },
             {
               "code": "search-type"
@@ -768,7 +795,7 @@ Get a monitoree vaccination via an id, e.g.:
 
 ### GET `[base]/Provenance/[:id]`
 
-Get a monitoree provenance via an id, e.g.:
+Get a monitoree history via an id, e.g.:
 
 <details>
   <summary>Click to expand JSON snippet</summary>
@@ -821,7 +848,7 @@ Get a monitoree provenance via an id, e.g.:
 
 ### GET `[base]/Patient/[:id]/$everything`
 
-Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab results, and all their daily reports.
+Use this route to retrieve a FHIR Bundle containing the monitoree and all their lab results, daily reports, vaccinations, close contacts, and histories
 
 <details>
   <summary>Click to expand JSON snippet</summary>

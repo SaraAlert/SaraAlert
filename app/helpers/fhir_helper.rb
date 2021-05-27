@@ -250,13 +250,12 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       agent: [
         {
           who: FHIR::Reference.new(identifier: FHIR::Identifier.new(value: history.created_by)),
-
           onBehalfOf: FHIR::Reference.new(reference: "Patient/#{history.patient_id}")
         }
       ],
       extension: [
         to_string_extension(history.comment, 'comment'),
-        to_string_extension(history.history_type, 'history_type')
+        to_string_extension(history.history_type, 'history-type')
       ]
     )
   end
