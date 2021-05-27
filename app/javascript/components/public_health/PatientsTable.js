@@ -56,7 +56,7 @@ class PatientsTable extends React.Component {
           { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatEndOfMonitoring },
           { field: 'extended_isolation', label: 'Extended Isolation To', isSortable: true, tooltip: 'extendedIsolation', filter: formatDate },
           { field: 'first_positive_lab_at', label: 'First Positive Lab', isSortable: true, filter: formatDate },
-          { field: 'symptom_onset', label: 'Symptom Onset', isSortable: true, tooltip: null, filter: this.formatSymptomOnset },
+          { field: 'symptom_onset', label: 'Symptom Onset', isSortable: true, tooltip: null, filter: formatDate },
           { field: 'risk_level', label: 'Risk Level', isSortable: true, tooltip: null },
           { field: 'monitoring_plan', label: 'Monitoring Plan', isSortable: true, tooltip: null },
           { field: 'reporter', label: 'Reporter ID', isSortable: true, tooltip: null, filter: this.linkReporter },
@@ -494,10 +494,6 @@ class PatientsTable extends React.Component {
       return 'Continuous Exposure';
     }
     return moment(endOfMonitoring, 'YYYY-MM-DD').format('MM/DD/YYYY');
-  };
-
-  formatSymptomOnset = data => {
-    return data?.value ? (data.value === 'Asymptomatic' ? data.value : formatDate(data.value)) : '';
   };
 
   formatLatestReport = data => {

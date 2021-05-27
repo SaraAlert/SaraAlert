@@ -171,7 +171,7 @@ class PatientsController < ApplicationController
 
     # Create a history for the first positive lab if presentt
     if allowed_params[:laboratories_attributes].present?
-      History.lab_result(patient: patient.id, created_by: current_user.email, comment: "User added a new lab result (ID: #{patient.laboratories.first.id}).")
+      History.lab_result(patient: patient.id, created_by: current_user.email, comment: "User added a new lab result (ID: #{patient.laboratories.last.id}).")
     end
 
     if params[:cc_id].present?
@@ -542,6 +542,9 @@ class PatientsController < ApplicationController
     # Apply and save updates to the db
     patient.update!(updates)
 
+    # Create first positive lab and history if present
+    create_lab_result(params, patient, true)
+
     # If the jurisdiction was changed, create a Transfer
     if updates&.keys&.include?(:jurisdiction_id) && !updates[:jurisdiction_id].nil?
       Transfer.create(patient: patient, from_jurisdiction: patient_before.jurisdiction, to_jurisdiction: patient.jurisdiction, who: current_user)
@@ -663,18 +666,21 @@ class PatientsController < ApplicationController
   def clear_assessments
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
-    permitted_params = params.permit(:id, :symptom_onset, :user_defined_symptom_onset, :asymptomatic, :reasoning, diffState: [])
+    permitted_params = params.permit(:id, :symptom_onset, :user_defined_symptom_onset, :reasoning, diffState: [])
 
     patient = current_user.get_patient(permitted_params[:id])
     patient.assessments.update(symptomatic: false)
 
-    # Update symptom onset or asymptomatic when reviewing reports in isolation
-    isolation_updates = permitted_params[:diffState].map(&:to_sym) & %i[symptom_onset user_defined_symptom_onset asymptomatic]
+    # Update symptom onset when reviewing reports in isolation
+    isolation_updates = permitted_params[:diffState].map(&:to_sym) & %i[symptom_onset user_defined_symptom_onset]
     patient.update(permitted_params.transform_keys(&:to_sym).slice(*isolation_updates)) if patient.isolation && isolation_updates.any?
+
+    # Create first positive lab if present
+    lab_id = create_lab_result(params, patient, false)
 
     comment = 'User reviewed all reports'
     comment += " and updated Symptom Onset Date to #{patient[:symptom_onset]&.strftime('%m/%d/%Y')}" if isolation_updates.include?(:symptom_onset)
-    comment += ' and marked this record as Asymptomatic' if patient.asymptomatic && isolation_updates.include?(:asymptomatic)
+    comment += " and added a new lab result (ID: #{lab_id})" if lab_id.present?
     comment += '.'
     comment += ' Reason: ' + permitted_params[:reasoning] unless permitted_params[:reasoning].blank?
     History.reports_reviewed(patient: patient, created_by: current_user.email, comment: comment)
@@ -683,19 +689,22 @@ class PatientsController < ApplicationController
   def clear_assessment
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
-    permitted_params = params.permit(:id, :assessment_id, :symptom_onset, :user_defined_symptom_onset, :asymptomatic, :reasoning, diffState: [])
+    permitted_params = params.permit(:id, :assessment_id, :symptom_onset, :user_defined_symptom_onset, :reasoning, diffState: [])
 
     patient = current_user.get_patient(permitted_params[:id])
     assessment = patient.assessments.find_by(id: permitted_params[:assessment_id])
     assessment.update(symptomatic: false)
 
-    # Update symptom onset or asymptomatic when reviewing reports in isolation
-    isolation_updates = permitted_params[:diffState].map(&:to_sym) & %i[symptom_onset user_defined_symptom_onset asymptomatic]
+    # Update symptom onset when reviewing reports in isolation
+    isolation_updates = permitted_params[:diffState].map(&:to_sym) & %i[symptom_onset user_defined_symptom_onset]
     patient.update(permitted_params.transform_keys(&:to_sym).slice(*isolation_updates)) if patient.isolation && isolation_updates.any?
+
+    # Create first positive lab if present
+    lab_id = create_lab_result(params, patient, false)
 
     comment = 'User reviewed a report (ID: ' + assessment.id.to_s + ')'
     comment += " and updated Symptom Onset Date to #{patient[:symptom_onset]&.strftime('%m/%d/%Y')}" if isolation_updates.include?(:symptom_onset)
-    comment += ' and marked this record as Asymptomatic' if patient.asymptomatic && isolation_updates.include?(:asymptomatic)
+    comment += " and added a new lab result (ID: #{lab_id})" if lab_id.present?
     comment += '.'
     comment += ' Reason: ' + permitted_params[:reasoning] unless permitted_params[:reasoning].blank?
     History.report_reviewed(patient: patient, created_by: current_user.email, comment: comment)
@@ -721,6 +730,26 @@ class PatientsController < ApplicationController
       apply_to_household_ids = []
     end
     apply_to_household_ids
+  end
+
+  # Create first positive lab and history if present (using laboratories_attributes does not work in this case)
+  def create_lab_result(params, patient, create_history)
+    return unless params[:first_positive_lab].present?
+
+    lab = Laboratory.new(lab_type: params[:first_positive_lab][:lab_type],
+                         specimen_collection: params[:first_positive_lab][:specimen_collection],
+                         report: params[:first_positive_lab][:report],
+                         result: params[:first_positive_lab][:result],
+                         patient_id: patient.id)
+
+    # Create history item on successful create
+    ActiveRecord::Base.transaction do
+      if lab.save && create_history
+        History.lab_result(patient: patient.id, created_by: current_user.email, comment: "User added a new lab result (ID: #{lab.id}).")
+      end
+    end
+
+    lab.id
   end
 
   # A patient is eligible to be removed from a household if their responder doesn't have the same contact
@@ -873,7 +902,6 @@ class PatientsController < ApplicationController
       :jurisdiction_id,
       :assigned_user,
       :symptom_onset,
-      :asymptomatic,
       :extended_isolation,
       :case_status,
       :continuous_exposure,

@@ -64,16 +64,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     patients = patients_by_query(user, settings.dig(:data, :patients, :query) || {})
     patients_group = patients.reorder('')
 
-    if settings[:format] == :csv
-      export_files = {}
-      settings[:data]&.each_key do |data_type|
-        export_files[data_type] = get_csv('Sara-Alert-Custom-Export-????-??-??T??-??-?????-??.csv') if settings.dig(:data, data_type, :checked)&.present?
-      end
-      verify_custom_export_csv(patients_group, settings, export_files)
-    else
-      xlsx = get_xlsx('Sara-Alert-Custom-Export-????-??-??T??-??-?????-??.xlsx')
-      verify_custom_export_xlsx(patients_group.order(:id), settings, xlsx)
-    end
+    xlsx = get_xlsx('Sara-Alert-Custom-Export-????-??-??T??-??-?????-??.xlsx')
+    verify_custom_export_xlsx(patients_group.order(:id), settings, xlsx)
   end
 
   def verify_preset(user_label, settings)

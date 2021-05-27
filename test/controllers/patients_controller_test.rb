@@ -1027,8 +1027,8 @@ class PatientsControllerTest < ActionController::TestCase
     user = create(:public_health_enroller_user)
     sign_in user
     patient = create(:patient, symptom_onset: DateTime.now - 1.day, creator: user)
-    created_at = DateTime.now.to_date - 2.day
-    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: created_at)
+    earliest_symptomatic_assessment_timestamp = DateTime.now - 2.day
+    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: earliest_symptomatic_assessment_timestamp)
 
     post :update, params: {
       id: patient.id,
@@ -1041,7 +1041,7 @@ class PatientsControllerTest < ActionController::TestCase
 
     assert_response :success
     patient.reload
-    assert_equal created_at, patient.symptom_onset
+    assert_equal earliest_symptomatic_assessment_timestamp.to_date, patient.symptom_onset
     assert_not patient.user_defined_symptom_onset
 
     h = History.where(patient: patient)

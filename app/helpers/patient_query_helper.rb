@@ -678,7 +678,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
       details[:extended_isolation] = patient[:extended_isolation] if fields.include?(:extended_isolation)
       details[:first_positive_lab_at] = patient[:first_positive_lab_at] if fields.include?(:first_positive_lab_at)
-      details[:symptom_onset] = patient[:asymptomatic] ? 'Asymptomatic' : patient.symptom_onset if fields.include?(:symptom_onset)
+      details[:symptom_onset] = patient[:symptom_onset] if fields.include?(:symptom_onset)
       details[:risk_level] = patient[:exposure_risk_assessment] || '' if fields.include?(:risk_level)
       details[:monitoring_plan] = patient[:monitoring_plan] || '' if fields.include?(:monitoring_plan)
       details[:public_health_action] = patient[:public_health_action] || '' if fields.include?(:public_health_action)

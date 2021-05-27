@@ -22,13 +22,13 @@ class MonitoringPeriod extends React.Component {
   render() {
     return (
       <Row>
-        <Col sm={8}>
+        <Col lg={8} sm={this.props.patient.isolation ? 12 : 8}>
           <SymptomOnset
             authenticity_token={this.props.authenticity_token}
             patient={this.props.patient}
             symptomatic_assessments_exist={this.props.symptomatic_assessments_exist}
-            numPosLabs={this.props.numPosLabs}
-            calculatedSymptomOnset={this.props.calculatedSymptomOnset}
+            num_pos_labs={this.props.num_pos_labs}
+            calculated_symptom_onset={this.props.calculated_symptom_onset}
           />
         </Col>
         {!this.props.patient.isolation && (
@@ -42,7 +42,7 @@ class MonitoringPeriod extends React.Component {
             />
           </Col>
         )}
-        <Col sm={8}>
+        <Col lg={8} sm={this.props.patient.isolation ? 12 : 8}>
           {this.props.patient.isolation ? (
             <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
           ) : (
@@ -60,7 +60,9 @@ class MonitoringPeriod extends React.Component {
                   );
                 }}
                 location="right"></InfoTooltip>
-              <div className="my-1">{this.formatEndOfMonitoringDate()}</div>
+              <div id="end_of_monitoring_date" className="my-1">
+                {this.formatEndOfMonitoringDate()}
+              </div>
             </React.Fragment>
           )}
         </Col>
@@ -77,11 +79,11 @@ MonitoringPeriod.propTypes = {
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   symptomatic_assessments_exist: PropTypes.bool,
-  numPosLabs: PropTypes.number,
-  calculatedSymptomOnset: function (props) {
-    if (props.calculatedSymptomOnset && !moment(props.calculatedSymptomOnset, 'YYYY-MM-DD').isValid()) {
+  num_pos_labs: PropTypes.number,
+  calculated_symptom_onset: function (props) {
+    if (props.calculated_symptom_onset && !moment(props.calculated_symptom_onset, 'YYYY-MM-DD').isValid()) {
       return new Error(
-        'Invalid prop `calculatedSymptomOnset` supplied to `DateInput`, `calculatedSymptomOnset` must be a valid date string in the `YYYY-MM-DD` format.'
+        'Invalid prop `calculated_symptom_onset` supplied to `DateInput`, `calculated_symptom_onset` must be a valid date string in the `YYYY-MM-DD` format.'
       );
     }
   },

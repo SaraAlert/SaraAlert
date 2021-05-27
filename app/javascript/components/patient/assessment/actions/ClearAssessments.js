@@ -1,12 +1,13 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Alert, Button, Form, Modal } from 'react-bootstrap';
 
 import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
 
 import DateInput from '../../../util/DateInput';
+import FirstPositiveLaboratory from '../../laboratory/FirstPositiveLaboratory';
 import reportError from '../../../util/ReportError';
 
 class ClearAssessments extends React.Component {
@@ -14,7 +15,6 @@ class ClearAssessments extends React.Component {
     super(props);
     this.state = {
       user_defined_symptom_onset: false,
-      asymptomatic: false,
       showClearAssessmentsModal: false,
       loading: false,
     };
@@ -35,15 +35,18 @@ class ClearAssessments extends React.Component {
   submit = () => {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
+      const updates = {
+        symptom_onset: this.state.symptom_onset,
+        user_defined_symptom_onset: this.state.user_defined_symptom_onset,
+        diffState: diffState,
+        reasoning: this.state.reasoning,
+      };
+      if (this.state.first_positive_lab) {
+        updates['first_positive_lab'] = this.state.first_positive_lab;
+      }
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(`${window.BASE_PATH}/patients/${this.props.patient.id}/status/clear${this.props.assessment_id ? '/' + this.props.assessment_id : ''}`, {
-          symptom_onset: this.state.symptom_onset,
-          user_defined_symptom_onset: this.state.user_defined_symptom_onset,
-          asymptomatic: this.state.asymptomatic,
-          diffState: diffState,
-          reasoning: this.state.reasoning,
-        })
+        .post(`${window.BASE_PATH}/patients/${this.props.patient.id}/status/clear${this.props.assessment_id ? '/' + this.props.assessment_id : ''}`, updates)
         .then(() => {
           location.reload();
         })
@@ -104,17 +107,15 @@ class ClearAssessments extends React.Component {
           </Form.Group>
           {this.props.patient.isolation &&
             !this.props.patient.user_defined_symptom_onset &&
-            !this.props.patient.asymptomatic &&
+            this.props.num_pos_labs === 0 &&
             (!this.props.assessment_id || this.props.onlySympAssessment) && (
               <React.Fragment>
-                <p className="my-4">
-                  {`Marking ${
-                    this.props.assessment_id ? 'this report' : 'all reports'
-                  } as reviewed will result in the system populated Symptom Onset Date being cleared. Please provide a Symptom Onset Date or select Asymptomatic${
-                    this.props.numPosLabs === 0 ? ' and enter a positive lab result' : ''
-                  } in order for this record to be eligible to appear on the Records Requiring Review line list.`}
-                </p>
-                <Form.Label className="nav-input-label">SYMPTOM ONSET</Form.Label>
+                <Alert variant="warning" className="my-4 alert-warning-text">
+                  Warning: Marking {this.props.assessment_id ? 'this report' : 'all reports'} as reviewed will result in the system populated Symptom Onset Date
+                  being cleared. Please consider providing a Symptom Onset Date or entering a positive lab result in order for this record to be eligible to
+                  appear on the Records Requiring Review line list.
+                </Alert>
+                <Form.Label className="input-label">SYMPTOM ONSET</Form.Label>
                 <DateInput
                   id="symptom_onset_mark_as_reviewed"
                   date={this.state.symptom_onset}
@@ -124,29 +125,14 @@ class ClearAssessments extends React.Component {
                     this.setState({
                       symptom_onset: date,
                       user_defined_symptom_onset: !!date,
-                      asymptomatic: false,
                     })
                   }
                   placement="bottom"
-                  customClass="form-control-lg"
+                  customClass="form-control-lg mb-2"
                   ariaLabel="Symptom Onset Date Input"
                 />
-                <Form.Check
-                  size="lg"
-                  label="ASYMPTOMATIC"
-                  id="asymptomatic_mark_as_reviewed"
-                  className="mt-2"
-                  checked={this.state.asymptomatic}
-                  onChange={() =>
-                    this.setState(state => {
-                      return {
-                        symptom_onset: null,
-                        user_defined_symptom_onset: false,
-                        asymptomatic: !state.asymptomatic,
-                      };
-                    })
-                  }
-                />
+                <div className="my-2"></div>
+                <FirstPositiveLaboratory lab={this.state.first_positive_lab} onChange={lab => this.setState({ first_positive_lab: lab })} />
               </React.Fragment>
             )}
         </Modal.Body>
@@ -189,7 +175,7 @@ ClearAssessments.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   assessment_id: PropTypes.number,
-  numPosLabs: PropTypes.number,
+  num_pos_labs: PropTypes.number,
   onlySympAssessment: PropTypes.bool,
 };
 

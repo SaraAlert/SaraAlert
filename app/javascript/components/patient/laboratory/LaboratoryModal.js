@@ -18,31 +18,41 @@ class LaboratoryModal extends React.Component {
   }
 
   handleChange = event => {
-    this.setState({ [event.target.id]: event.target.value });
+    this.setState({ [event.target.id]: event.target.value }, this.clearSymptomOnset);
   };
 
   handleDateChange = (field, date) => {
     this.setState({ [field]: date }, () => {
       this.setState(state => {
         return {
-          reportInvalid: moment(state.report).isBefore(state.specimen_collection, 'day'),
+          reportInvalid: state.report && state.specimen_collection && moment(state.report).isBefore(state.specimen_collection, 'day'),
         };
-      });
+      }, this.clearSymptomOnset);
     });
   };
 
+  // Clear symptom onset if user decides to undo changes
+  clearSymptomOnset = () => {
+    if (this.state.result == 'positive' && this.state.specimen_collection != null) {
+      this.setState({ symptom_onset: null });
+    }
+  };
+
   submit = () => {
-    this.props.submit({
-      lab_type: this.state.lab_type,
-      specimen_collection: this.state.specimen_collection,
-      report: this.state.report,
-      result: this.state.result,
-    });
+    this.props.submit(
+      {
+        lab_type: this.state.lab_type,
+        specimen_collection: this.state.specimen_collection,
+        report: this.state.report,
+        result: this.state.result,
+      },
+      this.state.symptom_onset
+    );
   };
 
   render() {
     return (
-      <Modal size="lg" show centered onHide={this.props.cancel}>
+      <Modal size="lg" className="laboratory-modal-container" show centered onHide={this.props.cancel}>
         <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Lab Result</h1>
         <Modal.Header>
           <Modal.Title>{this.props.editMode ? 'Edit' : 'Add New'} Lab Result</Modal.Title>
@@ -122,12 +132,27 @@ class LaboratoryModal extends React.Component {
             </Row>
             {this.props.editMode &&
               this.props.isolation &&
-              this.props.onlyPosLab &&
+              this.props.only_positive_lab &&
               (this.state.result !== 'positive' || this.state.specimen_collection == null) && (
-                <Alert variant="warning">
-                  Warning: This record does not have a Symptom Onset Date. Changing this lab result may result in the record not ever being eligible to appear
-                  on the Records Requiring Review line list.
-                </Alert>
+                <div>
+                  <Alert variant="warning" className="mt-2 mb-3 alert-warning-text">
+                    Warning: Since this record does not have a Symptom Onset Date, updating this lab from a positive result or clearing the Specimen Collection
+                    Date may result in the record not ever being eligible to appear on the Records Requiring Review line list. Please consider undoing these
+                    changes or entering a symptom onset date:
+                  </Alert>
+                  <Form.Label className="input-label">SYMPTOM ONSET</Form.Label>
+                  <DateInput
+                    id="symptom_onset_lab"
+                    date={this.state.symptom_onset}
+                    minDate={'2020-01-01'}
+                    maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
+                    onChange={date => this.setState({ symptom_onset: date })}
+                    isClearable={true}
+                    placement="bottom"
+                    customClass="form-control-lg"
+                    ariaLabel="Symptom Onset Date Input"
+                  />
+                </div>
               )}
           </Form>
         </Modal.Body>
@@ -155,7 +180,7 @@ LaboratoryModal.propTypes = {
   cancel: PropTypes.func,
   editMode: PropTypes.bool,
   loading: PropTypes.bool,
-  onlyPosLab: PropTypes.bool,
+  only_positive_lab: PropTypes.bool,
   isolation: PropTypes.bool,
 };
 
