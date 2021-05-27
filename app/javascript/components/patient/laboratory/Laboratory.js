@@ -28,7 +28,7 @@ class Laboratory extends React.Component {
     });
   };
 
-  handleLabSubmit = lab => {
+  handleLabSubmit = (lab, symptom_onset) => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -38,6 +38,7 @@ class Laboratory extends React.Component {
           specimen_collection: lab.specimen_collection,
           report: lab.report,
           result: lab.result,
+          symptom_onset,
         })
         .then(() => {
           location.reload();
@@ -57,19 +58,21 @@ class Laboratory extends React.Component {
     });
   };
 
-  handleDeleteSubmit = () => {
+  handleDeleteSubmit = patientUpdates => {
     let deleteReason = this.state.delete_reason;
     if (deleteReason === 'Other' && this.state.delete_reason_text) {
       deleteReason += ', ' + this.state.delete_reason_text;
     }
+    const updates = {
+      patient_id: this.props.patient.id,
+      delete_reason: deleteReason,
+    };
+    if (patientUpdates.symptom_onset) {
+      updates['symptom_onset'] = patientUpdates.symptom_onset;
+    }
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .delete(window.BASE_PATH + '/laboratories/' + this.props.lab.id, {
-        data: {
-          patient_id: this.props.patient.id,
-          delete_reason: deleteReason,
-        },
-      })
+      .delete(window.BASE_PATH + '/laboratories/' + this.props.lab.id, { data: updates })
       .then(() => {
         location.reload();
       })
@@ -111,12 +114,18 @@ class Laboratory extends React.Component {
             cancel={this.toggleLabModal}
             editMode={!!this.props.lab.id}
             loading={this.state.loading}
-            onlyPosLab={this.props.onlyPosLab}
+            only_positive_lab={this.props.only_positive_lab}
             isolation={this.props.patient.isolation}
           />
         )}
         {this.state.showDeleteModal && (
-          <DeleteDialog type={'Lab Result'} delete={this.handleDeleteSubmit} toggle={this.toggleDeleteModal} onChange={this.handleChange} />
+          <DeleteDialog
+            type={'Lab Result'}
+            delete={this.handleDeleteSubmit}
+            toggle={this.toggleDeleteModal}
+            onChange={this.handleChange}
+            showSymptomOnsetInput={this.props.patient.isolation && !this.props.patient.symptom_onset && this.props.only_positive_lab}
+          />
         )}
       </React.Fragment>
     );
@@ -127,7 +136,7 @@ Laboratory.propTypes = {
   lab: PropTypes.object,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  onlyPosLab: PropTypes.bool,
+  only_positive_lab: PropTypes.bool,
 };
 
 export default Laboratory;

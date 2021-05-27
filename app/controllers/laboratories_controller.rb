@@ -40,13 +40,19 @@ class LaboratoriesController < ApplicationController
       result: params.permit(:result)[:result]
     }
 
+    symptom_onset = params.permit(:symptom_onset)[:symptom_onset]
+
     # Handle lab update success or failure
     ActiveRecord::Base.transaction do
+      @patient.update(symptom_onset: symptom_onset, user_defined_symptom_onset: true) if symptom_onset.present?
+
       if @lab.update(update_params)
+        comment = "User edited a lab result (ID: #{@lab.id})"
+        comment += " and updated symptom onset to #{@patient.symptom_onset.strftime('%m/%d/%Y')}" if symptom_onset.present?
+        comment += '.'
+
         # Create history item on successful update
-        History.lab_result_edit(patient: @patient.id,
-                                created_by: current_user.email,
-                                comment: "User edited a lab result (ID: #{@lab.id}).")
+        History.lab_result_edit(patient: @patient.id, created_by: current_user.email, comment: comment)
       else
         # Handle case where lab update failed
         error_message = 'Lab result was unable to be updated.'
@@ -57,7 +63,11 @@ class LaboratoriesController < ApplicationController
 
   # Destroy an existing lab result
   def destroy
+    symptom_onset = params.permit(:symptom_onset)[:symptom_onset]
+
     ActiveRecord::Base.transaction do
+      @patient.update(symptom_onset: symptom_onset, user_defined_symptom_onset: true) if symptom_onset.present?
+
       if @lab.destroy
         reason = params.permit(:delete_reason)[:delete_reason]
         comment = "User deleted a lab result (ID: #{@lab.id}"
@@ -65,7 +75,9 @@ class LaboratoriesController < ApplicationController
         comment += ", Specimen Collected: #{@lab.specimen_collection}" unless @lab.specimen_collection.blank?
         comment += ", Report: #{@lab.report}" unless @lab.report.blank?
         comment += ", Result: #{@lab.result}" unless @lab.result.blank?
-        comment += "). Reason: #{reason}."
+        comment += ')'
+        comment += " and updated symptom onset to #{@patient.symptom_onset.strftime('%m/%d/%Y')}" if symptom_onset.present?
+        comment += ". Reason: #{reason}."
         History.lab_result_edit(patient: @patient.id,
                                 created_by: current_user.email,
                                 comment: comment)
