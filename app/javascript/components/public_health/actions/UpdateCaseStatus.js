@@ -39,6 +39,7 @@ class UpdateCaseStatus extends React.Component {
         const distinctCaseStatus = [...new Set(response.data.case_status)];
         const distinctIsolation = [...new Set(response.data.isolation)];
         const distinctMonitoring = [...new Set(response.data.monitoring)];
+        const distinctMonitoringReason = [...new Set(response.data.monitoring_reason)];
 
         const state_updates = {};
         if (distinctCaseStatus.length === 1 && distinctCaseStatus[0] !== null) {
@@ -52,6 +53,9 @@ class UpdateCaseStatus extends React.Component {
         if (distinctMonitoring.length === 1 && distinctMonitoring[0] !== null) {
           state_updates.initialMonitoring = distinctMonitoring[0];
           state_updates.monitoring = distinctMonitoring[0];
+        }
+        if (distinctMonitoringReason.length === 1 && distinctMonitoringReason[0] !== null) {
+          state_updates.monitoring_reason = distinctMonitoringReason[0];
         }
 
         if (Object.keys(state_updates).length) {
@@ -160,7 +164,12 @@ class UpdateCaseStatus extends React.Component {
       <div>
         <Form.Group controlId="monitoring_reason">
           <Form.Label>Please select reason for status change:</Form.Label>
-          <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange} defaultValue={'Meets Case Definition'}>
+          <Form.Control
+            as="select"
+            size="lg"
+            className="form-square"
+            onChange={this.handleChange}
+            value={this.state.monitoring_reason || 'Meets Case Definition'}>
             <option></option>
             {this.props.monitoring_reasons.map((option, index) => (
               <option key={`option-${index}`} value={option}>

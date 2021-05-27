@@ -620,7 +620,8 @@ class PatientsController < ApplicationController
 
     patient_ids = params[:patient_ids]
     patients = current_user.viewable_patients.where(id: patient_ids)
-    render json: { case_status: patients.pluck(:case_status), isolation: patients.pluck(:isolation), monitoring: patients.pluck(:monitoring) }
+    render json: { case_status: patients.pluck(:case_status), isolation: patients.pluck(:isolation), monitoring: patients.pluck(:monitoring),
+                   monitoring_reason: patients.pluck(:monitoring_reason) }
   end
 
   # Fetches table data for viable HoH options.
