@@ -1,5 +1,10 @@
 @import './constants';
 
+.alert-warning-text {
+  font-weight: 500;
+  color: #212529;
+}
+
 .first-positive-lab-result-header {
   margin-bottom: 8px;
   border-bottom: 1px solid $section-border;
@@ -12,8 +17,4 @@
 
 .first-positive-lab-result-field-name {
   font-weight: 600;
-}
-
-.first-positive-lab-disabled {
-  color: #808080;
 }

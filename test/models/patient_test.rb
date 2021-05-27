@@ -2507,13 +2507,13 @@ class PatientTest < ActiveSupport::TestCase
                      extended_isolation: DateTime.now + 1.day,
                      user_defined_symptom_onset: true,
                      symptom_onset: DateTime.now - 1.day)
-    created_at = DateTime.now.to_date - 1.day
-    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: created_at)
+    earliest_symptomatic_assessment_timestamp = DateTime.now - 2.days
+    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: earliest_symptomatic_assessment_timestamp)
     patient.update({ isolation: false })
     assert_not patient.isolation
     assert_nil patient.extended_isolation
     assert_not patient.user_defined_symptom_onset
-    assert_equal created_at, patient.symptom_onset
+    assert_equal earliest_symptomatic_assessment_timestamp.to_date, patient.symptom_onset
   end
 
   test 'update handles case_status change' do
@@ -2524,11 +2524,11 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'update handles symptom_onset change' do
-    patient = create(:patient, symptom_onset: DateTime.now - 1.day)
-    created_at = DateTime.now.to_date - 2.day
-    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: created_at)
+    patient = create(:patient, symptom_onset: DateTime.now - 1.day, user_defined_symptom_onset: false)
+    earliest_symptomatic_assessment_timestamp = DateTime.now - 2.days
+    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: earliest_symptomatic_assessment_timestamp)
     patient.update({ symptom_onset: nil })
-    assert_equal created_at, patient.symptom_onset
+    assert_equal earliest_symptomatic_assessment_timestamp.to_date, patient.symptom_onset
     assert_not patient.user_defined_symptom_onset
   end
 

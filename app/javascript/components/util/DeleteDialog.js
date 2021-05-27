@@ -1,6 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Alert, Button, Form, Modal } from 'react-bootstrap';
+import moment from 'moment';
+
+import DateInput from './DateInput';
 
 const MAX_REASON_LENGTH = 200;
 
@@ -32,7 +35,7 @@ class DeleteDialog extends React.Component {
 
   delete = () => {
     this.setState({ loading: true }, () => {
-      this.props.delete();
+      this.props.delete({ symptom_onset: this.state.symptom_onset });
     });
   };
 
@@ -78,6 +81,26 @@ class DeleteDialog extends React.Component {
               <div className="character-limit-text">{MAX_REASON_LENGTH - this.state.delete_reason_text.length} characters remaining</div>
             </React.Fragment>
           )}
+          {this.props.showSymptomOnsetInput && (
+            <React.Fragment>
+              <Alert variant="warning" className="alert-warning-text">
+                Warning: Since this record does not have a Symptom Onset Date, deleting this positive lab result may result in the record not ever being
+                eligible to appear on the Records Requiring Review line list. Please consider entering a symptom onset date to prevent this from happening:
+              </Alert>
+              <Form.Label className="input-label">SYMPTOM ONSET</Form.Label>
+              <DateInput
+                id="symptom_onset_delete_dialog"
+                date={this.state.symptom_onset}
+                minDate={'2020-01-01'}
+                maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
+                onChange={date => this.setState({ symptom_onset: date })}
+                isClearable={true}
+                placement="bottom"
+                customClass="form-control-md"
+                ariaLabel="Symptom Onset Date Input"
+              />
+            </React.Fragment>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={this.props.toggle}>
@@ -102,6 +125,7 @@ DeleteDialog.propTypes = {
   delete: PropTypes.func,
   toggle: PropTypes.func,
   onChange: PropTypes.func,
+  showSymptomOnsetInput: PropTypes.bool,
 };
 
 export default DeleteDialog;

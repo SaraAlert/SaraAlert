@@ -112,15 +112,6 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  asymptomatic: (
-    <div>
-      Allows a user to indicate that the monitoree is an asymptomatic or pre-symptomatic case. If checked, the monitoree will only be eligible to meet an
-      asymptomatic recovery definition (unless they develop symptoms later on).
-    </div>
-  ),
-
-  asymptomaticDisabled: <div>ASYMPTOMATIC cannot be selected because this case has at least one symptomatic report.</div>,
-
   latestPublicHealthActionInExposure: (
     <div>
       Selecting any option other than <i>none</i> moves record from the symptomatic line list to the Person Under Investigation (PUI) line list in the exposure

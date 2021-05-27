@@ -37,47 +37,10 @@
   border-radius: 0 !important;
 }
 
-.row-container {
-  width: 100%;
-}
-
-.left-container {
-  display: inline-block;
-  width: 430px !important;
-}
-
-.left-box-1 {
-  width: 40%;
-  display: inline-block;
-}
-
-.left-box-2 {
-  width: 60%;
-  display: inline-block;
-}
-
-.right-container {
-  display: inline;
-  float: right;
-}
-
-// the medium bootstrap breakpoint
-@media only screen and (max-width: 768px) {
-  .left-box-1 {
-    width: 172px; // 40% of 430px
-    display: inline-block;
-  }
-
-  .left-box-2 {
-    width: 100%;
-    display: inline-block;
-  }
-}
-
-@media only screen and (max-width: 1100px) {
-  .left-container {
-    margin-bottom: 12px;
-  }
+.num-rows-displayed-text {
+  background-color: transparent;
+  color: #212529;
+  border: none;
 }
 
 // This is how we deal with slight vertical overflow from a dropdown in a table that needs to be horizontal scrollable.

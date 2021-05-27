@@ -1,5 +1,4 @@
 export const advancedFilterOptions = [
-
   /* BOOLEAN FILTER OPTIONS */
   {
     name: 'continous-exposure',
@@ -61,8 +60,7 @@ export const advancedFilterOptions = [
   {
     name: 'seven-day-quarantine',
     title: 'Candidate to Reduce Quarantine after 7 Days (Boolean)',
-    description:
-      'All asymptomatic records that meet CDC criteria to end quarantine after Day 7 (based on last date of exposure and most recent lab result)',
+    description: 'All asymptomatic records that meet CDC criteria to end quarantine after Day 7 (based on last date of exposure and most recent lab result)',
     type: 'boolean',
     tooltip:
       'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.',
@@ -277,98 +275,70 @@ export const advancedFilterOptions = [
     hasTimestamp: false,
   },
 
-  /* RELATIVE DATE FILTER OPTIONS */
-  {
-    name: 'enrolled-relative',
-    title: 'Enrolled (Relative Date)',
-    description: 'Monitorees enrolled in system during specified date range (relative to the current date)',
-    type: 'relative',
-    hasTimestamp: true
-  },
-  {
-    name: 'latest-report-relative',
-    title: 'Latest Report (Relative Date)',
-    description: 'Monitorees with latest report during specified date range (relative to the current date)',
-    type: 'relative',
-    hasTimestamp: true
-  },
-  {
-    name: 'last-date-exposure-relative',
-    title: 'Last Date of Exposure (Relative Date)',
-    description: 'Monitorees who have a last date of exposure during specified date range (relative to the current date)',
-    type: 'relative',
-    hasTimestamp: false
-  },
-  {
-    name: 'symptom-onset-relative',
-    title: 'Symptom Onset (Relative Date)',
-    description: 'Monitorees who have a symptom onset date during specified date range (relative to the current date)',
-    type: 'relative',
-    hasTimestamp: false
-  },
-
   /* MULTI FILTER OPTIONS */
   {
     name: 'lab-result',
     title: 'Lab Result (Multi-select)',
     description: 'Monitorees with specified Lab Result criteria',
     type: 'multi',
-    tooltip: 'Returns records that contain at least one Lab Result entry that meets all user-specified criteria (e.g., searching for a specific Lab Test Type and Report Date will only return records containing at least one Lab Result entry with matching values in both fields).',
+    tooltip:
+      'Returns records that contain at least one Lab Result entry that meets all user-specified criteria (e.g., searching for a specific Lab Test Type and Report Date will only return records containing at least one Lab Result entry with matching values in both fields).',
     fields: [
       {
         name: 'result',
         title: 'result',
         type: 'select',
-        options: ['positive', 'negative', 'indeterminate', 'other']
+        options: ['positive', 'negative', 'indeterminate', 'other'],
       },
       {
         name: 'lab-type',
         title: 'test type',
         type: 'select',
-        options: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other']
+        options: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'],
       },
       {
         name: 'specimen-collection',
         title: 'specimen collection date',
-        type: 'date'
+        type: 'date',
       },
       {
         name: 'report',
         title: 'report date',
-        type: 'date'
-      }
-    ]
+        type: 'date',
+      },
+    ],
   },
   {
     name: 'vaccination',
     title: 'Vaccination (Multi-select)',
     description: 'Monitorees with specified Vaccination criteria',
     type: 'multi',
-    tooltip: 'Returns records that contain at least one Vaccination entry that meets all user-specified criteria (e.g., searching for a specific Vaccination Product Name and Administration Date will only return records containing at least one Vaccination entry with matching values in both fields).',
+    tooltip:
+      'Returns records that contain at least one Vaccination entry that meets all user-specified criteria (e.g., searching for a specific Vaccination Product Name and Administration Date will only return records containing at least one Vaccination entry with matching values in both fields).',
     fields: [
       {
         name: 'vaccine-group',
         title: 'vaccine group',
         type: 'select',
-        options: ['COVID-19']
+        options: ['COVID-19'],
       },
       {
         name: 'product-name',
         title: 'product name',
         type: 'select',
-        options: ['Moderna COVID-19 Vaccine', 'Pfizer-BioNTech COVID-19 Vaccine', 'Janssen (J&J) COVID-19 Vaccine', 'Unknown']
+        options: ['Moderna COVID-19 Vaccine', 'Pfizer-BioNTech COVID-19 Vaccine', 'Janssen (J&J) COVID-19 Vaccine', 'Unknown'],
       },
       {
         name: 'administration-date',
         title: 'administration date',
-        type: 'date'
+        type: 'date',
       },
       {
         name: 'dose-number',
         title: 'dose number',
         type: 'select',
-        options: ['', '1', '2', 'Unknown']
-      }
-    ]
-  }
-]
+        options: ['', '1', '2', 'Unknown'],
+      },
+    ],
+  },
+];

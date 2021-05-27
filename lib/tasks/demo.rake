@@ -378,8 +378,6 @@ namespace :demo do
         if rand < 0.7
           patient[:symptom_onset] = beginning_of_day - rand(10).days
           patient[:user_defined_symptom_onset] = true
-        else
-          patient[:asymptomatic] = true
         end
       else
         patient[:continuous_exposure] = rand < 0.3

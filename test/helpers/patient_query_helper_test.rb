@@ -40,25 +40,25 @@ class PatientQueryHelperTest < ActionView::TestCase
 
     # records eligible for recovery definition
     patient_1 = create(:patient, creator: user, isolation: true, symptom_onset: '2020-02-02')
-    patient_2 = create(:patient, creator: user, isolation: true, asymptomatic: true)
+    patient_2 = create(:patient, creator: user, isolation: true)
     create(:laboratory, patient: patient_2, result: 'positive', specimen_collection: '2020-02-02')
     patient_3 = create(:patient, creator: user, isolation: true)
     create(:laboratory, patient: patient_3, result: 'positive', specimen_collection: '2020-02-02')
 
     # records ineligible for recovery definition
     patient_4 = create(:patient, creator: user, isolation: true)
-    patient_5 = create(:patient, creator: user, isolation: true, asymptomatic: true)
-    patient_6 = create(:patient, creator: user, isolation: true, asymptomatic: true)
+    patient_5 = create(:patient, creator: user, isolation: true)
+    patient_6 = create(:patient, creator: user, isolation: true)
     create(:laboratory, patient: patient_6, result: 'positive')
-    patient_7 = create(:patient, creator: user, isolation: true, asymptomatic: true)
+    patient_7 = create(:patient, creator: user, isolation: true)
     create(:laboratory, patient: patient_7, specimen_collection: '2020-02-02')
-    patient_8 = create(:patient, creator: user, isolation: true, asymptomatic: true)
+    patient_8 = create(:patient, creator: user, isolation: true)
     create(:laboratory, patient: patient_8, result: 'negative', specimen_collection: '2020-02-02')
 
     # records in exposure should not be returned whether filter value is true or false
     create(:patient, creator: user, isolation: false)
     create(:patient, creator: user, isolation: false, symptom_onset: '2020-02-02')
-    patient_9 = create(:patient, creator: user, isolation: false, asymptomatic: true)
+    patient_9 = create(:patient, creator: user, isolation: false)
     create(:laboratory, patient: patient_9, result: 'positive', specimen_collection: '2020-02-02')
 
     patients = Patient.all
