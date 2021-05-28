@@ -6,7 +6,8 @@ class DateValidator < ActiveModel::EachValidator
     err_msg = 'is not a valid date'
     # If we can, validate using the pre-type cast value, since this will more accurately reflect user input
     value = record.public_send("#{attribute}_before_type_cast") || value
-    # Blank, Date, DateTime, and Time values are accepted.
+    # Blank, Date, DateTime, and Time values are accepted without further validation because they are already
+    # valid because they are already an initialized object.
     return if value.blank? || value.is_a?(Date) || value.is_a?(DateTime) || value.is_a?(Time)
 
     # Numeric dates do not conform to import or API guidance
