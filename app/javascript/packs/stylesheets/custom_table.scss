@@ -37,13 +37,24 @@
   width: 100%;
 }
 
+.left-container {
+  display: inline-block;
+  width: 430px !important;
+}
+
 .left-box-1 {
-  width: 200px !important;
+  width: 40%;
   display: inline-block;
 }
 
 .left-box-2 {
+  width: 60%;
   display: inline-block;
+}
+
+.right-container {
+  display: inline;
+  float: right;
 }
 
 // the medium bootstrap breakpoint

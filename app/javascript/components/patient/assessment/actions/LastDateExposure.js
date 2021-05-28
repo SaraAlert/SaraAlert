@@ -137,7 +137,9 @@ class LastDateExposure extends React.Component {
               <DateInput
                 id="last_date_of_exposure"
                 date={this.state.last_date_of_exposure}
-                maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
+                maxDate={moment()
+                  .add(30, 'days')
+                  .format('YYYY-MM-DD')}
                 onChange={date => this.setState({ last_date_of_exposure: date })}
                 placement="top"
                 customClass="form-control-lg"
@@ -200,24 +202,34 @@ class LastDateExposure extends React.Component {
           )}
         <Row>
           <SymptomOnset authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
-          {!this.props.patient.isolation ? (
-            <React.Fragment>
-              <Form.Group as={Col} md={8} controlId="last_date_of_exposure">
-                <Form.Label className="nav-input-label">
+          <Form.Group as={Col} controlId="last_date_of_exposure">
+            <Row className="reports-actions-title">
+              <Col>
+                <Form.Label className="nav-input-label h6">
                   LAST DATE OF EXPOSURE
                   <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
                 </Form.Label>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
                 <DateInput
                   id="last_date_of_exposure"
                   date={this.state.last_date_of_exposure}
                   minDate={'2020-01-01'}
-                  maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
+                  maxDate={moment()
+                    .add(30, 'days')
+                    .format('YYYY-MM-DD')}
                   onChange={this.openLastDateOfExposureModal}
                   placement="top"
                   customClass="form-control-lg"
                   ariaLabel="Last Date of Exposure Input"
                   isClearable
                 />
+              </Col>
+            </Row>
+            <Row className="pt-2">
+              <Col>
                 <OverlayTrigger
                   key="tooltip-ot-ce"
                   placement="left"
@@ -239,15 +251,26 @@ class LastDateExposure extends React.Component {
                   </span>
                 </OverlayTrigger>
                 <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
-              </Form.Group>
-              <Col md={8}>
-                <span className="nav-input-label">END OF MONITORING</span>
-                <InfoTooltip getCustomText={this.endOfMonitoringTooltipText} location="right"></InfoTooltip>
-                <div>{this.formatEndOfMonitoringDate()}</div>
               </Col>
-            </React.Fragment>
-          ) : (
+            </Row>
+          </Form.Group>
+          {this.props.patient.isolation ? (
             <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+          ) : (
+            <Col>
+              <Row className="reports-actions-title">
+                <Col>
+                  <span className="nav-input-label">END OF MONITORING</span>
+                  <InfoTooltip getCustomText={this.endOfMonitoringTooltipText} location="right"></InfoTooltip>
+                </Col>
+              </Row>
+              <Row>
+                <Col>{this.formatEndOfMonitoringDate()}</Col>
+              </Row>
+              <Row>
+                <Col></Col>
+              </Row>
+            </Col>
           )}
         </Row>
       </React.Fragment>
