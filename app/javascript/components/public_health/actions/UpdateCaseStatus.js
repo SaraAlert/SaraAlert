@@ -119,7 +119,7 @@ class UpdateCaseStatus extends React.Component {
       // Per feedback, include the monitoring_reason in the reasoning text, as the user might not inlude any text
       let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
       // Add a period at the end of the Reasoning (if it's not already included)
-      if (_.last(reasoning) !== '.') {
+      if (reasoning && !['.', '!', '?'].includes(_.last(reasoning))) {
         reasoning += '.';
       }
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;

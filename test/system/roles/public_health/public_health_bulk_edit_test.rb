@@ -33,6 +33,10 @@ class PublicHealthBulkEditTest < ApplicationSystemTestCase
     @@public_health_test_helper.bulk_edit_update_case_status('state1_epi', %w[patient_54], :isolation, 'all', 'Unknown', nil, apply_to_household: true)
   end
 
+  test 'bulk edit case status to ensure closed records remain closed' do
+    @@public_health_test_helper.bulk_edit_update_case_status_closed('state1_epi', %w[patient_5], %w[patient_69])
+  end
+
   test 'bulk edit close records from exposure workflow' do
     @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_1 patient_2], :exposure, 'all', nil, '')
   end

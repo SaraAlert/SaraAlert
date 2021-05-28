@@ -40,7 +40,7 @@ class CloseRecords extends React.Component {
 
     let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
     // Add a period at the end of the Reasoning (if it's not already included)
-    if (_.last(reasoning) !== '.') {
+    if (reasoning && !['.', '!', '?'].includes(_.last(reasoning))) {
       reasoning += '.';
     }
 
