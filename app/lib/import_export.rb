@@ -161,7 +161,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patients.pluck(:id).in_groups_of(10_000, false) do |batch|
       symptom_ids << Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: batch).pluck(:id)).pluck(:id)).pluck(:id)
     end
-    symptom_names_and_labels = Symptom.where(id: symptom_ids).where.not(label: nil).where.not(name: nil).distinct.order(:label).pluck(:name, :label).transpose
+    symptom_names_and_labels = Symptom.where(id: symptom_ids.to_a.flatten).where.not(label: nil).where.not(name: nil)
+                                      .distinct.order(:label).pluck(:name, :label).transpose
 
     # Empty symptoms check
     return [] unless symptom_names_and_labels.present?
