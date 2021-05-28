@@ -450,13 +450,15 @@ class PatientsController < ApplicationController
     end
     patients = current_user.get_patients(patient_ids)
 
-    # Slightly more performant to calculate this outside the loop below
-    params_without_monitoring = params.except('monitoring')
-    params_without_monitoring[:diffState] = params_without_monitoring[:diffState].without('monitoring')
+    # For Monitorees who are closed, we don't want to update their `monitoring` status
+    # Or their `isolation` value through the bulk action case status modal.
+    # It is slightly more performant to pre-calculate this outside the loop below
+    closed_params = params.except('monitoring', 'isolation')
+    closed_params[:diffState] = closed_params[:diffState].without('monitoring', 'isolation')
 
     patients.each do |patient|
       # We never want to update closed records monitoring status via the bulk_update
-      update_params = patient.monitoring ? params : params_without_monitoring
+      update_params = patient.monitoring ? params : closed_params
       update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
                                update_params[:apply_to_household] ? :group : :none)
     end

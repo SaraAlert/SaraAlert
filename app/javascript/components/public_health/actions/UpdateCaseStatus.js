@@ -259,7 +259,10 @@ class UpdateCaseStatus extends React.Component {
                 {[undefined, true].includes(this.state.initialIsolation) && (
                   <p>
                     The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or
-                    asymptomatic line list as appropriate.
+                    asymptomatic line list as appropriate.{' '}
+                    {this.state.someSelectedAreClosed && (
+                      <span>For records on the Closed line list, updating this value will not move the record to another line list.</span>
+                    )}
                   </p>
                 )}
                 {this.state.initialIsolation === false && <p>The selected cases will remain in the exposure workflow.</p>}
