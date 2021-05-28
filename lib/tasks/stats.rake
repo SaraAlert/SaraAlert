@@ -552,6 +552,18 @@ namespace :stats do
         exposure: active_exp.where(sex: ['', nil], ethnicity: ['', nil], white: [false, nil], black_or_african_american: [false, nil], american_indian_or_alaska_native: [false, nil], asian: [false, nil], native_hawaiian_or_other_pacific_islander: [false, nil]).count,
         isolation: active_iso.where(sex: ['', nil], ethnicity: ['', nil], white: [false, nil], black_or_african_american: [false, nil], american_indian_or_alaska_native: [false, nil], asian: [false, nil], native_hawaiian_or_other_pacific_islander: [false, nil]).count
       }
+      results[title]['Age - <= 5'] = {
+        exposure: active_exp.where('date_of_birth > ?', 6.years.ago).count,
+        isolation: active_iso.where('date_of_birth > ?', 6.years.ago).count
+      }
+      results[title]['Age - 6-11'] = {
+        exposure: active_exp.where('date_of_birth <= ?', 6.years.ago).where('date_of_birth > ?', 12.years.ago).count,
+        isolation: active_iso.where('date_of_birth <= ?', 6.years.ago).where('date_of_birth > ?', 12.years.ago).count
+      }
+      results[title]['Age - 12-18'] = {
+        exposure: active_exp.where('date_of_birth <= ?', 12.years.ago).where('date_of_birth > ?', 19.years.ago).count,
+        isolation: active_iso.where('date_of_birth <= ?', 12.years.ago).where('date_of_birth > ?', 19.years.ago).count
+      }
       results[title]['Age - <= 18'] = {
         exposure: active_exp.where('date_of_birth > ?', 19.years.ago).count,
         isolation: active_iso.where('date_of_birth > ?', 19.years.ago).count
