@@ -985,6 +985,44 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
       }
     },
     {
+      "fullUrl": "http://localhost:3000/fhir/r4/Provenance/1262",
+      "resource": {
+        "id": 1262,
+        "meta": {
+          "lastUpdated": "2021-05-19T02:13:54+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/comment",
+            "valueString": "User enrolled monitoree."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/history-type",
+            "valueString": "Enrollment"
+          }
+        ],
+       "target": [
+         {
+            "reference": "Patient/3"
+          }
+        ],
+        "recorded": "2021-05-19T02:13:54+00:00",
+        "agent": [
+         {
+           "who": {
+             "identifier": {
+               "value": "state1_enroller@example.com"
+             }
+           },
+           "onBehalfOf": {
+              "reference": "Patient/3"
+           }
+          }
+        ],
+        "resourceType": "Provenance"
+      }
+    },
+    {
       "fullUrl": "http://localhost:3000/fhir/r4/QuestionnaireResponse/3",
       "resource": {
         "id": 3,
@@ -2804,6 +2842,73 @@ GET `[base]/Immunization?patient=Patient/[:id]`
     }
   ],
   "resourceType": "Bundle"
+}
+
+```
+  </div>
+</details>
+
+### GET `[base]/Provenance?patient=Patient/[:id]`
+
+You can also use search to find Monitoree histories by using the `patient` parameter.
+
+<a name="search-history-patient"/>
+
+GET `[base]/Provenance?patient=Patient/[:id]`
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+    "id": "83890c54-0871-4801-bbdf-b4b29f6c400a",
+    "meta": {
+        "lastUpdated": "2021-05-28T16:37:43-04:00"
+    },
+    "type": "searchset",
+    "total": 1,
+    "entry": [
+        {
+            "fullUrl": "http://localhost:3000/fhir/r4/Provenance/10183",
+            "resource": {
+                "id": 10183,
+                "meta": {
+                    "lastUpdated": "2021-05-26T15:51:19+00:00"
+                },
+                "extension": [
+                    {
+                        "url": "http://saraalert.org/StructureDefinition/comment",
+                        "valueString": "User enrolled monitoree."
+                    },
+                    {
+                        "url": "http://saraalert.org/StructureDefinition/history-type",
+                        "valueString": "Enrollment"
+                    }
+                ],
+                "target": [
+                    {
+                        "reference": "Patient/954"
+                    }
+                ],
+                "recorded": "2021-05-26T15:51:19+00:00",
+                "agent": [
+                    {
+                        "who": {
+                            "identifier": {
+                                "value": "locals2c4_enroller@example.com"
+                            }
+                        },
+                        "onBehalfOf": {
+                            "reference": "Patient/954"
+                        }
+                    }
+                ],
+                "resourceType": "Provenance"
+            }
+        }
+    ],
+    "resourceType": "Bundle"
 }
 
 ```
