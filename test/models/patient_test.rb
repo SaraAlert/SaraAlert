@@ -36,6 +36,22 @@ class PatientTest < ActiveSupport::TestCase
           symptom_onset: 4.days.ago.to_date)
   end
 
+  test 'date validations cannot be numeric' do
+    patient = create(:patient, purged: false, monitoring: true)
+    assert patient.valid?(import: true)
+    patient.date_of_birth = '2021-01-01'
+    assert patient.valid?(:import)
+    patient.date_of_birth = 20_210_101
+    assert_not patient.valid?(:import)
+    assert_equal ['is not a valid date, please use the \'YYYY-MM-DD\' format'], patient.errors[:date_of_birth]
+    patient.date_of_birth = 20_210_001
+    assert_not patient.valid?(:import)
+    assert_equal ['is not a valid date, please use the \'YYYY-MM-DD\' format'], patient.errors[:date_of_birth]
+    patient.date_of_birth = 20_210_101.001
+    assert_not patient.valid?(:import)
+    assert_equal ['is not a valid date, please use the \'YYYY-MM-DD\' format'], patient.errors[:date_of_birth]
+  end
+
   test 'active dependents does NOT include dependents that are purged' do
     responder = create(:patient, purged: false, monitoring: true)
     dependent = create(:patient, purged: true, monitoring: false, responder_id: responder.id)
