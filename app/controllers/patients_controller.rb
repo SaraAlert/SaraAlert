@@ -619,8 +619,19 @@ class PatientsController < ApplicationController
         history_data[:patient] = member
         history_data[:follow_up_reason_before] = member.follow_up_reason
         history_data[:follow_up_note_before] = member.follow_up_note
-        member.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
-        History.follow_up_flag_edit(history_data)
+
+        # Handle success or failure of updating a follow-up flag
+        ActiveRecord::Base.transaction do
+          # Apply and save updates to the db
+          if member.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
+            # Create history item on successful update
+            History.follow_up_flag_edit(history_data)
+          else
+            # Handle case where follow-up flag update failed
+            error_message = 'Unable to update Follow-up Flag for a household member.'
+            render(json: { error: error_message }, status: :bad_request) && return
+          end
+        end
       end
     end
   end

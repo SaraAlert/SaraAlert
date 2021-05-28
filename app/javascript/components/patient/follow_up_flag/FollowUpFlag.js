@@ -165,35 +165,31 @@ class FollowUpFlag extends React.Component {
             />
           </Form.Group>
           {!this.state.clear_flag && (
-            <Form.Group>
-              <Form.Label>
-                Please select a reason for being flagged for follow-up. If a monitoree is already flagged, this reason will replace any previously selected
-                reason.
-              </Form.Label>
-              <Form.Control
-                as="select"
-                size="lg"
-                className="form-square mb-3"
-                id="follow_up_reason"
-                value={this.state.follow_up_reason}
-                onChange={this.handleChange}>
-                <option></option>
-                <option>Deceased</option>
-                <option>Duplicate</option>
-                <option>High-Risk</option>
-                <option>Hospitalized</option>
-                <option>In Need of Follow-up</option>
-                <option>Lost to Follow-up</option>
-                <option>Needs Interpretation</option>
-                <option>Quality Assurance</option>
-                <option>Other</option>
-              </Form.Control>
+            <React.Fragment>
+              <Form.Group controlId="follow_up_reason">
+                <Form.Label>
+                  Please select a reason for being flagged for follow-up. If a monitoree is already flagged, this reason will replace any previously selected
+                  reason.
+                </Form.Label>
+                <Form.Control as="select" size="lg" className="form-square mb-3" value={this.state.follow_up_reason} onChange={this.handleChange}>
+                  <option></option>
+                  <option>Deceased</option>
+                  <option>Duplicate</option>
+                  <option>High-Risk</option>
+                  <option>Hospitalized</option>
+                  <option>In Need of Follow-up</option>
+                  <option>Lost to Follow-up</option>
+                  <option>Needs Interpretation</option>
+                  <option>Quality Assurance</option>
+                  <option>Other</option>
+                </Form.Control>
+              </Form.Group>
               <Form.Group controlId="follow_up_note">
                 <Form.Label>Please include any additional details:</Form.Label>
                 <Form.Control as="textarea" rows="4" maxLength={MAX_NOTES_LENGTH} value={this.state.follow_up_note} onChange={this.handleChange} />
                 <div className="character-limit-text">{MAX_NOTES_LENGTH - this.state.follow_up_note.length} characters remaining</div>
               </Form.Group>
-            </Form.Group>
+            </React.Fragment>
           )}
           {this.props.other_household_members.length > 0 && !this.props.bulk_action && (
             <ApplyToHousehold

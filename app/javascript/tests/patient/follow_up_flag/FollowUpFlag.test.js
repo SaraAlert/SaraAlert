@@ -27,7 +27,7 @@ describe('FollowUpFlag', () => {
     expect(wrapper.find('#set_flag_for_follow_up').prop('checked')).toBeTruthy();
     expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBeTruthy();
     expect(wrapper.find('#clear_flag_for_follow_up').prop('checked')).toBeFalsy();
-    expect(wrapper.find('#follow_up_reason').exists()).toBeTruthy();
+    expect(wrapper.find(Form.Control).length).toEqual(2);
     expect(wrapper.find('option').length).toEqual(10);
     followUpFlagOptions.forEach((value, index) => {
       expect(wrapper.find('option').at(index).text()).toEqual(value);
@@ -49,7 +49,7 @@ describe('FollowUpFlag', () => {
     expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBeTruthy();
     expect(wrapper.find('#clear_flag_for_follow_up').prop('checked')).toBeFalsy();
     expect(wrapper.find('#clear_flag_for_follow_up').prop('disabled')).toBeTruthy();
-    expect(wrapper.find('#follow_up_reason').exists()).toBeTruthy();
+    expect(wrapper.find(Form.Control).length).toEqual(2);
     expect(wrapper.find('option').length).toEqual(10);
     followUpFlagOptions.forEach((value, index) => {
       expect(wrapper.find('option').at(index).text()).toEqual(value);
@@ -113,12 +113,18 @@ describe('FollowUpFlag', () => {
     expect(wrapper.find(ReactTooltip).find('div').text()).toEqual('Please select a reason for follow-up');
 
     // Select a reason for follow-up
-    wrapper.find('#follow_up_reason').simulate('change', { target: { id: 'follow_up_reason', value: 'Quality Assurance' }, persist: jest.fn() });
+    wrapper
+      .find(Form.Control)
+      .at(0)
+      .simulate('change', { target: { id: 'follow_up_reason', value: 'Quality Assurance' }, persist: jest.fn() });
     expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBeFalsy();
     expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
 
     // Clear reason for follow-up
-    wrapper.find('#follow_up_reason').simulate('change', { target: { id: 'follow_up_reason', value: '' }, persist: jest.fn() });
+    wrapper
+      .find(Form.Control)
+      .at(0)
+      .simulate('change', { target: { id: 'follow_up_reason', value: '' }, persist: jest.fn() });
     expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBeTruthy();
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
     expect(wrapper.find(ReactTooltip).find('div').text()).toEqual('Please select a reason for follow-up');
@@ -139,6 +145,7 @@ describe('FollowUpFlag', () => {
     wrapper.find('#clear_flag_for_follow_up').simulate('change', { target: { name: 'flag_for_follow_up_option', id: 'clear_flag_for_follow_up' } });
     expect(wrapper.find('#set_flag_for_follow_up').prop('checked')).toBeFalsy();
     expect(wrapper.find('#clear_flag_for_follow_up').prop('checked')).toBeTruthy();
+    expect(wrapper.find(Form.Control).length).toEqual(1);
     expect(wrapper.find('#follow_up_note').exists()).toBeFalsy();
     expect(wrapper.find(Form.Label).at(0).text()).toEqual('Please include any additional details for clearing the follow-up flag:');
     expect(wrapper.find(Form.Label).at(1).exists()).toBeFalsy();
@@ -146,7 +153,7 @@ describe('FollowUpFlag', () => {
     wrapper.find('#set_flag_for_follow_up').simulate('change', { target: { name: 'flag_for_follow_up_option', id: 'set_flag_for_follow_up' } });
     expect(wrapper.find('#set_flag_for_follow_up').prop('checked')).toBeTruthy();
     expect(wrapper.find('#clear_flag_for_follow_up').prop('checked')).toBeFalsy();
-    expect(wrapper.find('#follow_up_reason').exists()).toBeTruthy();
+    expect(wrapper.find(Form.Control).length).toEqual(2);
     expect(wrapper.find(Form.Label).at(0).text()).toContain('Please select a reason for being flagged for follow-up.');
     expect(wrapper.find(Form.Label).at(1).text()).toEqual('Please include any additional details:');
     expect(wrapper.find('#clear_flag_reason').exists()).toBeFalsy();
@@ -154,13 +161,13 @@ describe('FollowUpFlag', () => {
 
   it('Follow-up flag reason and notes fields are blank when monitoree currently does not have a flag set', () => {
     const wrapper = getWrapperIndividual(mockPatient1, []);
-    expect(wrapper.find('#follow_up_reason').prop('value')).toEqual('');
+    expect(wrapper.find(Form.Control).at(0).prop('value')).toEqual('');
     expect(wrapper.find(Form.Control).at(1).prop('value')).toEqual('');
   });
 
   it('Follow-up flag reason and notes fields are pre-populated when monitoree currently has a flag set', () => {
     const wrapper = getWrapperIndividual(mockPatient5, []);
-    expect(wrapper.find('#follow_up_reason').prop('value')).toEqual(mockPatient5.follow_up_reason);
+    expect(wrapper.find(Form.Control).at(0).prop('value')).toEqual(mockPatient5.follow_up_reason);
     expect(wrapper.find(Form.Control).at(1).prop('value')).toEqual(mockPatient5.follow_up_note);
   });
 
@@ -171,19 +178,19 @@ describe('FollowUpFlag', () => {
 
   it('When a bulk action, pre-populates the follow-up reason and note if only one monitoree selected', () => {
     const wrapper = getWrapperBulkAction([mockPatient5.linelist]);
-    expect(wrapper.find('#follow_up_reason').prop('value')).toEqual(mockPatient5.follow_up_reason);
+    expect(wrapper.find(Form.Control).at(0).prop('value')).toEqual(mockPatient5.follow_up_reason);
     expect(wrapper.find(Form.Control).at(1).prop('value')).toEqual(mockPatient5.follow_up_note);
   });
 
   it('When a bulk action, pre-populates the follow-up reason and note if one shared among all monitorees', () => {
     const wrapper = getWrapperBulkAction([mockPatient5.linelist, mockPatient5.linelist]);
-    expect(wrapper.find('#follow_up_reason').prop('value')).toEqual(mockPatient5.follow_up_reason);
+    expect(wrapper.find(Form.Control).at(0).prop('value')).toEqual(mockPatient5.follow_up_reason);
     expect(wrapper.find(Form.Control).at(1).prop('value')).toEqual(mockPatient5.follow_up_note);
   });
 
   it('When a bulk action, does not pre-populate the follow-up reason and note if not shared among all monitorees', () => {
     const wrapper = getWrapperBulkAction([mockPatient1.linelist, mockPatient5.linelist]);
-    expect(wrapper.find('#follow_up_reason').prop('value')).toEqual('');
+    expect(wrapper.find(Form.Control).at(0).prop('value')).toEqual('');
     expect(wrapper.find(Form.Control).at(1).prop('value')).toEqual('');
   });
 
