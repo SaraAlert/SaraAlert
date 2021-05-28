@@ -23,8 +23,8 @@ class Patient extends React.Component {
       expandPlannedTravelNotes: false,
       primaryLanguageDisplayName: null,
       showSetFlagModal: false,
-      is_minor: moment(props.details.date_of_birth, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years')),
-      display_hoh_contact_info: false,
+      isMinor: props.details && props.details.date_of_birth && moment(props.details.date_of_birth, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years')),
+      displayHohContactInfo: false,
     };
   }
 
@@ -82,17 +82,17 @@ class Patient extends React.Component {
   }
 
   renderContactInfo() {
-    let contact_info_patient = this.state.display_hoh_contact_info ? this.props.hoh : this.props.details;
+    let contactInfoPatient = this.state.displayHohContactInfo ? this.props.hoh : this.props.details;
     let switchContactInfoButton;
-    if (this.state.is_minor && this.props.hoh) {
+    if (this.state.isMinor && this.props.hoh) {
       switchContactInfoButton = (
         <Button
           id="switch-contact-info"
           variant="link"
           className="p-0"
           aria-label="switch displayed contact info"
-          onClick={() => this.setState({ display_hoh_contact_info: !this.state.display_hoh_contact_info })}>
-          <span>View Contact Info for {this.state.display_hoh_contact_info ? 'Monitoree' : 'Reporter'}</span>
+          onClick={() => this.setState({ displayHohContactInfo: !this.state.displayHohContactInfo })}>
+          <span>View Contact Info for {this.state.displayHohContactInfo ? 'Monitoree' : 'Reporter'}</span>
         </Button>
       );
     }
@@ -100,48 +100,48 @@ class Patient extends React.Component {
       <Col id="contact-information" lg={10} className="col-xxl-12">
         <div className="section-header">
           <h4 className="section-title">Contact Information</h4>
-          {this.state.display_hoh_contact_info ? '' : this.renderEditLink('Contact Information', 2)}
+          {this.state.displayHohContactInfo ? '' : this.renderEditLink('Contact Information', 2)}
         </div>
         <div className="item-group">
           <div>
-            <span style={{ color: 'red' }}>{this.state.is_minor ? 'Monitoree is a minor.' : ''}</span>
+            <span style={{ color: 'red' }}>{this.state.isMinor ? 'Monitoree is a minor.' : ''}</span>
           </div>
           <div>{switchContactInfoButton}</div>
           <div>
-            {this.state.display_hoh_contact_info ? (
+            {this.state.displayHohContactInfo ? (
               <span>
                 <b>Name: </b>
-                {formatName(contact_info_patient)}
+                {formatName(contactInfoPatient)}
               </span>
             ) : (
               <span></span>
             )}
           </div>
           <div>
-            <b>Phone:</b> <span>{contact_info_patient.primary_telephone ? `${formatPhoneNumber(contact_info_patient.primary_telephone)}` : '--'}</span>
-            {contact_info_patient.blocked_sms && (
+            <b>Phone:</b> <span>{contactInfoPatient.primary_telephone ? `${formatPhoneNumber(contactInfoPatient.primary_telephone)}` : '--'}</span>
+            {contactInfoPatient.blocked_sms && (
               <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
                 &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
               </Form.Label>
             )}
           </div>
           <div>
-            <b>Preferred Contact Time:</b> <span>{contact_info_patient.preferred_contact_time || '--'}</span>
+            <b>Preferred Contact Time:</b> <span>{contactInfoPatient.preferred_contact_time || '--'}</span>
           </div>
           <div>
-            <b>Primary Telephone Type:</b> <span>{contact_info_patient.primary_telephone_type || '--'}</span>
+            <b>Primary Telephone Type:</b> <span>{contactInfoPatient.primary_telephone_type || '--'}</span>
           </div>
           <div>
-            <b>Email:</b> <span>{contact_info_patient.email || '--'}</span>
+            <b>Email:</b> <span>{contactInfoPatient.email || '--'}</span>
           </div>
           <div>
             <b>Preferred Reporting Method:</b>{' '}
-            {(!contact_info_patient.blocked_sms || !contact_info_patient.preferred_contact_method?.includes('SMS')) && (
-              <span>{contact_info_patient.preferred_contact_method || '--'}</span>
+            {(!contactInfoPatient.blocked_sms || !contactInfoPatient.preferred_contact_method?.includes('SMS')) && (
+              <span>{contactInfoPatient.preferred_contact_method || '--'}</span>
             )}
-            {contact_info_patient.blocked_sms && contact_info_patient.preferred_contact_method?.includes('SMS') && (
+            {contactInfoPatient.blocked_sms && contactInfoPatient.preferred_contact_method?.includes('SMS') && (
               <span className="font-weight-bold text-danger">
-                {contact_info_patient.preferred_contact_method || '--'}
+                {contactInfoPatient.preferred_contact_method || '--'}
                 <Form.Label className="tooltip-whitespace">
                   <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
                 </Form.Label>
@@ -264,7 +264,9 @@ class Patient extends React.Component {
               <Col sm={10} className="item-group">
                 <div>
                   <b>DOB:</b> <span>{this.props.details.date_of_birth && moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
-                  <span style={{ color: 'red' }}>{this.state.is_minor ? ' (Minor)' : ''}</span>
+                  <span id="patient-is-minor" style={{ color: 'red' }}>
+                    {this.state.isMinor ? ' (Minor)' : ''}
+                  </span>
                 </div>
                 <div>
                   <b>Age:</b> <span>{this.props.details.age || '--'}</span>
@@ -308,44 +310,6 @@ class Patient extends React.Component {
             </Row>
           </Col>
           {this.renderContactInfo()}
-          {/* <Col id="contact-information" lg={10} className="col-xxl-12">
-            <div className="section-header">
-              <h4 className="section-title">Contact Information</h4>
-              {this.renderEditLink('Contact Information', 2)}
-            </div>
-            <div className="item-group">
-              <div>
-                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
-                {this.props.details.blocked_sms && (
-                  <span className="font-weight-bold pl-2">
-                    SMS Blocked
-                    <InfoTooltip tooltipTextKey="blockedSMS" location="top" />
-                  </span>
-                )}
-              </div>
-              <div>
-                <b>Preferred Contact Time:</b> <span>{this.props.details.preferred_contact_time || '--'}</span>
-              </div>
-              <div>
-                <b>Primary Telephone Type:</b> <span>{this.props.details.primary_telephone_type || '--'}</span>
-              </div>
-              <div>
-                <b>Email:</b> <span>{this.props.details.email || '--'}</span>
-              </div>
-              <div>
-                <b>Preferred Reporting Method:</b>{' '}
-                {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method?.includes('SMS')) && (
-                  <span>{this.props.details.preferred_contact_method || '--'}</span>
-                )}
-                {this.props.details.blocked_sms && this.props.details.preferred_contact_method?.includes('SMS') && (
-                  <span className="font-weight-bold text-danger">
-                    {this.props.details.preferred_contact_method}
-                    <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top" />
-                  </span>
-                )}
-              </div>
-            </div>
-          </Col> */}
         </Row>
         {!this.props.edit_mode && (
           <div className="details-expander mb-3">

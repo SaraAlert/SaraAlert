@@ -82,6 +82,17 @@ describe('Patient', () => {
     });
   });
 
+  it('Properly renders identification section when patient is a minor', () => {
+    const wrapper = shallow(<Patient details={mockPatient6} hoh={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
+    const section = wrapper.find('#identification');
+    expect(section.find('h4').text()).toEqual('Identification');
+    expect(section.find('.edit-link').exists()).toBeTruthy();
+    identificationFields.forEach((field, index) => {
+      expect(section.find('b').at(index).text()).toEqual(field + ':');
+    });
+    expect(section.find('#patient-is-minor').text()).toEqual(' (Minor)');
+  });
+
   it('Properly renders contact information section', () => {
     const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" />);
     const section = wrapper.find('#contact-information');
@@ -107,6 +118,25 @@ describe('Patient', () => {
     expect(preferredContactMethod.find('span').text().includes('SMS Texted Weblink')).toBeTruthy();
     expect(preferredContactMethod.find(InfoTooltip).exists()).toBeTruthy();
     expect(preferredContactMethod.find(InfoTooltip).prop('tooltipTextKey')).toEqual('blockedSMSContactMethod');
+  });
+  
+  it('Properly renders contact information section when patient is a minor', () => {
+    const wrapper = shallow(<Patient details={mockPatient6} hoh={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
+    expect(wrapper.find('#contact-information').find('#switch-contact-info').exists()).toBeTruthy();
+    expect(wrapper.find('#contact-information').find('#switch-contact-info').text()).toEqual('View Contact Info for Reporter');
+    wrapper.find('#contact-information').find('#switch-contact-info').simulate('click');
+    expect(wrapper.find('#contact-information').find('#switch-contact-info').text()).toEqual('View Contact Info for Monitoree');
+    expect(wrapper.find('#contact-information').find('.edit-link').exists()).toBeFalsy();
+    expect(wrapper.find('#contact-information').find('b').at(0).text()).toEqual('Name: ');
+    contactFields.forEach((field, index) => {
+      expect(
+        wrapper
+          .find('#contact-information')
+          .find('b')
+          .at(index + 1)
+          .text()
+      ).toEqual(field + ':');
+    });
   });
 
   it('Properly renders show/hide divider when props.collapse is true', () => {
