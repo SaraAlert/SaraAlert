@@ -36,6 +36,21 @@ class PatientTest < ActiveSupport::TestCase
           symptom_onset: 4.days.ago.to_date)
   end
 
+  test 'date validation must explicitly be in the format YYYY-MM-DD' do
+    patient = create(:patient, purged: false, monitoring: true)
+    assert patient.valid?(import: true)
+    patient.date_of_birth = '2021-01-01'
+    assert patient.valid?(:import)
+    patient.date_of_birth = ' 2021-01-01 '
+    assert_not patient.valid?(:import)
+    patient.date_of_birth = '2021-02-02 2021-01-01'
+    assert_not patient.valid?(:import)
+    patient.date_of_birth = 'typo2021-01-01'
+    assert_not patient.valid?(:import)
+    patient.date_of_birth = '2021-01-01typo'
+    assert_not patient.valid?(:import)
+  end
+
   test 'date validations cannot be numeric' do
     patient = create(:patient, purged: false, monitoring: true)
     assert patient.valid?(import: true)
