@@ -73,7 +73,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     histories = History.where(patient: created_vac.patient_id)
     assert_equal(1, histories.count)
     assert_equal 'system-test-everything (API)', histories.first.created_by
-    assert_match(/vaccine added.*API/, histories.first.comment)
+    assert_match(/vaccination added.*API/, histories.first.comment)
   end
 
   test 'SYSTEM FLOW: should be unprocessable entity via Immunization create with invalid Patient reference' do

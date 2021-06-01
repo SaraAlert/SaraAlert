@@ -29,6 +29,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   end
   before_action :check_client_type
   rescue_from StandardError, with: :handle_server_error
+  rescue_from ClientError, with: proc {}
 
   MAX_TRANSACTION_ENTRIES = 50
 
@@ -152,25 +153,8 @@ class Fhir::R4::ApiController < ApplicationApiController
       # Get the contents from applying a patch, if needed
       contents = apply_patch(close_contact, patch) if request.patch?
 
-      fhir_map = close_contact_from_fhir(contents)
-      request_updates = fhir_map.transform_values { |v| v[:value] }
-      status_unprocessable_entity && return if request_updates.nil?
+      update_record(*update_model_from_fhir(close_contact, contents, :close_contact_from_fhir), :close_contact_edit, 'close contact')
 
-      # Assign any remaining updates to the close_contact
-      close_contact.assign_attributes(request_updates)
-
-      # Wrap updates to the CloseContact and History creation in a transaction
-      ActiveRecord::Base.transaction do
-        unless referenced_patient_valid_for_client?(close_contact, :patient_id) && close_contact.save(context: :api)
-          req_json = request.patch? ? close_contact.as_fhir.to_json : JSON.parse(request_body)
-          status_unprocessable_entity(close_contact, fhir_map, req_json) && return
-        end
-
-        Rails.logger.info "Updated Close Contact (ID: #{close_contact.id}) for Patient with ID: #{close_contact.patient_id}"
-        History.close_contact_edit(patient: close_contact.patient_id,
-                                   created_by: @current_actor_label,
-                                   comment: "Close contact edited via the API (ID: #{close_contact.id}).")
-      end
       status_ok(close_contact.as_fhir) && return
     when 'immunization'
       return if doorkeeper_authorize!(*IMMUNIZATION_WRITE_SCOPES)
@@ -182,25 +166,8 @@ class Fhir::R4::ApiController < ApplicationApiController
       # Get the contents from applying a patch, if needed
       contents = apply_patch(vaccine, patch) if request.patch?
 
-      fhir_map = vaccine_from_fhir(contents)
-      request_updates = fhir_map.transform_values { |v| v[:value] }
-      status_unprocessable_entity && return if request_updates.nil?
+      update_record(*update_model_from_fhir(vaccine, contents, :vaccine_from_fhir), :vaccination_edit, 'vaccination')
 
-      # Assign any remaining updates to the Vaccine
-      vaccine.assign_attributes(request_updates)
-
-      # Wrap updates to the Vaccine and History creation in a transaction
-      ActiveRecord::Base.transaction do
-        unless referenced_patient_valid_for_client?(vaccine, :patient_id) && vaccine.save
-          req_json = request.patch? ? vaccine.as_fhir.to_json : JSON.parse(request_body)
-          status_unprocessable_entity(vaccine, fhir_map, req_json) && return
-        end
-
-        Rails.logger.info "Updated Vaccination (ID: #{vaccine.id}) for Patient with ID: #{vaccine.patient_id}"
-        History.vaccination_edit(patient: vaccine.patient_id,
-                                 created_by: @current_actor_label,
-                                 comment: "Vaccination edited via the API (ID: #{vaccine.id}).")
-      end
       status_ok(vaccine.as_fhir) && return
     when 'observation'
       return if doorkeeper_authorize!(*OBSERVATION_WRITE_SCOPES)
@@ -243,32 +210,6 @@ class Fhir::R4::ApiController < ApplicationApiController
     end
   rescue JSON::ParserError
     status_bad_request(['Invalid JSON in request body'])
-  rescue ClientError
-    nil # If we reach here, we've already rendered a 422 response
-  end
-
-  # Create History items corresponding to Patient changes from an update.
-  #
-  # updates - A hash that contains attributes corresponding to the Patient.
-  # patient_before - The Patient before updates were applied.
-  # patient - The Patient after the updates have been applied.
-  def update_all_patient_history(updates, patient_before, patient)
-    # Handle History for monitoree details information updates
-    # NOTE: "isolation" is a special case, because it is not a monitoring field, but it has side effects that are handled
-    # alongside monitoring fields
-    info_updates = updates.filter { |attr, _value| !PatientHelper.monitoring_fields.include?(attr) || attr == :isolation }
-    Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, @current_actor_label)
-
-    # Handle History for monitoree monitoring information updates
-    history_data = {
-      created_by: @current_actor_label,
-      patient_before: patient_before,
-      patient: patient,
-      updates: updates,
-      household_status: :patient,
-      propagation: :none
-    }
-    patient.monitoring_history_edit(history_data, nil)
   end
 
   # Create a resource given a type.
@@ -294,39 +235,11 @@ class Fhir::R4::ApiController < ApplicationApiController
     when 'relatedperson'
       return if doorkeeper_authorize!(*RELATED_PERSON_WRITE_SCOPES)
 
-      fhir_map = close_contact_from_fhir(contents)
-      vals = fhir_map.transform_values { |v| v[:value] }
-      resource = CloseContact.new(vals)
-
-      ActiveRecord::Base.transaction do
-        unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api)
-          req_json = JSON.parse(request_body)
-          status_unprocessable_entity(resource, fhir_map, req_json) && return
-        end
-
-        Rails.logger.info "Created Close Contact (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
-        History.close_contact(patient: resource.patient_id,
-                              created_by: @current_actor_label,
-                              comment: "New close contact added via API (ID: #{resource.id}).")
-      end
+      resource = save_record(*build_model_from_fhir(CloseContact, contents, :close_contact_from_fhir), :close_contact, 'close contact')
     when 'immunization'
       return if doorkeeper_authorize!(*IMMUNIZATION_WRITE_SCOPES)
 
-      fhir_map = vaccine_from_fhir(contents)
-      vals = fhir_map.transform_values { |v| v[:value] }
-      resource = Vaccine.new(vals)
-
-      ActiveRecord::Base.transaction do
-        unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save
-          req_json = JSON.parse(request_body)
-          status_unprocessable_entity(resource, fhir_map, req_json) && return
-        end
-
-        Rails.logger.info "Created Vaccine (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
-        History.vaccination(patient: resource.patient_id,
-                            created_by: @current_actor_label,
-                            comment: "New vaccine added via API (ID: #{resource.id}).")
-      end
+      resource = save_record(*build_model_from_fhir(Vaccine, contents, :vaccine_from_fhir), :vaccination, 'vaccination')
     when 'observation'
       return if doorkeeper_authorize!(*OBSERVATION_WRITE_SCOPES)
 
@@ -813,8 +726,6 @@ class Fhir::R4::ApiController < ApplicationApiController
     [resource, fhir_map]
   end
 
-  class ClientError < StandardError; end
-
   # Handle general unkown error. Log and serve a 500
   def handle_server_error(error)
     Rails.logger.error ([error.message] + error.backtrace).join("\n")
@@ -1160,6 +1071,81 @@ class Fhir::R4::ApiController < ApplicationApiController
       end
     end
     query
+  end
+
+  # Build a non-Patient model from FHIR, given a conversion function
+  def build_model_from_fhir(model, contents, from_fhir_function)
+    fhir_map = method(from_fhir_function).call(contents)
+    vals = fhir_map.transform_values { |v| v[:value] }
+    resource = model.new(vals)
+
+    [resource, fhir_map]
+  end
+
+  # Save a non-Patient record
+  def save_record(resource, fhir_map, history_type, resource_label)
+    ActiveRecord::Base.transaction do
+      unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api)
+        req_json = JSON.parse(request.body.string)
+        status_unprocessable_entity(resource, fhir_map, req_json) && (raise ClientError)
+      end
+
+      Rails.logger.info "Created #{resource_label} (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
+      History.send(history_type, patient: resource.patient_id,
+                                 created_by: @current_actor_label,
+                                 comment: "New #{resource_label} added via API (ID: #{resource.id}).")
+    end
+    resource
+  end
+
+  # Update a non-Patient model from FHIR, given a conversion function
+  def update_model_from_fhir(resource, contents, from_fhir_function)
+    fhir_map = method(from_fhir_function).call(contents)
+    request_updates = fhir_map.transform_values { |v| v[:value] }
+    status_unprocessable_entity && (raise ClientError) if request_updates.nil?
+
+    resource.assign_attributes(request_updates)
+    [resource, fhir_map]
+  end
+
+  # Update a non-Patient record
+  def update_record(resource, fhir_map, history_type, resource_label)
+    ActiveRecord::Base.transaction do
+      unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api)
+        req_json = request.patch? ? resource.as_fhir.to_json : JSON.parse(request.body.string)
+        status_unprocessable_entity(resource, fhir_map, req_json) && (raise ClientError)
+      end
+
+      Rails.logger.info "Updated #{resource_label} (ID: #{resource.id}) for Patient with ID: #{resource.patient_id}"
+      History.send(history_type, patient: resource.patient_id,
+                                 created_by: @current_actor_label,
+                                 comment: "#{resource_label.capitalize} edited via the API (ID: #{resource.id}).")
+    end
+    resource
+  end
+
+  # Create History items corresponding to Patient changes from an update.
+  #
+  # updates - A hash that contains attributes corresponding to the Patient.
+  # patient_before - The Patient before updates were applied.
+  # patient - The Patient after the updates have been applied.
+  def update_all_patient_history(updates, patient_before, patient)
+    # Handle History for monitoree details information updates
+    # NOTE: "isolation" is a special case, because it is not a monitoring field, but it has side effects that are handled
+    # alongside monitoring fields
+    info_updates = updates.filter { |attr, _value| !PatientHelper.monitoring_fields.include?(attr) || attr == :isolation }
+    Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, @current_actor_label)
+
+    # Handle History for monitoree monitoring information updates
+    history_data = {
+      created_by: @current_actor_label,
+      patient_before: patient_before,
+      patient: patient,
+      updates: updates,
+      household_status: :patient,
+      propagation: :none
+    }
+    patient.monitoring_history_edit(history_data, nil)
   end
 
   # Get a record that has a "patient_id" field
