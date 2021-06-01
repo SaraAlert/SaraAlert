@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import BadgeHoH from './household/utils/BadgeHoH';
+import IconMinor from './household/utils/IconMinor';
 import InfoTooltip from '../util/InfoTooltip';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
 import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
@@ -83,19 +84,6 @@ class Patient extends React.Component {
 
   renderContactInfo() {
     let contactInfoPatient = this.state.displayHohContactInfo ? this.props.hoh : this.props.details;
-    let switchContactInfoButton;
-    if (this.state.isMinor && this.props.hoh) {
-      switchContactInfoButton = (
-        <Button
-          id="switch-contact-info"
-          variant="link"
-          className="p-0"
-          aria-label="switch displayed contact info"
-          onClick={() => this.setState({ displayHohContactInfo: !this.state.displayHohContactInfo })}>
-          <span>View Contact Info for {this.state.displayHohContactInfo ? 'Monitoree' : 'Reporter'}</span>
-        </Button>
-      );
-    }
     return (
       <Col id="contact-information" lg={10} className="col-xxl-12">
         <div className="section-header">
@@ -103,20 +91,13 @@ class Patient extends React.Component {
           {this.state.displayHohContactInfo ? '' : this.renderEditLink('Contact Information', 2)}
         </div>
         <div className="item-group">
-          <div>
-            <span style={{ color: 'red' }}>{this.state.isMinor ? 'Monitoree is a minor.' : ''}</span>
-          </div>
-          <div>{switchContactInfoButton}</div>
-          <div>
-            {this.state.displayHohContactInfo ? (
-              <span>
-                <b>Name: </b>
-                {formatName(contactInfoPatient)}
-              </span>
-            ) : (
-              <span></span>
-            )}
-          </div>
+          {this.state.isMinor && this.props.hoh && this.props.hoh.id != this.props.details.id && (
+            <div>
+              <a id="dependent-hoh-link" href={`${window.BASE_PATH}/patients/${this.props.hoh.id}`}>
+                Monitoree is a minor. View contact info for head of household ({formatName(this.props.hoh)})
+              </a>
+            </div>
+          )}
           <div>
             <b>Phone:</b> <span>{contactInfoPatient.primary_telephone ? `${formatPhoneNumber(contactInfoPatient.primary_telephone)}` : '--'}</span>
             {contactInfoPatient.blocked_sms && (
@@ -264,9 +245,7 @@ class Patient extends React.Component {
               <Col sm={10} className="item-group">
                 <div>
                   <b>DOB:</b> <span>{this.props.details.date_of_birth && moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
-                  <span id="patient-is-minor" style={{ color: 'red' }}>
-                    {this.state.isMinor ? ' (Minor)' : ''}
-                  </span>
+                  {this.state.isMinor && <IconMinor patientId={String(this.props.details.id)} />}
                 </div>
                 <div>
                   <b>Age:</b> <span>{this.props.details.age || '--'}</span>

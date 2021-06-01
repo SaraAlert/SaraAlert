@@ -494,7 +494,7 @@ class PatientsTable extends React.Component {
     if (!!rowData?.dob && moment(rowData.dob, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'))) {
       return (
         <div>
-          <IconMinor patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />
+          <IconMinor patientId={rowData.id.toString()} customClass={'float-right ml-1'} />
           {formatDate(rowData.dob)}
         </div>
       );

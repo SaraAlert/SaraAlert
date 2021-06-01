@@ -2,14 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 
-class BadgeHoH extends React.Component {
+class IconMinor extends React.Component {
   render() {
     return (
       <React.Fragment>
         <span data-for={`${this.props.patientId}-is-minor`} data-tip="" className={this.props.customClass}>
           <i className="fas fa-child" />
         </span>
-        <ReactTooltip id={`${this.props.patientId}-is-minor`} multiline={true} place={this.props.location} type="dark" effect="solid">
+        <ReactTooltip id={`${this.props.patientId}-is-minor`} multiline={true} place="right" type="dark" effect="solid">
           <span>Monitoree is a minor</span>
         </ReactTooltip>
       </React.Fragment>
@@ -17,10 +17,9 @@ class BadgeHoH extends React.Component {
   }
 }
 
-BadgeHoH.propTypes = {
+IconMinor.propTypes = {
   patientId: PropTypes.string,
   customClass: PropTypes.string,
-  location: PropTypes.string,
 };
 
-export default BadgeHoH;
+export default IconMinor;
