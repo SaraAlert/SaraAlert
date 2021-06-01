@@ -538,7 +538,9 @@ class PatientsTable extends React.Component {
                 <br />
                 {flaggedForFollowUp.follow_up_reason}
                 {flaggedForFollowUp.follow_up_note && flaggedForFollowUp.follow_up_note.length < 75 && <span>{': ' + flaggedForFollowUp.follow_up_note}</span>}
-                {flaggedForFollowUp.follow_up_note.length >= 75 && <span>{': ' + flaggedForFollowUp.follow_up_note.slice(0, 75) + ' ...'}</span>}
+                {flaggedForFollowUp.follow_up_note && flaggedForFollowUp.follow_up_note.length >= 75 && (
+                  <span>{': ' + flaggedForFollowUp.follow_up_note.slice(0, 75) + ' ...'}</span>
+                )}
               </div>
             </ReactTooltip>
           </React.Fragment>
