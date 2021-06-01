@@ -49,7 +49,7 @@ The examples above are in terms of Monitorees, but the API also supports reading
 **A client can search by the following data elements:**<br>ID, Patient ID
 
 ### For Histories
-**A client can read the following data elements:**<br>Patient ID, Comment, History Type
+**A client can read the following data elements:**<br>Patient ID, Comment, History Type, Created By
 
 **A client can search by the following data elements:**<br>ID, Patient ID
 

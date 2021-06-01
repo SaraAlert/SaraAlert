@@ -30,6 +30,7 @@ Because the Sara Alert API follows the FHIR specification, there is a mapping be
 | Monitoree Daily Report    | [QuestionnaireResponse](https://www.hl7.org/fhir/questionnaireresponse.html)|
 | Monitoree Close Contact   | [RelatedPerson](https://www.hl7.org/fhir/relatedperson.html)|
 | Monitoree Immunization    | [Immunization](https://www.hl7.org/fhir/immunization.html)|
+| Monitoree History         | [Provenance](https://hl7.org/fhir/provenance.html)|
 
 <a name="supported-scopes"/>
 
