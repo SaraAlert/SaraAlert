@@ -64,10 +64,10 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
       exposure: exposure_closed_patient_labels,
       isolation: isolation_closed_patient_labels
     }
-    [:exposure, :isolation].each do |workflow|
+    %i[exposure isolation].each do |workflow|
       @@system_test_utils.login(user_label)
       fill_in 'search', with: ''
-      ["Suspect", "Unknown", "Not a Case"].each do |case_status|
+      ['Suspect', 'Unknown', 'Not a Case'].each do |case_status|
         @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, 'all', workflow_patient_hash[workflow])
         # Use `End Monitoring` on the next line to prevent the tests from switching workflows
         @@public_health_dashboard.bulk_edit_update_case_status(workflow, case_status, 'End Monitoring', false)

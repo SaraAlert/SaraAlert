@@ -90,7 +90,7 @@ class UpdateCaseStatus extends React.Component {
       } else if (event.target.id === 'monitoring_reason') {
         this.setState({ monitoring_reason: event.target.value });
       } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
-        this.setState({ monitoring: true, isolation: false, monitoring_reason: '', reasoning: '' });
+        this.setState({ monitoring: true, isolation: false, monitoring_reason: this.state.initialMonitoringReason || '', reasoning: '' });
       }
 
       // If in isolation the follow up will not be displayed, ensure changed properties do not carry over
@@ -112,7 +112,7 @@ class UpdateCaseStatus extends React.Component {
       diffState.push('monitoring_reason');
     }
     // We dont want to touch `monitoring_reason` if the case status has been changed to any of the following
-    if (['Suspect', 'Not a Case', 'Unknown', ''].includes(this.state.case_status)) {
+    if (this.state.isolation || ['Suspect', 'Not a Case', 'Unknown', ''].includes(this.state.case_status)) {
       diffState = diffState.filter(x => x !== 'monitoring_reason');
     }
     this.setState({ loading: true }, () => {
@@ -172,7 +172,7 @@ class UpdateCaseStatus extends React.Component {
     return (
       <div>
         <Form.Group controlId="monitoring_reason">
-          <Form.Label>Please select reason for status change:</Form.Label>
+          <Form.Label>Please select reason for closure:</Form.Label>
           <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange} value={this.state.monitoring_reason}>
             <option></option>
             {this.props.monitoring_reasons.map((option, index) => (
@@ -188,6 +188,12 @@ class UpdateCaseStatus extends React.Component {
           <div className="character-limit-text"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </div>
         </Form.Group>
       </div>
+    );
+  };
+
+  renderClosedStatement = () => {
+    return (
+      this.state.someSelectedAreClosed && <span>For records on the Closed line list, updating this value will not move the record to another line list.</span>
     );
   };
 
@@ -227,45 +233,43 @@ class UpdateCaseStatus extends React.Component {
                 </Form.Control>
               </React.Fragment>
             )}
-            {['Confirmed', 'Probable'].includes(this.state.case_status) ? (
+            {this.state.initialIsolation ? (
+              // In the Isolation workflow, only show certain explanation statements
               <React.Fragment>
-                {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && [undefined, false].includes(this.state.initialIsolation) && (
-                  <p>
-                    The selected monitorees will be moved to the isolation workflow and placed in the requiring review, non-reporting, or reporting line list as
-                    appropriate.{' '}
-                    {this.state.someSelectedAreClosed && (
-                      <span>For records on the Closed line list, updating this value will not move the record to another line list.</span>
-                    )}
-                  </p>
+                {['Confirmed', 'Probable'].includes(this.state.case_status) && (
+                  <p>The selected cases will remain in the isolation workflow. {this.renderClosedStatement()}</p>
                 )}
-                {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && this.state.initialIsolation === true && (
+                {['', 'Suspect', 'Not a Case', 'Unknown'].includes(this.state.case_status) && (
                   <p>
-                    The selected monitorees will remain in the isolation workflow.{' '}
-                    {this.state.someSelectedAreClosed && (
-                      <span>For records on the Closed line list, updating this value will not move the record to another line list.</span>
-                    )}
+                    The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or
+                    asymptomatic line list as appropriate. {this.renderClosedStatement()}
                   </p>
-                )}
-                {this.state.follow_up === 'End Monitoring' && (
-                  <div>
-                    <p>The selected monitorees will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
-                    {this.renderReasonsSection()}
-                  </div>
                 )}
                 {this.state.allSelectedAreClosed && this.renderReasonsSection()}
               </React.Fragment>
             ) : (
+              // In the Exposure workflow, show other explanation statements
               <React.Fragment>
-                {[undefined, true].includes(this.state.initialIsolation) && (
-                  <p>
-                    The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or
-                    asymptomatic line list as appropriate.{' '}
-                    {this.state.someSelectedAreClosed && (
-                      <span>For records on the Closed line list, updating this value will not move the record to another line list.</span>
+                {['Confirmed', 'Probable'].includes(this.state.case_status) && (
+                  <div>
+                    {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && (
+                      <p>
+                        The selected monitorees will be moved to the isolation workflow and placed in the requiring review, non-reporting, or reporting line
+                        list as appropriate. {this.renderClosedStatement()}
+                      </p>
                     )}
-                  </p>
+                    {this.state.follow_up === 'End Monitoring' && (
+                      <div>
+                        <p>The selected monitorees will be moved into the Closed line list, and will no longer be monitored.</p>
+                        {this.renderReasonsSection()}
+                      </div>
+                    )}
+                  </div>
                 )}
-                {this.state.initialIsolation === false && <p>The selected cases will remain in the exposure workflow.</p>}
+                {['', 'Suspect', 'Not a Case', 'Unknown'].includes(this.state.case_status) && (
+                  <p>The selected cases will remain in the exposure workflow. {this.renderClosedStatement()}</p>
+                )}
+                {this.state.allSelectedAreClosed && this.renderReasonsSection()}
               </React.Fragment>
             )}
             <Form.Group className="my-2">

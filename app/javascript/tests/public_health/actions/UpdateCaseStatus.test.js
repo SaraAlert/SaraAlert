@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import UpdateCaseStatus from '../../../components/public_health/actions/UpdateCaseStatus';
 import { mockMonitoringReasons } from '../../mocks/mockMonitoringReasons';
-import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
+import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, mockPatient6 } from '../../mocks/mockPatients';
 
 const onCloseMock = jest.fn();
 const mockToken = 'testMockTokenString12345';
@@ -79,37 +79,7 @@ describe('UpdateCaseStatus', () => {
     expect(wrapper.find('ModalFooter').find('Button').at(1).text()).toEqual('Submit');
   });
 
-  it('Properly renders all main components for Patients who are in both workflows', () => {
-    const wrapper = getWrapper([mockPatient1, mockPatient2, mockPatient3, mockPatient4]);
-    expect(wrapper.find('ModalBody').find('p').at(0).text()).toContain('Please select the desired case status to be assigned to all selected patients:');
-    wrapper
-      .find('#case_status')
-      .find('option')
-      .forEach((option, index) => {
-        expect(option.text()).toEqual(CASE_STATUS_OPTIONS[Number(index)]);
-      });
-    // The behavior here is the same as if they were in the isolation workflow
-    expect(wrapper.find('ModalBody').find('p').at(1).text()).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
-    expect(wrapper.find('ModalFooter').find('Button').at(0).text()).toEqual('Cancel');
-    expect(wrapper.find('ModalFooter').find('Button').at(1).text()).toEqual('Submit');
-  });
-
-  it('Properly does not display any follow-up options when the empty string is selected', () => {
-    const wrapper = getWrapper([mockPatient1, mockPatient2, mockPatient3, mockPatient4]);
-    const option = '';
-    wrapper
-      .find('FormControl')
-      .first()
-      .simulate('change', { target: { id: 'case_status', type: 'change', value: option }, persist: jest.fn() });
-    expect(wrapper.state('case_status')).toEqual(option);
-    // When '' is selected, there will be 4 children (other selections will have more nodes appear with additional choices)
-    expect(wrapper.find('ModalBody').children().length).toEqual(4);
-    expect(wrapper.find('ModalBody').children().at(0).text()).toContain('Please select the desired case status to be assigned to all selected patients:');
-    expect(wrapper.find('ModalBody').children().at(2).text()).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
-    expect(wrapper.find('FormCheck').prop('label')).toContain('Apply this change to the entire household that these monitorees are responsible for, if it applies.');
-  });
-
-  it('Properly sets the correct follow-up options for "Confirmed", and "Probable"', () => {
+  it('Properly sets the correct follow-up options for "Confirmed", and "Probable" in the Exposure Workflow', () => {
     // mockPatient5 is in the Exposure Workflow and is not closed
     const wrapper = getWrapper([mockPatient5]);
     ['Confirmed', 'Probable'].forEach(case_status_option => {
@@ -136,7 +106,7 @@ describe('UpdateCaseStatus', () => {
         .simulate('change', { target: { id: 'follow_up', type: 'change', value: 'End Monitoring' }, persist: jest.fn() });
       expect(wrapper.state('follow_up')).toEqual('End Monitoring');
       expect(wrapper.find('FormControl').length).toEqual(4);
-      expect(wrapper.find('p').at(2).text()).toContain('The selected monitorees will be moved into the "Closed" line list, and will no longer be monitored.');
+      expect(wrapper.find('p').at(2).text()).toContain('The selected monitorees will be moved into the Closed line list, and will no longer be monitored.');
       const monitoringReasonOptions = [''].concat(mockMonitoringReasons);
       wrapper
         .find('#monitoring_reason')
@@ -162,6 +132,26 @@ describe('UpdateCaseStatus', () => {
         .simulate('change', { target: { id: 'follow_up', type: 'change', value: 'Continue Monitoring in Isolation Workflow' }, persist: jest.fn() });
       expect(wrapper.state('follow_up')).toEqual('Continue Monitoring in Isolation Workflow');
       expect(wrapper.find('p').at(2).text()).toContain('The selected monitorees will be moved to the isolation workflow and placed in the requiring review, non-reporting, or reporting line list as appropriate.');
+      wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
+      expect(wrapper.state('apply_to_household')).toBeFalsy();
+      wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
+      expect(wrapper.state('apply_to_household')).toBeTruthy();
+    });
+  });
+
+  it('Properly sets the correct follow-up options for "Confirmed", and "Probable" in the Isolation Workflow', () => {
+    // mockPatient6 is in the Isolation workflow, but is not closed
+    const wrapper = getWrapper([mockPatient6]);
+    ['Confirmed', 'Probable'].forEach(case_status_option => {
+      wrapper
+        .find('FormControl')
+        .first()
+        .simulate('change', { target: { id: 'case_status', type: 'change', value: case_status_option }, persist: jest.fn() });
+      expect(wrapper.state('case_status')).toEqual(case_status_option);
+
+      expect(wrapper.find('p').at(1).text()).toContain('The selected cases will remain in the isolation workflow.');
+      // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
+      expect(wrapper.find('FormControl').at(1).exists()).toBeFalsy();
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
       expect(wrapper.state('apply_to_household')).toBeFalsy();
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
@@ -203,16 +193,37 @@ describe('UpdateCaseStatus', () => {
     });
   });
 
-  it('Properly sets the correct follow-up options for "Suspect", "Unknown, and "Not a Case"', () => {
-    const wrapper = getWrapper([mockPatient1, mockPatient2, mockPatient3, mockPatient4]);
-    // "Suspect", "Unknown" and "Not a Case" have identical behavior in the modal
-    ['Suspect', 'Unknown', 'Not a Case'].forEach(case_status_option => {
+  it('Properly sets the correct follow-up options for "", "Suspect", "Unknown, and "Not a Case" for the Isolation Workflow', () => {
+    // mockPatient6 is in the Isolation workflow, but is not closed
+    const wrapper = getWrapper([mockPatient6]);
+    // "", "Suspect", "Unknown" and "Not a Case" have identical behavior in the modal
+    ['', 'Suspect', 'Unknown', 'Not a Case'].forEach(case_status_option => {
       wrapper
         .find('FormControl')
         .first()
         .simulate('change', { target: { id: 'case_status', type: 'change', value: case_status_option }, persist: jest.fn() });
 
       expect(wrapper.find('p').at(1).text()).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
+      // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
+      expect(wrapper.find('FormControl').at(1).exists()).toBeFalsy();
+      wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
+      expect(wrapper.state('apply_to_household')).toBeFalsy();
+      wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
+      expect(wrapper.state('apply_to_household')).toBeTruthy();
+    });
+  });
+
+  it('Properly sets the correct follow-up options for "", "Suspect", "Unknown, and "Not a Case" for the Exposure Workflow', () => {
+    // mockPatient5 is in the Exposure Workflow and is not closed
+    const wrapper = getWrapper([mockPatient5]);
+    // "", "Suspect", "Unknown" and "Not a Case" have identical behavior in the modal
+    ['', 'Suspect', 'Unknown', 'Not a Case'].forEach(case_status_option => {
+      wrapper
+        .find('FormControl')
+        .first()
+        .simulate('change', { target: { id: 'case_status', type: 'change', value: case_status_option }, persist: jest.fn() });
+
+      expect(wrapper.find('p').at(1).text()).toContain('The selected cases will remain in the exposure workflow.');
       // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
       expect(wrapper.find('FormControl').at(1).exists()).toBeFalsy();
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });

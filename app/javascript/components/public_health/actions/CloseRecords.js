@@ -36,7 +36,9 @@ class CloseRecords extends React.Component {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     // Because the behavior of CloseRecords is to always set monitoring to false, the diffState will never detect
     // a difference in the `monitoring` field, so manually add it now.
-    diffState.push('monitoring');
+    if (!diffState.includes('monitoring_reason')) {
+      diffState.push('monitoring');
+    }
 
     let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
     // Add a period at the end of the Reasoning (if it's not already included)
