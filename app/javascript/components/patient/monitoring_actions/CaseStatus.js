@@ -37,6 +37,9 @@ class CaseStatus extends React.Component {
   handleCaseStatusChange = event => {
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     const confirmedOrProbable = value === 'Confirmed' || value === 'Probable';
+    if (!confirmedOrProbable) {
+      this.setState({ monitoring_reason: '', reasoning: '' });
+    }
 
     this.setState({ [event.target.id]: value, showCaseStatusModal: true, confirmedOrProbable }, () => {
       // changing case status of monitoree in the closed line list (either workflow)
