@@ -8,5 +8,8 @@ class LaboratoryDateValidator < ActiveModel::Validator
     year_start = Date.new(2020, 1, 1)
     validate_between_dates(record, :report, year_start, Time.now.to_date) if record.report_changed?
     validate_between_dates(record, :specimen_collection, year_start, Time.now.to_date) if record.specimen_collection_changed?
+    return unless record.report && record.specimen_collection && (record.specimen_collection > record.report)
+
+    record.errors.add(:specimen_collection, 'Report Date cannot be before Specimen Collection Date.')
   end
 end
