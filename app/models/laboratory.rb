@@ -42,8 +42,7 @@ class Laboratory < ApplicationRecord
     validates date_field, on: %i[api import], date: true
   end
 
-  # NOTE: Commented out until additional testing
-  # validates_with LaboratoryDateValidator
+  validates_with LaboratoryDateValidator
 
   after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
