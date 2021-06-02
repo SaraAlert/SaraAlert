@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Alert, Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import moment from 'moment';
+import ReactTooltip from 'react-tooltip';
 
 import DateInput from '../../util/DateInput';
 
@@ -51,6 +52,8 @@ class LaboratoryModal extends React.Component {
   };
 
   render() {
+    // Data is valid and can be saved if there is either a report or specimen collection date AND a result
+    const isValid = (this.state.report || this.state.specimen_collection) && this.state.result;
     return (
       <Modal size="lg" className="laboratory-modal-container" show centered onHide={this.props.cancel}>
         <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Lab Result</h1>
@@ -160,12 +163,19 @@ class LaboratoryModal extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.cancel}>
             Cancel
           </Button>
-          <Button
-            variant="primary btn-square"
-            disabled={this.props.loading || this.state.reportInvalid || (this.props.specimenCollectionRequired && !this.state.specimen_collection)}
-            onClick={this.submit}>
-            {this.props.editMode ? 'Update' : 'Create'}
-          </Button>
+          <span data-for="submit-tooltip" data-tip="" className="ml-1">
+            <Button variant="primary btn-square" disabled={this.props.loading || this.state.reportInvalid || !isValid} onClick={this.submit}>
+              {this.props.editMode ? 'Update' : 'Create'}
+            </Button>
+          </span>
+          {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
+          {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
+          {/* This does not impact component functionality at all. */}
+          {!isValid && (
+            <ReactTooltip id="submit-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
+              Please enter at minimum a report date or specimen date and a result
+            </ReactTooltip>
+          )}
         </Modal.Footer>
       </Modal>
     );
