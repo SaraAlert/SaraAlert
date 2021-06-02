@@ -24,7 +24,6 @@ class FollowUpFlag extends React.Component {
       follow_up_reason: '',
       follow_up_note: '',
       initial_follow_up_reason: '',
-      initial_follow_up_note: '',
       loading: false,
     };
   }
@@ -52,8 +51,8 @@ class FollowUpFlag extends React.Component {
       }
     } else {
       if (this.props.patient.follow_up_reason) {
-        // If the monitoree has a follow up flag set, enable the clear flag option
-        state_updates.clear_flag_disabled = false;
+        state_updates.clear_flag = this.props.clear_flag;
+        state_updates.initial_follow_up_reason = this.props.patient.follow_up_reason;
         state_updates.follow_up_reason = this.props.patient.follow_up_reason;
         state_updates.follow_up_note = this.props.patient.follow_up_note;
         this.setState(state_updates);
@@ -144,26 +143,28 @@ class FollowUpFlag extends React.Component {
     return (
       <React.Fragment>
         <Modal.Body>
-          <Form.Group style={{ display: 'inline-flex' }}>
-            <Form.Check
-              type="radio"
-              name="flag_for_follow_up_option"
-              className="pr-5"
-              id="set_flag_for_follow_up"
-              label="Set Follow-up Flag"
-              onChange={this.handleChange}
-              checked={!this.state.clear_flag}
-            />
-            <Form.Check
-              type="radio"
-              name="flag_for_follow_up_option"
-              id="clear_flag_for_follow_up"
-              label="Clear Follow-up Flag"
-              disabled={this.state.clear_flag_disabled}
-              onChange={this.handleChange}
-              checked={this.state.clear_flag}
-            />
-          </Form.Group>
+          {this.props.bulk_action && (
+            <Form.Group style={{ display: 'inline-flex' }}>
+              <Form.Check
+                type="radio"
+                name="flag_for_follow_up_option"
+                className="pr-5"
+                id="set_flag_for_follow_up"
+                label="Set Follow-up Flag"
+                onChange={this.handleChange}
+                checked={!this.state.clear_flag}
+              />
+              <Form.Check
+                type="radio"
+                name="flag_for_follow_up_option"
+                id="clear_flag_for_follow_up"
+                label="Clear Follow-up Flag"
+                disabled={this.state.clear_flag_disabled}
+                onChange={this.handleChange}
+                checked={this.state.clear_flag}
+              />
+            </Form.Group>
+          )}
           {!this.state.clear_flag && (
             <React.Fragment>
               <Form.Group controlId="follow_up_reason">
@@ -235,7 +236,9 @@ class FollowUpFlag extends React.Component {
               </React.Fragment>
             )}
             <span data-for="follow-up-submit" data-tip="">
-              Submit
+              {(this.props.bulk_action || this.state.initial_follow_up_reason === '') && 'Submit'}
+              {!this.props.bulk_action && this.state.initial_follow_up_reason !== '' && !this.state.clear_flag && 'Update'}
+              {!this.props.bulk_action && this.state.clear_flag && 'Clear'}
             </span>
             {this.state.noMembersSelected && (
               <ReactTooltip id="follow-up-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
@@ -263,6 +266,7 @@ FollowUpFlag.propTypes = {
   other_household_members: PropTypes.array,
   close: PropTypes.func,
   bulk_action: PropTypes.bool,
+  clear_flag: PropTypes.bool,
 };
 
 export default FollowUpFlag;

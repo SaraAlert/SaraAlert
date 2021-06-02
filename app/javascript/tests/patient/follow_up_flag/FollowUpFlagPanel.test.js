@@ -21,7 +21,7 @@ describe('FollowUpFlagPanel', () => {
     expect(wrapper.find(Button).text()).toContain('Flag for Follow-up');
     expect(wrapper.find(Button).find('i').exists()).toBeTruthy();
     expect(wrapper.find('.follow-up-flag-box').exists()).toBeFalsy();
-    expect(wrapper.find('#edit-follow-up-flag-link').exists()).toBeFalsy();
+    expect(wrapper.find('#update-follow-up-flag').exists()).toBeFalsy();
     expect(wrapper.find(FollowUpFlagModal).exists()).toBeFalsy();
   });
 
@@ -29,7 +29,7 @@ describe('FollowUpFlagPanel', () => {
     const wrapper = getWrapper(mockPatient5, []);
     expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeFalsy();
     expect(wrapper.find('.follow-up-flag-box').exists()).toBeTruthy();
-    expect(wrapper.find('#edit-follow-up-flag-link').exists()).toBeTruthy();
+    expect(wrapper.find('#update-follow-up-flag').exists()).toBeTruthy();
     const section = wrapper.find('.follow-up-flag-box');
     expect(section.find('i').exists()).toBeTruthy();
     expect(section.find(Button).exists()).toBeTruthy();

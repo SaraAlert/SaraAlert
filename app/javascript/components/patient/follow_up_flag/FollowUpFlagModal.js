@@ -7,13 +7,26 @@ import FollowUpFlag from './FollowUpFlag';
 class FollowUpFlagModal extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      initial_follow_up_reason: '',
+    };
+  }
+
+  componentDidMount() {
+    if (this.props.patient.follow_up_reason) {
+      this.setState({ initial_follow_up_reason: this.props.patient.follow_up_reason });
+    }
   }
 
   render() {
     return (
       <Modal id="follow-up-flag-modal" size="lg" centered show={this.props.show} onHide={this.props.close}>
         <Modal.Header closeButton>
-          <Modal.Title>Flag for Follow-Up</Modal.Title>
+          <Modal.Title>
+            {!this.props.bulk_action && this.state.initial_follow_up_reason !== '' && !this.props.clear_flag && 'Update '}
+            {!this.props.bulk_action && this.props.clear_flag && 'Clear '}
+            Flag for Follow-Up
+          </Modal.Title>
         </Modal.Header>
         <FollowUpFlag
           patient={this.props.patient}
@@ -23,6 +36,7 @@ class FollowUpFlagModal extends React.Component {
           other_household_members={this.props.other_household_members}
           close={this.props.close}
           bulk_action={this.props.bulk_action}
+          clear_flag={this.props.clear_flag}
         />
       </Modal>
     );
@@ -39,6 +53,7 @@ FollowUpFlagModal.propTypes = {
   other_household_members: PropTypes.array,
   close: PropTypes.func,
   bulk_action: PropTypes.bool,
+  clear_flag: PropTypes.bool,
 };
 
 export default FollowUpFlagModal;

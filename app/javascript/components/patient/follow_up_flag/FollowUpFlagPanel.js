@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button } from 'react-bootstrap';
+import { Button, Col } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
 
 import FollowUpFlagModal from './FollowUpFlagModal';
 
@@ -8,8 +9,44 @@ class FollowUpFlagPanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      show_modal: false,
+      show_update_flag_modal: false,
+      show_clear_flag_modal: false,
     };
+  }
+
+  renderActionButtons() {
+    return (
+      <Col>
+        <div className="flag-edit-icons float-right" style={{ width: '45px' }}>
+          <span data-for={'update-follow-up-flag'} data-tip="">
+            <Button
+              id="update-follow-up-flag-btn"
+              variant="link"
+              className="icon-btn-dark p-0 mr-1"
+              onClick={() => this.setState({ show_update_flag_modal: true })}
+              aria-label="Update Follow-up Flag">
+              <i className="fas fa-edit"></i>
+            </Button>
+          </span>
+          <ReactTooltip id={'update-follow-up-flag'} place="top" type="dark" effect="solid">
+            <span>Update Follow-up Flag</span>
+          </ReactTooltip>
+          <span data-for={'clear-follow-up-flag-link'} data-tip="">
+            <Button
+              id="clear-follow-up-flag-btn"
+              variant="link"
+              className="icon-btn-dark p-0"
+              onClick={() => this.setState({ show_update_flag_modal: true })}
+              aria-label="Clear Follow-up Flag">
+              <i className="fas fa-trash"></i>
+            </Button>
+          </span>
+          <ReactTooltip id={'clear-follow-up-flag-link'} place="top" type="dark" effect="solid">
+            <span>Clear Follow-up Flag</span>
+          </ReactTooltip>
+        </div>
+      </Col>
+    );
   }
 
   render() {
@@ -21,7 +58,7 @@ class FollowUpFlagPanel extends React.Component {
             size="sm"
             className="my-2 mr-2"
             aria-label="Set Flag for Follow-up"
-            onClick={() => this.setState({ show_modal: true })}>
+            onClick={() => this.setState({ show_update_flag_modal: true })}>
             <span>
               {' '}
               <i className="fas fa-flag pr-1"></i> Flag for Follow-up
@@ -34,16 +71,7 @@ class FollowUpFlagPanel extends React.Component {
               <i className="fas fa-flag"></i>
               <span className="pl-2">
                 <b>Flagged for Follow-up</b>
-                <div className="edit-link">
-                  <Button
-                    id="edit-follow-up-flag-link"
-                    variant="link"
-                    className="py-0"
-                    onClick={() => this.setState({ show_modal: true })}
-                    aria-label="Edit Flag for Follow-up">
-                    <span className="pl-2">Edit Flag</span>
-                  </Button>
-                </div>
+                {this.renderActionButtons()}
               </span>
               <div className="flag-note">
                 <b>{this.props.patient.follow_up_reason}</b>
@@ -66,16 +94,30 @@ class FollowUpFlagPanel extends React.Component {
             </div>
           </React.Fragment>
         )}
-        {this.state.show_modal && (
+        {this.state.show_update_flag_modal && (
           <FollowUpFlagModal
-            show={this.state.show_modal}
+            show={this.state.show_update_flag_modal}
             patient={this.props.patient}
             current_user={this.props.current_user}
             jurisdiction_paths={this.props.jurisdiction_paths}
             authenticity_token={this.props.authenticity_token}
             other_household_members={this.props.other_household_members}
-            close={() => this.setState({ show_modal: false })}
+            close={() => this.setState({ show_update_flag_modal: false })}
             bulk_action={false}
+            clear_flag={false}
+          />
+        )}
+        {this.state.show_clear_flag_modal && (
+          <FollowUpFlagModal
+            show={this.state.show_clear_flag_modal}
+            patient={this.props.patient}
+            current_user={this.props.current_user}
+            jurisdiction_paths={this.props.jurisdiction_paths}
+            authenticity_token={this.props.authenticity_token}
+            other_household_members={this.props.other_household_members}
+            close={() => this.setState({ show_clear_flag_modal: false })}
+            bulk_action={false}
+            clear_flag={true}
           />
         )}
       </React.Fragment>
