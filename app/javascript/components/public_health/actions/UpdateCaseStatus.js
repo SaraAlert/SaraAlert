@@ -25,7 +25,7 @@ class UpdateCaseStatus extends React.Component {
       apply_to_household: false,
       reasoning: '',
       monitoring: null,
-      monitoring_reason: 'Meets Case Definition',
+      monitoring_reason: '',
       loading: false,
     };
     this.origState = Object.assign({}, this.state);
@@ -77,14 +77,14 @@ class UpdateCaseStatus extends React.Component {
           this.setState({
             monitoring: false,
             isolation: undefined, // Make sure not to alter the existing isolation
-            monitoring_reason: 'Meets Case Definition',
+            monitoring_reason: 'Meets Case Definition', // Default to `Meets Case Definition`
           });
         }
         if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
           this.setState({
             monitoring: true,
             isolation: true,
-            monitoring_reason: 'Meets Case Definition',
+            monitoring_reason: '',
           });
         }
       } else if (event.target.id === 'monitoring_reason') {
@@ -98,7 +98,7 @@ class UpdateCaseStatus extends React.Component {
         this.setState({
           monitoring: this.state.initialMonitoring,
           isolation: this.state.initialIsolation,
-          monitoring_reason: 'Meets Case Definition',
+          monitoring_reason: this.state.monitoring_reason,
         });
       }
     });
@@ -106,15 +106,26 @@ class UpdateCaseStatus extends React.Component {
 
   submit = () => {
     let idArray = this.props.patients.map(x => x['id']);
-    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
-    if (this.state.monitoring_reason !== this.state.initialMonitoringReason && !diffState.includes('monitoring_reason')) {
-      // Handles the case where the user goes with the default monitoring_reason
+    let diffState = [];
+    if (this.state.case_status !== this.state.initialCaseStatus) {
+      diffState.push('case_status');
+    }
+    if (this.state.monitoring_reason !== this.state.initialMonitoringReason) {
       diffState.push('monitoring_reason');
     }
-    // We dont want to touch `monitoring_reason` if the case status has been changed to any of the following
-    if (this.state.isolation || ['Suspect', 'Not a Case', 'Unknown', ''].includes(this.state.case_status)) {
-      diffState = diffState.filter(x => x !== 'monitoring_reason');
+    if (this.state.monitoring !== this.state.initialMonitoring) {
+      diffState.push('monitoring');
     }
+    if (this.state.isolation !== this.state.initialIsolation) {
+      diffState.push('isolation');
+    }
+    if (this.state.follow_up !== this.origState.follow_up) {
+      diffState.push('follow_up');
+    }
+    if (this.state.reasoning !== this.origState.reasoning) {
+      diffState.push('reasoning');
+    }
+
     this.setState({ loading: true }, () => {
       // Per feedback, include the monitoring_reason in the reasoning text, as the user might not inlude any text
       let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
@@ -129,7 +140,7 @@ class UpdateCaseStatus extends React.Component {
           case_status: this.state.case_status,
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
-          monitoring_reason: this.state.monitoring_reason,
+          monitoring_reason: this.state.monitoring_reason || this.state.initialMonitoringReason,
           reasoning,
           apply_to_household: this.state.apply_to_household,
           diffState: diffState,
