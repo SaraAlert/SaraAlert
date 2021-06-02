@@ -261,16 +261,12 @@ class HouseholdMemberTable extends React.Component {
     return (
       <React.Fragment>
         {rowData.head_of_household && <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />}
-        {this.validJurisdiction(rowData) ? (
-          <a
-            id={rowData.head_of_household ? 'dependent-hoh-link' : null}
-            href={`${window.BASE_PATH}/patients/${rowData.id}`}
-            target={this.props.isSelectable ? '_blank' : '_self'}>
-            {monitoreeName}
-          </a>
-        ) : (
-          <div>{monitoreeName}</div>
-        )}
+        <a
+          id={rowData.head_of_household ? 'dependent-hoh-link' : null}
+          href={`${window.BASE_PATH}/patients/${rowData.id}`}
+          target={this.props.isSelectable ? '_blank' : '_self'}>
+          {monitoreeName}
+        </a>
       </React.Fragment>
     );
   };
