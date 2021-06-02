@@ -36,7 +36,7 @@ class FollowUpFlagPanel extends React.Component {
               id="clear-follow-up-flag-btn"
               variant="link"
               className="icon-btn-dark p-0"
-              onClick={() => this.setState({ show_update_flag_modal: true })}
+              onClick={() => this.setState({ show_clear_flag_modal: true })}
               aria-label="Clear Follow-up Flag">
               <i className="fas fa-trash"></i>
             </Button>
