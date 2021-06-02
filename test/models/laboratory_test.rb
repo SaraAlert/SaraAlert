@@ -15,39 +15,48 @@ class LaboratoryTest < ActiveSupport::TestCase
     end
   end
 
-  # test 'validates report date constraints' do
-  #   laboratory = build(:laboratory, report: 30.days.ago)
-  #   assert laboratory.valid?
+  test 'validates report date constraints' do
+    laboratory = build(:laboratory, report: 30.days.ago)
+    assert laboratory.valid?
 
-  #   laboratory = build(:laboratory, report: nil)
-  #   assert laboratory.valid?
+    laboratory = build(:laboratory, report: nil)
+    assert laboratory.valid?
 
-  #   laboratory = build(:laboratory, report: Time.now)
-  #   assert laboratory.valid?
+    laboratory = build(:laboratory, report: Time.now)
+    assert laboratory.valid?
 
-  #   laboratory = build(:laboratory, report: 1.day.from_now)
-  #   assert_not laboratory.valid?
+    # Date cannot be in the future
+    laboratory = build(:laboratory, report: 1.day.from_now)
+    assert_not laboratory.valid?
 
-  #   laboratory = build(:laboratory, report: Date.new(1900, 1, 1))
-  #   assert_not laboratory.valid?
-  # end
+    # Date cannot be before start year
+    laboratory = build(:laboratory, report: Date.new(1900, 1, 1))
+    assert_not laboratory.valid?
+  end
 
-  # test 'validates specimen collection date constraints' do
-  #   laboratory = build(:laboratory, specimen_collection: 30.days.ago)
-  #   assert laboratory.valid?
+  test 'validates specimen collection date constraints' do
+    laboratory = build(:laboratory, specimen_collection: 30.days.ago)
+    assert laboratory.valid?
 
-  #   laboratory = build(:laboratory, specimen_collection: nil)
-  #   assert laboratory.valid?
+    laboratory = build(:laboratory, specimen_collection: nil)
+    assert laboratory.valid?
 
-  #   laboratory = build(:laboratory, specimen_collection: Time.now)
-  #   assert laboratory.valid?
+    laboratory = build(:laboratory, specimen_collection: Time.now)
+    assert laboratory.valid?
 
-  #   laboratory = build(:laboratory, specimen_collection: 1.day.from_now)
-  #   assert_not laboratory.valid?
+    laboratory = build(:laboratory, specimen_collection: 1.day.from_now)
+    assert_not laboratory.valid?
 
-  #   laboratory = build(:laboratory, specimen_collection: Date.new(1900, 1, 1))
-  #   assert_not laboratory.valid?
-  # end
+    laboratory = build(:laboratory, specimen_collection: Date.new(1900, 1, 1))
+    assert_not laboratory.valid?
+
+    # Ensure specimen collection date is before report date
+    laboratory = build(:laboratory, specimen_collection: 1.days.ago, report: 2.days.ago)
+    assert_not laboratory.valid?
+
+    laboratory = build(:laboratory, specimen_collection: 2.days.ago, report: 1.days.ago)
+    assert laboratory.valid?
+  end
 
   test 'update patient updated_at upon laboratory create, update, and delete' do
     patient = create(:patient)
