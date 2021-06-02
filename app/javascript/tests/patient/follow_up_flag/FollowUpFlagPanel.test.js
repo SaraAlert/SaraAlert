@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
 import { shallow } from 'enzyme';
 import FollowUpFlagPanel from '../../../components/patient/follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from '../../../components/patient/follow_up_flag/FollowUpFlagModal';
@@ -31,9 +32,13 @@ describe('FollowUpFlagPanel', () => {
     expect(wrapper.find('.follow-up-flag-box').exists()).toBeTruthy();
     expect(wrapper.find('#update-follow-up-flag').exists()).toBeTruthy();
     const section = wrapper.find('.follow-up-flag-box');
-    expect(section.find('i').exists()).toBeTruthy();
-    expect(section.find(Button).exists()).toBeTruthy();
-    expect(section.find(Button).text()).toEqual('Edit Flag');
+    expect(wrapper.find('i').length).toEqual(3);
+    expect(wrapper.find('#update-follow-up-flag-btn').exists()).toBeTruthy();
+    expect(wrapper.find('#clear-follow-up-flag-btn').exists()).toBeTruthy();
+    expect(section.find(Button).length).toEqual(2);
+    expect(wrapper.find(ReactTooltip).length).toEqual(2);
+    expect(wrapper.find(ReactTooltip).at(0).find('span').text()).toEqual('Update Follow-up Flag');
+    expect(wrapper.find(ReactTooltip).at(1).find('span').text()).toEqual('Clear Follow-up Flag');
     expect(section.find('b').at(1).text()).toEqual(mockPatient5.follow_up_reason);
     expect(section.find('.wrap-words').text()).toEqual(': ' + mockPatient5.follow_up_note);
     expect(wrapper.find(FollowUpFlagModal).exists()).toBeFalsy();

@@ -13,7 +13,7 @@ class FollowUpFlagModal extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.patient.follow_up_reason) {
+    if (!this.props.bulk_action && this.props.patient.follow_up_reason) {
       this.setState({ initial_follow_up_reason: this.props.patient.follow_up_reason });
     }
   }
