@@ -405,7 +405,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       patient_id: { value: observation&.subject&.reference&.match(%r{^Patient/(\d+)$}).to_a[1], path: 'Observation.subject.reference' },
       lab_type: { value: lab_type, path: 'Observation.code.coding[0]', errors: lab_type_errors },
       specimen_collection: { value: observation&.effectiveDateTime, path: 'Observation.effectiveDateTime' },
-      report: { value: observation&.issued, path: 'Observation.issued' },
+      report: { value: observation&.issued&.split('T')&.first, path: 'Observation.issued' },
       result: { value: result, path: 'Observation.valueCodeableConcept.coding[0]', errors: result_errors }
     }
   end
