@@ -2436,52 +2436,52 @@ class PatientTest < ActiveSupport::TestCase
 
   test 'seven_day_quarantine_candidates scope asserts lab results specimen_collection within correct range around LDE' do
     # LDE + 4 days: too early
-    patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 1.day.ago.utc)
-    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 3.days.ago.utc.to_date)
-    scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
+    patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 4.day.ago.utc)
+    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 6.days.ago.utc.to_date)
+    scoped_patients = Patient.seven_day_quarantine_candidates(3.days.ago.utc.to_date)
     assert_not scoped_patients.where(id: patient.id).present?
 
     # LDE + 5 days: in range
-    patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc)
-    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 2.days.ago)
-    scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
+    patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 3.days.ago.utc)
+    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 5.days.ago.utc.to_date)
+    scoped_patients = Patient.seven_day_quarantine_candidates(3.days.ago.utc.to_date)
     assert scoped_patients.where(id: patient.id).present?
 
     # # LDE + 6 days: in range
-    patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 1.day)
-    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 1.day.ago)
-    scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
+    patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 2.days.ago.utc.to_date)
+    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 4.days.ago.utc.to_date)
+    scoped_patients = Patient.seven_day_quarantine_candidates(3.days.ago.utc.to_date)
     assert scoped_patients.where(id: patient.id).present?
 
     # # LDE + 7 days: in range
-    patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 2.day)
-    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
-    scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
+    patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 1.day.ago.utc.to_date)
+    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 3.days.ago.utc.to_date)
+    scoped_patients = Patient.seven_day_quarantine_candidates(3.days.ago.utc.to_date)
     assert scoped_patients.where(id: patient.id).present?
 
     # # LDE + 8 days: in range
-    patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 3.day)
-    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date + 1.day)
-    scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
+    patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc)
+    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 1.day.ago.utc.to_date)
+    scoped_patients = Patient.seven_day_quarantine_candidates(3.days.ago.utc.to_date)
     assert_not scoped_patients.where(id: patient.id).present?
 
     # LDE + 9 days: in range
-    patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 3.day)
-    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date + 2.days)
-    scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
+    patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc)
+    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 2.days.ago.utc.to_date)
+    scoped_patients = Patient.seven_day_quarantine_candidates(3.days.ago.utc.to_date)
     assert_not scoped_patients.where(id: patient.id).present?
 
     # LDE + 10 days: too late
-    patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 3.day)
-    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date + 3.days)
-    scoped_patients = Patient.seven_day_quarantine_candidates(DateTime.now.utc)
+    patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc)
+    create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc)
+    scoped_patients = Patient.seven_day_quarantine_candidates(3.days.ago.utc.to_date)
     assert_not scoped_patients.where(id: patient.id).present?
   end
 
