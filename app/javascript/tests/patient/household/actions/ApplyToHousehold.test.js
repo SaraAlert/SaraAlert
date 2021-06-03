@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Form } from 'react-bootstrap';
-import _ from 'lodash';
 import ApplyToHousehold from '../../../../components/patient/household/actions/ApplyToHousehold';
 import HouseholdMemberTable from '../../../../components/patient/household/utils/HouseholdMemberTable';
 import { mockUser1 } from '../../../mocks/mockUsers';
