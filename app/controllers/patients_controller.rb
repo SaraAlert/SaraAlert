@@ -454,7 +454,7 @@ class PatientsController < ApplicationController
     # Or their `isolation` value through the bulk action case status modal.
     # It is slightly more performant to pre-calculate this outside the loop below
     closed_params = params.except('monitoring', 'isolation')
-    closed_params[:diffState] = closed_params[:diffState].without('monitoring', 'isolation')
+    closed_params[:diffState] = closed_params[:diffState]&.without('monitoring', 'isolation')
 
     patients.each do |patient|
       # We never want to update closed records monitoring status via the bulk_update
