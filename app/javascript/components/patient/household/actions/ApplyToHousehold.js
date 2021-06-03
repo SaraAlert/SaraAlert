@@ -1,7 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form } from 'react-bootstrap';
-import _ from 'lodash';
 import HouseholdMemberTable from '../utils/HouseholdMemberTable';
 
 class ApplyToHousehold extends React.Component {
