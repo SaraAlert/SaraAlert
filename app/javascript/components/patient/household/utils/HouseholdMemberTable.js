@@ -1,6 +1,5 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form } from 'react-bootstrap';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import { formatDate } from '../../../../utils/DateTime';
@@ -264,7 +263,8 @@ class HouseholdMemberTable extends React.Component {
         <a
           id={rowData.head_of_household ? 'dependent-hoh-link' : null}
           href={`${window.BASE_PATH}/patients/${rowData.id}`}
-          target={this.props.isSelectable ? '_blank' : '_self'}>
+          target={this.props.isSelectable ? '_blank' : '_self'}
+          rel="noreferrer">
           {monitoreeName}
         </a>
       </React.Fragment>
