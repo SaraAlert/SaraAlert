@@ -717,6 +717,7 @@ class PatientsTable extends React.Component {
             <UpdateCaseStatus
               authenticity_token={this.props.authenticity_token}
               patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
+              monitoring_reasons={this.props.monitoring_reasons}
               close={() => this.setState({ action: undefined })}
             />
           )}

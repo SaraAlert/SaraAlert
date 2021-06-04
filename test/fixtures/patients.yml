@@ -1396,3 +1396,26 @@ patient_68:
   last_date_of_exposure: <%= 5.days.ago %>
   first_positive_lab_at: <%= 20.days.ago %>
   latest_assessment_at: <%= 2.days.ago %>
+patient_69:
+  id: 69
+  created_at: <%= 3.days.ago %>
+  updated_at: <%= 3.days.ago %>
+  responder_id: 69
+  creator_id: 1
+  jurisdiction_id: 2
+  closed_at: <%= 1.hour.ago %>
+  monitoring: false
+  isolation: true
+  first_name: 'Ronald13'
+  last_name: 'Weasley16'
+  sex: 'Male'
+  date_of_birth: <%= 2.years.ago %>
+  address_line_1: '534 Broadway'
+  address_city: 'Watersvillle'
+  address_state: 'Ohio'
+  address_zip: '61312-4762'
+  primary_telephone: '+15554550178'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 9.days.ago %>

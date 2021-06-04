@@ -450,9 +450,17 @@ class PatientsController < ApplicationController
     end
     patients = current_user.get_patients(patient_ids)
 
+    # For Monitorees who are closed, we don't want to update their `monitoring` status
+    # Or their `isolation` value through the bulk action case status modal.
+    # It is slightly more performant to pre-calculate this outside the loop below
+    closed_params = params.except('monitoring', 'isolation')
+    closed_params[:diffState] = closed_params[:diffState]&.without('monitoring', 'isolation')
+
     patients.each do |patient|
-      update_monitoring_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
-                               params[:apply_to_household] ? :group : :none)
+      # We never want to update closed records monitoring status via the bulk_update
+      update_params = patient.monitoring ? params : closed_params
+      update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
+                               update_params[:apply_to_household] ? :group : :none)
     end
   end
 
@@ -614,7 +622,8 @@ class PatientsController < ApplicationController
 
     patient_ids = params[:patient_ids]
     patients = current_user.viewable_patients.where(id: patient_ids)
-    render json: { case_status: patients.pluck(:case_status), isolation: patients.pluck(:isolation), monitoring: patients.pluck(:monitoring) }
+    render json: { case_status: patients.pluck(:case_status), isolation: patients.pluck(:isolation), monitoring: patients.pluck(:monitoring),
+                   monitoring_reason: patients.pluck(:monitoring_reason) }
   end
 
   # Fetches table data for viable HoH options.

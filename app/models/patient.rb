@@ -1263,13 +1263,18 @@ class Patient < ApplicationRecord
     # NOTE: Attributes are sorted so that:
     # - case_status always comes before isolation, since a case_status change may trigger an isolation change from the front end
     # - continuous_exposure comes before last_date_of_exposure, since a continuous_exposure change may trigger an lde change from the front end
-    attribute_order = %i[case_status isolation continuous_exposure last_date_of_exposure]
+
+    # When closing a monitoree via updating their case_status, the `reason` field will (incorrectly) be set on both History items
+    # To prevent this, we want to keep track of when monitoring has been updating, and then not include 'reason' for case_status History item
+    has_updated_monitoring = false
+    attribute_order = %i[monitoring monitoring_reason case_status isolation continuous_exposure last_date_of_exposure]
     history_data[:updates].keys.sort_by { |key| attribute_order.index(key) || Float::INFINITY }&.each do |attribute|
       updated_value = self[attribute]
       next if patient_before[attribute] == updated_value
 
       case attribute
       when :monitoring
+        has_updated_monitoring = true
         History.monitoring_status(history_data)
 
         # If the record was in continuous exposure and then it was closed and continuous exposure was turned off
@@ -1300,8 +1305,12 @@ class Patient < ApplicationRecord
         update_patient_history_for_isolation(patient_before, updated_value)
       when :symptom_onset
         History.symptom_onset(history_data)
+      when :monitoring_reason
+        # Only create a monitoring_reason History item if no case_status change occurs too
+        # If there *are* case_status changes, monitoring_reason changes will be listed in that history item
+        History.monitoring_reason(history_data) unless history_data[:updates].key?(:case_status)
       when :case_status
-        History.case_status(history_data, diff_state)
+        History.case_status(has_updated_monitoring ? history_data.except(:reason) : history_data, diff_state)
 
         # If Case Status was updated to one of the values meant for the Exposure workflow and the Public Health Action was reset.
         if ['Suspect', 'Unknown', 'Not a Case'].include?(updated_value) && patient_before[:public_health_action] != 'None' && public_health_action == 'None'
