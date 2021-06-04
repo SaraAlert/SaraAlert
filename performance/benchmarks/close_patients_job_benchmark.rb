@@ -7,7 +7,7 @@ require_relative '../benchmark'
 # Setup: Changes many patients to be close_eligible
 benchmark(
   name: 'ClosePatientsJob',
-  time_threshold: 8 * 60,
+  time_threshold: 18 * 60,
   setup: proc {
     puts 'updating patients'
     max_num_to_close = 20_000
