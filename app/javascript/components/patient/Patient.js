@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import BadgeHoH from './household/utils/BadgeHoH';
-import IconMinor from './household/utils/IconMinor';
 import InfoTooltip from '../util/InfoTooltip';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
 import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
@@ -25,7 +24,6 @@ class Patient extends React.Component {
       primaryLanguageDisplayName: null,
       showSetFlagModal: false,
       isMinor: props.details && props.details.date_of_birth && moment(props.details.date_of_birth, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years')),
-      displayHohContactInfo: false,
     };
   }
 
@@ -80,58 +78,6 @@ class Patient extends React.Component {
         </div>
       );
     }
-  }
-
-  renderContactInfo() {
-    let contactInfoPatient = this.state.displayHohContactInfo ? this.props.hoh : this.props.details;
-    return (
-      <Col id="contact-information" lg={10} className="col-xxl-12">
-        <div className="section-header">
-          <h4 className="section-title">Contact Information</h4>
-          {this.state.displayHohContactInfo ? '' : this.renderEditLink('Contact Information', 2)}
-        </div>
-        <div className="item-group">
-          {this.state.isMinor && this.props.hoh && this.props.hoh.id != this.props.details.id && (
-            <div>
-              <a id="dependent-hoh-link" href={`${window.BASE_PATH}/patients/${this.props.hoh.id}`}>
-                Monitoree is a minor. View contact info for head of household ({formatName(this.props.hoh)})
-              </a>
-            </div>
-          )}
-          <div>
-            <b>Phone:</b> <span>{contactInfoPatient.primary_telephone ? `${formatPhoneNumber(contactInfoPatient.primary_telephone)}` : '--'}</span>
-            {contactInfoPatient.blocked_sms && (
-              <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
-                &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
-              </Form.Label>
-            )}
-          </div>
-          <div>
-            <b>Preferred Contact Time:</b> <span>{contactInfoPatient.preferred_contact_time || '--'}</span>
-          </div>
-          <div>
-            <b>Primary Telephone Type:</b> <span>{contactInfoPatient.primary_telephone_type || '--'}</span>
-          </div>
-          <div>
-            <b>Email:</b> <span>{contactInfoPatient.email || '--'}</span>
-          </div>
-          <div>
-            <b>Preferred Reporting Method:</b>{' '}
-            {(!contactInfoPatient.blocked_sms || !contactInfoPatient.preferred_contact_method?.includes('SMS')) && (
-              <span>{contactInfoPatient.preferred_contact_method || '--'}</span>
-            )}
-            {contactInfoPatient.blocked_sms && contactInfoPatient.preferred_contact_method?.includes('SMS') && (
-              <span className="font-weight-bold text-danger">
-                {contactInfoPatient.preferred_contact_method || '--'}
-                <Form.Label className="tooltip-whitespace">
-                  <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
-                </Form.Label>
-              </span>
-            )}
-          </div>
-        </div>
-      </Col>
-    );
   }
 
   render() {
@@ -245,7 +191,7 @@ class Patient extends React.Component {
               <Col sm={10} className="item-group">
                 <div>
                   <b>DOB:</b> <span>{this.props.details.date_of_birth && moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
-                  {this.state.isMinor && <IconMinor patientId={String(this.props.details.id)} />}
+                  {this.state.isMinor && <span className="text-danger"> (Minor)</span>}
                 </div>
                 <div>
                   <b>Age:</b> <span>{this.props.details.age || '--'}</span>
@@ -288,7 +234,58 @@ class Patient extends React.Component {
               </Col>
             </Row>
           </Col>
-          {this.renderContactInfo()}
+          <Col id="contact-information" lg={10} className="col-xxl-12">
+            <div className="section-header">
+              <h4 className="section-title">Contact Information</h4>
+              {this.renderEditLink('Contact Information', 2)}
+            </div>
+            <div className="item-group">
+              {this.state.isMinor && (
+                <div>
+                  <span className="text-danger">Monitoree is a minor. </span>
+                  {!this.props.details.head_of_household && this.props.hoh && (
+                    <span>
+                      View contact info for head of household:
+                      <a className="pl-1" href={`${window.BASE_PATH}/patients/${this.props.hoh.id}`}>
+                        {formatName(this.props.hoh)}
+                      </a>
+                    </span>
+                  )}
+                </div>
+              )}
+              <div>
+                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
+                {this.props.details.blocked_sms && (
+                  <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
+                    &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
+                  </Form.Label>
+                )}
+              </div>
+              <div>
+                <b>Preferred Contact Time:</b> <span>{this.props.details.preferred_contact_time || '--'}</span>
+              </div>
+              <div>
+                <b>Primary Telephone Type:</b> <span>{this.props.details.primary_telephone_type || '--'}</span>
+              </div>
+              <div>
+                <b>Email:</b> <span>{this.props.details.email || '--'}</span>
+              </div>
+              <div>
+                <b>Preferred Reporting Method:</b>{' '}
+                {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method?.includes('SMS')) && (
+                  <span>{this.props.details.preferred_contact_method || '--'}</span>
+                )}
+                {this.props.details.blocked_sms && this.props.details.preferred_contact_method?.includes('SMS') && (
+                  <span className="font-weight-bold text-danger">
+                    {this.props.details.preferred_contact_method || '--'}
+                    <Form.Label className="tooltip-whitespace">
+                      <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
+                    </Form.Label>
+                  </span>
+                )}
+              </div>
+            </div>
+          </Col>
         </Row>
         {!this.props.edit_mode && (
           <div className="details-expander mb-3">
@@ -724,7 +721,7 @@ Patient.propTypes = {
   current_user: PropTypes.object,
   details: PropTypes.object,
   hoh: PropTypes.object,
-  jurisdiction_path: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
   collapse: PropTypes.bool,

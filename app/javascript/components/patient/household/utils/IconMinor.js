@@ -10,7 +10,7 @@ class IconMinor extends React.Component {
           <i className="fas fa-child" />
         </span>
         <ReactTooltip id={`${this.props.patientId}-is-minor`} multiline={true} place="right" type="dark" effect="solid">
-          <span>Monitoree is a minor</span>
+          <span>Monitoree is under 18</span>
         </ReactTooltip>
       </React.Fragment>
     );

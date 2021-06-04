@@ -83,14 +83,14 @@ describe('Patient', () => {
   });
 
   it('Properly renders identification section when patient is a minor', () => {
-    const wrapper = shallow(<Patient details={mockPatient6} hoh={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
+    const wrapper = shallow(<Patient details={mockPatient5} hoh={mockPatient1} collapse={true} edit_mode={false} jurisdiction_paths={mockJurisdictionPaths} />);
     const section = wrapper.find('#identification');
     expect(section.find('h4').text()).toEqual('Identification');
     expect(section.find('.edit-link').exists()).toBeTruthy();
     identificationFields.forEach((field, index) => {
       expect(section.find('b').at(index).text()).toEqual(field + ':');
     });
-    expect(section.find('#patient-is-minor').text()).toEqual(' (Minor)');
+    expect(section.find('.text-danger').exists()).toBeTruthy();
   });
 
   it('Properly renders contact information section', () => {
@@ -121,22 +121,12 @@ describe('Patient', () => {
   });
   
   it('Properly renders contact information section when patient is a minor', () => {
-    const wrapper = shallow(<Patient details={mockPatient6} hoh={mockPatient1} collapse={true} edit_mode={false} jurisdiction_path="USA, State 1, County 2" />);
-    expect(wrapper.find('#contact-information').find('#switch-contact-info').exists()).toBeTruthy();
-    expect(wrapper.find('#contact-information').find('#switch-contact-info').text()).toEqual('View Contact Info for Reporter');
-    wrapper.find('#contact-information').find('#switch-contact-info').simulate('click');
-    expect(wrapper.find('#contact-information').find('#switch-contact-info').text()).toEqual('View Contact Info for Monitoree');
-    expect(wrapper.find('#contact-information').find('.edit-link').exists()).toBeFalsy();
-    expect(wrapper.find('#contact-information').find('b').at(0).text()).toEqual('Name: ');
-    contactFields.forEach((field, index) => {
-      expect(
-        wrapper
-          .find('#contact-information')
-          .find('b')
-          .at(index + 1)
-          .text()
-      ).toEqual(field + ':');
-    });
+    const wrapper = shallow(<Patient details={mockPatient5} hoh={mockPatient1} collapse={true} edit_mode={false} jurisdiction_paths={mockJurisdictionPaths} />);
+    const section = wrapper.find('#contact-information');
+    expect(wrapper.find('#contact-information').find('.text-danger').exists()).toBeTruthy();
+    expect(wrapper.find('#contact-information').find('.text-danger').text()).toEqual('Monitoree is a under 18. ');
+    expect(section.find('a').exists()).toBeTruthy();
+    expect(section.find('a').last().text()).toEqual(mockPatient1.first_name + ' ' + mockPatient1.middle_name + ' ' + mockPatient1.last_name);
   });
 
   it('Properly renders show/hide divider when props.collapse is true', () => {

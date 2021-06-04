@@ -207,7 +207,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       closed_at: closed_at || '',
       created_at: created_at || '',
       updated_at: updated_at || ''
-    }
+        }
 
     full_history_details_for_export.merge(additional_custom_export_details)
   end
