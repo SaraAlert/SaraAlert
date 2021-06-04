@@ -9,6 +9,8 @@ import ApplyToHousehold from '../household/actions/ApplyToHousehold';
 import InfoTooltip from '../../util/InfoTooltip';
 import reportError from '../../util/ReportError';
 
+const MAX_NOTES_LENGTH = 2000;
+
 class CaseStatus extends React.Component {
   constructor(props) {
     super(props);
@@ -24,6 +26,7 @@ class CaseStatus extends React.Component {
       monitoring_option: '',
       apply_to_household: false,
       apply_to_household_ids: [],
+      reasoning: '',
       loading: false,
       disabled: false,
       noMembersSelected: false,
@@ -32,9 +35,11 @@ class CaseStatus extends React.Component {
   }
 
   handleCaseStatusChange = event => {
-    event.persist();
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     const confirmedOrProbable = value === 'Confirmed' || value === 'Probable';
+    if (!confirmedOrProbable) {
+      this.setState({ monitoring_reason: '', reasoning: '' });
+    }
 
     this.setState({ [event.target.id]: value, showCaseStatusModal: true, confirmedOrProbable }, () => {
       // changing case status of monitoree in the closed line list (either workflow)
@@ -158,6 +163,12 @@ class CaseStatus extends React.Component {
   submit = () => {
     const diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
+      // Per feedback, include the monitoring_reason in the reasoning text, as the user might not inlude any text
+      let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
+      // Add a period at the end of the Reasoning (if it's not already included)
+      if (reasoning && !['.', '!', '?'].includes(_.last(reasoning))) {
+        reasoning += '.';
+      }
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
@@ -165,6 +176,7 @@ class CaseStatus extends React.Component {
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
+          reasoning,
           apply_to_household: this.state.apply_to_household,
           apply_to_household_ids: this.state.apply_to_household_ids,
           diffState: diffState,
@@ -176,6 +188,11 @@ class CaseStatus extends React.Component {
           reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
     });
+  };
+
+  handleChange = event => {
+    event.persist();
+    this.setState({ [`${event.target.id}`]: event.target.value });
   };
 
   createModal(toggle, submit) {
@@ -201,6 +218,26 @@ class CaseStatus extends React.Component {
             </React.Fragment>
           )}
           {this.state.modal_text !== '' && <p>{this.state.modal_text}</p>}
+          {this.state.monitoring_option === 'End Monitoring' && (
+            <div>
+              <Form.Group controlId="monitoring_reason">
+                <Form.Label>Please select reason for status change:</Form.Label>
+                <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange} defaultValue={'Meets Case Definition'}>
+                  <option></option>
+                  {this.props.monitoring_reasons.map((option, index) => (
+                    <option key={`option-${index}`} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="reasoning">
+                <Form.Label>Please include any additional details:</Form.Label>
+                <Form.Control as="textarea" maxLength={MAX_NOTES_LENGTH} rows="2" onChange={this.handleChange} />
+                <div className="character-limit-text"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </div>
+              </Form.Group>
+            </div>
+          )}
           {this.props.household_members.length > 0 && (
             <ApplyToHousehold
               household_members={this.props.household_members}
@@ -270,6 +307,7 @@ CaseStatus.propTypes = {
   household_members: PropTypes.array,
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
+  monitoring_reasons: PropTypes.array,
 };
 
 export default CaseStatus;

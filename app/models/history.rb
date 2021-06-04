@@ -372,6 +372,17 @@ class History < ApplicationRecord
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
+  def self.monitoring_reason(history)
+    field = {
+      name: 'Reason for Closure',
+      old_value: history[:patient_before][:monitoring_reason],
+      new_value: history[:updates][:monitoring_reason]
+    }
+    return if field[:old_value] == field[:new_value]
+
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
+  end
+
   def self.extended_isolation(history)
     field = {
       name: 'Extended Isolation',

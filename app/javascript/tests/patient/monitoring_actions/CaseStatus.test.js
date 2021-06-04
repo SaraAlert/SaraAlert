@@ -7,6 +7,7 @@ import CustomTable from '../../../components/layout/CustomTable';
 import InfoTooltip from '../../../components/util/InfoTooltip';
 import { mockUser1 } from '../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
+import { mockMonitoringReasons } from '../../mocks/mockMonitoringReasons';
 import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
 
 const mockToken = 'testMockTokenString12345';
@@ -14,7 +15,7 @@ const caseStatusValues = ['', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'No
 const monitoringOptionValues = ['', 'End Monitoring', 'Continue Monitoring in Isolation Workflow'];
 
 function getWrapper(patient) {
-  return shallow(<CaseStatus patient={patient} current_user={mockUser1} household_members={[]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+  return shallow(<CaseStatus patient={patient} current_user={mockUser1} household_members={[]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} monitoring_reasons={mockMonitoringReasons} />);
 }
 
 describe('CaseStatus', () => {
@@ -86,6 +87,7 @@ describe('CaseStatus', () => {
     expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
     expect(wrapper.state('isolation')).toBeFalsy();
     expect(modalBody.find('p').text()).toEqual('This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.');
+    expect(modalBody.children().length).toEqual(1); // Ensure no monitoring options dropdowns are present
   });
 
   it('Correctly renders modal body and does not change workflow or line list when updating Case Status to Confirmed from Probable or vice versa for a record in the Isolation workflow', () => {
@@ -174,6 +176,15 @@ describe('CaseStatus', () => {
     expect(wrapper.state('monitoring')).toBeFalsy();
     expect(wrapper.find(Button).at(1).prop('disabled')).toBeFalsy();
     expect(wrapper.find('p').at(1).text()).toEqual('The case status for the selected record will be updated to Confirmed and moved to the closed line list in the current workflow.');
+    expect(wrapper.find('ModalBody').find('p').at(0).text()).toContain('Please select what you would like to do:');
+    const monitoringReasonOptions = [''].concat(mockMonitoringReasons);
+    wrapper
+      .find('FormGroup')
+      .at(0)
+      .find('option')
+      .forEach((option, index) => {
+        expect(option.text()).toEqual(monitoringReasonOptions[Number(index)]);
+      });
 
     // change monitoring option to Continue Monitoring in Isolation Workflow
     wrapper.find('#monitoring_option').simulate('change', { target: { id: 'monitoring_option', value: 'Continue Monitoring in Isolation Workflow' }, persist: jest.fn() });

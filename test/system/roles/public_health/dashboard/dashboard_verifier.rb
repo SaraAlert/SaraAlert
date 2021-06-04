@@ -132,7 +132,11 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     @@public_health_dashboard.search_for_and_view_patient('all', patient_label)
     patient = Patient.find(SystemTestUtils::PATIENTS[patient_label]['id'])
     assertions.each do |field, value|
-      assert_equal value, patient[field], @@system_test_utils.get_err_msg('Bulk edit', field, value)
+      if value.nil?
+        assert_nil value, @@system_test_utils.get_err_msg('Bulk edit', field, value)
+      else
+        assert_equal value, patient[field], @@system_test_utils.get_err_msg('Bulk edit', field, value)
+      end
     end
     monitoring_status = patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring'
     public_health_action = patient.public_health_action == '' ? 'None' : patient.public_health_action

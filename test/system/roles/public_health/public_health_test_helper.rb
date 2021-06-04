@@ -57,6 +57,34 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
+  # Custom test to ensure Closed Monitorees are never moved off the Closed Linelists when updating Case Status
+  # via the bulk action modal
+  def bulk_edit_update_case_status_closed(user_label, exposure_closed_patient_labels, isolation_closed_patient_labels)
+    workflow_patient_hash = {
+      exposure: exposure_closed_patient_labels,
+      isolation: isolation_closed_patient_labels
+    }
+    %i[exposure isolation].each do |workflow|
+      @@system_test_utils.login(user_label)
+      fill_in 'search', with: ''
+      ['Suspect', 'Unknown', 'Not a Case'].each do |case_status|
+        @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, 'all', workflow_patient_hash[workflow])
+        # Use `End Monitoring` on the next line to prevent the tests from switching workflows
+        @@public_health_dashboard.bulk_edit_update_case_status(workflow, case_status, 'End Monitoring', false)
+        assertions = {
+          case_status: case_status,
+          isolation: workflow == :isolation,
+          monitoring: false
+        }
+        workflow_patient_hash[workflow].each do |label|
+          @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions, false)
+        end
+        sleep(2)
+      end
+      @@system_test_utils.logout
+    end
+  end
+
   def bulk_edit_close_records(user_label, patient_labels, workflow, tab, monitoring_reason, reasoning, apply_to_household: false)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
