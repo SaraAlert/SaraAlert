@@ -20,7 +20,12 @@ class EnrollmentForm < ApplicationSystemTestCase
     @@enrollment_form_steps.steps.each_key do |step|
       next unless monitoree[step.to_s]
 
-      click_on "edit-#{step}-btn"
+      begin
+        click_on "edit-#{step}-btn"
+      rescue Capybara::ElementNotFound, Selenium::WebDriver::Error::ElementNotInteractableError
+        find('#details-expander-link').click
+        click_on "edit-#{step}-btn"
+      end
       populate_enrollment_step(step, monitoree[step.to_s])
       @@system_test_utils.wait_for_enrollment_page_transition
     end
