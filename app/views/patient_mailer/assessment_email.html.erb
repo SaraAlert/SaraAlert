@@ -8,6 +8,12 @@
 
     <p><%= t('assessments.email.reminder.thank-you', locale: @lang) %></p>
 
+    <% if Jurisdiction.find_by_id(patient[:patient].jurisdiction_id).contact_info[:email] != '' || Jurisdiction.find_by_id(patient[:patient].jurisdiction_id).contact_info[:phone] != '' || Jurisdiction.find_by_id(patient[:patient].jurisdiction_id).contact_info[:webpage] != '' %>
+    <p><%= t('assessments.email.contact.info1', locale: @lang) %></p>
+    <% else %>
+    <p><%= t('assessments.email.contact.info2', locale: @lang) %></p>    
+    <% end %>
+
     <%= render partial: 'main_mailer/responsive_button', locals: {
           patient: patient,
           link: new_patient_assessment_jurisdiction_lang_initials_url(patient[:patient].submission_token,
@@ -16,6 +22,17 @@
                                                                       patient[:patient]&.initials_age),
           text: t('assessments.email.reminder.report', locale: @lang)
         } %><br />
+
+    <% if Jurisdiction.find_by_id(patient[:patient].jurisdiction_id).contact_info[:email] != '' %>
+    <%= t('assessments.email.contact.email', locale: @lang) %> <%=Jurisdiction.find_by_id(patient[:patient].jurisdiction_id).contact_info[:email] %> <br />
+    <% end %>
+    <% if Jurisdiction.find_by_id(patient[:patient].jurisdiction_id).contact_info[:phone] != '' %>
+    <%= t('assessments.email.contact.phone', locale: @lang) %> <%= Jurisdiction.find_by_id(patient[:patient].jurisdiction_id).contact_info[:phone] %> <br />
+    <% end %>
+    <% if Jurisdiction.find_by_id(patient[:patient].jurisdiction_id).contact_info[:webpage] != '' %>
+    <%= t('assessments.email.contact.webpage', locale: @lang) %> <%= Jurisdiction.find_by_id(patient[:patient].jurisdiction_id).contact_info[:webpage] %>
+    <% end %>
+
   <% end %>
 <% end %>
 

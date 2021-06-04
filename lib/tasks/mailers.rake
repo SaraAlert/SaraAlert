@@ -19,6 +19,7 @@ namespace :mailers do
     test_patient.responder = test_patient
     test_patient.email = '<test_email>'
     test_patient.submission_token = SecureRandom.urlsafe_base64[0, 10]
+    test_patient.jurisdiction = Jurisdiction.where(name: 'County 1').first
     test_patient.save!
     PatientMailer.enrollment_email(test_patient).deliver_now
   end
