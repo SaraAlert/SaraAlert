@@ -157,7 +157,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                                        .where('symptoms.label IS NOT NULL')
                                        .where('symptoms.name IS NOT NULL')
                                        .distinct
-                                       .order('symptom.label')
+                                       .order('symptoms.label')
                                        .pluck('symptoms.name', 'symptoms.label')
                                        .transpose
 
