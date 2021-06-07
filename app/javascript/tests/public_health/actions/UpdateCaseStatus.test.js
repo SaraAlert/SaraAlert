@@ -65,8 +65,8 @@ describe('UpdateCaseStatus', () => {
   });
 
   it('Properly renders all main components for Patients who are in Isolation only', () => {
-    // mockPatien1 and mockPatient4 are both in the Isolation workflow
-    const wrapper = getWrapper([mockPatient1, mockPatient4]);
+    // mockPatient6 is in the Isolation workflow, but is not closed
+    const wrapper = getWrapper([mockPatient6]);
     expect(wrapper.find('ModalBody').find('p').at(0).text()).toContain('Please select the desired case status to be assigned to all selected patients:');
     wrapper
       .find('#case_status')
@@ -148,7 +148,6 @@ describe('UpdateCaseStatus', () => {
         .first()
         .simulate('change', { target: { id: 'case_status', type: 'change', value: case_status_option }, persist: jest.fn() });
       expect(wrapper.state('case_status')).toEqual(case_status_option);
-
       expect(wrapper.find('p').at(1).text()).toContain('The selected cases will remain in the isolation workflow.');
       // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
       expect(wrapper.find('FormControl').at(1).exists()).toBeFalsy();
