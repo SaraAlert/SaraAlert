@@ -89,6 +89,8 @@ class UpdateCaseStatus extends React.Component {
         }
       } else if (event.target.id === 'monitoring_reason') {
         this.setState({ monitoring_reason: event.target.value });
+      } else if (event.target.id === 'reasoning') {
+        this.setState({ reasoning: event.target.value });
       } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
         this.setState({ monitoring: true, isolation: false, monitoring_reason: this.state.initialMonitoringReason || '', reasoning: '' });
       }
