@@ -25,6 +25,8 @@ class ClosePatientsJob < ApplicationJob
             ((patient.last_date_of_exposure.beginning_of_day + ADMIN_OPTIONS['monitoring_period_days'].days) == patient.created_at.beginning_of_day)
         # If the patient was enrolled on their last day of monitoring based on their last date of exposure, specify special reason for closure
         patient[:monitoring_reason] = 'Enrolled on last day of monitoring period (system)'
+      elsif patient.updated_at <= 30.days.ago
+        patient[:monitoring_reason] = 'No record activity for 30 days (system)'
       else
         # Otherwise, normal reason for closure
         patient[:monitoring_reason] = 'Completed Monitoring (system)'

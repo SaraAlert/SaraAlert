@@ -3,14 +3,18 @@
 require_relative '../../config/environment'
 require_relative '../benchmark'
 
-# Time Threshold: 8 minutes
+# Time Threshold: 10 minutes
 # Setup: Changes many patients to be close_eligible
 benchmark(
   name: 'ClosePatientsJob',
-  time_threshold: 8 * 60,
+  time_threshold: 10 * 60,
   setup: proc {
     puts 'updating patients'
     max_num_to_close = 20_000
+    # Due to the `no_recent_activity` criteria of the close_eligible scope
+    # it is necessary to change the updated_at of all patients so that
+    # we do not go over `max_num_to_close`
+    Patient.update_all(updated_at: Time.now)
     Patient.limit(max_num_to_close).update_all(
       isolation: false,
       continuous_exposure: false,

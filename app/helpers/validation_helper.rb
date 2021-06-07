@@ -105,8 +105,13 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   SYSTEM_SELECTABLE_MONITORING_REASONS = [
-    'Enrolled more than 14 days after last date of exposure (system)', 'Enrolled more than 10 days after last date of exposure (system)',
-    'Enrolled on last day of monitoring period (system)', 'Completed Monitoring (system)', '', nil
+    'Enrolled more than 14 days after last date of exposure (system)',
+    'Enrolled more than 10 days after last date of exposure (system)',
+    'Enrolled on last day of monitoring period (system)',
+    'Completed Monitoring (system)',
+    'No record activity for 30 days (system)',
+    '',
+    nil
   ].freeze
 
   VALID_PATIENT_ENUMS = {
