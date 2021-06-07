@@ -218,6 +218,11 @@ class FollowUpFlag extends React.Component {
             <Form.Group controlId="clear_flag_reason">
               <Form.Label>Please include any additional details for clearing the follow-up flag:</Form.Label>
               <Form.Control as="textarea" rows="2" value={this.state.clear_flag_reason} onChange={this.handleChange} />
+              {this.props.bulk_action && (
+                <p className="mt-3">
+                  If any selected monitorees do not currently have a flag set, their records will not be updated as a result of this action.
+                </p>
+              )}
             </Form.Group>
           )}
         </Modal.Body>
