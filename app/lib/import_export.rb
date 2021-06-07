@@ -153,13 +153,21 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data[:assessments][:checked].delete(:symptoms)
     data[:assessments][:headers].delete('Symptoms Reported')
 
-    symptom_names_and_labels = patients.joins(assessments: { reported_condition: :symptoms })
-                                       .where('symptoms.label IS NOT NULL')
-                                       .where('symptoms.name IS NOT NULL')
-                                       .distinct
-                                       .order('symptoms.label')
-                                       .pluck('symptoms.name', 'symptoms.label')
-                                       .transpose
+    # For large queries (e.g. 100k patients) of the `Symptom.where(...) query below
+    # we saw MySQL give up on queries and throw an exception.
+    # The workaround for this is to collect the symptom ids in a set and find them
+    # using batches of patients.
+    symptoms = Set.new
+    patients.pluck(:id).in_groups_of(10_000, false) do |batch|
+      Symptom.where(
+        condition_id: ReportedCondition.where(
+          assessment_id: Assessment.where(
+            patient_id: batch
+          ).pluck(:id)
+        ).pluck(:id)
+      ).where.not(label: nil).where.not(name: nil).distinct.pluck(:name, :label).each { |symptom| symptoms.add(symptom) }
+    end
+    symptom_names_and_labels = symptoms.to_a.sort { |a, b| a[1] <=> b[1] }.transpose
 
     # Empty symptoms check
     return [] unless symptom_names_and_labels.present?
