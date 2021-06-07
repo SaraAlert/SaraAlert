@@ -157,12 +157,17 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     # we saw MySQL give up on queries and throw an exception.
     # The workaround for this is to collect the symptom ids in a set and find them
     # using batches of patients.
-    symptom_ids = Set.new
+    symptoms = Set.new
     patients.pluck(:id).in_groups_of(10_000, false) do |batch|
-      symptom_ids << Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: batch).pluck(:id)).pluck(:id)).pluck(:id)
+      Symptom.where(
+        condition_id: ReportedCondition.where(
+          assessment_id: Assessment.where(
+            patient_id: batch
+          ).pluck(:id)
+        ).pluck(:id)
+      ).where.not(label: nil).where.not(name: nil).distinct.pluck(:name, :label).each { |symptom| symptoms.add(symptom) }
     end
-    symptom_names_and_labels = Symptom.where(id: symptom_ids.to_a.flatten).where.not(label: nil).where.not(name: nil)
-                                      .distinct.order(:label).pluck(:name, :label).transpose
+    symptom_names_and_labels = symptoms.to_a.sort { |a, b| a[1] <=> b[1] }.transpose
 
     # Empty symptoms check
     return [] unless symptom_names_and_labels.present?
