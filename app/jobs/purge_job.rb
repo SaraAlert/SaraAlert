@@ -9,7 +9,6 @@ class PurgeJob < ApplicationJob
       start_time: DateTime.now
     }
     eligible = Patient.purge_eligible
-    # Change to hash
     purged = []
     not_purged = []
     job_info[:eligible] = eligible.count
@@ -56,8 +55,8 @@ class PurgeJob < ApplicationJob
       UserMailer.purge_job_email([], { current: 1, total: total_purged_emails_to_send }, job_info).deliver_later
     else
       # Send results in batches to avoid emails that are too large to send
-      (purged | not_purged).in_groups_of(ADMIN_OPTIONS['job_run_email_group_size'].to_i, false) do |group, index|
-        UserMailer.purge_job_email([group], { current: index, total: total_purged_emails_to_send }, job_info).deliver_later
+      (purged | not_purged).in_groups_of(ADMIN_OPTIONS['job_run_email_group_size'].to_i, false).each_with_index do |group, index|
+        UserMailer.purge_job_email(group, { current: index + 1, total: total_purged_emails_to_send }, job_info).deliver_later
       end
     end
   end
@@ -80,8 +79,6 @@ class PurgeJob < ApplicationJob
 
   def calculate_total_emails(total_monitorees)
     total_emails = (total_monitorees.to_f / ADMIN_OPTIONS['job_run_email_group_size'].to_i).ceil
-    return total_emails if total_emails > 1
-
-    1
+    [1, total_emails].max
   end
 end
