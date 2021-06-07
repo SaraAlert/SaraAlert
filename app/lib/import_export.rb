@@ -318,15 +318,18 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       assessments = assessments.joins(reported_condition: :symptoms).group(*(plucked_fields | [:assessment_id]))
 
       # this sql statement casts symptom values into their string value so all symptom values can be represented in a single column
-      string_value = ActiveRecord::Base.sanitize_sql(Arel.sql("CASE WHEN symptoms.type = 'BoolSymptom' THEN CASE WHEN bool_value THEN 'true' ELSE 'false' END
-                                                                    WHEN symptoms.type = 'IntegerSymptom' THEN CAST(int_value AS CHAR)
-                                                                    WHEN symptoms.type = 'FloatSymptom' THEN CAST(float_value AS CHAR)
-                                                                    ELSE '' END"))
+      symptom_value = "CASE WHEN symptoms.type = 'BoolSymptom'
+                              THEN CASE WHEN bool_value THEN 'true' ELSE (CASE WHEN bool_value = FALSE THEN 'false' ELSE '' END) END
+                            WHEN symptoms.type = 'IntegerSymptom'
+                              THEN CAST(int_value AS CHAR)
+                            WHEN symptoms.type = 'FloatSymptom'
+                              THEN CAST(float_value AS CHAR)
+                            ELSE '' END"
 
       # add each unique symptom value to the list of fields to pluck
       plucked_fields += symptom_names.map do |name|
         name = ActiveRecord::Base.sanitize_sql(name)
-        Arel.sql("MAX(CASE WHEN symptoms.name = '#{name}' THEN (#{string_value}) END) AS '#{name}'")
+        Arel.sql("MAX(CASE WHEN symptoms.name = '#{name}' THEN (#{ActiveRecord::Base.sanitize_sql(Arel.sql(symptom_value))}) END) AS '#{name}'")
       end
     end
 
