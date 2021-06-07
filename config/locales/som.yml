@@ -101,7 +101,6 @@ som:
         dear: 'Gacaliye/Gacaliso'
         info1: 'Waa lagaa diiwaangeliyay nidaamka la socoshada Sara Alert. Waxaan kaa codsanaynaa inaad bixiso warbixinnada maalinlaha ah ee xaaladaada. Si fudud u guji badhanka hoose oo raac tallaabooyinka shaashada ku yaala.'
         info2: 'Waxaad heli doontaa xusuusin la mid ah maalin kasta ilaa muddada la socoshadaada ka dhammaato. '
-        webpage: 'boga shabagada: '
         report: 'Warbixinta Maalinlaha'
         footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka. Xogta gaarka ah iyo macluumaad dheeri ah, booqo saraalert.org.'
       closed:
@@ -115,6 +114,7 @@ som:
         info2: 'Haddii aad qabtid wax su’aalo ah, fadlan la xiriir xirfadlaha daryeelka caafimaadka kaasoo kaa caawiyay in lagu diiwaangeliyo.'
         email: 'email: '
         phone: 'telefoon: '
+        webpage: 'boga shabagada: '        
     sms:
       prompt:
         intro1: 'Ku soo dhowow nidaamka Sara Alert, waxaan ku soo diri doonnaa warbixinadaada maalinlaha ah ee loogu talagalay'
