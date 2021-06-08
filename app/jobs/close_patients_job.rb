@@ -13,6 +13,9 @@ class ClosePatientsJob < ApplicationJob
 
     # Close patients who are past the monitoring period (and are actually closable from above logic)
     eligible.each do |patient|
+      # Send completed monitoring message?
+      completed_message = false
+
       # Update related fields
       patient[:monitoring] = false
       patient[:closed_at] = DateTime.now
@@ -30,10 +33,14 @@ class ClosePatientsJob < ApplicationJob
       else
         # Otherwise, normal reason for closure
         patient[:monitoring_reason] = 'Completed Monitoring (system)'
+        completed_message = true
       end
 
+      # Save patient
+      patient.save!
+
       # Send closed email to patient if they are a reporter
-      PatientMailer.closed_email(patient).deliver_later if patient.save! && patient.email.present? && patient.self_reporter_or_proxy?
+      PatientMailer.closed_email(patient).deliver_later if completed_message && patient.email.present? && patient.self_reporter_or_proxy?
 
       # History item for automatically closing the record
       History.record_automatically_closed(patient: patient)

@@ -51,7 +51,7 @@ jobs:
       - name: Run audit-ci
         run: yarn run audit-ci --config audit-ci.json
       - name: Run bundle-audit
-        run: bundle exec bundle-audit
+        run: bundle exec bundle-audit check --update
       - name: Run Brakeman
         run: bundle exec brakeman -qAzw1
       - name: Run Rubocop

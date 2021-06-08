@@ -110,11 +110,11 @@ gem 'order_as_specified'
 group :development, :test do
   gem 'benchmark-ips'
   gem 'brakeman'
+  gem 'bundle-audit'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'erb_lint'
   gem 'factory_bot_rails'
   gem 'ffi-hunspell'
-  gem 'bundle-audit'
   gem 'memory_profiler'
   gem 'rubocop'
   gem 'ruby-jmeter'
