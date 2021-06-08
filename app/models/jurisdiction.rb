@@ -52,17 +52,6 @@ class Jurisdiction < ApplicationRecord
            .where(jurisdiction_id: subtree_ids + [id])
   end
 
-  # The threshold_hash is a way for an assessment to reference the set of symptoms and expected values that
-  # are associated with the assessment
-  # It is better to call hierarchical_symptomatic_condition.threshold_condition_hash because it guarentees that
-  # the threshold condtition that this hash references _actually_ exists
-  def jurisdiction_path_threshold_hash
-    theshold_conditions_edit_count = 0
-    path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
-    jurisdiction_threshold_unique_string = self[:path] + theshold_conditions_edit_count.to_s
-    Digest::SHA256.hexdigest(jurisdiction_threshold_unique_string)
-  end
-
   # This will return the first available contact info (email, phone, and/or webpage)
   # discovered along this jurisdiction's path
   def contact_info
@@ -82,20 +71,20 @@ class Jurisdiction < ApplicationRecord
   # This creates NEW condition that represents a join of all of the symptoms in your jurisdiciton hierarchy
   # Contains the values for the symptoms that will be what are considered as symptomatic
   def hierarchical_symptomatic_condition
-    symptoms_list_hash = jurisdiction_path_threshold_hash
+    threshold_condition = ThresholdCondition.where(threshold_condition_hash: threshold_hash).first
+
     # This condition _should_ only be true when the jurisdiction add/update task is run
-    if ThresholdCondition.where(threshold_condition_hash: symptoms_list_hash).count.zero?
-      master_symptoms_list = []
-      # Get array of arrays of symptoms, sorted top-down ie: usa set of symptoms first, state next etc...
-      all_condition_symptoms = path&.map { |symp_defs| symp_defs.threshold_conditions.last&.symptoms }
-      all_condition_symptoms&.each do |symptoms_list|
-        symptoms_list&.each do |symptom|
-          master_symptoms_list.push(symptom.dup) unless master_symptoms_list.include?(symptom.name)
-        end
+    return threshold_condition unless threshold_condition.nil?
+
+    master_symptoms_list = []
+    # Get array of arrays of symptoms, sorted top-down ie: usa set of symptoms first, state next etc...
+    all_condition_symptoms = path&.map { |symp_defs| symp_defs.threshold_conditions.last&.symptoms }
+    all_condition_symptoms&.each do |symptoms_list|
+      symptoms_list&.each do |symptom|
+        master_symptoms_list.push(symptom.dup) unless master_symptoms_list.include?(symptom.name)
       end
-      ThresholdCondition.create(symptoms: master_symptoms_list, threshold_condition_hash: symptoms_list_hash)
     end
-    ThresholdCondition.where(threshold_condition_hash: symptoms_list_hash).first
+    ThresholdCondition.create(symptoms: master_symptoms_list, threshold_condition_hash: threshold_hash)
   end
 
   def hierarchical_condition_unpopulated_symptoms

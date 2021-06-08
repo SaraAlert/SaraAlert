@@ -18,6 +18,7 @@ namespace :admin do
       # Will pre-generate all possible thresholdConditions
       Jurisdiction.all.each do |jur|
         jur.hierarchical_symptomatic_condition
+        jur.update(threshold_hash: Digest::SHA256.hexdigest(jur[:path] + ThresholdCondition.where(jurisdiction_id: jur.path_ids).size.to_s))
       end
 
       # Seed newly created jurisdictions with (empty) analytic cache entries
@@ -27,10 +28,8 @@ namespace :admin do
       puts "\e[41mThe following output on each of the servers should be EXACTLY EQUAL\e[0m"
       combined_hash = ""
       Jurisdiction.all.each do |jur|
-        theshold_conditions_edit_count = 0
-        jur.path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
-        puts jur[:path].ljust(80)  + "Edits: " + theshold_conditions_edit_count.to_s.ljust(5) + "Hash: " + jur.jurisdiction_path_threshold_hash[0..6]
-        combined_hash += jur.jurisdiction_path_threshold_hash
+        puts jur[:path].ljust(80)  + "Edits: " + ThresholdCondition.where(jurisdiction_id: jur.path_ids).size.to_s.ljust(5) + "Hash: " + jur[:threshold_hash][0..6]
+        combined_hash += jur[:threshold_hash]
       end
 
       unique_identifier_check = if Jurisdiction.where(unique_identifier: nil).count.zero?
@@ -109,7 +108,7 @@ namespace :admin do
       jurisdiction = Jurisdiction.create(name: jur_name , parent: parent)
       jurisdiction_path = jurisdiction.path&.map(&:name)&.join(', ')
 
-      # create a 10 character, url-safe, base-64 string based on the SHA-256 hash of the jurisdiction path
+      # Create a 10 character, url-safe, base-64 string based on the SHA-256 hash of the jurisdiction path
       unique_identifier = Base64::urlsafe_encode64([[Digest::SHA256.hexdigest(jurisdiction_path)].pack('H*')].pack('m0'))[0, 10]
 
       # Warn user if collision has occured
