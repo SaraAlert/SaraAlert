@@ -2,33 +2,23 @@
   Sara Alert Purge Job Results (<%= ActionMailer::Base.default_url_options[:host] %>)
 </h1>
 <h2>
-  <%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %>
+  Job Started: <%= @job_info[:start_time] %>
 </h2>
-<br />
-Total eligible for purge at runtime: <%= @eligible %>
-<br />
-Purged during this job run: <b><%= @purged.count %></b>
-<br />
-Not purged during this job run (due to exceptions): <b><%= @not_purged.count %></b>
-<br />
 <h2>
-  Purged
+  Job Ended: <%= @job_info[:end_time] %>
 </h2>
+<hr />
+Total eligible for purge at runtime: <%= @job_info[:eligible] %>
 <br />
-ID
+<p>Purged during this job run: <%= @job_info[:purged_count] %></p>
+<p>Not purged during this job run: <b><%= @job_info[:not_purged_count] %></b></p>
 <br />
-<% @purged.each do |p| %>
-  <%= p[:id] %>
-  <br />
+Message: <%= @batch_info[:current]%> of <%= @batch_info[:total] %>
+<hr />
+<% unless @job_info[:purged_count].zero? %>
+  <%= render partial: 'purge_job_email_success' %>
 <% end %>
 <br />
-<h2>
-  Not Purged
-</h2>
-<br />
-ID, Reason
-<br />
-<% @not_purged.each do |np| %>
-  <%= np[:id] %>, <%= np[:reason] %>
-  <br />
+<% unless @job_info[:not_purged_count].zero? %>
+  <%= render partial: 'purge_job_email_failure' %>
 <% end %>

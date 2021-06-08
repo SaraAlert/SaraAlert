@@ -14,18 +14,17 @@ class PurgeJobTest < ActiveSupport::TestCase
 
   def teardown
     ADMIN_OPTIONS['job_run_email'] = nil
+    ActionMailer::Base.deliveries.clear
   end
 
-  test 'sends an email with all purged monitorees' do
+  test 'sends an email' do
     patient = create(:patient, monitoring: false, purged: false)
     patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago)
-    email = PurgeJob.perform_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    PurgeJob.perform_now
     assert_not ActionMailer::Base.deliveries.empty?
-    assert_includes(email_body, patient.id.to_s)
   end
 
-  test 'sends an email with all non purged monitorees' do
+  test 'sends an email when there is an error' do
     patient = create(:patient, monitoring: false, purged: false)
     patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago)
 
@@ -33,11 +32,20 @@ class PurgeJobTest < ActiveSupport::TestCase
       raise StandardError, 'Test StandardError'
     end)
 
-    email = PurgeJob.perform_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    PurgeJob.perform_now
     assert_not ActionMailer::Base.deliveries.empty?
-    assert_includes(email_body, patient.id.to_s)
-    assert_includes(email_body, 'Test StandardError')
+  end
+
+  test 'sends emails in groups of monitorees' do
+    old_size = ADMIN_OPTIONS['job_run_email_group_size']
+    ADMIN_OPTIONS['job_run_email_group_size'] = 5
+    10.times do
+      patient = create(:patient, monitoring: false, purged: false)
+      patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago)
+    end
+    PurgeJob.perform_now
+    assert_equal(2, ActionMailer::Base.deliveries.length)
+    ADMIN_OPTIONS['job_run_email_group_size'] = old_size
   end
 
   test 'does not purge heads of household with active dependents' do
@@ -140,5 +148,14 @@ class PurgeJobTest < ActiveSupport::TestCase
     assert_empty(patient.histories)
     assert_empty(patient.contact_attempts)
     assert_empty(patient.vaccines)
+  end
+
+  test 'calculate total emails' do
+    # with default batch size
+    job = PurgeJob.new
+    assert_equal(1, job.send(:calculate_total_emails, 0))
+    assert_equal(1, job.send(:calculate_total_emails, 50_000))
+    assert_equal(2, job.send(:calculate_total_emails, 75_000))
+    assert_equal(2, job.send(:calculate_total_emails, 100_000))
   end
 end
