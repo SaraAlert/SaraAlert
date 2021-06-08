@@ -114,7 +114,7 @@ group :development, :test do
   gem 'erb_lint'
   gem 'factory_bot_rails'
   gem 'ffi-hunspell'
-  gem 'gemsurance'
+  gem 'bundle-audit'
   gem 'memory_profiler'
   gem 'rubocop'
   gem 'ruby-jmeter'
