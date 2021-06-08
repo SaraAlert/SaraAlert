@@ -596,7 +596,7 @@ class PatientsTable extends React.Component {
         <Nav variant="tabs" activeKey={this.state.query.tab}>
           {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
             return (
-              <Nav.Item key={tab} className={tab === 'all' ? 'ml-auto' : ''}>
+              <Nav.Item key={tab} className={tab === 'all' ? 'ml-xl-auto' : ''}>
                 <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`}>
                   {tabProps.label}
                   <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
@@ -608,8 +608,8 @@ class PatientsTable extends React.Component {
           })}
         </Nav>
         <TabContent>
-          <Card>
-            <Card.Body className="pl-4 pr-4">
+          <Card style={{ marginTop: '-1px' }}>
+            <Card.Body className="px-4">
               <Row>
                 <Col md="18">
                   <div id="tab-description" className="lead mt-1 mb-3">

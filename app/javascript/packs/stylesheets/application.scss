@@ -1,20 +1,42 @@
-@import 'bootstrap';
-@import 'rct';
+/* default variables */
+$brand-primary: #226891;
+$brand-danger: #AB4642;
+$brand-warning: #8B6C38;
+$brand-success: #3A7539;
+
+$blue:    #226891 !default;
+$yellow:  #F0F020 !default;
+
+$grid-columns: 24;
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+  xxxl: 1640px
+);
+
+/* scss imports */
 @import '~bootstrap/scss/bootstrap';
 @import '~datatables.net-bs4/css/dataTables.bootstrap4';
 @import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 @import 'react-datepicker/dist/react-datepicker.css';
-@import 'login';
-@import 'layout';
-@import 'recharts';
+@import 'admin';
+@import 'advanced_filter';
+@import 'analytics';
+@import 'bootstrap';
+@import 'custom_table';
 @import 'datatables';
 @import 'datepicker';
-@import 'toastify';
-@import 'admin';
-@import 'analytics';
-@import 'custom_table';
-@import 'advanced_filter';
 @import 'devise_authy';
-@import 'monitoree_details';
-@import 'patient';
 @import 'enrollment';
+@import 'login';
+@import 'layout';
+@import 'monitoree_details';
+@import 'rct';
+@import 'recharts';
+@import 'patient';
+@import 'toastify';
