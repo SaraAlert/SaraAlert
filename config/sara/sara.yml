@@ -43,6 +43,10 @@ sentry_url: <%= ENV["SENTRY_URL"] || '' %>
 # Address to send job run results
 job_run_email: <%= ENV["JOB_RUN_EMAIL"] || '' %>
 
+# Number of monitorees to be included in a single job run result email
+# Too many will cause the email to be too large and throw an SMTPError
+job_run_email_group_size: <%= ENV["JOB_RUN_EMAIL_GROUP_SIZE"] || 50000 %>
+
 # Maximum number of allowed user saved filters
 max_user_filters: <%= ENV["MAX_USER_FILTERS"] || 150 %>
 
