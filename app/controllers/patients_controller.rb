@@ -465,7 +465,7 @@ class PatientsController < ApplicationController
         # We never want to update closed records monitoring status via the bulk_update
         update_params = patient.monitoring ? params : closed_params
         update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
-                                update_params[:apply_to_household] ? :group : :none)
+                                 update_params[:apply_to_household] ? :group : :none)
       end
     end
   end
@@ -629,7 +629,7 @@ class PatientsController < ApplicationController
           else
             # Handle case where follow-up flag update failed
             error_message = 'Unable to update Follow-up Flag for a household member.'
-            render(json: { error: error_message }, status: :bad_request) && return
+            render(json: { error: error_message }, status: :bad_request) && break
           end
         end
       end

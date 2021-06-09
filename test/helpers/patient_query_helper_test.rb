@@ -2,6 +2,7 @@
 
 require 'test_case'
 
+# rubocop:disable Metrics/ClassLength
 class PatientQueryHelperTest < ActionView::TestCase
   # --- BOOLEAN ADVANCED FILTER QUERIES --- #
 
@@ -827,3 +828,4 @@ class PatientQueryHelperTest < ActionView::TestCase
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 end
+# rubocop:enable Metrics/ClassLength
