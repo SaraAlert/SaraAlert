@@ -453,7 +453,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     close_contacts = patient.close_contacts || []
     vaccines = patient.vaccines || []
     histories = patient.histories || []
-    all = [patient] + assessments.to_a + laboratories.to_a + close_contacts.to_a + vaccines.to_a + histories.to_a
+    all = [patient] + assessments + laboratories + close_contacts + vaccines + histories
     results = all.collect { |r| FHIR::Bundle::Entry.new(fullUrl: full_url_helper(r.as_fhir), resource: r.as_fhir) }
 
     # Construct bundle from monitoree and data
