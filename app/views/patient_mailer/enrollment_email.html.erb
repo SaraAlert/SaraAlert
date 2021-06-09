@@ -8,12 +8,10 @@
 
 <p><%= t('assessments.email.enrollment.info1', locale: @lang) %></p>
 <p><%= t('assessments.email.enrollment.info2', locale: @lang) %>
-<% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
-<%= t('assessments.email.contact.info1', locale: @lang) %></p>
-<% else %>
-<%= t('assessments.email.contact.info2', locale: @lang) %></p>
+<% if @contact_info[:email].blank? && @contact_info[:phone].blank? && @contact_info[:webpage].blank? %>
+<%= t('assessments.email.contact.info2', locale: @lang) %>
 <% end %>
-
+</p>
 
 <%= render partial: 'main_mailer/responsive_button', locals: {
       patient: patient,
@@ -24,6 +22,9 @@
       text: t('assessments.email.enrollment.report', locale: @lang)
     } %><br />
 
+  <% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
+  <p><%= t('assessments.email.contact.info1', locale: @lang) %></p>
+  <% end %>
   <% if @contact_info[:email].present? %>
   <%= t('assessments.email.contact.email', locale: @lang) %> <%= @contact_info[:email] %> <br />
   <% end %>

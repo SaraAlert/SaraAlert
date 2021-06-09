@@ -110,11 +110,11 @@ spa:
         thank-you: '¡Su reporte de Sara Alert está completo! Gracias por su participación.'
         footer: 'No responda o reenvíe este correo electrónico, ni comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
       contact:
-        info1: 'Si tiene alguna pregunta, por favor utilice la información de contacto a continuación para comunicarse con la organización de salud pública que le ayudó a inscribirse.'
+        info1: 'Si tiene alguna pregunta, por favor utilice la información de contacto a continuación para comunicarse con la organización de salud pública que le ayudó a inscribirse:'
         info2: 'Si tiene alguna pregunta, por favor pónganse en contacto con el proveedor de atención médica que le ayudó a inscribirse.'
-        email: 'correo electrónico: '
-        phone: 'teléfono: '
-        webpage: 'sitio web: '
+        email: 'Correo electrónico: '
+        phone: 'Teléfono: '
+        webpage: 'Página web: '
     sms:
       prompt:
         intro1: 'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para'

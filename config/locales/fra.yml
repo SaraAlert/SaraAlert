@@ -110,11 +110,11 @@ fra:
         thank-you: "Votre surveillance d’Alerte Sara est maintenant terminée ! Merci pour votre participation."
         footer: "Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales. Pour la confidentialité et plus d’informations, visitez saraalert.org."
       contact:
-        info1: 'Si vous avez des questions, veuillez utiliser les coordonnées ci-dessous pour contacter l’organisation de santé publique qui vous a aidé à vous inscrire.'
+        info1: 'Si vous avez des questions, veuillez utiliser les coordonnées ci-dessous pour contacter l’organisation de santé publique qui vous a aidé à vous inscrire:'
         info2: 'Si vous avez des questions, veuillez contacter le professionnel de santé qui vous a recruté(e).'
-        email: 'courrier électronique: '
-        phone: 'téléphone: '
-        webpage: 'site internet: '
+        email: 'Courriel: '
+        phone: 'Téléphone: '
+        webpage: 'Site web: '
     sms:
       prompt:
         intro1: 'Bienvenue sur le système d’Alerte Sara, nous vous enverrons vos rapports quotidiens pour'
