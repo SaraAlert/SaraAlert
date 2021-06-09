@@ -10,6 +10,7 @@ import InfoTooltip from '../util/InfoTooltip';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
 import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
 import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
+import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class Patient extends React.Component {
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
       primaryLanguageDisplayName: null,
+      showUpdateFlagModal: false,
     };
   }
 
@@ -134,6 +136,16 @@ class Patient extends React.Component {
     return (
       <React.Fragment>
         <Row id="monitoree-details-header">
+          {this.props.can_modify_subject_status && !this.props.edit_mode && this.props.details.follow_up_reason && (
+            <FollowUpFlagPanel
+              patient={this.props.details}
+              current_user={this.props.current_user}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              authenticity_token={this.props.authenticity_token}
+              other_household_members={this.props.other_household_members}
+              bulkAction={false}
+            />
+          )}
           <Col sm={12}>
             <h3>
               <span aria-label={formatName(this.props.details)} className="pr-2">
@@ -141,15 +153,18 @@ class Patient extends React.Component {
               </span>
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
-            {this.props.can_modify_subject_status && !this.props.edit_mode && (
-              <FollowUpFlagPanel
-                patient={this.props.details}
-                current_user={this.props.current_user}
-                jurisdiction_paths={this.props.jurisdiction_paths}
-                authenticity_token={this.props.authenticity_token}
-                other_household_members={this.props.other_household_members}
-                bulkAction={false}
-              />
+            {this.props.can_modify_subject_status && !this.props.edit_mode && !this.props.details.follow_up_reason && (
+              <Button
+                id="set-follow-up-flag-link"
+                size="sm"
+                className="my-2 mr-2"
+                aria-label="Set Flag for Follow-up"
+                onClick={() => this.setState({ showSetFlagModal: true })}>
+                <span>
+                  {' '}
+                  <i className="fas fa-flag pr-1"></i> Flag for Follow-up
+                </span>
+              </Button>
             )}
           </Col>
           <Col sm={12}>
@@ -675,6 +690,18 @@ class Patient extends React.Component {
             </Row>
           </div>
         </Collapse>
+        {this.state.showSetFlagModal && (
+          <FollowUpFlagModal
+            show={this.state.showSetFlagModal}
+            patient={this.props.details}
+            current_user={this.props.current_user}
+            jurisdiction_paths={this.props.jurisdiction_paths}
+            authenticity_token={this.props.authenticity_token}
+            other_household_members={this.props.other_household_members}
+            close={() => this.setState({ showSetFlagModal: false })}
+            clear_flag={false}
+          />
+        )}
       </React.Fragment>
     );
   }

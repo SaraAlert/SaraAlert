@@ -5,7 +5,7 @@ import { shallow } from 'enzyme';
 import FollowUpFlagPanel from '../../../components/patient/follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from '../../../components/patient/follow_up_flag/FollowUpFlagModal';
 import { mockUser1 } from '../../mocks/mockUsers';
-import { mockPatient1, mockPatient3, mockPatient5 } from '../../mocks/mockPatients';
+import { mockPatient3, mockPatient5 } from '../../mocks/mockPatients';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 
 const mockToken = 'testMockTokenString12345';
@@ -15,20 +15,8 @@ function getWrapper(patient, householdMembers) {
 }
 
 describe('FollowUpFlagPanel', () => {
-  it('Properly renders all main components for patient without a follow-up flag set', () => {
-    const wrapper = getWrapper(mockPatient1, []);
-    expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeTruthy();
-    expect(wrapper.find(Button).exists()).toBeTruthy();
-    expect(wrapper.find(Button).text()).toContain('Flag for Follow-up');
-    expect(wrapper.find(Button).find('i').exists()).toBeTruthy();
-    expect(wrapper.find('.follow-up-flag-box').exists()).toBeFalsy();
-    expect(wrapper.find('#update-follow-up-flag').exists()).toBeFalsy();
-    expect(wrapper.find(FollowUpFlagModal).exists()).toBeFalsy();
-  });
-
-  it('Properly renders all main components for patient with a follow-up flag set', () => {
+  it('Properly renders all main components', () => {
     const wrapper = getWrapper(mockPatient5, []);
-    expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeFalsy();
     expect(wrapper.find('.follow-up-flag-box').exists()).toBeTruthy();
     expect(wrapper.find('#update-follow-up-flag').exists()).toBeTruthy();
     const section = wrapper.find('.follow-up-flag-box');

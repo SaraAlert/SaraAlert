@@ -52,22 +52,9 @@ class FollowUpFlagPanel extends React.Component {
   render() {
     return (
       <React.Fragment>
-        {!this.props.patient.follow_up_reason && (
-          <Button
-            id="set-follow-up-flag-link"
-            size="sm"
-            className="my-2 mr-2"
-            aria-label="Set Flag for Follow-up"
-            onClick={() => this.setState({ showUpdateFlagModal: true })}>
-            <span>
-              {' '}
-              <i className="fas fa-flag pr-1"></i> Flag for Follow-up
-            </span>
-          </Button>
-        )}
         {this.props.patient.follow_up_reason && (
           <React.Fragment>
-            <div className="follow-up-flag-box w-100">
+            <div className="follow-up-flag-box w-100 mx-3 mb-3">
               <i className="fas fa-flag"></i>
               <span className="pl-2">
                 <b>Flagged for Follow-up</b>

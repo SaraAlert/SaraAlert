@@ -33,7 +33,8 @@ describe('Patient', () => {
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
     expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient1));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHoH).exists()).toBeTruthy();
-    expect(wrapper.find(FollowUpFlagPanel).exists()).toBeTruthy();
+    expect(wrapper.find(FollowUpFlagPanel).exists()).toBeFalsy();
+    expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeTruthy();
     expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
     expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
     expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient1.assigned_user);
@@ -54,6 +55,7 @@ describe('Patient', () => {
     expect(wrapper.find('#monitoree-details-header').find('h3').find('span').text()).toEqual(nameFormatter(mockPatient4));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHoH).exists()).toBeFalsy();
     expect(wrapper.find(FollowUpFlagPanel).exists()).toBeFalsy();
+    expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeFalsy();
     expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
     expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
     expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient4.assigned_user);
@@ -433,5 +435,11 @@ describe('Patient', () => {
         btn.simulate('click');
         expect(goToMock).toHaveBeenCalledTimes(index + 1);
       });
+  });
+
+  it('Displays the Follow up Flag panel when a monitoree has a follow up flag set', () => {
+    const wrapper = shallow(<Patient details={mockPatient3} goto={goToMock} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} />);
+    expect(wrapper.find(FollowUpFlagPanel).exists()).toBeTruthy();
+    expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeFalsy();
   });
 });
