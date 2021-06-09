@@ -84,7 +84,7 @@ class ImportController < ApplicationController
             import_sara_alert_format_field(patient, field, row, row_ind, col_num, workflow, valid_jurisdiction_ids) if format == :sara_alert_format
             import_epi_x_field(patient, field, row, row_ind, col_num, international_address) if format == :epix
           rescue Date::Error
-            @errors << "Invalid date on row #{row_ind + 1} for #{field}: #{row[col_num]}"
+            @errors << "Validation Error (row #{row_ind + 1}): '#{row[col_num]}' is not a valid date for '#{EPI_X_HEADERS[EPI_X_FIELDS.index(field)]}'"
           rescue StandardError => e
             @errors << e&.message || "Unexpected error on row #{row_ind + 1} for #{field}: #{row[col_num]}"
           end
