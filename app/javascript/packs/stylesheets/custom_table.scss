@@ -19,10 +19,6 @@
   cursor: pointer;
 }
 
-.fixed-row-size {
-  width: 430px;
-}
-
 .col-long-text-field {
   max-width: 500px;
   overflow-wrap: break-word;
@@ -31,6 +27,14 @@
 .opaque-table {
   opacity: 1;
   background-color: white;
+}
+
+.paginate_button {
+  border-radius: 0 !important;
+}
+
+.page-link {
+  border-radius: 0 !important;
 }
 
 .row-container {
@@ -81,4 +85,9 @@
 .table-has-dropdown {
   padding-top: 80px;
   margin-top: -80px;
+}
+
+// REMOVE WHEN CLOSE CONTACT AND LAB TABLES ARE CONVERTED
+.table-smaller-font {
+  font-size: 0.9em;
 }

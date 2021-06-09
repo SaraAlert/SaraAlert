@@ -206,8 +206,8 @@ class PublicHealthHeader extends React.Component {
                 {this.state.counts.isolation !== undefined && <span id="isolationCount">({this.state.counts.isolation})</span>}
               </Button>
             </ButtonGroup>
-            </Col>
-          </Row>
+          </Col>
+        </Row>
         {this.renderUploadModal()}
         {this.renderImportModal()}
       </React.Fragment>

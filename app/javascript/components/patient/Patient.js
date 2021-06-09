@@ -168,7 +168,7 @@ class Patient extends React.Component {
             )}
           </Col>
           <Col sm={12}>
-            <div className="jurisdiction-user-box">
+            <div className="jurisdiction-user-box float-right">
               <div id="jurisdiction-path">
                 <b>
                   <span className="d-none d-md-inline">Assigned</span> Jurisdiction:
@@ -242,7 +242,7 @@ class Patient extends React.Component {
               <div>
                 <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 {this.props.details.blocked_sms && (
-                  <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
+                  <Form.Label className="tooltip-whitespace input-label font-weight-bold">
                     &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
                   </Form.Label>
                 )}
@@ -274,7 +274,7 @@ class Patient extends React.Component {
           </Col>
         </Row>
         {!this.props.edit_mode && (
-          <div className="details-expander">
+          <div className="details-expander mb-3">
             <Button
               id="details-expander-link"
               variant="link"

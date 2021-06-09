@@ -680,8 +680,8 @@ class AdminTable extends React.Component {
     return (
       <div className="mx-2">
         <h1 className="sr-only">Admin Dashboard</h1>
-        <Row id="admin-table-header" className="mb-1">
-          <Col xl={24} className="col-xxl-14 px-1">
+        <Row className="mb-1">
+          <Col xl={24} className="col-xxl-14">
             <Button className="mr-2 mb-2" size="md" onClick={this.handleAddUserClick}>
               <i className="fas fa-plus-circle"></i>
               &nbsp;Add User
@@ -724,7 +724,7 @@ class AdminTable extends React.Component {
               </Button>
             </ButtonGroup>
           </Col>
-          <Col xl={24} className="col-xxl-10 mb-2 px-1">
+          <Col xl={24} className="col-xxl-10 mb-2">
             <InputGroup>
               <InputGroup.Prepend>
                 <OverlayTrigger overlay={<Tooltip>Search by id, email, or jurisdiction.</Tooltip>}>

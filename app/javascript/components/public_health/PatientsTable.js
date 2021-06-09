@@ -498,7 +498,7 @@ class PatientsTable extends React.Component {
         <Col xs="1" className="align-self-center">
           {!!rowData?.latest_report?.symptomatic && (
             <span data-for={`${rowData.id.toString()}-symptomatic-icon`} data-tip="">
-              <i className="fas fa-exclamation-triangle symptomatic-icon"></i>
+              <i className="fas fa-exclamation-triangle text-danger"></i>
               <ReactTooltip id={`${rowData.id.toString()}-symptomatic-icon`} multiline={false} place="left" type="dark" effect="solid">
                 <span>{`Monitoree's latest report was symptomatic`}</span>
               </ReactTooltip>

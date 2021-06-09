@@ -196,7 +196,7 @@ class Contact extends React.Component {
             <Form>
               <Form.Row className="pb-3">
                 <Form.Group as={Col} md="8" controlId="preferred_contact_method">
-                  <Form.Label className="nav-input-label">
+                  <Form.Label className="input-label">
                     PREFERRED REPORTING METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
                   </Form.Label>
                   <Form.Control
@@ -223,7 +223,7 @@ class Contact extends React.Component {
                   this.state.current.patient.preferred_contact_method === 'SMS Text-message' ||
                   this.state.current.patient.preferred_contact_method === 'E-mailed Web Link') && (
                   <Form.Group as={Col} md="8" controlId="preferred_contact_time">
-                    <Form.Label className="nav-input-label">
+                    <Form.Label className="input-label">
                       PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
                       <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
                     </Form.Label>
@@ -265,7 +265,7 @@ class Contact extends React.Component {
                 <Form.Group as={Col} md="11">
                   <Form.Row>
                     <Form.Group as={Col}>
-                      <Form.Label htmlFor="primary_telephone" className="nav-input-label">
+                      <Form.Label htmlFor="primary_telephone" className="input-label">
                         PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}
                       </Form.Label>
                       <PhoneInput
@@ -277,7 +277,7 @@ class Contact extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col}>
                       {this.state.current.blocked_sms && (
-                        <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold py-2">
+                        <Form.Label className="tooltip-whitespace input-label font-weight-bold py-2">
                           SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
                         </Form.Label>
                       )}
@@ -299,9 +299,7 @@ class Contact extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="2"></Form.Group>
                 <Form.Group as={Col} md="11" controlId="secondary_telephone">
-                  <Form.Label className="nav-input-label">
-                    SECONDARY TELEPHONE NUMBER{schema?.fields?.secondary_telephone?._exclusive?.required && ' *'}
-                  </Form.Label>
+                  <Form.Label className="input-label">SECONDARY TELEPHONE NUMBER{schema?.fields?.secondary_telephone?._exclusive?.required && ' *'}</Form.Label>
                   <PhoneInput
                     id="secondary_telephone"
                     value={this.state.current.patient.secondary_telephone}
@@ -315,7 +313,7 @@ class Contact extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} md="11" controlId="primary_telephone_type">
-                  <Form.Label className="nav-input-label">PRIMARY PHONE TYPE{schema?.fields?.primary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">PRIMARY PHONE TYPE{schema?.fields?.primary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['primary_telephone_type']}
                     as="select"
@@ -334,9 +332,7 @@ class Contact extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="2"></Form.Group>
                 <Form.Group as={Col} md="11" controlId="secondary_telephone_type">
-                  <Form.Label className="nav-input-label">
-                    SECONDARY PHONE TYPE{schema?.fields?.secondary_telephone_type?._exclusive?.required && ' *'}
-                  </Form.Label>
+                  <Form.Label className="input-label">SECONDARY PHONE TYPE{schema?.fields?.secondary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['secondary_telephone_type']}
                     as="select"
@@ -397,7 +393,7 @@ class Contact extends React.Component {
               </Form.Row>
               <Form.Row className="pt-3 pb-2">
                 <Form.Group as={Col} md="8" controlId="email">
-                  <Form.Label className="nav-input-label">E-MAIL ADDRESS{schema?.fields?.email?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">E-MAIL ADDRESS{schema?.fields?.email?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['email']}
                     size="lg"
@@ -410,7 +406,7 @@ class Contact extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="confirm_email">
-                  <Form.Label className="nav-input-label">CONFIRM E-MAIL ADDRESS{schema?.fields?.confirm_email?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">CONFIRM E-MAIL ADDRESS{schema?.fields?.confirm_email?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['confirm_email']}
                     size="lg"

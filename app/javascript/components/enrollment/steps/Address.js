@@ -153,7 +153,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row className="pt-4">
                     <Form.Group as={Col} controlId="address_line_1">
-                      <Form.Label className="nav-input-label">ADDRESS 1{schemaDomestic?.fields?.address_line_1?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="input-label">ADDRESS 1{schemaDomestic?.fields?.address_line_1?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['address_line_1']}
                         size="lg"
@@ -166,7 +166,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} controlId="address_city">
-                      <Form.Label className="nav-input-label">TOWN/CITY{schemaDomestic?.fields?.address_city?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="input-label">TOWN/CITY{schemaDomestic?.fields?.address_city?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['address_city']}
                         size="lg"
@@ -179,7 +179,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} controlId="address_state">
-                      <Form.Label className="nav-input-label">STATE{schemaDomestic?.fields?.address_state?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="input-label">STATE{schemaDomestic?.fields?.address_state?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['address_state']}
                         as="select"
@@ -201,7 +201,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} md={8} controlId="address_line_2">
-                      <Form.Label className="nav-input-label">ADDRESS 2{schemaDomestic?.fields?.address_line_2?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="input-label">ADDRESS 2{schemaDomestic?.fields?.address_line_2?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['address_line_2']}
                         size="lg"
@@ -214,7 +214,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} md={4} controlId="address_zip">
-                      <Form.Label className="nav-input-label">ZIP{schemaDomestic?.fields?.address_zip?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="input-label">ZIP{schemaDomestic?.fields?.address_zip?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['address_zip']}
                         size="lg"
@@ -229,9 +229,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} md={8} controlId="address_county">
-                      <Form.Label className="nav-input-label">
-                        COUNTY (DISTRICT) {schemaDomestic?.fields?.address_county?._exclusive?.required && ' *'}
-                      </Form.Label>
+                      <Form.Label className="input-label">COUNTY (DISTRICT) {schemaDomestic?.fields?.address_county?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['address_county']}
                         size="lg"
@@ -271,9 +269,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row className="pt-3">
                     <Form.Group as={Col} controlId="monitored_address_line_1">
-                      <Form.Label className="nav-input-label">
-                        ADDRESS 1{schemaDomestic?.fields?.monitored_address_line_1?._exclusive?.required && ' *'}
-                      </Form.Label>
+                      <Form.Label className="input-label">ADDRESS 1{schemaDomestic?.fields?.monitored_address_line_1?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['monitored_address_line_1']}
                         size="lg"
@@ -286,9 +282,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} controlId="monitored_address_city">
-                      <Form.Label className="nav-input-label">
-                        TOWN/CITY{schemaDomestic?.fields?.monitored_address_city?._exclusive?.required && ' *'}
-                      </Form.Label>
+                      <Form.Label className="input-label">TOWN/CITY{schemaDomestic?.fields?.monitored_address_city?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['monitored_address_city']}
                         size="lg"
@@ -301,7 +295,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} controlId="monitored_address_state">
-                      <Form.Label className="nav-input-label">STATE{schemaDomestic?.fields?.monitored_address_state?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="input-label">STATE{schemaDomestic?.fields?.monitored_address_state?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['monitored_address_state']}
                         as="select"
@@ -323,9 +317,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} md={8} controlId="monitored_address_line_2">
-                      <Form.Label className="nav-input-label">
-                        ADDRESS 2{schemaDomestic?.fields?.monitored_address_line_2?._exclusive?.required && ' *'}
-                      </Form.Label>
+                      <Form.Label className="input-label">ADDRESS 2{schemaDomestic?.fields?.monitored_address_line_2?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['monitored_address_line_2']}
                         size="lg"
@@ -338,7 +330,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} md={4} controlId="monitored_address_zip">
-                      <Form.Label className="nav-input-label">ZIP{schemaDomestic?.fields?.monitored_address_zip?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="input-label">ZIP{schemaDomestic?.fields?.monitored_address_zip?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['monitored_address_zip']}
                         size="lg"
@@ -353,7 +345,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row className="pb-2">
                     <Form.Group as={Col} md={8} controlId="monitored_address_county">
-                      <Form.Label className="nav-input-label">
+                      <Form.Label className="input-label">
                         COUNTY (DISTRICT) {schemaDomestic?.fields?.monitored_address_county?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
@@ -377,9 +369,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row className="pt-4">
                     <Form.Group as={Col} controlId="foreign_address_line_1">
-                      <Form.Label className="nav-input-label">
-                        ADDRESS 1{schemaForeign?.fields?.foreign_address_line_1?._exclusive?.required && ' *'}
-                      </Form.Label>
+                      <Form.Label className="input-label">ADDRESS 1{schemaForeign?.fields?.foreign_address_line_1?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['foreign_address_line_1']}
                         size="lg"
@@ -392,7 +382,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} controlId="foreign_address_city">
-                      <Form.Label className="nav-input-label">TOWN/CITY{schemaForeign?.fields?.foreign_address_city?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="input-label">TOWN/CITY{schemaForeign?.fields?.foreign_address_city?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['foreign_address_city']}
                         size="lg"
@@ -405,7 +395,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} controlId="foreign_address_country">
-                      <Form.Label className="nav-input-label">COUNTRY{schemaForeign?.fields?.foreign_address_country?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="input-label">COUNTRY{schemaForeign?.fields?.foreign_address_country?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['foreign_address_country']}
                         as="select"
@@ -425,9 +415,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} md={8} controlId="foreign_address_line_2">
-                      <Form.Label className="nav-input-label">
-                        ADDRESS 2{schemaForeign?.fields?.foreign_address_line_2?._exclusive?.required && ' *'}
-                      </Form.Label>
+                      <Form.Label className="input-label">ADDRESS 2{schemaForeign?.fields?.foreign_address_line_2?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['foreign_address_line_2']}
                         size="lg"
@@ -440,7 +428,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} md={4} controlId="foreign_address_zip">
-                      <Form.Label className="nav-input-label">POSTAL CODE{schemaForeign?.fields?.foreign_address_zip?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="input-label">POSTAL CODE{schemaForeign?.fields?.foreign_address_zip?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['foreign_address_zip']}
                         size="lg"
@@ -455,9 +443,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} md={8} controlId="foreign_address_line_3">
-                      <Form.Label className="nav-input-label">
-                        ADDRESS 3{schemaForeign?.fields?.foreign_address_line_3?._exclusive?.required && ' *'}
-                      </Form.Label>
+                      <Form.Label className="input-label">ADDRESS 3{schemaForeign?.fields?.foreign_address_line_3?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['foreign_address_line_3']}
                         size="lg"
@@ -470,7 +456,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} md={4} controlId="foreign_address_state">
-                      <Form.Label className="nav-input-label">
+                      <Form.Label className="input-label">
                         STATE/PROVINCE{schemaForeign?.fields?.foreign_address_state?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
@@ -502,7 +488,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row className="pt-3">
                     <Form.Group as={Col} controlId="foreign_monitored_address_line_1">
-                      <Form.Label className="nav-input-label">
+                      <Form.Label className="input-label">
                         ADDRESS 1{schemaForeign?.fields?.foreign_monitored_address_line_1?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
@@ -517,7 +503,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} controlId="foreign_monitored_address_city">
-                      <Form.Label className="nav-input-label">
+                      <Form.Label className="input-label">
                         TOWN/CITY{schemaForeign?.fields?.foreign_monitored_address_city?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
@@ -532,7 +518,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} controlId="foreign_monitored_address_state">
-                      <Form.Label className="nav-input-label">
+                      <Form.Label className="input-label">
                         STATE{schemaForeign?.fields?.foreign_monitored_address_state?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
@@ -556,7 +542,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} md={8} controlId="foreign_monitored_address_line_2">
-                      <Form.Label className="nav-input-label">
+                      <Form.Label className="input-label">
                         ADDRESS 2{schemaForeign?.fields?.foreign_monitored_address_line_2?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
@@ -571,9 +557,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} md={4} controlId="foreign_monitored_address_zip">
-                      <Form.Label className="nav-input-label">
-                        ZIP{schemaForeign?.fields?.foreign_monitored_address_zip?._exclusive?.required && ' *'}
-                      </Form.Label>
+                      <Form.Label className="input-label">ZIP{schemaForeign?.fields?.foreign_monitored_address_zip?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['foreign_monitored_address_zip']}
                         size="lg"
@@ -588,7 +572,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row className="pb-2">
                     <Form.Group as={Col} md={8} controlId="foreign_monitored_address_county">
-                      <Form.Label className="nav-input-label">
+                      <Form.Label className="input-label">
                         COUNTY (DISTRICT) {schemaForeign?.fields?.foreign_monitored_address_county?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
