@@ -1,4 +1,5 @@
 @import 'constants';
+@import 'rct';
 @import '~bootstrap/scss/bootstrap';
 @import '~datatables.net-bs4/css/dataTables.bootstrap4';
 @import 'react-checkbox-tree/lib/react-checkbox-tree.css';
@@ -13,6 +14,5 @@
 @import 'enrollment';
 @import 'layout';
 @import 'patient';
-@import 'rct';
 @import 'recharts';
 @import 'toastify';
