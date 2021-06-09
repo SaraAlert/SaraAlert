@@ -30,7 +30,7 @@ class FollowUpFlag extends React.Component {
 
   componentDidMount() {
     var state_updates = {};
-    if (this.props.bulk_action) {
+    if (this.props.bulkAction) {
       // When the selected monitorees share the same follow up reason/note, pre-populate the modal with those values
       const distinctFollowUpReason = [...new Set(this.props.patients.map(x => x.flagged_for_follow_up.follow_up_reason))];
       const distinctFollowUpNote = [...new Set(this.props.patients.map(x => x.flagged_for_follow_up.follow_up_note))];
@@ -50,11 +50,11 @@ class FollowUpFlag extends React.Component {
         this.setState(state_updates);
       }
     } else {
-      if (this.props.patient.follow_up_reason) {
+      if (this.props.patients[0].follow_up_reason) {
         state_updates.clear_flag = this.props.clear_flag;
-        state_updates.initial_follow_up_reason = this.props.patient.follow_up_reason;
-        state_updates.follow_up_reason = this.props.patient.follow_up_reason;
-        state_updates.follow_up_note = this.props.patient.follow_up_note;
+        state_updates.initial_follow_up_reason = this.props.patients[0].follow_up_reason;
+        state_updates.follow_up_reason = this.props.patients[0].follow_up_reason;
+        state_updates.follow_up_note = this.props.patients[0].follow_up_note;
         this.setState(state_updates);
       }
     }
@@ -98,7 +98,7 @@ class FollowUpFlag extends React.Component {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
 
       // Different POST requests are used depending on whether this action is triggered via the dashboard or monitoree page
-      if (this.props.bulk_action) {
+      if (this.props.bulkAction) {
         let idArray = this.props.patients.map(x => x['id']);
         axios
           .post(window.BASE_PATH + '/patients/bulk_edit', {
@@ -119,7 +119,7 @@ class FollowUpFlag extends React.Component {
           });
       } else {
         axios
-          .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/follow_up_flag', {
+          .post(window.BASE_PATH + '/patients/' + this.props.patients[0].id + '/follow_up_flag', {
             follow_up_reason: this.state.follow_up_reason,
             follow_up_note: this.state.follow_up_note,
             clear_flag: this.state.clear_flag,
@@ -143,7 +143,7 @@ class FollowUpFlag extends React.Component {
     return (
       <React.Fragment>
         <Modal.Body>
-          {this.props.bulk_action && (
+          {this.props.bulkAction && (
             <Form.Group style={{ display: 'inline-flex' }}>
               <Form.Check
                 type="radio"
@@ -158,11 +158,18 @@ class FollowUpFlag extends React.Component {
                 type="radio"
                 name="flag_for_follow_up_option"
                 id="clear_flag_for_follow_up"
+                data-for="clear_flag_disable_reason"
+                data-tip=""
                 label="Clear Follow-up Flag"
                 disabled={this.state.clear_flag_disabled}
                 onChange={this.handleChange}
                 checked={this.state.clear_flag}
               />
+              {this.state.clear_flag_disabled && (
+                <ReactTooltip id="clear_flag_disable_reason" multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container">
+                  <div>None of the selected monitorees have a flag set</div>
+                </ReactTooltip>
+              )}
             </Form.Group>
           )}
           {!this.state.clear_flag && (
@@ -192,7 +199,7 @@ class FollowUpFlag extends React.Component {
               </Form.Group>
             </React.Fragment>
           )}
-          {this.props.other_household_members.length > 0 && !this.props.bulk_action && (
+          {this.props.other_household_members.length > 0 && !this.props.bulkAction && (
             <ApplyToHousehold
               household_members={this.props.other_household_members}
               current_user={this.props.current_user}
@@ -201,7 +208,7 @@ class FollowUpFlag extends React.Component {
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
             />
           )}
-          {this.props.bulk_action && (
+          {this.props.bulkAction && (
             <React.Fragment>
               <Form.Group>
                 <Form.Check
@@ -218,7 +225,7 @@ class FollowUpFlag extends React.Component {
             <Form.Group controlId="clear_flag_reason">
               <Form.Label>Please include any additional details for clearing the follow-up flag:</Form.Label>
               <Form.Control as="textarea" rows="2" value={this.state.clear_flag_reason} onChange={this.handleChange} />
-              {this.props.bulk_action && (
+              {this.props.bulkAction && (
                 <p className="mt-3">
                   If any selected monitorees do not currently have a flag set, their records will not be updated as a result of this action.
                 </p>
@@ -241,9 +248,9 @@ class FollowUpFlag extends React.Component {
               </React.Fragment>
             )}
             <span data-for="follow-up-submit" data-tip="">
-              {(this.props.bulk_action || this.state.initial_follow_up_reason === '') && 'Submit'}
-              {!this.props.bulk_action && this.state.initial_follow_up_reason !== '' && !this.state.clear_flag && 'Update'}
-              {!this.props.bulk_action && this.state.clear_flag && 'Clear'}
+              {(this.props.bulkAction || this.state.initial_follow_up_reason === '') && 'Submit'}
+              {!this.props.bulkAction && this.state.initial_follow_up_reason !== '' && !this.state.clear_flag && 'Update'}
+              {!this.props.bulkAction && this.state.clear_flag && 'Clear'}
             </span>
             {this.state.noMembersSelected && (
               <ReactTooltip id="follow-up-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
@@ -263,14 +270,13 @@ class FollowUpFlag extends React.Component {
 }
 
 FollowUpFlag.propTypes = {
-  patient: PropTypes.object,
   patients: PropTypes.array,
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   authenticity_token: PropTypes.string,
   other_household_members: PropTypes.array,
   close: PropTypes.func,
-  bulk_action: PropTypes.bool,
+  bulkAction: PropTypes.bool,
   clear_flag: PropTypes.bool,
 };
 

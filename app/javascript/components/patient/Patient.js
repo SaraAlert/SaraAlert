@@ -19,7 +19,6 @@ class Patient extends React.Component {
       expandNotes: false,
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
-      expandFollowUpNotes: false,
       primaryLanguageDisplayName: null,
     };
   }
@@ -149,7 +148,7 @@ class Patient extends React.Component {
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 authenticity_token={this.props.authenticity_token}
                 other_household_members={this.props.other_household_members}
-                bulk_action={false}
+                bulkAction={false}
               />
             )}
           </Col>

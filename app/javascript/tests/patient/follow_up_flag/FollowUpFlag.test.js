@@ -12,11 +12,11 @@ const mockToken = 'testMockTokenString12345';
 const followUpFlagOptions = ['', 'Deceased', 'Duplicate', 'High-Risk', 'Hospitalized', 'In Need of Follow-up', 'Lost to Follow-up', 'Needs Interpretation', 'Quality Assurance', 'Other'];
 
 function getWrapperIndividual(patient, householdMembers, clear_flag) {
-  return shallow(<FollowUpFlag bulk_action={false} current_user={mockUser1} patient={patient} patients={[]} other_household_members={householdMembers} jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} clear_flag={clear_flag} />);
+  return shallow(<FollowUpFlag bulkAction={false} current_user={mockUser1} patients={[patient]} other_household_members={householdMembers} jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} clear_flag={clear_flag} />);
 }
 
 function getWrapperBulkAction(patients) {
-  return shallow(<FollowUpFlag bulk_action={true} current_user={mockUser1} patients={patients} other_household_members={[]} jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+  return shallow(<FollowUpFlag bulkAction={true} current_user={mockUser1} patients={patients} other_household_members={[]} jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
 }
 
 describe('FollowUpFlag', () => {
@@ -85,6 +85,9 @@ describe('FollowUpFlag', () => {
     expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBeTruthy();
     expect(wrapper.find('#clear_flag_for_follow_up').prop('checked')).toBeFalsy();
     expect(wrapper.find('#clear_flag_for_follow_up').prop('disabled')).toBeTruthy();
+    expect(wrapper.find(ReactTooltip).length).toEqual(2);
+    expect(wrapper.find(ReactTooltip).at(0).find('div').text()).toEqual('None of the selected monitorees have a flag set');
+    expect(wrapper.find(ReactTooltip).at(1).find('div').text()).toEqual('Please select a reason for follow-up');
     expect(wrapper.find(Form.Control).length).toEqual(2);
     expect(wrapper.find('option').length).toEqual(10);
     followUpFlagOptions.forEach((value, index) => {
@@ -98,7 +101,6 @@ describe('FollowUpFlag', () => {
     expect(wrapper.find('#follow_up_flag_submit_button').exists()).toBeTruthy();
     expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBeTruthy();
     expect(wrapper.find('#follow_up_flag_submit_button').find('span').text()).toEqual('Submit');
-    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
   });
 
   it('Sets intial state after mount correctly for monitoree who currently does not have a flag set', () => {

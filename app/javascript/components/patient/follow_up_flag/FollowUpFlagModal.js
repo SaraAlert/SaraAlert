@@ -7,15 +7,6 @@ import FollowUpFlag from './FollowUpFlag';
 class FollowUpFlagModal extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      initial_follow_up_reason: '',
-    };
-  }
-
-  componentDidMount() {
-    if (!this.props.bulk_action && this.props.patient.follow_up_reason) {
-      this.setState({ initial_follow_up_reason: this.props.patient.follow_up_reason });
-    }
   }
 
   render() {
@@ -23,19 +14,18 @@ class FollowUpFlagModal extends React.Component {
       <Modal id="follow-up-flag-modal" size="lg" centered show={this.props.show} onHide={this.props.close}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {!this.props.bulk_action && this.state.initial_follow_up_reason !== '' && !this.props.clear_flag && 'Update '}
-            {!this.props.bulk_action && this.props.clear_flag && 'Clear '}
-            Flag for Follow-Up
+            {!this.props.clear_flag && 'Flag for Follow-Up'}
+            {this.props.clear_flag && 'Clear Flag'}
           </Modal.Title>
         </Modal.Header>
         <FollowUpFlag
-          patient={this.props.patient}
+          patients={[this.props.patient]}
           current_user={this.props.current_user}
           jurisdiction_paths={this.props.jurisdiction_paths}
           authenticity_token={this.props.authenticity_token}
           other_household_members={this.props.other_household_members}
           close={this.props.close}
-          bulk_action={this.props.bulk_action}
+          bulkAction={false}
           clear_flag={this.props.clear_flag}
         />
       </Modal>
@@ -46,13 +36,11 @@ class FollowUpFlagModal extends React.Component {
 FollowUpFlagModal.propTypes = {
   show: PropTypes.bool,
   patient: PropTypes.object,
-  patients: PropTypes.array,
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   authenticity_token: PropTypes.string,
   other_household_members: PropTypes.array,
   close: PropTypes.func,
-  bulk_action: PropTypes.bool,
   clear_flag: PropTypes.bool,
 };
 

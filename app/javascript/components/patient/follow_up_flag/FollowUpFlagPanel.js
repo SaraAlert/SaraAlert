@@ -9,8 +9,8 @@ class FollowUpFlagPanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      show_update_flag_modal: false,
-      show_clear_flag_modal: false,
+      showUpdateFlagModal: false,
+      showClearFlagModal: false,
     };
   }
 
@@ -23,7 +23,7 @@ class FollowUpFlagPanel extends React.Component {
               id="update-follow-up-flag-btn"
               variant="link"
               className="icon-btn-dark p-0 mr-1"
-              onClick={() => this.setState({ show_update_flag_modal: true })}
+              onClick={() => this.setState({ showUpdateFlagModal: true })}
               aria-label="Update Follow-up Flag">
               <i className="fas fa-edit"></i>
             </Button>
@@ -36,7 +36,7 @@ class FollowUpFlagPanel extends React.Component {
               id="clear-follow-up-flag-btn"
               variant="link"
               className="icon-btn-dark p-0"
-              onClick={() => this.setState({ show_clear_flag_modal: true })}
+              onClick={() => this.setState({ showClearFlagModal: true })}
               aria-label="Clear Follow-up Flag">
               <i className="fas fa-trash"></i>
             </Button>
@@ -58,7 +58,7 @@ class FollowUpFlagPanel extends React.Component {
             size="sm"
             className="my-2 mr-2"
             aria-label="Set Flag for Follow-up"
-            onClick={() => this.setState({ show_update_flag_modal: true })}>
+            onClick={() => this.setState({ showUpdateFlagModal: true })}>
             <span>
               {' '}
               <i className="fas fa-flag pr-1"></i> Flag for Follow-up
@@ -94,29 +94,27 @@ class FollowUpFlagPanel extends React.Component {
             </div>
           </React.Fragment>
         )}
-        {this.state.show_update_flag_modal && (
+        {this.state.showUpdateFlagModal && (
           <FollowUpFlagModal
-            show={this.state.show_update_flag_modal}
+            show={this.state.showUpdateFlagModal}
             patient={this.props.patient}
             current_user={this.props.current_user}
             jurisdiction_paths={this.props.jurisdiction_paths}
             authenticity_token={this.props.authenticity_token}
             other_household_members={this.props.other_household_members}
-            close={() => this.setState({ show_update_flag_modal: false })}
-            bulk_action={false}
+            close={() => this.setState({ showUpdateFlagModal: false })}
             clear_flag={false}
           />
         )}
-        {this.state.show_clear_flag_modal && (
+        {this.state.showClearFlagModal && (
           <FollowUpFlagModal
-            show={this.state.show_clear_flag_modal}
+            show={this.state.showClearFlagModal}
             patient={this.props.patient}
             current_user={this.props.current_user}
             jurisdiction_paths={this.props.jurisdiction_paths}
             authenticity_token={this.props.authenticity_token}
             other_household_members={this.props.other_household_members}
-            close={() => this.setState({ show_clear_flag_modal: false })}
-            bulk_action={false}
+            close={() => this.setState({ showClearFlagModal: false })}
             clear_flag={true}
           />
         )}
@@ -127,12 +125,11 @@ class FollowUpFlagPanel extends React.Component {
 
 FollowUpFlagPanel.propTypes = {
   patient: PropTypes.object,
-  patients: PropTypes.array,
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   authenticity_token: PropTypes.string,
   other_household_members: PropTypes.array,
-  bulk_action: PropTypes.bool,
+  bulkAction: PropTypes.bool,
 };
 
 export default FollowUpFlagPanel;

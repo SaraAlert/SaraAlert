@@ -771,7 +771,7 @@ class PatientsTable extends React.Component {
               close={() => this.setState({ action: undefined })}
               jurisdiction_paths={this.props.jurisdiction_paths}
               other_household_members={[]}
-              bulk_action={true}
+              bulkAction={true}
             />
           )}
         </Modal>

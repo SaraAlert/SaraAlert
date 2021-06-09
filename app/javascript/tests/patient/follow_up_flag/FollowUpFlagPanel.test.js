@@ -11,7 +11,7 @@ import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 const mockToken = 'testMockTokenString12345';
 
 function getWrapper(patient, householdMembers) {
-  return shallow(<FollowUpFlagPanel bulk_action={false} current_user={mockUser1} patient={patient} other_household_members={householdMembers} jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+  return shallow(<FollowUpFlagPanel bulkAction={false} current_user={mockUser1} patient={patient} other_household_members={householdMembers} jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
 }
 
 describe('FollowUpFlagPanel', () => {
