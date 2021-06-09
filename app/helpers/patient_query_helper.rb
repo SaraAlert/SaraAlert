@@ -98,10 +98,15 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     query
   end
 
-  def patients_by_query(current_user, query)
-    # Determine jurisdiction
+  def jurisdiction_by_query(current_user, query)
     jurisdiction = Jurisdiction.find(query[:jurisdiction].to_i) unless ['all', nil].include?(query[:jurisdiction])
     jurisdiction = current_user.jurisdiction if jurisdiction.nil?
+    jurisdiction
+  end
+
+  def patients_by_query(current_user, query)
+    # Determine jurisdiction
+    jurisdiction = jurisdiction_by_query(current_user, query)
 
     # Get current user's viewable patients by linelist
     patients = patients_by_linelist(current_user, query[:workflow]&.to_sym, query[:tab]&.to_sym, jurisdiction)
