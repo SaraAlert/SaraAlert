@@ -183,7 +183,7 @@ ActiveRecord::Schema.define(version: 2021_06_16_203622) do
     t.string "message"
     t.boolean "send_digest", default: false
     t.boolean "send_close", default: false
-    t.string "threshold_hash"
+    t.string "current_threshold_condition_hash"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 

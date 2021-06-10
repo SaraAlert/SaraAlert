@@ -136,7 +136,7 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                                  patient_submission_token: @patient.submission_token,
                                                                                                  prompt: contents,
                                                                                                  threshold_hash:
-                                                                                               @patient.jurisdiction[:threshold_hash]
+                                                                                               @patient.jurisdiction[:current_threshold_condition_hash]
                                                                                                }
                                                                                              ]
                                                                                            },
@@ -163,7 +163,7 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                                patient_submission_token: @patient.submission_token,
                                                                                                prompt: contents,
                                                                                                threshold_hash:
-                                                                                              @patient.jurisdiction[:threshold_hash]
+                                                                                              @patient.jurisdiction[:current_threshold_condition_hash]
                                                                                              }] },
                                                                                         to: '+15555550111'
                                                                                       ))
@@ -186,7 +186,7 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                               patient_submission_token: @patient.submission_token,
                                                                                               prompt: contents,
                                                                                               threshold_hash:
-                                                                                              @patient.jurisdiction[:threshold_hash]
+                                                                                              @patient.jurisdiction[:current_threshold_condition_hash]
                                                                                             }
                                                                                           ]
                                                                                         },
@@ -211,7 +211,7 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                                patient_submission_token: @patient.submission_token,
                                                                                                prompt: contents,
                                                                                                threshold_hash:
-                                                                                             @patient.jurisdiction[:threshold_hash]
+                                                                                             @patient.jurisdiction[:current_threshold_condition_hash]
                                                                                              }] },
                                                                                         to: '+15555550111'
                                                                                       ))
@@ -238,7 +238,7 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                                patient_submission_token: @patient.submission_token,
                                                                                                prompt: contents,
                                                                                                threshold_hash:
-                                                                                             @patient.jurisdiction[:threshold_hash]
+                                                                                             @patient.jurisdiction[:current_threshold_condition_hash]
                                                                                              }] },
                                                                                         to: '+15555550111'
                                                                                       ))
@@ -267,7 +267,7 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                                                patient_submission_token: @patient.submission_token,
                                                                                                prompt: contents,
                                                                                                threshold_hash:
-                                                                                             @patient.jurisdiction[:threshold_hash]
+                                                                                             @patient.jurisdiction[:current_threshold_condition_hash]
                                                                                              }] },
                                                                                         to: '+15555550111'
                                                                                       ))
@@ -382,7 +382,7 @@ class PatientMailerTest < ActionMailer::TestCase
       max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'eng'),
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
-      threshold_hash: @patient.jurisdiction[:threshold_hash],
+      threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
       # rubocop:disable Layout/LineLength
       prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'eng')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'eng')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'eng')}"
       # rubocop:enable Layout/LineLength
@@ -419,7 +419,7 @@ class PatientMailerTest < ActionMailer::TestCase
       max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'eng'),
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
-      threshold_hash: @patient.jurisdiction[:threshold_hash],
+      threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
       # rubocop:disable Layout/LineLength
       prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'eng')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'eng')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'eng')}"
       # rubocop:enable Layout/LineLength
@@ -457,7 +457,7 @@ class PatientMailerTest < ActionMailer::TestCase
       medium: 'VOICE',
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
-      threshold_hash: @patient.jurisdiction[:threshold_hash],
+      threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
       # rubocop:disable Layout/LineLength
       prompt: "#{I18n.t('assessments.phone.daily1', locale: 'eng')}, , #{I18n.t('assessments.phone.age', locale: 'eng')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'eng')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'eng')}#{I18n.t('assessments.phone.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}?#{I18n.t('assessments.phone.daily4', locale: 'eng')}"
       # rubocop:enable Layout/LineLength

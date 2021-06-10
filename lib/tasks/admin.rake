@@ -18,7 +18,7 @@ namespace :admin do
       # Will pre-generate all possible thresholdConditions
       Jurisdiction.all.each do |jur|
         jur.hierarchical_symptomatic_condition
-        jur.update(threshold_hash: Digest::SHA256.hexdigest(jur[:path] + ThresholdCondition.where(jurisdiction_id: jur.path_ids).size.to_s))
+        jur.update(current_threshold_condition_hash: Digest::SHA256.hexdigest(jur[:path] + ThresholdCondition.where(jurisdiction_id: jur.path_ids).size.to_s))
       end
 
       # Seed newly created jurisdictions with (empty) analytic cache entries
@@ -28,8 +28,8 @@ namespace :admin do
       puts "\e[41mThe following output on each of the servers should be EXACTLY EQUAL\e[0m"
       combined_hash = ""
       Jurisdiction.all.each do |jur|
-        puts jur[:path].ljust(80)  + "Edits: " + ThresholdCondition.where(jurisdiction_id: jur.path_ids).size.to_s.ljust(5) + "Hash: " + jur[:threshold_hash][0..6]
-        combined_hash += jur[:threshold_hash]
+        puts jur[:path].ljust(80)  + "Edits: " + ThresholdCondition.where(jurisdiction_id: jur.path_ids).size.to_s.ljust(5) + "Hash: " + jur[:current_threshold_condition_hash][0..6]
+        combined_hash += jur[:current_threshold_condition_hash]
       end
 
       unique_identifier_check = if Jurisdiction.where(unique_identifier: nil).count.zero?

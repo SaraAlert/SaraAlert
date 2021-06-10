@@ -36,7 +36,7 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
-    threshold_hash = patient.jurisdiction[:threshold_hash]
+    threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
     message = { prompt: contents, patient_submission_token: patient.submission_token,
                 threshold_hash: threshold_hash }
     success = TwilioSender.send_sms(patient, [message])
@@ -67,7 +67,7 @@ class PatientMailer < ApplicationMailer
                                                                   dependent&.initials_age)
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
       patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
-      threshold_hash = dependent.jurisdiction[:threshold_hash]
+      threshold_hash = dependent.jurisdiction[:current_threshold_condition_hash]
       message = { prompt: contents, patient_submission_token: dependent.submission_token,
                   threshold_hash: threshold_hash }
       messages_array << message
@@ -104,7 +104,7 @@ class PatientMailer < ApplicationMailer
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
     contents += I18n.t('assessments.sms.prompt.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '.'
     contents += I18n.t('assessments.sms.prompt.daily4', locale: lang)
-    threshold_hash = patient.jurisdiction[:threshold_hash]
+    threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
     # The medium parameter will either be SMS, VOICE or SINGLE_SMS
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.split('-').first.upcase,
@@ -146,7 +146,7 @@ class PatientMailer < ApplicationMailer
     contents += I18n.t('assessments.phone.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '?'
     contents += I18n.t('assessments.phone.daily4', locale: lang)
 
-    threshold_hash = patient.jurisdiction[:threshold_hash]
+    threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
     # The medium parameter will either be SMS, VOICE or SINGLE_SMS
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'VOICE', language: lang.to_s.split('-').first.upcase,

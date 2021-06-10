@@ -71,7 +71,7 @@ class Jurisdiction < ApplicationRecord
   # This creates NEW condition that represents a join of all of the symptoms in your jurisdiciton hierarchy
   # Contains the values for the symptoms that will be what are considered as symptomatic
   def hierarchical_symptomatic_condition
-    threshold_condition = ThresholdCondition.where(threshold_condition_hash: threshold_hash).first
+    threshold_condition = ThresholdCondition.where(threshold_condition_hash: current_threshold_condition_hash).first
 
     # This condition _should_ only be true when the jurisdiction add/update task is run
     return threshold_condition unless threshold_condition.nil?
@@ -84,7 +84,7 @@ class Jurisdiction < ApplicationRecord
         master_symptoms_list.push(symptom.dup) unless master_symptoms_list.include?(symptom.name)
       end
     end
-    ThresholdCondition.create(symptoms: master_symptoms_list, threshold_condition_hash: threshold_hash)
+    ThresholdCondition.create(symptoms: master_symptoms_list, threshold_condition_hash: current_threshold_condition_hash)
   end
 
   def hierarchical_condition_unpopulated_symptoms
