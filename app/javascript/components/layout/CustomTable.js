@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Spinner, Table, Form, InputGroup } from 'react-bootstrap';
+import { Button, Form, InputGroup, Spinner, Table } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import ReactTooltip from 'react-tooltip';
 import InfoTooltip from '../util/InfoTooltip';
@@ -241,9 +241,9 @@ class CustomTable extends React.Component {
                     })}
                     {this.props.isEditable && (
                       <td>
-                        <div className="float-left edit-button" onClick={() => this.handleEditClick(rowIndex)} aria-label="Edit Row Button">
+                        <Button variant="link" className="icon-btn-primary float-left p-0" onClick={() => this.handleEditClick(rowIndex)} aria-label="Edit Row Button">
                           <i className="fas fa-edit"></i>
-                        </div>
+                        </Button>
                       </td>
                     )}
                     {this.props.isSelectable && this.props.checkboxColumnLocation === 'right' && this.renderRowCheckbox(rowData, rowIndex)}

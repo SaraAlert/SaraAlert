@@ -124,9 +124,9 @@ class AdminTable extends React.Component {
   createAuditButton(data) {
     const rowData = data.rowData;
     return (
-      <div id={rowData.id} className="float-left edit-button" aria-label="Open Audit Modal Row Button">
+      <Button id={rowData.id} variant="link" className="icon-btn-primary float-left p-0" onClick={this.toggleEditMode} aria-label="Open Audit Modal Row Button">
         <i className="fas fa-user-clock"></i>
-      </div>
+      </Button>
     );
   }
 
