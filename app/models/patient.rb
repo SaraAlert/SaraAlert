@@ -716,6 +716,12 @@ class Patient < ApplicationRecord
                  .submitted_assessment_today
                  .end_of_monitoring_period
 
+    # If a patient record has been inactive for 30 days or more
+    # in the exposure workflow and is non-reporting
+    no_recent_activity = where(isolation: false)
+                         .non_reporting
+                         .where('updated_at <= ?', 30.days.ago)
+
     case reason
     when nil
       base_scope.or(no_recent_activity)
@@ -730,14 +736,6 @@ class Patient < ApplicationRecord
     else
       throw Exception.new('Invalid reason provided to close_eligible scope!')
     end
-  }
-
-  # If a patient record has been inactive for 30 days or more,
-  # then it should be automatically closed as part of the close patients job.
-  scope :no_recent_activity, lambda {
-    where(isolation: false)
-      .non_reporting
-      .where('updated_at <= ?', 30.days.ago)
   }
 
   # Patients are enrolled past the monitoring period OF:
