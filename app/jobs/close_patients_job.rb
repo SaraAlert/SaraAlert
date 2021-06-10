@@ -5,38 +5,32 @@ class ClosePatientsJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    # Grab closable patients
-    eligible = Patient.close_eligible
+    # Close patients in groups of criteria
+    results = combine_batch_results(
+      [
+        perform_batch(Patient.close_eligible(:enrolled_past_monitioring_period), 'Enrolled more than 14 days after last date of exposure (system)'),
+        perform_batch(Patient.close_eligible(:enrolled_last_day_monitoring_period), 'Enrolled on last day of monitoring period (system)'),
+        perform_batch(Patient.close_eligible(:no_recent_activity), 'No record activity for 30 days (system)'),
+        perform_batch(Patient.close_eligible(:completed_monitoring), 'Completed Monitoring (system)', completed_message: true)
+      ]
+    )
 
+    # Send results
+    UserMailer.close_job_email(results[:closed], results[:not_closed], results[:count]).deliver_now
+  end
+
+  def perform_batch(patients, monitoring_reason, completed_message: false)
     closed = []
     not_closed = []
+    count = 0
 
     # Close patients who are past the monitoring period (and are actually closable from above logic)
-    eligible.each do |patient|
-      # Send completed monitoring message?
-      completed_message = false
-
+    patients.each do |patient|
+      count += 1
       # Update related fields
       patient[:monitoring] = false
       patient[:closed_at] = DateTime.now
-
-      # If the patient was enrolled already past their monitoring period based on their last date of exposure, specify special reason for closure
-      if !patient.last_date_of_exposure.nil? &&
-         ((patient.last_date_of_exposure.beginning_of_day + ADMIN_OPTIONS['monitoring_period_days'].days) < patient.created_at.beginning_of_day)
-        patient[:monitoring_reason] = 'Enrolled more than 14 days after last date of exposure (system)'
-      elsif !patient.last_date_of_exposure.nil? &&
-            ((patient.last_date_of_exposure.beginning_of_day + ADMIN_OPTIONS['monitoring_period_days'].days) == patient.created_at.beginning_of_day)
-        # If the patient was enrolled on their last day of monitoring based on their last date of exposure, specify special reason for closure
-        patient[:monitoring_reason] = 'Enrolled on last day of monitoring period (system)'
-      elsif patient.updated_at <= 30.days.ago
-        patient[:monitoring_reason] = 'No record activity for 30 days (system)'
-      else
-        # Otherwise, normal reason for closure
-        patient[:monitoring_reason] = 'Completed Monitoring (system)'
-        completed_message = true
-      end
-
-      # Save patient
+      patient[:monitoring_reason] = monitoring_reason
       patient.save!
 
       # Send closed email to patient if they are a reporter
@@ -51,7 +45,26 @@ class ClosePatientsJob < ApplicationJob
       next
     end
 
-    # Send results
-    UserMailer.close_job_email(closed, not_closed, eligible.size).deliver_now
+    {
+      closed: closed,
+      not_closed: not_closed,
+      count: count
+    }
+  end
+
+  def combine_batch_results(batch_results)
+    # Expected blank results
+    results = {
+      closed: [],
+      not_closed: [],
+      count: 0
+    }
+    # Combine the results
+    batch_results.each do |batch_result|
+      results[:closed] += batch_result[:closed]
+      results[:not_closed] += batch_result[:not_closed]
+      results[:count] += batch_result[:count]
+    end
+    results
   end
 end
