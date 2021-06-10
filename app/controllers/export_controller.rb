@@ -145,7 +145,7 @@ class ExportController < ApplicationController
 
     # NOTE: separate implementation used for single patient export for performance and to keep this endpoint's logic separate from main export logic
     # Get all of the field data based on the config
-    field_data, symptom_names = get_field_data(FULL_HISTORY_PATIENT_CONFIG, patients)
+    field_data = get_field_data(FULL_HISTORY_PATIENT_CONFIG, patients)
 
     # Create export file
     workbook = FastExcel.open
@@ -161,7 +161,7 @@ class ExportController < ApplicationController
     end
 
     # Get export data hashes for each data type from config and write data to each sheet
-    exported_data = get_export_data(patients, FULL_HISTORY_PATIENT_CONFIG[:data], field_data, symptom_names)
+    exported_data = get_export_data(patients, FULL_HISTORY_PATIENT_CONFIG[:data], field_data)
     FULL_HISTORY_PATIENT_CONFIG[:data].each_key do |data_type|
       exported_data[data_type]&.each do |record|
         # fast_excel unfortunately does not provide a method to modify the @last_row_number class variable so it needs to be manually kept track of

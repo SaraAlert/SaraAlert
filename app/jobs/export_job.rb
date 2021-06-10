@@ -22,8 +22,7 @@ class ExportJob < ApplicationJob
     return if data.nil?
 
     # Construct export
-    query = data.dig(:patients, :query) || {}
-    patients = patients_by_query(user, query)
+    patients = patients_by_query(user, data.dig(:patients, :query) || {})
     files = write_export_data_to_files(config, patients, INNER_BATCH_SIZE)
     downloads = create_downloads(config, files).sort_by { |download| download[:filename] }
 

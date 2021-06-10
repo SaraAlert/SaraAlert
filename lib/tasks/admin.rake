@@ -14,11 +14,11 @@ namespace :admin do
         parse_jurisdiction(nil, jur_name, jur_values)
       end
 
-      # Call hierarchical_symptomatic_condition on each jurisdiction
+      # Update current_threshold_condition_hash and call hierarchical_symptomatic_condition on each jurisdiction
       # Will pre-generate all possible thresholdConditions
       Jurisdiction.all.each do |jur|
-        jur.hierarchical_symptomatic_condition
         jur.update(current_threshold_condition_hash: Digest::SHA256.hexdigest(jur[:path] + ThresholdCondition.where(jurisdiction_id: jur.path_ids).size.to_s))
+        jur.hierarchical_symptomatic_condition
       end
 
       # Seed newly created jurisdictions with (empty) analytic cache entries
