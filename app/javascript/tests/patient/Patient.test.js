@@ -124,7 +124,7 @@ describe('Patient', () => {
     const wrapper = shallow(<Patient details={mockPatient5} hoh={mockPatient1} collapse={true} edit_mode={false} jurisdiction_paths={mockJurisdictionPaths} />);
     const section = wrapper.find('#contact-information');
     expect(wrapper.find('#contact-information').find('.text-danger').exists()).toBeTruthy();
-    expect(wrapper.find('#contact-information').find('.text-danger').text()).toEqual('Monitoree is a under 18. ');
+    expect(wrapper.find('#contact-information').find('.text-danger').text()).toEqual('Monitoree is a minor. ');
     expect(section.find('a').exists()).toBeTruthy();
     expect(section.find('a').last().text()).toEqual(mockPatient1.first_name + ' ' + mockPatient1.middle_name + ' ' + mockPatient1.last_name);
   });

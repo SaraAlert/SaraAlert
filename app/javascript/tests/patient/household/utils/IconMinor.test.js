@@ -9,6 +9,6 @@ describe('IconMinor', () => {
     expect(wrapper.find('i').exists()).toBeTruthy();
     expect(wrapper.find('i').hasClass('fa-child')).toBeTruthy();
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('Monitoree is under 18');
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('Monitoree is a minor');
   });
 });
