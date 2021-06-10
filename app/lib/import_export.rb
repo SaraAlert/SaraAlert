@@ -155,7 +155,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data[:assessments][:headers].delete('Symptoms Reported')
 
     # Query symptom names and labels
-    threshold_condition_hashes = ReportedCondition.where(assessment_id: Assessment.where(patient_id: patients)).distinct.pluck(:threshold_condition_hash)
+    threshold_condition_hashes = ReportedCondition.where(assessment_id: Assessment.where(patient_id: patients)).distinct.select(:threshold_condition_hash)
     symptom_names_and_labels = Symptom.where(condition_id: ThresholdCondition.where(threshold_condition_hash: threshold_condition_hashes))
                                       .where.not(label: nil).where.not(name: nil).order(:label).distinct.pluck(:name, :label).transpose
 
