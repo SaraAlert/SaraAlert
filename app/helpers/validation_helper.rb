@@ -89,6 +89,20 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     'Other'
   ].freeze
 
+  # Please note, this array is only used for the demo.rake file.
+  # The FollowUpFlag component's flag reasons are populated in-line.
+  FOLLOW_UP_FLAG_REASONS = [
+    'Deceased',
+    'Duplicate',
+    'High-Risk',
+    'Hospitalized',
+    'In Need of Follow-up',
+    'Lost to Follow-up',
+    'Needs Interpretation',
+    'Quality Assurance',
+    'Other'
+  ].freeze
+
   RACE_OPTIONS = {
     non_exclusive: [
       { race: :white, label: 'WHITE' },

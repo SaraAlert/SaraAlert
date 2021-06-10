@@ -425,18 +425,7 @@ namespace :demo do
 
       # Follow-up Flag
       if rand < 0.15
-        follow_up_reasons = [
-          'Deceased',
-          'Duplicate',
-          'High-Risk',
-          'Hospitalized',
-          'In Need of Follow-up',
-          'Lost to Follow-up',
-          'Needs Interpretation',
-          'Quality Assurance',
-          'Other'
-        ]
-        patient[:follow_up_reason] = follow_up_reasons.sample
+        patient[:follow_up_reason] = ValidationHelper::FOLLOW_UP_FLAG_REASONS.sample
         patient[:follow_up_note] = Faker::GreekPhilosophers.quote if rand < 0.75
       end
 
