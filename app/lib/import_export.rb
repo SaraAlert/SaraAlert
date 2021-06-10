@@ -16,22 +16,22 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   include Languages
 
   # Writes export data to file(s)
-  def write_export_data_to_files(config, patients, jurisdiction, inner_batch_size)
+  def write_export_data_to_files(config, patients, inner_batch_size)
     case config[:format]
     when 'csv'
-      csv_export(config, patients, jurisdiction, inner_batch_size)
+      csv_export(config, patients, inner_batch_size)
     when 'xlsx'
-      xlsx_export(config, patients, jurisdiction, inner_batch_size)
+      xlsx_export(config, patients, inner_batch_size)
     end
   end
 
   # Creates a list of csv files from exported data
-  def csv_export(config, patients, jurisdiction, inner_batch_size)
+  def csv_export(config, patients, inner_batch_size)
     # Determine selected data types for export
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
 
     # Get all of the field data based on the config
-    field_data = get_field_data(config, jurisdiction)
+    field_data = get_field_data(config, patients)
 
     files = []
     csvs = {}
@@ -63,14 +63,14 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Creates a list of excel files from exported data
-  def xlsx_export(config, patients, jurisdiction, inner_batch_size)
+  def xlsx_export(config, patients, inner_batch_size)
     files = []
 
     # Determine selected data types for export
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
 
     # Get all of the field data based on the config
-    field_data = get_field_data(config, jurisdiction)
+    field_data = get_field_data(config, patients)
 
     # Declare variables in scope outside of batch loop
     sheets = nil
@@ -109,7 +109,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Gets data for this batch of patients that may not have already been present in the export config (such as specific symptoms).
-  def get_field_data(config, jurisdiction)
+  def get_field_data(config, patients)
     data = config[:data].deep_dup
 
     # Update the checked data (used for obtaining values) with race information
@@ -120,7 +120,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # Update the checked and header data for assessment symptoms
     # NOTE: this must be done after updating the general headers above
-    update_assessment_symptom_data(data, jurisdiction)
+    update_assessment_symptom_data(data, patients)
 
     data
   end
@@ -147,7 +147,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Finds the symptoms needed for the reports columns
-  def update_assessment_symptom_data(data, jurisdiction)
+  def update_assessment_symptom_data(data, patients)
     # Don't update if assessment symptom data isn't needed
     return [] unless data.dig(:assessments, :checked)&.include?(:symptoms)
 
@@ -155,7 +155,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data[:assessments][:headers].delete('Symptoms Reported')
 
     # Query symptom names and labels
-    symptom_names_and_labels = Symptom.where(condition_id: ThresholdCondition.where(threshold_condition_hash: jurisdiction.subtree.pluck(:threshold_hash)))
+    threshold_condition_hashes = ReportedCondition.where(assessment_id: Assessment.where(patient_id: patients)).distinct.pluck(:threshold_condition_hash)
+    symptom_names_and_labels = Symptom.where(condition_id: ThresholdCondition.where(threshold_condition_hash: threshold_condition_hashes))
                                       .where.not(label: nil).where.not(name: nil).order(:label).distinct.pluck(:name, :label).transpose
 
     # Empty symptoms check

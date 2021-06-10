@@ -24,8 +24,7 @@ class ExportJob < ApplicationJob
     # Construct export
     query = data.dig(:patients, :query) || {}
     patients = patients_by_query(user, query)
-    jurisdiction = jurisdiction_by_query(user, query)
-    files = write_export_data_to_files(config, patients, jurisdiction, INNER_BATCH_SIZE)
+    files = write_export_data_to_files(config, patients, INNER_BATCH_SIZE)
     downloads = create_downloads(config, files).sort_by { |download| download[:filename] }
 
     # Send an email to user
