@@ -3174,9 +3174,8 @@ class PatientTest < ActiveSupport::TestCase
     patient.update(updated_at: 29.days.ago)
     assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
-    # 30 day border is sensitive to when DST starts
-    patient.update(updated_at: correct_dst_edge(patient, 30.days.ago))
-    # assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+    patient.update(updated_at: 30.days.ago)
+    assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
     patient.update(updated_at: 31.days.ago)
     assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
