@@ -21,7 +21,7 @@ class Patient extends React.Component {
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
       primaryLanguageDisplayName: null,
-      showUpdateFlagModal: false,
+      showSetFlagModal: false,
     };
   }
 

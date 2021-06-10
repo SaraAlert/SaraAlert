@@ -52,35 +52,29 @@ class FollowUpFlagPanel extends React.Component {
   render() {
     return (
       <React.Fragment>
-        {this.props.patient.follow_up_reason && (
-          <React.Fragment>
-            <div className="follow-up-flag-box w-100 mx-3 mb-3">
-              <i className="fas fa-flag"></i>
-              <span className="pl-2">
-                <b>Flagged for Follow-up</b>
-                {this.renderActionButtons()}
-              </span>
-              <div className="flag-note">
-                <b>{this.props.patient.follow_up_reason}</b>
-                {this.props.patient.follow_up_note && this.props.patient.follow_up_note.length < 150 && (
-                  <span className="wrap-words">{': ' + this.props.patient.follow_up_note}</span>
-                )}
-                {this.props.patient.follow_up_note && this.props.patient.follow_up_note.length >= 150 && (
-                  <React.Fragment>
-                    <span className="wrap-words">
-                      {this.state.expandFollowUpNotes
-                        ? ': ' + this.props.patient.follow_up_note
-                        : ': ' + this.props.patient.follow_up_note.slice(0, 150) + ' ...'}
-                    </span>
-                    <Button variant="link" className="notes-button p-0" onClick={() => this.setState({ expandFollowUpNotes: !this.state.expandFollowUpNotes })}>
-                      {this.state.expandFollowUpNotes ? '(Collapse)' : '(View all)'}
-                    </Button>
-                  </React.Fragment>
-                )}
-              </div>
-            </div>
-          </React.Fragment>
-        )}
+        <div className="follow-up-flag-box w-100 mx-3 mb-3">
+          <i className="fas fa-flag"></i>
+          <span className="pl-2">
+            <b>Flagged for Follow-up</b>
+            {this.renderActionButtons()}
+          </span>
+          <div className="flag-note">
+            <b>{this.props.patient.follow_up_reason}</b>
+            {this.props.patient.follow_up_note && this.props.patient.follow_up_note.length < 150 && (
+              <span className="wrap-words">{': ' + this.props.patient.follow_up_note}</span>
+            )}
+            {this.props.patient.follow_up_note && this.props.patient.follow_up_note.length >= 150 && (
+              <React.Fragment>
+                <span className="wrap-words">
+                  {this.state.expandFollowUpNotes ? ': ' + this.props.patient.follow_up_note : ': ' + this.props.patient.follow_up_note.slice(0, 150) + ' ...'}
+                </span>
+                <Button variant="link" className="notes-button p-0" onClick={() => this.setState({ expandFollowUpNotes: !this.state.expandFollowUpNotes })}>
+                  {this.state.expandFollowUpNotes ? '(Collapse)' : '(View all)'}
+                </Button>
+              </React.Fragment>
+            )}
+          </div>
+        </div>
         {this.state.showUpdateFlagModal && (
           <FollowUpFlagModal
             show={this.state.showUpdateFlagModal}
