@@ -138,7 +138,7 @@ const mockFilterLatestReportRelativeCustomFuture = {
   numberOption: null,
   relativeOption: 'custom',
   value: {
-    operator: 'more-than',
+    operator: 'greater-than',
     number: 2,
     unit: 'weeks',
     when: 'next',
