@@ -65,7 +65,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   def verify_user_jurisdiction(user_label)
     jurisdiction = get_user(user_label).jurisdiction
     assert page.has_content?(jurisdiction.name), get_err_msg('Dashboard', 'user jurisdiction', jurisdiction.name) unless user_label.include?('admin')
-    jurisdiction.id
+    jurisdiction
   end
 
   def get_user(user_label)

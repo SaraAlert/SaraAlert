@@ -12,17 +12,17 @@ class AdminTestHelper < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def view_users(user_label)
-    jurisdiction_id = @@system_test_utils.login(user_label)
-    User.where(is_api_proxy: false, jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each do |user|
+    jurisdiction = @@system_test_utils.login(user_label)
+    User.where(is_api_proxy: false, jurisdiction_id: jurisdiction.subtree_ids).each do |user|
       @@admin_dashboard.search_for_user(user.email)
       @@admin_dashboard_verifier.verify_user(user, should_exist: true)
     end
     # API Proxy users in the jurisdiction hierarchy should be hidden
-    User.where(is_api_proxy: true, jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each do |user|
+    User.where(is_api_proxy: true, jurisdiction_id: jurisdiction.subtree_ids).each do |user|
       @@admin_dashboard.search_for_user(user.email)
       @@admin_dashboard_verifier.verify_user(user, should_exist: false)
     end
-    User.where.not(jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each do |user|
+    User.where.not(jurisdiction_id: jurisdiction.subtree_ids).each do |user|
       @@admin_dashboard.search_for_user(user.email)
       @@admin_dashboard_verifier.verify_user(user, should_exist: false)
     end

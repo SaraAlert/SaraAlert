@@ -1,7 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
+import { formatDate } from '../../utils/DateTime';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
+import { formatPhoneNumber } from '../../utils/Patient';
 
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -260,7 +262,7 @@ class Import extends React.Component {
                         <br />
                         <b>Last Name:</b> {patient.last_name}
                         <br />
-                        <b>DOB:</b> {patient.date_of_birth}
+                        <b>DOB:</b> {formatDate(patient.date_of_birth)}
                         <br />
                         <b>Language:</b> {this.state.allLanguageDisplayNames[Number(index)] || '--'}
                         <br />
@@ -284,15 +286,15 @@ class Import extends React.Component {
                         <b>Monitored Zip:</b> {patient.monitored_address_zip}
                       </Col>
                       <Col>
-                        <b>Phone Number 1:</b> {patient.primary_telephone}
+                        <b>Phone Number 1:</b> {formatPhoneNumber(patient.primary_telephone)}
                         <br />
-                        <b>Phone Number 2:</b> {patient.secondary_telephone}
+                        <b>Phone Number 2:</b> {formatPhoneNumber(patient.secondary_telephone)}
                         <br />
                         <b>Email:</b> {patient.email}
                         <br />
                         <b>Exposure Location:</b> {patient.potential_exposure_location}
                         <br />
-                        <b>Date of Departure:</b> {patient.date_of_departure}
+                        <b>Date of Departure:</b> {formatDate(patient.date_of_departure)}
                         <br />
                         <b>Close Contact w/ Known Case:</b> {patient.contact_of_known_case?.toString()}
                         <br />

@@ -5,7 +5,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
   SEX_ABBREVIATIONS = {
     M: 'Male',
     F: 'Female',
-    U: 'Unknown'
+    U: 'Unknown',
+    UNREPORTED: 'Unknown'
   }.freeze
 
   STATE_ABBREVIATIONS = {
