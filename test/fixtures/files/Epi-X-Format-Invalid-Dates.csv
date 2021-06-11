@@ -1,0 +1,16 @@
+RecordLocatorID,StatusFlag,IndexCase,Seat_Number,Last_Name,First_Name,Middle_Initial,DOB,Gender,Perm_Home_Telephone,Business_Telephone,Perm_Cell_Pager,Other_Phone,Locate_Telephone,Perm_Address,Perm_City,Perm_State,Perm_Postal_Code,Perm_Country,Perm_Email,Emergency_Telephone,Perm_Address_2,Locate_Address,Locate_City,Locate_State,Emergency_Contact,Emergency_City,Emergency_State,Emergency_Country,Live_in_US,Days_in_US,Weeks_in_US,Months_in_US,ConveyanceName,IdentifyingNumber,DateDeparture,AirportCode,DateArrival,CityArrival,CDCCaseID,OnsetDate,Notes
+A111111,,,11B,Lane,Lois,,31/7/1961,,777-888-9999,,,,,12 Fake St,UNDERWOOD,WA,98651,USA,fakeemail@MSN.COM,,,,,,,,,,,,,,American Airlines,9999,3/21/2021 23:40,CLT,Mar 22 2021  7:24AM,Charlotte,777777,,Note Entered By: qqq1 - Apr  4 2021
+A198000,,,17A,Potter,Harry,,4/19/1988,,444-555-0000,,,,,PO BOX 99999,VANCOUVER,WA,98665-0020,US,,,,,,,,,,,,,,,American Airlines,9999,3/21/2021 23:40,CLT,Mar 22 2021  7:24AM,Charlotte,777777,,Note Entered By: qqq1 - Apr  4 2021
+A199000,,,19F,Granger,Hermione,,5/30/2000,,111-222-3333,,,,,123 NW Fake St,VANCOUVER,WA,98685,USA,test@YAHOO.COM,,,,,,,,,,,,,,American Airlines,9999,3/21/2021 23:40,CLT,Mar 22 2021  7:24AM,Charlotte,777777,,Note Entered By: qqq1 - Apr  4 2021
+A222222,,,23D,Kent,Martha,,2/17/1990,,222-111-0000,,,,,234 Fake ST,CAMAS,WA,98607,US,test@GMAIL.COM,,,,,,,,,,,,,,American Airlines,9999,3/21/2021 23:40,CLT,Mar 22 2021  7:24AM,Charlotte,777777,,Note Entered By: qqq1 - Apr  4 2021
+,,,,Billie79,Abbott20,,20/7/1998,,(555) 555-0111,,,,,200 W Preston St,Boston,MA,21200,China,1535997849fake@example.com,,,,,,,,,,,,,,,,,,,,,,
+,,,,Balistreri67,Tilda90,,7/10/1994,,(555) 555-0112,,,,,205 E Preston St,Arlington,Oregon,12345,Germany,2535997849fake@example.com,,,,,,,,,,,,,,,,,,,,,,
+,,,,Bashirian28,Deshawn39,,31/12/1999,,(555) 555-0113,,,,,46750 Cremin Summit,Peabody,CA,54321,,153549fake@example.com,,,,,,,,,,,,,,,,,,,,,,
+,,,,Beatty68,Jimmie77,,1/5/1913,,(555) 555-0114,,,,,8676 Donn Mountains Apt. 618,Caryview,WA,32432-3234,Korea,1534210123fake@example.com,,,,,,,,,,,,,,,,,,,,,,
+,,,,Cole22,Loren79,,4/20/2015,,15555550115,,,,,209 W Preston St,Methuen,MA,53234-5290,Italy,112487912347fake@example.com,,,,,,,,,,,,,,,,,,,,,,
+,,,,Christiansen32,Ayako44,,6/20/1999,,5555550116,,,,,3313 Jacobi Valleys,Austin,TX,67386,,5732912fake@example.com,,,,,,,,,,,,,,,,,,,,,,
+,,,,Natacha01,Batz96,,1/9/1976,,15555550117,,,,,205 W Preston St,Little Rock,TX,59321,Brazil,37289123fake@example.com,,,,,,,,,,,,,,,,,,,,,,
+,,,,Jenkins69,Lashawn86,,2/22/1955,,,,,,,2240 Adams Keys Suite 803,Atlanta,Georgia,03295-3243,,37294892fake@example.com,,,,,,,,,,,,,,,,,,,,,,
+,,,,Littel77,Domingo54,,09/99/1965,,(555) 555-0119,,,,,509 Raymond Road Apt. 134,North Melany,AK,1234,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,Kohler76,Darrel41,,28/28/1932,,(555) 555-0110,,,,,4403 Jessica Brook,Port Janel,NM,81536,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,Altenwerth99,Piper83,,8/18/2005,,,,,,,7197 Johnson Dale,Irmaborough,SD,86846-7192,,,,,,,,,,,,,,,,,,,,,,,,

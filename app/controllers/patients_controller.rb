@@ -110,8 +110,8 @@ class PatientsController < ApplicationController
     patient = Patient.new(allowed_params)
 
     # Default to copying *required address into monitored address if monitored address is nil
-    if patient.monitored_address_line_1.nil? || patient.monitored_address_state.nil? ||
-       patient.monitored_address_city.nil? || patient.monitored_address_zip.nil?
+    if patient.monitored_address_line_1.nil? && patient.monitored_address_state.nil? &&
+       patient.monitored_address_city.nil? && patient.monitored_address_zip.nil?
       patient.monitored_address_line_1 = patient.address_line_1
       patient.monitored_address_line_2 = patient.address_line_2
       patient.monitored_address_city = patient.address_city

@@ -25,8 +25,8 @@ class AnalystTest < ApplicationSystemTestCase
   end
 
   def view_analytics(user_label)
-    jurisdiction_id = login_and_view_analytics(user_label)
-    analytic_id = Analytic.where(jurisdiction_id: jurisdiction_id).order(created_at: :desc).first['id']
+    jurisdiction = login_and_view_analytics(user_label)
+    analytic_id = Analytic.where(jurisdiction_id: jurisdiction.id).order(created_at: :desc).first['id']
     @@analyst_dashboard_monitoree_counts_verifier.verify_monitoree_counts(analytic_id)
     @@analyst_dashboard_monitoree_snapshots_verifier.verify_monitoree_snapshots(analytic_id)
     @@system_test_utils.logout

@@ -12,31 +12,31 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   test 'import epi-x to exposure and accept all' do
-    @@public_health_test_helper.import_epi_x('state1_epi_enroller', :exposure, 'Epi-X-Format.xlsx', :valid, nil)
+    @@public_health_test_helper.import_epi_x('state1_epi_enroller', :exposure, 'Epi-X-Format.csv', :valid, nil)
   end
 
   test 'import epi-x to isolation and accept all' do
-    @@public_health_test_helper.import_epi_x('state1_epi_enroller', :isolation, 'Epi-X-Format.xlsx', :valid, nil)
+    @@public_health_test_helper.import_epi_x('state1_epi_enroller', :isolation, 'Epi-X-Format.csv', :valid, nil)
   end
 
   test 'import epi-x to isolation and accept all individually' do
-    @@public_health_test_helper.import_epi_x('state2_epi', :isolation, 'Epi-X-Format.xlsx', :valid, [])
+    @@public_health_test_helper.import_epi_x('state2_epi', :isolation, 'Epi-X-Format.csv', :valid, [])
   end
 
   test 'import epi-x to exposure and accept some' do
-    @@public_health_test_helper.import_epi_x('locals2c3_epi', :exposure, 'Epi-X-Format.xlsx', :valid, [2, 5, 7, 8])
+    @@public_health_test_helper.import_epi_x('locals2c3_epi', :exposure, 'Epi-X-Format.csv', :valid, [2, 5, 7, 8])
   end
 
   test 'import epi-x to isolation and reject all' do
-    @@public_health_test_helper.import_epi_x('locals1c1_epi', :isolation, 'Epi-X-Format.xlsx', :valid, (0..10).to_a)
+    @@public_health_test_helper.import_epi_x('locals1c1_epi', :isolation, 'Epi-X-Format.csv', :valid, (0..10).to_a)
   end
 
   test 'import epi-x to exposure with duplicate patient and accept duplicates' do
-    @@public_health_test_helper.import_epi_x('state5_epi', :exposure, 'Epi-X-Format.xlsx', :valid, nil, accept_duplicates: true)
+    @@public_health_test_helper.import_epi_x('state5_epi', :exposure, 'Epi-X-Format.csv', :valid, nil, accept_duplicates: true)
   end
 
   test 'import epi-x to isolation with duplicate patient and reject duplicates' do
-    @@public_health_test_helper.import_epi_x('state5_epi', :isolation, 'Epi-X-Format.xlsx', :valid, nil, accept_duplicates: false)
+    @@public_health_test_helper.import_epi_x('state5_epi', :isolation, 'Epi-X-Format.csv', :valid, nil, accept_duplicates: false)
   end
 
   test 'import epi-x to isolation and validate file type' do
@@ -44,27 +44,27 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   end
 
   test 'import epi-x to exposure and validate file format' do
-    @@public_health_test_helper.import_epi_x('locals1c2_epi', :exposure, 'Invalid-Excel-File.xlsx', :invalid_format, nil)
+    @@public_health_test_helper.import_epi_x('locals1c2_epi', :exposure, 'Invalid-Csv-File.csv', :invalid_format, nil)
   end
 
   test 'import epi-x to isolation and validate headers' do
-    @@public_health_test_helper.import_epi_x('locals2c4_epi', :isolation, 'Epi-X-Format-Invalid-Headers.xlsx', :invalid_headers, nil)
+    @@public_health_test_helper.import_epi_x('locals2c4_epi', :isolation, 'Epi-X-Format-Invalid-Headers.csv', :invalid_headers, nil)
   end
 
   test 'import epi-x to exposure and validate empty monitorees list' do
-    @@public_health_test_helper.import_epi_x('locals2c3_epi', :exposure, 'Epi-X-Format-Invalid-Monitorees.xlsx', :invalid_monitorees, nil)
+    @@public_health_test_helper.import_epi_x('locals2c3_epi', :exposure, 'Epi-X-Format-Invalid-Monitorees.csv', :invalid_monitorees, nil)
   end
 
   test 'import epi-x to exposure and validate fields' do
-    @@public_health_test_helper.import_epi_x('locals1c2_epi', :exposure, 'Epi-X-Format-Invalid-Fields.xlsx', :invalid_fields, nil)
+    @@public_health_test_helper.import_epi_x('locals1c2_epi', :exposure, 'Epi-X-Format-Invalid-Fields.csv', :invalid_fields, nil)
   end
 
   test 'import epi-x to isolation and validate fields' do
-    @@public_health_test_helper.import_epi_x('locals1c2_epi', :isolation, 'Epi-X-Format-Invalid-Fields.xlsx', :invalid_fields, nil)
+    @@public_health_test_helper.import_epi_x('locals1c2_epi', :isolation, 'Epi-X-Format-Invalid-Fields.csv', :invalid_fields, nil)
   end
 
   test 'import epi-x format and cancel' do
-    @@public_health_test_helper.import_and_cancel('locals2c4_epi', :isolation, 'Epi-X-Format.xlsx', 'Epi-X')
+    @@public_health_test_helper.import_and_cancel('locals2c4_epi', :isolation, 'Epi-X-Format.csv', 'Epi-X')
   end
 
   test 'import sara alert format to exposure and accept all' do
