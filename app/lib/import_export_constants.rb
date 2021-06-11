@@ -14,28 +14,17 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
 
   EXPORT_FORMATS = %w[csv xlsx].freeze
 
-  EPI_X_FIELDS = [:user_defined_id_statelocal, :flight_or_vessel_number, nil, nil, :user_defined_id_cdc, nil, nil, :primary_language, :date_of_arrival,
-                  :port_of_entry_into_usa, :last_name, :first_name, :date_of_birth, :sex, nil, nil, :address_line_1, :address_city, :address_state,
-                  :address_zip, :monitored_address_line_1, :monitored_address_city, :monitored_address_state, :monitored_address_zip, nil, nil, nil, nil,
-                  :primary_telephone, :secondary_telephone, :email, nil, nil, nil, :potential_exposure_location, :potential_exposure_country,
-                  :date_of_departure, nil, nil, nil, nil, :contact_of_known_case, :was_in_health_care_facility_with_known_cases].freeze
+  EPI_X_FIELDS = [nil, nil, nil, :travel_related_notes, :last_name, :first_name, :middle_name, :date_of_birth, :sex, :primary_telephone, nil,
+                  :secondary_telephone, nil, nil, :address_line_1, :address_city, :address_state, :address_zip, :foreign_address_country, :email, nil,
+                  :address_line_2, :monitored_address_line_1, :monitored_address_city, :monitored_address_state, nil, nil, nil, nil, nil, nil, nil, nil,
+                  :flight_or_vessel_carrier, :flight_or_vessel_number, :date_of_departure, :port_of_entry_into_usa, :date_of_arrival, :port_of_entry_into_usa,
+                  :user_defined_id_cdc, :symptom_onset, :travel_related_notes].freeze
 
-  EPI_X_HEADERS = ['Local-ID', 'Flight No', 'Date of notice', 'MDH Assignee', 'DGMQ ID', 'CARE ID', 'CARE Cell Number', 'Language', 'Arrival Date and Time',
-                   'Arrival City', 'Last Name', 'First Name', 'Date of Birth', 'Gender', 'Passport Country', 'Passport Number', 'Permanent Street Address',
-                   'Permanent City', 'Permanent State or Country', 'Postal Code', 'Temporary Street Address 1', 'Temporary City 1', 'Temporary State 1',
-                   'Temporary Postal Code 1', 'Temporary Street Address 2', 'Temporary City 2', 'Temporary State 2', 'Temporary Postal Code 2',
-                   'Phone Number 1', 'Phone Number 2', 'Email 1', 'Email 2', 'Emergency Contact Name', 'Emergency Contact Telephone Number',
-                   'Emergency Contact Email', 'Countries Visited with Widespread Transmission in Past 14 Days', 'Departure Date',
-                   'DHS Observed Vomiting, Diarrhea or Bleeding', 'Temperature taken by DHS', 'Fever/Chills in the past 48 hours',
-                   'Vomiting/Diarrhea in the past 48 hours', 'Lived in Same Household or Had Other Contact with a Person Sick with disease in Past 14 Days',
-                   'Worked in Health Care Facility or Laboratory in Country with Widespread Transmission in Past 14 Days',
-                   'Touched Body of Someone who Died in Country with Widespread Transmission in Past 14 Days',
-                   'DHS Traveler Health Declaration Outcome: Released', 'DHS Traveler Health Declaration Outcome: Referred to Tertiary for Add\'l Assessment',
-                   'Disposition of Travelers Referred for CDC Assessment: Released to Continue Travel',
-                   'Disposition of Travelers Referred for CDC Assessment: Coordinated Disposition with State Health Dept.',
-                   'Disposition of Travelers Referred for CDC Assessment: Referred for Additional Medical Evaluation',
-                   'Disposition of Travelers Referred for CDC Assessment: Other', 'Final Disposition of Traveler\'s Medical Evaluation (If applicable)',
-                   'Exposure Assessment', 'Contact Made?', 'Monitoring needed?', 'Notes'].freeze
+  EPI_X_HEADERS = %w[RecordLocatorID StatusFlag IndexCase Seat_Number Last_Name First_Name Middle_Initial DOB Gender Perm_Home_Telephone Business_Telephone
+                     Perm_Cell_Pager Other_Phone Locate_Telephone Perm_Address Perm_City Perm_State Perm_Postal_Code Perm_Country Perm_Email Emergency_Telephone
+                     Perm_Address_2 Locate_Address Locate_City Locate_State Emergency_Contact Emergency_City Emergency_State Emergency_Country Live_in_US
+                     Days_in_US Weeks_in_US Months_in_US ConveyanceName IdentifyingNumber DateDeparture AirportCode DateArrival CityArrival CDCCaseID OnsetDate
+                     Notes].freeze
 
   LINELIST_FIELDS = %i[id name jurisdiction_name assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring exposure_risk_assessment
                        monitoring_plan latest_assessment_at latest_transfer_at monitoring_reason public_health_action status closed_at transferred_from

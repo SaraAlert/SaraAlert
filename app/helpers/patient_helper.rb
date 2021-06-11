@@ -21,7 +21,7 @@ module PatientHelper
   def normalize_name(name)
     return nil if name.nil?
 
-    name.delete(" \t\r\n").downcase
+    name&.to_s&.delete(" \t\r\n")&.downcase
   end
 
   def normalize_and_get_state_name(name)
