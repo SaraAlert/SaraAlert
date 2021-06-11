@@ -189,6 +189,7 @@ class FollowUpFlag extends React.Component {
                   <option>Lost to Follow-up</option>
                   <option>Needs Interpretation</option>
                   <option>Quality Assurance</option>
+                  <option>Refused Active Monitoring</option>
                   <option>Other</option>
                 </Form.Control>
               </Form.Group>

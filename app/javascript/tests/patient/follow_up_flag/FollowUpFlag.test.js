@@ -9,7 +9,7 @@ import { mockPatient1, mockPatient3, mockPatient5 } from '../../mocks/mockPatien
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 
 const mockToken = 'testMockTokenString12345';
-const followUpFlagOptions = ['', 'Deceased', 'Duplicate', 'High-Risk', 'Hospitalized', 'In Need of Follow-up', 'Lost to Follow-up', 'Needs Interpretation', 'Quality Assurance', 'Other'];
+const followUpFlagOptions = ['', 'Deceased', 'Duplicate', 'High-Risk', 'Hospitalized', 'In Need of Follow-up', 'Lost to Follow-up', 'Needs Interpretation', 'Quality Assurance', 'Refused Active Monitoring', 'Other'];
 
 function getWrapperIndividual(patient, householdMembers, clear_flag) {
   return shallow(<FollowUpFlag bulkAction={false} current_user={mockUser1} patients={[patient]} other_household_members={householdMembers} jurisdiction_path="USA, State 1, County 2" jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} clear_flag={clear_flag} />);
@@ -26,7 +26,7 @@ describe('FollowUpFlag', () => {
     expect(wrapper.find('#set_flag_for_follow_up').exists()).toBeFalsy();
     expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBeFalsy();
     expect(wrapper.find(Form.Control).length).toEqual(2);
-    expect(wrapper.find('option').length).toEqual(10);
+    expect(wrapper.find('option').length).toEqual(11);
     followUpFlagOptions.forEach((value, index) => {
       expect(wrapper.find('option').at(index).text()).toEqual(value);
     });
@@ -47,7 +47,7 @@ describe('FollowUpFlag', () => {
     expect(wrapper.find('#set_flag_for_follow_up').exists()).toBeFalsy();
     expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBeFalsy();
     expect(wrapper.find(Form.Control).length).toEqual(2);
-    expect(wrapper.find('option').length).toEqual(10);
+    expect(wrapper.find('option').length).toEqual(11);
     followUpFlagOptions.forEach((value, index) => {
       expect(wrapper.find('option').at(index).text()).toEqual(value);
     });
@@ -89,7 +89,7 @@ describe('FollowUpFlag', () => {
     expect(wrapper.find(ReactTooltip).at(0).find('div').text()).toEqual('None of the selected monitorees have a flag set');
     expect(wrapper.find(ReactTooltip).at(1).find('div').text()).toEqual('Please select a reason for follow-up');
     expect(wrapper.find(Form.Control).length).toEqual(2);
-    expect(wrapper.find('option').length).toEqual(10);
+    expect(wrapper.find('option').length).toEqual(11);
     followUpFlagOptions.forEach((value, index) => {
       expect(wrapper.find('option').at(index).text()).toEqual(value);
     });

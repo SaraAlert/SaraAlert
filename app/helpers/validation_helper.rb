@@ -100,6 +100,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     'Lost to Follow-up',
     'Needs Interpretation',
     'Quality Assurance',
+    'Refused Active Monitoring',
     'Other'
   ].freeze
 
