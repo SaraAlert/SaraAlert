@@ -1,0 +1,10 @@
+<h2>
+  Not Purged
+</h2>
+<br />
+ID
+<br />
+<% @not_purged.each do |monitoree| %>
+  <%= monitoree[:id] %>, <%= monitoree[:reason] %>
+  <br />
+<% end %>

@@ -3154,34 +3154,91 @@ class PatientTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['reporting_period_minutes'] = original_reporting_period
   end
 
-  test 'no_recent_activity scope in exposure' do
-    patient = create(:patient)
-    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+  test 'no_recent_activity reason in close_eligible scope' do
+    patient = create(:patient, isolation: false, monitoring: true, created_at: 100.days.ago)
+
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
     patient.update(updated_at: 1.day.ago)
-    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
     patient.update(updated_at: 5.days.ago)
-    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
     patient.update(updated_at: 10.days.ago)
-    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
     patient.update(updated_at: 20.days.ago)
-    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
     patient.update(updated_at: 29.days.ago)
-    assert_nil Patient.no_recent_activity.find_by(id: patient.id)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
-    # 30 day border is sensitive to DST changes
-    patient.update(updated_at: correct_dst_edge(patient, 30.days.ago))
-    assert_nil Patient.close_eligible.find_by(id: patient.id)
+    patient.update(updated_at: 30.days.ago)
+    assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
     patient.update(updated_at: 31.days.ago)
-    assert_not_nil Patient.no_recent_activity.find_by(id: patient.id)
+    assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
     patient.update(updated_at: 300.days.ago)
-    assert_not_nil Patient.no_recent_activity.find_by(id: patient.id)
+    assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+
+    patient.update(isolation: true)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+
+    patient.update(isolation: false, monitoring: false)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+  end
+
+  test 'invalid reason in close_eligible scope' do
+    exception = assert_raises(Exception) { Patient.close_eligible(:fake_reason) }
+    assert_includes(exception.message, 'Invalid reason provided to close_eligible scope!')
+  end
+
+  test 'completed_monitoring reason in close_eligible scope' do
+    patient = create(:patient,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
+    assert_not_nil Patient.close_eligible(:completed_monitoring).find_by(id: patient.id)
+  end
+
+  test 'enrolled_last_day_monitoring_period reason in close_eligible scope' do
+    patient = create(:patient,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     created_at: 20.days.ago)
+    assert_not_nil Patient.close_eligible(:completed_monitoring).find_by(id: patient.id)
+    assert_nil Patient.close_eligible(:enrolled_last_day_monitoring_period).find_by(id: patient.id)
+    patient.update(last_date_of_exposure: Time.now.getlocal('-05:00') - 34.days)
+    assert_not_nil Patient.close_eligible(:completed_monitoring).find_by(id: patient.id)
+    assert_not_nil Patient.close_eligible(:enrolled_last_day_monitoring_period).find_by(id: patient.id)
+  end
+
+  test 'enrolled_past_monitioring_period reason in close_eligible scope' do
+    patient = create(:patient,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     created_at: 20.days.ago)
+    assert_not_nil Patient.close_eligible(:completed_monitoring).find_by(id: patient.id)
+    assert_nil Patient.close_eligible(:enrolled_past_monitioring_period).find_by(id: patient.id)
+    assert_nil Patient.close_eligible(:enrolled_last_day_monitoring_period).find_by(id: patient.id)
+    patient.update(last_date_of_exposure: Time.now.getlocal('-05:00') - 35.days)
+    assert_not_nil Patient.close_eligible(:completed_monitoring).find_by(id: patient.id)
+    assert_not_nil Patient.close_eligible(:enrolled_past_monitioring_period).find_by(id: patient.id)
+    assert_nil Patient.close_eligible(:enrolled_last_day_monitoring_period).find_by(id: patient.id)
   end
 
   [

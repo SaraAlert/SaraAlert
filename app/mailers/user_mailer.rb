@@ -12,10 +12,11 @@ class UserMailer < ApplicationMailer
     mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Send Assessments Job Results (#{ActionMailer::Base.default_url_options[:host]})")
   end
 
-  def purge_job_email(purged, not_purged, eligible)
-    @purged = purged
-    @not_purged = not_purged
-    @eligible = eligible
+  def purge_job_email(monitorees, batch_info, job_info)
+    @purged = monitorees.reject { |m| m[:reason].present? }
+    @not_purged = monitorees.select { |m| m[:reason].present? }
+    @batch_info = batch_info
+    @job_info = job_info
     mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Purge Job Results (#{ActionMailer::Base.default_url_options[:host]})")
   end
 
