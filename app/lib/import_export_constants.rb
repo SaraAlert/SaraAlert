@@ -57,7 +57,6 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                 lab_2_result jurisdiction_path assigned_user gender_identity sexual_orientation race_other race_unknown
                                 race_refused_to_answer].freeze
 
-
   SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                                'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
                                'Secondary Language', 'Interpretation Required?', 'Nationality', 'Identifier (STATE/LOCAL)', 'Identifier (CDC)',

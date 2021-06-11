@@ -268,7 +268,7 @@ describe('HouseholdMemberTable', () => {
 
     // sort by DOB, desc
     sortedHouseholdMembers = sortByDateDescending(sortedHouseholdMembers, 'date_of_birth');
-    selectedRows = [1, 2];
+    selectedRows = [2, 3];
     wrapper.find('th').at(2).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
     expect(wrapper.state('table').selectAll).toBeFalsy();
@@ -286,7 +286,7 @@ describe('HouseholdMemberTable', () => {
 
     // sort by workflow, asc
     sortedHouseholdMembers = sortByAscending(sortedHouseholdMembers, 'isolation');
-    selectedRows = [0, 4];
+    selectedRows = [1, 4];
     wrapper.find('th').at(3).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
     expect(wrapper.state('table').selectAll).toBeFalsy();
