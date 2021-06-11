@@ -1,3 +1,8 @@
+import React from 'react';
+import IconMinor from '../components/patient/household/utils/IconMinor';
+import { formatDate } from '../utils/DateTime';
+import moment from 'moment-timezone';
+
 /**
  * Formats a patient's name (first middle last) as a string.
  * @param {Object} patient - patient object
@@ -61,4 +66,28 @@ function formatRace(patient) {
   return raceArray.length === 0 ? '--' : raceArray.join(', ');
 }
 
-export { formatName, formatNameAlt, formatPhoneNumber, formatRace };
+function formatDateOfBirth(data) {
+  const rowData = data.rowData;
+  if (!!rowData?.dob && moment(rowData.dob, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'))) {
+    return (
+      <div>
+        <IconMinor patientId={rowData.id.toString()} customClass={'float-right ml-1'} />
+        {formatDate(rowData.dob)}
+      </div>
+    );
+  }
+  if (!!rowData?.date_of_birth && moment(rowData.date_of_birth, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'))) {
+    return (
+      <div>
+        <IconMinor patientId={rowData.id.toString()} customClass={'float-right ml-1'} />
+        {formatDate(rowData.date_of_birth)}
+      </div>
+    );
+  }
+  if (!!rowData?.date_of_birth) {
+    return formatDate(rowData.date_of_birth);
+  }
+  return formatDate(rowData.dob);
+}
+
+export { formatName, formatNameAlt, formatPhoneNumber, formatRace, formatDateOfBirth };

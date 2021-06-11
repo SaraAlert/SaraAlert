@@ -21,6 +21,7 @@ import { ToastContainer } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 
 import { formatDate, formatTimestamp } from '../../utils/DateTime';
+import { formatDateOfBirth } from '../../utils/Patient';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
@@ -53,7 +54,7 @@ class PatientsTable extends React.Component {
           { field: 'transferred_to', label: 'To Jurisdiction', isSortable: true, tooltip: null },
           { field: 'assigned_user', label: 'Assigned User', isSortable: true, tooltip: null },
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
-          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDateOfBirth },
+          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: formatDateOfBirth },
           { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatEndOfMonitoring },
           { field: 'extended_isolation', label: 'Extended Isolation To', isSortable: true, tooltip: 'extendedIsolation', filter: formatDate },
           { field: 'first_positive_lab_at', label: 'First Positive Lab', isSortable: true, filter: formatDate },
@@ -487,19 +488,6 @@ class PatientsTable extends React.Component {
 
   createPatientLink = (id, text) => {
     return <a href={patientHref(id, this.props.workflow)}>{text}</a>;
-  };
-
-  formatDateOfBirth = data => {
-    const rowData = data.rowData;
-    if (!!rowData?.dob && moment(rowData.dob, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'))) {
-      return (
-        <div>
-          <IconMinor patientId={rowData.id.toString()} customClass={'float-right ml-1'} />
-          {formatDate(rowData.dob)}
-        </div>
-      );
-    }
-    return formatDate(rowData.dob);
   };
 
   formatEndOfMonitoring = data => {

@@ -77,6 +77,7 @@ describe('Patient', () => {
     expect(section.find('h4').text()).toEqual('Identification');
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient1.id + '/edit?step=0&nav=global');
+    expect(section.find('.text-danger').exists()).toBeFalsy();
     identificationFields.forEach((field, index) => {
       expect(section.find('b').at(index).text()).toEqual(field + ':');
     });
@@ -91,6 +92,7 @@ describe('Patient', () => {
       expect(section.find('b').at(index).text()).toEqual(field + ':');
     });
     expect(section.find('.text-danger').exists()).toBeTruthy();
+    expect(section.find('.text-danger').text()).toEqual(' (Minor)');
   });
 
   it('Properly renders contact information section', () => {
@@ -99,6 +101,7 @@ describe('Patient', () => {
     expect(section.find('h4').text()).toEqual('Contact Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient1.id + '/edit?step=2&nav=global');
+    expect(wrapper.find('#contact-information').find('.text-danger').exists()).toBeFalsy();
     contactFields.forEach((field, index) => {
       expect(section.find('b').at(index).text()).toEqual(field + ':');
     });
@@ -126,7 +129,8 @@ describe('Patient', () => {
     expect(wrapper.find('#contact-information').find('.text-danger').exists()).toBeTruthy();
     expect(wrapper.find('#contact-information').find('.text-danger').text()).toEqual('Monitoree is a minor. ');
     expect(section.find('a').exists()).toBeTruthy();
-    expect(section.find('a').last().text()).toEqual(mockPatient1.first_name + ' ' + mockPatient1.middle_name + ' ' + mockPatient1.last_name);
+    expect(section.find('.item-group').find('a').props().href).toEqual('undefined/patients/' + mockPatient1.id);
+    expect(section.find('.item-group').find('a').text()).toEqual(mockPatient1.first_name + ' ' + mockPatient1.middle_name + ' ' + mockPatient1.last_name);
   });
 
   it('Properly renders show/hide divider when props.collapse is true', () => {

@@ -835,7 +835,7 @@ const mockPatient5 = {
   linelist: {
     assigned_user: 21,
     closed_at: null,
-    dob: '1893-05-20',
+    dob: '2005-05-20',
     end_of_monitoring: '2020-09-27',
     expected_purge_date: 'Sun, 27 Sep 2020 20:32:02 +0000',
     extended_isolation: '',

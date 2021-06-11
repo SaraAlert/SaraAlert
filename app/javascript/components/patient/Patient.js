@@ -241,8 +241,8 @@ class Patient extends React.Component {
             </div>
             <div className="item-group">
               {this.state.isMinor && (
-                <div>
-                  <span className="text-danger">Monitoree is a minor. </span>
+                <React.Fragment>
+                  <span className="text-danger">Monitoree is a minor{!this.props.details.head_of_household && this.props.hoh && '. '}</span>
                   {!this.props.details.head_of_household && this.props.hoh && (
                     <span>
                       View contact info for head of household:
@@ -251,7 +251,7 @@ class Patient extends React.Component {
                       </a>
                     </span>
                   )}
-                </div>
+                </React.Fragment>
               )}
               <div>
                 <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
