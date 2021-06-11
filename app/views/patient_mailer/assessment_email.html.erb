@@ -9,7 +9,7 @@
     <p><%= t('assessments.email.reminder.thank-you', locale: @lang) %></p>
 
     <% if @contact_info[:email].blank? && @contact_info[:phone].blank? && @contact_info[:webpage].blank? %>
-    <p><%= t('assessments.email.contact.info2', locale: @lang) %></p>    
+    <p><%= t('assessments.email.contact.info2', locale: @lang) %></p>
     <% end %>
 
     <%= render partial: 'main_mailer/responsive_button', locals: {
