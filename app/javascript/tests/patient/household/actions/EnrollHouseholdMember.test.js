@@ -4,7 +4,7 @@ import { Button, Modal } from 'react-bootstrap';
 import EnrollHouseholdMember from '../../../../components/patient/household/actions/EnrollHouseholdMember';
 
 function getWrapper(isHoh) {
-  return shallow(<EnrollHouseholdMember responderId={123} isHoh={isHoh} />);
+  return shallow(<EnrollHouseholdMember responderId={123} isHoh={isHoh} workflow={'global'} />);
 }
 
 describe('EnrollHouseholdMember', () => {
@@ -33,7 +33,7 @@ describe('EnrollHouseholdMember', () => {
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
     expect(wrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
     expect(wrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Continue');
-    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('href').includes('/patients/123/group')).toBeTruthy();
+    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('href').includes('/patients/123/group?nav=global')).toBeTruthy();
   });
 
   it('Properly renders modal for single household member (no depenedents)', () => {
@@ -44,7 +44,7 @@ describe('EnrollHouseholdMember', () => {
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
     expect(wrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
     expect(wrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Continue');
-    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('href').includes('/patients/123/group')).toBeTruthy();
+    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('href').includes('/patients/123/group?nav=global')).toBeTruthy();
   });
 
   it('Clicking Cancel button closes modal and resets state', () => {

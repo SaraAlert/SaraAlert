@@ -52,6 +52,7 @@ class ApplyToHousehold extends React.Component {
             isSelectable={true}
             handleApplyHouseholdChange={this.props.handleApplyHouseholdChange}
             handleApplyHouseholdIdsChange={this.props.handleApplyHouseholdIdsChange}
+            workflow={this.props.workflow}
           />
         )}
       </React.Fragment>
@@ -65,6 +66,7 @@ ApplyToHousehold.propTypes = {
   jurisdiction_paths: PropTypes.object,
   handleApplyHouseholdChange: PropTypes.func,
   handleApplyHouseholdIdsChange: PropTypes.func,
+  workflow: PropTypes.string,
 };
 
 export default ApplyToHousehold;

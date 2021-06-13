@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
+import { navQueryParam } from '../../../../utils/Navigation';
 
 class EnrollHouseholdMember extends React.Component {
   constructor(props) {
@@ -43,7 +44,7 @@ class EnrollHouseholdMember extends React.Component {
           </Button>
           <Button
             variant="primary btn-square"
-            href={`${window.BASE_PATH}/patients/${this.props.responderId}/group`}
+            href={`${window.BASE_PATH}/patients/${this.props.responderId}/group${navQueryParam(this.props.workflow, true)}`}
             onClick={() => {
               this.setState({ loading: true });
             }}
@@ -75,6 +76,7 @@ class EnrollHouseholdMember extends React.Component {
 EnrollHouseholdMember.propTypes = {
   responderId: PropTypes.number,
   isHoh: PropTypes.bool,
+  workflow: PropTypes.string,
 };
 
 export default EnrollHouseholdMember;

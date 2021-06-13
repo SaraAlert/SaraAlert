@@ -29,7 +29,7 @@ class MoveToHousehold extends React.Component {
         page: 0,
         search: '',
         entries: 5,
-        workflow: 'all',
+        workflow: 'global',
         tab: 'all',
         scope: 'all',
         tz_offset: new Date().getTimezoneOffset(),

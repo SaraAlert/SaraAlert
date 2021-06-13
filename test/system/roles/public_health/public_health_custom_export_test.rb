@@ -159,7 +159,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
           selected: ['Monitoree Details'],
           checked: all_custom_export_patient_fields,
           query: {
-            workflow: 'all',
+            workflow: 'global',
             tab: 'all',
             jurisdiction: 1,
             scope: 'all',
@@ -312,7 +312,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
           selected: ['Monitoree Details'],
           checked: all_custom_export_patient_fields,
           query: {
-            workflow: 'all',
+            workflow: 'global',
             tab: 'all',
             jurisdiction: 1,
             scope: 'all',
@@ -360,7 +360,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
           selected: ['Monitoree Details'],
           checked: all_custom_export_patient_fields,
           query: {
-            workflow: 'all',
+            workflow: 'global',
             tab: 'all',
             jurisdiction: 1,
             scope: 'all',

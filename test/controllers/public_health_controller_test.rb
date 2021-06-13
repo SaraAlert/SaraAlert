@@ -57,6 +57,9 @@ class PublicHealthControllerTest < ActionController::TestCase
     post :patients, params: { query: { workflow: 'isolation', tab: 'pui' } }, as: :json
     assert_response :bad_request
 
+    post :patients, params: { query: { workflow: 'global', tab: 'reporting' } }, as: :json
+    assert_response :bad_request
+
     post :patients, params: { query: { workflow: 'exposure', tab: 'symptomatic', jurisdiction: 'asdf' } }, as: :json
     assert_response :bad_request
 
@@ -226,25 +229,43 @@ class PublicHealthControllerTest < ActionController::TestCase
       assert_equal common_fields + %w[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan
                                       latest_report status report_eligibility], json_response['fields']
 
-      post :patients, params: { query: { workflow: 'all', tab: 'closed' } }, as: :json
+      post :patients, params: { query: { workflow: 'global', tab: 'closed' } }, as: :json
       json_response = JSON.parse(response.body)
       patients = user.viewable_patients.monitoring_closed_without_purged
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
 
-      post :patients, params: { query: { workflow: 'all', tab: 'transferred_in' } }, as: :json
+      post :patients, params: { query: { workflow: 'global', tab: 'active', entries: 100 } }, as: :json
+      json_response = JSON.parse(response.body)
+      patients = user.viewable_patients.monitoring_active(true)
+      assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
+      assert_equal patients.size, json_response['total']
+
+      post :patients, params: { query: { workflow: 'global', tab: 'priority_review' } }, as: :json
+      json_response = JSON.parse(response.body)
+      patients = user.viewable_patients.exposure_symptomatic.merge(user.viewable_patients.isolation_requiring_review)
+      assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
+      assert_equal patients.size, json_response['total']
+
+      post :patients, params: { query: { workflow: 'global', tab: 'non_reporting' } }, as: :json
+      json_response = JSON.parse(response.body)
+      patients = user.viewable_patients.exposure_non_reporting.merge(user.patients.isolation_non_reporting)
+      assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
+      assert_equal patients.size, json_response['total']
+
+      post :patients, params: { query: { workflow: 'global', tab: 'transferred_in' } }, as: :json
       json_response = JSON.parse(response.body)
       patients = user_jur.transferred_in_patients
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
 
-      post :patients, params: { query: { workflow: 'all', tab: 'transferred_out' } }, as: :json
+      post :patients, params: { query: { workflow: 'global', tab: 'transferred_out' } }, as: :json
       json_response = JSON.parse(response.body)
       patients = user_jur.transferred_out_patients
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
 
-      post :patients, params: { query: { workflow: 'all', tab: 'all', entries: 100 } }, as: :json
+      post :patients, params: { query: { workflow: 'global', tab: 'all', entries: 100 } }, as: :json
       json_response = JSON.parse(response.body)
       patients = user.viewable_patients.where(purged: false)
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
@@ -379,6 +400,7 @@ class PublicHealthControllerTest < ActionController::TestCase
 
         assert_equal user.viewable_patients.where(isolation: false, purged: false).size, json_response['exposure']
         assert_equal user.viewable_patients.where(isolation: true, purged: false).size, json_response['isolation']
+        assert_equal user.viewable_patients.size, json_response['global']
 
         sign_out user
       end
@@ -389,7 +411,7 @@ class PublicHealthControllerTest < ActionController::TestCase
     user = create(:public_health_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
     sign_in user
 
-    post :patients_count, params: { query: { workflow: 'all', tab: 'all', jurisdiction: user.jurisdiction.id } }, as: :json
+    post :patients_count, params: { query: { workflow: 'global', tab: 'all', jurisdiction: user.jurisdiction.id } }, as: :json
     assert_equal user.jurisdiction.all_patients_excluding_purged.size, JSON.parse(response.body)['count']
 
     sign_out user
@@ -419,6 +441,9 @@ class PublicHealthControllerTest < ActionController::TestCase
         assert_response :bad_request
 
         get :tab_counts, params: { workflow: 'isolation', tab: 'pui' }
+        assert_response :bad_request
+
+        get :tab_counts, params: { workflow: 'global', tab: 'pui' }
         assert_response :bad_request
 
         get :tab_counts, params: { workflow: 'exposure', tab: 'symptomatic' }
@@ -465,6 +490,24 @@ class PublicHealthControllerTest < ActionController::TestCase
 
         get :tab_counts, params: { workflow: 'isolation', tab: 'all' }
         assert_equal user.viewable_patients.where(isolation: true, purged: false).size, JSON.parse(response.body)['total']
+
+        get :tab_counts, params: { workflow: 'global', tab: 'active' }
+        assert_equal user.viewable_patients.monitoring_active(true).size, JSON.parse(response.body)['total']
+
+        get :tab_counts, params: { workflow: 'global', tab: 'priority_review' }
+        assert_equal user.viewable_patients.exposure_symptomatic.merge(user.patients.isolation_requiring_review).size, JSON.parse(response.body)['total']
+
+        get :tab_counts, params: { workflow: 'global', tab: 'non_reporting' }
+        assert_equal user.viewable_patients.exposure_non_reporting.merge(user.patients.isolation_non_reporting).size, JSON.parse(response.body)['total']
+
+        get :tab_counts, params: { workflow: 'global', tab: 'closed' }
+        assert_equal user.viewable_patients.monitoring_closed_without_purged.size, JSON.parse(response.body)['total']
+
+        get :tab_counts, params: { workflow: 'global', tab: 'transferred_in' }
+        assert_equal user.jurisdiction.transferred_in_patients.size, JSON.parse(response.body)['total']
+
+        get :tab_counts, params: { workflow: 'global', tab: 'transferred_out' }
+        assert_equal user.jurisdiction.transferred_out_patients.size, JSON.parse(response.body)['total']
 
         sign_out user
       end

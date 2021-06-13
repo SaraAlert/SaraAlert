@@ -129,6 +129,7 @@ class LastDateExposure extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               handleApplyHouseholdChange={this.handleApplyHouseholdChange}
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
+              workflow={this.props.workflow}
             />
           )}
           {!!this.props.patient.continuous_exposure && !this.state.continuous_exposure && (
@@ -281,6 +282,7 @@ LastDateExposure.propTypes = {
   patient: PropTypes.object,
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
+  workflow: PropTypes.string,
 };
 
 export default LastDateExposure;

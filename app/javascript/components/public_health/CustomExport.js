@@ -28,7 +28,15 @@ class CustomExport extends React.Component {
       selected_records: props.preset?.id ? 'custom' : 'current',
       custom_patient_query: props.preset?.config?.data?.patients?.query
         ? _.clone(props.preset.config.data.patients.query)
-        : { workflow: 'all', tab: 'all', jurisdiction: props.jurisdiction.id, scope: 'all', user: null, search: '', tz_offset: new Date().getTimezoneOffset() },
+        : {
+            workflow: 'global',
+            tab: 'all',
+            jurisdiction: props.jurisdiction.id,
+            scope: 'all',
+            user: null,
+            search: '',
+            tz_offset: new Date().getTimezoneOffset(),
+          },
       filtered_monitorees_count: props.all_monitorees_count,
       show_confirm_export_modal: false,
       cancel_token: axios.CancelToken.source(),
@@ -146,7 +154,7 @@ class CustomExport extends React.Component {
         this.handlePresetChange('config.data.patients.query', this.state.custom_patient_query);
       } else if (selected_records === 'all') {
         this.handlePresetChange('config.data.patients.query', {
-          workflow: 'all',
+          workflow: 'global',
           tab: 'all',
           jurisdiction: this.props.jurisdiction.id,
           scope: 'all',
@@ -208,7 +216,12 @@ class CustomExport extends React.Component {
                   {this.state.selected_records === 'current' && (
                     <div className="px-1 pb-1">
                       <Badge variant="secondary" className="mr-1">
-                        {this.props.patient_query.workflow === 'isolation' ? 'Isolation' : 'Exposure'} - {this.props.tabs[this.props.patient_query.tab]?.label}
+                        {this.props.patient_query.workflow === 'isolation'
+                          ? 'Isolation '
+                          : this.props.patient_query.workflow === 'exposure'
+                          ? 'Exposure '
+                          : 'Global '}
+                        - {this.props.tabs[this.props.patient_query.tab]?.label}
                       </Badge>
                       {this.props.patient_query.jurisdiction !== this.props.jurisdiction.id && (
                         <Badge variant="secondary" className="mr-1">

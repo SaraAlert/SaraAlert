@@ -12,7 +12,7 @@ import FollowUpFlag from '../../components/patient/follow_up_flag/FollowUpFlag';
 import UpdateCaseStatus from '../../components/public_health/actions/UpdateCaseStatus';
 import UpdateAssignedUser from '../../components/public_health/actions/UpdateAssignedUser';
 import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction';
-import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs';
+import { mockExposureTabs, mockIsolationTabs, mockGlobalTabs } from '../mocks/mockTabs';
 import { mockMonitoringReasons } from '../mocks/mockMonitoringReasons';
 
 const mockToken = 'testMockTokenString12345';
@@ -26,6 +26,10 @@ function getExposureWrapper() {
 
 function getIsolationWrapper() {
   return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'isolation'} jurisdiction={mockJurisdiction1} tabs={mockIsolationTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} />);
+}
+
+function getGlobalWrapper() {
+  return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'global'} jurisdiction={mockJurisdiction1} tabs={mockGlobalTabs} default_tab={'all'} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} />);
 }
 
 afterEach(() => {
@@ -63,6 +67,22 @@ describe('PatientsTable', () => {
 
     const defaultTab = Object.keys(mockIsolationTabs)[0];
     expect(wrapper.find('#tab-description').text()).toEqual(mockIsolationTabs[`${defaultTab}`]['description'] + ' You are currently in the isolation workflow.');
+  });
+
+  it('Properly renders all main components for the global workflow', () => {
+    const wrapper = getGlobalWrapper();
+    expect(wrapper.find('#search').exists()).toBeTruthy();
+    expect(wrapper.find('#tab-description').exists()).toBeTruthy();
+    expect(wrapper.find('#clear-all-filters').exists()).toBeTruthy();
+    expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(AdvancedFilter)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(CustomTable)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(DropdownButton)).toBeTruthy();
+    expect(wrapper.find(Dropdown.Item).length).toEqual(2);
+
+    const defaultTab = Object.keys(mockIsolationTabs)[0];
+    expect(wrapper.find('#tab-description').text()).toEqual(mockGlobalTabs[`${defaultTab}`]['description'] + ' You are currently in the global workflow.');
   });
 
   it('Sets intial state after mount correctly', () => {
@@ -163,6 +183,14 @@ describe('PatientsTable', () => {
     for (var key of Object.keys(mockIsolationTabs)) {
       expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
       expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockIsolationTabs[`${key}`]['label']);
+    }
+  });
+
+  it('Properly renders all tabs on global dashboard', () => {
+    const wrapper = getGlobalWrapper();
+    for (var key of Object.keys(mockGlobalTabs)) {
+      expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
+      expect(wrapper.find('#' + key + '_tab').text()).toEqual(mockGlobalTabs[`${key}`]['label']);
     }
   });
 });

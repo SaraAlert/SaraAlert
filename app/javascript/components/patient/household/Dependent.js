@@ -17,6 +17,7 @@ class Dependent extends React.Component {
             current_user={this.props.current_user}
             jurisdiction_paths={this.props.jurisdiction_paths}
             isSelectable={false}
+            workflow={this.props.workflow}
           />
         </Row>
         <Row>
@@ -33,6 +34,7 @@ Dependent.propTypes = {
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   authenticity_token: PropTypes.string,
+  workflow: PropTypes.string,
 };
 
 export default Dependent;

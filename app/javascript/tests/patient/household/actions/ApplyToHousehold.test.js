@@ -12,7 +12,7 @@ const handleApplyHouseholdChangeMock = jest.fn();
 const handleApplyHouseholdIdsChangeMock = jest.fn();
 
 function getWrapper() {
-  return shallow(<ApplyToHousehold household_members={householdMembers} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
+  return shallow(<ApplyToHousehold household_members={householdMembers} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} workflow={'global'} />);
 }
 
 afterEach(() => {

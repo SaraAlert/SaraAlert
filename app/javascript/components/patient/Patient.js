@@ -11,6 +11,7 @@ import { convertLanguageCodesToNames } from '../../utils/Languages';
 import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
 import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
+import { navQueryParam } from '../../utils/Navigation';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -67,7 +68,10 @@ class Patient extends React.Component {
     } else {
       return (
         <div className="edit-link">
-          <a href={`${window.BASE_PATH}/patients/${this.props.details.id}/edit?step=${enrollmentStep}`} id={sectionId} aria-label={`Edit ${section}`}>
+          <a
+            href={`${window.BASE_PATH}/patients/${this.props.details.id}/edit?step=${enrollmentStep}${navQueryParam(this.props.workflow, false)}`}
+            id={sectionId}
+            aria-label={`Edit ${section}`}>
             Edit
           </a>
         </div>
@@ -712,6 +716,7 @@ Patient.propTypes = {
   other_household_members: PropTypes.array,
   can_modify_subject_status: PropTypes.bool,
   authenticity_token: PropTypes.string,
+  workflow: PropTypes.string,
 };
 
 export default Patient;

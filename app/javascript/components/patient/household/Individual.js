@@ -11,7 +11,7 @@ class Individual extends React.Component {
         <Row>This monitoree is not a member of a household.</Row>
         <Row>
           <MoveToHousehold patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
-          {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.patient.id} isHoh={false} />}
+          {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.patient.id} isHoh={false} workflow={this.props.workflow} />}
         </Row>
       </div>
     );
@@ -22,6 +22,7 @@ Individual.propTypes = {
   can_add_group: PropTypes.bool,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
+  workflow: PropTypes.string,
 };
 
 export default Individual;
