@@ -64,19 +64,6 @@ describe('CaseStatus', () => {
     expect(modalBody.find('p').text()).toEqual(`Are you sure you want to change case status from ${mockPatient3.case_status} to Confirmed? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`);
   });
 
-  it('Correctly renders modal body and and does not change line list or workflow when changing Case Status to blank', () => {
-    const wrapper = getWrapper(mockPatient1);
-    wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: '' }, persist: jest.fn() });
-    const modalBody = wrapper.find(Modal.Body);
-    expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
-    expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
-    expect(wrapper.state('case_status')).toEqual('');
-    expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
-    expect(wrapper.state('isolation')).toEqual(mockPatient1.isolation);
-    expect(wrapper.state('monitoring')).toBeTruthy();
-    expect(modalBody.find('p').text()).toEqual(`Are you sure you want to change case status from ${mockPatient1.case_status} to blank? The monitoree will remain in the same workflow.`);
-  });
-
   it('Correctly renders modal body and updates to exposure workflow when changing Case Status to Suspect, Unknown or Not a Case from Confirmed or Probable in isolation workflow', () => {
     const wrapper = getWrapper(mockPatient4);
     wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Unknown' }, persist: jest.fn() });
@@ -100,6 +87,18 @@ describe('CaseStatus', () => {
     expect(wrapper.state('confirmedOrProbable')).toBeTruthy();
     expect(wrapper.state('isolation')).toBeTruthy();
     expect(modalBody.find('p').text()).toEqual(`Are you sure you want to change the case status from ${mockPatient4.case_status} to Confirmed? The record will remain in the isolation workflow.`);
+  });
+
+  it('Correctly renders modal body and is moved to the exposure workflow when changing Case Status to Blank in the isolation workflow', () => {
+    const wrapper = getWrapper(blankMockPatient);
+    wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: '' }, persist: jest.fn() });
+    const modalBody = wrapper.find(Modal.Body);
+    expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
+    expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
+    expect(wrapper.state('case_status')).toEqual('');
+    expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
+    expect(wrapper.state('isolation')).toBeFalsy();
+    expect(modalBody.find('p').text()).toEqual('The case status for the selected record will be updated to blank and moved to the appropriate line list in the Exposure Workflow.');
   });
 
   it('Correctly renders modal body and is moved to the exposure workflow when changing Case Status to Suspect, Unknown or Not A Case in the isolation workflow', () => {

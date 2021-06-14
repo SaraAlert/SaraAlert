@@ -249,16 +249,14 @@ class UpdateCaseStatus extends React.Component {
             {this.state.initialIsolation ? (
               // In the Isolation workflow, only show certain explanation statements
               <React.Fragment>
-                {['Confirmed', 'Probable'].includes(this.state.case_status) && (
-                  <p>The selected cases will remain in the isolation workflow. {this.renderClosedStatement()}</p>
-                )}
-                {['', 'Suspect', 'Not a Case', 'Unknown'].includes(this.state.case_status) && (
+                {!this.state.allSelectedAreClosed && (
                   <p>
-                    The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or
-                    asymptomatic line list as appropriate. {this.renderClosedStatement()}
+                    {['Confirmed', 'Probable'].includes(this.state.case_status) && 'The selected cases will remain in the isolation workflow.'}
+                    {['', 'Suspect', 'Not a Case', 'Unknown'].includes(this.state.case_status) &&
+                      'The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.'}
                   </p>
                 )}
-                {this.state.allSelectedAreClosed && this.renderReasonsSection()}
+                {this.renderClosedStatement()}
               </React.Fragment>
             ) : (
               // In the Exposure workflow, show other explanation statements
