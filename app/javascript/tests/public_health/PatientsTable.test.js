@@ -82,7 +82,7 @@ describe('PatientsTable', () => {
     expect(wrapper.find(Dropdown.Item).length).toEqual(2);
 
     const defaultTab = Object.keys(mockIsolationTabs)[0];
-    expect(wrapper.find('#tab-description').text()).toEqual(mockGlobalTabs[`${defaultTab}`]['description'] + ' You are currently in the global workflow.');
+    expect(wrapper.find('#tab-description').text()).toEqual(mockGlobalTabs[`${defaultTab}`]['description'] + ' You are currently in the global dashboard.');
   });
 
   it('Sets intial state after mount correctly', () => {
