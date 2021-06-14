@@ -596,8 +596,8 @@ class PatientsTable extends React.Component {
         <Nav variant="tabs" activeKey={this.state.query.tab}>
           {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
             return (
-              <Nav.Item key={tab} className={tab === 'all' ? 'ml-xl-auto' : ''}>
-                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`}>
+              <Nav.Item key={tab}>
+                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`} className={this.props.workflow}>
                   {tabProps.label}
                   <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
                     <span>{`${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>

@@ -241,7 +241,11 @@ class CustomTable extends React.Component {
                     })}
                     {this.props.isEditable && (
                       <td>
-                        <Button variant="link" className="icon-btn-primary float-left p-0" onClick={() => this.handleEditClick(rowIndex)} aria-label="Edit Row Button">
+                        <Button
+                          variant="link"
+                          className="icon-btn-primary float-left p-0"
+                          onClick={() => this.handleEditClick(rowIndex)}
+                          aria-label="Edit Row Button">
                           <i className="fas fa-edit"></i>
                         </Button>
                       </td>

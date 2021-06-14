@@ -140,12 +140,23 @@ select.form-control {
   color: rgba(255, 255, 255, 0.8) !important;
 }
 
+.nav-item:last-child {
+  margin-left: auto;
+}
+
 /* styling for navbar on smaller screens only */
-@media only screen and (max-width : 1199px) {
+@media only screen and (max-width : 1310px) {
   .nav-tabs .nav-link {
-    width: 190px;
     border: 1px #dee2e6 solid;
     margin-bottom: -.05px;
+  }
+
+  .nav-tabs .nav-link.exposure {
+    width: 190px;
+  }
+
+  .nav-tabs .nav-link.isolation {
+    width: 265px;
   }
 
   .nav-tabs .nav-link:hover {
@@ -158,6 +169,10 @@ select.form-control {
 
   .nav-tabs .nav-link .badge {
     float: right !important
+  }
+
+  .nav-item:last-child {
+    margin-left: 0px;
   }
 }
 
