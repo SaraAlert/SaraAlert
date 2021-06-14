@@ -82,6 +82,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_us_core_race(races_as_hash(patient)),
         to_us_core_ethnicity(patient.ethnicity),
         to_us_core_birthsex(patient.sex),
+        to_latest_transfer_extension(patient),
         to_string_extension(patient.preferred_contact_method, 'preferred-contact-method'),
         to_string_extension(patient.preferred_contact_time, 'preferred-contact-time'),
         to_date_extension(patient.symptom_onset, 'symptom-onset-date'),
@@ -99,7 +100,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.exposure_notes, 'exposure-notes'),
         to_string_extension(patient.travel_related_notes, 'travel-related-notes'),
         to_string_extension(patient.additional_planned_travel_related_notes, 'additional-planned-travel-notes'),
-        to_bool_extension(patient.continuous_exposure, 'continuous-exposure')
+        to_bool_extension(patient.continuous_exposure, 'continuous-exposure'),
+        to_string_extension(patient.end_of_monitoring, 'end-of-monitoring'),
+        to_datetime_extension(patient.expected_purge_ts, 'expected-purge-date'),
+        to_string_extension(patient.monitoring_reason, 'monitoring-reason'),
       ].reject(&:nil?)
     )
   end
@@ -550,6 +554,18 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     { value: converted || code, path: "Patient.extension('http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex').valueCode" }
   end
 
+  def to_latest_transfer_extension(patient)
+    return nil if patient.latest_transfer_at.nil? || patient.latest_transfer_from.nil?
+
+    FHIR::Extension.new(
+      url: SA_EXT_BASE_URL + 'latest-transfer',
+      extension: [
+        to_datetime_extension(patient.latest_transfer_at, 'transferred-at'),
+        to_string_extension(Jurisdiction.where(id: patient.latest_transfer_from)&.pluck(:path)&.first, 'transferred-from'),
+      ]
+    )
+  end
+
   # Given a language string, try to find the corresponding BCP 47 code for it and construct a FHIR::Coding.
   def language_coding(language)
     mapped_lang = Languages.normalize_and_get_language_code(language)
@@ -576,7 +592,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def to_date_extension(value, extension_id)
-    value.nil? ? nil : FHIR::Extension.new(
+    value.blank? ? nil : FHIR::Extension.new(
       url: SA_EXT_BASE_URL + extension_id,
       valueDate: value
     )
@@ -592,6 +608,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       break unless val.nil?
     end
     { value: val, path: date_ext_path(base_path, ext_id) }
+  end
+
+  def to_datetime_extension(value, extension_id)
+    value.blank? ? nil : FHIR::Extension.new(
+      url: SA_EXT_BASE_URL + extension_id,
+      valueDateTime: value.strftime('%FT%T%:z')
+    )
   end
 
   def to_string_extension(value, extension_id)
