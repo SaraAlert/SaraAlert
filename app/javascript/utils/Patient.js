@@ -66,6 +66,10 @@ function formatRace(patient) {
   return raceArray.length === 0 ? '--' : raceArray.join(', ');
 }
 
+/**
+ * Formats values in the date of birth column to be human readable and include whether that DOB indicates a minor.
+ * @param {Object} data - Data about the cell this filter is called on.
+ */
 function formatDateOfBirth(data) {
   const rowData = data.rowData;
   if (!!rowData?.dob && moment(rowData.dob, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'))) {

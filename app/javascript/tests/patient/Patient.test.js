@@ -129,7 +129,7 @@ describe('Patient', () => {
     expect(wrapper.find('#contact-information').find('.text-danger').exists()).toBeTruthy();
     expect(wrapper.find('#contact-information').find('.text-danger').text()).toEqual('Monitoree is a minor. ');
     expect(section.find('a').exists()).toBeTruthy();
-    expect(section.find('.item-group').find('a').props().href).toEqual('undefined/patients/' + mockPatient1.id);
+    expect(section.find('.item-group').find('a').props().href).toContain('patients/' + mockPatient1.id);
     expect(section.find('.item-group').find('a').text()).toEqual(mockPatient1.first_name + ' ' + mockPatient1.middle_name + ' ' + mockPatient1.last_name);
   });
 
