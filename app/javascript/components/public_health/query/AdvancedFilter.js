@@ -543,7 +543,7 @@ class AdvancedFilter extends React.Component {
     let statement = '';
     const operatorValue = value.operator.replace('-', ' ');
 
-    if (value.operator === 'more-than') {
+    if (value.operator === 'greater-than') {
       if (value.when === 'past') {
         before = moment().subtract(value.number, value.unit).format('MM/DD/YY');
       } else {
@@ -593,7 +593,7 @@ class AdvancedFilter extends React.Component {
         statement += ` after ${timestampString}${after}. `;
       }
     }
-    statement += `To filter between two dates, use the "more than" and "less than" filters in combination.`;
+    statement += `To filter between two dates, use the "greater than" and "less than" filters in combination.`;
     return statement;
   }
 
@@ -1001,7 +1001,7 @@ class AdvancedFilter extends React.Component {
                   this.changeValue(index, { operator: event.target.value, number: value.number, unit: value.unit, when: value.when });
                 }}>
                 <option value="less-than">less than</option>
-                <option value="more-than">more than</option>
+                <option value="greater-than">greater than</option>
               </Form.Control>
               <Form.Control
                 value={value.number}

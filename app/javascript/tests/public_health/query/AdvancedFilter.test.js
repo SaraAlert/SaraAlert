@@ -38,7 +38,7 @@ const numberOptionValuesText = ['less than', 'less than or equal to', 'equal to'
 const dateOptionValues = ['within', 'before', 'after'];
 const multiDateOptionValues = ['before', 'after'];
 const relativeOptionValues = ['today', 'tomorrow', 'yesterday', 'custom'];
-const relativeOptionOperatorValues = ['less-than', 'more-than'];
+const relativeOptionOperatorValues = ['less-than', 'greater-than'];
 const relativeOptionUnitValues = ['day(s)', 'week(s)', 'month(s)'];
 const relativeOptionWhenValues = ['past', 'future'];
 
@@ -1038,15 +1038,15 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
     wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: 'custom' } });
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 1 days in the past" will return records with Latest Report date from the current time on ${moment(new Date()).subtract(1, 'd').format('MM/DD/YY')} through now. To filter between two dates, use the "more than" and "less than" filters in combination.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 1 days in the past" will return records with Latest Report date from the current time on ${moment(new Date()).subtract(1, 'd').format('MM/DD/YY')} through now. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
     wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 3 } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 3 days in the past" will return records with Latest Report date from the current time on ${moment(new Date()).subtract(3, 'd').format('MM/DD/YY')} through now. To filter between two dates, use the "more than" and "less than" filters in combination.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 3 days in the past" will return records with Latest Report date from the current time on ${moment(new Date()).subtract(3, 'd').format('MM/DD/YY')} through now. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
     wrapper.find('.advanced-filter-unit-input').simulate('change', { target: { value: 'weeks' } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 3 weeks in the past" will return records with Latest Report date from the current time on ${moment(new Date()).subtract(3, 'weeks').format('MM/DD/YY')} through now. To filter between two dates, use the "more than" and "less than" filters in combination.`);
-    wrapper.find('.advanced-filter-operator-input').simulate('change', { target: { value: 'more-than' } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "more than 3 weeks in the past" will return records with Latest Report date before the current time on ${moment(new Date()).subtract(3, 'w').format('MM/DD/YY')}. To filter between two dates, use the "more than" and "less than" filters in combination.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 3 weeks in the past" will return records with Latest Report date from the current time on ${moment(new Date()).subtract(3, 'weeks').format('MM/DD/YY')} through now. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
+    wrapper.find('.advanced-filter-operator-input').simulate('change', { target: { value: 'greater-than' } });
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "greater than 3 weeks in the past" will return records with Latest Report date before the current time on ${moment(new Date()).subtract(3, 'w').format('MM/DD/YY')}. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
     wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 1 } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "more than 1 weeks in the past" will return records with Latest Report date before the current time on ${moment(new Date()).subtract(1, 'w').format('MM/DD/YY')}. To filter between two dates, use the "more than" and "less than" filters in combination.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "greater than 1 weeks in the past" will return records with Latest Report date before the current time on ${moment(new Date()).subtract(1, 'w').format('MM/DD/YY')}. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
   });
 
   it('Relative date without timestamp custom tooltip dynamically updates as options change', () => {
@@ -1056,19 +1056,19 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
     wrapper.find('.advanced-filter-relative-options').simulate('change', { target: { value: 'custom' } });
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 1 days in the past" will return records with Symptom Onset date of today. To filter between two dates, use the "more than" and "less than" filters in combination.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 1 days in the past" will return records with Symptom Onset date of today. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
     wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 3 } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 3 days in the past" will return records with Symptom Onset date from ${moment(new Date()).subtract(3, 'd').add(1, 'd').format('MM/DD/YY')} through ${moment(new Date()).format('MM/DD/YY')}. To filter between two dates, use the "more than" and "less than" filters in combination.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 3 days in the past" will return records with Symptom Onset date from ${moment(new Date()).subtract(3, 'd').add(1, 'd').format('MM/DD/YY')} through ${moment(new Date()).format('MM/DD/YY')}. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
     wrapper.find('.advanced-filter-unit-input').simulate('change', { target: { value: 'weeks' } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 3 weeks in the past" will return records with Symptom Onset date from ${moment(new Date()).subtract(3, 'w').add(1, 'd').format('MM/DD/YY')} through ${moment(new Date()).format('MM/DD/YY')}. To filter between two dates, use the "more than" and "less than" filters in combination.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 3 weeks in the past" will return records with Symptom Onset date from ${moment(new Date()).subtract(3, 'w').add(1, 'd').format('MM/DD/YY')} through ${moment(new Date()).format('MM/DD/YY')}. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
     wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: 'future' } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 3 weeks in the future" will return records with Symptom Onset date from ${moment(new Date()).format('MM/DD/YY')} through ${moment(new Date()).add(3, 'w').subtract(1, 'd').format('MM/DD/YY')}. To filter between two dates, use the "more than" and "less than" filters in combination.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 3 weeks in the future" will return records with Symptom Onset date from ${moment(new Date()).format('MM/DD/YY')} through ${moment(new Date()).add(3, 'w').subtract(1, 'd').format('MM/DD/YY')}. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
     wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: 1 } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 1 weeks in the future" will return records with Symptom Onset date from ${moment(new Date()).format('MM/DD/YY')} through ${moment(new Date()).add(1, 'w').subtract(1, 'd').format('MM/DD/YY')}. To filter between two dates, use the "more than" and "less than" filters in combination.`);
-    wrapper.find('.advanced-filter-operator-input').simulate('change', { target: { value: 'more-than' } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "more than 1 weeks in the future" will return records with Symptom Onset date after ${moment(new Date()).add(1, 'w').format('MM/DD/YY')}. To filter between two dates, use the "more than" and "less than" filters in combination.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "less than 1 weeks in the future" will return records with Symptom Onset date from ${moment(new Date()).format('MM/DD/YY')} through ${moment(new Date()).add(1, 'w').subtract(1, 'd').format('MM/DD/YY')}. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
+    wrapper.find('.advanced-filter-operator-input').simulate('change', { target: { value: 'greater-than' } });
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "greater than 1 weeks in the future" will return records with Symptom Onset date after ${moment(new Date()).add(1, 'w').format('MM/DD/YY')}. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
     wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: 'past' } });
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "more than 1 weeks in the past" will return records with Symptom Onset date before ${moment(new Date()).subtract(1, 'w').format('MM/DD/YY')}. To filter between two dates, use the "more than" and "less than" filters in combination.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "greater than 1 weeks in the past" will return records with Symptom Onset date before ${moment(new Date()).subtract(1, 'w').format('MM/DD/YY')}. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
   });
 
   it('Clicking "Save" button opens Filter Name modal', () => {

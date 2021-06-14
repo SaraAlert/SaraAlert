@@ -572,7 +572,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         timespan -= 1.day if filter[:filterOption][:hasTimestamp] == false
         timeframe = { after: timespan.ago - tz_diff, before: local_current_time } if filter[:value][:when] == 'past'
         timeframe = { after: local_current_time, before: timespan.from_now - tz_diff } if filter[:value][:when] == 'future'
-      when 'more-than'
+      when 'greater-than'
         # add one day to the timespan if relative date field does not have have a timestamp
         # the filter will then be strictly more than and not include the day of X days ago
         # EXAMPLE: if today is 3/17/21 and you search for more than 14 days in the past
