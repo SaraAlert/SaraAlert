@@ -592,12 +592,12 @@ class PatientsTable extends React.Component {
 
   render() {
     return (
-      <div className="mx-2 pb-4">
+      <div className={`${this.props.workflow}-dashboard mx-2 pb-4`}>
         <Nav variant="tabs" activeKey={this.state.query.tab}>
           {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
             return (
               <Nav.Item key={tab}>
-                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`} className={this.props.workflow}>
+                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`}>
                   {tabProps.label}
                   <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
                     <span>{`${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>

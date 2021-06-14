@@ -126,54 +126,8 @@ select.form-control {
   font-weight: 250 !important;
 }
 
-.nav-tabs .nav-link {
-  border-top-left-radius: 0 !important;
-  border-top-right-radius: 0 !important;
-}
-
-.nav-tabs .nav-link:hover {
-  border-color:#b5b5b5;
-  background-color:white;
-}
-
 .nav-link-inactive {
   color: rgba(255, 255, 255, 0.8) !important;
-}
-
-.nav-item:last-child {
-  margin-left: auto;
-}
-
-/* styling for navbar on smaller screens only */
-@media only screen and (max-width : 1310px) {
-  .nav-tabs .nav-link {
-    border: 1px #dee2e6 solid;
-    margin-bottom: -.05px;
-  }
-
-  .nav-tabs .nav-link.exposure {
-    width: 230px;
-  }
-
-  .nav-tabs .nav-link.isolation {
-    width: 300px;
-  }
-
-  .nav-tabs .nav-link:hover {
-    border-color:#606060;
-  }
-
-  .nav-tabs .nav-link.active {
-    border: 1px #606060 solid !important;
-  }
-
-  .nav-tabs .nav-link .badge {
-    float: right !important
-  }
-
-  .nav-item:last-child {
-    margin-left: 0px;
-  }
 }
 
 .breadcrumb {
