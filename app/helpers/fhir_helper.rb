@@ -104,6 +104,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.end_of_monitoring, 'end-of-monitoring'),
         to_datetime_extension(patient.expected_purge_ts, 'expected-purge-date'),
         to_string_extension(patient.monitoring_reason, 'monitoring-reason'),
+        to_string_extension(patient.exposure_risk_assessment, 'exposure-risk-assessment'),
+        to_string_extension(patient.public_health_action, 'public-health-action'),
+        to_bool_extension(patient.contact_of_known_case, 'contact-of-known-case'),
+        to_string_extension(patient.contact_of_known_case_id, 'contact-of-known-case-id'),
+        to_string_extension(patient.member_of_a_common_exposure_cohort_type, 'common-exposure-cohort-name'),
+        to_string_extension(patient.potential_exposure_location, 'potential-exposure-location'),
+        to_string_extension(patient.potential_exposure_country, 'potential-exposure-country')
       ].reject(&:nil?)
     )
   end
@@ -209,7 +216,14 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       primary_telephone_type: from_primary_phone_type_extension(patient, 'Patient'),
       secondary_telephone_type: from_secondary_phone_type_extension(patient, 'Patient'),
       user_defined_id_statelocal: from_statelocal_id_extension(patient, 'Patient'),
-      continuous_exposure: from_bool_extension_false_default(patient, 'Patient', 'continuous-exposure')
+      continuous_exposure: from_bool_extension_false_default(patient, 'Patient', 'continuous-exposure'),
+      exposure_risk_assessment: from_string_extension(patient, 'Patient', 'exposure-risk-assessment'),
+      public_health_action: from_string_extension(patient, 'Patient', 'public-health-action'),
+      contact_of_known_case: from_bool_extension_nil_default(patient, 'Patient', 'contact-of-known-case'),
+      contact_of_known_case_id: from_string_extension(patient, 'Patient', 'contact-of-known-case-id'),
+      member_of_a_common_exposure_cohort_type: from_string_extension(patient, 'Patient', 'common-exposure-cohort-name'),
+      potential_exposure_location: from_string_extension(patient, 'Patient', 'potential-exposure-location'),
+      potential_exposure_country: from_string_extension(patient, 'Patient', 'potential-exposure-country')
     }
   end
 
@@ -561,7 +575,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       url: SA_EXT_BASE_URL + 'latest-transfer',
       extension: [
         to_datetime_extension(patient.latest_transfer_at, 'transferred-at'),
-        to_string_extension(Jurisdiction.where(id: patient.latest_transfer_from)&.pluck(:path)&.first, 'transferred-from'),
+        to_string_extension(Jurisdiction.where(id: patient.latest_transfer_from)&.pluck(:path)&.first, 'transferred-from')
       ]
     )
   end
@@ -589,6 +603,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # Convert from a boolean extension, treating omission (nil) as equal to false
   def from_bool_extension_false_default(element, base_path, extension_id)
     { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueBoolean || false, path: bool_ext_path(base_path, extension_id) }
+  end
+
+  # Convert from a boolean extension, treating omission (nil) as different than false
+  def from_bool_extension_nil_default(element, base_path, extension_id)
+    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueBoolean, path: bool_ext_path(base_path, extension_id) }
   end
 
   def to_date_extension(value, extension_id)

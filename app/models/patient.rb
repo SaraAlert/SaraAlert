@@ -52,6 +52,13 @@ class Patient < ApplicationRecord
     }
   end
 
+  %i[public_health_action].each do |enum_field|
+    validates enum_field, on: :api, inclusion: {
+      in: VALID_PATIENT_ENUMS[enum_field],
+      message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].reject(&:blank?).join("', '")}'"
+    }
+  end
+
   %i[primary_telephone
      secondary_telephone].each do |phone_field|
     validates phone_field, on: %i[api import], phone_number: true
