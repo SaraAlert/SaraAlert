@@ -54,7 +54,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         }
       )],
       id: patient.id,
-      identifier: [to_statelocal_identifier(patient.user_defined_id_statelocal)],
+      identifier: [
+        to_identifier(patient.user_defined_id_statelocal, 'state-local-id'),
+        to_identifier(patient.user_defined_id_cdc, 'cdc-id'),
+        to_identifier(patient.user_defined_id_nndss, 'nndss-id')
+      ],
       active: patient.monitoring,
       name: [FHIR::HumanName.new(given: [patient.first_name, patient.middle_name].reject(&:blank?), family: patient.last_name)],
       telecom: [
@@ -215,7 +219,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       additional_planned_travel_related_notes: from_string_extension(patient, 'Patient', 'additional-planned-travel-notes'),
       primary_telephone_type: from_primary_phone_type_extension(patient, 'Patient'),
       secondary_telephone_type: from_secondary_phone_type_extension(patient, 'Patient'),
-      user_defined_id_statelocal: from_statelocal_id_extension(patient, 'Patient'),
+      user_defined_id_statelocal: from_identifier(patient&.identifier, 'state-local-id', 'Patient'),
+      user_defined_id_cdc: from_identifier(patient&.identifier, 'cdc-id', 'Patient'),
+      user_defined_id_nndss: from_identifier(patient&.identifier, 'nndss-id', 'Patient'),
       continuous_exposure: from_bool_extension_false_default(patient, 'Patient', 'continuous-exposure'),
       exposure_risk_assessment: from_string_extension(patient, 'Patient', 'exposure-risk-assessment'),
       public_health_action: from_string_extension(patient, 'Patient', 'public-health-action'),
@@ -710,9 +716,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     FHIR::Identifier.new(value: statelocal_identifier, system: 'http://saraalert.org/SaraAlert/state-local-id') unless statelocal_identifier.blank?
   end
 
-  def from_statelocal_id_extension(element, base_path)
-    statelocal_id = element&.identifier&.find { |i| i&.system == 'http://saraalert.org/SaraAlert/state-local-id' }
-    { value: statelocal_id&.value, path: "#{base_path}.identifier[#{element&.identifier&.index(statelocal_id)}].value" }
+  def to_identifier(value, system_id)
+    FHIR::Identifier.new(value: value, system: "http://saraalert.org/SaraAlert/#{system_id}") unless value.blank?
+  end
+
+  def from_identifier(identifier, system_id, base_path)
+    id = identifier&.find { |i| i&.system == "http://saraalert.org/SaraAlert/#{system_id}" }
+    { value: id&.value, path: "#{base_path}.identifier[#{identifier&.index(id)}].value" }
   end
 
   def to_address_by_type_extension(patient, address_type)
