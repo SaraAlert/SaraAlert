@@ -803,22 +803,25 @@ class AdvancedFilter extends React.Component {
   renderSelectStatement = (filter, index, value) => {
     return (
       <React.Fragment>
-        <Form.Control
-          as="select"
-          value={value}
-          className="advanced-filter-select py-0 my-0"
-          aria-label="Advanced Filter Option Select"
-          onChange={event => {
-            this.changeValue(index, event.target.value);
-          }}>
-          {filter.options.map((option, op_index) => {
-            return (
-              <option key={index + 'opkeyop-f' + op_index} value={option}>
-                {option}
-              </option>
-            );
-          })}
-        </Form.Control>
+        <div className="d-flex justify-content-between">
+          <Form.Control
+            as="select"
+            value={value}
+            className="advanced-filter-select py-0 my-0"
+            aria-label="Advanced Filter Option Select"
+            onChange={event => {
+              this.changeValue(index, event.target.value);
+            }}>
+            {filter.options.map((option, op_index) => {
+              return (
+                <option key={index + 'opkeyop-f' + op_index} value={option}>
+                  {option}
+                </option>
+              );
+            })}
+          </Form.Control>
+          {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
+        </div>
       </React.Fragment>
     );
   };

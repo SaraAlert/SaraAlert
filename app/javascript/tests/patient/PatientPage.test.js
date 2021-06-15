@@ -5,8 +5,8 @@ import Patient from '../../components/patient/Patient';
 import Dependent from '../../components/patient/household/Dependent';
 import HeadOfHousehold from '../../components/patient/household/HeadOfHousehold';
 import Individual from '../../components/patient/household/Individual';
-import { mockPatient1, mockPatient2, mockPatient3 } from '../mocks/mockPatients';
 import { mockUser1 } from '../mocks/mockUsers';
+import { mockPatient1, mockPatient2, mockPatient3 } from '../mocks/mockPatients';
 import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 
 const mockToken = 'testMockTokenString12345';

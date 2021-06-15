@@ -423,6 +423,12 @@ namespace :demo do
       patient[:pause_notifications] = rand < 0.1
       patient[:last_assessment_reminder_sent] = beginning_of_day - rand(7).days if rand < 0.3
 
+      # Follow-up Flag
+      if rand < 0.15
+        patient[:follow_up_reason] = ValidationHelper::FOLLOW_UP_FLAG_REASONS.sample
+        patient[:follow_up_note] = Faker::GreekPhilosophers.quote if rand < 0.75
+      end
+
       patients << patient
     end
 

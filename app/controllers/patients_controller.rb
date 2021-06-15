@@ -426,7 +426,7 @@ class PatientsController < ApplicationController
   end
 
   def bulk_update
-    redirect_to(root_url) && return unless current_user.can_edit_patient?
+    redirect_to(root_url) && return unless current_user.can_edit_patient_monitoring_info?
 
     # Nothing to do in this function if there isn't a list of patient ids.
     patient_ids = params.require(:ids)
@@ -450,17 +450,23 @@ class PatientsController < ApplicationController
     end
     patients = current_user.get_patients(patient_ids)
 
-    # For Monitorees who are closed, we don't want to update their `monitoring` status
-    # Or their `isolation` value through the bulk action case status modal.
-    # It is slightly more performant to pre-calculate this outside the loop below
-    closed_params = params.except('monitoring', 'isolation')
-    closed_params[:diffState] = closed_params[:diffState]&.without('monitoring', 'isolation')
+    if params.permit(:bulk_edit_type)[:bulk_edit_type] == 'follow-up'
+      patients.each do |patient|
+        update_follow_up_flag_fields(patient, params)
+      end
+    else
+      # For Monitorees who are closed, we don't want to update their `monitoring` status
+      # Or their `isolation` value through the bulk action case status modal.
+      # It is slightly more performant to pre-calculate this outside the loop below
+      closed_params = params.except('monitoring', 'isolation')
+      closed_params[:diffState] = closed_params[:diffState]&.without('monitoring', 'isolation')
 
-    patients.each do |patient|
-      # We never want to update closed records monitoring status via the bulk_update
-      update_params = patient.monitoring ? params : closed_params
-      update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
-                               update_params[:apply_to_household] ? :group : :none)
+      patients.each do |patient|
+        # We never want to update closed records monitoring status via the bulk_update
+        update_params = patient.monitoring ? params : closed_params
+        update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
+                                 update_params[:apply_to_household] ? :group : :none)
+      end
     end
   end
 
@@ -488,17 +494,10 @@ class PatientsController < ApplicationController
     # Update patient
     update_monitoring_fields(patient, params, :patient, :none)
 
+    # Grab the patient IDs of houshold members to also update
+    apply_to_household_ids = find_household_ids(patient, params)
     # If not applying to household, return
-    apply_to_household_ids = params.permit(apply_to_household_ids: [])[:apply_to_household_ids]
-    return unless params.permit(:apply_to_household)[:apply_to_household] && !apply_to_household_ids.nil?
-
-    # If a household member has been removed, they should not be updated
-    current_household_ids = patient.household.where(purged: false).where.not(id: patient.id).pluck(:id)
-    diff_household_array = apply_to_household_ids - current_household_ids
-    unless diff_household_array.empty?
-      error_message = 'Apply to household action failed: changes have been made to this household. Please refresh.'
-      render(json: { error: error_message }, status: :bad_request) && return
-    end
+    return if apply_to_household_ids.empty?
 
     # Update selected group members if applying to household and ids are supplied
     apply_to_household_ids.each do |id|
@@ -550,6 +549,105 @@ class PatientsController < ApplicationController
     patient.monitoring_history_edit(history_data, diff_state)
   end
 
+  # Update the patient's follow-up flag fields
+  def update_follow_up_flag
+    redirect_to(root_url) && return unless current_user.can_edit_patient_monitoring_info?
+
+    patient = current_user.get_patient(params.permit(:id)[:id])
+    redirect_to(root_url) && return if patient.nil?
+
+    update_follow_up_flag_fields(patient, params)
+  end
+
+  # Make updates to follow-up flag reason and/or note and create corresponding History items.
+  #
+  # patient - The Patient to update.
+  # params - The request params.
+  def update_follow_up_flag_fields(patient, params)
+    clear_flag = params.permit(:clear_flag)[:clear_flag]
+    history_data = {}
+    if clear_flag
+      clear_flag_reason = params.permit(:clear_flag_reason)[:clear_flag_reason]
+      clear_follow_up_flag(patient, clear_flag_reason)
+    else
+      follow_up_reason = params.permit(:follow_up_reason)[:follow_up_reason]
+      follow_up_note = params.permit(:follow_up_note)[:follow_up_note]
+
+      # Handle creating history items based on the updates
+      history_data = {
+        created_by: current_user.email,
+        patient: patient,
+        follow_up_reason: follow_up_reason,
+        follow_up_note: follow_up_note,
+        follow_up_reason_before: patient.follow_up_reason,
+        follow_up_note_before: patient.follow_up_note
+      }
+
+      # Handle success or failure of updating a follow-up flag
+      ActiveRecord::Base.transaction do
+        # Apply and save updates to the db
+        patient.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
+        # Create history item on successful update
+        History.follow_up_flag_edit(history_data)
+      end
+    end
+
+    # Grab the patient IDs of houshold members to also update
+    apply_to_household_ids = find_household_ids(patient, params)
+    # If not applying to household, return
+    return if apply_to_household_ids.empty?
+
+    # Update selected group members if applying to household and ids are supplied
+    if clear_flag
+      apply_to_household_ids.each do |id|
+        member = current_user.get_patient(id)
+        next if member.nil?
+
+        clear_flag_reason = params.permit(:clear_flag_reason)[:clear_flag_reason]
+        clear_follow_up_flag(member, clear_flag_reason)
+      end
+    else
+      apply_to_household_ids.each do |id|
+        member = current_user.get_patient(id)
+        next if member.nil?
+
+        history_data[:patient] = member
+        history_data[:follow_up_reason_before] = member.follow_up_reason
+        history_data[:follow_up_note_before] = member.follow_up_note
+
+        # Handle success or failure of updating a follow-up flag
+        ActiveRecord::Base.transaction do
+          # Apply and save updates to the db
+          member.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
+          # Create history item on successful update
+          History.follow_up_flag_edit(history_data)
+        end
+      end
+    end
+  end
+
+  # Clear the patient's follow-up flag reason and/or note and create corresponding History items.
+  #
+  # patient - The Patient to update.
+  # clear_flag_reason - The note to include in the history item
+  def clear_follow_up_flag(patient, clear_flag_reason)
+    # Prep data needed to create history items based on this update
+    history_data = {
+      created_by: current_user.email,
+      patient: patient,
+      clear_flag_reason: clear_flag_reason,
+      follow_up_reason_before: patient.follow_up_reason
+    }
+
+    # Handle success or failure of clearing a follow-up flag
+    ActiveRecord::Base.transaction do
+      # Apply and save updates to the db
+      patient.update!(follow_up_reason: nil, follow_up_note: nil)
+      # Create history item on successful update
+      History.clear_follow_up_flag(history_data)
+    end
+  end
+
   def clear_assessments
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
@@ -575,6 +673,28 @@ class PatientsController < ApplicationController
     comment = 'User reviewed a report (ID: ' + assessment.id.to_s + ').'
     comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
     History.report_reviewed(patient: patient, created_by: current_user.email, comment: comment)
+  end
+
+  # Return the patient IDs of household members that need to be updated
+  #
+  # patient - The Patient being updated
+  # params - The request params.
+  def find_household_ids(patient, params)
+    apply_to_household_ids = params.permit(apply_to_household_ids: [])[:apply_to_household_ids]
+    if params.permit(:apply_to_household)[:apply_to_household] && !apply_to_household_ids.nil?
+      # If a household member has been removed, they should not be updated
+      current_household_ids = patient.household.where(purged: false).where.not(id: patient.id).pluck(:id)
+      diff_household_array = apply_to_household_ids - current_household_ids
+      unless diff_household_array.empty?
+        error_message = 'Apply to household action failed: changes have been made to this household. Please refresh.'
+        render(json: { error: error_message }, status: :bad_request)
+        apply_to_household_ids = []
+      end
+    else
+      # When not applying the change to other household members, don't return any household IDs
+      apply_to_household_ids = []
+    end
+    apply_to_household_ids
   end
 
   # A patient is eligible to be removed from a household if their responder doesn't have the same contact
