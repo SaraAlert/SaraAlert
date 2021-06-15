@@ -589,10 +589,6 @@ class PatientsController < ApplicationController
         if patient.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
           # Create history item on successful update
           History.follow_up_flag_edit(history_data)
-        else
-          # Handle case where follow-up flag update failed
-          error_message = 'Unable to update Follow-up Flag.'
-          render(json: { error: error_message }, status: :bad_request) && return
         end
       end
     end
@@ -626,10 +622,6 @@ class PatientsController < ApplicationController
           if member.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
             # Create history item on successful update
             History.follow_up_flag_edit(history_data)
-          else
-            # Handle case where follow-up flag update failed
-            error_message = 'Unable to update Follow-up Flag for a household member.'
-            render(json: { error: error_message }, status: :bad_request) && break
           end
         end
       end
@@ -655,10 +647,6 @@ class PatientsController < ApplicationController
       if patient.update!(follow_up_reason: nil, follow_up_note: nil)
         # Create history item on successful update
         History.clear_follow_up_flag(history_data)
-      else
-        # Handle case where follow-up flag clear failed
-        error_message = 'Unable to clear Follow-up Flag.'
-        render(json: { error: error_message }, status: :bad_request) && return
       end
     end
   end
