@@ -12,6 +12,7 @@ class HistoryTest < ActiveSupport::TestCase
      'Report Updated',
      'Comment',
      'Enrollment',
+     'Follow Up Flag',
      'Monitoring Change',
      'Reports Reviewed',
      'Report Reviewed',

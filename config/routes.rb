@@ -106,6 +106,7 @@ Rails.application.routes.draw do
   post '/patients/:id/update_hoh', to: 'patients#update_hoh'
   post '/patients/:id/move_to_household', to: 'patients#move_to_household'
   post '/patients/:id/remove_from_household', to: 'patients#remove_from_household'
+  post '/patients/:id/follow_up_flag', to: 'patients#update_follow_up_flag'
   post '/patients/current_case_status', to: 'patients#current_case_status'
 
   resources :patients, param: :submission_token do

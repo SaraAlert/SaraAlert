@@ -83,11 +83,11 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     # Validate sorting order
     order = query[:order]
-    raise InvalidQueryError.new(:order, order) unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user
-                                                                                       state_local_id dob end_of_monitoring risk_level monitoring_plan
-                                                                                       public_health_action expected_purge_date reason_for_closure closed_at
-                                                                                       transferred_at latest_report first_positive_lab_at symptom_onset
-                                                                                       extended_isolation].include?(order)
+    raise InvalidQueryError.new(:order, order) unless order.nil? || order.blank? || %w[name flagged_for_follow_up jurisdiction transferred_from transferred_to
+                                                                                       assigned_user state_local_id dob end_of_monitoring risk_level
+                                                                                       monitoring_plan public_health_action expected_purge_date
+                                                                                       reason_for_closure closed_at transferred_at latest_report
+                                                                                       first_positive_lab_at symptom_onset extended_isolation].include?(order)
 
     # Validate sorting direction
     direction = query[:direction]
@@ -182,6 +182,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     case order
     when 'name'
       patients = patients.order(last_name: dir, first_name: dir, id: dir)
+    when 'flagged_for_follow_up'
+      patients = patients.order_by_follow_up_flag(asc: dir == 'asc').order(id: dir)
     when 'jurisdiction'
       patients = patients.includes(:jurisdiction).order('jurisdictions.name ' + dir, id: dir)
     when 'transferred_from'
@@ -455,6 +457,12 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = advanced_filter_quarantine_option(patients, filter, tz_offset, :ten_day)
       when 'seven-day-quarantine'
         patients = advanced_filter_quarantine_option(patients, filter, tz_offset, :seven_day)
+      when 'flagged-for-follow-up'
+        patients = if filter[:value] == 'Any Reason'
+                     patients.where.not(follow_up_reason: [nil, ''])
+                   else
+                     patients.where(follow_up_reason: filter[:value])
+                   end
       end
     end
     patients
@@ -630,8 +638,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                                'patients.isolation, patients.responder_id, patients.pause_notifications, patients.preferred_contact_method, '\
                                'patients.last_assessment_reminder_sent, patients.preferred_contact_time, patients.extended_isolation, '\
                                'patients.latest_fever_or_fever_reducer_at, patients.first_positive_lab_at, patients.negative_lab_count, '\
-                               'patients.head_of_household, jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path, '\
-                               'jurisdictions.id AS jurisdiction_id')
+                               'patients.head_of_household, patients.follow_up_reason, patients.follow_up_note, jurisdictions.name AS jurisdiction_name, '\
+                               'jurisdictions.path AS jurisdiction_path, jurisdictions.id AS jurisdiction_id')
 
     # execute query and get total count
     total = patients.total_entries
@@ -648,6 +656,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
       # populate fields specific to this linelist only if relevant
       details[:jurisdiction] = patient[:jurisdiction_name] || '' if fields.include?(:jurisdiction)
+      if fields.include?(:flagged_for_follow_up)
+        details[:flagged_for_follow_up] = { follow_up_reason: patient[:follow_up_reason], follow_up_note: patient[:follow_up_note] }
+      end
       details[:transferred_from] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_from)
       details[:transferred_to] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_to)
       details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
@@ -662,8 +673,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       details[:reason_for_closure] = patient[:monitoring_reason] || '' if fields.include?(:reason_for_closure)
       details[:closed_at] = patient[:closed_at]&.rfc2822 || '' if fields.include?(:closed_at)
       details[:transferred_at] = patient[:latest_transfer_at]&.rfc2822 || '' if fields.include?(:transferred_at)
-      latest_report = { timestamp: patient[:latest_assessment_at]&.rfc2822, symptomatic: patient[:latest_assessment_symptomatic] }
-      details[:latest_report] = latest_report || '' if fields.include?(:latest_report)
+      if fields.include?(:latest_report)
+        details[:latest_report] = { timestamp: patient[:latest_assessment_at]&.rfc2822, symptomatic: patient[:latest_assessment_symptomatic] }
+      end
       details[:status] = patient.status.to_s.gsub('_', ' ').sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
       details[:report_eligibility] = patient.report_eligibility if fields.include?(:report_eligibility)
       details[:is_hoh] = patient.head_of_household?
@@ -675,24 +687,30 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def linelist_specific_fields(workflow, tab)
-    return %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at] if tab == :closed
+    return %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at] if tab == :closed
 
     if workflow == :isolation
       if tab == :all
-        return %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report status report_eligibility]
+        return %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan
+                  latest_report status report_eligibility]
       end
-      return %i[transferred_from monitoring_plan transferred_at] if tab == :transferred_in
+      return %i[flagged_for_follow_up transferred_from monitoring_plan transferred_at] if tab == :transferred_in
       return %i[transferred_to monitoring_plan transferred_at] if tab == :transferred_out
 
-      return %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
+      return %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan
+                latest_report report_eligibility]
     end
 
-    return %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility] if tab == :all
-    return %i[jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility] if tab == :pui
-    return %i[transferred_from end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_in
+    case tab
+    when :all
+      return %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility]
+    when :pui
+      return %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility]
+    end
+    return %i[flagged_for_follow_up transferred_from end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_in
     return %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_out
 
-    %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
+    %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
   end
 end
 
