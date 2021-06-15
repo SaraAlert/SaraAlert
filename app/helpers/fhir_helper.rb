@@ -194,6 +194,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       preferred_contact_time: from_string_extension(patient, 'Patient', 'preferred-contact-time'),
       symptom_onset: symptom_onset,
       user_defined_symptom_onset: { value: !symptom_onset[:value]&.nil?, path: date_ext_path('Patient', 'symptom-onset-date') },
+      user_defined_id_statelocal: from_identifier(patient&.identifier, 'state-local-id', 'Patient'),
+      user_defined_id_cdc: from_identifier(patient&.identifier, 'cdc-id', 'Patient'),
+      user_defined_id_nndss: from_identifier(patient&.identifier, 'nndss-id', 'Patient'),
       interpretation_required: from_bool_extension_nil_default(patient, 'Patient', 'interpretation-required'),
       last_date_of_exposure: from_date_extension(patient, 'Patient', %w[last-date-of-exposure last-exposure-date]),
       isolation: from_bool_extension_false_default(patient, 'Patient', 'isolation'),
@@ -211,9 +214,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       additional_planned_travel_related_notes: from_string_extension(patient, 'Patient', 'additional-planned-travel-notes'),
       primary_telephone_type: from_primary_phone_type_extension(patient, 'Patient'),
       secondary_telephone_type: from_secondary_phone_type_extension(patient, 'Patient'),
-      user_defined_id_statelocal: from_identifier(patient&.identifier, 'state-local-id', 'Patient'),
-      user_defined_id_cdc: from_identifier(patient&.identifier, 'cdc-id', 'Patient'),
-      user_defined_id_nndss: from_identifier(patient&.identifier, 'nndss-id', 'Patient'),
       continuous_exposure: from_bool_extension_false_default(patient, 'Patient', 'continuous-exposure'),
       exposure_risk_assessment: from_string_extension(patient, 'Patient', 'exposure-risk-assessment'),
       public_health_action: from_string_extension(patient, 'Patient', 'public-health-action'),
@@ -567,6 +567,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     { value: converted || code, path: "Patient.extension('http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex').valueCode" }
   end
 
+  # Convert to a complex extension representing the Patient's latest transfer
   def to_latest_transfer_extension(patient)
     return nil if patient.latest_transfer_at.nil? || patient.latest_transfer_from.nil?
 

@@ -1733,6 +1733,23 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.valid?
   end
 
+  test 'validates public_health_action inclusion in api context' do
+    patient = valid_patient
+
+    patient.public_health_action = 'None'
+    assert patient.valid?(:api)
+
+    patient.public_health_action = ''
+    assert patient.valid?(:api)
+
+    patient.public_health_action = nil
+    assert patient.valid?(:api)
+
+    patient.public_health_action = 'foo'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
   test 'validates case_status inclusion in api and import context' do
     patient = valid_patient
 
