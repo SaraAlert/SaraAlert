@@ -586,10 +586,9 @@ class PatientsController < ApplicationController
       # Handle success or failure of updating a follow-up flag
       ActiveRecord::Base.transaction do
         # Apply and save updates to the db
-        if patient.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
-          # Create history item on successful update
-          History.follow_up_flag_edit(history_data)
-        end
+        patient.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
+        # Create history item on successful update
+        History.follow_up_flag_edit(history_data)
       end
     end
 
@@ -619,10 +618,9 @@ class PatientsController < ApplicationController
         # Handle success or failure of updating a follow-up flag
         ActiveRecord::Base.transaction do
           # Apply and save updates to the db
-          if member.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
-            # Create history item on successful update
-            History.follow_up_flag_edit(history_data)
-          end
+          member.update!(follow_up_reason: follow_up_reason, follow_up_note: follow_up_note)
+          # Create history item on successful update
+          History.follow_up_flag_edit(history_data)
         end
       end
     end
@@ -644,10 +642,9 @@ class PatientsController < ApplicationController
     # Handle success or failure of clearing a follow-up flag
     ActiveRecord::Base.transaction do
       # Apply and save updates to the db
-      if patient.update!(follow_up_reason: nil, follow_up_note: nil)
-        # Create history item on successful update
-        History.clear_follow_up_flag(history_data)
-      end
+      patient.update!(follow_up_reason: nil, follow_up_note: nil)
+      # Create history item on successful update
+      History.clear_follow_up_flag(history_data)
     end
   end
 
