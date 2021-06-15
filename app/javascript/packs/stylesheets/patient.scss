@@ -99,3 +99,14 @@
   color: #707070 !important;
   font-size: .9em;
 }
+
+.follow-up-flag-box {
+  background-color: $follow-up-box;
+  border: 2px solid $follow-up-box-border;
+  float: left;
+  color: #404040;
+}
+
+.flag-note {
+  font-size: .95rem;
+}

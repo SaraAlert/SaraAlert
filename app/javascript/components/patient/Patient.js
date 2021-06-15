@@ -135,7 +135,7 @@ class Patient extends React.Component {
 
     return (
       <React.Fragment>
-        <Row id="monitoree-details-header">
+        <Row id="monitoree-details-header" className="mb-3">
           {this.props.can_modify_subject_status && !this.props.edit_mode && this.props.details.follow_up_reason && (
             <FollowUpFlagPanel
               patient={this.props.details}
@@ -154,12 +154,7 @@ class Patient extends React.Component {
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
             {this.props.can_modify_subject_status && !this.props.edit_mode && !this.props.details.follow_up_reason && (
-              <Button
-                id="set-follow-up-flag-link"
-                size="sm"
-                className="my-2 mr-2"
-                aria-label="Set Flag for Follow-up"
-                onClick={() => this.setState({ showSetFlagModal: true })}>
+              <Button id="set-follow-up-flag-link" size="sm" aria-label="Set Flag for Follow-up" onClick={() => this.setState({ showSetFlagModal: true })}>
                 <span>
                   {' '}
                   <i className="fas fa-flag pr-1"></i> Flag for Follow-up
