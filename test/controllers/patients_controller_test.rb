@@ -605,7 +605,7 @@ class PatientsControllerTest < ActionController::TestCase
   # ------- End Household Updates -----
 
   test 'bulk update status' do
-    %i[admin_user analyst_user].each do |role|
+    %i[admin_user analyst_user enroller_user].each do |role|
       user = create(role)
       sign_in user
       post :bulk_update
@@ -614,7 +614,7 @@ class PatientsControllerTest < ActionController::TestCase
     end
 
     # public_health_enroller_user public_health_user
-    %i[enroller_user].each do |role|
+    %i[public_health_enroller_user public_health_user].each do |role|
       user = create(role)
       patient = create(:patient, creator: user)
       sign_in user
@@ -1046,6 +1046,229 @@ class PatientsControllerTest < ActionController::TestCase
 
     h = History.where(patient: patient)
     assert_match(/changed Symptom Onset Date/, h.second.comment)
+  end
+
+  test 'setting and clearing follow up flag for an individual patient with no other household members' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    patient = create(:patient, creator: user, monitoring: true, continuous_exposure: true)
+
+    post :update_follow_up_flag, params: {
+      id: patient.id,
+      follow_up_reason: 'Hospitalized',
+      follow_up_note: 'Test Note',
+      clear_flag: false,
+      clear_flag_reason: '',
+      apply_to_household: false,
+      apply_to_household_ids: []
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_match('Hospitalized', patient.follow_up_reason)
+    assert_match('Test Note', patient.follow_up_note)
+    assert_contains_history(patient, 'Flagged for Follow-up. Reason: "Hospitalized: Test Note"')
+
+    post :update_follow_up_flag, params: {
+      id: patient.id,
+      follow_up_reason: '',
+      follow_up_note: '',
+      clear_flag: true,
+      clear_flag_reason: 'Test Note',
+      apply_to_household: false,
+      apply_to_household_ids: []
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_nil patient.follow_up_reason
+    assert_nil patient.follow_up_note
+    assert_contains_history(patient, 'User cleared flag for follow-up. Reason: Test Note')
+  end
+
+  test 'setting and clearing follow up flag for an individual patient with other household members' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+    household_member_1 = create(:patient, creator: user, monitoring: true)
+    household_member_2 = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+    household_member_3 = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+    patient = create(:patient, creator: user, monitoring: true, responder_id: household_member_1.id)
+
+    post :update_follow_up_flag, params: {
+      id: patient.id,
+      follow_up_reason: 'Hospitalized',
+      follow_up_note: 'Test Note',
+      clear_flag: false,
+      clear_flag_reason: '',
+      apply_to_household: true,
+      apply_to_household_ids: [household_member_1.id, household_member_2.id]
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_match('Hospitalized', patient.follow_up_reason)
+    assert_match('Test Note', patient.follow_up_note)
+    assert_contains_history(patient, 'Flagged for Follow-up. Reason: "Hospitalized: Test Note"')
+    household_member_1.reload
+    assert_match('Hospitalized', household_member_1.follow_up_reason)
+    assert_match('Test Note', household_member_1.follow_up_note)
+    assert_contains_history(household_member_1, 'Flagged for Follow-up. Reason: "Hospitalized: Test Note"')
+    household_member_2.reload
+    assert_match('Hospitalized', household_member_2.follow_up_reason)
+    assert_match('Test Note', household_member_2.follow_up_note)
+    assert_contains_history(household_member_2, 'Flagged for Follow-up. Reason: "Hospitalized: Test Note"')
+    household_member_3.reload
+    assert_nil household_member_3.follow_up_reason
+    assert_nil household_member_3.follow_up_note
+    assert_not_contains_history(household_member_3, 'Flagged for Follow-up. Reason: "Hospitalized: Test Note"')
+
+    post :update_follow_up_flag, params: {
+      id: patient.id,
+      follow_up_reason: '',
+      follow_up_note: '',
+      clear_flag: true,
+      clear_flag_reason: 'Test Note',
+      apply_to_household: true,
+      apply_to_household_ids: [household_member_1.id, household_member_3.id]
+    }, as: :json
+
+    assert_response :success
+    patient.reload
+    assert_nil patient.follow_up_reason
+    assert_nil patient.follow_up_note
+    assert_contains_history(patient, 'User cleared flag for follow-up. Reason: Test Note')
+    household_member_1.reload
+    assert_nil household_member_1.follow_up_reason
+    assert_nil household_member_1.follow_up_note
+    assert_contains_history(household_member_1, 'User cleared flag for follow-up. Reason: Test Note')
+    household_member_2.reload
+    assert_match('Hospitalized', household_member_2.follow_up_reason)
+    assert_match('Test Note', household_member_2.follow_up_note)
+    assert_not_contains_history(household_member_2, 'User cleared flag for follow-up. Reason: Test Note')
+    household_member_3.reload
+    assert_nil household_member_3.follow_up_reason
+    assert_nil household_member_3.follow_up_note
+    assert_not_contains_history(household_member_3, 'User cleared flag for follow-up. Reason: Test Note')
+  end
+
+  test 'bulk action for setting and clearing follow up flag for patients without applying update to household members' do
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    patient_2 = create(:patient, creator: user)
+    sign_in user
+
+    post :bulk_update, params: {
+      ids: [patient_1.id, patient_2.id],
+      bulk_edit_type: 'follow-up',
+      apply_to_household: false,
+      follow_up_reason: 'In Need of Follow-up',
+      follow_up_note: 'Test Note',
+      clear_flag: false,
+      clear_flag_reason: ''
+    }, as: :json
+
+    assert_response :success
+    patient_1.reload
+    assert_match('In Need of Follow-up', patient_1.follow_up_reason)
+    assert_match('Test Note', patient_1.follow_up_note)
+    assert_contains_history(patient_1, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+
+    patient_2.reload
+    assert_match('In Need of Follow-up', patient_2.follow_up_reason)
+    assert_match('Test Note', patient_2.follow_up_note)
+    assert_contains_history(patient_2, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+
+    post :bulk_update, params: {
+      ids: [patient_1.id, patient_2.id],
+      bulk_edit_type: 'follow-up',
+      apply_to_household: false,
+      follow_up_reason: '',
+      follow_up_note: '',
+      clear_flag: true,
+      clear_flag_reason: 'This is a test'
+    }, as: :json
+
+    assert_response :success
+    patient_1.reload
+    assert_nil patient_1.follow_up_reason
+    assert_nil patient_1.follow_up_note
+    assert_contains_history(patient_1, 'User cleared flag for follow-up. Reason: This is a test')
+    patient_2.reload
+    assert_nil patient_2.follow_up_reason
+    assert_nil patient_2.follow_up_note
+    assert_contains_history(patient_2, 'User cleared flag for follow-up. Reason: This is a test')
+  end
+
+  test 'bulk action for setting and clearing follow up flag for patients with applying update to household members' do
+    user = create(:public_health_enroller_user)
+    household_1_hoh = create(:patient, creator: user, monitoring: true)
+    household_1_member_1 = create(:patient, creator: user, monitoring: true, responder_id: household_1_hoh.id)
+
+    household_2_hoh = create(:patient, creator: user, monitoring: true)
+    household_2_member_1 = create(:patient, creator: user, monitoring: true, responder_id: household_2_hoh.id)
+    household_2_member_2 = create(:patient, creator: user, monitoring: true, responder_id: household_2_hoh.id)
+    sign_in user
+
+    post :bulk_update, params: {
+      ids: [household_1_hoh.id, household_2_member_1.id],
+      bulk_edit_type: 'follow-up',
+      apply_to_household: true,
+      follow_up_reason: 'In Need of Follow-up',
+      follow_up_note: 'Test Note',
+      clear_flag: false,
+      clear_flag_reason: ''
+    }, as: :json
+
+    assert_response :success
+    household_1_hoh.reload
+    assert_match('In Need of Follow-up', household_1_hoh.follow_up_reason)
+    assert_match('Test Note', household_1_hoh.follow_up_note)
+    assert_contains_history(household_1_hoh, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+    household_1_member_1.reload
+    assert_match('In Need of Follow-up', household_1_member_1.follow_up_reason)
+    assert_match('Test Note', household_1_member_1.follow_up_note)
+    assert_contains_history(household_1_member_1, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+
+    household_2_member_1.reload
+    assert_match('In Need of Follow-up', household_2_member_1.follow_up_reason)
+    assert_match('Test Note', household_2_member_1.follow_up_note)
+    assert_contains_history(household_2_member_1, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+    household_2_member_2.reload
+    assert_nil household_2_member_2.follow_up_reason
+    assert_nil household_2_member_2.follow_up_note
+    assert_not_contains_history(household_2_member_2, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+    household_2_hoh.reload
+    assert_nil household_2_hoh.follow_up_reason
+    assert_nil household_2_hoh.follow_up_note
+    assert_not_contains_history(household_2_hoh, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+
+    post :bulk_update, params: {
+      ids: [household_1_hoh.id, household_2_member_1.id],
+      bulk_edit_type: 'follow-up',
+      apply_to_household: true,
+      follow_up_reason: '',
+      follow_up_note: '',
+      clear_flag: true,
+      clear_flag_reason: 'This is a test'
+    }, as: :json
+    assert_response :success
+    household_1_hoh.reload
+    assert_nil household_1_hoh.follow_up_reason
+    assert_nil household_1_hoh.follow_up_note
+    assert_contains_history(household_1_hoh, 'User cleared flag for follow-up. Reason: This is a test')
+    household_1_member_1.reload
+    assert_nil household_1_member_1.follow_up_reason
+    assert_nil household_1_member_1.follow_up_note
+    assert_contains_history(household_1_hoh, 'User cleared flag for follow-up. Reason: This is a test')
+
+    household_2_member_1.reload
+    assert_nil household_2_member_1.follow_up_reason
+    assert_nil household_2_member_1.follow_up_note
+    assert_contains_history(household_2_member_1, 'User cleared flag for follow-up. Reason: This is a test')
+    household_2_member_2.reload
+    assert_not_contains_history(household_2_member_2, 'User cleared flag for follow-up. Reason: This is a test')
+    household_2_hoh.reload
+    assert_not_contains_history(household_2_hoh, 'User cleared flag for follow-up. Reason: This is a test')
   end
 end
 # rubocop:enable Metrics/ClassLength

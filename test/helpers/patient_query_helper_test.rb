@@ -2,6 +2,7 @@
 
 require 'test_case'
 
+# rubocop:disable Metrics/ClassLength
 class PatientQueryHelperTest < ActionView::TestCase
   # --- BOOLEAN ADVANCED FILTER QUERIES --- #
 
@@ -796,4 +797,35 @@ class PatientQueryHelperTest < ActionView::TestCase
     filtered_patients_array = [patient_4, patient_7]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
+
+  test 'advanced filter flagged for follow up filters those marked as flagged for follow up' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    patient_1.update!(follow_up_reason: 'Lost to Follow-up', follow_up_note: 'This is a test')
+    patient_2 = create(:patient, creator: user)
+    patient_2.update!(follow_up_reason: 'Duplicate', follow_up_note: 'This is a test')
+    patient_3 = create(:patient, creator: user)
+    patient_3.update!(follow_up_reason: 'Needs Interpretation')
+    patient_4 = create(:patient, creator: user)
+    patient_4.update!(follow_up_reason: 'Lost to Follow-up', follow_up_note: 'This is a test note')
+    create(:patient, creator: user)
+
+    patients = Patient.all
+    # Check for monitorees who have any follow-up flag reason
+    filters = [{ filterOption: {}, additionalFilterOption: nil, value: 'Any Reason' }]
+    filters[0][:filterOption]['name'] = 'flagged-for-follow-up'
+    tz_offset = 300
+
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Check for monitorees who have a specific follow-up flag reason
+    filters[0][:value] = 'Lost to Follow-up'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_4]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
 end
+# rubocop:enable Metrics/ClassLength
