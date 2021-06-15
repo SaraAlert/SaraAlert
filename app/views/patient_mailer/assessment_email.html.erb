@@ -8,10 +8,6 @@
 
     <p><%= t('assessments.email.reminder.thank-you', locale: @lang) %></p>
 
-    <% if @contact_info[:email].blank? && @contact_info[:phone].blank? && @contact_info[:webpage].blank? %>
-    <p><%= t('assessments.email.contact.info2', locale: @lang) %></p>
-    <% end %>
-
     <%= render partial: 'main_mailer/responsive_button', locals: {
           patient: patient,
           link: new_patient_assessment_jurisdiction_lang_initials_url(patient[:patient].submission_token,
@@ -21,18 +17,20 @@
           text: t('assessments.email.reminder.report', locale: @lang)
         } %><br />
 
-      <% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
+    <% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
       <p><%= t('assessments.email.contact.info1', locale: @lang) %></p>
-      <% end %>
       <% if @contact_info[:email].present? %>
-      <%= t('assessments.email.contact.email', locale: @lang) %> <%= @contact_info[:email] %> <br />
+        <%= t('assessments.email.contact.email', locale: @lang) %> <%= @contact_info[:email] %> <br />
       <% end %>
-      <% if @contact_info[:phone].present? %>
+        <% if @contact_info[:phone].present? %>
       <%= t('assessments.email.contact.phone', locale: @lang) %> <%= @contact_info[:phone] %> <br />
       <% end %>
-      <% if @contact_info[:webpage].present? %>
+        <% if @contact_info[:webpage].present? %>
       <%= t('assessments.email.contact.webpage', locale: @lang) %> <%= @contact_info[:webpage] %>
       <% end %>
+    <% else %>
+      <p><%= t('assessments.email.contact.info2', locale: @lang) %></p>
+    <% end %>
 
   <% end %>
 <% end %>
