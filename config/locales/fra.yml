@@ -100,7 +100,7 @@ fra:
         header: 'Bienvenue sur le système d’Alerte Sara'
         dear: 'Cher/Chère'
         info1: 'Vous avez été recruté(e) dans le système de surveillance d’Alerte Sara. Nous vous demandons de fournir des rapports quotidiens sur votre état. Veuillez cliquer sur le bouton ci-dessous et suivre les instructions qui s’affichent à l’écran.'
-        info2: 'Vous recevrez un rappel similaire tous les jours jusqu’à ce que votre période de surveillance soit terminée. Si vous avez des questions, veuillez contacter le professionnel de santé qui vous a recruté(e).'
+        info2: 'Vous recevrez un rappel similaire tous les jours jusqu’à ce que votre période de surveillance soit terminée.'
         report: 'Rapport quotidien'
         footer: 'Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales. Pour la confidentialité et plus d’informations, visitez saraalert.org.'
       closed:
@@ -109,6 +109,12 @@ fra:
         dear: 'Cher/Chère'
         thank-you: "Votre surveillance d’Alerte Sara est maintenant terminée ! Merci pour votre participation."
         footer: "Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales. Pour la confidentialité et plus d’informations, visitez saraalert.org."
+      contact:
+        info1: 'Si vous avez des questions, veuillez utiliser les coordonnées ci-dessous pour contacter l’organisation de santé publique qui vous a aidé à vous inscrire:'
+        info2: 'Si vous avez des questions, veuillez contacter le professionnel de santé qui vous a recruté(e).'
+        email: 'Courriel'
+        phone: 'Téléphone'
+        webpage: 'Site web'
     sms:
       prompt:
         intro1: 'Bienvenue sur le système d’Alerte Sara, nous vous enverrons vos rapports quotidiens pour'
