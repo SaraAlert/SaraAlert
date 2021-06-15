@@ -20,13 +20,13 @@
     <% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
       <p><%= t('assessments.email.contact.info1', locale: @lang) %></p>
       <% if @contact_info[:email].present? %>
-        <%= t('assessments.email.contact.email', locale: @lang) %> <%= @contact_info[:email] %> <br />
+        <%= t('assessments.email.contact.email', locale: @lang) %><%= ': '%> <%= @contact_info[:email] %> <br />
       <% end %>
         <% if @contact_info[:phone].present? %>
-      <%= t('assessments.email.contact.phone', locale: @lang) %> <%= @contact_info[:phone] %> <br />
+      <%= t('assessments.email.contact.phone', locale: @lang) %><%= ': '%> <%= @contact_info[:phone] %> <br />
       <% end %>
         <% if @contact_info[:webpage].present? %>
-      <%= t('assessments.email.contact.webpage', locale: @lang) %> <%= @contact_info[:webpage] %>
+      <%= t('assessments.email.contact.webpage', locale: @lang) %><%= ': '%> <%= @contact_info[:webpage] %>
       <% end %>
     <% else %>
       <p><%= t('assessments.email.contact.info2', locale: @lang) %></p>

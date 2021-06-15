@@ -112,9 +112,9 @@ spa:
       contact:
         info1: 'Si tiene alguna pregunta, por favor utilice la información de contacto a continuación para comunicarse con la organización de salud pública que le ayudó a inscribirse:'
         info2: 'Si tiene alguna pregunta, por favor pónganse en contacto con el proveedor de atención médica que le ayudó a inscribirse.'
-        email: 'Correo electrónico: '
-        phone: 'Teléfono: '
-        webpage: 'Página web: '
+        email: 'Correo electrónico'
+        phone: 'Teléfono'
+        webpage: 'Página web'
     sms:
       prompt:
         intro1: 'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para'

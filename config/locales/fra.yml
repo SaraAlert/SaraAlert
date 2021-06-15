@@ -112,9 +112,9 @@ fra:
       contact:
         info1: 'Si vous avez des questions, veuillez utiliser les coordonnées ci-dessous pour contacter l’organisation de santé publique qui vous a aidé à vous inscrire:'
         info2: 'Si vous avez des questions, veuillez contacter le professionnel de santé qui vous a recruté(e).'
-        email: 'Courriel: '
-        phone: 'Téléphone: '
-        webpage: 'Site web: '
+        email: 'Courriel'
+        phone: 'Téléphone'
+        webpage: 'Site web'
     sms:
       prompt:
         intro1: 'Bienvenue sur le système d’Alerte Sara, nous vous enverrons vos rapports quotidiens pour'

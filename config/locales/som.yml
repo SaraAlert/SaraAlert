@@ -112,9 +112,9 @@ som:
       contact:
         info1: 'Haddii aad qabtid wax su’aalo ah, fadlan macluumaad hoos ku qoran u isticmaal si aad u gaadho hay’ad caafimaadka dadweynaha in caawisay kuu soo diiwaangelin:'
         info2: 'Haddii aad qabtid wax su’aalo ah, fadlan la xiriir xirfadlaha daryeelka caafimaadka kaasoo kaa caawiyay in lagu diiwaangeliyo.'
-        email: 'Email: '
-        phone: 'Telefoon: '
-        webpage: 'Boga shabagada: '
+        email: 'Email'
+        phone: 'Telefoon'
+        webpage: 'Boga shabagada'
     sms:
       prompt:
         intro1: 'Ku soo dhowow nidaamka Sara Alert, waxaan ku soo diri doonnaa warbixinadaada maalinlaha ah ee loogu talagalay'

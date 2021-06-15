@@ -112,9 +112,9 @@ eng:
       contact:
         info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
         info2: 'If you have any questions please reach out to the public health organization that helped enroll you.'
-        email: 'Email: '
-        phone: 'Phone: '
-        webpage: 'Webpage: '
+        email: 'Email'
+        phone: 'Phone'
+        webpage: 'Webpage'
     sms:
       prompt:
         intro1: 'Welcome to the Sara Alert system, we will be sending your daily reports for'
