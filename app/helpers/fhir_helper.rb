@@ -105,7 +105,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_bool_extension(patient.continuous_exposure, 'continuous-exposure'),
         to_string_extension(patient.end_of_monitoring, 'end-of-monitoring'),
         to_datetime_extension(patient.expected_purge_ts, 'expected-purge-date'),
-        to_string_extension(patient.monitoring_reason, 'monitoring-reason'),
         to_string_extension(patient.exposure_risk_assessment, 'exposure-risk-assessment'),
         to_string_extension(patient.public_health_action, 'public-health-action'),
         to_bool_extension(patient.contact_of_known_case, 'contact-of-known-case'),
@@ -114,7 +113,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.potential_exposure_location, 'potential-exposure-location'),
         to_string_extension(patient.potential_exposure_country, 'potential-exposure-country'),
         to_bool_extension(patient.interpretation_required, 'interpretation-required'),
-        to_date_extension(patient.extended_isolation, 'extended-isolation')
+        to_date_extension(patient.extended_isolation, 'extended-isolation'),
+        to_string_extension(patient.monitoring_reason, 'reason-for-closure')
       ].reject(&:nil?)
     )
   end
