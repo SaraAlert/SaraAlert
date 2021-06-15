@@ -1931,6 +1931,22 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
+  test 'validates extended_isolation is a valid date in api context' do
+    patient = valid_patient
+    patient.isolation = true
+
+    patient.extended_isolation = 25.years.ago
+    assert patient.valid?(:api)
+
+    patient.extended_isolation = '01-15-2000'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+
+    patient.extended_isolation = '2000-13-13'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
   test 'validates email is a valid email address in api and import context' do
     patient = valid_patient
 
@@ -2096,6 +2112,20 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.laboratories << create(:laboratory, result: 'positive', specimen_collection: 1.day.ago)
     assert patient.valid?(:api_create)
+  end
+
+  test 'validates extended_isolation is absent when isolation is false' do
+    patient = valid_patient
+    patient.isolation = false
+
+    patient.extended_isolation = 3.days.ago
+    assert_not patient.valid?(:api)
+
+    patient.extended_isolation = ''
+    assert patient.valid?(:api)
+
+    patient.extended_isolation = nil
+    assert patient.valid?(:api)
   end
 
   test 'ten_day_quarantine_candidates scope checks purged, monitoring, isolation, and continuous_exposure' do

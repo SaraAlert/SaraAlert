@@ -80,6 +80,12 @@ class Patient < ApplicationRecord
     validates required_field, on: :api, presence: { message: 'is required' }
   end
 
+  validates :extended_isolation,
+            on: :api,
+            absence: { message: "is not allowed unless 'Isolation' is 'true'" },
+            if: -> { !isolation }
+  validates :extended_isolation, on: :api, date: true
+
   validates :last_date_of_exposure,
             on: :api,
             presence: { message: "is required when 'Isolation' is 'false' and 'Continuous Exposure' is 'false'" },

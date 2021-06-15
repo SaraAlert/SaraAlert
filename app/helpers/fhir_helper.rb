@@ -113,7 +113,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.member_of_a_common_exposure_cohort_type, 'common-exposure-cohort-name'),
         to_string_extension(patient.potential_exposure_location, 'potential-exposure-location'),
         to_string_extension(patient.potential_exposure_country, 'potential-exposure-country'),
-        to_bool_extension(patient.interpretation_required, 'interpretation-required')
+        to_bool_extension(patient.interpretation_required, 'interpretation-required'),
+        to_date_extension(patient.extended_isolation, 'extended-isolation')
       ].reject(&:nil?)
     )
   end
@@ -220,7 +221,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       contact_of_known_case_id: from_string_extension(patient, 'Patient', 'contact-of-known-case-id'),
       member_of_a_common_exposure_cohort_type: from_string_extension(patient, 'Patient', 'common-exposure-cohort-name'),
       potential_exposure_location: from_string_extension(patient, 'Patient', 'potential-exposure-location'),
-      potential_exposure_country: from_string_extension(patient, 'Patient', 'potential-exposure-country')
+      potential_exposure_country: from_string_extension(patient, 'Patient', 'potential-exposure-country'),
+      extended_isolation: from_date_extension(patient, 'Patient', ['extended-isolation'])
     }
   end
 

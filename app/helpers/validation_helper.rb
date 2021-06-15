@@ -244,7 +244,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     administration_date: { label: 'Administration Date', checks: [:date] },
     dose_number: { label: 'Dose Number', checks: [:enum] },
     notes: { label: 'Notes', checks: [] },
-    public_health_action: { label: 'Public Health Action', checks: [] }
+    public_health_action: { label: 'Public Health Action', checks: [] },
+    extended_isolation: { label: 'Extended Isolation', checks: [:date] }
   }.freeze
 
   # Validates if a given date value is between (inclusive) two dates.
