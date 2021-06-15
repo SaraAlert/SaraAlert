@@ -14,6 +14,7 @@ class PatientMailer < ApplicationMailer
       { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
     end
     @lang = patient.select_language
+    @contact_info = patient.jurisdiction.contact_info
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.enrollment.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
@@ -168,6 +169,7 @@ class PatientMailer < ApplicationMailer
     return unless patient.last_assessment_reminder_sent_eligible?
 
     @lang = patient.select_language
+    @contact_info = patient.jurisdiction.contact_info
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     @patients = patient.active_dependents.uniq.collect do |dependent|

@@ -127,7 +127,7 @@ namespace :admin do
       jurisdiction.email = jur_values['email'] || ''
       jurisdiction.phone = jur_values['phone'] || ''
       jurisdiction.webpage = jur_values['webpage'] || ''
-      jurisdiction.webpage = jur_values['message'] || ''
+      jurisdiction.message = jur_values['message'] || ''
       jurisdiction.send_digest = jur_values['send_digest'] || false
     end
     threshold_condition_symptoms = []
