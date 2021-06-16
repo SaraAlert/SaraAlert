@@ -201,10 +201,6 @@ class PublicHealthHeader extends React.Component {
               )}
             </ButtonGroup>
             <ButtonGroup className="float-right mb-2">
-              <Button variant={this.props.workflow === 'global' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/global`}>
-                <i className="fas fa-globe"></i> Global<span className="d-none d-xl-inline"> Dashboard</span>{' '}
-                {this.state.counts.exposure !== undefined && <span id="globalCount">({this.state.counts.global})</span>}
-              </Button>
               <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/exposure`}>
                 <i className="fas fa-people-arrows"></i> Exposure <span className="d-none d-xl-inline"> Monitoring</span>{' '}
                 {this.state.counts.exposure !== undefined && <span id="exposureCount">({this.state.counts.exposure})</span>}
@@ -212,6 +208,10 @@ class PublicHealthHeader extends React.Component {
               <Button variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/isolation`}>
                 <i className="fas fa-street-view"></i> Isolation <span className="d-none d-xl-inline"> Monitoring</span>{' '}
                 {this.state.counts.isolation !== undefined && <span id="isolationCount">({this.state.counts.isolation})</span>}
+              </Button>
+              <Button variant={this.props.workflow === 'global' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/global`}>
+                <i className="fas fa-globe"></i> Global<span className="d-none d-xl-inline"> Dashboard</span>{' '}
+                {this.state.counts.exposure !== undefined && <span id="globalCount">({this.state.counts.global})</span>}
               </Button>
             </ButtonGroup>
           </Col>
