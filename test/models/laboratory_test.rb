@@ -214,6 +214,32 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert_not lab.valid?(:api)
     assert_not lab.valid?(:import)
     assert lab.valid?
+
+    lab.specimen_collection = '2021-02-02 2021-01-01'
+    assert_not lab.valid?(:import)
+
+    lab.specimen_collection = 'typo2021-01-01'
+    assert_not lab.valid?(:api)
+    assert_not lab.valid?(:import)
+
+    lab.specimen_collection = '2021-01-01typo'
+    assert_not lab.valid?(:api)
+    assert_not lab.valid?(:import)
+
+    lab.specimen_collection = 20_210_101
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:specimen_collection][0]
+
+    lab.specimen_collection = 20_210_001
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:specimen_collection][0]
+
+    lab.specimen_collection = 20_210_101.001
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:specimen_collection][0]
   end
 
   test 'validates report is a valid date' do
@@ -240,5 +266,31 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert_not lab.valid?(:api)
     assert_not lab.valid?(:import)
     assert lab.valid?
+
+    lab.report = '2021-02-02 2021-01-01'
+    assert_not lab.valid?(:import)
+
+    lab.report = 'typo2021-01-01'
+    assert_not lab.valid?(:api)
+    assert_not lab.valid?(:import)
+
+    lab.report = '2021-01-01typo'
+    assert_not lab.valid?(:api)
+    assert_not lab.valid?(:import)
+
+    lab.report = 20_210_101
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:report][0]
+
+    lab.report = 20_210_001
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:report][0]
+
+    lab.report = 20_210_101.001
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:report][0]
   end
 end
