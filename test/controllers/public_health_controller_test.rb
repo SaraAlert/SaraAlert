@@ -243,13 +243,13 @@ class PublicHealthControllerTest < ActionController::TestCase
 
       post :patients, params: { query: { workflow: 'global', tab: 'priority_review' } }, as: :json
       json_response = JSON.parse(response.body)
-      patients = user.viewable_patients.exposure_symptomatic.merge(user.viewable_patients.isolation_requiring_review)
+      patients = user.viewable_patients.global_priority_review
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
 
       post :patients, params: { query: { workflow: 'global', tab: 'non_reporting' } }, as: :json
       json_response = JSON.parse(response.body)
-      patients = user.viewable_patients.exposure_non_reporting.merge(user.patients.isolation_non_reporting)
+      patients = user.patients.global_non_reporting
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
 
