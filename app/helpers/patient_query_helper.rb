@@ -22,6 +22,10 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     # Get filtered patients
     patients = patients_by_query(current_user, query)
 
+    # Filter out current monitoree if applicable
+    curr_monitoree_id = params[:patient_id]&.to_i || nil
+    patients = patients.where.not(id: curr_monitoree_id)
+
     # Paginate
     patients = patients.paginate(per_page: entries, page: page + 1)
 
