@@ -1299,7 +1299,7 @@ class AdvancedFilter extends React.Component {
           </Row>
         </Modal.Body>
         <Modal.Footer className="justify-unset">
-          <p className="lead mr-auto">Filter will be applied to all line lists in the current Dashboard until reset.</p>
+          <p className="lead mr-auto">Filter will be applied to all line lists in the current dashboard until reset.</p>
           <Button id="advanced-filter-cancel" variant="secondary btn-square" onClick={this.cancel}>
             Cancel
           </Button>

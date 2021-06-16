@@ -70,8 +70,8 @@ class Enrollment extends React.Component {
           toast.success(message, {
             onClose: () =>
               (location.href =
-                window.BASE_PATH +
-                (groupMember ? '/patients/' + response['data']['responder_id'] + '/group' : '/patients/' + response['data']['id']) +
+                `${window.BASE_PATH}/patients/` +
+                (groupMember ? `${response['data']['responder_id']}/group` : response['data']['id']) +
                 navQueryParam(this.props.workflow, true)),
           });
         })
@@ -164,8 +164,8 @@ class Enrollment extends React.Component {
           toast.success(message, {
             onClose: () =>
               (location.href =
-                window.BASE_PATH +
-                (groupMember ? '/patients/' + response['data']['responder_id'] + '/group' : '/patients/' + response['data']['id']) +
+                `${window.BASE_PATH}/patients/` +
+                (groupMember ? `${response['data']['responder_id']}/group` : response['data']['id']) +
                 navQueryParam(this.props.workflow, true)),
           });
         }

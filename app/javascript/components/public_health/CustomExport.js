@@ -175,6 +175,10 @@ class CustomExport extends React.Component {
     }, cb);
   };
 
+  firstLetterToUpper = str => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   render() {
     const non_zero_elements_selected =
       this.state.preset?.config?.data?.patients?.checked?.length > 0 ||
@@ -216,12 +220,7 @@ class CustomExport extends React.Component {
                   {this.state.selected_records === 'current' && (
                     <div className="px-1 pb-1">
                       <Badge variant="secondary" className="mr-1">
-                        {this.props.patient_query.workflow === 'isolation'
-                          ? 'Isolation '
-                          : this.props.patient_query.workflow === 'exposure'
-                          ? 'Exposure '
-                          : 'Global '}
-                        - {this.props.tabs[this.props.patient_query.tab]?.label}
+                        {`${this.firstLetterToUpper(this.props.patient_query.workflow)} - ${this.props.tabs[this.props.patient_query.tab]?.label}`}
                       </Badge>
                       {this.props.patient_query.jurisdiction !== this.props.jurisdiction.id && (
                         <Badge variant="secondary" className="mr-1">
