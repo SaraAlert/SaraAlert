@@ -212,6 +212,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
 
   def select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
     click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
+    sleep(1)
     @@system_test_utils.go_to_tab(tab)
     sleep(2)
     patient_labels.each { |patient| check_patient(patient) }
