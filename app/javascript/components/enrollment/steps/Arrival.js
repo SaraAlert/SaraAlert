@@ -73,7 +73,7 @@ class Arrival extends React.Component {
             <Form>
               <Form.Row>
                 <Form.Group as={Col} md="8" controlId="port_of_origin">
-                  <Form.Label className="nav-input-label">PORT OF ORIGIN{schema?.fields?.port_of_origin?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">PORT OF ORIGIN{schema?.fields?.port_of_origin?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['port_of_origin']}
                     size="lg"
@@ -86,7 +86,7 @@ class Arrival extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="date_of_departure">
-                  <Form.Label className="nav-input-label">DATE OF DEPARTURE{schema?.fields?.date_of_departure?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">DATE OF DEPARTURE{schema?.fields?.date_of_departure?._exclusive?.required && ' *'}</Form.Label>
                   <DateInput
                     id="date_of_departure"
                     date={this.state.current.patient.date_of_departure}
@@ -106,7 +106,7 @@ class Arrival extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} md="8" controlId="flight_or_vessel_number">
-                  <Form.Label className="nav-input-label">
+                  <Form.Label className="input-label">
                     FLIGHT OR VESSEL NUMBER{schema?.fields?.flight_or_vessel_number?._exclusive?.required && ' *'}
                   </Form.Label>
                   <Form.Control
@@ -121,7 +121,7 @@ class Arrival extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="flight_or_vessel_carrier">
-                  <Form.Label className="nav-input-label">CARRIER{schema?.fields?.flight_or_vessel_carrier?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">CARRIER{schema?.fields?.flight_or_vessel_carrier?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['flight_or_vessel_carrier']}
                     size="lg"
@@ -136,9 +136,7 @@ class Arrival extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} md="8" controlId="port_of_entry_into_usa">
-                  <Form.Label className="nav-input-label">
-                    PORT OF ENTRY INTO USA{schema?.fields?.port_of_entry_into_usa?._exclusive?.required && ' *'}
-                  </Form.Label>
+                  <Form.Label className="input-label">PORT OF ENTRY INTO USA{schema?.fields?.port_of_entry_into_usa?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['port_of_entry_into_usa']}
                     size="lg"
@@ -151,7 +149,7 @@ class Arrival extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="date_of_arrival">
-                  <Form.Label className="nav-input-label">DATE OF ARRIVAL{schema?.fields?.date_of_arrival?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">DATE OF ARRIVAL{schema?.fields?.date_of_arrival?._exclusive?.required && ' *'}</Form.Label>
                   <DateInput
                     id="date_of_arrival"
                     date={this.state.current.patient.date_of_arrival}
@@ -171,7 +169,7 @@ class Arrival extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} md="8" controlId="source_of_report">
-                  <Form.Label className="nav-input-label">SOURCE OF REPORT{schema?.fields?.source_of_report?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">SOURCE OF REPORT{schema?.fields?.source_of_report?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['source_of_report']}
                     as="select"
@@ -193,7 +191,7 @@ class Arrival extends React.Component {
                 </Form.Group>
                 {this.state.current.patient.source_of_report === 'Other' && (
                   <Form.Group as={Col} md="8" controlId="source_of_report_specify">
-                    <Form.Label className="nav-input-label">
+                    <Form.Label className="input-label">
                       SOURCE OF REPORT (SPECIFY){schema?.fields?.source_of_report_specify?._exclusive?.required && ' *'}
                     </Form.Label>
                     <Form.Control
@@ -211,7 +209,7 @@ class Arrival extends React.Component {
               </Form.Row>
               <Form.Row className="pb-2">
                 <Form.Group as={Col} md="24" controlId="travel_related_notes">
-                  <Form.Label className="nav-input-label">TRAVEL RELATED NOTES{schema?.fields?.travel_related_notes?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">TRAVEL RELATED NOTES{schema?.fields?.travel_related_notes?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['travel_related_notes']}
                     as="textarea"

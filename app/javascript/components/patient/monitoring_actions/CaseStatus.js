@@ -276,7 +276,7 @@ class CaseStatus extends React.Component {
     return (
       <React.Fragment>
         <div className="disabled">
-          <Form.Label htmlFor="case_status" className="nav-input-label">
+          <Form.Label htmlFor="case_status" className="input-label">
             CASE STATUS
             <InfoTooltip tooltipTextKey="caseStatus" location="right"></InfoTooltip>
           </Form.Label>

@@ -133,13 +133,11 @@ class LastDateExposure extends React.Component {
           )}
           {!!this.props.patient.continuous_exposure && !this.state.continuous_exposure && (
             <div className="mt-2">
-              <Form.Label className="nav-input-label">Update Last Date of Exposure to:</Form.Label>
+              <Form.Label className="input-label">Update Last Date of Exposure to:</Form.Label>
               <DateInput
                 id="last_date_of_exposure"
                 date={this.state.last_date_of_exposure}
-                maxDate={moment()
-                  .add(30, 'days')
-                  .format('YYYY-MM-DD')}
+                maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
                 onChange={date => this.setState({ last_date_of_exposure: date })}
                 placement="top"
                 customClass="form-control-lg"
@@ -205,7 +203,7 @@ class LastDateExposure extends React.Component {
           <Form.Group as={Col} controlId="last_date_of_exposure">
             <Row className="reports-actions-title">
               <Col>
-                <Form.Label className="nav-input-label h6">
+                <Form.Label className="input-label h6">
                   LAST DATE OF EXPOSURE
                   <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
                 </Form.Label>
@@ -217,9 +215,7 @@ class LastDateExposure extends React.Component {
                   id="last_date_of_exposure"
                   date={this.state.last_date_of_exposure}
                   minDate={'2020-01-01'}
-                  maxDate={moment()
-                    .add(30, 'days')
-                    .format('YYYY-MM-DD')}
+                  maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
                   onChange={this.openLastDateOfExposureModal}
                   placement="top"
                   customClass="form-control-lg"
@@ -260,7 +256,7 @@ class LastDateExposure extends React.Component {
             <Col>
               <Row className="reports-actions-title">
                 <Col>
-                  <span className="nav-input-label">END OF MONITORING</span>
+                  <span className="input-label">END OF MONITORING</span>
                   <InfoTooltip getCustomText={this.endOfMonitoringTooltipText} location="right"></InfoTooltip>
                 </Col>
               </Row>

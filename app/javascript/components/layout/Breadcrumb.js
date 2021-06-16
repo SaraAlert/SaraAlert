@@ -51,7 +51,7 @@ class Breadcrumb extends React.Component {
             <ol className="breadcrumb">
               {this.props.crumbs?.map((crumb, index) => {
                 return (
-                  <li key={'bc' + index} className={'breadcrumb-item lead lead-bc' + (crumb['href'] && 'active')}>
+                  <li key={'bc' + index} className={'breadcrumb-item lead ' + (crumb['href'] && 'active')}>
                     {crumb['href'] && (
                       <a
                         href="#"
@@ -76,7 +76,7 @@ class Breadcrumb extends React.Component {
                   </li>
                 );
               })}
-              <li className="lead lead-bc ml-auto">Your Jurisdiction: {this.props.jurisdiction}</li>
+              <li className="lead ml-auto">Your Jurisdiction: {this.props.jurisdiction}</li>
             </ol>
           </nav>
         </div>

@@ -219,7 +219,7 @@ class SymptomsAssessment extends React.Component {
     const id = `${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
     return (
       <Form.Row className="pt-3" key={key}>
-        <Form.Label className="nav-input-label" key={key + '_label'} htmlFor={id}>
+        <Form.Label className="input-label" key={key + '_label'} htmlFor={id}>
           <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b>{' '}
           {this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
             ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
@@ -246,7 +246,7 @@ class SymptomsAssessment extends React.Component {
         </Card.Header>
         <Card.Body>
           <Form.Row>
-            <Form.Label className="nav-input-label pb-3">{this.props.translations[this.props.lang]['web']['bool-title']}</Form.Label>
+            <Form.Label className="input-label pb-3">{this.props.translations[this.props.lang]['web']['bool-title']}</Form.Label>
           </Form.Row>
           <Form.Row>
             <Form.Group className="pt-1">

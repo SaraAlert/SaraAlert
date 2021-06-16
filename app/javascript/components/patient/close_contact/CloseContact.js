@@ -189,14 +189,14 @@ class CloseContact extends React.Component {
         <Modal.Body className="px-5">
           <Row className="mt-3">
             <Form.Group as={Col} lg="12" controlId="first_name">
-              <Form.Label className="nav-input-label">First Name {schema?.fields?.first_name?._exclusive?.required && '*'} </Form.Label>
+              <Form.Label className="input-label">First Name {schema?.fields?.first_name?._exclusive?.required && '*'} </Form.Label>
               <Form.Control size="lg" className="form-square" value={this.state.first_name || ''} onChange={this.handleChange} />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['first_name']}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Col} lg="12" controlId="last_name">
-              <Form.Label className="nav-input-label">Last Name {schema?.fields?.last_name?._exclusive?.required && '*'} </Form.Label>
+              <Form.Label className="input-label">Last Name {schema?.fields?.last_name?._exclusive?.required && '*'} </Form.Label>
               <Form.Control size="lg" className="form-square" value={this.state.last_name || ''} onChange={this.handleChange} />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['last_name']}
@@ -205,7 +205,7 @@ class CloseContact extends React.Component {
           </Row>
           <Row>
             <Form.Group as={Col} lg="12" controlId="primary_telephone">
-              <Form.Label className="nav-input-label">Phone Number {schema?.fields?.primary_telephone?._exclusive?.required && '*'}</Form.Label>
+              <Form.Label className="input-label">Phone Number {schema?.fields?.primary_telephone?._exclusive?.required && '*'}</Form.Label>
               <PhoneInput
                 id="primary_telephone"
                 className="form-square"
@@ -218,7 +218,7 @@ class CloseContact extends React.Component {
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Col} lg="12" controlId="email">
-              <Form.Label className="nav-input-label">Email {schema?.fields?.email?._exclusive?.required && '*'} </Form.Label>
+              <Form.Label className="input-label">Email {schema?.fields?.email?._exclusive?.required && '*'} </Form.Label>
               <Form.Control size="lg" className="form-square" value={this.state.email || ''} onChange={this.handleChange} />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['email']}
@@ -228,7 +228,7 @@ class CloseContact extends React.Component {
           <hr></hr>
           <Row>
             <Form.Group as={Col} lg="12" controlId="cc_last_date_of_exposure">
-              <Form.Label className="nav-input-label">Last Date of Exposure {schema?.fields?.cc_last_date_of_exposure?._exclusive?.required && '*'}</Form.Label>
+              <Form.Label className="input-label">Last Date of Exposure {schema?.fields?.cc_last_date_of_exposure?._exclusive?.required && '*'}</Form.Label>
               <DateInput
                 id="cc_last_date_of_exposure"
                 date={this.state.cc_last_date_of_exposure}
@@ -244,7 +244,7 @@ class CloseContact extends React.Component {
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Col} lg="12" controlId="cc_assigned_user">
-              <Form.Label className="nav-input-label">
+              <Form.Label className="input-label">
                 Assigned User {schema?.fields?.cc_assigned_user?._exclusive?.required && '*'}
                 <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
               </Form.Label>
@@ -274,7 +274,7 @@ class CloseContact extends React.Component {
           </Row>
           <Row>
             <Form.Group as={Col}>
-              <Form.Label htmlFor="notes" className="nav-input-label">
+              <Form.Label htmlFor="notes" className="input-label">
                 Notes
                 {schema?.fields?.notes?._exclusive?.required && '*'}
               </Form.Label>

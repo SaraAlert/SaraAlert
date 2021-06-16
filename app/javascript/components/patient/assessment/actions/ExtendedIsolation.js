@@ -43,7 +43,7 @@ class ExtendedIsolation extends React.Component {
         <Col>
           <Row className="reports-actions-title">
             <Col>
-              <Form.Label className="nav-input-label">
+              <Form.Label className="input-label">
                 EXTEND ISOLATION TO
                 <InfoTooltip tooltipTextKey="extendedIsolation" location="right"></InfoTooltip>
               </Form.Label>
@@ -54,12 +54,8 @@ class ExtendedIsolation extends React.Component {
               <DateInput
                 id="extended_isolation"
                 date={this.state.extended_isolation}
-                minDate={moment()
-                  .subtract(30, 'days')
-                  .format('YYYY-MM-DD')}
-                maxDate={moment()
-                  .add(30, 'days')
-                  .format('YYYY-MM-DD')}
+                minDate={moment().subtract(30, 'days').format('YYYY-MM-DD')}
+                maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
                 onChange={date => this.setState({ extended_isolation: date, showExtendIsolationModal: true, reasoning: '' })}
                 placement="bottom"
                 customClass="form-control-lg"

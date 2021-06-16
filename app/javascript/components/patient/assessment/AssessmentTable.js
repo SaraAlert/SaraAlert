@@ -158,7 +158,7 @@ class AssessmentTable extends React.Component {
     const rowData = data.rowData;
     const symptomName = data.colData.field;
     const passesThreshold = rowData.passes_threshold_data[symptomName.toString()];
-    const className = passesThreshold ? 'concern' : '';
+    const className = passesThreshold ? 'text-danger' : '';
     return <span className={className}>{data.value}</span>;
   };
 

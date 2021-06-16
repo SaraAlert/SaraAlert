@@ -95,7 +95,7 @@ class VaccineModal extends React.Component {
           <Form>
             <Row>
               <Form.Group as={Col}>
-                <Form.Label htmlFor="group-name-select" className="nav-input-label">
+                <Form.Label htmlFor="group-name-select" className="input-label">
                   Vaccine Group*
                 </Form.Label>
                 <Select
@@ -120,7 +120,7 @@ class VaccineModal extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col}>
-                <Form.Label htmlFor="product-name-select" className="nav-input-label">
+                <Form.Label htmlFor="product-name-select" className="input-label">
                   Product Name*
                 </Form.Label>
                 <Select
@@ -145,7 +145,7 @@ class VaccineModal extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col}>
-                <Form.Label htmlFor="administration-date" className="nav-input-label">
+                <Form.Label htmlFor="administration-date" className="input-label">
                   Administration Date
                 </Form.Label>
                 <DateInput
@@ -162,7 +162,7 @@ class VaccineModal extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col}>
-                <Form.Label htmlFor="dose-number-select" className="nav-input-label">
+                <Form.Label htmlFor="dose-number-select" className="input-label">
                   Dose Number
                 </Form.Label>
                 <Select
@@ -187,7 +187,7 @@ class VaccineModal extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col}>
-                <Form.Label htmlFor="notes" className="nav-input-label">
+                <Form.Label htmlFor="notes" className="input-label">
                   Notes
                 </Form.Label>
                 <Form.Control

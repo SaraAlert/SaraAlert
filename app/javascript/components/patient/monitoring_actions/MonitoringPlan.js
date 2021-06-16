@@ -130,7 +130,7 @@ class MonitoringPlan extends React.Component {
     return (
       <React.Fragment>
         <div className="disabled">
-          <Form.Label htmlFor="monitoring_plan" className="nav-input-label">
+          <Form.Label htmlFor="monitoring_plan" className="input-label">
             MONITORING PLAN
             <InfoTooltip tooltipTextKey={'monitoringPlan'} location="right"></InfoTooltip>
           </Form.Label>
