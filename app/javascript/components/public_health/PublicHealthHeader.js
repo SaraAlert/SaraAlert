@@ -11,6 +11,8 @@ import { navQueryParam } from '../../utils/Navigation';
 class PublicHealthHeader extends React.Component {
   constructor(props) {
     super(props);
+    console.log(props);
+    console.log(Object.entries(this.props.header_action_buttons.import.options));
     this.state = {
       counts: {},
       showUploadModal: false,
@@ -159,7 +161,7 @@ class PublicHealthHeader extends React.Component {
         <Row className="mx-2 my-2">
           <Col className="p-0">
             <ButtonGroup>
-              {this.props.abilities.enrollment && (
+              {this.props.abilities.enrollment && his.props.header_action_buttons.enroll && (
                 <Button
                   variant="primary"
                   className="mb-2"
@@ -167,48 +169,41 @@ class PublicHealthHeader extends React.Component {
                     this.props.workflow,
                     false
                   )}`}>
-                  {(this.props.workflow === 'exposure' || this.props.workflow === 'global') && (
-                    <span>
-                      <i className="fas fa-user-plus"></i> Enroll New Monitoree
-                    </span>
-                  )}
-                  {this.props.workflow === 'isolation' && (
-                    <span>
-                      <i className="fas fa-user-plus"></i> Enroll New Case
-                    </span>
-                  )}
+                  <span>
+                    <i className="fas fa-user-plus"></i> {this.props.header_action_buttons.enroll.label}
+                  </span>
                 </Button>
               )}
-              {this.props.abilities.export && (
+              {this.props.abilities.export && this.props.header_action_buttons.export && (
                 <Export
                   authenticity_token={this.props.authenticity_token}
                   jurisdiction_paths={this.props.jurisdiction_paths}
                   all_assigned_users={this.props.all_assigned_users}
                   jurisdiction={this.props.jurisdiction}
-                  available_workflows={this.props.available_workflows}
-                  available_line_lists={this.props.available_line_lists}
                   tabs={this.props.tabs}
                   workflow={this.props.workflow}
+                  export_options={this.props.header_action_buttons.export_options}
                   query={this.props.query}
                   all_monitorees_count={this.state.counts.exposure + this.state.counts.isolation}
                   current_monitorees_count={this.props.current_monitorees_count}
                   custom_export_options={this.props.custom_export_options}
                 />
               )}
-              {this.props.abilities.import && (
+              {this.props.abilities.import && this.props.header_action_buttons.import && (
                 <DropdownButton
                   as={ButtonGroup}
                   size="md"
-                  className="ml-2 mb-2"
+                  className="ml-2 mb-4"
                   title={
                     <React.Fragment>
                       <i className="fas fa-upload"></i> Import{' '}
                     </React.Fragment>
                   }>
-                  <Dropdown.Item onClick={() => this.setState({ importType: 'epix', showUploadModal: true })}>Epi-X ({this.props.workflow})</Dropdown.Item>
-                  <Dropdown.Item onClick={() => this.setState({ importType: 'saf', showUploadModal: true })}>
-                    Sara Alert Format ({this.props.workflow})
-                  </Dropdown.Item>
+                  {Object.entries(this.props.header_action_buttons.import.options).map(([key, value]) => (
+                    <Dropdown.Item key={key} onClick={() => this.setState({ importType: key, showUploadModal: true })}>
+                      {value.label}
+                    </Dropdown.Item>
+                  ))}
                 </DropdownButton>
               )}
             </ButtonGroup>
@@ -226,6 +221,20 @@ class PublicHealthHeader extends React.Component {
             </ButtonGroup>
           </Col>
         </Row>
+
+        <ButtonGroup className="float-right mb-4 mr-2">
+          {this.props.available_workflows.map(value => {
+            return (
+              <Button
+                key={value.name}
+                variant={this.props.workflow === value.name ? 'primary' : 'outline-primary'}
+                href={`${window.BASE_PATH}/dashboard/${this.props.playbook}/${value.name}`}>
+                <i className="fas fa-people-arrows"></i> {value.label} Monitoring{' '}
+              </Button>
+            );
+          })}
+        </ButtonGroup>
+
         {this.renderUploadModal()}
         {this.renderImportModal()}
       </React.Fragment>
@@ -252,6 +261,7 @@ PublicHealthHeader.propTypes = {
   available_workflows: PropTypes.array,
   available_line_lists: PropTypes.object,
   playbook: PropTypes.string,
+  header_action_buttons: PropTypes.object,
 };
 
 export default PublicHealthHeader;

@@ -39,6 +39,7 @@ class Workflow extends React.Component {
           available_workflows={this.props.available_workflows}
           available_line_lists={this.props.available_line_lists}
           playbook={this.props.playbook}
+          header_action_buttons={this.props.header_action_buttons}
         />
         <PatientsTable
           authenticity_token={this.props.authenticity_token}
@@ -72,6 +73,7 @@ Workflow.propTypes = {
   available_workflows: PropTypes.array,
   available_line_lists: PropTypes.object,
   playbook: PropTypes.string,
+  header_action_buttons: PropTypes.object,
 };
 
 export default Workflow;

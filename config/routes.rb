@@ -142,6 +142,7 @@ Rails.application.routes.draw do
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
+
   get '/dashboard/:playbook/:workflow', to: 'dashboard#dashboard'
   get '/dashboard/:playbook', to: 'dashboard#index'
   get '/dashboard', to: 'dashboard#index', as: :dashboard
