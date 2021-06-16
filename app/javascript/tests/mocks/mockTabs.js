@@ -95,7 +95,7 @@ const mockGlobalTabs = {
     variant: 'primary',
   },
   closed: {
-    description: 'Monitorees not currently being monitored across both the exposure and isolation workflows.',
+    description: 'Monitorees not currently being actively monitored across both the exposure and isolation workflows.',
     label: 'Closed',
     variant: 'secondary',
   },

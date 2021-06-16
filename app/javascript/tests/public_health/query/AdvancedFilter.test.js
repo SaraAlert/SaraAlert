@@ -133,7 +133,7 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(Modal.Body).find('.remove-filter-row').exists()).toBeTruthy();
     expect(wrapper.find(Modal.Body).find('#add-filter-row').exists()).toBeTruthy();
     expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Footer).find('p').text()).toEqual('Filter will be applied to all line lists in the current Dashboard until reset.');
+    expect(wrapper.find(Modal.Footer).find('p').text()).toEqual('Filter will be applied to all line lists in the current dashboard until reset.');
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
     expect(wrapper.find(Modal.Footer).find('#advanced-filter-cancel').exists()).toBeTruthy();
     expect(wrapper.find(Modal.Footer).find('#advanced-filter-cancel').text()).toEqual('Cancel');
@@ -181,7 +181,7 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(Modal.Body).find('.remove-filter-row').exists()).toBeTruthy();
     expect(wrapper.find(Modal.Body).find('#add-filter-row').exists()).toBeTruthy();
     expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Footer).find('p').text()).toEqual('Filter will be applied to all line lists in the current Dashboard until reset.');
+    expect(wrapper.find(Modal.Footer).find('p').text()).toEqual('Filter will be applied to all line lists in the current dashboard until reset.');
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
     expect(wrapper.find(Modal.Footer).find('#advanced-filter-cancel').exists()).toBeTruthy();
     expect(wrapper.find(Modal.Footer).find('#advanced-filter-cancel').text()).toEqual('Cancel');

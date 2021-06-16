@@ -492,13 +492,13 @@ class PublicHealthControllerTest < ActionController::TestCase
         assert_equal user.viewable_patients.where(isolation: true, purged: false).size, JSON.parse(response.body)['total']
 
         get :tab_counts, params: { workflow: 'global', tab: 'active' }
-        assert_equal user.viewable_patients.monitoring_active(true).size, JSON.parse(response.body)['total']
+        assert_equal user.viewable_patients.monitoring_open.size, JSON.parse(response.body)['total']
 
         get :tab_counts, params: { workflow: 'global', tab: 'priority_review' }
-        assert_equal user.viewable_patients.exposure_symptomatic.merge(user.patients.isolation_requiring_review).size, JSON.parse(response.body)['total']
+        assert_equal user.viewable_patients.global_priority_review.size, JSON.parse(response.body)['total']
 
         get :tab_counts, params: { workflow: 'global', tab: 'non_reporting' }
-        assert_equal user.viewable_patients.exposure_non_reporting.merge(user.patients.isolation_non_reporting).size, JSON.parse(response.body)['total']
+        assert_equal user.viewable_patients.global_non_reporting.size, JSON.parse(response.body)['total']
 
         get :tab_counts, params: { workflow: 'global', tab: 'closed' }
         assert_equal user.viewable_patients.monitoring_closed_without_purged.size, JSON.parse(response.body)['total']
