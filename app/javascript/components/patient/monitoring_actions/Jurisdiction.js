@@ -159,7 +159,7 @@ class Jurisdiction extends React.Component {
     return (
       <React.Fragment>
         <div className="disabled">
-          <Form.Label htmlFor="jurisdiction_id" className="nav-input-label">
+          <Form.Label htmlFor="jurisdiction_id" className="input-label">
             ASSIGNED JURISDICTION
             <InfoTooltip
               tooltipTextKey={this.props.user_can_transfer ? 'assignedJurisdictionCanTransfer' : 'assignedJurisdictionCannotTransfer'}

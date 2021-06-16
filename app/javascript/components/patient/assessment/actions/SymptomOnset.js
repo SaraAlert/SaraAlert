@@ -67,7 +67,7 @@ class SymptomOnset extends React.Component {
         <Form.Group as={Col} controlId="symptom_onset">
           <Row className="reports-actions-title">
             <Col>
-              <Form.Label className="nav-input-label">
+              <Form.Label className="input-label">
                 SYMPTOM ONSET
                 <InfoTooltip tooltipTextKey={this.props.patient.isolation ? 'isolationSymptomOnset' : 'exposureSymptomOnset'} location="right"></InfoTooltip>
                 <div style={{ display: 'inline' }}>
@@ -94,9 +94,7 @@ class SymptomOnset extends React.Component {
                 id="symptom_onset"
                 date={this.state.symptom_onset}
                 minDate={'2020-01-01'}
-                maxDate={moment()
-                  .add(30, 'days')
-                  .format('YYYY-MM-DD')}
+                maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
                 onChange={this.handleDateChange}
                 placement="bottom"
                 isClearable={this.props.patient.user_defined_symptom_onset}

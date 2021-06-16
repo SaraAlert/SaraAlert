@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, ButtonGroup, Dropdown, DropdownButton, Form, Modal, ProgressBar } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Dropdown, DropdownButton, Form, Modal, ProgressBar, Row } from 'react-bootstrap';
 import axios from 'axios';
 
 import Export from './Export';
@@ -146,66 +146,68 @@ class PublicHealthHeader extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <ButtonGroup>
-          {this.props.abilities.enrollment && (
-            <Button
-              variant="primary"
-              className="ml-2 mb-4"
-              href={`${window.BASE_PATH}/patients/new${this.props.workflow === 'exposure' ? '' : '?isolation=true'}`}>
-              {this.props.workflow === 'exposure' && (
-                <span>
-                  <i className="fas fa-user-plus"></i> Enroll New Monitoree
-                </span>
+        <Row className="mx-2 my-3">
+          <Col className="p-0">
+            <ButtonGroup>
+              {this.props.abilities.enrollment && (
+                <Button
+                  variant="primary"
+                  className="mb-2"
+                  href={`${window.BASE_PATH}/patients/new${this.props.workflow === 'exposure' ? '' : '?isolation=true'}`}>
+                  {this.props.workflow === 'exposure' && (
+                    <span>
+                      <i className="fas fa-user-plus"></i> Enroll New Monitoree
+                    </span>
+                  )}
+                  {this.props.workflow === 'isolation' && (
+                    <span>
+                      <i className="fas fa-user-plus"></i> Enroll New Case
+                    </span>
+                  )}
+                </Button>
               )}
-              {this.props.workflow === 'isolation' && (
-                <span>
-                  <i className="fas fa-user-plus"></i> Enroll New Case
-                </span>
+              {this.props.abilities.export && (
+                <Export
+                  authenticity_token={this.props.authenticity_token}
+                  jurisdiction_paths={this.props.jurisdiction_paths}
+                  jurisdiction={this.props.jurisdiction}
+                  tabs={this.props.tabs}
+                  workflow={this.props.workflow}
+                  query={this.props.query}
+                  all_monitorees_count={this.state.counts.exposure + this.state.counts.isolation}
+                  current_monitorees_count={this.props.current_monitorees_count}
+                  custom_export_options={this.props.custom_export_options}
+                />
               )}
-            </Button>
-          )}
-          {this.props.abilities.export && (
-            <Export
-              authenticity_token={this.props.authenticity_token}
-              jurisdiction_paths={this.props.jurisdiction_paths}
-              jurisdiction={this.props.jurisdiction}
-              tabs={this.props.tabs}
-              workflow={this.props.workflow}
-              query={this.props.query}
-              all_monitorees_count={this.state.counts.exposure + this.state.counts.isolation}
-              current_monitorees_count={this.props.current_monitorees_count}
-              custom_export_options={this.props.custom_export_options}
-            />
-          )}
-          {this.props.abilities.import && (
-            <DropdownButton
-              as={ButtonGroup}
-              size="md"
-              className="ml-2 mb-4"
-              title={
-                <React.Fragment>
-                  <i className="fas fa-upload"></i> Import{' '}
-                </React.Fragment>
-              }>
-              <Dropdown.Item onClick={() => this.setState({ importType: 'epix', showUploadModal: true })}>Epi-X ({this.props.workflow})</Dropdown.Item>
-              <Dropdown.Item onClick={() => this.setState({ importType: 'saf', showUploadModal: true })}>
-                Sara Alert Format ({this.props.workflow})
-              </Dropdown.Item>
-            </DropdownButton>
-          )}
-        </ButtonGroup>
-
-        <ButtonGroup className="float-right mb-4 mr-2">
-          <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health`}>
-            <i className="fas fa-people-arrows"></i> Exposure Monitoring{' '}
-            {this.state.counts.exposure !== undefined && <span id="exposureCount">({this.state.counts.exposure})</span>}
-          </Button>
-          <Button variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/isolation`}>
-            <i className="fas fa-street-view"></i> Isolation Monitoring{' '}
-            {this.state.counts.isolation !== undefined && <span id="isolationCount">({this.state.counts.isolation})</span>}
-          </Button>
-        </ButtonGroup>
-
+              {this.props.abilities.import && (
+                <DropdownButton
+                  as={ButtonGroup}
+                  size="md"
+                  className="ml-2 mb-2"
+                  title={
+                    <React.Fragment>
+                      <i className="fas fa-upload"></i> Import{' '}
+                    </React.Fragment>
+                  }>
+                  <Dropdown.Item onClick={() => this.setState({ importType: 'epix', showUploadModal: true })}>Epi-X ({this.props.workflow})</Dropdown.Item>
+                  <Dropdown.Item onClick={() => this.setState({ importType: 'saf', showUploadModal: true })}>
+                    Sara Alert Format ({this.props.workflow})
+                  </Dropdown.Item>
+                </DropdownButton>
+              )}
+            </ButtonGroup>
+            <ButtonGroup className="float-right mb-2">
+              <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health`}>
+                <i className="fas fa-people-arrows"></i> Exposure Monitoring{' '}
+                {this.state.counts.exposure !== undefined && <span id="exposureCount">({this.state.counts.exposure})</span>}
+              </Button>
+              <Button variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/isolation`}>
+                <i className="fas fa-street-view"></i> Isolation Monitoring{' '}
+                {this.state.counts.isolation !== undefined && <span id="isolationCount">({this.state.counts.isolation})</span>}
+              </Button>
+            </ButtonGroup>
+          </Col>
+        </Row>
         {this.renderUploadModal()}
         {this.renderImportModal()}
       </React.Fragment>
