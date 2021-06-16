@@ -173,7 +173,7 @@ class LaboratoryModal extends React.Component {
           {/* This does not impact component functionality at all. */}
           {!isValid && (
             <ReactTooltip id="submit-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
-              Please enter at minimum a report date or specimen date and a result
+              Please enter at minimum a result and either a report date or specimen date
             </ReactTooltip>
           )}
         </Modal.Footer>
