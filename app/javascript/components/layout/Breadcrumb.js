@@ -33,8 +33,6 @@ class Breadcrumb extends React.Component {
 Breadcrumb.propTypes = {
   crumbs: PropTypes.array,
   jurisdiction: PropTypes.string,
-  isolation: PropTypes.bool,
-  enroller: PropTypes.bool,
 };
 
 export default Breadcrumb;
