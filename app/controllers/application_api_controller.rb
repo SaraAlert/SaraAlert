@@ -12,6 +12,7 @@ class ApplicationApiController < ActionController::API
   IMMUNIZATION_WRITE_SCOPES = %i[user/Immunization.write user/Immunization.* system/Immunization.write system/Immunization.*].freeze
   OBSERVATION_READ_SCOPES = %i[user/Observation.read system/Observation.read].freeze
   QUESTIONNAIRE_RESPONSE_READ_SCOPES = %i[user/QuestionnaireResponse.read system/QuestionnaireResponse.read].freeze
+  PROVENANCE_READ_SCOPES = %i[user/Provenance.read system/Provenance.read].freeze
 
   # Generic 401 unauthorized
   def status_unauthorized
