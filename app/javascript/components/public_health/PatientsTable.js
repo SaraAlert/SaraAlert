@@ -37,7 +37,7 @@ import JurisdictionFilter from './query/JurisdictionFilter';
 import AssignedUserFilter from './query/AssignedUserFilter';
 import EligibilityTooltip from '../util/EligibilityTooltip';
 import confirmDialog from '../util/ConfirmDialog';
-import { navQueryParam } from '../../utils/Navigation';
+import { patientHref } from '../../utils/Navigation';
 
 class PatientsTable extends React.Component {
   constructor(props) {
@@ -59,7 +59,7 @@ class PatientsTable extends React.Component {
           { field: 'symptom_onset', label: 'Symptom Onset', isSortable: true, tooltip: null, filter: this.formatSymptomOnset },
           { field: 'risk_level', label: 'Risk Level', isSortable: true, tooltip: null },
           { field: 'monitoring_plan', label: 'Monitoring Plan', isSortable: true, tooltip: null },
-          { field: 'reporter', label: 'Reporter ID', isSortable: true, tooltip: null },
+          { field: 'reporter', label: 'Reporter ID', isSortable: true, tooltip: null, filter: this.linkReporter },
           { field: 'public_health_action', label: 'Latest Public Health Action', isSortable: true, tooltip: null },
           { field: 'expected_purge_date', label: 'Eligible for Purge After', isSortable: true, tooltip: 'purgeDate', filter: formatTimestamp },
           { field: 'reason_for_closure', label: 'Reason for Closure', isSortable: true, tooltip: null },
@@ -473,11 +473,19 @@ class PatientsTable extends React.Component {
       return (
         <div>
           <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />
-          <a href={`${window.BASE_PATH}/patients/${rowData.id}${navQueryParam(this.props.workflow, true)}`}>{name}</a>
+          {this.createPatientLink(rowData.id, name)}
         </div>
       );
     }
-    return <a href={`${window.BASE_PATH}/patients/${rowData.id}${navQueryParam(this.props.workflow, true)}`}>{name}</a>;
+    return this.createPatientLink(rowData.id, name);
+  };
+
+  linkReporter = data => {
+    return this.createPatientLink(data.value, data.value);
+  };
+
+  createPatientLink = (id, text) => {
+    return <a href={patientHref(id, this.props.workflow)}>{text}</a>;
   };
 
   formatEndOfMonitoring = data => {

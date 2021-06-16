@@ -10,7 +10,7 @@ class Individual extends React.Component {
       <div id="no-household">
         <Row>This monitoree is not a member of a household.</Row>
         <Row>
-          <MoveToHousehold patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+          <MoveToHousehold patient={this.props.patient} authenticity_token={this.props.authenticity_token} workflow={this.props.workflow} />
           {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.patient.id} isHoh={false} workflow={this.props.workflow} />}
         </Row>
       </div>

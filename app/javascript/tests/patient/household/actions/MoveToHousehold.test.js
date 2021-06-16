@@ -11,7 +11,7 @@ import _ from 'lodash';
 const mockToken = 'testMockTokenString12345';
 
 function getWrapper() {
-  return shallow(<MoveToHousehold patient={mockPatient1} authenticity_token={mockToken} />);
+  return shallow(<MoveToHousehold patient={mockPatient1} authenticity_token={mockToken} workflow={'global'} />);
 }
 
 describe('MoveToHousehold', () => {

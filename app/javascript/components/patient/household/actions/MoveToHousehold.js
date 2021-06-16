@@ -9,6 +9,7 @@ import { formatNameAlt } from '../../../../utils/Patient';
 import BadgeHoH from '../utils/BadgeHoH';
 import CustomTable from '../../../layout/CustomTable';
 import reportError from '../../../util/ReportError';
+import { patientHref } from '../../../../utils/Navigation';
 
 class MoveToHousehold extends React.Component {
   constructor(props) {
@@ -66,11 +67,11 @@ class MoveToHousehold extends React.Component {
       return (
         <div>
           <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />
-          <a href={`${window.BASE_PATH}/patients/${rowData.id}`}>{name}</a>
+          <a href={patientHref(rowData.id, this.props.workflow)}>{name}</a>
         </div>
       );
     }
-    return <a href={`${window.BASE_PATH}/patients/${rowData.id}`}>{name}</a>;
+    return <a href={patientHref(rowData.id, this.props.workflow)}>{name}</a>;
   };
 
   /**
@@ -353,6 +354,7 @@ class MoveToHousehold extends React.Component {
 MoveToHousehold.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
+  workflow: PropTypes.string,
 };
 
 export default MoveToHousehold;
