@@ -83,8 +83,8 @@ class Contact extends React.Component {
     let modified = this.state.modified;
     this.setState(
       {
-        current: { ...current, blocked_sms: blocked_sms, patient: { ...current.patient, [event.target.id]: value } },
-        modified: { ...modified, blocked_sms: blocked_sms, patient: { ...modified.patient, [event.target.id]: value } },
+        current: { ...current, blocked_sms, patient: { ...current.patient, [event.target.id]: value } },
+        modified: { ...modified, blocked_sms, patient: { ...modified.patient, [event.target.id]: value } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
@@ -194,8 +194,8 @@ class Contact extends React.Component {
           <Card.Header className="h5">Monitoree Contact Information</Card.Header>
           <Card.Body>
             <Form>
-              <Form.Row className="pb-3">
-                <Form.Group as={Col} md="8" controlId="preferred_contact_method">
+              <Form.Row className="mb-2">
+                <Form.Group as={Col} lg="12" xl="10" controlId="preferred_contact_method">
                   <Form.Label className="input-label">
                     PREFERRED REPORTING METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
                   </Form.Label>
@@ -222,7 +222,7 @@ class Contact extends React.Component {
                   this.state.current.patient.preferred_contact_method === 'Telephone call' ||
                   this.state.current.patient.preferred_contact_method === 'SMS Text-message' ||
                   this.state.current.patient.preferred_contact_method === 'E-mailed Web Link') && (
-                  <Form.Group as={Col} md="8" controlId="preferred_contact_time">
+                  <Form.Group as={Col} lg="12" xl="10" controlId="preferred_contact_time">
                     <Form.Label className="input-label">
                       PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
                       <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
@@ -239,22 +239,13 @@ class Contact extends React.Component {
                       <option>Afternoon</option>
                       <option>Evening</option>
                     </Form.Control>
-                    <Form.Row>
-                      <Form.Group as={Col} md="auto">
-                        Morning:
-                        <br />
-                        Afternoon:
-                        <br />
-                        Evening:
-                      </Form.Group>
-                      <Form.Group as={Col} md="auto">
-                        <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
-                        <br />
-                        <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
-                        <br />
-                        <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
-                      </Form.Group>
-                    </Form.Row>
+                    <div className="my-1">
+                      Morning: <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
+                      <br />
+                      Afternoon: <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
+                      <br />
+                      Evening: <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
+                    </div>
                     <Form.Control.Feedback className="d-block" type="invalid">
                       {this.state.errors['preferred_contact_time']}
                     </Form.Control.Feedback>
@@ -262,44 +253,36 @@ class Contact extends React.Component {
                 )}
               </Form.Row>
               <Form.Row>
-                <Form.Group as={Col} md="11">
-                  <Form.Row>
-                    <Form.Group as={Col}>
-                      <Form.Label htmlFor="primary_telephone" className="input-label">
-                        PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}
-                      </Form.Label>
-                      <PhoneInput
-                        id="primary_telephone"
-                        value={this.state.current.patient.primary_telephone}
-                        onChange={this.handleChange}
-                        isInvalid={!!this.state.errors['primary_telephone']}
-                      />
-                    </Form.Group>
-                    <Form.Group as={Col}>
-                      {this.state.current.blocked_sms && (
-                        <Form.Label className="tooltip-whitespace input-label font-weight-bold py-2">
-                          SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
-                        </Form.Label>
-                      )}
-                    </Form.Group>
-                  </Form.Row>
-                  {this.state.current.patient?.preferred_contact_method?.includes('SMS') && this.state.current.blocked_sms === true && (
-                    <Form.Label className="tooltip-whitespace">
+                <Form.Group as={Col} lg="12" xl="10" controlId="primary_telephone">
+                  <Form.Label className="input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
+                  {this.state.current.blocked_sms && (
+                    <span className="float-right font-weight-bold">
+                      SMS Blocked
+                      <InfoTooltip tooltipTextKey="blockedSMS" location="right" />
+                    </span>
+                  )}
+                  <PhoneInput
+                    id="primary_telephone"
+                    value={this.state.current.patient.primary_telephone}
+                    onChange={this.handleChange}
+                    isInvalid={!!this.state.errors['primary_telephone']}
+                  />
+                  {this.state.current.patient?.preferred_contact_method?.includes('SMS') && this.state.current.blocked_sms && (
+                    <div className="pt-1">
                       <i>
                         <b>* Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert.
                       </i>
-                      <b>
-                        <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
-                      </b>
-                    </Form.Label>
+                      <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="right" />
+                    </div>
                   )}
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['primary_telephone']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} md="2"></Form.Group>
-                <Form.Group as={Col} md="11" controlId="secondary_telephone">
-                  <Form.Label className="input-label">SECONDARY TELEPHONE NUMBER{schema?.fields?.secondary_telephone?._exclusive?.required && ' *'}</Form.Label>
+                <Form.Group as={Col} lg="12" xl="10" controlId="secondary_telephone">
+                  <Form.Label className="input-label">
+                    SECONDARY TELEPHONE NUMBER{schema?.fields?.secondary_telephone?._exclusive?.required && ' *'}
+                  </Form.Label>
                   <PhoneInput
                     id="secondary_telephone"
                     value={this.state.current.patient.secondary_telephone}
@@ -312,7 +295,7 @@ class Contact extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row>
-                <Form.Group as={Col} md="11" controlId="primary_telephone_type">
+                <Form.Group as={Col} lg="12" xl="10" controlId="primary_telephone_type" className="mb-0">
                   <Form.Label className="input-label">PRIMARY PHONE TYPE{schema?.fields?.primary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['primary_telephone_type']}
@@ -330,9 +313,10 @@ class Contact extends React.Component {
                     {this.state.errors['primary_telephone_type']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} md="2"></Form.Group>
-                <Form.Group as={Col} md="11" controlId="secondary_telephone_type">
-                  <Form.Label className="input-label">SECONDARY PHONE TYPE{schema?.fields?.secondary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
+                <Form.Group as={Col} lg="12" xl="10" controlId="secondary_telephone_type" className="mb-0">
+                  <Form.Label className="input-label">
+                    SECONDARY PHONE TYPE{schema?.fields?.secondary_telephone_type?._exclusive?.required && ' *'}
+                  </Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['secondary_telephone_type']}
                     as="select"
@@ -376,23 +360,18 @@ class Contact extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row>
-                <Form.Group as={Col} md="auto">
-                  Smartphone:
-                  <br />
-                  Plain Cell:
-                  <br />
-                  Landline:
-                </Form.Group>
-                <Form.Group as={Col} md="auto">
-                  <span className="font-weight-light">Phone capable of accessing web-based reporting tool</span>
-                  <br />
-                  <span className="font-weight-light">Phone capable of SMS messaging</span>
-                  <br />
-                  <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
+                <Form.Group as={Col}>
+                  <div>
+                    Smartphone: <span className="font-weight-light">Phone capable of accessing web-based reporting tool</span>
+                    <br />
+                    Plain Cell: <span className="font-weight-light">Phone capable of SMS messaging</span>
+                    <br />
+                    Landline: <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
+                  </div>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3 pb-2">
-                <Form.Group as={Col} md="8" controlId="email">
+              <Form.Row className="mt-2">
+                <Form.Group as={Col} lg="12" xl="10" controlId="email">
                   <Form.Label className="input-label">E-MAIL ADDRESS{schema?.fields?.email?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['email']}
@@ -405,7 +384,7 @@ class Contact extends React.Component {
                     {this.state.errors['email']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} md="8" controlId="confirm_email">
+                <Form.Group as={Col} lg="12" xl="10" controlId="confirm_email">
                   <Form.Label className="input-label">CONFIRM E-MAIL ADDRESS{schema?.fields?.confirm_email?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['confirm_email']}
