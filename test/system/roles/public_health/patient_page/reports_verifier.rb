@@ -61,7 +61,7 @@ class PublicHealthPatientPageReportsVerifier < ApplicationSystemTestCase
         value = symptom.value
         value = value == true ? 'Yes' : 'No' if symptom[:type] == 'BoolSymptom' && !value.nil?
         assert_equal value&.to_s || '', cell.text, "Symptom '#{symptom[:label]}' for assessment #{assessment[:id]}"
-        assert_equal assessment.symptom_passes_threshold(symptom), cell.find('span')[:class].include?('concern'),
+        assert_equal assessment.symptom_passes_threshold(symptom), cell.find('span')[:class].include?('text-danger'),
                      "'Symptomatic color' for symptom '#{symptom[:label]}' for assessment #{assessment[:id]}"
       end
     end

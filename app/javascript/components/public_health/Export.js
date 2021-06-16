@@ -64,7 +64,7 @@ class Export extends React.Component {
         <DropdownButton
           as={ButtonGroup}
           size="md"
-          className="ml-2 mb-4"
+          className="ml-2 mb-2"
           title={
             <React.Fragment>
               <i className="fas fa-download"></i> Export{' '}

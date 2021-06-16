@@ -315,7 +315,7 @@ class AuditModal extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Modal show={this.props.show} onHide={this.hide} dialogClassName="modal-am" aria-labelledby="contained-modal-title-vcenter" centered>
+        <Modal show={this.props.show} onHide={this.hide} dialogClassName="modal-audit" aria-labelledby="contained-modal-title-vcenter" centered>
           <Modal.Header closeButton>
             <Modal.Title>Audit Events</Modal.Title>
           </Modal.Header>

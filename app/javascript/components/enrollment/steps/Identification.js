@@ -294,7 +294,7 @@ class Identification extends React.Component {
             <Form>
               <Form.Row>
                 <Form.Group as={Col} id="workflow_wrapper">
-                  <Form.Label htmlFor="workflow-select" className="nav-input-label">
+                  <Form.Label htmlFor="workflow-select" className="input-label">
                     WORKFLOW *
                   </Form.Label>
                   <Select
@@ -313,7 +313,7 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="first_name">
-                  <Form.Label className="nav-input-label">FIRST NAME{schema?.fields?.first_name?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">FIRST NAME{schema?.fields?.first_name?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['first_name']}
                     size="lg"
@@ -326,7 +326,7 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} controlId="middle_name">
-                  <Form.Label className="nav-input-label">MIDDLE NAME(S){schema?.fields?.middle_name?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">MIDDLE NAME(S){schema?.fields?.middle_name?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['middle_name']}
                     size="lg"
@@ -339,7 +339,7 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} controlId="last_name">
-                  <Form.Label className="nav-input-label">LAST NAME{schema?.fields?.last_name?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">LAST NAME{schema?.fields?.last_name?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['last_name']}
                     size="lg"
@@ -354,7 +354,7 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} md="auto" controlId="date_of_birth">
-                  <Form.Label className="nav-input-label">DATE OF BIRTH{schema?.fields?.date_of_birth?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">DATE OF BIRTH{schema?.fields?.date_of_birth?._exclusive?.required && ' *'}</Form.Label>
                   <DateInput
                     id="date_of_birth"
                     date={this.state.current.patient.date_of_birth}
@@ -373,7 +373,7 @@ class Identification extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="age" md="auto">
-                  <Form.Label className="nav-input-label">AGE{schema?.fields?.age?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">AGE{schema?.fields?.age?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['age']}
                     placeholder=""
@@ -389,7 +389,7 @@ class Identification extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="sex" md="auto">
-                  <Form.Label className="nav-input-label">SEX AT BIRTH{schema?.fields?.sex?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">SEX AT BIRTH{schema?.fields?.sex?._exclusive?.required && ' *'}</Form.Label>
                   <InfoTooltip tooltipTextKey="sexAtBirth" location="right"></InfoTooltip>
                   <Form.Control
                     isInvalid={this.state.errors['sex']}
@@ -410,7 +410,7 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="gender_identity" md="auto">
-                  <Form.Label className="nav-input-label">GENDER IDENTITY{schema?.fields?.gender_identity?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">GENDER IDENTITY{schema?.fields?.gender_identity?._exclusive?.required && ' *'}</Form.Label>
                   <InfoTooltip tooltipTextKey="genderIdentity" location="right"></InfoTooltip>
                   <Form.Control
                     isInvalid={this.state.errors['gender_identity']}
@@ -433,7 +433,7 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} controlId="sexual_orientation" md="auto">
-                  <Form.Label className="nav-input-label">SEXUAL ORIENTATION{schema?.fields?.sexual_orientation?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">SEXUAL ORIENTATION{schema?.fields?.sexual_orientation?._exclusive?.required && ' *'}</Form.Label>
                   <InfoTooltip tooltipTextKey="sexualOrientation" location="right"></InfoTooltip>
                   <Form.Control
                     isInvalid={this.state.errors['sexual_orientation']}
@@ -457,7 +457,7 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} md="auto">
-                  <Form.Label className="nav-input-label">
+                  <Form.Label className="input-label">
                     RACE (SELECT ALL THAT APPLY)<InfoTooltip tooltipTextKey="race" location="right"></InfoTooltip>
                   </Form.Label>
                   {this.props.race_options.non_exclusive.map(option => {
@@ -490,7 +490,7 @@ class Identification extends React.Component {
                   })}
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="ethnicity">
-                  <Form.Label className="nav-input-label">ETHNICITY{schema?.fields?.ethnicity?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">ETHNICITY{schema?.fields?.ethnicity?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.patient.ethnicity || ''} onChange={this.handleChange}>
                     <option></option>
                     <option>Not Hispanic or Latino</option>
@@ -501,19 +501,19 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-3 ml-0 mb-0">
-                <div className="nav-input-label">LANGUAGE</div>
+                <div className="input-label">LANGUAGE</div>
               </Form.Row>
               <Form.Row className="pb-3 ml-0">Languages that are not fully supported are indicated by a (*) in the below list.</Form.Row>
               <Form.Row>
                 <Form.Group as={Col} sm={24} md={12} id="primary_language_wrapper" className="pr-md-4 mb-2">
-                  <Form.Label htmlFor="primary-language-select" className="nav-input-label">
+                  <Form.Label htmlFor="primary-language-select" className="input-label">
                     PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="primaryLanguage" location="right"></InfoTooltip>
                   </Form.Label>
                   {this.renderLanguageSelect(true)}
                 </Form.Group>
                 <Form.Group as={Col} sm={24} md={12} id="secondary_language_wrapper" className="pl-md-4 mb-2">
-                  <Form.Label htmlFor="secondary-language-select" className="nav-input-label">
+                  <Form.Label htmlFor="secondary-language-select" className="input-label">
                     SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="secondaryLanguage" location="right"></InfoTooltip>
                   </Form.Label>
@@ -545,7 +545,7 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} md={12} controlId="nationality">
-                  <Form.Label className="nav-input-label">NATIONALITY{schema?.fields?.nationality?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">NATIONALITY{schema?.fields?.nationality?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['nationality']}
                     size="lg"
@@ -560,7 +560,7 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row className="pb-2">
                 <Form.Group as={Col} md={8} controlId="user_defined_id_statelocal">
-                  <Form.Label className="nav-input-label">STATE/LOCAL ID{schema?.fields?.user_defined_id_statelocal?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">STATE/LOCAL ID{schema?.fields?.user_defined_id_statelocal?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['user_defined_id_statelocal']}
                     size="lg"
@@ -573,7 +573,7 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md={8} controlId="user_defined_id_cdc">
-                  <Form.Label className="nav-input-label">CDC ID{schema?.fields?.user_defined_id_cdc?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">CDC ID{schema?.fields?.user_defined_id_cdc?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['user_defined_id_cdc']}
                     size="lg"
@@ -586,7 +586,7 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md={8} controlId="user_defined_id_nndss">
-                  <Form.Label className="nav-input-label">
+                  <Form.Label className="input-label">
                     NNDSS LOC. REC. ID/CASE ID{schema?.fields?.user_defined_id_nndss?._exclusive?.required && ' *'}
                   </Form.Label>
                   <Form.Control

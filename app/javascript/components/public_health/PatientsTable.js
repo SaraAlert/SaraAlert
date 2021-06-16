@@ -498,7 +498,7 @@ class PatientsTable extends React.Component {
         <Col xs="1" className="align-self-center">
           {!!rowData?.latest_report?.symptomatic && (
             <span data-for={`${rowData.id.toString()}-symptomatic-icon`} data-tip="">
-              <i className="fas fa-exclamation-triangle symptomatic-icon"></i>
+              <i className="fas fa-exclamation-triangle text-danger"></i>
               <ReactTooltip id={`${rowData.id.toString()}-symptomatic-icon`} multiline={false} place="left" type="dark" effect="solid">
                 <span>{`Monitoree's latest report was symptomatic`}</span>
               </ReactTooltip>
@@ -592,11 +592,11 @@ class PatientsTable extends React.Component {
 
   render() {
     return (
-      <div className="mx-2 pb-4">
+      <div className={`${this.props.workflow}-dashboard mx-2 pb-4`}>
         <Nav variant="tabs" activeKey={this.state.query.tab}>
           {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
             return (
-              <Nav.Item key={tab} className={tab === 'all' ? 'ml-auto' : ''}>
+              <Nav.Item key={tab}>
                 <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`}>
                   {tabProps.label}
                   <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
@@ -608,8 +608,8 @@ class PatientsTable extends React.Component {
           })}
         </Nav>
         <TabContent>
-          <Card>
-            <Card.Body className="pl-4 pr-4">
+          <Card style={{ marginTop: '-1px' }}>
+            <Card.Body className="px-4">
               <Row>
                 <Col md="18">
                   <div id="tab-description" className="lead mt-1 mb-3">

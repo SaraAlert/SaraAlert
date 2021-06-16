@@ -66,7 +66,7 @@ class Header extends React.Component {
                   <i className="fas fa-user fa-fw mr-2"></i>
                   {this.props.current_user?.email} ({this.props.current_user?.role?.split('_')?.map(_.capitalize)?.join(' ')})
                 </Navbar.Text>
-                <a className="white-border-right"></a>
+                <a className="w-border-right"></a>
                 <div className="dropdown">
                   <Nav.Link
                     className="text-white py-0"
@@ -90,17 +90,17 @@ class Header extends React.Component {
                     </a>
                   </div>
                 </div>
-                <a className="white-border-right"></a>
+                <a className="w-border-right"></a>
                 {this.props.current_user?.is_usa_admin && (
                   <React.Fragment>
                     <Nav.Link className="text-white py-0" href={`${window.BASE_PATH}/oauth/applications`}>
                       <i className="fas fa-share-alt fa-fw mr-2"></i>API
                     </Nav.Link>
-                    <a className="white-border-right"></a>
+                    <a className="w-border-right"></a>
                     <Nav.Link className="text-white py-0" href={`${window.BASE_PATH}/sidekiq`}>
                       <i className="fas fa-hourglass fa-fw mr-2"></i>Jobs
                     </Nav.Link>
-                    <a className="white-border-right"></a>
+                    <a className="w-border-right"></a>
                   </React.Fragment>
                 )}
                 <Nav.Link className="text-white py-0" href={`${window.BASE_PATH}/users/sign_out`} data-method="DELETE">

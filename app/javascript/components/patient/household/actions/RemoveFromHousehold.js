@@ -62,12 +62,12 @@ class RemoveFromHousehold extends React.Component {
             <Row>
               <Form.Group as={Col}>
                 {this.state.removeEligible && (
-                  <Form.Label size="sm" className="nav-input-label">
+                  <Form.Label size="sm" className="input-label">
                     This monitoree will be removed from their household and will be responsible for their own responses.
                   </Form.Label>
                 )}
                 {this.state.removeEligible == false && (
-                  <Form.Label size="sm" className="nav-input-label">
+                  <Form.Label size="sm" className="input-label">
                     This monitoree cannot be removed from their household until their email and primary telephone number differ from those of the current head
                     of household.
                   </Form.Label>

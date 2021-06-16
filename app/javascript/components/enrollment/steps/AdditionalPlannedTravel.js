@@ -74,7 +74,7 @@ class AdditionalPlannedTravel extends React.Component {
             <Form>
               <Form.Row>
                 <Form.Group as={Col} md="8" controlId="additional_planned_travel_type">
-                  <Form.Label className="nav-input-label">TRAVEL TYPE{schema?.fields?.additional_planned_travel_type?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="input-label">TRAVEL TYPE{schema?.fields?.additional_planned_travel_type?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['additional_planned_travel_type']}
                     as="select"
@@ -91,7 +91,7 @@ class AdditionalPlannedTravel extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="additional_planned_travel_destination">
-                  <Form.Label className="nav-input-label">
+                  <Form.Label className="input-label">
                     DESTINATION{schema?.fields?.additional_planned_travel_destination?._exclusive?.required && ' *'}
                   </Form.Label>
                   <Form.Control
@@ -107,7 +107,7 @@ class AdditionalPlannedTravel extends React.Component {
                 </Form.Group>
                 {this.state.current.patient.additional_planned_travel_type && this.state.current.patient.additional_planned_travel_type === 'International' && (
                   <Form.Group as={Col} md="8" controlId="additional_planned_travel_destination_country">
-                    <Form.Label className="nav-input-label">
+                    <Form.Label className="input-label">
                       DESTINATION COUNTRY{schema?.fields?.additional_planned_travel_destination_country?._exclusive?.required && ' *'}
                     </Form.Label>
                     <Form.Control
@@ -131,7 +131,7 @@ class AdditionalPlannedTravel extends React.Component {
                   this.state.current.patient.additional_planned_travel_type && this.state.current.patient.additional_planned_travel_type === 'International'
                 ) && (
                   <Form.Group as={Col} md="8" controlId="additional_planned_travel_destination_state">
-                    <Form.Label className="nav-input-label">
+                    <Form.Label className="input-label">
                       DESTINATION STATE{schema?.fields?.additional_planned_travel_destination_state?._exclusive?.required && ' *'}
                     </Form.Label>
                     <Form.Control
@@ -157,7 +157,7 @@ class AdditionalPlannedTravel extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} md="8" controlId="additional_planned_travel_port_of_departure">
-                  <Form.Label className="nav-input-label">
+                  <Form.Label className="input-label">
                     PORT OF DEPARTURE{schema?.fields?.additional_planned_travel_port_of_departure?._exclusive?.required && ' *'}
                   </Form.Label>
                   <Form.Control
@@ -172,7 +172,7 @@ class AdditionalPlannedTravel extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="additional_planned_travel_start_date">
-                  <Form.Label className="nav-input-label">
+                  <Form.Label className="input-label">
                     START DATE{schema?.fields?.additional_planned_travel_start_date?._exclusive?.required && ' *'}
                   </Form.Label>
                   <DateInput
@@ -192,9 +192,7 @@ class AdditionalPlannedTravel extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="additional_planned_travel_end_date">
-                  <Form.Label className="nav-input-label">
-                    END DATE{schema?.fields?.additional_planned_travel_end_date?._exclusive?.required && ' *'}
-                  </Form.Label>
+                  <Form.Label className="input-label">END DATE{schema?.fields?.additional_planned_travel_end_date?._exclusive?.required && ' *'}</Form.Label>
                   <DateInput
                     id="additional_planned_travel_end_date"
                     date={this.state.current.patient.additional_planned_travel_end_date}
@@ -214,7 +212,7 @@ class AdditionalPlannedTravel extends React.Component {
               </Form.Row>
               <Form.Row className="pb-2">
                 <Form.Group as={Col} md="24" controlId="additional_planned_travel_related_notes">
-                  <Form.Label className="nav-input-label">
+                  <Form.Label className="input-label">
                     ADDITIONAL PLANNED TRAVEL NOTES{schema?.fields?.additional_planned_travel_related_notes?._exclusive?.required && ' *'}
                   </Form.Label>
                   <Form.Control

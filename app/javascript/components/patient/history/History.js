@@ -172,7 +172,7 @@ class History extends React.Component {
             <b>{this.state.original_version.created_by}</b>, {formatRelativePast(this.state.original_version.created_at)} (
             {formatTimestamp(this.state.original_version.created_at)})
             <span className="float-right">
-              <div className="badge-padding h5">
+              <div className="h5 m-0">
                 <span className="badge badge-secondary">{this.state.original_version.history_type}</span>
               </div>
             </span>

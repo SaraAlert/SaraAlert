@@ -1,30 +1,9 @@
-$brand-primary: #226891;
-$brand-danger: #AB4642;
-$brand-warning: #8B6C38;
-$brand-success: #3A7539;
-
-$blue:    #226891 !default;
-$yellow:  #F0F020 !default;
-
-$grid-columns: 24;
-
-$grid-breakpoints: (
-  xs: 0,
-  sm: 576px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px,
-  xxl: 1400px,
-  xxxl: 1640px
-);
-
-body {
-  background-color: #f5f5f5 !important;
+.alert {
+  border-radius: 0 !important;
 }
 
-.demo-bg {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20height%3D%27100px%27%20width%3D%27100px%27%3E%3Ctext%20transform%3D%27translate(20%2C%20100)%20rotate(-45)%27%20fill%3D%27rgb(220%2C220%2C220)%27%20font-size%3D%2730%27%3EDEMO%3C%2Ftext%3E%3C%2Fsvg%3E");
-  background-size: 100px 100px;
+.button {
+  border-radius: 0 !important;
 }
 
 .btn {
@@ -44,11 +23,19 @@ body {
 }
 
 .icon-btn {
-  color: #808080 !important;
+  color: #808080;
 }
 
 .icon-btn:hover {
-  color: #404040 !important;
+  color: #404040;
+}
+
+.icon-btn-primary {
+  color: #226891;
+}
+
+.icon-btn-primary:hover {
+  color: #1B5272;
 }
 
 .icon-btn-dark {
@@ -59,59 +46,21 @@ body {
   color: #000000 !important;
 }
 
-.react-datepicker-popper {
-  z-index: 100 !important
-}
-
-.custom-control {
-  z-index: 0 !important;
-}
-
-.popover {
-  border-radius: 0 !important;
-  width: 750px !important;
-  max-width: 750px !important;
-}
-
-.brand-primary-color {
-  background-color: #226891;
+.badge-muted {
+  background-color: #6c757d !important;
   color: #fff;
 }
 
-.card.card-square {
-  border-radius: 0;
+.badge-larger-font {
+  font-size: 90% !important;
 }
 
 .card {
   border-radius: 0 !important;
 }
 
-.table-smaller-font {
-  font-size: 0.9em;
-}
-
-.nav-version {
-  font-size: 50%;
-}
-
-.form-control.form-square {
+.card.card-square {
   border-radius: 0;
-}
-
-.authy-form input[type=text] {
-  width: inherit !important;
-}
-
-.breadcrumb {
-  border-radius: 0 !important;
-}
-
-.alert {
-  border-radius: 0 !important;
-}
-
-.button {
-  border-radius: 0 !important;
 }
 
 .form-control {
@@ -119,16 +68,16 @@ body {
   transition: none !important;
 }
 
+.form-control.form-square {
+  border-radius: 0;
+}
+
 .form-group-inline {
   display: inline-flex;
 }
 
-.nav-input-label {
+.input-label {
   font-weight: 600;
-}
-
-.lead-bc {
-  font-size: 1.10rem !important;
 }
 
 select.form-control {
@@ -144,21 +93,8 @@ select.form-control {
   color: #606060 !important;
 }
 
-.badge-larger-font {
-  font-size: 90% !important;
-}
-
-.badge-muted {
-  background-color: #6c757d !important;
-  color: #fff;
-}
-
-.badge-hoh {
-  vertical-align: top !important;
-}
-
-.table .concern {
-  color: red;
+.custom-control {
+  z-index: 0 !important;
 }
 
 .b-border-right-3 {
@@ -177,19 +113,10 @@ select.form-control {
   border-bottom: 2px solid rgba(0, 0, 0, 0.125) !important;
 }
 
-.mb-0 {
-  margin-bottom: 0px !important;
-}
-
-.pt-0 {
-  padding-top: 0px !important;
-}
-
-.mx-0 {
-  margin-left: 0px;
-  margin-right: 0px;
-  padding-left: 0px;
-  padding-right: 0px;
+.w-border-right {
+  border-right: 1px solid white;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .navbar-brand {
@@ -207,6 +134,14 @@ select.form-control {
   color: rgba(255, 255, 255, 0.8) !important;
 }
 
+.breadcrumb {
+  border-radius: 0 !important;
+}
+
+.breadcrumb .li {
+  font-size: 1.10rem !important;
+}
+
 .display-5 {
   font-size: 2.5rem;
   font-weight: 300;
@@ -217,19 +152,6 @@ select.form-control {
   font-size: 1.5rem;
   font-weight: 300;
   line-height: 1.2;
-}
-
-.logo-header {
-  background-size: 20px 30px;
-}
-
-.badge-padding {
-  margin: 0 !important;
-}
-
-.nav-tabs .nav-link {
-  border-top-left-radius: 0 !important;
-  border-top-right-radius: 0 !important;
 }
 
 .modal-content {
@@ -281,38 +203,15 @@ select.form-control {
   max-width: 900px !important;
 }
 
-.reports-actions-title {
-  height: 30px !important;
-}
-
 .dropdown-menu {
   border-radius: 0 !important;
 }
 
-.modal-am {
+.modal-audit, .modal-move-household {
   width: 60% !important;
   max-width: 60% !important;
 }
 
-.modal-move-household {
-  max-width: 60% !important;
-  width: 60%;
-}
-
 .justify-unset {
   justify-content: unset;
-}
-
-// Use this class to correctly word-break elements across all browsers
-.wrap-words {
-  // This somewhat hacky solution causes things to wrap on all browsers
-  // Not all browsers have these defined. The browser will select the ones it has defined
-  // This has been tested on Safari, IE11, MSEdge, Chrome, and Firefox and it behaves as expected
-  word-break: break-all;
-  word-break: break-word;
-}
-
-.edit-text {
-  color: #707070 !important;
-  font-size: .9em;
 }

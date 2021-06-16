@@ -51,7 +51,7 @@ class LaboratoryModal extends React.Component {
           <Form>
             <Row>
               <Form.Group as={Col} controlId="lab_type">
-                <Form.Label className="nav-input-label">Lab Test Type</Form.Label>
+                <Form.Label className="input-label">Lab Test Type</Form.Label>
                 <Form.Control as="select" className="form-control-lg" onChange={this.handleChange} value={this.state.lab_type}>
                   <option disabled></option>
                   <option>PCR</option>
@@ -66,7 +66,7 @@ class LaboratoryModal extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col}>
-                <Form.Label htmlFor="specimen_collection" className="nav-input-label">
+                <Form.Label htmlFor="specimen_collection" className="input-label">
                   Specimen Collection Date {this.props.specimenCollectionRequired && '*'}
                 </Form.Label>
                 <DateInput
@@ -83,7 +83,7 @@ class LaboratoryModal extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col}>
-                <Form.Label htmlFor="report" className="nav-input-label">
+                <Form.Label htmlFor="report" className="input-label">
                   Report Date
                 </Form.Label>
                 <DateInput
@@ -104,7 +104,7 @@ class LaboratoryModal extends React.Component {
             </Row>
             <Row>
               <Form.Group as={Col} controlId="result">
-                <Form.Label className="nav-input-label">Result {this.props.onlyPositiveResult && '*'}</Form.Label>
+                <Form.Label className="input-label">Result {this.props.onlyPositiveResult && '*'}</Form.Label>
                 <Form.Control as="select" className="form-control-lg" onChange={this.handleChange} value={this.state.result}>
                   {this.props.onlyPositiveResult ? (
                     <option>positive</option>

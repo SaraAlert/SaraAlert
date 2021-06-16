@@ -135,7 +135,7 @@ class Patient extends React.Component {
 
     return (
       <React.Fragment>
-        <Row id="monitoree-details-header">
+        <Row id="monitoree-details-header" className="mb-3">
           {this.props.can_modify_subject_status && !this.props.edit_mode && this.props.details.follow_up_reason && (
             <FollowUpFlagPanel
               patient={this.props.details}
@@ -154,12 +154,7 @@ class Patient extends React.Component {
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
             {this.props.can_modify_subject_status && !this.props.edit_mode && !this.props.details.follow_up_reason && (
-              <Button
-                id="set-follow-up-flag-link"
-                size="sm"
-                className="my-2 mr-2"
-                aria-label="Set Flag for Follow-up"
-                onClick={() => this.setState({ showSetFlagModal: true })}>
+              <Button id="set-follow-up-flag-link" size="sm" aria-label="Set Flag for Follow-up" onClick={() => this.setState({ showSetFlagModal: true })}>
                 <span>
                   {' '}
                   <i className="fas fa-flag pr-1"></i> Flag for Follow-up
@@ -168,7 +163,7 @@ class Patient extends React.Component {
             )}
           </Col>
           <Col sm={12}>
-            <div className="jurisdiction-user-box">
+            <div className="jurisdiction-user-box float-right">
               <div id="jurisdiction-path">
                 <b>
                   <span className="d-none d-md-inline">Assigned</span> Jurisdiction:
@@ -242,7 +237,7 @@ class Patient extends React.Component {
               <div>
                 <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 {this.props.details.blocked_sms && (
-                  <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
+                  <Form.Label className="tooltip-whitespace input-label font-weight-bold">
                     &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
                   </Form.Label>
                 )}
@@ -274,7 +269,7 @@ class Patient extends React.Component {
           </Col>
         </Row>
         {!this.props.edit_mode && (
-          <div className="details-expander">
+          <div className="details-expander mb-3">
             <Button
               id="details-expander-link"
               variant="link"
