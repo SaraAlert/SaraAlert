@@ -79,7 +79,7 @@ describe('PatientsTable', () => {
     expect(wrapper.containsMatchingElement(AdvancedFilter)).toBeTruthy();
     expect(wrapper.containsMatchingElement(CustomTable)).toBeTruthy();
     expect(wrapper.containsMatchingElement(DropdownButton)).toBeTruthy();
-    expect(wrapper.find(Dropdown.Item).length).toEqual(2);
+    expect(wrapper.find(Dropdown.Item).length).toEqual(3);
 
     const defaultTab = Object.keys(mockIsolationTabs)[0];
     expect(wrapper.find('#tab-description').text()).toEqual(mockGlobalTabs[`${defaultTab}`]['description'] + ' You are currently in the global dashboard.');
