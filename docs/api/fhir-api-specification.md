@@ -30,6 +30,7 @@ Because the Sara Alert API follows the FHIR specification, there is a mapping be
 | Monitoree Daily Report    | [QuestionnaireResponse](https://www.hl7.org/fhir/questionnaireresponse.html)|
 | Monitoree Close Contact   | [RelatedPerson](https://www.hl7.org/fhir/relatedperson.html)|
 | Monitoree Immunization    | [Immunization](https://www.hl7.org/fhir/immunization.html)|
+| Monitoree History         | [Provenance](https://hl7.org/fhir/provenance.html)|
 
 <a name="supported-scopes"/>
 
@@ -46,7 +47,8 @@ For applications following the [SMART-on-FHIR App Launch Framework "Standalone L
 * `user/RelatedPerson.*`
 * `user/Immunization.read`
 * `user/Immunization.write`
-* `user/Immunization.*`
+* `user/Immunization.*`,
+* `user/Provenance.read`
 
 For applications following the [SMART on FHIR Backend Services Workflow](#backend-services), these are the available scopes:
 
@@ -60,7 +62,8 @@ For applications following the [SMART on FHIR Backend Services Workflow](#backen
 * `system/RelatedPerson.*`,
 * `system/Immunization.read`,
 * `system/Immunization.write`,
-* `system/Immunization.*`
+* `system/Immunization.*`,
+* `system/Provenance.read`
 
 Please note a given application and request for access token can have have multiple scopes, which must be space-separated. For example:
 ```
@@ -255,6 +258,31 @@ A capability statement is available at `[base]/metadata`:
           ]
         },
         {
+          "type": "Provenance",
+          "interaction": [
+            {
+              "code": "read"
+            },
+            {
+              "code": "search-type"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "patient",
+              "type": "reference"
+            },
+            {
+              "name": "_id",
+              "type": "string"
+            },
+            {
+              "name": "_count",
+              "type": "string"
+            }
+          ]
+        },
+        {
           "type": "Observation",
           "interaction": [
             {
@@ -343,6 +371,7 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
     "user/Immunization.read",
     "user/Immunization.write",
     "user/Immunization.*",
+    "user/Provenance.read",
     "system/Patient.read",
     "system/Patient.write",
     "system/Patient.*",
@@ -353,7 +382,8 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
     "system/RelatedPerson.*",
     "system/Immunization.read",
     "system/Immunization.write",
-    "system/Immunization.*"
+    "system/Immunization.*",
+    "system/Provenance.read"
   ],
   "capabilities": ["launch-standalone"]
 }
@@ -762,6 +792,56 @@ Get a monitoree vaccination via an id, e.g.:
   </div>
 </details>
 
+<a name="read-get-provenance"/>
+
+### GET `[base]/Provenance/[:id]`
+
+Get a monitoree history via an id, e.g.:
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "id": 2006, 
+  "meta": {
+    "lastUpdated": "2021-05-20T02:09:38+00:00"
+  },
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/comment", 
+      "valueString": "User changed latest public health action to \"Recommended medical evaluation of symptoms\". Reason: Lost to follow-up during monitoring period, details"
+    }, 
+    {
+      "url": "http://saraalert.org/StructureDefinition/history_type", 
+      "valueString": "Monitoring Change"
+    }
+  ], 
+  "target": [
+    {
+      "reference": "Patient/6"
+    }
+  ], 
+  "recorded": "2021-05-20T02:09:38+00:00", 
+  "agent": [
+    {
+      "who": {
+        "identifier": {
+          "value": "state1_epi_enroller@example.com"
+        }
+      }, 
+      "onBehalfOf": {
+        "reference": "Patient/6"
+      }
+    }
+  ], 
+  "resourceType": "Provenance"
+}
+```
+  </div>
+</details>
+
 
 
 
@@ -769,7 +849,7 @@ Get a monitoree vaccination via an id, e.g.:
 
 ### GET `[base]/Patient/[:id]/$everything`
 
-Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab results, and all their daily reports.
+Use this route to retrieve a FHIR Bundle containing the monitoree and all their lab results, daily reports, vaccinations, close contacts, and histories
 
 <details>
   <summary>Click to expand JSON snippet</summary>
@@ -903,6 +983,44 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
           }
         ],
         "resourceType": "Patient"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Provenance/1262",
+      "resource": {
+        "id": 1262,
+        "meta": {
+          "lastUpdated": "2021-05-19T02:13:54+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/comment",
+            "valueString": "User enrolled monitoree."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/history-type",
+            "valueString": "Enrollment"
+          }
+        ],
+       "target": [
+         {
+            "reference": "Patient/3"
+          }
+        ],
+        "recorded": "2021-05-19T02:13:54+00:00",
+        "agent": [
+         {
+           "who": {
+             "identifier": {
+               "value": "state1_enroller@example.com"
+             }
+           },
+           "onBehalfOf": {
+              "reference": "Patient/3"
+           }
+          }
+        ],
+        "resourceType": "Provenance"
       }
     },
     {
@@ -2725,6 +2843,73 @@ GET `[base]/Immunization?patient=Patient/[:id]`
     }
   ],
   "resourceType": "Bundle"
+}
+
+```
+  </div>
+</details>
+
+### GET `[base]/Provenance?patient=Patient/[:id]`
+
+You can also use search to find Monitoree histories by using the `patient` parameter.
+
+<a name="search-history-patient"/>
+
+GET `[base]/Provenance?patient=Patient/[:id]`
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+    "id": "83890c54-0871-4801-bbdf-b4b29f6c400a",
+    "meta": {
+        "lastUpdated": "2021-05-28T16:37:43-04:00"
+    },
+    "type": "searchset",
+    "total": 1,
+    "entry": [
+        {
+            "fullUrl": "http://localhost:3000/fhir/r4/Provenance/10183",
+            "resource": {
+                "id": 10183,
+                "meta": {
+                    "lastUpdated": "2021-05-26T15:51:19+00:00"
+                },
+                "extension": [
+                    {
+                        "url": "http://saraalert.org/StructureDefinition/comment",
+                        "valueString": "User enrolled monitoree."
+                    },
+                    {
+                        "url": "http://saraalert.org/StructureDefinition/history-type",
+                        "valueString": "Enrollment"
+                    }
+                ],
+                "target": [
+                    {
+                        "reference": "Patient/954"
+                    }
+                ],
+                "recorded": "2021-05-26T15:51:19+00:00",
+                "agent": [
+                    {
+                        "who": {
+                            "identifier": {
+                                "value": "locals2c4_enroller@example.com"
+                            }
+                        },
+                        "onBehalfOf": {
+                            "reference": "Patient/954"
+                        }
+                    }
+                ],
+                "resourceType": "Provenance"
+            }
+        }
+    ],
+    "resourceType": "Bundle"
 }
 
 ```

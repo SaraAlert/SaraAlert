@@ -241,6 +241,25 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     }
   end
 
+  def history_as_fhir(history)
+    FHIR::Provenance.new(
+      meta: FHIR::Meta.new(lastUpdated: history.updated_at.strftime('%FT%T%:z')),
+      id: history.id,
+      target: FHIR::Reference.new(reference: "Patient/#{history.patient_id}"),
+      recorded: history.created_at.strftime('%FT%T%:z'),
+      agent: [
+        {
+          who: FHIR::Reference.new(identifier: FHIR::Identifier.new(value: history.created_by)),
+          onBehalfOf: FHIR::Reference.new(reference: "Patient/#{history.patient_id}")
+        }
+      ],
+      extension: [
+        to_string_extension(history.comment, 'comment'),
+        to_string_extension(history.history_type, 'history-type')
+      ]
+    )
+  end
+
   # Returns a representative FHIR::Immunization for an instance of a Sara Alert Vaccine.
   # https://www.hl7.org/fhir/immunization.html
   def vaccine_as_fhir(vaccine)
