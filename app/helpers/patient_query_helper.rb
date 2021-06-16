@@ -150,7 +150,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
       current_user.patients&.where(isolation: true, purged: false)
     else
-      return current_user.patients&.monitoring_active(true) if tab == :active
+      return current_user.patients&.monitoring_open if tab == :active
       return current_user.patients&.global_priority_review if tab == :priority_review
       return current_user.patients&.global_non_reporting if tab == :non_reporting
       return current_user.patients&.monitoring_closed_without_purged if tab == :closed
