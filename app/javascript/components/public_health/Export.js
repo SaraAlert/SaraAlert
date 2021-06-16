@@ -151,6 +151,7 @@ Export.propTypes = {
   available_workflows: PropTypes.array,
   available_line_lists: PropTypes.object,
   tabs: PropTypes.object,
+  export_options: PropTypes.object,
   query: PropTypes.object,
   all_monitorees_count: PropTypes.number,
   current_monitorees_count: PropTypes.number,

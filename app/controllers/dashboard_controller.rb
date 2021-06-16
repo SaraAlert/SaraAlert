@@ -18,7 +18,10 @@ class DashboardController < ApplicationController
 
     redirect_to('/404') && return if @playbook_label.nil? || @workflow_label.nil?
 
-    @tabs = workflow_configuration(playbook, workflow, :dashboard_tabs)
+    tabs = custom_configuration(playbook, workflow, :dashboard_tabs)
+    @tabs = tabs.dig(:options)
+    button = custom_configuration(playbook, workflow, :header_action_buttons)
+    @header_action_buttons = button.nil? ? nil : button.dig(:options)
     @available_workflows = available_workflows(playbook)
     @available_line_lists = available_line_lists(playbook)
   end
@@ -42,8 +45,14 @@ class DashboardController < ApplicationController
 
     redirect_to ("/dashboard/#{playbook}/" + workflow[:name].to_s)
 
-    @tabs = custom_configuration(playbook, workflow, :dashboard_tabs)
+    # TODO: For now we'll also dig out the options but we should probably determine
+    # if we just want to send the 'options' to be more consistent
+    tabs = custom_configuration(playbook, workflow, :dashboard_tabs)
+    @tabs = tabs.dig(:options)
+    button = custom_configuration(playbook, workflow, :header_action_buttons)
+    @header_action_buttons = button.nil? ? nil : button.dig(:options)
     @available_workflows = available_workflows(playbook)
+    @available_line_lists = available_line_lists(playbook)
   end
 
   def authenticate_user_role
