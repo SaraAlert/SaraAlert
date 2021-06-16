@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 # ApiController: API for interacting with Sara Alert
 class Fhir::R4::ApiController < ApplicationApiController
   include ValidationHelper
@@ -20,7 +21,8 @@ class Fhir::R4::ApiController < ApplicationApiController
       *RELATED_PERSON_READ_SCOPES,
       *IMMUNIZATION_READ_SCOPES,
       *OBSERVATION_READ_SCOPES,
-      *QUESTIONNAIRE_RESPONSE_READ_SCOPES
+      *QUESTIONNAIRE_RESPONSE_READ_SCOPES,
+      *PROVENANCE_READ_SCOPES
     )
   end
   before_action :check_client_type
@@ -28,7 +30,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
   # Return a resource given a type and an id.
   #
-  # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization
+  # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization, Provenance
   #
   # GET /[:resource_type]/[:id]
   def show
@@ -56,6 +58,10 @@ class Fhir::R4::ApiController < ApplicationApiController
       return if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
 
       resource = get_record(Vaccine, params.permit(:id)[:id])
+    when 'provenance'
+      return if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
+
+      resource = get_record(History, params.permit(:id)[:id])
     else
       status_not_found && return
     end
@@ -387,6 +393,11 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       resources = search_vaccines(search_params) || []
       resource_type = 'Immunization'
+    when 'provenance'
+      return if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
+
+      resources = search_histories(search_params) || []
+      resource_type = 'Provenance'
     else
       status_not_found && return
     end
@@ -418,7 +429,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   end
 
   # Return a FHIR Bundle containing a monitoree and all their assessments, lab results,
-  # close contacts, and vaccinations
+  # close contacts, vaccinations, and histories
   #
   # GET /fhir/r4/Patient/[:id]/$everything
   def all
@@ -428,6 +439,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     return if doorkeeper_authorize!(*QUESTIONNAIRE_RESPONSE_READ_SCOPES)
     return if doorkeeper_authorize!(*RELATED_PERSON_READ_SCOPES)
     return if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
+    return if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
 
     status_not_acceptable && return unless accept_header?
 
@@ -440,7 +452,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     laboratories = patient.laboratories || []
     close_contacts = patient.close_contacts || []
     vaccines = patient.vaccines || []
-    all = [patient] + assessments.to_a + laboratories.to_a + close_contacts.to_a + vaccines.to_a
+    histories = patient.histories || []
+    all = [patient] + assessments + laboratories + close_contacts + vaccines + histories
     results = all.collect { |r| FHIR::Bundle::Entry.new(fullUrl: full_url_helper(r.as_fhir), resource: r.as_fhir) }
 
     # Construct bundle from monitoree and data
@@ -567,6 +580,18 @@ class Fhir::R4::ApiController < ApplicationApiController
               FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_id', type: 'string'),
               FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_count', type: 'string')
             ]
+          ),
+          FHIR::CapabilityStatement::Rest::Resource.new(
+            type: 'Provenance',
+            interaction: [
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'read'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'search-type')
+            ],
+            searchParam: [
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: 'patient', type: 'reference'),
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_id', type: 'string'),
+              FHIR::CapabilityStatement::Rest::Resource::SearchParam.new(name: '_count', type: 'string')
+            ]
           )
         ]
       )
@@ -597,6 +622,7 @@ class Fhir::R4::ApiController < ApplicationApiController
         'user/Immunization.read',
         'user/Immunization.write',
         'user/Immunization.*',
+        'user/Provenance.read',
         'system/Patient.read',
         'system/Patient.write',
         'system/Patient.*',
@@ -607,7 +633,8 @@ class Fhir::R4::ApiController < ApplicationApiController
         'system/RelatedPerson.*',
         'system/Immunization.read',
         'system/Immunization.write',
-        'system/Immunization.*'
+        'system/Immunization.*',
+        'system/Provenance.read'
       ],
       capabilities: ['launch-standalone']
     }
@@ -931,6 +958,22 @@ class Fhir::R4::ApiController < ApplicationApiController
     query
   end
 
+  # Search for Histories
+  def search_histories(options)
+    query = History.where(patient: accessible_patients)
+    options.each do |option, search|
+      next unless search.present?
+
+      case option
+      when 'patient'
+        query = query.where(patient_id: search.match(%r{^Patient/(\d+)$}).to_a[1])
+      when '_id'
+        query = query.where(id: search)
+      end
+    end
+    query
+  end
+
   # Get a record that has a "patient_id" field
   def get_record(model, id)
     model.where(patient_id: accessible_patients).find_by(id: id)
@@ -996,3 +1039,4 @@ class Fhir::R4::ApiController < ApplicationApiController
     headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
   end
 end
+# rubocop:enable Metrics/ClassLength

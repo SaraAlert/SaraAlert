@@ -35,7 +35,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @user_everything_app = OauthApplication.create(
       name: 'user-test-patient-rw',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read user/RelatedPerson.* user/Immunization.*'
+      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read user/RelatedPerson.* user/Immunization.* user/Provenance.read'
     )
 
     # Create access tokens
@@ -49,7 +49,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @user_everything_token = Doorkeeper::AccessToken.create(
       resource_owner_id: @user.id,
       application_id: @user_everything_app.id,
-      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read user/RelatedPerson.* user/Immunization.*'
+      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read user/RelatedPerson.* user/Immunization.* user/Provenance.read'
     )
   end
 
@@ -136,6 +136,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       name: 'system-test-patient-w',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/Immunization.write',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    @system_provenance_read_app = OauthApplication.create(
+      name: 'system-test-patient-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Provenance.read',
       jurisdiction_id: 2,
       user_id: shadow_user.id
     )
@@ -235,6 +243,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       application: @system_response_read_app,
       scopes: 'system/QuestionnaireResponse.read'
     )
+    @system_provenance_token_r = Doorkeeper::AccessToken.create(
+      application: @system_provenance_read_app,
+      scopes: 'system/Provenance.read'
+    )
     @system_patient_rw_observation_r_token = Doorkeeper::AccessToken.create(
       application: @system_patient_rw_observation_r_app,
       scopes: 'system/Patient.* system/Observation.read'
@@ -249,7 +261,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     @system_everything_token = Doorkeeper::AccessToken.create(
       application: @system_everything_app,
-      scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read system/RelatedPerson.* system/Immunization.*'
+      scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read system/RelatedPerson.* system/Immunization.* system/Provenance.read'
     )
   end
 

@@ -239,6 +239,7 @@ Doorkeeper.configure do
     'user/Immunization.*',
     'user/Observation.read',
     'user/QuestionnaireResponse.read',
+    'user/Provenance.read',
     'system/Patient.read',
     'system/Patient.write',
     'system/Patient.*',
@@ -250,6 +251,7 @@ Doorkeeper.configure do
     'system/Immunization.read',
     'system/Immunization.write',
     'system/Immunization.*',
+    'system/Provenance.read',
   )
 
   # Allows to restrict only certain scopes for grant_type.

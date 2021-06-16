@@ -6,6 +6,7 @@ require 'action_view/helpers'
 # History: history model
 class History < ApplicationRecord
   include ExcelSanitizer
+  include FhirHelper
 
   HISTORY_TYPES = {
     record_edit: 'Record Edit',
@@ -132,6 +133,10 @@ class History < ApplicationRecord
     where('created_at >= ?', since)
       .where(history_type: [HISTORY_TYPES[:reports_reviewed], HISTORY_TYPES[:report_reviewed]])
   }
+
+  def as_fhir
+    history_as_fhir(self)
+  end
 
   def self.unsuccessful_report_reminder_group_of_patients(patients: nil, created_by: 'Sara Alert System', comment: 'Failed Contact Attempt', error_message: nil)
     histories = []
