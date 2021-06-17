@@ -154,17 +154,17 @@ class FollowUpFlag extends React.Component {
                 onChange={this.handleChange}
                 checked={!this.state.clear_flag}
               />
-              <Form.Check
-                type="radio"
-                name="flag_for_follow_up_option"
-                id="clear_flag_for_follow_up"
-                data-for="clear_flag_disable_reason"
-                data-tip=""
-                label="Clear Follow-up Flag"
-                disabled={this.state.clear_flag_disabled}
-                onChange={this.handleChange}
-                checked={this.state.clear_flag}
-              />
+              <span data-for="clear_flag_disable_reason" data-tip="">
+                <Form.Check
+                  type="radio"
+                  name="flag_for_follow_up_option"
+                  id="clear_flag_for_follow_up"
+                  label="Clear Follow-up Flag"
+                  disabled={this.state.clear_flag_disabled}
+                  onChange={this.handleChange}
+                  checked={this.state.clear_flag}
+                />
+              </span>
               {this.state.clear_flag_disabled && (
                 <ReactTooltip id="clear_flag_disable_reason" multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container">
                   <div>None of the selected monitorees have a flag set</div>
