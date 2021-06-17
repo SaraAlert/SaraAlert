@@ -130,7 +130,13 @@ class UpdateCaseStatus extends React.Component {
 
     this.setState({ loading: true }, () => {
       // Per feedback, include the monitoring_reason in the reasoning text, as the user might not inlude any text
-      let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
+      let reasoning;
+      // We want to include the monitoring_reason in the reasoning text ONLY if case_status was also updated
+      if (diffState.includes('monitoring_reason') && !diffState.includes('case_status')) {
+        reasoning = this.state.isolation ? '' : this.state.reasoning;
+      } else {
+        reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
+      }
       // Add a period at the end of the Reasoning (if it's not already included)
       if (reasoning && !['.', '!', '?'].includes(_.last(reasoning))) {
         reasoning += '.';
