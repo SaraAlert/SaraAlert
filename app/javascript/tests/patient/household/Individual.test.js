@@ -11,8 +11,8 @@ const mockToken = 'testMockTokenString12345';
 
 describe('Individual', () => {
   it('Properly renders all main components', () => {
-    const wrapper1 = shallow(<Individual patient={mockPatient3} can_add_group={true} authenticity_token={mockToken} />);
-    const wrapper2 = shallow(<Individual patient={mockPatient3} can_add_group={false} authenticity_token={mockToken} />);
+    const wrapper1 = shallow(<Individual patient={mockPatient3} can_add_group={true} authenticity_token={mockToken} workflow={'global'} />);
+    const wrapper2 = shallow(<Individual patient={mockPatient3} can_add_group={false} authenticity_token={mockToken} workflow={'global'} />);
 
     // if user can add group
     expect(wrapper1.find(Row).length).toEqual(2);

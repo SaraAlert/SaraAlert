@@ -14,6 +14,35 @@
   }
 }
 
+/* styling for global dashboard navbar on smaller screens only */
+@media only screen and (max-width : 1082px) {
+  .global-dashboard {
+    .nav-tabs {     
+      .nav-link {
+        width: 230px;
+        border: 1px #dee2e6 solid;
+        margin-bottom: -.05px;
+
+        &:hover {
+          border-color:#606060;
+        }
+
+        &.active {
+          border: 1px #606060 solid !important;
+        }
+
+        .badge {
+          float: right !important
+        }
+      }
+    }
+
+    .nav-item:last-child {
+      margin-left: 0px;
+    }
+  }
+}
+
 /* styling for exposure dashboard navbar on smaller screens only */
 @media only screen and (max-width : 1310px) {
   .exposure-dashboard {

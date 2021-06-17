@@ -16,11 +16,12 @@ class HeadOfHousehold extends React.Component {
             current_user={this.props.current_user}
             jurisdiction_paths={this.props.jurisdiction_paths}
             isSelectable={false}
+            workflow={this.props.workflow}
           />
         </Row>
         <Row>
           <ChangeHoH patient={this.props.patient} dependents={this.props.other_household_members} authenticity_token={this.props.authenticity_token} />
-          {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.patient.id} isHoh={true} />}
+          {this.props.can_add_group && <EnrollHouseholdMember responderId={this.props.patient.id} isHoh={true} workflow={this.props.workflow} />}
         </Row>
       </div>
     );
@@ -34,6 +35,7 @@ HeadOfHousehold.propTypes = {
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   authenticity_token: PropTypes.string,
+  workflow: PropTypes.string,
 };
 
 export default HeadOfHousehold;

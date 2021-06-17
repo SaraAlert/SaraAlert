@@ -15,7 +15,7 @@ const caseStatusValues = ['', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'No
 const monitoringOptionValues = ['', 'End Monitoring', 'Continue Monitoring in Isolation Workflow'];
 
 function getWrapper(patient) {
-  return shallow(<CaseStatus patient={patient} current_user={mockUser1} household_members={[]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} monitoring_reasons={mockMonitoringReasons} />);
+  return shallow(<CaseStatus patient={patient} current_user={mockUser1} household_members={[]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} monitoring_reasons={mockMonitoringReasons} workflow={'global'} />);
 }
 
 describe('CaseStatus', () => {
@@ -201,7 +201,7 @@ describe('CaseStatus', () => {
   });
 
   it('Toggling HoH radio buttons hides/shows household members table and updates state', () => {
-    const wrapper = mount(<CaseStatus patient={mockPatient1} current_user={mockUser1} household_members={[mockPatient2, mockPatient3, mockPatient4]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+    const wrapper = mount(<CaseStatus patient={mockPatient1} current_user={mockUser1} household_members={[mockPatient2, mockPatient3, mockPatient4]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} workflow={'global'} />);
     wrapper
       .find('#case_status')
       .at(1)

@@ -5,8 +5,7 @@
 <%= render partial: 'layouts/breadcrumb',
            locals: {
              jurisdiction_path: current_user.jurisdiction_path,
-             crumbs: [{ value: 'Return to Exposure Dashboard', href: '/' }, { value: 'Monitoree Details', href: nil }],
-             isolation: @patient&.isolation || false
+             crumbs: [{ value: dashboard_crumb_title(@dashboard), href: @dashboard_path }, { value: 'Monitoree Details', href: nil }]
            } %>
 
 <% if current_user.can_download_monitoree_data? %>
@@ -21,7 +20,8 @@
                       other_household_members: @household_members_exclude_self,
                       authenticity_token: form_authenticity_token,
                       jurisdiction_paths: @possible_jurisdiction_paths,
-                      blocked_sms: @patient.blocked_sms
+                      blocked_sms: @patient.blocked_sms,
+                      workflow: @dashboard
                     }) %>
 
 <% if current_user.can_modify_subject_status? %>
@@ -35,7 +35,8 @@
                         patient: @patient,
                         jurisdiction_paths: @possible_jurisdiction_paths,
                         assigned_users: @possible_assigned_users,
-                        monitoring_reasons: ValidationHelper::USER_SELECTABLE_MONITORING_REASONS
+                        monitoring_reasons: ValidationHelper::USER_SELECTABLE_MONITORING_REASONS,
+                        workflow: @dashboard
                       }) %>
 </div>
 <% end %>
@@ -55,7 +56,8 @@
                         current_user: current_user,
                         translations: Assessment.new.translations,
                         authenticity_token: form_authenticity_token,
-                        jurisdiction_paths: @possible_jurisdiction_paths
+                        jurisdiction_paths: @possible_jurisdiction_paths,
+                        workflow: @dashboard
                       }) %>
 <% end %>
 

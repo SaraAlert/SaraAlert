@@ -13,8 +13,8 @@ const mockToken = 'testMockTokenString12345';
 
 describe('HeadOfHousehold', () => {
   it('Properly renders all main components', () => {
-    const wrapper1 = shallow(<HeadOfHousehold patient={mockPatient1} other_household_members={[mockPatient2]} can_add_group={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
-    const wrapper2 = shallow(<HeadOfHousehold patient={mockPatient1} other_household_members={[mockPatient2]} can_add_group={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+    const wrapper1 = shallow(<HeadOfHousehold patient={mockPatient1} other_household_members={[mockPatient2]} can_add_group={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} workflow={'global'} />);
+    const wrapper2 = shallow(<HeadOfHousehold patient={mockPatient1} other_household_members={[mockPatient2]} can_add_group={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} workflow={'global'} />);
 
     // if user can add group
     expect(wrapper1.find(Row).length).toEqual(2);

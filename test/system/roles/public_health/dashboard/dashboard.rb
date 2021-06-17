@@ -13,6 +13,11 @@ class PublicHealthDashboard < ApplicationSystemTestCase
 
   PATIENTS = SystemTestUtils::PATIENTS
   MONITOREES = SystemTestUtils::MONITOREES
+  WORKFLOW_CLICK_MAP = {
+    exposure: 'Exposure Monitoring',
+    isolation: 'Isolation Monitoring',
+    global: 'Global Dashboard'
+  }.freeze
 
   def search_for_and_view_patient(tab, patient_label)
     @@system_test_utils.go_to_tab(tab)
@@ -47,7 +52,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def start_export(workflow, export_type, action)
-    click_on 'Isolation Monitoring' if workflow == :isolation
+    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
     click_on 'Export'
     click_on export_type
     click_on action == :export ? 'Start Export' : 'Cancel'
@@ -60,7 +65,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def export_custom(user_label, settings)
-    click_on (settings[:workflow] == :exposure ? 'Exposure Monitoring' : 'Isolation Monitoring').to_s if settings[:workflow].present?
+    click_on WORKFLOW_CLICK_MAP[settings[:workflow]] if settings[:workflow].present?
     @@system_test_utils.go_to_tab(settings[:tab]) if settings[:tab].present?
 
     click_on 'Export'
@@ -106,7 +111,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def import_epi_x(jurisdiction, workflow, file_name, validity, rejects, accept_duplicates)
-    click_on 'Isolation Monitoring' if workflow == :isolation
+    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
     click_on 'Import'
     find('a', text: "Epi-X (#{workflow})").click
     page.attach_file(file_fixture(file_name))
@@ -125,7 +130,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def import_sara_alert_format(jurisdiction, workflow, file_name, validity, rejects, accept_duplicates)
-    click_on 'Isolation Monitoring' if workflow == :isolation
+    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
     click_on 'Import'
     find('a', text: "Sara Alert Format (#{workflow})").click
     page.attach_file(file_fixture(file_name))
@@ -144,7 +149,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def import_and_cancel(workflow, file_name, file_type)
-    click_on 'Isolation Monitoring' if workflow == :isolation
+    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
     click_on 'Import'
     find('a', text: "#{file_type} (#{workflow})").click
     page.attach_file(file_fixture(file_name))
@@ -178,7 +183,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def download_sara_alert_format_guidance(workflow)
-    click_on 'Isolation Monitoring' if workflow == :isolation
+    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
     click_on 'Import'
     find('a', text: "Sara Alert Format (#{workflow})").click
     click_on 'Download formatting guidance'
@@ -206,7 +211,8 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
-    click_on 'Isolation Monitoring' if workflow == :isolation
+    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
+    sleep(2)
     @@system_test_utils.go_to_tab(tab)
     sleep(2)
     patient_labels.each { |patient| check_patient(patient) }
@@ -244,8 +250,8 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def go_to_other_workflow(workflow)
-    click_on 'Isolation Monitoring' if workflow == :exposure
+    click_on WORKFLOW_CLICK_MAP[:isolation] if workflow == :exposure
 
-    click_on 'Exposure Monitoring' if workflow == :isolation
+    click_on WORKFLOW_CLICK_MAP[:exposure] if workflow == :isolation
   end
 end

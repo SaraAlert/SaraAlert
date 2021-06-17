@@ -61,7 +61,7 @@ class PatientsFilters extends React.Component {
                   this.props.onQueryChange('tab', 'all');
                 }}
                 value={this.props.query?.workflow}>
-                <option value="all">All</option>
+                <option value="global">Global</option>
                 <option value="exposure">Exposure</option>
                 <option value="isolation">Isolation</option>
               </Form.Control>
@@ -98,6 +98,13 @@ class PatientsFilters extends React.Component {
                     <option value="requiring_review">Records Requiring Review</option>
                     <option value="non_reporting">Non-Reporting</option>
                     <option value="reporting">Reporting</option>
+                  </React.Fragment>
+                )}
+                {this.props.query?.workflow === 'global' && (
+                  <React.Fragment>
+                    <option value="active">Active</option>
+                    <option value="priority_review">Priority Review</option>
+                    <option value="non_reporting">Non-Reporting</option>
                   </React.Fragment>
                 )}
                 <option value="closed">Closed</option>
@@ -161,7 +168,6 @@ class PatientsFilters extends React.Component {
                   )
                 }
                 authenticity_token={this.props.authenticity_token}
-                workflow={this.props.query?.workflow}
                 updateStickySettings={false}
               />
             </InputGroup>
