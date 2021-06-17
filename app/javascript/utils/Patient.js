@@ -68,7 +68,7 @@ function formatRace(patient) {
 }
 
 function isMinor(date) {
-  moment(date, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years')); 
+  return moment(date, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years')); 
 }
 
 /**

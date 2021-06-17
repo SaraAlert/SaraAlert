@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import ReactTooltip from 'react-tooltip';
-import IconMinor from '../../../../components/patient/household/utils/IconMinor';
+import IconMinor from '../../../components/patient/utils/IconMinor';
 
 describe('IconMinor', () => {
   it('Properly renders all main components', () => {
