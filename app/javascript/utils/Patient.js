@@ -1,7 +1,8 @@
 import React from 'react';
-import IconMinor from '../components/patient/household/utils/IconMinor';
+import IconMinor from '../components/patient/utils/IconMinor';
 import { formatDate } from '../utils/DateTime';
 import moment from 'moment-timezone';
+import { faDatabase } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * Formats a patient's name (first middle last) as a string.
@@ -66,13 +67,17 @@ function formatRace(patient) {
   return raceArray.length === 0 ? '--' : raceArray.join(', ');
 }
 
+function isMinor(date) {
+  moment(date, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years')); 
+}
+
 /**
  * Formats values in the date of birth column to be human readable and include whether that DOB indicates a minor.
  * @param {Object} data - Data about the cell this filter is called on.
  */
 function formatDateOfBirth(data) {
   const rowData = data.rowData;
-  if (!!rowData?.dob && moment(rowData.dob, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'))) {
+  if (!!rowData?.dob && isMinor(rowData.dob)) {
     return (
       <div>
         <IconMinor patientId={rowData.id.toString()} customClass={'float-right ml-1'} />
@@ -80,7 +85,7 @@ function formatDateOfBirth(data) {
       </div>
     );
   }
-  if (!!rowData?.date_of_birth && moment(rowData.date_of_birth, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'))) {
+  if (!!rowData?.date_of_birth && isMinor(rowData.date_of_birth)) {
     return (
       <div>
         <IconMinor patientId={rowData.id.toString()} customClass={'float-right ml-1'} />
@@ -94,4 +99,4 @@ function formatDateOfBirth(data) {
   return formatDate(rowData.dob);
 }
 
-export { formatName, formatNameAlt, formatPhoneNumber, formatRace, formatDateOfBirth };
+export { formatName, formatNameAlt, formatPhoneNumber, formatRace, isMinor, formatDateOfBirth };

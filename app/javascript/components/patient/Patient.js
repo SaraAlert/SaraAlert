@@ -8,7 +8,7 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import BadgeHoH from './household/utils/BadgeHoH';
 import InfoTooltip from '../util/InfoTooltip';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
-import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
+import { formatName, formatPhoneNumber, formatRace, isMinor } from '../../utils/Patient';
 import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
 import { navQueryParam } from '../../utils/Navigation';
@@ -23,7 +23,7 @@ class Patient extends React.Component {
       expandPlannedTravelNotes: false,
       primaryLanguageDisplayName: null,
       showSetFlagModal: false,
-      isMinor: props.details && props.details.date_of_birth && moment(props.details.date_of_birth, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years')),
+      isMinor: props.details && props.details.date_of_birth && isMinor(props.details.date_of_birth),
     };
   }
 
