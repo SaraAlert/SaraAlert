@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card, Button, Form, Col } from 'react-bootstrap';
+import { Alert, Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
 import axios from 'axios';
 import libphonenumber from 'google-libphonenumber';
@@ -195,7 +195,7 @@ class Contact extends React.Component {
           <Card.Body>
             <Form>
               <Form.Row>
-                <Form.Group as={Col} lg="12" xl="10" controlId="preferred_contact_method">
+                <Form.Group as={Col} lg="12" controlId="preferred_contact_method">
                   <Form.Label className="input-label">
                     PREFERRED REPORTING METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
                   </Form.Label>
@@ -222,7 +222,7 @@ class Contact extends React.Component {
                   this.state.current.patient.preferred_contact_method === 'Telephone call' ||
                   this.state.current.patient.preferred_contact_method === 'SMS Text-message' ||
                   this.state.current.patient.preferred_contact_method === 'E-mailed Web Link') && (
-                  <Form.Group as={Col} lg="12" xl="10" controlId="preferred_contact_time">
+                  <Form.Group as={Col} lg="12" controlId="preferred_contact_time">
                     <Form.Label className="input-label">
                       PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
                       <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
@@ -252,8 +252,8 @@ class Contact extends React.Component {
                   </Form.Group>
                 )}
               </Form.Row>
-              <Form.Row>
-                <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 1 }} lg={{ span: 12, order: 1 }} xl={{ span: 10, order: 1 }} controlId="primary_telephone">
+              <Form.Row className="mb-4">
+                <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 1 }} lg={{ span: 12, order: 1 }} controlId="primary_telephone">
                   <Form.Label className="input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
                   {this.state.current.blocked_sms && (
                     <span className="float-right font-weight-bold">
@@ -271,7 +271,7 @@ class Contact extends React.Component {
                     {this.state.errors['primary_telephone']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} className="mb-3 mb-lg-0" sm={{ span: 24, order: 3 }} lg={{ span: 12, order: 2 }} xl={{ span: 10, order: 2 }}  controlId="secondary_telephone">
+                <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 3 }} lg={{ span: 12, order: 2 }} controlId="secondary_telephone">
                   <Form.Label className="input-label">
                     SECONDARY TELEPHONE NUMBER{schema?.fields?.secondary_telephone?._exclusive?.required && ' *'}
                   </Form.Label>
@@ -286,16 +286,16 @@ class Contact extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 {this.state.current.patient?.preferred_contact_method?.includes('SMS') && this.state.current.blocked_sms && (
-                  <Form.Group as={Col} className="mt-1" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
-                    <i>
-                      <b>* Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert
-                    </i>
-                    <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="right" />
+                  <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
+                    <Alert variant="danger" className="mb-0">
+                      <b>Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert
+                      <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="right" />
+                    </Alert>
                   </Form.Group>
                 )}
               </Form.Row>
-              <Form.Row>
-                <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 1 }} lg={{ span: 12, order: 1 }} xl={{ span: 10, order: 1 }} controlId="primary_telephone_type">
+              <Form.Row className="mb-3">
+                <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 1 }} lg={{ span: 12, order: 1 }} controlId="primary_telephone_type">
                   <Form.Label className="input-label">PRIMARY PHONE TYPE{schema?.fields?.primary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['primary_telephone_type']}
@@ -313,7 +313,7 @@ class Contact extends React.Component {
                     {this.state.errors['primary_telephone_type']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} className="mb-3 mb-lg-0" sm={{ span: 24, order: 3 }} lg={{ span: 12, order: 2 }} xl={{ span: 10, order: 2 }} controlId="secondary_telephone_type">
+                <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 3 }} lg={{ span: 12, order: 2 }} controlId="secondary_telephone_type">
                   <Form.Label className="input-label">
                     SECONDARY PHONE TYPE{schema?.fields?.secondary_telephone_type?._exclusive?.required && ' *'}
                   </Form.Label>
@@ -335,29 +335,29 @@ class Contact extends React.Component {
                 </Form.Group>
                   {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
                     this.state.current.patient.primary_telephone_type == 'Plain Cell' && (
-                      <Form.Group as={Col} className="mt-1" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
-                        <i>
-                          <b>* Warning:</b> Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this
+                      <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
+                        <Alert variant="danger" className="mb-0">
+                          <b>Warning:</b> Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this
                           type of message.
-                        </i>
+                        </Alert>
                       </Form.Group>
                   )}
                   {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
                     this.state.current.patient.primary_telephone_type == 'Landline' && (
-                      <Form.Group as={Col} className="mt-1" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
-                        <i>
-                          <b>* Warning:</b> Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this
+                      <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
+                        <Alert variant="danger" className="mb-0">
+                          <b>Warning:</b> Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this
                           type of message.
-                        </i>
+                          </Alert>
                       </Form.Group>
                   )}
                   {this.state.current.patient.preferred_contact_method === 'SMS Text-message' &&
                     this.state.current.patient.primary_telephone_type === 'Landline' && (
-                      <Form.Group as={Col} className="mt-1" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
-                        <i>
-                          <b>* Warning:</b> Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this
+                      <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
+                        <Alert variant="danger" className="mb-0">
+                          <b>Warning:</b> Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this
                           type of message.
-                        </i>
+                        </Alert>
                       </Form.Group>
                   )}
               </Form.Row>
@@ -373,7 +373,7 @@ class Contact extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="mt-2">
-                <Form.Group as={Col} lg="12" xl="10" controlId="email">
+                <Form.Group as={Col} lg="12" controlId="email">
                   <Form.Label className="input-label">E-MAIL ADDRESS{schema?.fields?.email?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['email']}
@@ -386,7 +386,7 @@ class Contact extends React.Component {
                     {this.state.errors['email']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} lg="12" xl="10" controlId="confirm_email">
+                <Form.Group as={Col} lg="12" controlId="confirm_email">
                   <Form.Label className="input-label">CONFIRM E-MAIL ADDRESS{schema?.fields?.confirm_email?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['confirm_email']}
