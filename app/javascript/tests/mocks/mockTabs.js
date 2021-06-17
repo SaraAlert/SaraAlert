@@ -88,4 +88,43 @@ const mockIsolationTabs = {
   },
 };
 
-export { mockExposureTabs, mockIsolationTabs };
+const mockGlobalTabs = {
+  all: {
+    description: 'All Monitorees in this jurisdiction across both the exposure and isolation workflows.',
+    label: 'All Monitorees',
+    variant: 'primary',
+  },
+  closed: {
+    description: 'Monitorees not currently being actively monitored across both the exposure and isolation workflows.',
+    label: 'Closed',
+    variant: 'secondary',
+  },
+  non_reporting: {
+    description: 'All monitorees who have failed to report in the last day across both the exposure and isolation workflows.',
+    label: 'Non-Reporting',
+    variant: 'warning',
+  },
+  priority_review: {
+    description:
+      'Monitorees who meet the criteria to appear on either the Symptomatic line list (exposure) or Records Requiring Review line list (isolation) which need to be reviewed.',
+    label: 'Priority Review',
+    variant: 'danger',
+  },
+  active: {
+    description: 'Monitorees currently being monitored across both the exposure and isolation workflows.',
+    label: 'Active',
+    variant: 'success',
+  },
+  transferred_in: {
+    description: 'Cases that have been transferred into this jurisdiction during the last 24 hours.',
+    label: 'Transferred In',
+    variant: 'info',
+  },
+  transferred_out: {
+    description: 'Cases that have been transferred out of this jurisdiction.',
+    label: 'Transferred Out',
+    variant: 'info',
+  },
+};
+
+export { mockExposureTabs, mockIsolationTabs, mockGlobalTabs };

@@ -37,6 +37,7 @@ import JurisdictionFilter from './query/JurisdictionFilter';
 import AssignedUserFilter from './query/AssignedUserFilter';
 import EligibilityTooltip from '../util/EligibilityTooltip';
 import confirmDialog from '../util/ConfirmDialog';
+import { patientHref } from '../../utils/Navigation';
 
 class PatientsTable extends React.Component {
   constructor(props) {
@@ -58,12 +59,14 @@ class PatientsTable extends React.Component {
           { field: 'symptom_onset', label: 'Symptom Onset', isSortable: true, tooltip: null, filter: this.formatSymptomOnset },
           { field: 'risk_level', label: 'Risk Level', isSortable: true, tooltip: null },
           { field: 'monitoring_plan', label: 'Monitoring Plan', isSortable: true, tooltip: null },
+          { field: 'reporter', label: 'Reporter ID', isSortable: true, tooltip: null, filter: this.linkReporter },
           { field: 'public_health_action', label: 'Latest Public Health Action', isSortable: true, tooltip: null },
           { field: 'expected_purge_date', label: 'Eligible for Purge After', isSortable: true, tooltip: 'purgeDate', filter: formatTimestamp },
           { field: 'reason_for_closure', label: 'Reason for Closure', isSortable: true, tooltip: null },
           { field: 'closed_at', label: 'Closed At', isSortable: true, tooltip: null, filter: formatTimestamp },
           { field: 'transferred_at', label: 'Transferred At', isSortable: true, tooltip: null, filter: formatTimestamp },
           { field: 'latest_report', label: 'Latest Report', isSortable: true, tooltip: null, filter: this.formatLatestReport },
+          { field: 'workflow', label: 'Workflow', isSortable: true, tooltip: null },
           { field: 'status', label: 'Status', isSortable: false, tooltip: null },
           { field: 'report_eligibility', label: '', isSortable: false, tooltip: null, filter: this.createEligibilityTooltip, icon: 'far fa-comment' },
         ],
@@ -79,7 +82,7 @@ class PatientsTable extends React.Component {
       assigned_users: [],
       query: {
         workflow: props.workflow,
-        tab: Object.keys(props.tabs)[0],
+        tab: props.default_tab ?? Object.keys(props.tabs)[0],
         jurisdiction: props.jurisdiction.id,
         scope: 'all',
         user: null,
@@ -470,11 +473,19 @@ class PatientsTable extends React.Component {
       return (
         <div>
           <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />
-          <a href={`${window.BASE_PATH}/patients/${rowData.id}`}>{name}</a>
+          {this.createPatientLink(rowData.id, name)}
         </div>
       );
     }
-    return <a href={`${window.BASE_PATH}/patients/${rowData.id}`}>{name}</a>;
+    return this.createPatientLink(rowData.id, name);
+  };
+
+  linkReporter = data => {
+    return this.createPatientLink(data.value, data.value);
+  };
+
+  createPatientLink = (id, text) => {
+    return <a href={patientHref(id, this.props.workflow)}>{text}</a>;
   };
 
   formatEndOfMonitoring = data => {
@@ -613,7 +624,8 @@ class PatientsTable extends React.Component {
               <Row>
                 <Col md="18">
                   <div id="tab-description" className="lead mt-1 mb-3">
-                    {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u> workflow.
+                    {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u>{' '}
+                    {this.props.workflow === 'global' ? 'dashboard' : 'workflow'}.
                     {this.props.tabs[this.state.query.tab].tooltip && (
                       <InfoTooltip tooltipTextKey={this.props.tabs[this.state.query.tab].tooltip} location="right"></InfoTooltip>
                     )}
@@ -675,7 +687,6 @@ class PatientsTable extends React.Component {
                   <AdvancedFilter
                     advancedFilterUpdate={this.advancedFilterUpdate}
                     authenticity_token={this.props.authenticity_token}
-                    workflow={this.props.workflow}
                     updateStickySettings={true}
                   />
                   {this.state.query.tab !== 'transferred_out' && (
@@ -696,10 +707,12 @@ class PatientsTable extends React.Component {
                           <span className="ml-2">Close Records</span>
                         </Dropdown.Item>
                       )}
-                      <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Case Status' })}>
-                        <i className="fas fa-clipboard-list text-center" style={{ width: '1em' }}></i>
-                        <span className="ml-2">Update Case Status</span>
-                      </Dropdown.Item>
+                      {this.props.workflow !== 'global' && (
+                        <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Case Status' })}>
+                          <i className="fas fa-clipboard-list text-center" style={{ width: '1em' }}></i>
+                          <span className="ml-2">Update Case Status</span>
+                        </Dropdown.Item>
+                      )}
                       <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Assigned User' })}>
                         <i className="fas fa-users text-center" style={{ width: '1em' }}></i>
                         <span className="ml-2">Update Assigned User</span>
@@ -784,12 +797,13 @@ class PatientsTable extends React.Component {
 PatientsTable.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
-  workflow: PropTypes.oneOf(['exposure', 'isolation']),
+  workflow: PropTypes.oneOf(['global', 'exposure', 'isolation']),
   jurisdiction: PropTypes.exact({
     id: PropTypes.number,
     path: PropTypes.string,
   }),
   tabs: PropTypes.object,
+  default_tab: PropTypes.string,
   setQuery: PropTypes.func,
   setFilteredMonitoreesCount: PropTypes.func,
   monitoring_reasons: PropTypes.array,

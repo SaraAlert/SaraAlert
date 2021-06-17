@@ -13,11 +13,11 @@ const handleApplyHouseholdChangeMock = jest.fn();
 const handleApplyHouseholdIdsChangeMock = jest.fn();
 
 function getWrapper(isSelectable) {
-  return shallow(<HouseholdMemberTable household_members={householdMembers} isSelectable={isSelectable} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
+  return shallow(<HouseholdMemberTable household_members={householdMembers} isSelectable={isSelectable} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} workflow={'global'} />);
 }
 
 function getMountedWrapper(isSelectable) {
-  return mount(<HouseholdMemberTable household_members={householdMembers} isSelectable={isSelectable} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
+  return mount(<HouseholdMemberTable household_members={householdMembers} isSelectable={isSelectable} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} workflow={'global'} />);
 }
 
 afterEach(() => {
@@ -34,20 +34,8 @@ describe('HouseholdMemberTable', () => {
     const wrapper = getMountedWrapper(true);
     expect(wrapper.find('thead').exists()).toBeTruthy();
     expect(wrapper.find('th').length).toEqual(wrapper.state('table').colData.length + 1);
-    expect(
-      wrapper
-        .find('th')
-        .at(0)
-        .find('input')
-        .exists()
-    ).toBeTruthy();
-    expect(
-      wrapper
-        .find('th')
-        .at(0)
-        .find('input')
-        .prop('checked')
-    ).toBeFalsy();
+    expect(wrapper.find('th').at(0).find('input').exists()).toBeTruthy();
+    expect(wrapper.find('th').at(0).find('input').prop('checked')).toBeFalsy();
     wrapper.state('table').colData.forEach((colData, index) => {
       expect(
         wrapper
@@ -81,86 +69,21 @@ describe('HouseholdMemberTable', () => {
     expect(wrapper.find('tbody').exists()).toBeTruthy();
     expect(wrapper.find('tbody').find('tr').length).toEqual(wrapper.state('table').rowData.length);
     wrapper.state('table').rowData.forEach((rowData, index) => {
-      const row = wrapper
-        .find('tbody')
-        .find('tr')
-        .at(index);
-      expect(
-        row
-          .find('td')
-          .at(0)
-          .find('input')
-          .exists()
-      ).toBeTruthy();
-      expect(
-        row
-          .find('td')
-          .at(0)
-          .find('input')
-          .prop('checked')
-      ).toBeFalsy();
-      expect(
-        row
-          .find('td')
-          .at(1)
-          .find('a')
-          .exists()
-      ).toBeTruthy();
-      expect(
-        row
-          .find('td')
-          .at(1)
-          .find('a')
-          .prop('href')
-      ).toEqual(`${window.BASE_PATH}/patients/${rowData.id}`);
-      expect(
-        row
-          .find('td')
-          .at(1)
-          .find('a')
-          .text()
-      ).toEqual(nameFormatterAlt(rowData));
+      const row = wrapper.find('tbody').find('tr').at(index);
+      expect(row.find('td').at(0).find('input').exists()).toBeTruthy();
+      expect(row.find('td').at(0).find('input').prop('checked')).toBeFalsy();
+      expect(row.find('td').at(1).find('a').exists()).toBeTruthy();
+      expect(row.find('td').at(1).find('a').prop('href')).toEqual(`${window.BASE_PATH}/patients/${rowData.id}?nav=global`);
+      expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(rowData));
       if (rowData.head_of_household) {
-        expect(
-          row
-            .find('td')
-            .at(1)
-            .find(BadgeHoH)
-            .exists()
-        ).toBeTruthy();
+        expect(row.find('td').at(1).find(BadgeHoH).exists()).toBeTruthy();
       } else {
-        expect(
-          row
-            .find('td')
-            .at(1)
-            .find(BadgeHoH)
-            .exists()
-        ).toBeFalsy();
+        expect(row.find('td').at(1).find(BadgeHoH).exists()).toBeFalsy();
       }
-      expect(
-        row
-          .find('td')
-          .at(2)
-          .text()
-      ).toEqual(formatDate(rowData[wrapper.state('table').colData[1].field]));
-      expect(
-        row
-          .find('td')
-          .at(3)
-          .text()
-      ).toEqual(rowData[wrapper.state('table').colData[2].field] ? 'Isolation' : 'Exposure');
-      expect(
-        row
-          .find('td')
-          .at(4)
-          .text()
-      ).toEqual(rowData[wrapper.state('table').colData[3].field] ? 'Actively Monitoring' : 'Not Monitoring');
-      expect(
-        row
-          .find('td')
-          .at(5)
-          .text()
-      ).toEqual(rowData[wrapper.state('table').colData[4].field] ? 'Yes' : 'No');
+      expect(row.find('td').at(2).text()).toEqual(formatDate(rowData[wrapper.state('table').colData[1].field]));
+      expect(row.find('td').at(3).text()).toEqual(rowData[wrapper.state('table').colData[2].field] ? 'Isolation' : 'Exposure');
+      expect(row.find('td').at(4).text()).toEqual(rowData[wrapper.state('table').colData[3].field] ? 'Actively Monitoring' : 'Not Monitoring');
+      expect(row.find('td').at(5).text()).toEqual(rowData[wrapper.state('table').colData[4].field] ? 'Yes' : 'No');
     });
   });
 
@@ -177,20 +100,14 @@ describe('HouseholdMemberTable', () => {
     wrapper.find('tr').forEach(row => {
       expect(row.find('input').prop('checked')).toBeFalsy();
     });
-    wrapper
-      .find('th')
-      .find('input')
-      .simulate('change');
+    wrapper.find('th').find('input').simulate('change');
     expect(wrapper.state('table').selectAll).toBeTruthy();
     expect(wrapper.state('table').selectedRows).toEqual([0, 1, 2, 3]);
     expect(wrapper.state('selectedIds')).toEqual([mockPatient1.id, mockPatient2.id, mockPatient3.id, mockPatient4.id]);
     wrapper.find('tr').forEach(row => {
       expect(row.find('input').prop('checked')).toBeTruthy();
     });
-    wrapper
-      .find('th')
-      .find('input')
-      .simulate('change');
+    wrapper.find('th').find('input').simulate('change');
     expect(wrapper.state('table').selectAll).toBeFalsy();
     expect(wrapper.state('table').selectedRows).toEqual([]);
     expect(wrapper.state('selectedIds')).toEqual([]);
@@ -264,71 +181,41 @@ describe('HouseholdMemberTable', () => {
 
   it('Properly sorts table by name', () => {
     const wrapper = getMountedWrapper(true);
-    wrapper
-      .find('th')
-      .at(1)
-      .simulate('click');
+    wrapper.find('th').at(1).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByNameAscending(householdMembers));
-    wrapper
-      .find('th')
-      .at(1)
-      .simulate('click');
+    wrapper.find('th').at(1).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByNameDescending(householdMembers));
   });
 
   it('Properly sorts table by DOB', () => {
     const wrapper = getMountedWrapper(true);
-    wrapper
-      .find('th')
-      .at(2)
-      .simulate('click');
+    wrapper.find('th').at(2).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByDateAscending(householdMembers, 'date_of_birth'));
-    wrapper
-      .find('th')
-      .at(2)
-      .simulate('click');
+    wrapper.find('th').at(2).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByDateDescending(householdMembers, 'date_of_birth'));
   });
 
   it('Properly sorts table by workflow', () => {
     const wrapper = getMountedWrapper(true);
-    wrapper
-      .find('th')
-      .at(3)
-      .simulate('click');
+    wrapper.find('th').at(3).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByAscending(householdMembers, 'isolation'));
-    wrapper
-      .find('th')
-      .at(3)
-      .simulate('click');
+    wrapper.find('th').at(3).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByDescending(householdMembers, 'isolation'));
   });
 
   it('Properly sorts table by monitoring status', () => {
     const wrapper = getMountedWrapper(true);
-    wrapper
-      .find('th')
-      .at(4)
-      .simulate('click');
+    wrapper.find('th').at(4).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByDescending(householdMembers, 'monitoring'));
-    wrapper
-      .find('th')
-      .at(4)
-      .simulate('click');
+    wrapper.find('th').at(4).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByAscending(householdMembers, 'monitoring'));
   });
 
   it('Properly sorts table by continuous exposure', () => {
     const wrapper = getMountedWrapper(true);
-    wrapper
-      .find('th')
-      .at(5)
-      .simulate('click');
+    wrapper.find('th').at(5).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByAscending(householdMembers, 'continuous_exposure'));
-    wrapper
-      .find('th')
-      .at(5)
-      .simulate('click');
+    wrapper.find('th').at(5).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByDescending(householdMembers, 'continuous_exposure'));
   });
 
@@ -336,7 +223,7 @@ describe('HouseholdMemberTable', () => {
     householdMembers.push(mockPatient5);
     let selectedRows = [0, 2];
     let selectedIds = [householdMembers[0].id, householdMembers[2].id];
-    const wrapper = mount(<HouseholdMemberTable household_members={householdMembers} isSelectable={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} />);
+    const wrapper = mount(<HouseholdMemberTable household_members={householdMembers} isSelectable={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} workflow={'global'} />);
 
     // initial load
     selectedRows.forEach(rowId => {
@@ -351,157 +238,74 @@ describe('HouseholdMemberTable', () => {
     expect(wrapper.state('table').selectAll).toBeFalsy();
     expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
     expect(wrapper.state('selectedIds')).toEqual(selectedIds);
-    expect(
-      wrapper
-        .find('thead')
-        .find('input')
-        .prop('checked')
-    ).toBeFalsy();
-    expect(
-      wrapper
-        .find('thead')
-        .find('input')
-        .prop('disabled')
-    ).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('checked')).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('disabled')).toBeFalsy();
     wrapper
       .find('tbody')
       .find('tr')
       .forEach((row, index) => {
         expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
-        expect(
-          row
-            .find('td')
-            .at(1)
-            .find('a')
-            .text()
-        ).toEqual(nameFormatterAlt(householdMembers[Number(index)]));
+        expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(householdMembers[Number(index)]));
       });
 
     // sort by name, asc
     let sortedHouseholdMembers = sortByNameAscending(householdMembers);
     selectedRows = [2, 4];
-    wrapper
-      .find('th')
-      .at(1)
-      .simulate('click');
+    wrapper.find('th').at(1).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
     expect(wrapper.state('table').selectAll).toBeFalsy();
     expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
     expect(wrapper.state('selectedIds')).toEqual(selectedIds);
-    expect(
-      wrapper
-        .find('thead')
-        .find('input')
-        .prop('checked')
-    ).toBeFalsy();
-    expect(
-      wrapper
-        .find('thead')
-        .find('input')
-        .prop('disabled')
-    ).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('checked')).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('disabled')).toBeFalsy();
     wrapper
       .find('tbody')
       .find('tr')
       .forEach((row, index) => {
         expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
-        expect(
-          row
-            .find('td')
-            .at(1)
-            .find('a')
-            .text()
-        ).toEqual(nameFormatterAlt(sortedHouseholdMembers[Number(index)]));
+        expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[Number(index)]));
       });
 
     // sort by DOB, desc
     sortedHouseholdMembers = sortByDateDescending(sortedHouseholdMembers, 'date_of_birth');
     selectedRows = [1, 2];
-    wrapper
-      .find('th')
-      .at(2)
-      .simulate('click');
+    wrapper.find('th').at(2).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
     expect(wrapper.state('table').selectAll).toBeFalsy();
     expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
     expect(wrapper.state('selectedIds')).toEqual(selectedIds);
-    expect(
-      wrapper
-        .find('thead')
-        .find('input')
-        .prop('checked')
-    ).toBeFalsy();
-    expect(
-      wrapper
-        .find('thead')
-        .find('input')
-        .prop('disabled')
-    ).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('checked')).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('disabled')).toBeFalsy();
     wrapper
       .find('tbody')
       .find('tr')
       .forEach((row, index) => {
         expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
-        expect(
-          row
-            .find('td')
-            .at(1)
-            .find('a')
-            .text()
-        ).toEqual(nameFormatterAlt(sortedHouseholdMembers[Number(index)]));
+        expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[Number(index)]));
       });
 
     // sort by workflow, asc
     sortedHouseholdMembers = sortByAscending(sortedHouseholdMembers, 'isolation');
     selectedRows = [0, 4];
-    wrapper
-      .find('th')
-      .at(3)
-      .simulate('click');
+    wrapper.find('th').at(3).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
     expect(wrapper.state('table').selectAll).toBeFalsy();
     expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
     expect(wrapper.state('selectedIds')).toEqual(selectedIds);
-    expect(
-      wrapper
-        .find('thead')
-        .find('input')
-        .prop('checked')
-    ).toBeFalsy();
-    expect(
-      wrapper
-        .find('thead')
-        .find('input')
-        .prop('disabled')
-    ).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('checked')).toBeFalsy();
+    expect(wrapper.find('thead').find('input').prop('disabled')).toBeFalsy();
     wrapper
       .find('tbody')
       .find('tr')
       .forEach((row, index) => {
         expect(row.find('input').prop('checked')).toEqual(selectedRows.includes(index));
-        expect(
-          row
-            .find('td')
-            .at(1)
-            .find('a')
-            .text()
-        ).toEqual(nameFormatterAlt(sortedHouseholdMembers[Number(index)]));
+        expect(row.find('td').at(1).find('a').text()).toEqual(nameFormatterAlt(sortedHouseholdMembers[Number(index)]));
       });
   });
 
   it('Hides checkboxes when props.isSelectable is false', () => {
     const wrapper = getMountedWrapper(false);
-    expect(
-      wrapper
-        .find('thead')
-        .find('input')
-        .exists()
-    ).toBeFalsy();
-    expect(
-      wrapper
-        .find('tbody')
-        .find('input')
-        .exists()
-    ).toBeFalsy();
+    expect(wrapper.find('thead').find('input').exists()).toBeFalsy();
+    expect(wrapper.find('tbody').find('input').exists()).toBeFalsy();
   });
 });

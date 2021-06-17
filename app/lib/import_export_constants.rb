@@ -5,8 +5,10 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
   EXPORT_TYPES = {
     csv_linelist_exposure: { label: 'Line list CSV (exposure)', filename: 'Sara-Alert-Linelist-Exposure' },
     csv_linelist_isolation: { label: 'Line list CSV (isolation)', filename: 'Sara-Alert-Linelist-Isolation' },
+    csv_linelist_global: { label: 'Line list CSV (global)', filename: 'Sara-Alert-Linelist-Global' },
     sara_alert_format_exposure: { label: 'Sara Alert Format (exposure)', filename: 'Sara-Alert-Format-Exposure' },
     sara_alert_format_isolation: { label: 'Sara Alert Format (isolation)', filename: 'Sara-Alert-Format-Isolation' },
+    sara_alert_format_global: { label: 'Sara Alert Format (global)', filename: 'Sara-Alert-Format-Global' },
     full_history_patients_all: { label: 'Excel Export For All Monitorees', filename: 'Sara-Alert-Full-Export' },
     full_history_patients_purgeable: { label: 'Excel Export For Purge-Eligible Monitorees', filename: 'Sara-Alert-Purge-Eligible-Export' },
     custom: { label: 'Custom Export', filename: 'Sara-Alert-Custom-Export' }

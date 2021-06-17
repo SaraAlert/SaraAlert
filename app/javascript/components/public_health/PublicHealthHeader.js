@@ -6,6 +6,7 @@ import axios from 'axios';
 import Export from './Export';
 import Import from './Import';
 import confirmDialog from '../util/ConfirmDialog';
+import { navQueryParam } from '../../utils/Navigation';
 
 class PublicHealthHeader extends React.Component {
   constructor(props) {
@@ -71,7 +72,7 @@ class PublicHealthHeader extends React.Component {
               additionalNote: 'Records imported prior to clicking "X" will not be deleted from the system.',
             };
             if (await confirmDialog(confirmText, options)) {
-              location.href = `${window.BASE_PATH}/public_health/${this.props.workflow === 'exposure' ? '' : 'isolation'}`;
+              location.href = `${window.BASE_PATH}/public_health/${this.props.workflow}`;
             }
           } else {
             const confirmText = 'You are about to cancel the import process. Are you sure you want to do this?';
@@ -146,15 +147,18 @@ class PublicHealthHeader extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Row className="mx-2 my-3">
+        <Row className="mx-2 my-2">
           <Col className="p-0">
             <ButtonGroup>
               {this.props.abilities.enrollment && (
                 <Button
                   variant="primary"
                   className="mb-2"
-                  href={`${window.BASE_PATH}/patients/new${this.props.workflow === 'exposure' ? '' : '?isolation=true'}`}>
-                  {this.props.workflow === 'exposure' && (
+                  href={`${window.BASE_PATH}/patients/new?${this.props.workflow === 'isolation' ? 'isolation=true' : ''}${navQueryParam(
+                    this.props.workflow,
+                    false
+                  )}`}>
+                  {(this.props.workflow === 'exposure' || this.props.workflow === 'global') && (
                     <span>
                       <i className="fas fa-user-plus"></i> Enroll New Monitoree
                     </span>
@@ -197,13 +201,17 @@ class PublicHealthHeader extends React.Component {
               )}
             </ButtonGroup>
             <ButtonGroup className="float-right mb-2">
-              <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health`}>
-                <i className="fas fa-people-arrows"></i> Exposure Monitoring{' '}
+              <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/exposure`}>
+                <i className="fas fa-people-arrows"></i> Exposure <span className="d-none d-xl-inline"> Monitoring</span>{' '}
                 {this.state.counts.exposure !== undefined && <span id="exposureCount">({this.state.counts.exposure})</span>}
               </Button>
               <Button variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/isolation`}>
-                <i className="fas fa-street-view"></i> Isolation Monitoring{' '}
+                <i className="fas fa-street-view"></i> Isolation <span className="d-none d-xl-inline"> Monitoring</span>{' '}
                 {this.state.counts.isolation !== undefined && <span id="isolationCount">({this.state.counts.isolation})</span>}
+              </Button>
+              <Button variant={this.props.workflow === 'global' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/global`}>
+                <i className="fas fa-globe"></i> Global<span className="d-none d-xl-inline"> Dashboard</span>{' '}
+                {this.state.counts.exposure !== undefined && <span id="globalCount">({this.state.counts.global})</span>}
               </Button>
             </ButtonGroup>
           </Col>
@@ -218,7 +226,7 @@ class PublicHealthHeader extends React.Component {
 PublicHealthHeader.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
-  workflow: PropTypes.oneOf(['exposure', 'isolation']),
+  workflow: PropTypes.oneOf(['global', 'exposure', 'isolation']),
   jurisdiction: PropTypes.object,
   tabs: PropTypes.object,
   abilities: PropTypes.exact({

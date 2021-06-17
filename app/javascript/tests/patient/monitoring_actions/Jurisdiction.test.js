@@ -12,7 +12,7 @@ import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../mo
 const mockToken = 'testMockTokenString12345';
 
 function getWrapper() {
-  return shallow(<Jurisdiction patient={mockPatient1} current_user={mockUser1} household_members={[]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} user_can_transfer={true} />);
+  return shallow(<Jurisdiction patient={mockPatient1} current_user={mockUser1} household_members={[]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} user_can_transfer={true} workflow={'global'} />);
 }
 
 describe('Jurisdiction', () => {
@@ -90,7 +90,7 @@ describe('Jurisdiction', () => {
   });
 
   it('Toggling HoH radio buttons hides/shows household members table and updates state', () => {
-    const wrapper = mount(<Jurisdiction patient={mockPatient1} current_user={mockUser1} household_members={[mockPatient2, mockPatient3, mockPatient4]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} user_can_transfer={true} />);
+    const wrapper = mount(<Jurisdiction patient={mockPatient1} current_user={mockUser1} household_members={[mockPatient2, mockPatient3, mockPatient4]} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} user_can_transfer={true} workflow={'global'} />);
     wrapper
       .find('#jurisdiction_id')
       .at(1)

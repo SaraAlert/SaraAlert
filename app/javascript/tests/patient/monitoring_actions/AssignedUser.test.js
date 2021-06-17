@@ -13,7 +13,7 @@ const mockToken = 'testMockTokenString12345';
 const assigned_users = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 21];
 
 function getWrapper() {
-  return shallow(<AssignedUser patient={mockPatient1} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} assigned_users={assigned_users} household_members={[]} authenticity_token={mockToken} />);
+  return shallow(<AssignedUser patient={mockPatient1} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} assigned_users={assigned_users} household_members={[]} authenticity_token={mockToken} workflow={'global'} />);
 }
 
 describe('AssignedUser', () => {
@@ -73,7 +73,7 @@ describe('AssignedUser', () => {
   });
 
   it('Toggling HoH radio buttons hides/shows household members table and updates state', () => {
-    const wrapper = mount(<AssignedUser patient={mockPatient1} assigned_users={assigned_users} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} household_members={[mockPatient2, mockPatient3, mockPatient4]} />);
+    const wrapper = mount(<AssignedUser patient={mockPatient1} assigned_users={assigned_users} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} household_members={[mockPatient2, mockPatient3, mockPatient4]} workflow={'global'} />);
     wrapper
       .find('#assigned_user')
       .at(1)

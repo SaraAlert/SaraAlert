@@ -17,7 +17,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     user = @@system_test_utils.get_user(user_label)
     export_type = "csv_linelist_#{workflow}".to_sym
     download_export_files(user, export_type)
-    patients = user.jurisdiction.all_patients_excluding_purged.where(isolation: workflow == :isolation).reorder('')
+    patients = user.jurisdiction.all_patients_excluding_purged
+    patients = patients.where(isolation: workflow == :isolation).reorder('') unless workflow == :global
 
     csv = get_csv("Sara-Alert-Linelist-#{workflow.to_s.humanize}-????-??-??T??-??-?????-??.csv")
     verify_csv_linelist_export(csv, patients.order(:id))
@@ -27,7 +28,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     user = @@system_test_utils.get_user(user_label)
     export_type = "sara_alert_format_#{workflow}".to_sym
     download_export_files(user, export_type)
-    patients = user.jurisdiction.all_patients_excluding_purged.where(isolation: workflow == :isolation).reorder('')
+    patients = user.jurisdiction.all_patients_excluding_purged
+    patients = patients.where(isolation: workflow == :isolation).reorder('') unless workflow == :global
     xlsx = get_xlsx("Sara-Alert-Format-#{workflow.to_s.humanize}-????-??-??T??-??-?????-??.xlsx")
     verify_sara_alert_format_export(xlsx, patients.order(:id))
   end

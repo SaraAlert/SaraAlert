@@ -35,6 +35,11 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
     @@public_health_test_helper.export_csv_linelist('state1_epi_enroller', :isolation, :export)
   end
 
+  test 'export line list csv (global)' do
+    @@public_health_test_helper.export_csv_linelist('locals2c4_epi', :global, :cancel)
+    @@public_health_test_helper.export_csv_linelist('state1_epi_enroller', :global, :export)
+  end
+
   test 'export sara alert format (exposure)' do
     @@public_health_test_helper.export_sara_alert_format('locals1c1_epi', :exposure, :cancel)
     @@public_health_test_helper.export_sara_alert_format('state1_epi_enroller', :exposure, :export)
@@ -45,14 +50,21 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
     @@public_health_test_helper.export_sara_alert_format('state1_epi', :isolation, :export)
   end
 
+  test 'export sara alert format (global)' do
+    @@public_health_test_helper.export_sara_alert_format('locals2c3_epi', :global, :cancel)
+    @@public_health_test_helper.export_sara_alert_format('state1_epi', :global, :export)
+  end
+
   test 'export full history purge-eligible monitorees' do
     @@public_health_test_helper.export_full_history_patients('state1_epi_enroller', :isolation, :cancel, :purgeable)
     @@public_health_test_helper.export_full_history_patients('state1_epi', :exposure, :export, :purgeable)
+    @@public_health_test_helper.export_full_history_patients('state1_epi', :global, :export, :purgeable)
   end
 
   test 'export full history all monitorees' do
     @@public_health_test_helper.export_full_history_patients('locals1c1_epi', :exposure, :cancel, :all)
     @@public_health_test_helper.export_full_history_patients('state1_epi', :isolation, :export, :all)
+    @@public_health_test_helper.export_full_history_patients('state1_epi', :global, :export, :all)
   end
 
   test 'export full history single monitoree' do
@@ -77,6 +89,14 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
     @@public_health_test_helper.export_csv_linelist('state1_epi_enroller', :isolation, :export)
   end
 
+  test 'export line list csv (global) with batching' do
+    ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
+    load 'app/jobs/export_job.rb'
+
+    @@public_health_test_helper.export_csv_linelist('locals2c4_epi', :global, :cancel)
+    @@public_health_test_helper.export_csv_linelist('state1_epi_enroller', :global, :export)
+  end
+
   test 'export sara alert format (exposure) with batching' do
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
@@ -91,6 +111,14 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
 
     @@public_health_test_helper.export_sara_alert_format('locals2c3_epi', :isolation, :cancel)
     @@public_health_test_helper.export_sara_alert_format('state1_epi', :isolation, :export)
+  end
+
+  test 'export sara alert format (global) with batching' do
+    ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
+    load 'app/jobs/export_job.rb'
+
+    @@public_health_test_helper.export_sara_alert_format('locals2c3_epi', :global, :cancel)
+    @@public_health_test_helper.export_sara_alert_format('state1_epi', :global, :export)
   end
 
   test 'export full history purge-eligible monitorees with batching' do

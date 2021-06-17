@@ -122,6 +122,7 @@ class MonitoringStatus extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               handleApplyHouseholdChange={this.handleApplyHouseholdChange}
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
+              workflow={this.props.workflow}
             />
           )}
           {!this.state.monitoring && (
@@ -246,6 +247,7 @@ MonitoringStatus.propTypes = {
   monitoring_reasons: PropTypes.array,
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
+  workflow: PropTypes.string,
 };
 
 export default MonitoringStatus;

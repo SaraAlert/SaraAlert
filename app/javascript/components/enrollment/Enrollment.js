@@ -17,6 +17,7 @@ import Exposure from './steps/Exposure';
 import Review from './steps/Review';
 import confirmDialog from '../util/ConfirmDialog';
 import reportError from '../util/ReportError';
+import { navQueryParam } from '../../utils/Navigation';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
@@ -69,7 +70,9 @@ class Enrollment extends React.Component {
           toast.success(message, {
             onClose: () =>
               (location.href =
-                window.BASE_PATH + (groupMember ? '/patients/' + response['data']['responder_id'] + '/group' : '/patients/' + response['data']['id'])),
+                `${window.BASE_PATH}/patients/` +
+                (groupMember ? `${response['data']['responder_id']}/group` : response['data']['id']) +
+                navQueryParam(this.props.workflow, true)),
           });
         })
         .catch(err => {
@@ -161,7 +164,9 @@ class Enrollment extends React.Component {
           toast.success(message, {
             onClose: () =>
               (location.href =
-                window.BASE_PATH + (groupMember ? '/patients/' + response['data']['responder_id'] + '/group' : '/patients/' + response['data']['id'])),
+                `${window.BASE_PATH}/patients/` +
+                (groupMember ? `${response['data']['responder_id']}/group` : response['data']['id']) +
+                navQueryParam(this.props.workflow, true)),
           });
         }
       })
@@ -276,6 +281,7 @@ class Enrollment extends React.Component {
               canAddGroup={this.props.can_add_group}
               jurisdiction_paths={this.props.jurisdiction_paths}
               authenticity_token={this.props.authenticity_token}
+              workflow={this.props.workflow}
             />
           </Carousel.Item>
         </Carousel>
@@ -302,6 +308,7 @@ Enrollment.propTypes = {
   blocked_sms: PropTypes.bool,
   first_positive_lab: PropTypes.object,
   symptomatic_assessments_exist: PropTypes.bool,
+  workflow: PropTypes.string,
 };
 
 export default Enrollment;

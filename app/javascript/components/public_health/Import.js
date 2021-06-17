@@ -120,7 +120,7 @@ class Import extends React.Component {
       };
       if (await confirmDialog(confirmText, options)) {
         this.setState({ isPaused: false });
-        location.href = `${window.BASE_PATH}/public_health/${this.props.workflow === 'exposure' ? '' : 'isolation'}`;
+        location.href = `${window.BASE_PATH}/public_health/${this.props.workflow === 'isolation' ? 'isolation' : 'exposure'}`;
       } else {
         this.setState({ isPaused: false });
         if (this.state.acceptedAllStarted) {

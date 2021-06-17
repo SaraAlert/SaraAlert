@@ -136,7 +136,9 @@ Rails.application.routes.draw do
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
-  get '/public_health', to: 'public_health#exposure', as: :public_health
+  get '/public_health', to: redirect('/public_health/exposure')
+  get '/public_health/global', to: 'public_health#global', as: :public_health_global
+  get '/public_health/exposure', to: 'public_health#exposure', as: :public_health_exposure
   get '/public_health/isolation', to: 'public_health#isolation', as: :public_health_isolation
   post '/public_health/patients', to: 'public_health#patients', as: :public_health_patients
   post '/public_health/patients/count', to: 'public_health#patients_count', as: :public_health_patients_count

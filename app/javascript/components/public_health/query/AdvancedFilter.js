@@ -1299,9 +1299,7 @@ class AdvancedFilter extends React.Component {
           </Row>
         </Modal.Body>
         <Modal.Footer className="justify-unset">
-          <p className="lead mr-auto">
-            Filter will be applied to the line lists in the <u>{this.props.workflow}</u> workflow until reset.
-          </p>
+          <p className="lead mr-auto">Filter will be applied to all line lists in the current dashboard until reset.</p>
           <Button id="advanced-filter-cancel" variant="secondary btn-square" onClick={this.cancel}>
             Cancel
           </Button>
@@ -1376,7 +1374,7 @@ class AdvancedFilter extends React.Component {
       <React.Fragment>
         {this.state.showAdvancedFilterModal && this.renderAdvancedFilterModal()}
         {this.state.showFilterNameModal && this.renderFilterNameModal()}
-        <OverlayTrigger overlay={<Tooltip>Find monitorees that meet specified parameters within current workflow</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>Find monitorees that meet specified parameters</Tooltip>}>
           <Button
             size="sm"
             className="ml-2"
@@ -1424,7 +1422,6 @@ class AdvancedFilter extends React.Component {
 AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
-  workflow: PropTypes.string,
   updateStickySettings: PropTypes.bool,
 };
 

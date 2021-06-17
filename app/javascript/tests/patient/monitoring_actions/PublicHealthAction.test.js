@@ -13,11 +13,11 @@ const mockToken = 'testMockTokenString12345';
 const publicHealthActionOptions = ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing'];
 
 function getWrapper(patient) {
-  return shallow(<PublicHealthAction patient={patient} household_members={[]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+  return shallow(<PublicHealthAction patient={patient} household_members={[]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} workflow={'global'} />);
 }
 
 function getMountedWrapper(patient) {
-  return mount(<PublicHealthAction patient={patient} household_members={[mockPatient3, mockPatient4]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+  return mount(<PublicHealthAction patient={patient} household_members={[mockPatient3, mockPatient4]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} workflow={'global'} />);
 }
 
 describe('PublicHealthAction', () => {

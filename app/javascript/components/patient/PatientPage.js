@@ -23,6 +23,7 @@ class PatientPage extends React.Component {
             other_household_members={this.props.other_household_members}
             can_modify_subject_status={this.props.can_modify_subject_status}
             authenticity_token={this.props.authenticity_token}
+            workflow={this.props.workflow}
           />
           <div className="household-info">
             {!this.props.patient.head_of_household && this.props?.other_household_members?.length > 0 && (
@@ -32,6 +33,7 @@ class PatientPage extends React.Component {
                 current_user={this.props.current_user}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 authenticity_token={this.props.authenticity_token}
+                workflow={this.props.workflow}
               />
             )}
             {this.props.patient.head_of_household && (
@@ -42,10 +44,16 @@ class PatientPage extends React.Component {
                 current_user={this.props.current_user}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 authenticity_token={this.props.authenticity_token}
+                workflow={this.props.workflow}
               />
             )}
             {!this.props.patient.head_of_household && this.props?.other_household_members?.length === 0 && (
-              <Individual patient={this.props.patient} can_add_group={this.props.can_add_group} authenticity_token={this.props.authenticity_token} />
+              <Individual
+                patient={this.props.patient}
+                can_add_group={this.props.can_add_group}
+                authenticity_token={this.props.authenticity_token}
+                workflow={this.props.workflow}
+              />
             )}
           </div>
         </Card.Body>
@@ -63,6 +71,7 @@ PatientPage.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   blocked_sms: PropTypes.bool,
+  workflow: PropTypes.string,
 };
 
 export default PatientPage;
