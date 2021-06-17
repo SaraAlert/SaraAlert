@@ -29,7 +29,6 @@ import _ from 'lodash';
 import AdvancedFilter from './query/AdvancedFilter';
 import BadgeHoH from '../patient/household/utils/BadgeHoH';
 import FollowUpFlag from '../patient/follow_up_flag/FollowUpFlag';
-import IconMinor from '../patient/household/utils/IconMinor';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import UpdateAssignedUser from './actions/UpdateAssignedUser';
