@@ -225,7 +225,7 @@ class PatientMailer < ApplicationMailer
     message = {
       prompt: contents,
       patient_submission_token: patient.submission_token,
-      threshold_hash: patient.jurisdiction.jurisdiction_path_threshold_hash
+      threshold_hash: patient.jurisdiction[:current_threshold_condition_hash]
     }
     TwilioSender.send_sms(patient, [message])
     History.monitoring_complete_message_sent(patient: patient)

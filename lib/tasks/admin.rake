@@ -17,7 +17,7 @@ namespace :admin do
       # Update current_threshold_condition_hash and call hierarchical_symptomatic_condition on each jurisdiction
       # Will pre-generate all possible thresholdConditions
       Jurisdiction.all.each do |jur|
-        jur.update(current_threshold_condition_hash: Digest::SHA256.hexdigest(jur[:path] + ThresholdCondition.where(jurisdiction_id: jur.path_ids).size.to_s))
+        jur.update(current_threshold_condition_hash: jur.calculate_current_threshold_condition_hash)
         jur.hierarchical_symptomatic_condition
       end
 

@@ -68,6 +68,12 @@ class Jurisdiction < ApplicationRecord
     contact_info
   end
 
+  # This calculates the current threshold condition hash which is usually only meant to be called after updating threshold conditions
+  # Otherwise, simply reference the :current_threshold_condition_hash field to avoid extra computation and queries
+  def calculate_current_threshold_condition_hash
+    Digest::SHA256.hexdigest(self[:path] + ThresholdCondition.where(jurisdiction_id: path_ids).size.to_s)
+  end
+
   # This creates NEW condition that represents a join of all of the symptoms in your jurisdiciton hierarchy
   # Contains the values for the symptoms that will be what are considered as symptomatic
   def hierarchical_symptomatic_condition
