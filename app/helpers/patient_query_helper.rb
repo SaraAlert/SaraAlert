@@ -42,7 +42,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     tab = query[:tab]&.to_sym || :all
     case workflow
     when :global
-      raise InvalidQueryError.new(:tab, tab) unless %i[all active priority_review non_reporting closed transferred_in transferred_out].include?(tab)
+      raise InvalidQueryError.new(:tab, tab) unless %i[all active priority_review non_reporting closed].include?(tab)
     when :exposure
       raise InvalidQueryError.new(:tab, tab) unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
     when :isolation
@@ -154,8 +154,6 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       return current_user.patients&.global_priority_review if tab == :priority_review
       return current_user.patients&.global_non_reporting if tab == :non_reporting
       return current_user.patients&.monitoring_closed_without_purged if tab == :closed
-      return jurisdiction.transferred_in_patients if tab == :transferred_in
-      return jurisdiction.transferred_out_patients if tab == :transferred_out
 
       current_user.patients&.where(purged: false)
     end

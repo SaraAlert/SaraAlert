@@ -91,6 +91,9 @@ class PatientsFilters extends React.Component {
                     <option value="non_reporting">Non-Reporting</option>
                     <option value="asymptomatic">Asymptomatic</option>
                     <option value="pui">PUI</option>
+                    <option value="closed">Closed</option>
+                    <option value="transferred_in">Transferred In</option>
+                    <option value="transferred_out">Transferred Out</option>
                   </React.Fragment>
                 )}
                 {this.props.query?.workflow === 'isolation' && (
@@ -98,6 +101,9 @@ class PatientsFilters extends React.Component {
                     <option value="requiring_review">Records Requiring Review</option>
                     <option value="non_reporting">Non-Reporting</option>
                     <option value="reporting">Reporting</option>
+                    <option value="closed">Closed</option>
+                    <option value="transferred_in">Transferred In</option>
+                    <option value="transferred_out">Transferred Out</option>
                   </React.Fragment>
                 )}
                 {this.props.query?.workflow === 'global' && (
@@ -105,11 +111,9 @@ class PatientsFilters extends React.Component {
                     <option value="active">Active</option>
                     <option value="priority_review">Priority Review</option>
                     <option value="non_reporting">Non-Reporting</option>
+                    <option value="closed">Closed</option>
                   </React.Fragment>
                 )}
-                <option value="closed">Closed</option>
-                <option value="transferred_in">Transferred In</option>
-                <option value="transferred_out">Transferred Out</option>
               </Form.Control>
             </InputGroup>
           </Col>
