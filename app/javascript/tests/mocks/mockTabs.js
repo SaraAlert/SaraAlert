@@ -115,16 +115,6 @@ const mockGlobalTabs = {
     label: 'Active',
     variant: 'success',
   },
-  transferred_in: {
-    description: 'Cases that have been transferred into this jurisdiction during the last 24 hours.',
-    label: 'Transferred In',
-    variant: 'info',
-  },
-  transferred_out: {
-    description: 'Cases that have been transferred out of this jurisdiction.',
-    label: 'Transferred Out',
-    variant: 'info',
-  },
 };
 
 export { mockExposureTabs, mockIsolationTabs, mockGlobalTabs };
