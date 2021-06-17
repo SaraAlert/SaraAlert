@@ -27,7 +27,7 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import AdvancedFilter from './query/AdvancedFilter';
-import BadgeHoH from '../patient/household/utils/BadgeHoH';
+import BadgeHoH from '../patient/icons/BadgeHoH';
 import FollowUpFlag from '../patient/follow_up_flag/FollowUpFlag';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
@@ -53,7 +53,7 @@ class PatientsTable extends React.Component {
           { field: 'transferred_to', label: 'To Jurisdiction', isSortable: true, tooltip: null },
           { field: 'assigned_user', label: 'Assigned User', isSortable: true, tooltip: null },
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
-          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: formatDateOfBirth },
+          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDOB },
           { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatEndOfMonitoring },
           { field: 'extended_isolation', label: 'Extended Isolation To', isSortable: true, tooltip: 'extendedIsolation', filter: formatDate },
           { field: 'first_positive_lab_at', label: 'First Positive Lab', isSortable: true, filter: formatDate },
@@ -495,6 +495,11 @@ class PatientsTable extends React.Component {
       return 'Continuous Exposure';
     }
     return moment(endOfMonitoring, 'YYYY-MM-DD').format('MM/DD/YYYY');
+  };
+
+  formatDOB = data => {
+    const rowData = data.rowData;
+    return formatDateOfBirth(rowData.dob, rowData.id);
   };
 
   formatLatestReport = data => {

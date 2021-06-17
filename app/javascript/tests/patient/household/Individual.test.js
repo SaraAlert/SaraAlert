@@ -4,7 +4,7 @@ import { Row } from 'react-bootstrap';
 import Individual from '../../../components/patient/household/Individual';
 import MoveToHousehold from '../../../components/patient/household/actions/MoveToHousehold';
 import EnrollHouseholdMember from '../../../components/patient/household/actions/EnrollHouseholdMember';
-import HouseholdMemberTable from '../../../components/patient/household/utils/HouseholdMemberTable';
+import HouseholdMemberTable from '../../../components/patient/household/HouseholdMemberTable';
 import { mockPatient3 } from '../../mocks/mockPatients';
 
 const mockToken = 'testMockTokenString12345';

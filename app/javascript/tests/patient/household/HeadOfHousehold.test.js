@@ -4,7 +4,7 @@ import { Row } from 'react-bootstrap';
 import HeadOfHousehold from '../../../components/patient/household/HeadOfHousehold';
 import ChangeHoH from '../../../components/patient/household/actions/ChangeHoH';
 import EnrollHouseholdMember from '../../../components/patient/household/actions/EnrollHouseholdMember';
-import HouseholdMemberTable from '../../../components/patient/household/utils/HouseholdMemberTable';
+import HouseholdMemberTable from '../../../components/patient/household/HouseholdMemberTable';
 import { mockPatient1, mockPatient2 } from '../../mocks/mockPatients';
 import { mockUser1 } from '../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';

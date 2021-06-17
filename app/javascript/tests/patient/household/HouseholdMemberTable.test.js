@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import HouseholdMemberTable from '../../../../components/patient/household/utils/HouseholdMemberTable';
-import CustomTable from '../../../../components/layout/CustomTable';
-import BadgeHoH from '../../../../components/patient/household/utils/BadgeHoH';
-import { mockUser1 } from '../../../mocks/mockUsers';
-import { mockJurisdictionPaths } from '../../../mocks/mockJurisdiction';
-import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../../mocks/mockPatients';
-import { nameFormatterAlt, formatDate, sortByNameAscending, sortByNameDescending, sortByDateAscending, sortByDateDescending, sortByAscending, sortByDescending } from '../../../util.js';
+import HouseholdMemberTable from '../../../components/patient/household/HouseholdMemberTable';
+import CustomTable from '../../../components/layout/CustomTable';
+import BadgeHoH from '../../../components/patient/icons/BadgeHoH';
+import { mockUser1 } from '../../mocks/mockUsers';
+import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
+import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
+import { nameFormatterAlt, formatDate, sortByNameAscending, sortByNameDescending, sortByDateAscending, sortByDateDescending, sortByAscending, sortByDescending } from '../../util.js';
 
 const householdMembers = [mockPatient1, mockPatient2, mockPatient3, mockPatient4];
 const handleApplyHouseholdChangeMock = jest.fn();
