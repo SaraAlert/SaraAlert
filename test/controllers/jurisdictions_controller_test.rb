@@ -178,12 +178,20 @@ class JurisdictionsControllerTest < ActionController::TestCase
                                                       as: :json
           assert_equal patients.where(monitoring: false, purged: false).distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
-          post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'global', tab: 'transferred_in' } },
+          post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'global', tab: 'non_reporting' } },
+                                                      as: :json
+          assert_equal patients.global_non_reporting.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+
+          post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'global', tab: 'priority_review' } },
+                                                      as: :json
+          assert_equal patients.global_priority_review.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+
+          post :assigned_users_for_viewable_patients, params: { query: { jurisdiction: jur.id, scope: scope, workflow: 'global', tab: 'active' } },
                                                       as: :json
           assigned_users = if scope == 'exact'
-                             jur.transferred_in_patients.where(jurisdiction: jur.id).where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
+                             patients.monitoring_open.where(jurisdiction: jur.id).where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
                            else
-                             jur.transferred_in_patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
+                             patients.monitoring_open.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
                            end
           assert_equal assigned_users, JSON.parse(response.body)['assigned_users']
         end
