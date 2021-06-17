@@ -237,7 +237,7 @@ class PublicHealthControllerTest < ActionController::TestCase
 
       post :patients, params: { query: { workflow: 'global', tab: 'active', entries: 100 } }, as: :json
       json_response = JSON.parse(response.body)
-      patients = user.viewable_patients.monitoring_active(true)
+      patients = user.viewable_patients.monitoring_open
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
 
