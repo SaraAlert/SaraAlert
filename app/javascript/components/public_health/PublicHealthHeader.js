@@ -147,7 +147,7 @@ class PublicHealthHeader extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Row className="mx-2 my-3">
+        <Row className="mx-2 my-2">
           <Col className="p-0">
             <ButtonGroup>
               {this.props.abilities.enrollment && (
