@@ -94,6 +94,13 @@ class CustomTable extends React.Component {
   };
 
   /**
+   * Safely checks props.rowAriaLabels and returns that string else null
+   * @param {Number} rowIndex - Index of the row the aria-label is being rendered in
+   * @return {String} - the aria-label for that row
+   */
+  getRowAriaLabel = rowIndex => (this.props.rowAriaLabels ? this.props.rowAriaLabels[Number(rowIndex)] : null);
+
+  /**
    * Renders the select all checkbox in the header element
    * Checkbox is disabled if every entry in rowData is disabled
    */
@@ -219,6 +226,7 @@ class CustomTable extends React.Component {
                 return (
                   <tr
                     key={rowIndex}
+                    aria-label={this.getRowAriaLabel(rowIndex)}
                     id={`${this.props.dataType}-${rowData.id ? rowData.id : `row-${rowIndex}`}`}
                     className={this.props.getRowClassName ? this.props.getRowClassName(rowData) : ''}>
                     {this.props.isSelectable && this.props.checkboxColumnLocation === 'left' && this.renderRowCheckbox(rowData, rowIndex)}
@@ -336,6 +344,7 @@ CustomTable.propTypes = {
   dataType: PropTypes.string.isRequired,
   columnData: PropTypes.array,
   rowData: PropTypes.array,
+  rowAriaLabels: PropTypes.array,
   totalRows: PropTypes.number,
   selectedRows: PropTypes.array,
   selectAll: PropTypes.bool,
