@@ -240,11 +240,14 @@ class Contact extends React.Component {
                       <option>Evening</option>
                     </Form.Control>
                     <div className="mt-3">
-                      Morning: <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
+                      <span className="font-weight-bold">Morning: </span>
+                      <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
                       <br />
-                      Afternoon: <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
+                      <span className="font-weight-bold">Afternoon: </span>
+                      <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
                       <br />
-                      Evening: <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
+                      <span className="font-weight-bold">Evening: </span>
+                      <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
                     </div>
                     <Form.Control.Feedback className="d-block" type="invalid">
                       {this.state.errors['preferred_contact_time']}
@@ -364,11 +367,14 @@ class Contact extends React.Component {
               <Form.Row>
                 <Form.Group as={Col}>
                   <div>
-                    Smartphone: <span className="font-weight-light">Phone capable of accessing web-based reporting tool</span>
+                    <span className="font-weight-bold">Smartphone: </span>
+                    <span className="font-weight-light">Phone capable of accessing web-based reporting tool</span>
                     <br />
-                    Plain Cell: <span className="font-weight-light">Phone capable of SMS messaging</span>
+                    <span className="font-weight-bold">Plain Cell: </span>
+                    <span className="font-weight-light">Phone capable of SMS messaging</span>
                     <br />
-                    Landline: <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
+                    <span className="font-weight-bold">Landline: </span>
+                    <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
                   </div>
                 </Form.Group>
               </Form.Row>
