@@ -42,7 +42,7 @@ class PublicHealthController < ApplicationController
     tab = params.require(:tab).to_sym
     case workflow
     when :global
-      return head :bad_request unless %i[all active priority_review non_reporting closed transferred_in transferred_out].include?(tab)
+      return head :bad_request unless %i[all active priority_review non_reporting closed].include?(tab)
     when :exposure
       return head :bad_request unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
     when :isolation

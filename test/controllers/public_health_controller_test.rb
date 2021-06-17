@@ -253,18 +253,6 @@ class PublicHealthControllerTest < ActionController::TestCase
       assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
       assert_equal patients.size, json_response['total']
 
-      post :patients, params: { query: { workflow: 'global', tab: 'transferred_in' } }, as: :json
-      json_response = JSON.parse(response.body)
-      patients = user_jur.transferred_in_patients
-      assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
-      assert_equal patients.size, json_response['total']
-
-      post :patients, params: { query: { workflow: 'global', tab: 'transferred_out' } }, as: :json
-      json_response = JSON.parse(response.body)
-      patients = user_jur.transferred_out_patients
-      assert_equal patients.order(:id).pluck(:id), json_response['linelist'].map { |patient| patient['id'] }.sort
-      assert_equal patients.size, json_response['total']
-
       post :patients, params: { query: { workflow: 'global', tab: 'all', entries: 100 } }, as: :json
       json_response = JSON.parse(response.body)
       patients = user.viewable_patients.where(purged: false)
@@ -502,12 +490,6 @@ class PublicHealthControllerTest < ActionController::TestCase
 
         get :tab_counts, params: { workflow: 'global', tab: 'closed' }
         assert_equal user.viewable_patients.monitoring_closed_without_purged.size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'global', tab: 'transferred_in' }
-        assert_equal user.jurisdiction.transferred_in_patients.size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'global', tab: 'transferred_out' }
-        assert_equal user.jurisdiction.transferred_out_patients.size, JSON.parse(response.body)['total']
 
         sign_out user
       end
