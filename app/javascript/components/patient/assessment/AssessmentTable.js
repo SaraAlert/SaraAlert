@@ -34,6 +34,7 @@ class AssessmentTable extends React.Component {
           { label: 'Created At', field: 'created_at', isSortable: true, filter: formatTimestamp },
         ],
         rowData: [],
+        rowAriaLabels: [],
         totalRows: 0,
         selectedRows: [],
         selectAll: false,
@@ -111,11 +112,63 @@ class AssessmentTable extends React.Component {
               const symptomColData = this.getSymptomCols(response.data.symptoms);
               updatedColData = state.table.colData.concat(symptomColData);
             }
+
+            // The following section creates aria-label strings for the Assessments table. There are four possible scenarios:
+            // 1. Symptomatic, blank (typically this would be from an 'success_sms' or 'success_voice' response)
+            // "This report is symptomatic and was submitted at 06/16/2021 13:19 EDT. Specific symptoms were not reported by the monitoree."
+            // 2. Symptomatic. non-blank
+            // "This report is symptomatic and was submitted at 06/05/2021 16:36 EDT. Symptoms of: Fever, Headache were reported by test_email@example.com."
+            // 3. Non-symptomatic, blank
+            // "This report is not symptomatic and was submitted at 06/03/2021 05:39 EDT by test_email@example.com."
+            // 4. Non-symptomatic, non-blank
+            // "This report is not symptomatic and was submitted at 05/31/2021 09:33 EDT. Symptoms of: Pulse Ox (value of 70) were reported by the Monitoree."
+            const rowAriaLabels = response.data.table_data.map(rowData => {
+              let isSymptomaticReport = rowData.symptomatic === 'Yes';
+              let symptomList = _.keys(rowData.passes_threshold_data)
+                .map(x => (rowData.passes_threshold_data[`${x}`] ? x : null))
+                .filter(x => x);
+              let symptomString;
+              // For Records containing symptoms
+              if (symptomList.length) {
+                let symptomListString = symptomList
+                  .map(symptomName => {
+                    let symptomReference = response.data.symptoms.find(symptom => symptom.name === symptomName);
+                    let retVal = symptomReference.label;
+                    if (symptomReference.type !== 'BoolSymptom') {
+                      retVal += ` (value of ${rowData.symptoms.find(x => x.name === symptomName).value})`;
+                    }
+                    return retVal;
+                  })
+                  .join(', ');
+                symptomString = `Symptoms of: ${symptomListString} were reported by ${
+                  rowData.who_reported === 'Monitoree' ? 'the monitoree' : rowData.who_reported
+                }.`;
+              } else {
+                // For Records *not* containing symptoms
+                if (isSymptomaticReport) {
+                  symptomString = 'Specific symptoms were not reported by the monitoree.';
+                } else {
+                  symptomString = '';
+                }
+              }
+
+              let reportStatus = `This report ${isSymptomaticReport ? 'is' : 'is not'} symptomatic and was submitted at ${formatTimestamp(rowData.created_at)}`;
+              if (symptomString === '') {
+                reportStatus += ` by ${rowData.who_reported === 'Monitoree' ? 'the monitoree' : rowData.who_reported}.`;
+              } else {
+                reportStatus += `.`;
+              }
+
+              let ariaLabel = [reportStatus, symptomString].join(' ');
+              return ariaLabel;
+            });
+
             return {
               table: {
                 ...state.table,
                 colData: updatedColData,
                 rowData: response.data.table_data,
+                rowAriaLabels,
                 totalRows: response.data.total,
               },
               isLoading: false,
@@ -352,6 +405,7 @@ class AssessmentTable extends React.Component {
                   dataType="assessments"
                   columnData={this.state.table.colData}
                   rowData={this.state.table.rowData}
+                  rowAriaLabels={this.state.table.rowAriaLabels}
                   totalRows={this.state.table.totalRows}
                   handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
                   handleEntriesChange={this.handleEntriesChange}
