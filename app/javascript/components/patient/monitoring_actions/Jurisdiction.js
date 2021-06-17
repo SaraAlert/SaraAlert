@@ -94,7 +94,7 @@ class Jurisdiction extends React.Component {
           // check if current_user has access to the changed jurisdiction
           // if so, reload the page, if not, redirect to exposure or isolation dashboard
           if (!this.state.jurisdiction_path.startsWith(currentUserJurisdictionString)) {
-            location.assign(`${window.BASE_PATH}/public_health${this.state.isolation ? '/isolation' : ''}`);
+            location.assign(`${window.BASE_PATH}/public_health${this.state.isolation ? '/isolation' : '/exposure'}`);
           } else {
             location.reload();
           }
@@ -124,6 +124,7 @@ class Jurisdiction extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               handleApplyHouseholdChange={this.handleApplyHouseholdChange}
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
+              workflow={this.props.workflow}
             />
           )}
           <Form.Group>
@@ -206,6 +207,7 @@ Jurisdiction.propTypes = {
   jurisdiction_paths: PropTypes.object,
   current_user: PropTypes.object,
   user_can_transfer: PropTypes.bool,
+  workflow: PropTypes.string,
 };
 
 export default Jurisdiction;

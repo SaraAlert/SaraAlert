@@ -542,6 +542,16 @@ class Patient < ApplicationRecord
          )
   }
 
+  # Individuals either in exposure who are considered symptomatic or in isolation who require review
+  scope :global_priority_review, lambda {
+    exposure_symptomatic.or(isolation_requiring_review)
+  }
+
+  # Individuals not meeting review and are not reporting (exposure or isolation)
+  scope :global_non_reporting, lambda {
+    exposure_non_reporting.or(isolation_non_reporting)
+  }
+
   # Monitorees who have reported in the last hour that are considered symptomatic
   scope :recently_symptomatic, lambda {
     where(monitoring: true)

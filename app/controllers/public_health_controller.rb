@@ -26,6 +26,7 @@ class PublicHealthController < ApplicationController
   # Get patient counts by workflow
   def workflow_counts
     render json: {
+      global: current_user.viewable_patients.where(purged: false).size,
       exposure: current_user.viewable_patients.where(isolation: false, purged: false).size,
       isolation: current_user.viewable_patients.where(isolation: true, purged: false).size
     }
@@ -35,13 +36,16 @@ class PublicHealthController < ApplicationController
   def tab_counts
     # Validate workflow param
     workflow = params.require(:workflow).to_sym
-    return head :bad_request unless %i[exposure isolation].include?(workflow)
+    return head :bad_request unless %i[global exposure isolation].include?(workflow)
 
     # Validate tab param
     tab = params.require(:tab).to_sym
-    if workflow == :exposure
+    case workflow
+    when :global
+      return head :bad_request unless %i[all active priority_review non_reporting closed transferred_in transferred_out].include?(tab)
+    when :exposure
       return head :bad_request unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
-    else
+    when :isolation
       return head :bad_request unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
     end
 

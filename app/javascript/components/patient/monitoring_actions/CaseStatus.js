@@ -245,6 +245,7 @@ class CaseStatus extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               handleApplyHouseholdChange={this.handleApplyHouseholdChange}
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
+              workflow={this.props.workflow}
             />
           )}
         </Modal.Body>
@@ -308,6 +309,7 @@ CaseStatus.propTypes = {
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   monitoring_reasons: PropTypes.array,
+  workflow: PropTypes.string,
 };
 
 export default CaseStatus;

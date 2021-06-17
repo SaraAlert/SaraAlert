@@ -45,12 +45,20 @@ class PublicHealthBulkEditTest < ApplicationSystemTestCase
     @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_45 patient_47], :isolation, 'all', 'Completed Monitoring', 'reasoning')
   end
 
+  test 'bulk edit close records from global workflow' do
+    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_1 patient_45], :global, 'all', 'Completed Monitoring', 'reasoning')
+  end
+
   test 'bulk edit close records from exposure workflow with household' do
     @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_52], :exposure, 'all', 'Duplicate', '', apply_to_household: true)
   end
 
   test 'bulk edit close records from isolation workflow with household' do
     @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_54], :isolation, 'all', nil, 'details', apply_to_household: true)
+  end
+
+  test 'bulk edit close records from global workflow with household' do
+    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_52 patient_54], :global, 'all', nil, 'details', apply_to_household: true)
   end
 
   test 'bulk edit assigned user from exposure workflow' do
@@ -61,11 +69,19 @@ class PublicHealthBulkEditTest < ApplicationSystemTestCase
     @@public_health_test_helper.bulk_edit_update_assigned_user('state1_epi', %w[patient_58 patient_59], :isolation, 'all', 32)
   end
 
+  test 'bulk edit assigned user from global workflow' do
+    @@public_health_test_helper.bulk_edit_update_assigned_user('state1_epi', %w[patient_56 patient_58], :global, 'all', 32)
+  end
+
   test 'bulk edit assigned user from exposure workflow with household' do
     @@public_health_test_helper.bulk_edit_update_assigned_user('state1_epi', %w[patient_60], :exposure, 'all', 32, apply_to_household: true)
   end
 
   test 'bulk edit assigned user from isolation workflow with household' do
     @@public_health_test_helper.bulk_edit_update_assigned_user('state1_epi', %w[patient_63], :isolation, 'all', 32, apply_to_household: true)
+  end
+
+  test 'bulk edit assigned user from global workflow with household' do
+    @@public_health_test_helper.bulk_edit_update_assigned_user('state1_epi', %w[patient_60 patient_63], :global, 'all', 32, apply_to_household: true)
   end
 end

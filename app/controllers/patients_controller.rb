@@ -21,6 +21,8 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(action: 'monitoree_unavailable', id: params[:id]) && return if @patient.nil? || @patient.purged
 
+    dashboard_crumb(params.permit(:nav)[:nav], @patient)
+
     @jurisdiction = @patient.jurisdiction
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
@@ -44,6 +46,8 @@ class PatientsController < ApplicationController
   # Returns a new (unsaved) subject, for creating a new subject
   def new
     redirect_to(root_url) && return unless current_user.can_create_patient?
+
+    dashboard_crumb(params.permit(:nav)[:nav] || (params.permit(:isolation)[:isolation] ? 'isolation' : 'global'), nil)
 
     # If this is a close contact that is being fully enrolled, grab that record to auto-populate fields
     @close_contact = CloseContact.where(patient_id: current_user.viewable_patients).where(id: params.permit(:cc)[:cc])&.first if params[:cc].present?
@@ -72,6 +76,8 @@ class PatientsController < ApplicationController
     # If we failed to find the parent given the id, redirect to index
     redirect_to(root_url) && return if parent.nil?
 
+    dashboard_crumb(params.permit(:nav)[:nav], parent)
+
     @patient = Patient.new(parent.attributes.slice(*group_member_subset.map(&:to_s)))
 
     # If we failed to find a subject given the id, redirect to index
@@ -88,6 +94,8 @@ class PatientsController < ApplicationController
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
+
+    dashboard_crumb(params.permit(:nav)[:nav], @patient)
 
     @dependents_exclude_hoh = @patient.dependents_exclude_self
     @propagated_fields = group_member_subset.collect { |field| [field, false] }.to_h
@@ -935,5 +943,23 @@ class PatientsController < ApplicationController
       assigned_user
       continuous_exposure
     ]
+  end
+
+  private
+
+  # Set the instance variables necessary for rendering the breadcrumbs
+  def dashboard_crumb(dashboard, patient)
+    unless current_user.enroller?
+      @dashboard = %w[global isolation exposure].include?(dashboard) ? dashboard : (patient&.isolation ? 'isolation' : 'exposure')
+    end
+
+    @dashboard_path = case @dashboard
+                      when 'isolation'
+                        public_health_isolation_path
+                      when 'exposure'
+                        public_health_exposure_path
+                      else
+                        current_user.enroller? ? patients_path : public_health_global_path
+                      end
   end
 end

@@ -7,6 +7,7 @@ import { formatNameAlt } from '../../../../utils/Patient';
 
 import BadgeHoH from '../utils/BadgeHoH';
 import CustomTable from '../../../layout/CustomTable';
+import { patientHref } from '../../../../utils/Navigation';
 
 class HouseholdMemberTable extends React.Component {
   constructor(props) {
@@ -262,7 +263,7 @@ class HouseholdMemberTable extends React.Component {
         {rowData.head_of_household && <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />}
         <a
           id={rowData.head_of_household ? 'dependent-hoh-link' : null}
-          href={`${window.BASE_PATH}/patients/${rowData.id}`}
+          href={patientHref(rowData.id, this.props.workflow)}
           target={this.props.isSelectable ? '_blank' : '_self'}
           rel="noreferrer">
           {monitoreeName}
@@ -308,6 +309,7 @@ HouseholdMemberTable.propTypes = {
   isSelectable: PropTypes.bool,
   handleApplyHouseholdChange: PropTypes.func,
   handleApplyHouseholdIdsChange: PropTypes.func,
+  workflow: PropTypes.string,
 };
 
 export default HouseholdMemberTable;

@@ -1,4 +1,11 @@
-<%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Return to Exposure Dashboard', href: '/' }, { value: 'Return to Monitoree Details', href: '/' }, { value: 'Edit Monitoree', href: nil }], isolation: @patient&.isolation || false } %>
+<%= render partial: 'layouts/breadcrumb', locals: {
+      jurisdiction_path: current_user.jurisdiction_path,
+      crumbs: [
+        { value: dashboard_crumb_title(@dashboard), href: @dashboard_path },
+        { value: 'Return to Monitoree Details', href: patient_path(@patient.id) + (@dashboard ? "?nav=#{@dashboard}" : '') },
+        { value: 'Edit Monitoree', href: nil }
+      ]
+    } %>
 
 <%= react_component('enrollment/Enrollment', {
                       current_user: current_user,
@@ -14,5 +21,6 @@
                       race_options: ValidationHelper::RACE_OPTIONS,
                       blocked_sms: @patient.blocked_sms,
                       first_positive_lab: @patient.laboratories.where(result: 'positive').order(:specimen_collection).first,
-                      symptomatic_assessments_exist: @patient.assessments.where(symptomatic: true).any?
+                      symptomatic_assessments_exist: @patient.assessments.where(symptomatic: true).any?,
+                      workflow: @dashboard
                     }) %>

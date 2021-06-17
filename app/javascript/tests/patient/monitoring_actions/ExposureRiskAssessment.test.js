@@ -13,7 +13,7 @@ const mockToken = 'testMockTokenString12345';
 const exposureRiskAssessmentOptions = ['', 'High', 'Medium', 'Low', 'No Identified Risk'];
 
 function getWrapper() {
-  return shallow(<ExposureRiskAssessment patient={mockPatient1} household_members={[]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+  return shallow(<ExposureRiskAssessment patient={mockPatient1} household_members={[]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} workflow={'global'} />);
 }
 
 describe('ExposureRiskAssessment', () => {
@@ -60,7 +60,7 @@ describe('ExposureRiskAssessment', () => {
   });
 
   it('Toggling HoH radio buttons hides/shows household members table and updates state', () => {
-    const wrapper = mount(<ExposureRiskAssessment patient={mockPatient1} household_members={[mockPatient2, mockPatient3, mockPatient4]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} />);
+    const wrapper = mount(<ExposureRiskAssessment patient={mockPatient1} household_members={[mockPatient2, mockPatient3, mockPatient4]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} workflow={'global'} />);
     wrapper
       .find('#exposure_risk_assessment')
       .at(1)

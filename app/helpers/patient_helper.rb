@@ -43,6 +43,10 @@ module PatientHelper
     patient.assessments.where(symptomatic: true).minimum(:created_at)&.to_date
   end
 
+  def dashboard_crumb_title(dashboard)
+    dashboard.nil? ? 'Return To Dashboard' : "Return to #{dashboard.titleize} Dashboard"
+  end
+
   def self.monitoring_fields
     %i[
       monitoring

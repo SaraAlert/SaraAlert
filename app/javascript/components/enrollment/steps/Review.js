@@ -70,6 +70,7 @@ class Review extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               details={{ ...this.props.currentState.patient, blocked_sms: this.props.currentState.blocked_sms } || {}}
               authenticity_token={this.props.authenticity_token}
+              workflow={this.props.workflow}
             />
             <div className="pb-4"></div>
             {this.props.previous && (
@@ -120,6 +121,7 @@ Review.propTypes = {
   canAddGroup: PropTypes.bool,
   jurisdiction_paths: PropTypes.object,
   authenticity_token: PropTypes.string,
+  workflow: PropTypes.string,
 };
 
 export default Review;

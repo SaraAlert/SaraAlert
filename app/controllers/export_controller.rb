@@ -9,7 +9,7 @@ class ExportController < ApplicationController
 
   def csv_linelist
     # Verify params
-    redirect_to(root_url) && return unless %w[exposure isolation].include?(params[:workflow])
+    redirect_to(root_url) && return unless %w[global exposure isolation].include?(params[:workflow])
 
     export_type = "csv_linelist_#{params[:workflow]}".to_sym
     return if exported_recently?(export_type)
@@ -23,7 +23,7 @@ class ExportController < ApplicationController
       user_id: current_user.id,
       export_type: export_type,
       format: 'csv',
-      filename: "Sara-Alert-Linelist-#{params[:workflow] == 'isolation' ? 'Isolation' : 'Exposure'}",
+      filename: "Sara-Alert-Linelist-#{params[:workflow].capitalize}",
       filename_data_type: false,
       data: {
         patients: {
@@ -43,7 +43,7 @@ class ExportController < ApplicationController
 
   def sara_alert_format
     # Verify params
-    redirect_to(root_url) && return unless %w[exposure isolation].include?(params[:workflow])
+    redirect_to(root_url) && return unless %w[global exposure isolation].include?(params[:workflow])
 
     export_type = "sara_alert_format_#{params[:workflow]}".to_sym
     return if exported_recently?(export_type)
@@ -57,7 +57,7 @@ class ExportController < ApplicationController
       user_id: current_user.id,
       export_type: export_type,
       format: 'xlsx',
-      filename: "Sara-Alert-Format-##{params[:workflow] == 'isolation' ? 'Isolation' : 'Exposure'}",
+      filename: "Sara-Alert-Format-##{params[:workflow].capitalize}",
       filename_data_type: false,
       data: {
         patients: {

@@ -98,6 +98,7 @@ class ExposureRiskAssessment extends React.Component {
               handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
               current_user={this.props.current_user}
               jurisdiction_paths={this.props.jurisdiction_paths}
+              workflow={this.props.workflow}
             />
           )}
           <Form.Group>
@@ -162,6 +163,7 @@ ExposureRiskAssessment.propTypes = {
   household_members: PropTypes.array,
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
+  workflow: PropTypes.string,
 };
 
 export default ExposureRiskAssessment;

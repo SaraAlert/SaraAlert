@@ -18,11 +18,11 @@ const mockToken = 'testMockTokenString12345';
 const monitoringStatusValues = ['Actively Monitoring', 'Not Monitoring'];
 
 function getWrapper(patient, householdMembers) {
-  return shallow(<MonitoringStatus patient={patient} household_members={householdMembers || []} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} monitoring_reasons={mockMonitoringReasons} />);
+  return shallow(<MonitoringStatus patient={patient} household_members={householdMembers || []} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} monitoring_reasons={mockMonitoringReasons} workflow={'global'} />);
 }
 
 function getMountedWrapper() {
-  return mount(<MonitoringStatus patient={mockPatient1} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} household_members={[mockPatient2, mockPatient3, mockPatient4]} authenticity_token={mockToken} monitoring_reasons={mockMonitoringReasons} />);
+  return mount(<MonitoringStatus patient={mockPatient1} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} household_members={[mockPatient2, mockPatient3, mockPatient4]} authenticity_token={mockToken} monitoring_reasons={mockMonitoringReasons} workflow={'global'} />);
 }
 
 describe('MonitoringStatus', () => {
