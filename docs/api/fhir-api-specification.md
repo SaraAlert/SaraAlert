@@ -52,22 +52,24 @@ For applications following the [SMART-on-FHIR App Launch Framework "Standalone L
 
 For applications following the [SMART on FHIR Backend Services Workflow](#backend-services), these are the available scopes:
 
-* `system/Patient.read`,
-* `system/Patient.write`,
-* `system/Patient.*`, (for both read and write access to this resource)
-* `system/Observation.read`,
-* `system/QuestionnaireResponse.read`,
-* `system/RelatedPerson.read`,
-* `system/RelatedPerson.write`,
-* `system/RelatedPerson.*`,
-* `system/Immunization.read`,
-* `system/Immunization.write`,
-* `system/Immunization.*`,
+* `system/Patient.read`
+* `system/Patient.write`
+* `system/Patient.*` (for both read and write access to this resource)
+* `system/Observation.read`
+* `system/Observation.write`
+* `system/Observation.*`
+* `system/QuestionnaireResponse.read`
+* `system/RelatedPerson.read`
+* `system/RelatedPerson.write`
+* `system/RelatedPerson.*`
+* `system/Immunization.read`
+* `system/Immunization.write`
+* `system/Immunization.*`
 * `system/Provenance.read`
 
 Please note a given application and request for access token can have have multiple scopes, which must be space-separated. For example:
 ```
-`user/Patient.read system/Patient.read system/Observation.read`
+user/Patient.read system/Patient.read system/Observation.read
 ```
 
 <a name="cap"/>
@@ -87,11 +89,11 @@ A capability statement is available at `[base]/metadata`:
 ```json
 {
   "status": "active",
-  "date": "2021-04-01T00:00:00+00:00",
+  "date": "2021-05-04T00:00:00+00:00",
   "kind": "instance",
   "software": {
     "name": "Sara Alert",
-    "version": "v1.27.0"
+    "version": "v1.30"
   },
   "implementation": {
     "description": "Sara Alert API"
@@ -289,6 +291,15 @@ A capability statement is available at `[base]/metadata`:
               "code": "read"
             },
             {
+              "code": "update"
+            },
+            {
+              "code": "patch"
+            },
+            {
+              "code": "create"
+            },
+            {
               "code": "search-type"
             }
           ],
@@ -337,6 +348,7 @@ A capability statement is available at `[base]/metadata`:
   ],
   "resourceType": "CapabilityStatement"
 }
+
 ```
   </div>
 </details>
@@ -355,7 +367,10 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
 {
   "authorization_endpoint": "http://localhost:3000/oauth/authorize",
   "token_endpoint": "http://localhost:3000/oauth/token",
-  "token_endpoint_auth_methods_supported": ["client_secret_basic", "private_key_jwt"],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "private_key_jwt"
+  ],
   "token_endpoint_auth_signing_alg_values_supported": ["RS384"],
   "introspection_endpoint": "http://localhost:3000/oauth/introspect",
   "revocation_endpoint": "http://localhost:3000/oauth/revoke",
@@ -364,6 +379,7 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
     "user/Patient.write",
     "user/Patient.*",
     "user/Observation.read",
+    "user/Observation.*",
     "user/QuestionnaireResponse.read",
     "user/RelatedPerson.read",
     "user/RelatedPerson.write",
@@ -376,6 +392,7 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
     "system/Patient.write",
     "system/Patient.*",
     "system/Observation.read",
+    "system/Observation.*",
     "system/QuestionnaireResponse.read",
     "system/RelatedPerson.read",
     "system/RelatedPerson.write",
@@ -544,16 +561,44 @@ Get a monitoree lab result via an id, e.g.:
 
 ```json
 {
-  "id": 1,
+  "id": 11,
   "meta": {
-    "lastUpdated": "2020-05-29T00:49:33+00:00"
+    "lastUpdated": "2021-05-06T12:44:19+00:00"
   },
   "status": "final",
-  "subject": {
-    "reference": "Patient/956"
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "94564-2"
+      }
+    ],
+    "text": "IgM Antibody"
   },
-  "effectiveDateTime": "2020-05-07T00:00:00+00:00",
-  "valueString": "negative",
+  "subject": {
+    "reference": "Patient/1"
+  },
+  "effectiveDateTime": "2021-05-06",
+  "issued": "2021-05-07T00:00:00+00:00",
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "10828004"
+      }
+    ],
+    "text": "positive"
+  },
   "resourceType": "Observation"
 }
 ```
@@ -1751,6 +1796,47 @@ To create a new monitoree vaccination, simply POST a FHIR Immunization resource 
   </div>
 </details>
 
+### POST `[base]/Observation`
+
+<a name="create-post-immunization"/>
+
+To create a new monitoree lab result, simply POST a FHIR Observation resource that references the monitoree.
+
+**Request Body:**
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "status": "final",
+  "subject": {
+    "reference": "Patient/10"
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "94564-2"
+      }
+    ]
+  },
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "10828004"
+      }
+    ]
+  },
+  "effectiveDateTime": "2021-05-06",
+  "issued": "2021-05-07T00:00:00+00:00",
+  "resourceType": "Observation"
+}
+```
+  </div>
+</details>
+
 
 <a name="update"/>
 
@@ -2123,6 +2209,44 @@ On success, the server will update the existing resource given the id.
   </div>
 </details>
 
+<a name="update-put-observation"/>
+### PUT `[base]/Observation/[:id]`
+
+**Request Body:**
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "status": "final",
+  "subject": {
+    "reference": "Patient/10"
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "94564-2"
+      }
+    ]
+  },
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "10828004"
+      }
+    ]
+  },
+  "effectiveDateTime": "2021-05-06",
+  "issued": "2021-05-07T00:00:00+00:00",
+  "resourceType": "Observation",
+}
+```
+  </div>
+</details>
+
 <a name="update-patch-pat"/>
 
 ### PATCH `[base]/Patient/[:id]`
@@ -2317,6 +2441,31 @@ Content-Type: application/json-patch+json
 ```json
 [
   { "op": "replace", "path": "/note/0/text", "value": "Important notes" },
+]
+```
+  </div>
+</details>
+
+<a name="update-patch-observation"/>
+### PATCH `[base]/Observation/[:id]`
+
+**NOTE:** See the [Patient PATCH documentation](#update-patch-pat) for a more complete explanation of PATCH.
+
+**Request Headers:**
+```
+Content-Type: application/json-patch+json
+```
+
+**Request Body:**
+
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+[
+  { "op": "replace", "path": "/valueCodeableConcept/coding/0", "value":  { "system": "http://snomed.info/sct", "code": "260385009" }}
 ]
 ```
   </div>
@@ -2682,18 +2831,46 @@ GET `[base]/Observation?subject=Patient/[:id]`
   "total": 1,
   "entry": [
     {
-      "fullUrl": "http://localhost:3000/fhir/r4/Observation/1",
+      "fullUrl": "http://localhost:3000/fhir/r4/Observation/11",
       "resource": {
-        "id": 1,
+        "id": 11,
         "meta": {
-          "lastUpdated": "2020-05-29T00:49:33+00:00"
+          "lastUpdated": "2021-05-06T12:44:19+00:00"
         },
         "status": "final",
-        "subject": {
-          "reference": "Patient/956"
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94564-2"
+            }
+          ],
+          "text": "IgM Antibody"
         },
-        "effectiveDateTime": "2020-05-07T00:00:00+00:00",
-        "valueString": "negative",
+        "subject": {
+          "reference": "Patient/1"
+        },
+        "effectiveDateTime": "2021-05-06",
+        "issued": "2021-05-07T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "10828004"
+            }
+          ],
+          "text": "positive"
+        },
         "resourceType": "Observation"
       }
     }
@@ -3196,3 +3373,410 @@ GET `[base]/Patient?_count=2`
   </div>
 </details>
 
+## Transactions
+The API supports performing several actions as a single atomic "transaction" for which all of the individual changes succeed or fail together. 
+
+<a name="transaction-post"/>
+
+### POST `[base]`
+To perform a transaction, POST a FHIR [Bundle](https://www.hl7.org/fhir/bundle.html) resource to `[base]`. The Bundle must have `Bundle.type` set to `transaction`. There is a limit of 50 resources per transaction. Currently a transaction may only be used to create monitorees and lab results via the FHIR Patient and Observations resources, respectively. The transaction does not need to include Observation resources, and can be used to enroll monitorees in bulk. If a transaction is used to create an Observation, that Observation must reference a Patient being created by the same transaction. The transaction Bundle can contain at most 50 elements in the `Bundle.entry` array. Each entry in the `Bundle.entry` array should contain the following fields:
+
+* `fullUrl` - Must be an identifier for the resource. Since the resources are being created, they do not have a server assigned ID yet. To uniquely identify a resource, generate a UUID, for example: `urn:uuid:9c94a2bc-1929-4666-8099-9e8566b7d9ad`. An Observation should use the `fullUrl` of its corresponding Patient in `Observation.subject.reference`.
+* `resource` - Must contain the content of the Observation or Patient that is being created.
+* `request.method` - Must be `POST` as this is the only supported operation.
+* `request.url` - Must be `Patient` or `Observation`, depending on which resource is being created.
+
+See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) documentation for more details. An example request and response is shown below.
+
+**Request Body:**
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:17b6896d-9fd1-437f-a7bd-6ef7a66116ab",
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      },
+      "resource": {
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94564-2"
+            }
+          ],
+          "text": "IgM Antibody"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "10828004"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:9c94a2bc-1929-4666-8099-9e8566b7d9ad"
+        },
+        "effectiveDateTime": "2021-05-06",
+        "issued": "2021-05-07T00:00:00+00:00",
+        "resourceType": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9c94a2bc-1929-4666-8099-9e8566b7d9ad",
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      },
+      "resource": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2054-5",
+                  "display": "Black or African American"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Black or African American"
+              }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+          },
+          {
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2186-5",
+                  "display": "Not Hispanic or Latino"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Not Hispanic or Latino"
+              }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "M"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
+            "valueString": "Telephone call"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
+            "valueDate": "2020-05-18"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/isolation",
+            "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+            "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/continuous-exposure",
+            "valueBoolean": false
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Smith82",
+            "given": ["Malcolm94", "Bogan39"]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+13333333333",
+            "rank": 1
+          },
+          {
+            "system": "phone",
+            "value": "+13333333333",
+            "rank": 2
+          },
+          {
+            "system": "email",
+            "value": "22222222323222@example.com",
+            "rank": 1
+          }
+        ],
+        "birthDate": "1981-03-30",
+        "address": [
+          {
+            "line": ["22424 Daphne Key"],
+            "city": "West Gabrielmouth",
+            "state": "Maine",
+            "postalCode": "24683"
+          }
+        ],
+        "communication": [
+          {
+            "language": {
+              "coding": [
+                {
+                  "system": "urn:ietf:bcp:47",
+                  "display": "eng"
+                }
+              ]
+            }
+          }
+        ],
+        "resourceType": "Patient"
+      }
+    }
+  ]
+}
+```
+  </div>
+</details>
+
+**Response:**
+
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+  <div markdown="1">
+
+```json
+{
+  "id": "ea19333b-2b23-4150-be6d-5c666e8f4414",
+  "meta": {
+    "lastUpdated": "2021-05-07T14:03:24-04:00"
+  },
+  "type": "transaction-response",
+  "entry": [
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Patient/30",
+      "resource": {
+        "id": 30,
+        "meta": {
+          "lastUpdated": "2021-05-07T18:03:24+00:00"
+        },
+        "contained": [
+          {
+            "target": [
+              {
+                "reference": "/fhir/r4/Patient/30"
+              }
+            ],
+            "recorded": "2021-05-07T18:03:24+00:00",
+            "activity": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                  "code": "CREATE",
+                  "display": "create"
+                }
+              ]
+            },
+            "agent": [
+              {
+                "who": {
+                  "identifier": {
+                    "value": "ogsaC3PrRzsMZYa1LOXRdu6eJaCc7yWJViGudzNNHBc"
+                  },
+                  "display": "test-m2m-app"
+                }
+              }
+            ],
+            "resourceType": "Provenance"
+          }
+        ],
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2054-5",
+                  "display": "Black or African American"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Black or African American"
+              }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+          },
+          {
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2186-5",
+                  "display": "Not Hispanic or Latino"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Not Hispanic or Latino"
+              }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "M"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
+            "valueString": "Telephone call"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
+            "valueDate": "2020-05-18"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/isolation",
+            "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+            "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/continuous-exposure",
+            "valueBoolean": false
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Smith82",
+            "given": ["Malcolm94", "Bogan39"]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+13333333333",
+            "rank": 1
+          },
+          {
+            "system": "phone",
+            "value": "+13333333333",
+            "rank": 2
+          },
+          {
+            "system": "email",
+            "value": "22222222323222@example.com",
+            "rank": 1
+          }
+        ],
+        "birthDate": "1981-03-30",
+        "address": [
+          {
+            "line": ["22424 Daphne Key"],
+            "city": "West Gabrielmouth",
+            "state": "Maine",
+            "postalCode": "24683"
+          }
+        ],
+        "communication": [
+          {
+            "language": {
+              "coding": [
+                {
+                  "system": "urn:ietf:bcp:47",
+                  "code": "en",
+                  "display": "English"
+                }
+              ]
+            }
+          }
+        ],
+        "resourceType": "Patient"
+      },
+      "response": {
+        "status": "201 Created"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Observation/36",
+      "resource": {
+        "id": 36,
+        "meta": {
+          "lastUpdated": "2021-05-07T18:03:24+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94564-2"
+            }
+          ],
+          "text": "IgM Antibody"
+        },
+        "subject": {
+          "reference": "Patient/30"
+        },
+        "effectiveDateTime": "2021-05-06",
+        "issued": "2021-05-07T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "10828004"
+            }
+          ],
+          "text": "positive"
+        },
+        "resourceType": "Observation"
+      },
+      "response": {
+        "status": "201 Created"
+      }
+    }
+  ],
+  "resourceType": "Bundle"
+}
+```
+  </div>
+</details>

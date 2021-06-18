@@ -73,11 +73,6 @@ class Patient < ApplicationRecord
     validates required_field, on: :api, presence: { message: 'is required' }
   end
 
-  validates :symptom_onset,
-            on: :api,
-            presence: { message: "is required when 'Isolation' is 'true'" },
-            if: -> { isolation }
-
   validates :last_date_of_exposure,
             on: :api,
             presence: { message: "is required when 'Isolation' is 'false' and 'Continuous Exposure' is 'false'" },
@@ -100,6 +95,7 @@ class Patient < ApplicationRecord
   validates_with RaceValidator, on: %i[api import]
   validates_with RequiredAddressValidator, on: :api
   validates_with TimeZoneValidator
+  validates_with IsolationSymptomOnsetValidator, on: %i[api_create]
 
   # NOTE: Commented out until additional testing
   # validates_with PatientDateValidator

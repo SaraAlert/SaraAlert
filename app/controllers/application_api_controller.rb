@@ -10,7 +10,8 @@ class ApplicationApiController < ActionController::API
   RELATED_PERSON_WRITE_SCOPES = %i[user/RelatedPerson.write user/RelatedPerson.* system/RelatedPerson.write system/RelatedPerson.*].freeze
   IMMUNIZATION_READ_SCOPES = %i[user/Immunization.read user/Immunization.* system/Immunization.read system/Immunization.*].freeze
   IMMUNIZATION_WRITE_SCOPES = %i[user/Immunization.write user/Immunization.* system/Immunization.write system/Immunization.*].freeze
-  OBSERVATION_READ_SCOPES = %i[user/Observation.read system/Observation.read].freeze
+  OBSERVATION_READ_SCOPES = %i[user/Observation.read user/Observation.* system/Observation.read system/Observation.*].freeze
+  OBSERVATION_WRITE_SCOPES = %i[user/Observation.write user/Observation.* system/Observation.write system/Observation.*].freeze
   QUESTIONNAIRE_RESPONSE_READ_SCOPES = %i[user/QuestionnaireResponse.read system/QuestionnaireResponse.read].freeze
   PROVENANCE_READ_SCOPES = %i[user/Provenance.read system/Provenance.read].freeze
 

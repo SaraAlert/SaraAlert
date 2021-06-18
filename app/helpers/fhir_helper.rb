@@ -7,6 +7,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   OMB_URL = 'ombCategory'
   DETAILED_URL = 'detailed'
 
+  # Switch the context of the paths on a fhir_map from old_context to new_context. For example
+  # A Patient resource may have paths such as Patient.birthDate, but if that Patient resource
+  # actually exists in an array of Bundle entries, the correct path is Bundle.entry[<index>].birthDate
+  def change_fhir_map_context!(fhir_map, old_context, new_context)
+    fhir_map.transform_values! { |v| { path: v[:path].sub(old_context, new_context), value: v[:value], errors: v[:errors] } }
+  end
+
   # Returns a representative FHIR::Patient for an instance of a Sara Alert Patient. Uses US Core
   # extensions for sex, race, and ethnicity.
   # https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-patient.html
@@ -294,8 +301,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  # Create a hash of atttributes that corresponds to a Sara Alert Patient (and can be used to
-  # create new ones, or update existing ones), using the given FHIR::Patient.
+  # Create a hash of atttributes that corresponds to a Sara Alert Vaccine (and can be used to
+  # create new ones, or update existing ones), using the given FHIR::Immunization.
   # Hash is of the form:
   # {
   #  attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element>, errors: <array-of-messages> }
@@ -324,6 +331,82 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       dose_number: { value: vaccine&.protocolApplied&.first&.doseNumberString, path: 'Immunization.protocolApplied[0].doseNumberString' },
       notes: { value: vaccine&.note&.first&.text, path: 'Immunization.note[0].text' },
       patient_id: { value: vaccine&.patient&.reference&.match(%r{^Patient/(\d+)$}).to_a[1], path: 'Immunization.patient.reference' }
+    }
+  end
+
+  # Returns a representative FHIR::Observation for an instance of a Sara Alert Laboratory.
+  # https://www.hl7.org/fhir/observation.html
+  def laboratory_as_fhir(laboratory)
+    coded_lab_type = Laboratory.lab_type_to_code(laboratory.lab_type)
+    coded_result = Laboratory.result_to_code(laboratory.result)
+
+    FHIR::Observation.new(
+      meta: FHIR::Meta.new(lastUpdated: laboratory.updated_at.strftime('%FT%T%:z')),
+      id: laboratory.id,
+      status: 'final',
+      category: [
+        FHIR::CodeableConcept.new(
+          coding: [
+            FHIR::Coding.new(
+              system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+              code: 'laboratory'
+            )
+          ]
+        )
+      ],
+      code: FHIR::CodeableConcept.new(
+        text: laboratory.lab_type,
+        coding: [
+          FHIR::Coding.new(
+            system: coded_lab_type[:system],
+            code: coded_lab_type[:code]
+          )
+        ]
+      ),
+      subject: FHIR::Reference.new(reference: "Patient/#{laboratory.patient_id}"),
+      effectiveDateTime: laboratory.specimen_collection,
+      issued: laboratory.report&.strftime('%FT%T%:z'),
+      valueCodeableConcept: coded_result.nil? ? nil : FHIR::CodeableConcept.new(
+        text: laboratory.result,
+        coding: [
+          FHIR::Coding.new(
+            system: coded_result[:system],
+            code: coded_result[:code]
+          )
+        ]
+      )
+    )
+  end
+
+  # Create a hash of atttributes that corresponds to a Sara Alert Laboratory (and can be used to
+  # create new ones, or update existing ones), using the given FHIR::Observation.
+  # Hash is of the form:
+  # {
+  #  attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element>, errors: <array-of-messages> }
+  # }
+  def laboratory_from_fhir(observation)
+    result_coding = observation&.valueCodeableConcept&.coding&.first
+    result = Laboratory.code_to_result(result_coding&.system, result_coding&.code)
+    if result.nil? && !result_coding.nil?
+      result_errors = ["is not an acceptable value, acceptable values are: #{Laboratory::CODE_TO_RESULT.keys.map do |c|
+                                                                               pretty_print_code_from_fhir(c.stringify_keys)
+                                                                             end.join(', ')}"]
+    end
+
+    lab_type_coding = observation&.code&.coding&.first
+    lab_type = Laboratory.code_to_lab_type(lab_type_coding&.system, lab_type_coding&.code)
+    if lab_type.nil? && !lab_type_coding.nil?
+      lab_type_errors = ["is not an acceptable value, acceptable values are: #{Laboratory::CODE_TO_LAB_TYPE.keys.map do |c|
+                                                                                 pretty_print_code_from_fhir(c.stringify_keys)
+                                                                               end.join(', ')}"]
+    end
+
+    {
+      patient_id: { value: observation&.subject&.reference&.match(%r{^Patient/(\d+)$}).to_a[1], path: 'Observation.subject.reference' },
+      lab_type: { value: lab_type, path: 'Observation.code.coding[0]', errors: lab_type_errors },
+      specimen_collection: { value: observation&.effectiveDateTime, path: 'Observation.effectiveDateTime' },
+      report: { value: observation&.issued&.split('T')&.first, path: 'Observation.issued' },
+      result: { value: result, path: 'Observation.valueCodeableConcept.coding[0]', errors: result_errors }
     }
   end
 
@@ -657,5 +740,52 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     return nil unless code_hash['system'] && code_hash['code']
 
     "#{code_hash['system']}##{code_hash['code']}"
+  end
+
+  def patients_to_fhir_bundle(patients)
+    results = []
+    patients.each do |patient|
+      patient_as_fhir = patient.as_fhir
+      results << FHIR::Bundle::Entry.new(fullUrl: full_url_helper(patient_as_fhir), resource: patient_as_fhir,
+                                         response: FHIR::Bundle::Entry::Response.new(status: '201 Created'))
+      patient.laboratories.each do |lab|
+        lab_as_fhir = lab.as_fhir
+        results << FHIR::Bundle::Entry.new(fullUrl: full_url_helper(lab_as_fhir), resource: lab_as_fhir,
+                                           response: FHIR::Bundle::Entry::Response.new(status: '201 Created'))
+      end
+    end
+
+    FHIR::Bundle.new(
+      id: SecureRandom.uuid,
+      meta: FHIR::Meta.new(lastUpdated: DateTime.now.strftime('%FT%T%:z')),
+      type: 'transaction-response',
+      entry: results
+    )
+  end
+
+  def validate_transaction_bundle(bundle)
+    # Only accept transaction Bundles
+    if bundle.resourceType&.downcase != 'bundle' || bundle.type&.downcase != 'transaction'
+      return ["Only Bundles of type 'transaction' are allowed", 'Bundle.type']
+    end
+
+    # Validate the entries
+    bundle.entry&.each_with_index do |entry, index|
+      resource_type = entry.resource&.resourceType&.downcase
+
+      # Check for valid resourceType
+      unless %w[observation patient].include?(resource_type)
+        return ["All entries must contain a resource of type 'Observation' or 'Patient'", "Bundle.entry[#{index}].resource"]
+      end
+
+      # Check for valid Bundle.entry.request
+      unless entry.request&.local_method == 'POST' && entry.request&.url&.downcase == resource_type
+        return [
+          "Invalid request method, request.method must be 'POST' and request.url must be 'Patient' or 'Observation",
+          "Bundle.entry[#{index}].request"
+        ]
+      end
+    end
+    []
   end
 end
