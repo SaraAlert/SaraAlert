@@ -59,3 +59,8 @@ sara_database_*
 *.jtl
 *.hprof
 jmeter.log
+
+# Other performance testing files
+performance/benchmarks/output/
+performance/github_artifacts/
+
