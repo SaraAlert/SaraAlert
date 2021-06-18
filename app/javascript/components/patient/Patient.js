@@ -23,7 +23,6 @@ class Patient extends React.Component {
       expandPlannedTravelNotes: false,
       primaryLanguageDisplayName: null,
       showSetFlagModal: false,
-      isMinor: props.details && props.details.date_of_birth && isMinor(props.details.date_of_birth),
     };
   }
 
@@ -191,7 +190,9 @@ class Patient extends React.Component {
               <Col sm={10} className="item-group">
                 <div>
                   <b>DOB:</b> <span>{this.props.details.date_of_birth && moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
-                  {this.state.isMinor && <span className="text-danger"> (Minor)</span>}
+                  {this.props.details && this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
+                    <span className="text-danger"> (Minor)</span>
+                  )}
                 </div>
                 <div>
                   <b>Age:</b> <span>{this.props.details.age || '--'}</span>
@@ -240,7 +241,7 @@ class Patient extends React.Component {
               {this.renderEditLink('Contact Information', 2)}
             </div>
             <div className="item-group">
-              {this.state.isMinor && (
+              {this.props.details && this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
                 <React.Fragment>
                   <span className="text-danger">Monitoree is a minor{!this.props.details.head_of_household && this.props.hoh && '. '}</span>
                   {!this.props.details.head_of_household && this.props.hoh && (
