@@ -6,7 +6,7 @@
   <% @count = @patients.count %>
   <% @i = 0 %>
   <% @patients.each do |patient| %>
-    <% @i = @i+1 %>
+    <% @i += 1 %>
     <p><%= t('assessments.email.reminder.dear', locale: @lang) %> <%= patient[:patient]&.initials_age('-') %>,</p>
 
     <p><%= t('assessments.email.reminder.thank-you', locale: @lang) %></p>
