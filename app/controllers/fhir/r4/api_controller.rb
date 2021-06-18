@@ -262,8 +262,6 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_created(resource.as_fhir) && return
   rescue JSON::ParserError
     status_bad_request(['Invalid JSON in request body'])
-  rescue ClientError
-    nil # If we reach here, we've already rendered a 422 response
   end
 
   # Create a set of resources as an atomic action
@@ -347,8 +345,6 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_ok(patients_to_fhir_bundle(saved_patients)) && return
   rescue JSON::ParserError
     status_bad_request(['Invalid JSON in request body'])
-  rescue ClientError
-    nil # If we reach here, we've already rendered a 422 response
   end
 
   # Return a FHIR Bundle containing results that match the given query.
