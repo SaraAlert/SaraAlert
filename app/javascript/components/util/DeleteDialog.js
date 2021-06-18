@@ -85,7 +85,7 @@ class DeleteDialog extends React.Component {
             <React.Fragment>
               <Alert variant="warning" className="alert-warning-text">
                 Warning: Since this record does not have a Symptom Onset Date, deleting this positive lab result may result in the record not ever being
-                eligible to appear on the Records Requiring Review line list. Please consider entering a symptom onset date to prevent this from happening:
+                eligible to appear on the Records Requiring Review line list. Please consider entering a Symptom Onset Date to prevent this from happening:
               </Alert>
               <Form.Label className="input-label">SYMPTOM ONSET</Form.Label>
               <DateInput

@@ -66,7 +66,7 @@ class SymptomOnset extends React.Component {
     });
   };
 
-  createModal = symptom_onset_invalid => {
+  createModal = () => {
     return (
       <Modal size="lg" show centered onHide={this.closeModal}>
         <Modal.Header>
@@ -84,7 +84,7 @@ class SymptomOnset extends React.Component {
                   this.props.calculated_symptom_onset ? moment(this.props.calculated_symptom_onset).format('MM/DD/YYYY') : 'blank'
                 }.`}
           </p>
-          {symptom_onset_invalid && (
+          {this.props.patient.isolation && !this.state.symptom_onset && !this.props.symptomatic_assessments_exist && this.props.num_pos_labs === 0 && (
             <React.Fragment>
               <Alert variant="warning" className="mt-2 mb-3 alert-warning-text">
                 Warning: Since the Symptom Onset Date will be set to blank, please consider entering a positive lab result in order for this record to be
@@ -114,11 +114,9 @@ class SymptomOnset extends React.Component {
   };
 
   render() {
-    const symptom_onset_invalid =
-      this.props.patient.isolation && !this.state.symptom_onset && !this.props.symptomatic_assessments_exist && this.props.num_pos_labs === 0;
     return (
       <React.Fragment>
-        {this.state.showModal && this.createModal(symptom_onset_invalid)}
+        {this.state.showModal && this.createModal()}
         <Form.Group controlId="symptom_onset">
           <Form.Label className="input-label">
             SYMPTOM ONSET
@@ -146,16 +144,10 @@ class SymptomOnset extends React.Component {
             maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
             onChange={this.openModal}
             placement="bottom"
-            isInvalid={symptom_onset_invalid}
             isClearable={this.props.patient.user_defined_symptom_onset}
             customClass="form-control-lg"
             ariaLabel="Symptom Onset Date Input"
           />
-          {this.props.patient.isolation && symptom_onset_invalid && (
-            <Form.Control.Feedback className="d-block" type="invalid">
-              Please enter a Symptom Onset Date AND/OR a positive lab result.
-            </Form.Control.Feedback>
-          )}
         </Form.Group>
       </React.Fragment>
     );

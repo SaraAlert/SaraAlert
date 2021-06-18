@@ -88,7 +88,7 @@ describe('CurrentStatus', () => {
     expect(wrapper.find(Badge).text()).toEqual('requires review (symptomatic non test based)');
     expect(wrapper.find(Badge).prop('variant')).toEqual('danger');
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('At least 10 days have passed since the symptom onset date and at least 24 hours have passed since the case last reported “Yes” for fever or use of fever-reducing medicine to the system. The system does not collect information on severity of symptoms. Public health will need to validate if other symptoms have improved.');
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('At least 10 days have passed since the Symptom Onset Date and at least 24 hours have passed since the case last reported “Yes” for fever or use of fever-reducing medicine to the system. The system does not collect information on severity of symptoms. Public health will need to validate if other symptoms have improved.');
   });
 
   it('Correctly renders isolation requires review (asymptomatic non test based) status', () => {

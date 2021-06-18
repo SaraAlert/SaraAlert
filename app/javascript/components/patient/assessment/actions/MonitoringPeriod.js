@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Col, Row } from 'react-bootstrap';
+import { Alert, Col, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { formatDate } from '../../../../utils/DateTime';
 
@@ -22,7 +22,7 @@ class MonitoringPeriod extends React.Component {
   render() {
     return (
       <Row>
-        <Col lg={8} sm={this.props.patient.isolation ? 12 : 8}>
+        <Col sm={this.props.patient.isolation ? 12 : 8}>
           <SymptomOnset
             authenticity_token={this.props.authenticity_token}
             patient={this.props.patient}
@@ -42,7 +42,7 @@ class MonitoringPeriod extends React.Component {
             />
           </Col>
         )}
-        <Col lg={8} sm={this.props.patient.isolation ? 12 : 8}>
+        <Col sm={this.props.patient.isolation ? 12 : 8}>
           {this.props.patient.isolation ? (
             <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
           ) : (
@@ -66,6 +66,13 @@ class MonitoringPeriod extends React.Component {
             </React.Fragment>
           )}
         </Col>
+        {this.props.patient.isolation && !this.props.patient.symptom_onset && !this.props.symptomatic_assessments_exist && this.props.num_pos_labs === 0 && (
+          <Col sm={24}>
+            <Alert variant="warning" className="alert-warning-text mb-2">
+              <b>Warning: </b>This case does not have a Symptom Onset Date or positive lab result and may never become eligible to end monitoring
+            </Alert>
+          </Col>
+        )}
       </Row>
     );
   }
