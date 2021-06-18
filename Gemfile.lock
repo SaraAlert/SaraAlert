@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/SaraAlert/sara-schema.git
+  revision: 4a62d483d1ca10bc184318e77b754771379c905a
+  branch: v2-dev
+  specs:
+    sara-schema (2.0.0)
+      json_schemer (~> 0.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -378,8 +386,6 @@ GEM
     ruby2_keywords (0.0.4)
     ruby_dep (1.5.0)
     rubyzip (2.3.0)
-    sara-schema (1.1.2)
-      json_schemer (~> 0.2)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.3.0)
@@ -528,7 +534,7 @@ DEPENDENCIES
   rubocop-rails
   ruby-jmeter
   rubyzip
-  sara-schema
+  sara-schema!
   sass-rails (>= 6)
   sassc (~> 2.3.0)
   selenium-webdriver

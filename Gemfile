@@ -69,7 +69,7 @@ gem 'rubyzip'
 gem 'premailer-rails'
 
 # Split arch schema
-gem 'sara-schema'
+gem 'sara-schema', git: 'https://github.com/SaraAlert/sara-schema.git', branch: 'v2-dev'
 
 # Send errors to Sentry
 gem 'sentry-raven'
