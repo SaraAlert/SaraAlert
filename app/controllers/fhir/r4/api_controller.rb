@@ -153,7 +153,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       # Get the contents from applying a patch, if needed
       contents = apply_patch(close_contact, patch) if request.patch?
 
-      update_record(*update_model_from_fhir(close_contact, contents, :close_contact_from_fhir), :close_contact_edit, 'close contact')
+      update_record(*update_model_from_fhir(close_contact, contents, :close_contact_from_fhir), request_body, :close_contact_edit, 'close contact')
 
       status_ok(close_contact.as_fhir) && return
     when 'immunization'
@@ -166,7 +166,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       # Get the contents from applying a patch, if needed
       contents = apply_patch(vaccine, patch) if request.patch?
 
-      update_record(*update_model_from_fhir(vaccine, contents, :vaccine_from_fhir), :vaccination_edit, 'vaccination')
+      update_record(*update_model_from_fhir(vaccine, contents, :vaccine_from_fhir), request_body, :vaccination_edit, 'vaccination')
 
       status_ok(vaccine.as_fhir) && return
     when 'observation'
@@ -235,11 +235,11 @@ class Fhir::R4::ApiController < ApplicationApiController
     when 'relatedperson'
       return if doorkeeper_authorize!(*RELATED_PERSON_WRITE_SCOPES)
 
-      resource = save_record(*build_model_from_fhir(CloseContact, contents, :close_contact_from_fhir), :close_contact, 'close contact')
+      resource = save_record(*build_model_from_fhir(CloseContact, contents, :close_contact_from_fhir), request_body, :close_contact, 'close contact')
     when 'immunization'
       return if doorkeeper_authorize!(*IMMUNIZATION_WRITE_SCOPES)
 
-      resource = save_record(*build_model_from_fhir(Vaccine, contents, :vaccine_from_fhir), :vaccination, 'vaccination')
+      resource = save_record(*build_model_from_fhir(Vaccine, contents, :vaccine_from_fhir), request_body, :vaccination, 'vaccination')
     when 'observation'
       return if doorkeeper_authorize!(*OBSERVATION_WRITE_SCOPES)
 
@@ -1079,10 +1079,10 @@ class Fhir::R4::ApiController < ApplicationApiController
   end
 
   # Save a non-Patient record
-  def save_record(resource, fhir_map, history_type, resource_label)
+  def save_record(resource, fhir_map, request_body, history_type, resource_label)
     ActiveRecord::Base.transaction do
       unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api)
-        req_json = JSON.parse(request.body.string)
+        req_json = JSON.parse(request_body)
         status_unprocessable_entity(resource, fhir_map, req_json) && (raise ClientError)
       end
 
@@ -1105,10 +1105,10 @@ class Fhir::R4::ApiController < ApplicationApiController
   end
 
   # Update a non-Patient record
-  def update_record(resource, fhir_map, history_type, resource_label)
+  def update_record(resource, fhir_map, request_body, history_type, resource_label)
     ActiveRecord::Base.transaction do
       unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api)
-        req_json = request.patch? ? resource.as_fhir.to_json : JSON.parse(request.body.string)
+        req_json = request.patch? ? resource.as_fhir.to_json : JSON.parse(request_body)
         status_unprocessable_entity(resource, fhir_map, req_json) && (raise ClientError)
       end
 
