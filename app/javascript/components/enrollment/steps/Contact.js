@@ -194,7 +194,7 @@ class Contact extends React.Component {
           {showTooltip && <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="right" />}
         </Alert>
       </Form.Group>
-    )
+    );
   }
 
   render() {
