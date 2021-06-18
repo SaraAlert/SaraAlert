@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Card, Col, Form } from 'react-bootstrap';
+import { Alert, Button, Card, Col, Form } from 'react-bootstrap';
 import Select from 'react-select';
 import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 
@@ -213,6 +213,16 @@ class Identification extends React.Component {
       });
   };
 
+  renderWarningBanner = message => {
+    return (
+      <Alert variant="warning" className="mt-2 mb-0 px-3 py-2">
+        <i>
+          <b>Warning:</b> {message}
+        </i>
+      </Alert>
+    );
+  };
+
   renderPrimaryLanguageSupportMessage = () => {
     let selectedLanguage = this.state.primaryLanguageData;
     if (!_.isEmpty(selectedLanguage)) {
@@ -244,11 +254,7 @@ class Identification extends React.Component {
           message +=
             ' is supported for email and SMS text reporting methods only. If telephone call is selected as the preferred reporting method, the call will be in English.';
         }
-        return (
-          <i>
-            <b>* Warning:</b> {message}
-          </i>
-        );
+        return this.renderWarningBanner(message);
       }
     }
   };
@@ -505,31 +511,22 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row className="pb-3 ml-0">Languages that are not fully supported are indicated by a (*) in the below list.</Form.Row>
               <Form.Row>
-                <Form.Group as={Col} sm={24} md={12} id="primary_language_wrapper" className="pr-md-4 mb-2">
+                <Form.Group as={Col} sm={24} md={12} id="primary_language_wrapper" className="pr-md-1 mb-3">
                   <Form.Label htmlFor="primary-language-select" className="input-label">
                     PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="primaryLanguage" location="right"></InfoTooltip>
                   </Form.Label>
                   {this.renderLanguageSelect(true)}
+                  {this.renderPrimaryLanguageSupportMessage()}
                 </Form.Group>
-                <Form.Group as={Col} sm={24} md={12} id="secondary_language_wrapper" className="pl-md-4 mb-2">
+                <Form.Group as={Col} sm={24} md={12} id="secondary_language_wrapper" className="pl-md-1 mb-3">
                   <Form.Label htmlFor="secondary-language-select" className="input-label">
                     SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="secondaryLanguage" location="right"></InfoTooltip>
                   </Form.Label>
                   {this.renderLanguageSelect(false)}
-                </Form.Group>
-              </Form.Row>
-              <Form.Row>
-                <Form.Group as={Col} sm={24} md={12} controlId="primary_language_support_message" className="pr-md-4 mb-0">
-                  {this.renderPrimaryLanguageSupportMessage()}
-                </Form.Group>
-                <Form.Group as={Col} sm={24} md={12} controlId="secondary_language_support_message" className="pl-md-4 mb-0">
-                  {this.state.current.patient.secondary_language && (
-                    <i>
-                      <b>* Warning:</b> Not used to determine which language the system sends messages to the monitoree in.
-                    </i>
-                  )}
+                  {this.state.current.patient.secondary_language &&
+                    this.renderWarningBanner('Not used to determine which language the system sends messages to the monitoree in.')}
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">
