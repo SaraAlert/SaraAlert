@@ -81,16 +81,16 @@ function isMinor(date) {
  * @param {String} dateOfBirth - Patient's date of birth in YYYY-MM-DD format
  * @param {Int} id - Patient'd unique ID
  */
-function formatDateOfBirth(dateOfBirth, id) {
+function formatDateOfBirthTableCell(dateOfBirth, id) {
   if (isMinor(dateOfBirth)) {
     return (
-      <div>
-        <IconMinor patientId={id.toString()} customClass={'float-right ml-1'} />
+      <React.Fragment>
         {formatDate(dateOfBirth)}
-      </div>
+        <IconMinor patientId={id.toString()} customClass={'float-right ml-1'} />
+      </React.Fragment>
     );
   }
   return formatDate(dateOfBirth);
 }
 
-export { formatName, formatNameAlt, formatPhoneNumber, formatRace, isMinor, formatDateOfBirth };
+export { formatName, formatNameAlt, formatPhoneNumber, formatRace, isMinor, formatDateOfBirthTableCell };

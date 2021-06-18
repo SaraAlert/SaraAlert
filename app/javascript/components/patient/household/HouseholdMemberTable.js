@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import moment from 'moment-timezone';
 import _ from 'lodash';
-import { formatNameAlt, formatDateOfBirth } from '../../../utils/Patient';
+import { formatNameAlt, formatDateOfBirthTableCell } from '../../../utils/Patient';
 
 import { patientHref } from '../../../utils/Navigation';
 import BadgeHoH from '../icons/BadgeHoH';
@@ -272,8 +272,7 @@ class HouseholdMemberTable extends React.Component {
   };
 
   formatDOB = data => {
-    const rowData = data.rowData;
-    return formatDateOfBirth(rowData.date_of_birth, rowData.id);
+    return formatDateOfBirthTableCell(data.rowData.date_of_birth, data.rowData.id);
   };
 
   /**

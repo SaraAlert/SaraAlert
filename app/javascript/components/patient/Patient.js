@@ -11,7 +11,7 @@ import { convertLanguageCodesToNames } from '../../utils/Languages';
 import { formatName, formatPhoneNumber, formatRace, isMinor } from '../../utils/Patient';
 import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
-import { navQueryParam } from '../../utils/Navigation';
+import { navQueryParam, patientHref } from '../../utils/Navigation';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -246,7 +246,7 @@ class Patient extends React.Component {
                   {!this.props.details.head_of_household && this.props.hoh && (
                     <span>
                       View contact info for head of household:
-                      <a className="pl-1" href={`${window.BASE_PATH}/patients/${this.props.hoh.id}`}>
+                      <a className="pl-1" href={patientHref(this.props.hoh.id)}>
                         {formatName(this.props.hoh)}
                       </a>
                     </span>
@@ -256,7 +256,7 @@ class Patient extends React.Component {
               <div>
                 <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 {this.props.details.blocked_sms && (
-                  <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
+                  <Form.Label className="tooltip-whitespace input-label font-weight-bold">
                     &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
                   </Form.Label>
                 )}

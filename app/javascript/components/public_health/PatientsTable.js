@@ -21,7 +21,7 @@ import { ToastContainer } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 
 import { formatDate, formatTimestamp } from '../../utils/DateTime';
-import { formatDateOfBirth } from '../../utils/Patient';
+import { formatDateOfBirthTableCell } from '../../utils/Patient';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
@@ -498,8 +498,7 @@ class PatientsTable extends React.Component {
   };
 
   formatDOB = data => {
-    const rowData = data.rowData;
-    return formatDateOfBirth(rowData.dob, rowData.id);
+    return formatDateOfBirthTableCell(data.rowData.dob, data.rowData.id);
   };
 
   formatLatestReport = data => {
