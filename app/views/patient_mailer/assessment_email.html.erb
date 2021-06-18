@@ -3,10 +3,7 @@
 <% end %>
 
 <% content_for :body do %>
-  <% @count = @patients.count %>
-  <% @i = 0 %>
-  <% @patients.each do |patient| %>
-    <% @i += 1 %>
+  <% @patients.each_with_index do |patient, index| %>
     <p><%= t('assessments.email.reminder.dear', locale: @lang) %> <%= patient[:patient]&.initials_age('-') %>,</p>
 
     <p><%= t('assessments.email.reminder.thank-you', locale: @lang) %></p>
@@ -20,7 +17,7 @@
           text: t('assessments.email.reminder.report', locale: @lang)
         } %><br />
 
-    <% if @count == @i %>
+    <% if @patients.count == index + 1 %>
       <% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
         <p><%= t('assessments.email.contact.info1', locale: @lang) %></p>
         <% if @contact_info[:email].present? %>
