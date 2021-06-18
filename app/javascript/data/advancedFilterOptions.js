@@ -190,7 +190,7 @@ export const advancedFilterOptions = [
     title: 'Flagged for Follow-up (Select)',
     description: 'Monitoree flagged for follow-up',
     type: 'select',
-    options: ['Any Reason', 'Deceased', 'Duplicate', 'High-Risk', 'Hospitalized', 'In Need of Follow-up', 'Lost to Follow-up', 'Needs Interpretation', 'Quality Assurance', 'Other'],
+    options: ['Any Reason', 'Deceased', 'Duplicate', 'High-Risk', 'Hospitalized', 'In Need of Follow-up', 'Lost to Follow-up', 'Needs Interpretation', 'Quality Assurance', 'Refused Active Monitoring', 'Other'],
     tooltip: 'This will return monitorees that are flagged for follow-up for the selected reason. To return all montitorees flagged for follow-up, select the “Any Reason” option.'
   },
 
