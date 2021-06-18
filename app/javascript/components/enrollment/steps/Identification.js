@@ -213,6 +213,16 @@ class Identification extends React.Component {
       });
   };
 
+  renderWarningBanner = message => {
+    return (
+      <Alert variant="warning" className="mt-2 mb-0 px-3 py-2">
+        <i>
+          <b>Warning:</b> {message}
+        </i>
+      </Alert>
+    );
+  };
+
   renderPrimaryLanguageSupportMessage = () => {
     let selectedLanguage = this.state.primaryLanguageData;
     if (!_.isEmpty(selectedLanguage)) {
@@ -244,13 +254,7 @@ class Identification extends React.Component {
           message +=
             ' is supported for email and SMS text reporting methods only. If telephone call is selected as the preferred reporting method, the call will be in English.';
         }
-        return (
-          <Alert variant="warning" className="mt-2 mb-0 px-3 py-2">
-            <i>
-              <b>Warning:</b> {message}
-            </i>
-          </Alert>
-        );
+        return this.renderWarningBanner(message);
       }
     }
   };
@@ -521,13 +525,8 @@ class Identification extends React.Component {
                     <InfoTooltip tooltipTextKey="secondaryLanguage" location="right"></InfoTooltip>
                   </Form.Label>
                   {this.renderLanguageSelect(false)}
-                  {this.state.current.patient.secondary_language && (
-                    <Alert variant="warning" className="mt-2 mb-0 px-3 py-2">
-                      <i>
-                        <b>Warning:</b> Not used to determine which language the system sends messages to the monitoree in.
-                      </i>
-                    </Alert>
-                  )}
+                  {this.state.current.patient.secondary_language &&
+                    this.renderWarningBanner('Not used to determine which language the system sends messages to the monitoree in.')}
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">

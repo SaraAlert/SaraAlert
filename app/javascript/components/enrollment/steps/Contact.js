@@ -186,6 +186,17 @@ class Contact extends React.Component {
       });
   };
 
+  renderWarningBanner = (message, showTooltip)  => {
+    return(
+      <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
+        <Alert variant="danger" className="mb-0">
+          <b>Warning:</b> {message}
+          {showTooltip && <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="right" />}
+        </Alert>
+      </Form.Group>
+    )
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -287,12 +298,7 @@ class Contact extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 {this.state.current.patient?.preferred_contact_method?.includes('SMS') && this.state.current.blocked_sms && (
-                  <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
-                    <Alert variant="danger" className="mb-0">
-                      <b>Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert
-                      <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="right" />
-                    </Alert>
-                  </Form.Group>
+                  this.renderWarningBanner('SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert)', true)
                 )}
               </Form.Row>
               <Form.Row className="mb-3">
@@ -334,30 +340,15 @@ class Contact extends React.Component {
                 </Form.Group>
                 {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
                   this.state.current.patient.primary_telephone_type == 'Plain Cell' && (
-                    <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
-                      <Alert variant="danger" className="mb-0">
-                        <b>Warning:</b> Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type
-                        of message.
-                      </Alert>
-                    </Form.Group>
+                    this.renderWarningBanner('Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.')
                   )}
                 {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
                   this.state.current.patient.primary_telephone_type == 'Landline' && (
-                    <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
-                      <Alert variant="danger" className="mb-0">
-                        <b>Warning:</b> Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of
-                        message.
-                      </Alert>
-                    </Form.Group>
+                    this.renderWarningBanner('Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.')
                   )}
                 {this.state.current.patient.preferred_contact_method === 'SMS Text-message' &&
                   this.state.current.patient.primary_telephone_type === 'Landline' && (
-                    <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
-                      <Alert variant="danger" className="mb-0">
-                        <b>Warning:</b> Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this
-                        type of message.
-                      </Alert>
-                    </Form.Group>
+                    this.renderWarningBanner('Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this type of message.')
                   )}
               </Form.Row>
               <Form.Row>
