@@ -4,7 +4,7 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 import { formatNameAlt, formatDateOfBirth } from '../../../utils/Patient';
 
-import { patientHref } from '../../../../utils/Navigation';
+import { patientHref } from '../../../utils/Navigation';
 import BadgeHoH from '../icons/BadgeHoH';
 import CustomTable from '../../layout/CustomTable';
 
