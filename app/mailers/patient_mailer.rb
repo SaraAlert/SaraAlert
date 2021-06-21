@@ -187,13 +187,47 @@ class PatientMailer < ApplicationMailer
   end
 
   def closed_email(patient)
-    return if patient&.email.blank?
+    if patient&.email.blank?
+      History.send_close_conact_method_blank(patient: patient, type: 'email')
+      return
+    end
 
-    @patient = patient
     @lang = patient.select_language
+    @contents = I18n.t(
+      'assessments.sms.closed.thank-you',
+      initials_age: patient&.initials_age('-'),
+      completed_date: patient.closed_at&.strftime('%m-%d-%Y'),
+      locale: @lang
+    )
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.closed.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
+    History.monitoring_complete_message_sent(patient: patient)
+  end
+
+  def closed_sms(patient)
+    if patient&.primary_telephone.blank?
+      History.send_close_conact_method_blank(patient: patient, type: 'primary phone number')
+      return
+    end
+    if patient.blocked_sms
+      History.send_close_sms_blocked(patient: patient)
+      return
+    end
+
+    lang = patient.select_language
+    contents = I18n.t(
+      'assessments.sms.closed.thank-you',
+      initials_age: patient&.initials_age('-'),
+      completed_date: patient.closed_at&.strftime('%m-%d-%Y'),
+      locale: lang
+    )
+    message = {
+      prompt: contents,
+      patient_submission_token: patient.submission_token,
+      threshold_hash: patient.jurisdiction.jurisdiction_path_threshold_hash
+    }
+    TwilioSender.send_sms(patient, [message])
     History.monitoring_complete_message_sent(patient: patient)
   end
 

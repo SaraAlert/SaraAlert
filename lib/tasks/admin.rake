@@ -129,6 +129,7 @@ namespace :admin do
       jurisdiction.webpage = jur_values['webpage'] || ''
       jurisdiction.message = jur_values['message'] || ''
       jurisdiction.send_digest = jur_values['send_digest'] || false
+      jurisdiction.send_close = jur_values['send_close'] || false
     end
     threshold_condition_symptoms = []
     if jur_symps != nil

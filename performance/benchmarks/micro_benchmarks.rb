@@ -96,7 +96,9 @@ micro_results << benchmark(
       purged: false,
       monitoring: true,
       created_at: 100.days.ago,
-      last_date_of_exposure: 100.days.ago
+      last_date_of_exposure: 100.days.ago,
+      email: 'testpatient@example.com',
+      primary_telephone: '+12223334444'
     )
   }
 ) { Patient.close_eligible.count }

@@ -292,28 +292,26 @@ class Patient < ApplicationRecord
 
   scope :within_preferred_contact_time, lambda {
     where(
-      # If preferred contact time is X,
-      # then valid contact hours in patient's timezone are Y.
-      # 'Morning'   => 0800 - 1200
-      # 'Afternoon' => 1200 - 1600
-      # 'Evening'   => 1600 - 1900
-      #  default    => 1200 - 1600
       '(patients.preferred_contact_time = "Morning"'\
-      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 8'\
-      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 12) '\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= ?'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= ?) '\
       'OR (patients.preferred_contact_time = "Afternoon"'\
-      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 12'\
-      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 16) '\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= ?'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= ?) '\
       'OR (patients.preferred_contact_time = "Evening"'\
-      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 16'\
-      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 19) '\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= ?'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= ?) '\
       'OR (patients.preferred_contact_time IS NULL'\
-      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= 12'\
-      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= 16)',
-      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
-      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
-      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
-      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00')
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= ?'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= ?)',
+      Time.now.getlocal('-00:00'), PatientDetailsHelper::MORNING_CONTACT_WINDOW.first,
+      Time.now.getlocal('-00:00'), PatientDetailsHelper::MORNING_CONTACT_WINDOW.last,
+      Time.now.getlocal('-00:00'), PatientDetailsHelper::AFTERNOON_CONTACT_WINDOW.first,
+      Time.now.getlocal('-00:00'), PatientDetailsHelper::AFTERNOON_CONTACT_WINDOW.last,
+      Time.now.getlocal('-00:00'), PatientDetailsHelper::EVENING_CONTACT_WINDOW.first,
+      Time.now.getlocal('-00:00'), PatientDetailsHelper::EVENING_CONTACT_WINDOW.last,
+      Time.now.getlocal('-00:00'), PatientDetailsHelper::UNSPECIFIED_CONTACT_WINDOW.first,
+      Time.now.getlocal('-00:00'), PatientDetailsHelper::UNSPECIFIED_CONTACT_WINDOW.last
     )
   }
 
@@ -1192,6 +1190,47 @@ class Patient < ApplicationRecord
     else
       time_zone_offset_for_state('massachusetts')
     end
+  end
+
+  ##
+  # Takes the patient's preferred contact time and time zone into account to
+  # find the next Time that it would be acceptable to contact them.
+  #
+  # Examples
+  # - If currently in the contact time window, then it's ok to send now
+  # - If currently outside the contact time window, then return the next time
+  #   that the window starts
+  def time_to_contact_next
+    hour_window = case preferred_contact_time
+                  when 'Morning'
+                    PatientDetailsHelper::MORNING_CONTACT_WINDOW
+                  when 'Afternoon'
+                    PatientDetailsHelper::AFTERNOON_CONTACT_WINDOW
+                  when 'Evening'
+                    PatientDetailsHelper::EVENING_CONTACT_WINDOW
+                  else
+                    PatientDetailsHelper::UNSPECIFIED_CONTACT_WINDOW
+                  end
+    patient_local_time = Time.now.getlocal(address_timezone_offset)
+    local_time_hour = patient_local_time.hour
+    return patient_local_time if hour_window.include? local_time_hour
+
+    return patient_local_time.change(hour: hour_window.first, min: 0) if local_time_hour < hour_window.first
+
+    patient_local_time.tomorrow.change(hour: hour_window.first, min: 0)
+  end
+
+  ##
+  # Takes the patient's local time, determines if the local time is between 8am and 8pm.
+  # If during that time, then the patient can be notified immediately.
+  # Otherwise, return 8am local time the next day.
+  def time_to_notify_closed
+    patient_local_time = Time.now.getlocal(address_timezone_offset)
+    return patient_local_time if (8..19).include? patient_local_time.hour
+
+    return patient_local_time.change(hour: 8, min: 0) if patient_local_time.hour < 8
+
+    (patient_local_time + 1.day).change(hour: 8, min: 0)
   end
 
   # Check last_assessment_reminder_sent for eligibility. This is chiefly intended to help cover potential race condition of

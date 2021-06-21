@@ -2,6 +2,17 @@
 
 # Helper methods for the linelist and full history details
 module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
+  # If preferred contact time is X,
+  # then valid contact hours in patient's local timezone are Y.
+  # 'Morning'   => 0800 - 1200
+  # 'Afternoon' => 1200 - 1600
+  # 'Evening'   => 1600 - 1900
+  #  default    => 1200 - 1600
+  MORNING_CONTACT_WINDOW = (8..12).freeze
+  AFTERNOON_CONTACT_WINDOW = (12..16).freeze
+  EVENING_CONTACT_WINDOW = (16..19).freeze
+  UNSPECIFIED_CONTACT_WINDOW = (12..16).freeze
+
   # Current patient status
   def status
     return :purged if purged
