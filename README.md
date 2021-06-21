@@ -115,9 +115,9 @@ bundle exec sidekiq -q default -q mailers -q exports -q assessments
   The following jobs are configured to run continuously:
   * `ConsumeAssessmentsJob`
       - Should always be running to be ready to consume assessments at any time
-      - Handles the processing of incomming Patient assessments from the assessment container into the enrollment container.
+      - Handles the processing of incoming Patient assessments from the assessment container into the enrollment container.
       - Utilizes Redis `RPOPLPUSH` pattern.
-      - Run with `bin/bundle exec rake reports:receive_and_process_reports`
+      - Run with `bin/bundle exec rake reports:queue_reports`
 
   The following jobs are configured to run periodically:
   * `ClosePatientsJob`

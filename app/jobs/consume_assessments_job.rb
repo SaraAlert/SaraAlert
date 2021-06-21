@@ -98,7 +98,7 @@ class ConsumeAssessmentsJob
       return
     end
 
-    threshold_condition = ThresholdCondition.where(type: 'ThresholdCondition').find_by(threshold_condition_hash: message['threshold_condition_hash'])
+    threshold_condition = ThresholdCondition.find_by(threshold_condition_hash: message['threshold_condition_hash'])
 
     # Invalid threshold_condition_hash
     if threshold_condition.nil?
