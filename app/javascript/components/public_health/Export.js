@@ -10,17 +10,37 @@ import ConfirmExport from './ConfirmExport';
 import CustomExport from './CustomExport';
 import reportError from '../util/ReportError';
 
+const exportOptions = [
+  { isOpen: false, workflowSpecific: true, label: 'Line list CSV' },
+  { isOpen: false, workflowSpecific: true, label: 'Sara Alert Format' },
+  { isOpen: false, workflowSpecific: false, label: 'Excel Export For Purge-Eligible Monitorees' },
+  { isOpen: false, workflowSpecific: false, label: 'Excel Export For All Monitorees' },
+];
+
 class Export extends React.Component {
   constructor(props) {
     super(props);
+    let allowedExportOptions = exportOptions;
+    if (props?.export_options?.export) {
+      let export_labels = Object.values(props.export_options.export.options).map(x => x.label);
+      allowedExportOptions = allowedExportOptions.filter(x => export_labels.includes(x.label));
+    }
     this.state = {
-      showCSVModal: false,
-      showSaraFormatModal: false,
-      showAllPurgeEligibleModal: false,
-      showAllModal: false,
+      exportOptions: allowedExportOptions,
       showCustomFormatModal: false,
     };
   }
+
+  toggleExportOpen = eoIndex => {
+    this.setState({
+      exportOptions: this.state.exportOptions.map((eo, eoi) => {
+        if (eoi === eoIndex) {
+          eo.isOpen = !eo.isOpen;
+        }
+        return eo;
+      }),
+    });
+  };
 
   componentDidMount() {
     // Grab saved user presets
@@ -41,19 +61,19 @@ class Export extends React.Component {
       .then(() => {
         toast.success('Export has been initiated!');
         this.setState({
-          showCSVModal: false,
-          showSaraFormatModal: false,
-          showAllPurgeEligibleModal: false,
-          showAllModal: false,
+          exportOptions: this.state.exportOptions(eo => {
+            eo.isOpen = false;
+            return eo;
+          }),
         });
       })
       .catch(err => {
         reportError(err?.response?.data?.message ? err.response.data.message : err, false);
         this.setState({
-          showCSVModal: false,
-          showSaraFormatModal: false,
-          showAllPurgeEligibleModal: false,
-          showAllModal: false,
+          exportOptions: this.state.exportOptions(eo => {
+            eo.isOpen = false;
+            return eo;
+          }),
         });
       });
   };
@@ -67,13 +87,16 @@ class Export extends React.Component {
           className="ml-2 mb-2"
           title={
             <React.Fragment>
-              <i className="fas fa-download"></i> Export{' '}
+              <i className="fas fa-download"></i> {this.props.export_options.export.label || 'Export'}{' '}
             </React.Fragment>
           }>
-          <Dropdown.Item onClick={() => this.setState({ showCSVModal: true })}>Line list CSV ({this.props.query.workflow})</Dropdown.Item>
-          <Dropdown.Item onClick={() => this.setState({ showSaraFormatModal: true })}>Sara Alert Format ({this.props.query.workflow})</Dropdown.Item>
-          <Dropdown.Item onClick={() => this.setState({ showAllPurgeEligibleModal: true })}>Excel Export For Purge-Eligible Monitorees</Dropdown.Item>
-          <Dropdown.Item onClick={() => this.setState({ showAllModal: true })}>Excel Export For All Monitorees</Dropdown.Item>
+          {this.state.exportOptions.map((eo, eoIndex) => {
+            return (
+              <Dropdown.Item key={`export-option-${eoIndex}`} onClick={() => this.toggleExportOpen(eoIndex)}>
+                {eo.label} {eo.workflowSpecific && `(${this.props.query.workflow})`}
+              </Dropdown.Item>
+            );
+          })}
           {this.state.savedExportPresets && this.state.savedExportPresets.length > 0 && <Dropdown.Divider />}
           {this.state.savedExportPresets?.map((savedPreset, index) => {
             return (
@@ -85,40 +108,20 @@ class Export extends React.Component {
           <Dropdown.Divider />
           <Dropdown.Item onClick={() => this.setState({ showCustomFormatModal: true })}>Custom Format...</Dropdown.Item>
         </DropdownButton>
-        {this.state.showCSVModal && (
-          <ConfirmExport
-            show={this.state.showCSVModal}
-            exportType={'Line list CSV'}
-            workflow={this.props.query.workflow}
-            onCancel={() => this.setState({ showCSVModal: false })}
-            onStartExport={this.submit}
-          />
-        )}
-        {this.state.showSaraFormatModal && (
-          <ConfirmExport
-            show={this.state.showSaraFormatModal}
-            exportType={'Sara Alert Format'}
-            workflow={this.props.query.workflow}
-            onCancel={() => this.setState({ showSaraFormatModal: false })}
-            onStartExport={this.submit}
-          />
-        )}
-        {this.state.showAllPurgeEligibleModal && (
-          <ConfirmExport
-            show={this.state.showAllPurgeEligibleModal}
-            exportType={'Excel Export For Purge-Eligible Monitorees'}
-            onCancel={() => this.setState({ showAllPurgeEligibleModal: false })}
-            onStartExport={this.submit}
-          />
-        )}
-        {this.state.showAllModal && (
-          <ConfirmExport
-            show={this.state.showAllModal}
-            exportType={'Excel Export For All Monitorees'}
-            onCancel={() => this.setState({ showAllModal: false })}
-            onStartExport={this.submit}
-          />
-        )}
+        {this.state.exportOptions.map((eo, eoIndex) => {
+          if (eo.isOpen) {
+            return (
+              <ConfirmExport
+                key={`confirm-export-${eoIndex}`}
+                show={eo.isOpen}
+                exportType={eo.label}
+                workflow={eo.workflowSpecific ? this.props.query.workflow : null}
+                onCancel={() => this.toggleExportOpen(eoIndex)}
+                onStartExport={this.submit}
+              />
+            );
+          }
+        })}
         {this.state.showCustomFormatModal && (
           <CustomExport
             authenticity_token={this.props.authenticity_token}
