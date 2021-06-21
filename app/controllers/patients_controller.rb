@@ -487,10 +487,9 @@ class PatientsController < ApplicationController
       patients.each do |patient|
         # We never want to update closed records monitoring status via the bulk_update
         update_params = patient.monitoring ? params : closed_params
-        update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
+        update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? patient.id : nil,
                                  update_params[:apply_to_household] ? :group : :none)
       end
-    end
   end
 
   # Updates to workflow/tracking status for a subject
@@ -515,7 +514,7 @@ class PatientsController < ApplicationController
     end
 
     # Update patient
-    update_monitoring_fields(patient, params, :patient, :none)
+    update_monitoring_fields(patient, params, patient.id, :none)
 
     # Grab the patient IDs of houshold members to also update
     apply_to_household_ids = find_household_ids(patient, params)
@@ -525,7 +524,7 @@ class PatientsController < ApplicationController
     # Update selected group members if applying to household and ids are supplied
     apply_to_household_ids.each do |id|
       member = current_user.get_patient(id)
-      update_monitoring_fields(member, params, :patient, :none) unless member.nil?
+      update_monitoring_fields(member, params, patient.id, :none) unless member.nil?
     end
   end
 
@@ -536,7 +535,7 @@ class PatientsController < ApplicationController
   # params - The request params.
   # household - Indicates if the Patient was updated directly (household = :patient) or updated because their head of household was (household = :dependent)
   # propogation - Indicates why the updates are being propogated to the Patient.
-  def update_monitoring_fields(patient, params, household, propagation)
+  def update_monitoring_fields(patient, params, household, propagation) 
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
     permitted_params = if diff_state.nil?
