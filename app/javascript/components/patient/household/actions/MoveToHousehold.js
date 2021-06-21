@@ -206,7 +206,7 @@ class MoveToHousehold extends React.Component {
     axios
       .post(window.BASE_PATH + '/patients/head_of_household_options', {
         query,
-        patient_id: this.props.patient.id,
+        exclude_patient_id: this.props.patient.id,
         cancelToken: this.state.cancelToken.token,
       })
       .catch(error => {
