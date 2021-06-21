@@ -46,3 +46,4 @@ staging:
 
 production:
   <<: *default_settings
+  error_collector.max_backtrace_frames: 125
