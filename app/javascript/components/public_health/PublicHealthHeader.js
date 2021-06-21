@@ -11,8 +11,6 @@ import { navQueryParam } from '../../utils/Navigation';
 class PublicHealthHeader extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
-    console.log(Object.entries(this.props.header_action_buttons.import.options));
     this.state = {
       counts: {},
       showUploadModal: false,
@@ -161,7 +159,7 @@ class PublicHealthHeader extends React.Component {
         <Row className="mx-2 my-2">
           <Col className="p-0">
             <ButtonGroup>
-              {this.props.abilities.enrollment && his.props.header_action_buttons.enroll && (
+              {this.props.abilities.enrollment && this.props.header_action_buttons.enroll && (
                 <Button
                   variant="primary"
                   className="mb-2"
@@ -196,7 +194,7 @@ class PublicHealthHeader extends React.Component {
                   className="ml-2 mb-4"
                   title={
                     <React.Fragment>
-                      <i className="fas fa-upload"></i> Import{' '}
+                      <i className="fas fa-upload"></i> {this.props.header_action_buttons.import.label || 'Import'}{' '}
                     </React.Fragment>
                   }>
                   {Object.entries(this.props.header_action_buttons.import.options).map(([key, value]) => (
@@ -221,19 +219,6 @@ class PublicHealthHeader extends React.Component {
             </ButtonGroup>
           </Col>
         </Row>
-
-        <ButtonGroup className="float-right mb-4 mr-2">
-          {this.props.available_workflows.map(value => {
-            return (
-              <Button
-                key={value.name}
-                variant={this.props.workflow === value.name ? 'primary' : 'outline-primary'}
-                href={`${window.BASE_PATH}/dashboard/${this.props.playbook}/${value.name}`}>
-                <i className="fas fa-people-arrows"></i> {value.label} Monitoring{' '}
-              </Button>
-            );
-          })}
-        </ButtonGroup>
 
         {this.renderUploadModal()}
         {this.renderImportModal()}

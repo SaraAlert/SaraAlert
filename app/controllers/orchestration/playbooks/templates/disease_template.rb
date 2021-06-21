@@ -59,15 +59,15 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate
           options: {
             enroll: { label: 'Enroll New Monitoree'},
             export: { label: 'Export', options: {
-              csv: { label: 'Line list CSV (Exposure)' },
-              saf: { label: 'Sara Alert Format(Exposure)' },
+              csv: { label: 'Line list CSV' },
+              saf: { label: 'Sara Alert Format' },
               purge_eligible: { label: 'Excel Export for Purge-Eligible Monitorees' },
               all: { label: 'Excel Export For All Monitorees' },
               custom_format: { label: 'Custom Format...'}
             }},
             import: { label: 'Import', options: {
-              epix: { label: 'Epi-X (Exposure)' },
-              saf: { label: 'Sara Alert Format (Exposure)'}
+              epix: { label: 'Epi-X' },
+              saf: { label: 'Sara Alert Format'}
             }}
           }
         }

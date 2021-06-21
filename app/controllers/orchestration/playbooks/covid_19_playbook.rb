@@ -27,7 +27,14 @@ module Orchestration::Playbooks::Covid19Playbook
             set: %i[enroll import],
             custom_options: {
               import: {
-                  label: 'Some random label',
+                  label: 'Import',
+                  type: 'subset',
+                  config: {
+                    set: %i[saf]
+                  }
+              },
+              export: {
+                  label: 'Export',
                   type: 'subset',
                   config: {
                     set: %i[saf]
