@@ -107,7 +107,7 @@ fra:
         subject: 'Rapport d’Alerte Sara complété'
         header: 'Rapport d’Alerte Sara complété'
         dear: 'Cher/Chère'
-        thank-you: "Votre surveillance d’Alerte Sara est maintenant terminée ! Merci pour votre participation."
+        thank-you: "La période de surveillance de Sara Alert pour %{initials_age} a été terminée le %{complete_date} ! Merci de votre participation"
         footer: "Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales. Pour la confidentialité et plus d’informations, visitez saraalert.org."
       contact:
         info1: 'Si vous avez des questions, veuillez utiliser les coordonnées ci-dessous pour contacter l’organisation de santé publique qui vous a aidé à vous inscrire:'
@@ -130,6 +130,8 @@ fra:
         thanks: "Merci d'avoir rempli votre rapport quotidien!"
       weblink:
         intro: 'Veuillez remplir le rapport quotidien de Sara Alert pour'
+      closed:
+        thank-you: "La période de surveillance de Sara Alert pour %{initials_age} a été terminée le %{complete_date} ! Merci de votre participation"
     phone:
       intro: "Bonjour, voici Sara, l'assistante de santé publique automatisée qui demande votre rapport quotidien."
       try-again: "Je suis désolé, je n'ai pas compris. Essayons encore."

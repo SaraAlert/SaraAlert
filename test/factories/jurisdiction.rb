@@ -4,6 +4,7 @@ FactoryBot.define do
   factory :jurisdiction do
     name { Faker::Address.city }
     path { name }
+    send_close { true }
 
     after(:build) do |jurisdiction|
       jurisdiction.update(unique_identifier: Digest::SHA256.hexdigest(jurisdiction[:path]))

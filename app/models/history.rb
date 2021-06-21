@@ -257,6 +257,17 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
   end
 
+  def self.send_close_conact_method_blank(patient: nil, created_by: 'Sara Alert System', type: 'Unknown')
+    comment = "The system was unable to send a monitoring complete message to this monitoree because their preferred contact method, #{type}, was blank."
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment)
+  end
+
+  def self.send_close_sms_blocked(patient: nil, created_by: 'Sara Alert System')
+    comment = 'The system was unable to send a monitoring complete message to this monitoree'\
+              ' because the recipient phone number blocked communication with Sara Alert'
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment)
+  end
+
   def self.monitoring_status(history)
     field = {
       name: 'Monitoring Status',

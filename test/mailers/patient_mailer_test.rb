@@ -553,16 +553,21 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'closed email contents' do
+    @patient.update(closed_at: DateTime.now)
     email = PatientMailer.closed_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.gsub("\n", ' ').gsub("\r", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_equal [@patient.email], email.to
     assert_equal [PatientMailer.default[:from]], email.from
     assert_equal I18n.t('assessments.email.closed.subject', locale: @patient.primary_language), email.subject
     assert_includes email_body, I18n.t('assessments.email.closed.header', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.closed.dear', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.closed.thank-you', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t(
+      'assessments.email.closed.thank-you',
+      initials_age: @patient.initials_age('-'),
+      completed_date: @patient.closed_at.strftime('%m-%d-%Y'),
+      locale: @patient.primary_language
+    )
     assert_includes email_body, I18n.t('assessments.email.closed.footer', locale: @patient.primary_language)
-    assert_contains_history(@patient, 'Monitoring Complete message was sent.')
+    assert_histories_contain(@patient, 'Monitoring Complete message was sent.')
   end
 end
