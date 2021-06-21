@@ -138,7 +138,7 @@ class LaboratoryModal extends React.Component {
                   <Alert variant="warning" className="mt-2 mb-3 alert-warning-text">
                     Warning: Since this record does not have a Symptom Onset Date, updating this lab from a positive result or clearing the Specimen Collection
                     Date may result in the record not ever being eligible to appear on the Records Requiring Review line list. Please consider undoing these
-                    changes or entering a symptom onset date:
+                    changes or entering a Symptom Onset Date:
                   </Alert>
                   <Form.Label className="input-label">SYMPTOM ONSET</Form.Label>
                   <DateInput

@@ -244,13 +244,13 @@ class History < ApplicationRecord
     return if patient[:symptom_onset] == new_symptom_onset
 
     comment = if patient[:symptom_onset].present? && new_symptom_onset.present?
-                "System changed symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to #{new_symptom_onset.strftime('%m/%d/%Y')}
+                "System changed Symptom Onset Date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to #{new_symptom_onset.strftime('%m/%d/%Y')}
                 because a report meeting the symptomatic logic was #{action}."
               elsif patient[:symptom_onset].nil? && new_symptom_onset.present?
-                "System changed symptom onset date from blank to #{new_symptom_onset.strftime('%m/%d/%Y')}
+                "System changed Symptom Onset Date from blank to #{new_symptom_onset.strftime('%m/%d/%Y')}
                 because a report meeting the symptomatic logic was #{action}."
               elsif patient[:symptom_onset].present? && new_symptom_onset.nil?
-                "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank
+                "System cleared Symptom Onset Date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank
                 because a report meeting the symptomatic logic was #{action}."
               end
 

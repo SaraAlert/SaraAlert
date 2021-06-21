@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Col, Row } from 'react-bootstrap';
+import { Alert, Col, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { formatDate } from '../../../../utils/DateTime';
 
@@ -20,9 +20,9 @@ class MonitoringPeriod extends React.Component {
   };
 
   render() {
-    return (
+    return this.props.patient.isolation ? (
       <Row>
-        <Col lg={8} sm={this.props.patient.isolation ? 12 : 8}>
+        <Col sm={{ span: 12, order: 1 }} xs={{ span: 24, order: 1 }}>
           <SymptomOnset
             authenticity_token={this.props.authenticity_token}
             patient={this.props.patient}
@@ -31,40 +31,56 @@ class MonitoringPeriod extends React.Component {
             calculated_symptom_onset={this.props.calculated_symptom_onset}
           />
         </Col>
-        {!this.props.patient.isolation && (
-          <Col sm={8}>
-            <LastDateExposure
-              household_members={this.props.household_members}
-              authenticity_token={this.props.authenticity_token}
-              patient={this.props.patient}
-              current_user={this.props.current_user}
-              jurisdiction_paths={this.props.jurisdiction_paths}
-            />
+        <Col sm={{ span: 12, order: 2 }} xs={{ span: 24, order: 3 }}>
+          <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+        </Col>
+        {!this.props.patient.symptom_onset && !this.props.symptomatic_assessments_exist && this.props.num_pos_labs === 0 && (
+          <Col sm={{ span: 24, order: 3 }} xs={{ span: 24, order: 2 }}>
+            <Alert variant="warning" className="alert-warning-text">
+              <b>Warning: </b>This case does not have a Symptom Onset Date or positive lab result and may never become eligible to end monitoring
+            </Alert>
           </Col>
         )}
-        <Col lg={8} sm={this.props.patient.isolation ? 12 : 8}>
-          {this.props.patient.isolation ? (
-            <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
-          ) : (
-            <React.Fragment>
-              <span className="input-label">END OF MONITORING</span>
-              <InfoTooltip
-                getCustomText={() => {
-                  return (
+      </Row>
+    ) : (
+      <Row>
+        <Col md={8}>
+          <SymptomOnset
+            authenticity_token={this.props.authenticity_token}
+            patient={this.props.patient}
+            symptomatic_assessments_exist={this.props.symptomatic_assessments_exist}
+            num_pos_labs={this.props.num_pos_labs}
+            calculated_symptom_onset={this.props.calculated_symptom_onset}
+          />
+        </Col>
+        <Col md={8}>
+          <LastDateExposure
+            household_members={this.props.household_members}
+            authenticity_token={this.props.authenticity_token}
+            patient={this.props.patient}
+            current_user={this.props.current_user}
+            jurisdiction_paths={this.props.jurisdiction_paths}
+          />
+        </Col>
+        <Col md={8}>
+          <React.Fragment>
+            <span className="input-label">END OF MONITORING</span>
+            <InfoTooltip
+              getCustomText={() => {
+                return (
+                  <div>
+                    Calculated by the system as Last Date of Exposure + {this.props.monitoring_period_days} days
                     <div>
-                      Calculated by the system as Last Date of Exposure + {this.props.monitoring_period_days} days
-                      <div>
-                        <i>Only relevant for Exposure Workflow</i>
-                      </div>
+                      <i>Only relevant for Exposure Workflow</i>
                     </div>
-                  );
-                }}
-                location="right"></InfoTooltip>
-              <div id="end_of_monitoring_date" className="my-1">
-                {this.formatEndOfMonitoringDate()}
-              </div>
-            </React.Fragment>
-          )}
+                  </div>
+                );
+              }}
+              location="right"></InfoTooltip>
+            <div id="end_of_monitoring_date" className="my-1">
+              {this.formatEndOfMonitoringDate()}
+            </div>
+          </React.Fragment>
         </Col>
       </Row>
     );

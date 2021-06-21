@@ -241,7 +241,7 @@ export const advancedFilterOptions = [
   {
     name: 'symptom-onset',
     title: 'Symptom Onset (Date)',
-    description: 'Monitorees who have a symptom onset date during specified date range',
+    description: 'Monitorees who have a Symptom Onset Date during specified date range',
     type: 'date',
   },
 
@@ -270,7 +270,7 @@ export const advancedFilterOptions = [
   {
     name: 'symptom-onset-relative',
     title: 'Symptom Onset (Relative Date)',
-    description: 'Monitorees who have a symptom onset date during specified date range (relative to the current date)',
+    description: 'Monitorees who have a Symptom Onset Date during specified date range (relative to the current date)',
     type: 'relative',
     hasTimestamp: false,
   },

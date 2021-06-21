@@ -284,7 +284,7 @@ class Exposure extends React.Component {
       <React.Fragment>
         {!this.state.current.patient.symptom_onset && !this.state.current.first_positive_lab && (
           <Alert variant="warning" className="alert-warning-text">
-            You must enter a symptom onset date AND/OR a <b style={{ fontWeight: 800 }}>positive</b> lab result (with a Specimen Collection Date) to enroll this
+            You must enter a Symptom Onset Date AND/OR a <b style={{ fontWeight: 800 }}>positive</b> lab result (with a Specimen Collection Date) to enroll this
             case.
           </Alert>
         )}

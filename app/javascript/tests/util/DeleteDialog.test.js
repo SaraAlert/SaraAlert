@@ -134,7 +134,7 @@ describe('DeleteDialog', () => {
 
   it('Prompts the user for symptom onset if necessary', () => {
     const wrapper = shallow(<DeleteDialog type={mockType} delete={deleteMock} toggle={toggleMock} onChange={onChangeMock} showSymptomOnsetInput={true} />);
-    expect(wrapper.find(Alert).text()).toEqual('Warning: Since this record does not have a Symptom Onset Date, deleting this positive lab result may result in the record not ever being eligible to appear on the Records Requiring Review line list. Please consider entering a symptom onset date to prevent this from happening:');
+    expect(wrapper.find(Alert).text()).toEqual('Warning: Since this record does not have a Symptom Onset Date, deleting this positive lab result may result in the record not ever being eligible to appear on the Records Requiring Review line list. Please consider entering a Symptom Onset Date to prevent this from happening:');
     expect(wrapper.find(Form.Label).text()).toEqual('SYMPTOM ONSET');
     expect(wrapper.find('#symptom_onset_delete_dialog').exists()).toBeTruthy();
   });

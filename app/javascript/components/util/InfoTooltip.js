@@ -213,7 +213,7 @@ const TOOLTIP_TEXT = {
         <b>Symptom Onset</b>
       </i>{' '}
       date should only be entered by a user in the exposure workflow if the monitoree is under investigation for the disease of interest and the monitoree
-      indicates their symptom onset date differs from what is available in the reports table. If a user entered a symptom onset date, the field will need to be
+      indicates their Symptom Onset Date differs from what is available in the reports table. If a user entered a Symptom Onset Date, the field will need to be
       manually cleared by a user to move the record off of the <i>Symptomatic</i> line list.
       <br />
       To clear an auto-populated{' '}
