@@ -54,3 +54,21 @@
 .table-smaller-font {
   font-size: 0.9em;
 }
+
+.patients-table .table-hover tbody tr:hover {
+  background-color: #e4e4e4 !important;
+}
+.patients-table .table-hover tbody tr:hover td {
+  border-color: white !important;
+}
+
+.selected-row {
+  background-color: #d4e7f7 !important;
+}
+
+.selected-row > td, .selected-row > th {
+  border: 1px solid white !important;
+}
+.selected-row:hover > td, .selected-row:hover > th {
+  background-color: #bcdcf5 !important;
+}
