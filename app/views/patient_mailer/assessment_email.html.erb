@@ -3,7 +3,7 @@
 <% end %>
 
 <% content_for :body do %>
-  <% @patients.each_with_index do |patient, index| %>
+  <% @patients.each do |patient| %>
     <p><%= t('assessments.email.reminder.dear', locale: @lang) %> <%= patient[:patient]&.initials_age('-') %>,</p>
 
     <p><%= t('assessments.email.reminder.thank-you', locale: @lang) %></p>
@@ -16,23 +16,20 @@
                                                                       patient[:patient]&.initials_age),
           text: t('assessments.email.reminder.report', locale: @lang)
         } %><br />
-
-    <% if @patients.count == index + 1 %>
-      <% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
-        <p><%= t('assessments.email.contact.info1', locale: @lang) %></p>
-        <% if @contact_info[:email].present? %>
-          <%= t('assessments.email.contact.email', locale: @lang) %><%= ':'%> <%= @contact_info[:email] %> <br />
-        <% end %>
-          <% if @contact_info[:phone].present? %>
-        <%= t('assessments.email.contact.phone', locale: @lang) %><%= ':'%> <%= @contact_info[:phone] %> <br />
-        <% end %>
-          <% if @contact_info[:webpage].present? %>
-        <%= t('assessments.email.contact.webpage', locale: @lang) %><%= ':'%> <%= @contact_info[:webpage] %>
-        <% end %>
-      <% else %>
-        <p><%= t('assessments.email.contact.info2', locale: @lang) %></p>
-      <% end %>
+  <% end %>
+  <% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
+    <p><%= t('assessments.email.contact.info1', locale: @lang) %></p>
+    <% if @contact_info[:email].present? %>
+      <%= t('assessments.email.contact.email', locale: @lang) %><%= ':'%> <%= @contact_info[:email] %> <br />
     <% end %>
+      <% if @contact_info[:phone].present? %>
+    <%= t('assessments.email.contact.phone', locale: @lang) %><%= ':'%> <%= @contact_info[:phone] %> <br />
+    <% end %>
+      <% if @contact_info[:webpage].present? %>
+    <%= t('assessments.email.contact.webpage', locale: @lang) %><%= ':'%> <%= @contact_info[:webpage] %>
+    <% end %>
+  <% else %>
+    <p><%= t('assessments.email.contact.info2', locale: @lang) %></p>
   <% end %>
 <% end %>
 
