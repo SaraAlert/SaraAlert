@@ -764,16 +764,20 @@ class AdvancedFilter extends React.Component {
    * @param {String} additionalFilterOption - Selected option from additional list of options (if provided)
    */
   renderSearchStatement = (filter, index, value, additionalFilterOption) => {
-    // compute tooltip for specific search case
-    let tooltip;
+    // compute tooltip for specific search cases
+    let tooltip = '';
     if (filter.name === 'close-contact-with-known-case-id') {
       if (additionalFilterOption === 'Exact Match') {
         tooltip =
-          'Returns records with an exact match to one or more of the user-entered search values when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “45” or “45, 12”).';
+          'Returns records with an exact match to one or more of the user-entered search values when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “45” or “45, 12”). ';
       } else if (additionalFilterOption === 'Contains') {
         tooltip =
-          'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451).';
+          'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451). ';
       }
+    }
+
+    if (filter.name === 'close-contact-with-known-case-id' || filter.name === 'cohort') {
+      tooltip += 'Leaving this field blank will return monitorees with missing and null values.';
     }
 
     return (
@@ -897,7 +901,7 @@ class AdvancedFilter extends React.Component {
    * @param {*} value - Current value for this statement (could be a single date or object of dates)
    * @param {String} dateOption - Selected option for date filters that determines what else is rendered in this statement
    */
-  renderDateStatement = (index, value, dateOption) => {
+  renderDateStatement = (filter, index, value, dateOption) => {
     return (
       <React.Fragment>
         <Form.Group className="form-group-inline py-0 my-0">
@@ -912,8 +916,9 @@ class AdvancedFilter extends React.Component {
             <option value="within">within</option>
             <option value="before">before</option>
             <option value="after">after</option>
+            {filter.name !== 'enrolled' && <option></option>}
           </Form.Control>
-          {dateOption !== 'within' && (
+          {(dateOption === 'before' || dateOption === 'after') && (
             <div className="advanced-filter-date-input">
               <DateInput
                 date={value}
@@ -1106,26 +1111,29 @@ class AdvancedFilter extends React.Component {
                     onChange={event => {
                       this.changeMultiValue(statementIndex, multiIndex, {
                         name: multiValue.name,
-                        value: { when: event.target.value, date: multiValue.value.date },
+                        value: { when: event.target.value, date: event.target.value === '' ? null : multiValue.value.date },
                       });
                     }}>
                     <option value="before">before</option>
                     <option value="after">after</option>
+                    {filter.name === 'lab-result' && <option></option>}
                   </Form.Control>
-                  <div className="advanced-filter-date-input mr-3">
-                    <DateInput
-                      date={multiValue.value.date}
-                      onChange={date => {
-                        this.changeMultiValue(statementIndex, multiIndex, { name: multiValue.name, value: { when: multiValue.value.when, date: date } });
-                      }}
-                      placement="bottom"
-                      customClass="form-control-md"
-                      ariaLabel="Advanced Filter Date Input"
-                      minDate={'1900-01-01'}
-                      maxDate={moment().add(2, 'years').format('YYYY-MM-DD')}
-                      replaceBlank={true}
-                    />
-                  </div>
+                  {(multiValue.value.when === 'before' || multiValue.value.when === 'after') && (
+                    <div className="advanced-filter-date-input mr-3">
+                      <DateInput
+                        date={multiValue.value.date}
+                        onChange={date => {
+                          this.changeMultiValue(statementIndex, multiIndex, { name: multiValue.name, value: { when: multiValue.value.when, date: date } });
+                        }}
+                        placement="bottom"
+                        customClass="form-control-md"
+                        ariaLabel="Advanced Filter Date Input"
+                        minDate={'1900-01-01'}
+                        maxDate={moment().add(2, 'years').format('YYYY-MM-DD')}
+                        replaceBlank={true}
+                      />
+                    </div>
+                  )}
                 </React.Fragment>
               )}
               {multiIndex + 1 === total && multiIndex + 1 < filter.fields.length && (
@@ -1199,7 +1207,7 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'search' && this.renderSearchStatement(filterOption, index, value, additionalFilterOption)}
             {filterOption?.type === 'select' && this.renderSelectStatement(filterOption, index, value)}
             {filterOption?.type === 'number' && this.renderNumberStatement(filterOption, index, value, numberOption, additionalFilterOption)}
-            {filterOption?.type === 'date' && this.renderDateStatement(index, value, dateOption)}
+            {filterOption?.type === 'date' && this.renderDateStatement(filterOption, index, value, dateOption)}
             {filterOption?.type === 'relative' && this.renderRelativeDateStatement(filterOption, index, value, relativeOption)}
             {filterOption?.type === 'multi' && (
               <React.Fragment>
