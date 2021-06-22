@@ -122,7 +122,7 @@ describe('Patient', () => {
     expect(preferredContactMethod.find(InfoTooltip).exists()).toBeTruthy();
     expect(preferredContactMethod.find(InfoTooltip).prop('tooltipTextKey')).toEqual('blockedSMSContactMethod');
   });
-  
+
   it('Properly renders contact information section when patient is a minor', () => {
     const wrapper = shallow(<Patient details={mockPatient5} hoh={mockPatient1} collapse={true} edit_mode={false} jurisdiction_paths={mockJurisdictionPaths} />);
     const section = wrapper.find('#contact-information');

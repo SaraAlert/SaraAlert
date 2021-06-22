@@ -245,7 +245,7 @@ class Patient extends React.Component {
                   {!this.props.details.head_of_household && this.props.hoh && (
                     <span>
                       View contact info for head of household:
-                      <a className="pl-1" href={patientHref(this.props.hoh.id)}>
+                      <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
                         {formatName(this.props.hoh)}
                       </a>
                     </span>
@@ -255,9 +255,10 @@ class Patient extends React.Component {
               <div>
                 <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 {this.props.details.blocked_sms && (
-                  <Form.Label className="tooltip-whitespace input-label font-weight-bold">
-                    &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
-                  </Form.Label>
+                  <span className="font-weight-bold pl-2">
+                    SMS Blocked
+                    <InfoTooltip tooltipTextKey="blockedSMS" location="top" />
+                  </span>
                 )}
               </div>
               <div>
@@ -276,10 +277,8 @@ class Patient extends React.Component {
                 )}
                 {this.props.details.blocked_sms && this.props.details.preferred_contact_method?.includes('SMS') && (
                   <span className="font-weight-bold text-danger">
-                    {this.props.details.preferred_contact_method || '--'}
-                    <Form.Label className="tooltip-whitespace">
-                      <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
-                    </Form.Label>
+                    {this.props.details.preferred_contact_method}
+                    <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top" />
                   </span>
                 )}
               </div>
