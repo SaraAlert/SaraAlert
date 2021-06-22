@@ -525,7 +525,10 @@ class PatientsTable extends React.Component {
   };
 
   // Adds the className `selected-row` to those rows who have been selected with the Bulk Action checkcbox
-  getRowClassName = rowData => (this.state.selectedPatients.filter(x => this.state.table.rowData[Number(x)].id === rowData.id).length ? 'selected-row' : null);
+  getRowClassName = rowData => {
+    const isSelected = this.state.selectedPatients.filter(x => this.state.table.rowData[Number(x)].id === rowData.id).length;
+    return isSelected ? 'selected-row' : null;
+  };
 
   createEligibilityTooltip = data => {
     const reportEligibility = data.value;
@@ -737,6 +740,7 @@ class PatientsTable extends React.Component {
                   handleSelect={this.handleSelect}
                   handleEntriesChange={this.handleEntriesChange}
                   handlePageUpdate={this.handlePageUpdate}
+                  getRowClassName={this.getRowClassName}
                   getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
                   isSelectable={true}
                   isEditable={false}
@@ -748,7 +752,6 @@ class PatientsTable extends React.Component {
                   entries={parseInt(this.state.query.entries)}
                   orderBy={this.state.query.order !== undefined ? this.state.query.order : ''}
                   sortDirection={this.state.query.direction !== undefined ? this.state.query.direction : ''}
-                  getRowClassName={this.getRowClassName}
                 />
               </div>
             </Card.Body>
