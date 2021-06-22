@@ -173,7 +173,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
           elsif %i[travel_related_notes port_of_entry_into_usa].include?(field)
             assert patient[field].to_s.include?(row[index].to_s), "#{field} mismatch in row #{row_num}"
           # format dates
-          elsif %i[date_of_birth date_of_departure].include?(field)
+          elsif %i[date_of_birth date_of_departure symptom_onset].include?(field)
             assert_equal(row[index].present? ? Date.strptime(row[index], '%m/%d/%Y').to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :date_of_arrival
             assert_equal(row[index].present? ? Date.strptime(row[index], '%b %d %Y').to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
