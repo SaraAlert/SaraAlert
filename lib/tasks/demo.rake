@@ -676,15 +676,16 @@ namespace :demo do
       else
         result = (Array.new(1, 'positive') + Array.new(1, 'negative') + ['indeterminate', 'other']).sample
       end
-      laboratories << Laboratory.new(
+      laboratory = Laboratory.new(
         patient_id: patient_id,
-        lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
-        specimen_collection: create_fake_timestamp(beginning_of_day - 1.week, beginning_of_day),
-        report: create_fake_timestamp(beginning_of_day),
-        result: result,
+        lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other', ''].sample,
         created_at: lab_ts,
         updated_at: lab_ts
       )
+      laboratory[:specimen_collection] = create_fake_timestamp(beginning_of_day - 1.week, beginning_of_day) if rand < 0.95
+      laboratory[:report] = create_fake_timestamp(beginning_of_day) if rand < 0.95
+      laboratory[:result] = result if rand < 0.95
+      laboratories << laboratory
       histories << History.new(
         patient_id: patient_id,
         created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
