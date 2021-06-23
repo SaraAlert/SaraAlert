@@ -23,7 +23,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     patients = patients_by_query(current_user, query)
 
     # Filter out current monitoree if exclude_patient_id is defined
-    exclude_patient_id = params[:exclude_patient_id]&.to_i || nil
+    exclude_patient_id = query[:exclude_patient_id]&.to_i || nil
     patients = patients.where.not(id: exclude_patient_id) unless exclude_patient_id.nil?
 
     # Paginate
@@ -35,7 +35,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
   def validate_patients_query(unsanitized_query)
     # Only allow permitted params
-    query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :tz_offset,
+    query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :tz_offset, :exclude_patient_id,
                                      filter: [:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption, { filterOption: {}, value: {} }])
 
     # Validate workflow
