@@ -718,9 +718,7 @@ class Patient < ApplicationRecord
 
     # If a patient record has been inactive for 30 days or more
     # in the exposure workflow and is non-reporting
-    no_recent_activity = where(isolation: false)
-                         .non_reporting
-                         .where('updated_at <= ?', 30.days.ago)
+    no_recent_activity = non_reporting.where('updated_at <= ?', 30.days.ago)
 
     case reason
     when nil

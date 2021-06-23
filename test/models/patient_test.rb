@@ -3187,9 +3187,10 @@ class PatientTest < ActiveSupport::TestCase
     assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
     patient.update(isolation: true)
-    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+    patient.update(updated_at: 300.days.ago)
+    assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
-    patient.update(isolation: false, monitoring: false)
+    patient.update(monitoring: false, updated_at: 300.days.ago)
     assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
   end
 
@@ -3245,7 +3246,6 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   [
-    { isolation: true },
     { isolation: false, monitoring: true, purged: false, public_health_action: 'Recommended medical evaluation of symptoms' },
     { isolation: false, monitoring: true, purged: true, public_health_action: 'None' },
     { isolation: false, monitoring: false, purged: false, public_health_action: 'None' },
