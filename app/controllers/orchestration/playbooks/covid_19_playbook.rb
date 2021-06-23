@@ -43,6 +43,20 @@ module Orchestration::Playbooks::Covid19Playbook
             }
           }
         },
+        dashboard_table_columns: {
+          type: 'all',
+          config: {
+            custom_options: {
+              symptomatic: {
+                type: 'subset',
+                config: {
+                  set: %i[jurisdiction end_of_monitoring risk_level]
+                }
+              }
+            }
+          }
+
+        },
         other_properties: {
         }
       } },
@@ -55,12 +69,24 @@ module Orchestration::Playbooks::Covid19Playbook
         },
       } }
     },
+    general: {
+      base: INFECTIOUS[:general], custom_options: { 
+        patient_page_sections: {
+          type: 'all',
+          config: {
+            custom_options: {
+            }
+          }
+        }
+      }
+    },
     system: {
       # Define primary, i.e., default, workflow to present on dashboard
       primary_workflow: :exposure,
       continuous_exposure_enabled: true
     },
     other_properties: {
+
     }
   }
 end

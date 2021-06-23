@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+include Orchestration::Orchestrator
 
 # Helper methods for filtering through patients
 module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
@@ -766,44 +767,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def linelist_specific_fields(workflow, tab)
-    case workflow
-    when :global
-      case tab
-      when :closed
-        %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at workflow]
-      else
-        %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status report_eligibility]
-      end
-    when :exposure
-      case tab
-      when :all
-        %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility]
-      when :pui
-        %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility]
-      when :transferred_in
-        %i[flagged_for_follow_up transferred_from end_of_monitoring risk_level monitoring_plan transferred_at]
-      when :transferred_out
-        %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at]
-      when :closed
-        %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
-      else
-        %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
-      end
-    when :isolation
-      case tab
-      when :all
-        %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report status
-           report_eligibility]
-      when :transferred_in
-        %i[flagged_for_follow_up transferred_from monitoring_plan transferred_at]
-      when :transferred_out
-        %i[transferred_to monitoring_plan transferred_at]
-      when :closed
-        %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
-      else
-        %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report
-           report_eligibility]
-      end
-    end
+    columns = custom_configuration(:covid_19, workflow, :dashboard_table_columns)
+    return columns[:options][tab][:options] unless columns.nil?
+
+    %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
   end
 end

@@ -27,8 +27,9 @@
                       }) %>
 
 <% if current_user.can_modify_subject_status? %>
+<% if @patient_page_sections[:options][:monitoring_actions].present? %>
 <div id="monitoring-actions" class="card mx-2 my-4 card-square">
-  <h1 class="card-header patient-card-header">Monitoring Actions</h1>
+  <h1 class="card-header patient-card-header"> <%= @patient_page_sections[:options][:monitoring_actions][:label] || 'Monitoring Actions'%> </h1>
   <%= react_component('patient/monitoring_actions/MonitoringActions', {
                         current_user: current_user,
                         user_can_transfer: current_user.can_transfer_patients?,
@@ -44,8 +45,10 @@
                       }) %>
 </div>
 <% end %>
+<% end %>
 
 <% if current_user.can_view_patient_assessments? %>
+<% if @patient_page_sections[:options][:assessment_table].present? %>
   <% reporting_condition = @jurisdiction.hierarchical_condition_unpopulated_symptoms %>
   <%= react_component('patient/assessment/AssessmentTable', {
                         patient: @patient,
@@ -65,13 +68,16 @@
                         num_pos_labs: @num_pos_labs,
                         calculated_symptom_onset: @calculated_symptom_onset,
                         continuous_exposure_enabled: @continuous_exposure_enabled
+                        section_label: @patient_page_sections[:options][:assessment_table][:label]
                       }) %>
+<% end %>
 <% end %>
 
 <% if current_user.can_view_patient_laboratories? %>
+<% if @patient_page_sections[:options][:lab_results].present? %>
 <div id="labs-table" class="card mx-2 my-4 card-square">
   <h1 class="card-header patient-card-header">
-    Lab Results
+    <%= @patient_page_sections[:options][:lab_results][:label] || 'Lab Results'%>
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
   </h1>
   <div class="m-4">
@@ -116,8 +122,10 @@
   </div>
 </div>
 <% end %>
+<% end %>
 
 <% if current_user.can_view_patient_vaccines? %>
+<% if @patient_page_sections[:options][:vaccines].present? %>
   <%= react_component('patient/vaccines/VaccineTable', {
                         patient: @patient,
                         current_user: current_user,
@@ -125,11 +133,14 @@
                         vaccine_mapping: Vaccine::VACCINE_STANDARDS,
                         group_name_options: Vaccine.group_name_options,
                         additional_product_name_options: Vaccine::ADDITIONAL_PRODUCT_NAME_OPTIONS.map { |option| option['product_name'] },
-                        dose_number_options: Vaccine::DOSE_OPTIONS.filter { |option| !option.nil? }
+                        dose_number_options: Vaccine::DOSE_OPTIONS.filter { |option| !option.nil? },
+                        section_label: @patient_page_sections[:options][:vaccines][:label]
                       }) %>
+<% end %>
 <% end %>
 
 <% if current_user.can_view_patient_close_contacts? %>
+<% if @patient_page_sections[:options][:close_contacts].present? %>
   <%= react_component('patient/close_contacts/CloseContactTable', {
                         patient: @patient,
                         can_enroll_close_contacts: current_user.can_enroll_patient_close_contacts?,
@@ -138,15 +149,19 @@
                         workflow: @dashboard
                       })%>
 <% end %>
+<% end %>
 
 <% if current_user.can_modify_subject_status? %>
+<% if @patient_page_sections[:options][:history].present? %>
 <%= react_component('patient/history/HistoryList', {
                       histories: @histories,
                       history_types: @history_types,
                       patient_id: @patient.id,
                       current_user: current_user,
-                      authenticity_token: form_authenticity_token
+                      authenticity_token: form_authenticity_token,
+                      section_label: @patient_page_sections[:options][:history][:label]
                     }) %>
+<% end %>
 <% end %>
 
 <script>

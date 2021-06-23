@@ -319,7 +319,7 @@ class AssessmentTable extends React.Component {
       <React.Fragment>
         <Card id="reports" className="mx-2 my-4 card-square">
           <Card.Header as="h1" className="patient-card-header">
-            Reports
+            {this.props.section_label}
           </Card.Header>
           <Card.Body>
             <CurrentStatus report_eligibility={this.props.report_eligibility} status={this.props.patient_status} isolation={this.props.patient?.isolation} />
@@ -441,7 +441,7 @@ AssessmentTable.propTypes = {
   jurisdiction_paths: PropTypes.object,
   workflow: PropTypes.string,
   num_pos_labs: PropTypes.number,
-  calculated_symptom_onset: function (props) {
+  calculated_symptom_onset: function(props) {
     if (props.calculated_symptom_onset && !moment(props.calculated_symptom_onset, 'YYYY-MM-DD').isValid()) {
       return new Error(
         'Invalid prop `calculated_symptom_onset` supplied to `DateInput`, `calculated_symptom_onset` must be a valid date string in the `YYYY-MM-DD` format.'
@@ -449,6 +449,7 @@ AssessmentTable.propTypes = {
     }
   },
   continuous_exposure_enabled: PropTypes.bool,
+  section_label: PropTypes.string,
 };
 
 export default AssessmentTable;

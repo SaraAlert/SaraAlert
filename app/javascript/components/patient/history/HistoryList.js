@@ -123,7 +123,7 @@ class HistoryList extends React.Component {
       <React.Fragment>
         <Card id="histories" className="mx-2 my-4 card-square">
           <Card.Header as="h1" className="patient-card-header">
-            History
+            {this.props.section_label}
             <InfoTooltip tooltipTextKey="history" location="right" className="pl-1" />
           </Card.Header>
           <Card.Body className="py-0 px-1">
@@ -207,6 +207,7 @@ HistoryList.propTypes = {
   histories: PropTypes.array,
   history_types: PropTypes.object,
   authenticity_token: PropTypes.string,
+  section_label: PropTypes.string,
 };
 
 export default HistoryList;

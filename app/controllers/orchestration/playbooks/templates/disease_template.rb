@@ -70,6 +70,34 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate
               saf: { label: 'Sara Alert Format'}
             }}
           }
+        },
+        dashboard_table_columns: {
+          options: {
+            symptomatic: {
+              options: %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
+            },
+            non_reporting: {
+              options: %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
+            },
+            asymptomatic: {
+              options: %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
+            },
+            pui: {
+              options: %i[jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility]
+            },
+            closed: {
+              options: %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
+            },
+            transferred_in: {
+              options: %i[transferred_from end_of_monitoring risk_level monitoring_plan transferred_at] 
+            },
+            transferred_out: {
+              options: %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at]
+            },
+            all: {
+              options: %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility]
+            }
+          }
         }
       },
       isolation: {
@@ -133,12 +161,45 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate
             saf: { label: 'Sara Alert Format (Isolation)'}
           }}
           }
+        },
+        dashboard_table_columns: {
+          options: {
+            requiring_review: {
+              options: %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
+            },
+            non_reporting: {
+              options: %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
+            },
+            reporting: {
+              options: %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
+            },
+            closed: {
+              options: %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
+            },
+            transferred_in: {
+              options: %i[transferred_from monitoring_plan transferred_at]
+            },
+            transferred_out: {
+              options: %i[transferred_to monitoring_plan transferred_at]
+            },
+            all: {
+              options: %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report status report_eligibility]
+            }
+          }
         }
-
       }
     },
     general: {
-
+      patient_page_sections: {
+        options: {
+          monitoring_actions: { label: 'Monitoring Actions'},
+          assessment_table: { label: 'Reports' },
+          lab_results: { label: 'Lab Results' },
+          vaccines: { label: 'Vaccinations' },
+          close_contacts: { label: 'Close Contacts' },
+          history: { label: 'History' }
+        }
+      }
     }
   }
 end
