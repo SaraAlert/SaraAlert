@@ -29,12 +29,12 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                      Notes].freeze
 
   LINELIST_FIELDS = %i[id name jurisdiction_name assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring exposure_risk_assessment
-                       monitoring_plan responder_id latest_assessment_at latest_transfer_at monitoring_reason public_health_action closed_at workflow status
-                       transferred_from transferred_to expected_purge_ts symptom_onset extended_isolation].freeze
+                       monitoring_plan latest_assessment_at latest_transfer_at monitoring_reason public_health_action status closed_at transferred_from
+                       transferred_to expected_purge_ts symptom_onset extended_isolation responder_id workflow].freeze
 
   LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
-                      'Monitoring Plan', 'Reporter ID', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Closed At',
-                      'Workflow', 'Status', 'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation'].freeze
+                      'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
+                      'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation', 'Reporter ID', 'Workflow'].freeze
 
   SARA_ALERT_FORMAT_FIELDS = %i[first_name middle_name last_name date_of_birth sex white black_or_african_american american_indian_or_alaska_native asian
                                 native_hawaiian_or_other_pacific_islander ethnicity primary_language secondary_language interpretation_required nationality
