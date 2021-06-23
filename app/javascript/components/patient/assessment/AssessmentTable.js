@@ -71,7 +71,7 @@ class AssessmentTable extends React.Component {
    * @return {Array of Strings} - All of the generated aria-labels
    */
   generateAriaLabels = response => {
-    response.data.table_data.map(rowData => {
+    return response.data.table_data.map(rowData => {
       let isSymptomaticReport = rowData.symptomatic === 'Yes';
       let symptomList = _.keys(rowData.passes_threshold_data)
         .map(x => (rowData.passes_threshold_data[`${x}`] ? x : null))
