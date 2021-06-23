@@ -124,8 +124,8 @@ class HistoryList extends React.Component {
           <Card.Header>
             <div className="d-flex flex-row align-items-center">
               <div className="float-left flex-grow-1 mb-0 h5">
-                <span>History</span>
-                <InfoTooltip tooltipTextKey="history" location="right" className="pl-1"></InfoTooltip>
+                <span>{this.props.section_label} </span>
+                <InfoTooltip tooltipTextKey="history" location="right"></InfoTooltip>
               </div>
             </div>
           </Card.Header>
@@ -207,6 +207,7 @@ HistoryList.propTypes = {
   histories: PropTypes.array,
   history_types: PropTypes.object,
   authenticity_token: PropTypes.string,
+  section_label: PropTypes.string,
 };
 
 export default HistoryList;

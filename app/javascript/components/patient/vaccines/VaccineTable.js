@@ -341,7 +341,7 @@ class VaccineTable extends React.Component {
     return (
       <React.Fragment>
         <Card id="vaccines" className="mx-2 my-4 card-square">
-          <Card.Header className="h5">Vaccinations</Card.Header>
+          <Card.Header className="h5">{this.props.section_label}</Card.Header>
           <Card.Body className="my-1">
             <Row className="mb-4">
               <Col>
@@ -410,6 +410,7 @@ VaccineTable.propTypes = {
   group_name_options: PropTypes.array,
   additional_product_name_options: PropTypes.array,
   dose_number_options: PropTypes.array,
+  section_label: PropTypes.string,
 };
 
 export default VaccineTable;

@@ -62,6 +62,10 @@ class PatientsController < ApplicationController
     @continuous_exposure_enabled = continuous_exposure_enabled?(@playbook)
 
     dashboard_crumb(params.permit(:nav)[:nav], @playbook, @patient)
+
+    @patient_page_sections = custom_configuration(@playbook, nil, :patient_page_sections)
+    @columns = custom_configuration(@playbook, :exposure, :dashboard_table_columns)
+
   end
 
   # Returns a new (unsaved) subject, for creating a new subject
