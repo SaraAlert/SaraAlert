@@ -86,8 +86,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     order = query[:order]
     raise InvalidQueryError.new(:order, order) unless order.nil? || order.blank? || %w[name flagged_for_follow_up jurisdiction transferred_from transferred_to
                                                                                        assigned_user state_local_id dob end_of_monitoring risk_level
-                                                                                       monitoring_plan public_health_action expected_purge_date
-                                                                                       reason_for_closure closed_at transferred_at latest_report
+                                                                                       monitoring_plan reporter public_health_action expected_purge_date
+                                                                                       reason_for_closure closed_at transferred_at latest_report workflow
                                                                                        first_positive_lab_at symptom_onset extended_isolation].include?(order)
 
     # Validate sorting direction
@@ -212,6 +212,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       patients = patients.order_by_risk(asc: dir == 'asc').order(id: dir)
     when 'monitoring_plan'
       patients = patients.order(Arel.sql('monitoring_plan IS NULL, monitoring_plan ' + dir), id: dir)
+    when 'reporter'
+      patients = patients.order('responder_id ' + dir, id: dir)
     when 'public_health_action'
       patients = patients.order(Arel.sql('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + dir), id: dir)
     when 'expected_purge_date'
@@ -225,6 +227,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       patients = patients.order(Arel.sql('CASE WHEN latest_transfer_at IS NULL THEN 1 ELSE 0 END, latest_transfer_at ' + dir), id: dir)
     when 'latest_report'
       patients = patients.order(Arel.sql('CASE WHEN latest_assessment_at IS NULL THEN 1 ELSE 0 END, latest_assessment_at ' + dir), id: dir)
+    when 'workflow'
+      patients = patients.order(Arel.sql('CASE WHEN isolation THEN 1 ELSE 0 END ' + dir), id: dir)
     end
 
     patients
