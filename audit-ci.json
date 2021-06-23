@@ -2,7 +2,6 @@
   "low": true,
   "package-manager": "yarn",
   "allowlist": [
-    1693,
     1751,
     1754,
     1755
