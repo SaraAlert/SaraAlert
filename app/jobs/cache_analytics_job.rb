@@ -94,7 +94,7 @@ class CacheAnalyticsJob < ApplicationJob
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 110 THEN 'FAKE_BIRTHDATE'
       END
     SQL
-    monitorees.monitoring_active(true)
+    monitorees.monitoring_open
               .group(age_groups, :isolation)
               .order(Arel.sql(age_groups), :isolation)
               .size
@@ -126,7 +126,7 @@ class CacheAnalyticsJob < ApplicationJob
   # Monitoree counts by sex
   def self.monitoree_counts_by_sex(analytic_id, monitorees)
     counts = []
-    monitorees.monitoring_active(true)
+    monitorees.monitoring_open
               .group(:sex, :isolation)
               .order(:sex, :isolation)
               .size
@@ -139,7 +139,7 @@ class CacheAnalyticsJob < ApplicationJob
   # Monitoree counts by sexual orientation
   def self.monitoree_counts_by_sexual_orientation(analytic_id, monitorees)
     counts = []
-    monitorees.monitoring_active(true)
+    monitorees.monitoring_open
               .group(:sexual_orientation, :isolation)
               .order(:sexual_orientation, :isolation)
               .size
@@ -176,7 +176,7 @@ class CacheAnalyticsJob < ApplicationJob
         ELSE "Unknown"
       END)
     SQL
-    monitorees.monitoring_active(true)
+    monitorees.monitoring_open
               .group(racial_groups, :isolation)
               .order(Arel.sql(racial_groups), :isolation)
               .size
@@ -196,7 +196,7 @@ class CacheAnalyticsJob < ApplicationJob
   # Monitoree counts by ethnicity
   def self.monitoree_counts_by_ethnicity(analytic_id, monitorees)
     counts = []
-    monitorees.monitoring_active(true)
+    monitorees.monitoring_open
               .group(:ethnicity, :isolation)
               .order(:ethnicity, :isolation)
               .size
@@ -241,7 +241,7 @@ class CacheAnalyticsJob < ApplicationJob
   def self.monitoree_counts_by_risk_factor(analytic_id, monitorees)
     counts = []
     RISK_FACTORS.each do |risk_factor, label|
-      monitorees.monitoring_active(true)
+      monitorees.monitoring_open
                 .where(risk_factor => true)
                 .group(risk_factor, :isolation)
                 .size
@@ -255,7 +255,7 @@ class CacheAnalyticsJob < ApplicationJob
   # Monitoree counts by exposure country
   def self.monitoree_counts_by_exposure_country(analytic_id, monitorees)
     counts = []
-    exposure_countries = monitorees.monitoring_active(true)
+    exposure_countries = monitorees.monitoring_open
                                    .where.not(potential_exposure_country: [nil, ''])
                                    .group(:potential_exposure_country)
                                    .order(count_potential_exposure_country: :desc)
@@ -263,7 +263,7 @@ class CacheAnalyticsJob < ApplicationJob
                                    .limit(NUM_EXPOSURE_COUNTRIES)
                                    .count(:potential_exposure_country)
                                    .map { |c| c[0] }
-    monitorees.monitoring_active(true)
+    monitorees.monitoring_open
               .where(potential_exposure_country: exposure_countries)
               .group(:potential_exposure_country, :isolation)
               .order(:potential_exposure_country, :isolation)
@@ -279,7 +279,7 @@ class CacheAnalyticsJob < ApplicationJob
     counts = []
 
     monitorees.where(isolation: false)
-              .monitoring_active(true)
+              .monitoring_open
               .exposed_in_time_frame(NUM_PAST_DAYS.days.ago.to_date.to_datetime)
               .group(:last_date_of_exposure)
               .order(:last_date_of_exposure)
@@ -289,7 +289,7 @@ class CacheAnalyticsJob < ApplicationJob
               end
 
     monitorees.where(isolation: true)
-              .monitoring_active(true)
+              .monitoring_open
               .symptom_onset_in_time_frame(NUM_PAST_DAYS.days.ago.to_date.to_datetime)
               .group(:symptom_onset)
               .order(:symptom_onset)
@@ -310,7 +310,7 @@ class CacheAnalyticsJob < ApplicationJob
       DATE_ADD(symptom_onset, INTERVAL(1 - DAYOFWEEK(symptom_onset)) DAY)
     SQL
     monitorees.where(isolation: false)
-              .monitoring_active(true)
+              .monitoring_open
               .exposed_in_time_frame(NUM_PAST_WEEKS.weeks.ago.to_date.to_datetime)
               .group(exposure_weeks)
               .order(Arel.sql(exposure_weeks))
@@ -319,7 +319,7 @@ class CacheAnalyticsJob < ApplicationJob
                 counts.append(monitoree_count(analytic_id, true, 'Last Exposure Week', week, total, 'Exposure'))
               end
     monitorees.where(isolation: true)
-              .monitoring_active(true)
+              .monitoring_open
               .symptom_onset_in_time_frame(NUM_PAST_WEEKS.weeks.ago.to_date.to_datetime)
               .group(symptom_onset_weeks)
               .order(Arel.sql(symptom_onset_weeks))
@@ -341,7 +341,7 @@ class CacheAnalyticsJob < ApplicationJob
     SQL
 
     monitorees.where(isolation: false)
-              .monitoring_active(true)
+              .monitoring_open
               .exposed_in_time_frame(NUM_PAST_MONTHS.months.ago.to_date.to_datetime)
               .group(exposure_months)
               .order(Arel.sql(exposure_months))
@@ -350,7 +350,7 @@ class CacheAnalyticsJob < ApplicationJob
                 counts.append(monitoree_count(analytic_id, true, 'Last Exposure Month', month, total, 'Exposure'))
               end
     monitorees.where(isolation: true)
-              .monitoring_active(true)
+              .monitoring_open
               .symptom_onset_in_time_frame(NUM_PAST_MONTHS.months.ago.to_date.to_datetime)
               .group(symptom_onset_months)
               .order(Arel.sql(symptom_onset_months))

@@ -555,11 +555,6 @@ class Patient < ApplicationRecord
       .where_assoc_exists(:assessments, &:symptomatic_last_hour)
   }
 
-  # All individuals currently being monitored if true, all individuals otherwise
-  scope :monitoring_active, lambda { |active_monitoring|
-    where(monitoring: true) if active_monitoring
-  }
-
   # All individuals with the given monitoring status
   scope :monitoring_status, lambda { |monitoring_status|
     case monitoring_status
