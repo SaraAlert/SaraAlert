@@ -15,39 +15,60 @@ class LaboratoryTest < ActiveSupport::TestCase
     end
   end
 
-  # test 'validates report date constraints' do
-  #   laboratory = build(:laboratory, report: 30.days.ago)
-  #   assert laboratory.valid?
+  test 'validates report date constraints' do
+    laboratory = build(:laboratory, report: 30.days.ago)
+    assert laboratory.valid?(:api)
+    assert laboratory.valid?(:import)
 
-  #   laboratory = build(:laboratory, report: nil)
-  #   assert laboratory.valid?
+    laboratory = build(:laboratory, report: nil)
+    assert laboratory.valid?(:api)
+    assert laboratory.valid?(:import)
 
-  #   laboratory = build(:laboratory, report: Time.now)
-  #   assert laboratory.valid?
+    laboratory = build(:laboratory, report: Time.now)
+    assert laboratory.valid?(:api)
+    assert laboratory.valid?(:import)
 
-  #   laboratory = build(:laboratory, report: 1.day.from_now)
-  #   assert_not laboratory.valid?
+    # Date cannot be in the future
+    laboratory = build(:laboratory, report: 1.day.from_now)
+    assert_not laboratory.valid?(:api)
+    assert_not laboratory.valid?(:import)
 
-  #   laboratory = build(:laboratory, report: Date.new(1900, 1, 1))
-  #   assert_not laboratory.valid?
-  # end
+    # Date cannot be before start year
+    laboratory = build(:laboratory, report: Date.new(1900, 1, 1))
+    assert_not laboratory.valid?(:api)
+    assert_not laboratory.valid?(:import)
+  end
 
-  # test 'validates specimen collection date constraints' do
-  #   laboratory = build(:laboratory, specimen_collection: 30.days.ago)
-  #   assert laboratory.valid?
+  test 'validates specimen collection date constraints' do
+    laboratory = build(:laboratory, specimen_collection: 30.days.ago)
+    assert laboratory.valid?(:api)
+    assert laboratory.valid?(:import)
 
-  #   laboratory = build(:laboratory, specimen_collection: nil)
-  #   assert laboratory.valid?
+    laboratory = build(:laboratory, specimen_collection: nil)
+    assert laboratory.valid?(:api)
+    assert laboratory.valid?(:import)
 
-  #   laboratory = build(:laboratory, specimen_collection: Time.now)
-  #   assert laboratory.valid?
+    laboratory = build(:laboratory, specimen_collection: Time.now)
+    assert laboratory.valid?(:api)
+    assert laboratory.valid?(:import)
 
-  #   laboratory = build(:laboratory, specimen_collection: 1.day.from_now)
-  #   assert_not laboratory.valid?
+    laboratory = build(:laboratory, specimen_collection: 1.day.from_now)
+    assert_not laboratory.valid?(:api)
+    assert_not laboratory.valid?(:import)
 
-  #   laboratory = build(:laboratory, specimen_collection: Date.new(1900, 1, 1))
-  #   assert_not laboratory.valid?
-  # end
+    laboratory = build(:laboratory, specimen_collection: Date.new(1900, 1, 1))
+    assert_not laboratory.valid?(:api)
+    assert_not laboratory.valid?(:import)
+
+    # Ensure specimen collection date is before report date
+    laboratory = build(:laboratory, specimen_collection: 1.days.ago, report: 2.days.ago)
+    assert_not laboratory.valid?(:api)
+    assert_not laboratory.valid?(:import)
+
+    laboratory = build(:laboratory, specimen_collection: 2.days.ago, report: 1.days.ago)
+    assert laboratory.valid?(:api)
+    assert laboratory.valid?(:import)
+  end
 
   test 'update patient updated_at upon laboratory create, update, and delete' do
     patient = create(:patient)
@@ -193,6 +214,32 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert_not lab.valid?(:api)
     assert_not lab.valid?(:import)
     assert lab.valid?
+
+    lab.specimen_collection = '2021-02-02 2021-01-01'
+    assert_not lab.valid?(:import)
+
+    lab.specimen_collection = 'typo2021-01-01'
+    assert_not lab.valid?(:api)
+    assert_not lab.valid?(:import)
+
+    lab.specimen_collection = '2021-01-01typo'
+    assert_not lab.valid?(:api)
+    assert_not lab.valid?(:import)
+
+    lab.specimen_collection = 20_210_101
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:specimen_collection][0]
+
+    lab.specimen_collection = 20_210_001
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:specimen_collection][0]
+
+    lab.specimen_collection = 20_210_101.001
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:specimen_collection][0]
   end
 
   test 'validates report is a valid date' do
@@ -219,5 +266,31 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert_not lab.valid?(:api)
     assert_not lab.valid?(:import)
     assert lab.valid?
+
+    lab.report = '2021-02-02 2021-01-01'
+    assert_not lab.valid?(:import)
+
+    lab.report = 'typo2021-01-01'
+    assert_not lab.valid?(:api)
+    assert_not lab.valid?(:import)
+
+    lab.report = '2021-01-01typo'
+    assert_not lab.valid?(:api)
+    assert_not lab.valid?(:import)
+
+    lab.report = 20_210_101
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:report][0]
+
+    lab.report = 20_210_001
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:report][0]
+
+    lab.report = 20_210_101.001
+    assert_not lab.valid?(:import)
+    assert_not lab.valid?(:api)
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:report][0]
   end
 end
