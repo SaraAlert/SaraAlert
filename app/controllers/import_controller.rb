@@ -171,7 +171,7 @@ class ImportController < ApplicationController
       patient[:primary_telephone] = import_field(field, row[col_num], row_ind)
     elsif international_address && %i[address_line_1 address_city address_state address_zip address_line_2].include?(field)
       patient[FOREIGN_ADDRESS_MAPPINGS[field]] = import_field(field, row[col_num], row_ind)
-    elsif %i[date_of_birth date_of_departure].include?(field)
+    elsif %i[date_of_birth date_of_departure symptom_onset].include?(field)
       patient[field] = import_field(field, Date.strptime(row[col_num], '%m/%d/%Y'), row_ind) if row[col_num].present?
     elsif field == :date_of_arrival
       patient[field] = import_field(field, Date.strptime(row[col_num], '%b %d %Y'), row_ind) if row[col_num].present?
