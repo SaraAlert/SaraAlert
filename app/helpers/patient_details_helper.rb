@@ -202,6 +202,8 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       pause_notifications: pause_notifications || false,
       expected_purge_ts: expected_purge_date_exp || '',
       monitoring_reason: monitoring_reason || '',
+      follow_up_reason: follow_up_reason || '',
+      follow_up_note: follow_up_note || '',
       closed_at: closed_at || '',
       created_at: created_at || '',
       updated_at: updated_at || ''

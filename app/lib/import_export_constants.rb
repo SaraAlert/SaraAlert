@@ -120,7 +120,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 additional_planned_travel_related_notes potential_exposure_location potential_exposure_country contact_of_known_case_id
                 was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel_facility_name healthcare_personnel_facility_name
                 member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan exposure_notes case_status gender_identity
-                sexual_orientation risk_level monitoring_reason public_health_action],
+                sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason follow_up_note],
     dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
               symptom_onset first_positive_lab_at extended_isolation],
     timestamps: %i[created_at updated_at closed_at latest_assessment_at latest_transfer_at last_assessment_reminder_sent],
@@ -274,6 +274,9 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     head_of_household: 'Head of Household',
     pause_notifications: 'Paused Notifications',
     last_assessment_reminder_sent: 'Last Assessment Reminder Sent Date',
+    # Follow-up Flag
+    follow_up_reason: 'Follow-up Reason',
+    follow_up_note: 'Follow-up Note',
     # CSV Linelist Export Specific Fields
     name: 'Name',
     latest_assessment_at: 'Latest Report',
@@ -471,7 +474,8 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                                            jurisdiction_path jurisdiction_name assigned_user]),
               rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset symptom_onset_defined_by first_positive_lab_at
                                                           extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_ts]),
-              rct_node(:patients, 'Reporting Info', %i[responder_id head_of_household pause_notifications last_assessment_reminder_sent])
+              rct_node(:patients, 'Reporting Info', %i[responder_id head_of_household pause_notifications last_assessment_reminder_sent]),
+              rct_node(:patients, 'Follow-up Flag', %i[follow_up_reason follow_up_note])
             ]
           }
         ]
