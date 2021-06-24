@@ -28,7 +28,8 @@ module ConsumeAssessmentsJobTestHelper
           value: false,
           type: 'BoolSymptom',
           label: 'Cough',
-          notes: 'Have you coughed today?'
+          notes: 'Have you coughed today?',
+          required: false
         }]
       }
       # If symptomatic is nil then we will include a reported_symptoms_array
