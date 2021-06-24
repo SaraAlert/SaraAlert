@@ -219,7 +219,6 @@ class CustomTable extends React.Component {
                 return (
                   <tr
                     key={rowIndex}
-                    aria-label={this.props.rowAriaLabels ? this.props.rowAriaLabels[Number(rowIndex)] : null}
                     id={`${this.props.dataType}-${rowData.id ? rowData.id : `row-${rowIndex}`}`}
                     className={this.props.getRowClassName ? this.props.getRowClassName(rowData) : ''}>
                     {this.props.isSelectable && this.props.checkboxColumnLocation === 'left' && this.renderRowCheckbox(rowData, rowIndex)}
@@ -337,7 +336,6 @@ CustomTable.propTypes = {
   dataType: PropTypes.string.isRequired,
   columnData: PropTypes.array,
   rowData: PropTypes.array,
-  rowAriaLabels: PropTypes.array,
   totalRows: PropTypes.number,
   selectedRows: PropTypes.array,
   selectAll: PropTypes.bool,
