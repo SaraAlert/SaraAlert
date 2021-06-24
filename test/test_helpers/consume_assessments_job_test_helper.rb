@@ -15,11 +15,13 @@ module ConsumeAssessmentsJobTestHelper
     end
 
     def invalid_submission_token
-      { response_status: nil,
+      {
+        response_status: nil,
         threshold_condition_hash: @patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
         reported_symptoms_array: nil,
         experiencing_symptoms: false,
-        patient_submission_token: 'invalid token' }.to_json
+        patient_submission_token: 'invalid token'
+      }.to_json
     end
 
     def reported_symptom_assessment(symptomatic: nil)
