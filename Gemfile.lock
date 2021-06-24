@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/SaraAlert/sara-schema.git
-  revision: 4a62d483d1ca10bc184318e77b754771379c905a
+  revision: d56952f8ad488c386f6c318387b748427f4c2fbd
   branch: v2-dev
   specs:
     sara-schema (2.0.0)
