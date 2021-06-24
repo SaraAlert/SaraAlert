@@ -13,7 +13,7 @@ class ConsumeAssessmentsJob
                                      'response_status',
                                      'error_code')
     # Invalid message
-    if message.nil?
+    if message.empty?
       log_and_capture('ConsumeAssessmentsJob: No valid fields found in message. Skipping.')
       return
     end
@@ -124,8 +124,8 @@ class ConsumeAssessmentsJob
     threshold_condition = ThresholdCondition.find_by(threshold_condition_hash: message['threshold_condition_hash'])
     # Invalid threshold_condition_hash
     if threshold_condition.nil?
-      log_and_capture("ConsumeAssessmentsJob: No ThresholdCondition found (patient: #{patient.id}, \
-                      threshold_condition_hash: #{message['threshold_condition_hash']})")
+      log_and_capture("ConsumeAssessmentsJob: No ThresholdCondition found (patient: #{patient.id}, " \
+                      "threshold_condition_hash: #{message['threshold_condition_hash']})")
       return
     end
 
@@ -142,8 +142,6 @@ class ConsumeAssessmentsJob
       rescue ActiveRecord::RecordInvalid => e
         log_and_capture("ConsumeAssessmentsJob: Unable to save assessment. Patient ID: #{patient.id}. Error: #{e}")
       end
-
-      return
     else
       # If message['reported_symptoms_array'] is not populated then this assessment came in through
       # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
@@ -173,16 +171,12 @@ class ConsumeAssessmentsJob
         rescue ActiveRecord::RecordInvalid => e
           log_and_capture("ConsumeAssessmentsJob: Unable to save assessment. Patient ID: #{patient.id}. Error: #{e}")
         end
-
-        return
       end
     end
   rescue JSON::ParserError
     # Do not reproduce entire message in the log. There may be sensitive data in the message.
     # Sentry will automatically capture.
     Rails.logger.error('ConsumeAssessmentsJob: Skipping invalid message.')
-
-    return
   end
 
   private
