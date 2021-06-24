@@ -490,6 +490,7 @@ class PatientsController < ApplicationController
         update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? patient.id : nil,
                                  update_params[:apply_to_household] ? :group : :none)
       end
+    end
   end
 
   # Updates to workflow/tracking status for a subject
@@ -535,7 +536,7 @@ class PatientsController < ApplicationController
   # params - The request params.
   # household - Indicates if the Patient was updated directly (household = :patient) or updated because their head of household was (household = :dependent)
   # propogation - Indicates why the updates are being propogated to the Patient.
-  def update_monitoring_fields(patient, params, household, propagation) 
+  def update_monitoring_fields(patient, params, household, propagation)
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
     permitted_params = if diff_state.nil?
