@@ -511,13 +511,13 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     filter[:value].each do |field|
       case field[:name]
       when 'lab-type'
-        labs = if filter[:value].blank?
+        labs = if field[:value].blank?
                  labs.where('laboratories.lab_type = ?', '').or(labs.where('laboratories.lab_type IS NULL'))
                else
                  labs.where('laboratories.lab_type = ?', field[:value])
                end
       when 'result'
-        labs = if filter[:value].blank?
+        labs = if field[:value].blank?
                  labs.where('laboratories.result = ?', '').or(labs.where('laboratories.result IS NULL'))
                else
                  labs.where('laboratories.result = ?', field[:value])
@@ -555,12 +555,14 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'product-name'
         vaccines = vaccines.where('vaccines.product_name = ?', field[:value])
       when 'administration-date'
-        case field[:value][:when]
-        when 'before'
-          vaccines = vaccines.where('vaccines.administration_date < ?', field[:value][:date])
-        when 'after'
-          vaccines = vaccines.where('vaccines.administration_date > ?', field[:value][:date])
-        end
+        vaccines = case field[:value][:when]
+                   when 'before'
+                     vaccines.where('vaccines.administration_date < ?', field[:value][:date])
+                   when 'after'
+                     vaccines.where('vaccines.administration_date > ?', field[:value][:date])
+                   else
+                     vaccines.where('vaccines.administration_date IS NULL')
+                   end
       when 'dose-number'
         vaccines = if field[:value].blank?
                      vaccines.where('vaccines.dose_number IS NULL')

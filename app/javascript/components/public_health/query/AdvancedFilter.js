@@ -897,6 +897,7 @@ class AdvancedFilter extends React.Component {
 
   /**
    * Renders date type line "statement"
+   * @param {Object} filter - Filter currently selected
    * @param {Number} index - Filter index
    * @param {*} value - Current value for this statement (could be a single date or object of dates)
    * @param {String} dateOption - Selected option for date filters that determines what else is rendered in this statement
@@ -1111,12 +1112,12 @@ class AdvancedFilter extends React.Component {
                     onChange={event => {
                       this.changeMultiValue(statementIndex, multiIndex, {
                         name: multiValue.name,
-                        value: { when: event.target.value, date: event.target.value === '' ? null : multiValue.value.date },
+                        value: { when: event.target.value, date: multiValue.value.date },
                       });
                     }}>
                     <option value="before">before</option>
                     <option value="after">after</option>
-                    {filter.name === 'lab-result' && <option></option>}
+                    <option></option>
                   </Form.Control>
                   {(multiValue.value.when === 'before' || multiValue.value.when === 'after') && (
                     <div className="advanced-filter-date-input mr-3">
