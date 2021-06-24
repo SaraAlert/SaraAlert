@@ -79,7 +79,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 
-  # SEARCH ADVANCED FILTER QUERIES
+  # --- SEARCH ADVANCED FILTER QUERIES --- #
 
   test 'advanced filter close contact with known case id exact match single value' do
     Patient.destroy_all
@@ -191,25 +191,35 @@ class PatientQueryHelperTest < ActionView::TestCase
     user = create(:public_health_enroller_user)
     patient_1 = create(:patient, creator: user)
     create(:laboratory, patient: patient_1, result: 'positive')
-    create(:laboratory, patient: patient_1, result: 'negative')
+    create(:laboratory, patient: patient_1, result: '')
     patient_2 = create(:patient, creator: user)
     create(:laboratory, patient: patient_2, result: 'negative')
     patient_3 = create(:patient, creator: user)
-    create(:laboratory, patient: patient_3, result: 'indeterminate')
+    create(:laboratory, patient: patient_3)
     patient_4 = create(:patient, creator: user)
     create(:laboratory, patient: patient_4, result: 'positive')
     patient_5 = create(:patient, creator: user)
-    create(:laboratory, patient: patient_5, result: 'negative')
+    create(:laboratory, patient: patient_5)
     create(:laboratory, patient: patient_5, result: 'indeterminate')
     patient_6 = create(:patient, creator: user)
     create(:laboratory, patient: patient_6, result: 'positive')
     create(:laboratory, patient: patient_6, result: 'positive')
+    patient_7 = create(:patient, creator: user)
+    create(:laboratory, patient: patient_7, result: '')
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'result', value: 'positive' }] }]
+    filters = [{ filterOption: {}, value: [{ name: 'result', value: '' }] }]
     filters[0][:filterOption]['name'] = 'lab-result'
     tz_offset = 300
+
+    # Check for monitorees who have a blank result
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_7, patient_3, patient_5]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Check for monitorees who have a non-blank result
+    filters[0][:value][0][:value] = 'positive'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_4, patient_6]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
@@ -220,25 +230,35 @@ class PatientQueryHelperTest < ActionView::TestCase
     user = create(:public_health_enroller_user)
     patient_1 = create(:patient, creator: user)
     create(:laboratory, patient: patient_1, lab_type: 'PCR')
-    create(:laboratory, patient: patient_1, lab_type: 'Antigen')
+    create(:laboratory, patient: patient_1, lab_type: '')
     patient_2 = create(:patient, creator: user)
     create(:laboratory, patient: patient_2, lab_type: 'Antigen')
     patient_3 = create(:patient, creator: user)
-    create(:laboratory, patient: patient_3, lab_type: 'Total Antibody')
+    create(:laboratory, patient: patient_3)
     patient_4 = create(:patient, creator: user)
     create(:laboratory, patient: patient_4, lab_type: 'PCR')
     patient_5 = create(:patient, creator: user)
-    create(:laboratory, patient: patient_5, lab_type: 'Total Antibody')
+    create(:laboratory, patient: patient_5)
     create(:laboratory, patient: patient_5, lab_type: 'Other')
     patient_6 = create(:patient, creator: user)
     create(:laboratory, patient: patient_6, lab_type: 'PCR')
     create(:laboratory, patient: patient_6, lab_type: 'PCR')
+    patient_7 = create(:patient, creator: user)
+    create(:laboratory, patient: patient_7, result: '')
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'lab-type', value: 'PCR' }] }]
+    filters = [{ filterOption: {}, value: [{ name: 'lab-type', value: '' }] }]
     filters[0][:filterOption]['name'] = 'lab-result'
     tz_offset = 300
+
+    # Check for monitorees who have a blank lab type
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_3, patient_5, patient_7]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Check for monitorees who have a non-blank lab type
+    filters[0][:value][0][:value] = 'PCR'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_4, patient_6]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
@@ -250,6 +270,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     patient_1 = create(:patient, creator: user)
     create(:laboratory, patient: patient_1, specimen_collection: DateTime.new(2021, 3, 1))
     create(:laboratory, patient: patient_1, specimen_collection: DateTime.new(2021, 4, 1))
+    create(:laboratory, patient: patient_1, specimen_collection: nil)
     patient_2 = create(:patient, creator: user)
     create(:laboratory, patient: patient_2, specimen_collection: DateTime.new(2021, 3, 24))
     patient_3 = create(:patient, creator: user)
@@ -262,14 +283,30 @@ class PatientQueryHelperTest < ActionView::TestCase
     patient_6 = create(:patient, creator: user)
     create(:laboratory, patient: patient_6, specimen_collection: DateTime.new(2021, 4, 1))
     create(:laboratory, patient: patient_6, specimen_collection: DateTime.new(2021, 4, 3))
+    patient_7 = create(:patient, creator: user)
+    create(:laboratory, patient: patient_7, specimen_collection: nil)
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'specimen-collection', value: { when: 'before', date: '2021-03-25' } }] }]
+    filters = [{ filterOption: {}, value: [{ name: 'specimen-collection', value: { when: '' } }] }]
     filters[0][:filterOption]['name'] = 'lab-result'
     tz_offset = 300
+
+    # Check for monitorees who have a blank specimen collection date
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_7]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Check for monitorees who have a specimen collection date "before"
+    filters[0][:value][0][:value] = { when: 'before', date: '2021-03-25' }
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_5]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Check for monitorees who have a specimen collection date "after"
+    filters[0][:value][0][:value] = { when: 'after', date: '2021-03-25' }
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_4, patient_6]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 
@@ -279,6 +316,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     patient_1 = create(:patient, creator: user)
     create(:laboratory, patient: patient_1, report: DateTime.new(2021, 3, 1))
     create(:laboratory, patient: patient_1, report: DateTime.new(2021, 4, 1))
+    create(:laboratory, patient: patient_1, report: nil)
     patient_2 = create(:patient, creator: user)
     create(:laboratory, patient: patient_2, report: DateTime.new(2021, 3, 24))
     patient_3 = create(:patient, creator: user)
@@ -291,12 +329,28 @@ class PatientQueryHelperTest < ActionView::TestCase
     patient_6 = create(:patient, creator: user)
     create(:laboratory, patient: patient_6, report: DateTime.new(2021, 4, 1))
     create(:laboratory, patient: patient_6, report: DateTime.new(2021, 4, 3))
+    patient_7 = create(:patient, creator: user)
+    create(:laboratory, patient: patient_7, report: nil)
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'report', value: { when: 'after', date: '2021-03-25' } }] }]
+    filters = [{ filterOption: {}, value: [{ name: 'report', value: { when: '' } }] }]
     filters[0][:filterOption]['name'] = 'lab-result'
     tz_offset = 300
+
+    # Check for monitorees who have a blank report date
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_7]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Check for monitorees who have a specimen collection date "before"
+    filters[0][:value][0][:value] = { when: 'before', date: '2021-03-25' }
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_5]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Check for monitorees who have a specimen collection date "after"
+    filters[0][:value][0][:value] = { when: 'after', date: '2021-03-25' }
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_4, patient_6]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
@@ -533,12 +587,13 @@ class PatientQueryHelperTest < ActionView::TestCase
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 
-  test 'advanced filter vaccination single filter option administration date before' do
+  test 'advanced filter vaccination single filter option administration date' do
     Patient.destroy_all
     user = create(:public_health_enroller_user)
     patient_1 = create(:patient, creator: user)
     create(:vaccine, patient: patient_1, administration_date: DateTime.new(2021, 3, 1))
     create(:vaccine, patient: patient_1, administration_date: DateTime.new(2021, 4, 1))
+    create(:vaccine, patient: patient_1, administration_date: nil)
     patient_2 = create(:patient, creator: user)
     create(:vaccine, patient: patient_2, administration_date: DateTime.new(2021, 3, 24))
     patient_3 = create(:patient, creator: user)
@@ -551,47 +606,37 @@ class PatientQueryHelperTest < ActionView::TestCase
     patient_6 = create(:patient, creator: user)
     create(:vaccine, patient: patient_6, administration_date: DateTime.new(2021, 4, 1))
     create(:vaccine, patient: patient_6, administration_date: DateTime.new(2021, 4, 3))
+    patient_7 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_7, administration_date: nil)
+    patient_8 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_8, administration_date: DateTime.new(2021, 3, 1))
+    create(:vaccine, patient: patient_8, administration_date: nil)
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'administration-date', value: { when: 'before', date: '2021-03-25' } }] }]
+    filters = [{ filterOption: {}, value: [{ name: 'administration-date', value: { when: '' } }] }]
     filters[0][:filterOption]['name'] = 'vaccination'
     tz_offset = 300
+
+    # Check for monitorees who have a blank report date
     filtered_patients = advanced_filter(patients, filters, tz_offset)
-    filtered_patients_array = [patient_1, patient_2, patient_5]
+    filtered_patients_array = [patient_1, patient_7, patient_8]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
-  end
 
-  test 'advanced filter vaccination single filter option administration date after' do
-    Patient.destroy_all
-    user = create(:public_health_enroller_user)
-    patient_1 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_1, administration_date: DateTime.new(2021, 3, 1))
-    create(:vaccine, patient: patient_1, administration_date: DateTime.new(2021, 4, 1))
-    patient_2 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_2, administration_date: DateTime.new(2021, 3, 24))
-    patient_3 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_3, administration_date: DateTime.new(2021, 3, 25))
-    patient_4 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_4, administration_date: DateTime.new(2021, 3, 26))
-    patient_5 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_5, administration_date: DateTime.new(2021, 3, 1))
-    create(:vaccine, patient: patient_5, administration_date: DateTime.new(2021, 3, 15))
-    patient_6 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_6, administration_date: DateTime.new(2021, 4, 1))
-    create(:vaccine, patient: patient_6, administration_date: DateTime.new(2021, 4, 3))
-    create(:patient, creator: user)
+    # Check for monitorees who have a report date "before"
+    filters[0][:value][0][:value] = { when: 'before', date: '2021-03-25' }
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_5, patient_8]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
 
-    patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'administration-date', value: { when: 'after', date: '2021-03-25' } }] }]
-    filters[0][:filterOption]['name'] = 'vaccination'
-    tz_offset = 300
+    # Check for monitorees who have a report date "after"
+    filters[0][:value][0][:value] = { when: 'after', date: '2021-03-25' }
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_4, patient_6]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 
-  test 'advanced filter vaccination single filter option dose number blank' do
+  test 'advanced filter vaccination single filter option dose number' do
     Patient.destroy_all
     user = create(:public_health_enroller_user)
     patient_1 = create(:patient, creator: user)
@@ -610,42 +655,24 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:vaccine, patient: patient_6, dose_number: '1')
     create(:vaccine, patient: patient_6, dose_number: '')
     create(:patient, creator: user)
+    patient_7 = create(:patient, creator: user)
+    create(:vaccine, patient: patient_7, dose_number: '2')
+    create(:vaccine, patient: patient_7, dose_number: '2')
 
     patients = Patient.all
     filters = [{ filterOption: {}, value: [{ name: 'dose-number', value: '' }] }]
     filters[0][:filterOption]['name'] = 'vaccination'
     tz_offset = 300
+
+    # Check for monitorees who have a blank dose number
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_3, patient_4, patient_5, patient_6]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
-  end
 
-  test 'advanced filter vaccination single filter option dose number not blank' do
-    Patient.destroy_all
-    user = create(:public_health_enroller_user)
-    patient_1 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_1, dose_number: '1')
-    create(:vaccine, patient: patient_1, dose_number: '2')
-    patient_2 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_2, dose_number: '1')
-    patient_3 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_3, dose_number: '')
-    patient_4 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_4, dose_number: 'Unknown')
-    patient_5 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_5, dose_number: '1')
-    create(:vaccine, patient: patient_5, dose_number: nil)
-    patient_6 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_6, dose_number: '1')
-    create(:vaccine, patient: patient_6, dose_number: '1')
-    create(:patient, creator: user)
-
-    patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'dose-number', value: '1' }] }]
-    filters[0][:filterOption]['name'] = 'vaccination'
-    tz_offset = 300
+    # Check for monitorees who have a non-blank dose number
+    filters[0][:value][0][:value] = '1'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
-    filtered_patients_array = [patient_1, patient_2, patient_5, patient_6]
+    filtered_patients_array = [patient_1, patient_6]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 
