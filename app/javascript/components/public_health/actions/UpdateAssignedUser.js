@@ -48,7 +48,7 @@ class UpdateAssignedUser extends React.Component {
 
   submit = () => {
     let idArray = this.props.patients.map(x => x['id']);
-    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
+    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k) || _.isEmpty(_.get(this.state, k)));
 
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
