@@ -382,7 +382,7 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    creator = history[:household_status] != nil ? 'User' : 'System'
+    creator = history[:household_status].nil? ? 'System' : 'User'
     comment = "#{creator} #{field[:new_value]} notifications for this monitoree#{compose_explanation(history, field)}."
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment, create: create)
   end
@@ -421,7 +421,7 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    creator = history[:household_status] != nil ? 'User' : 'System'
+    creator = history[:household_status].nil? ? 'System' : 'User'
     comment = "#{creator} turned #{field[:new_value]} #{field[:name]}#{compose_explanation(history, field)}."
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment, create: create)
   end
@@ -480,7 +480,7 @@ class History < ApplicationRecord
   end
 
   private_class_method def self.compose_message(history, field)
-    creator = history[:household_status] != nil ? 'User' : 'System'
+    creator = history[:household_status].nil? ? 'System' : 'User'
     verb = field[:new_value].blank? ? 'cleared' : 'changed'
     from_text = field[:old_value].blank? ? 'blank' : "\"#{field[:old_value]}\""
     to_text = field[:new_value].blank? ? 'blank' : "\"#{field[:new_value]}\""
@@ -493,11 +493,11 @@ class History < ApplicationRecord
     comment
   end
 
-  private_class_method def self.compose_explanation(history, field)
+  private_class_method def self.compose_explanation(history, _field)
     if history[:household_status] == history[:patient].id && history[:propagation] == :group
-      " and applied that change to all household members"
+      ' and applied that change to all household members'
     elsif history[:household_status] == history[:patient].id && history[:propagation] == :group_cm
-      " and applied that change to household members under continuous exposure"
+      ' and applied that change to household members under continuous exposure'
     elsif history[:household_status] == history[:patient].id
       ''
     elsif history[:household_status] == history[:patient].responder_id && history[:propagation] == :group
@@ -509,13 +509,13 @@ class History < ApplicationRecord
     elsif history[:household_status] == history[:patient].responder_id
       " by making that change for monitoree's head of household (SARA Alert ID: #{history[:household_status]})
         and applying that change to this monitoree"
-    elsif history[:household_status] != nil && history[:propagation] == :group
+    elsif !history[:household_status].nil? && history[:propagation] == :group
       " by making that change for a household member (SARA ALERT ID: #{history[:household_status]})
         and applying that change to all household members"
-    elsif history[:household_status] != nil && history[:propagation] == :group_cm
+    elsif !history[:household_status].nil? && history[:propagation] == :group_cm
       " by making that change for for a household member (SARA ALERT ID: #{history[:household_status]})
         and applying that change to household members under continuous exposure"
-    elsif history[:household_status] != nil
+    elsif !history[:household_status].nil?
       " by making that change for a household member (SARA ALERT ID: #{history[:household_status]})
         and applying that change to this monitoree"
     else
