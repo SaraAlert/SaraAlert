@@ -241,7 +241,7 @@ class Patient extends React.Component {
             <div className="item-group">
               {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
                 <React.Fragment>
-                  <span className="text-danger">Monitoree is a minor{!this.props.details.head_of_household && this.props.hoh && '. '}</span>
+                  <span className="text-danger">Monitoree is a minor</span>
                   {!this.props.details.head_of_household && this.props.hoh && (
                     <div>
                       View contact info for head of household:
