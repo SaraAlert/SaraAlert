@@ -12,7 +12,8 @@ class ConsumeAssessmentsJob
                                      'experiencing_symptoms',
                                      'response_status',
                                      'error_code')
-    if message.empty?
+    # Invalid message
+    if message.nil?
       log_and_capture('ConsumeAssessmentsJob: No valid fields found in message. Skipping.')
       return
     end
@@ -57,55 +58,74 @@ class ConsumeAssessmentsJob
     when 'no_answer_voice'
       # If nobody answered, nil out the last_reminder_sent field so the system will try calling again
       patient.update(last_assessment_reminder_sent: nil)
-      History.contact_attempt(patient: patient, comment: "Sara Alert called this monitoree's primary telephone" \
-                              " number #{patient.primary_telephone} and nobody answered the phone.")
+      History.contact_attempt(patient: patient, comment: "Sara Alert called this monitoree's primary telephone \
+                                                         number #{patient.primary_telephone} and nobody answered the phone.")
       unless dependents.blank?
-        create_contact_attempt_history_for_dependents(dependents, "Sara Alert called this monitoree's head" \
-                                              ' of household and nobody answered the phone.')
+        create_contact_attempt_history_for_dependents(dependents, "Sara Alert called this monitoree's head \
+                                                                  of household and nobody answered the phone.")
       end
 
       return
     when 'no_answer_sms'
       # No need to wipe out last_assessment_reminder_sent so that another sms will be sent because the sms studio flow is kept open for 18hrs
-      History.contact_attempt(patient: patient, comment: "Sara Alert texted this monitoree's primary telephone" \
-                              " number #{patient.primary_telephone} during their preferred" \
-                              ' contact time, but did not receive a response.')
+      History.contact_attempt(patient: patient, comment: "Sara Alert texted this monitoree's primary telephone \
+                                                          number #{patient.primary_telephone} during their preferred \
+                                                          contact time, but did not receive a response.")
       unless dependents.blank?
-        create_contact_attempt_history_for_dependents(dependents, "Sara Alert texted this monitoree's head of" \
-                                              ' household and did not receive a response.')
+        create_contact_attempt_history_for_dependents(dependents, "Sara Alert texted this monitoree's head of \
+                                                                   household and did not receive a response.")
       end
 
       return
     when 'error_voice'
       # If there was an error in completeing the call, nil out the last_reminder_sent field so the system will try calling again
       patient.update(last_assessment_reminder_sent: nil)
-      History.contact_attempt(patient: patient, comment: 'Sara Alert was unable to complete a call to this' \
-                             " monitoree's primary telephone number #{patient.primary_telephone}.")
+      History.contact_attempt(patient: patient, comment: "Sara Alert was unable to complete a call to this \
+                                                         monitoree's primary telephone number #{patient.primary_telephone}.")
       unless dependents.blank?
-        create_contact_attempt_history_for_dependents(dependents, 'Sara Alert was unable to complete a call' \
-                                              " to this monitoree's head of household.")
+        create_contact_attempt_history_for_dependents(dependents, "Sara Alert was unable to complete a call \
+                                                                          to this monitoree's head of household.")
       end
 
       return
     when 'error_sms'
       # If there was an error sending an SMS, nil out the last_reminder_sent field so the system will try calling again
       patient.update(last_assessment_reminder_sent: nil)
-      History.contact_attempt(patient: patient, comment: "Sara Alert was unable to send an SMS to this monitoree's" \
-                              " primary telephone number #{patient.primary_telephone}.")
+      History.contact_attempt(patient: patient, comment: "Sara Alert was unable to send an SMS to this monitoree's \
+                                                          primary telephone number #{patient.primary_telephone}.")
       unless dependents.blank?
-        create_contact_attempt_history_for_dependents(dependents, 'Sara Alert was unable to send an SMS to' \
-                                              " this monitoree's head of household.")
+        create_contact_attempt_history_for_dependents(dependents, "Sara Alert was unable to send an SMS to \
+                                                                          this monitoree's head of household.")
+      end
+
+      return
+    when 'max_retries_sms'
+      # Maximum amount of SMS response retries reached
+      History.contact_attempt(patient: patient, comment: "The system could not record a response because the monitoree exceeded the maximum number
+         of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
+      unless dependents.blank?
+        create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household
+          exceeded the maximum number of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
+      end
+
+      return
+    when 'max_retries_voice'
+      # Maximum amount of voice response retries reached
+      History.contact_attempt(patient: patient, comment: "The system could not record a response because the monitoree exceeded the maximum number
+        of report voice response retries via primary telephone number #{patient.primary_telephone}.")
+      unless dependents.blank?
+        create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household
+          exceeded the maximum number of report voice response retries via primary telephone number #{patient.primary_telephone}.")
       end
 
       return
     end
 
     threshold_condition = ThresholdCondition.find_by(threshold_condition_hash: message['threshold_condition_hash'])
-
     # Invalid threshold_condition_hash
     if threshold_condition.nil?
-      log_and_capture("ConsumeAssessmentsJob: No ThresholdCondition found (patient: #{patient.id}," \
-                      " threshold_condition_hash: #{message['threshold_condition_hash']})")
+      log_and_capture("ConsumeAssessmentsJob: No ThresholdCondition found (patient: #{patient.id}, \
+                      threshold_condition_hash: #{message['threshold_condition_hash']})")
       return
     end
 
@@ -113,12 +133,21 @@ class ConsumeAssessmentsJob
       typed_reported_symptoms = Condition.build_symptoms(message['reported_symptoms_array'])
       reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
       assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
-      assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
-      assessment.save
+      begin
+        reported_condition.transaction do
+          reported_condition.save!
+          assessment.symptomatic = assessment.symptomatic?
+          assessment.save!
+        end
+      rescue ActiveRecord::RecordInvalid => e
+        log_and_capture("ConsumeAssessmentsJob: Unable to save assessment. Patient ID: #{patient.id}. Error: #{e}")
+      end
+
+      return
     else
       # If message['reported_symptoms_array'] is not populated then this assessment came in through
       # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
-      patient.active_dependents.uniq.each do |dependent|
+      patient.active_dependents.each do |dependent|
         typed_reported_symptoms = if message['experiencing_symptoms']
                                     # Remove values so that the values will appear as blank in a symptomatic report
                                     # this will indicate that the person needs to be reached out to to get the actual values
@@ -130,18 +159,30 @@ class ConsumeAssessmentsJob
                                   end
         reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
         assessment = Assessment.new(reported_condition: reported_condition, patient: dependent)
-        assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
+
         # If current user in the collection of patient + patient dependents is the patient, then that means
         # that they reported for themselves, else we are creating an assessment for the dependent and
         # that means that it was the proxy who reported for them
         assessment.who_reported = patient.submission_token == dependent.submission_token ? 'Monitoree' : 'Proxy'
-        assessment.save
+        begin
+          reported_condition.transaction do
+            reported_condition.save!
+            assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
+            assessment.save!
+          end
+        rescue ActiveRecord::RecordInvalid => e
+          log_and_capture("ConsumeAssessmentsJob: Unable to save assessment. Patient ID: #{patient.id}. Error: #{e}")
+        end
+
+        return
       end
     end
   rescue JSON::ParserError
     # Do not reproduce entire message in the log. There may be sensitive data in the message.
     # Sentry will automatically capture.
     Rails.logger.error('ConsumeAssessmentsJob: Skipping invalid message.')
+
+    return
   end
 
   private
