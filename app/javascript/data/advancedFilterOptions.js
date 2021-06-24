@@ -79,7 +79,7 @@ export const advancedFilterOptions = [
     description: 'All isolation records ineligible to ever appear on Records Requiring Review line list',
     type: 'boolean',
     tooltip:
-      'This filter will return all records in isolation without a Symptom Onset Date or not marked as Asymptomatic or marked as Asymptomatic without a positive lab result',
+      'This filter will return all records in the Isolation workflow that both do not have a Symptom Onset Date and do not have a positive lab result with a Specimen Collection Date',
   },
 
   /* SEARCH FILTER OPTIONS */
