@@ -19,10 +19,33 @@ class MonitoringPeriod extends React.Component {
     return eom === 'Continuous Exposure' ? eom : formatDate(eom);
   };
 
+  renderEndOfMonitoring = () => {
+    return (
+      <React.Fragment>
+        <span className="input-label">END OF MONITORING</span>
+        <InfoTooltip
+          getCustomText={() => {
+            return (
+              <div>
+                Calculated by the system as Last Date of Exposure + {this.props.monitoring_period_days} days
+                <div>
+                  <i>Only relevant for Exposure Workflow</i>
+                </div>
+              </div>
+            );
+          }}
+          location="right"></InfoTooltip>
+        <div id="end_of_monitoring_date" className="my-1">
+          {this.formatEndOfMonitoringDate()}
+        </div>
+      </React.Fragment>
+    );
+  };
+
   render() {
-    return this.props.patient.isolation ? (
+    return (
       <Row>
-        <Col sm={{ span: 12, order: 1 }} xs={{ span: 24, order: 1 }}>
+        <Col md={{ span: 8, order: 1 }} xs={{ span: 24, order: 1 }}>
           <SymptomOnset
             authenticity_token={this.props.authenticity_token}
             patient={this.props.patient}
@@ -31,29 +54,7 @@ class MonitoringPeriod extends React.Component {
             calculated_symptom_onset={this.props.calculated_symptom_onset}
           />
         </Col>
-        <Col sm={{ span: 12, order: 2 }} xs={{ span: 24, order: 3 }}>
-          <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
-        </Col>
-        {!this.props.patient.symptom_onset && !this.props.symptomatic_assessments_exist && this.props.num_pos_labs === 0 && (
-          <Col sm={{ span: 24, order: 3 }} xs={{ span: 24, order: 2 }}>
-            <Alert variant="warning" className="alert-warning-text">
-              <b>Warning: </b>This case does not have a Symptom Onset Date or positive lab result and may never become eligible to end monitoring
-            </Alert>
-          </Col>
-        )}
-      </Row>
-    ) : (
-      <Row>
-        <Col md={8}>
-          <SymptomOnset
-            authenticity_token={this.props.authenticity_token}
-            patient={this.props.patient}
-            symptomatic_assessments_exist={this.props.symptomatic_assessments_exist}
-            num_pos_labs={this.props.num_pos_labs}
-            calculated_symptom_onset={this.props.calculated_symptom_onset}
-          />
-        </Col>
-        <Col md={8}>
+        <Col md={{ span: 8, order: 2 }} xs={{ span: 24, order: 3 }}>
           <LastDateExposure
             household_members={this.props.household_members}
             authenticity_token={this.props.authenticity_token}
@@ -62,26 +63,20 @@ class MonitoringPeriod extends React.Component {
             jurisdiction_paths={this.props.jurisdiction_paths}
           />
         </Col>
-        <Col md={8}>
-          <React.Fragment>
-            <span className="input-label">END OF MONITORING</span>
-            <InfoTooltip
-              getCustomText={() => {
-                return (
-                  <div>
-                    Calculated by the system as Last Date of Exposure + {this.props.monitoring_period_days} days
-                    <div>
-                      <i>Only relevant for Exposure Workflow</i>
-                    </div>
-                  </div>
-                );
-              }}
-              location="right"></InfoTooltip>
-            <div id="end_of_monitoring_date" className="my-1">
-              {this.formatEndOfMonitoringDate()}
-            </div>
-          </React.Fragment>
+        <Col md={{ span: 8, order: 3 }} xs={{ span: 24, order: 4 }}>
+          {this.props.patient.isolation ? (
+            <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+          ) : (
+            this.renderEndOfMonitoring()
+          )}
         </Col>
+        {!this.props.patient.symptom_onset && !this.props.symptomatic_assessments_exist && this.props.num_pos_labs === 0 && (
+          <Col md={{ span: 24, order: 4 }} xs={{ span: 24, order: 2 }}>
+            <Alert variant="warning" className="alert-warning-text">
+              <b>Warning: </b>This case does not have a Symptom Onset Date or positive lab result and may never become eligible to end monitoring
+            </Alert>
+          </Col>
+        )}
       </Row>
     );
   }
