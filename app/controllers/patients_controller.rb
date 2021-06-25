@@ -18,6 +18,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_patient?
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
+    @title = @patient.initials_age('-')
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(action: 'monitoree_unavailable', id: params[:id]) && return if @patient.nil? || @patient.purged
