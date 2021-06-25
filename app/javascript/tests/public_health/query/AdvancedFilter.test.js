@@ -18,7 +18,9 @@ import {
   mockFilterAgeBetween,
   mockFilterManualContactAttemptsEqual,
   mockFilterManualContactAttemptsLessThan,
-  mockFilterEnrolledDateWithin,
+  mockFilterSymptomOnsetDateWithin,
+  mockFilterSymptomOnsetDateBefore,
+  mockFilterSymptomOnsetDateBlank,
   mockFilterEnrolledDateBefore,
   mockFilterLatestReportRelativeToday,
   mockFilterLatestReportRelativeYesterday,
@@ -36,7 +38,7 @@ const mockToken = 'testMockTokenString12345';
 const numberOptionValues = ['less-than', 'less-than-equal', 'equal', 'greater-than-equal', 'greater-than', 'between'];
 const numberOptionValuesText = ['less than', 'less than or equal to', 'equal to', 'greater than or equal to', 'greater than', 'between'];
 const dateOptionValues = ['within', 'before', 'after'];
-const multiDateOptionValues = ['before', 'after'];
+const multiDateOptionValues = ['before', 'after', ''];
 const relativeOptionValues = ['today', 'tomorrow', 'yesterday', 'custom'];
 const relativeOptionOperatorValues = ['less-than', 'greater-than'];
 const relativeOptionUnitValues = ['day(s)', 'week(s)', 'month(s)'];
@@ -378,6 +380,28 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter date type statement with single date', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterSymptomOnsetDateBefore.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterSymptomOnsetDateBefore.filterOption.name);
+    wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: 'before' } });
+    expect(wrapper.find(Form.Control).length).toEqual(1);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual('before');
+    expect(wrapper.find(Form.Control).find('option').length).toEqual(dateOptionValues.length + 1);
+    dateOptionValues.forEach((value, index) => {
+      expect(wrapper.find(Form.Control).find('option').at(index).text()).toEqual(value);
+      expect(wrapper.find(Form.Control).find('option').at(index).prop('value')).toEqual(value);
+    });
+    expect(wrapper.find(Form.Control).find('option').at(dateOptionValues.length).text()).toEqual('');
+    expect(wrapper.find(Form.Control).find('option').at(dateOptionValues.length).prop('value')).toEqual(undefined);
+    expect(wrapper.find(DateInput).length).toEqual(1);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(moment(new Date()).format('YYYY-MM-DD'));
+    expect(wrapper.find('.text-center').exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
+  });
+
+  it('Properly renders advanced filter date type statement with single date where blank is not supported', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEnrolledDateBefore.filterOption.name });
     expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterEnrolledDateBefore.filterOption.name);
     wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: 'before' } });
@@ -398,15 +422,17 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter date type statement with date range', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEnrolledDateWithin.filterOption.name });
-    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterEnrolledDateWithin.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterSymptomOnsetDateWithin.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterSymptomOnsetDateWithin.filterOption.name);
     expect(wrapper.find(Form.Control).length).toEqual(1);
     expect(wrapper.find(Form.Control).prop('value')).toEqual('within');
-    expect(wrapper.find(Form.Control).find('option').length).toEqual(dateOptionValues.length);
+    expect(wrapper.find(Form.Control).find('option').length).toEqual(dateOptionValues.length + 1);
     dateOptionValues.forEach((value, index) => {
       expect(wrapper.find(Form.Control).find('option').at(index).text()).toEqual(value);
       expect(wrapper.find(Form.Control).find('option').at(index).prop('value')).toEqual(value);
     });
+    expect(wrapper.find(Form.Control).find('option').at(dateOptionValues.length).text()).toEqual('');
+    expect(wrapper.find(Form.Control).find('option').at(dateOptionValues.length).prop('value')).toEqual(undefined);
     expect(wrapper.find(DateInput).length).toEqual(2);
     expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(moment(new Date()).subtract(3, 'd').format('YYYY-MM-DD'));
     expect(wrapper.find('.text-center').find('b').text()).toEqual('TO');
@@ -858,38 +884,44 @@ describe('AdvancedFilter', () => {
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')).toEqual([{ filterOption: null }]);
-    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEnrolledDateWithin.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterSymptomOnsetDateWithin.filterOption.name });
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEnrolledDateWithin]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEnrolledDateWithin.dateOption);
-    expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(mockFilterEnrolledDateWithin.value.start);
-    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterEnrolledDateWithin.value.end);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterSymptomOnsetDateWithin]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSymptomOnsetDateWithin.dateOption);
+    expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(mockFilterSymptomOnsetDateWithin.value.start);
+    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterSymptomOnsetDateWithin.value.end);
     wrapper.find(DateInput).at(0).simulate('change', newDate);
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterEnrolledDateWithin.dateOption);
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ start: newDate, end: mockFilterEnrolledDateWithin.value.end });
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEnrolledDateWithin.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterSymptomOnsetDateWithin.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ start: newDate, end: mockFilterSymptomOnsetDateWithin.value.end });
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSymptomOnsetDateWithin.dateOption);
     expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(newDate);
-    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterEnrolledDateWithin.value.end);
-    wrapper.find(DateInput).at(1).simulate('change', mockFilterEnrolledDateWithin.value.start);
+    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterSymptomOnsetDateWithin.value.end);
+    wrapper.find(DateInput).at(1).simulate('change', mockFilterSymptomOnsetDateWithin.value.start);
     expect(wrapper.state('activeFilter')).toEqual(null);
-    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterEnrolledDateWithin.dateOption);
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ start: newDate, end: mockFilterEnrolledDateWithin.value.start });
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEnrolledDateWithin.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterSymptomOnsetDateWithin.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual({ start: newDate, end: mockFilterSymptomOnsetDateWithin.value.start });
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSymptomOnsetDateWithin.dateOption);
     expect(wrapper.find(DateInput).at(0).prop('date')).toEqual(newDate);
-    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterEnrolledDateWithin.value.start);
+    expect(wrapper.find(DateInput).at(1).prop('date')).toEqual(mockFilterSymptomOnsetDateWithin.value.start);
     wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterEnrolledDateBefore.dateOption } });
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterEnrolledDateBefore.dateOption);
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterEnrolledDateWithin.value.end);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterSymptomOnsetDateWithin.value.end);
     expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEnrolledDateBefore.dateOption);
-    expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilterEnrolledDateWithin.value.end);
+    expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilterSymptomOnsetDateWithin.value.end);
     wrapper.find(DateInput).simulate('change', mockFilterEnrolledDateBefore.value);
     expect(wrapper.state('activeFilter')).toEqual(null);
     expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterEnrolledDateBefore.dateOption);
     expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterEnrolledDateBefore.value);
     expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEnrolledDateBefore.dateOption);
     expect(wrapper.find(DateInput).prop('date')).toEqual(mockFilterEnrolledDateBefore.value);
+    wrapper.find(Form.Control).simulate('change', { target: { value: mockFilterSymptomOnsetDateBlank.dateOption } });
+    expect(wrapper.state('activeFilter')).toEqual(null);
+    expect(wrapper.state('activeFilterOptions')[0].dateOption).toEqual(mockFilterSymptomOnsetDateBlank.dateOption);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(mockFilterSymptomOnsetDateBlank.value);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterSymptomOnsetDateBlank.dateOption);
+    expect(wrapper.find(DateInput).exists()).toBeFalsy();
   });
 
   it('Changing advanced filter relativeOption and values for relative type advanced filters properly updates state and value', () => {
