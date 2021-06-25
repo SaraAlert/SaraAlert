@@ -812,7 +812,7 @@ class PatientsController < ApplicationController
 
   # Fetches table data for viable HoH options.
   def head_of_household_options
-    patients_table_data(params)
+    render json: patients_table_data(params, current_user)
   end
 
   # Parameters allowed for saving to database

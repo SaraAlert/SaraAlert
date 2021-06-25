@@ -8,7 +8,7 @@ class PublicHealthController < ApplicationController
   before_action :authenticate_user_role
 
   def patients
-    patients_table_data(params)
+    render json: patients_table_data(params, current_user)
   end
 
   def patients_count
