@@ -1,3 +1,9 @@
+import React from 'react';
+import IconMinor from '../components/patient/icons/IconMinor';
+import { formatDate } from '../utils/DateTime';
+import moment from 'moment-timezone';
+import { faDatabase } from '@fortawesome/free-solid-svg-icons';
+
 /**
  * Formats a patient's name (first middle last) as a string.
  * @param {Object} patient - patient object
@@ -61,4 +67,30 @@ function formatRace(patient) {
   return raceArray.length === 0 ? '--' : raceArray.join(', ');
 }
 
-export { formatName, formatNameAlt, formatPhoneNumber, formatRace };
+/**
+ * helper function to determine if a given date of birth would make someone a minor.
+ * @param {*} date : a date of birth value in YYYY-MM-DD format
+ * @returns boolean true if patient is under 18, false if not
+ */
+function isMinor(date) {
+  return moment(date, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years')); 
+}
+
+/**
+ * Formats values in the date of birth column to be human readable and include whether that DOB indicates a minor.
+ * @param {String} dateOfBirth - Patient's date of birth in YYYY-MM-DD format
+ * @param {Int} id - Patient'd unique ID
+ */
+function formatDateOfBirthTableCell(dateOfBirth, id) {
+  if (isMinor(dateOfBirth)) {
+    return (
+      <React.Fragment>
+        {formatDate(dateOfBirth)}
+        <IconMinor patientId={id.toString()} customClass={'float-right ml-1'} />
+      </React.Fragment>
+    );
+  }
+  return formatDate(dateOfBirth);
+}
+
+export { formatName, formatNameAlt, formatPhoneNumber, formatRace, isMinor, formatDateOfBirthTableCell };

@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { formatDate } from '../../../../utils/DateTime';
 import { formatNameAlt } from '../../../../utils/Patient';
 
-import BadgeHoH from '../utils/BadgeHoH';
+import BadgeHoH from '../../icons/BadgeHoH';
 import CustomTable from '../../../layout/CustomTable';
 import reportError from '../../../util/ReportError';
 import { patientHref } from '../../../../utils/Navigation';

@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Row } from 'react-bootstrap';
 import Dependent from '../../../components/patient/household/Dependent';
-import HouseholdMemberTable from '../../../components/patient/household/utils/HouseholdMemberTable';
+import HouseholdMemberTable from '../../../components/patient/household/HouseholdMemberTable';
 import RemoveFromHousehold from '../../../components/patient/household/actions/RemoveFromHousehold';
 import { mockPatient1, mockPatient2 } from '../../mocks/mockPatients';
 import { mockUser1 } from '../../mocks/mockUsers';
