@@ -186,8 +186,8 @@ class Contact extends React.Component {
       });
   };
 
-  renderWarningBanner = (message, showTooltip)  => {
-    return(
+  renderWarningBanner = (message, showTooltip) => {
+    return (
       <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
         <Alert variant="danger" className="mb-0">
           <b>Warning:</b> {message}
@@ -195,7 +195,7 @@ class Contact extends React.Component {
         </Alert>
       </Form.Group>
     );
-  }
+  };
 
   render() {
     return (
@@ -297,9 +297,9 @@ class Contact extends React.Component {
                     {this.state.errors['secondary_telephone']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                {this.state.current.patient?.preferred_contact_method?.includes('SMS') && this.state.current.blocked_sms && (
-                  this.renderWarningBanner('SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert)', true)
-                )}
+                {this.state.current.patient?.preferred_contact_method?.includes('SMS') &&
+                  this.state.current.blocked_sms &&
+                  this.renderWarningBanner('SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert', true)}
               </Form.Row>
               <Form.Row className="mb-3">
                 <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 1 }} lg={{ span: 12, order: 1 }} controlId="primary_telephone_type">
@@ -339,16 +339,19 @@ class Contact extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
-                  this.state.current.patient.primary_telephone_type == 'Plain Cell' && (
-                    this.renderWarningBanner('Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.')
+                  this.state.current.patient.primary_telephone_type == 'Plain Cell' &&
+                  this.renderWarningBanner(
+                    'Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
                   )}
                 {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
-                  this.state.current.patient.primary_telephone_type == 'Landline' && (
-                    this.renderWarningBanner('Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.')
+                  this.state.current.patient.primary_telephone_type == 'Landline' &&
+                  this.renderWarningBanner(
+                    'Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
                   )}
                 {this.state.current.patient.preferred_contact_method === 'SMS Text-message' &&
-                  this.state.current.patient.primary_telephone_type === 'Landline' && (
-                    this.renderWarningBanner('Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this type of message.')
+                  this.state.current.patient.primary_telephone_type === 'Landline' &&
+                  this.renderWarningBanner(
+                    'Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this type of message.'
                   )}
               </Form.Row>
               <Form.Row>

@@ -77,10 +77,10 @@ const mockFilterManualContactAttemptsLessThan = {
 };
 
 /* DATE TYPE MOCK FILTERS */
-const mockFilterEnrolledDateWithin = {
+const mockFilterSymptomOnsetDateWithin = {
   additionalFilterOption: null,
   dateOption: 'within',
-  filterOption: advancedFilterOptions.find(filter => filter.name === 'enrolled'),
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'symptom-onset'),
   numberOption: null,
   relativeOption: null,
   value: {
@@ -89,13 +89,31 @@ const mockFilterEnrolledDateWithin = {
   },
 };
 
+const mockFilterSymptomOnsetDateBefore = {
+  additionalFilterOption: null,
+  dateOption: 'before',
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'symptom-onset'),
+  numberOption: null,
+  relativeOption: null,
+  value: moment(new Date()).format('YYYY-MM-DD'),
+};
+
+const mockFilterSymptomOnsetDateBlank = {
+  additionalFilterOption: null,
+  dateOption: '',
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'symptom-onset'),
+  numberOption: null,
+  relativeOption: null,
+  value: moment(new Date()).format('YYYY-MM-DD'),
+};
+
 const mockFilterEnrolledDateBefore = {
   additionalFilterOption: null,
   dateOption: 'before',
   filterOption: advancedFilterOptions.find(filter => filter.name === 'enrolled'),
   numberOption: null,
   relativeOption: null,
-  value: '2020-12-30',
+  value: moment(new Date()).format('YYYY-MM-DD'),
 };
 
 /* RELATIVE TYPE MOCK FILTERS */
@@ -218,7 +236,9 @@ export {
   mockFilterAgeBetween,
   mockFilterManualContactAttemptsEqual,
   mockFilterManualContactAttemptsLessThan,
-  mockFilterEnrolledDateWithin,
+  mockFilterSymptomOnsetDateWithin,
+  mockFilterSymptomOnsetDateBefore,
+  mockFilterSymptomOnsetDateBlank,
   mockFilterEnrolledDateBefore,
   mockFilterLatestReportRelativeToday,
   mockFilterLatestReportRelativeYesterday,
