@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Row } from 'react-bootstrap';
 import ChangeHoH from './actions/ChangeHoH';
-import HouseholdMemberTable from './utils/HouseholdMemberTable';
+import HouseholdMemberTable from './HouseholdMemberTable';
 import EnrollHouseholdMember from './actions/EnrollHouseholdMember';
 
 class HeadOfHousehold extends React.Component {

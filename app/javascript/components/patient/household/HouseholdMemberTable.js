@@ -2,12 +2,11 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import moment from 'moment-timezone';
 import _ from 'lodash';
-import { formatDate } from '../../../../utils/DateTime';
-import { formatNameAlt } from '../../../../utils/Patient';
+import { formatNameAlt, formatDateOfBirthTableCell } from '../../../utils/Patient';
 
-import BadgeHoH from '../utils/BadgeHoH';
-import CustomTable from '../../../layout/CustomTable';
-import { patientHref } from '../../../../utils/Navigation';
+import { patientHref } from '../../../utils/Navigation';
+import BadgeHoH from '../icons/BadgeHoH';
+import CustomTable from '../../layout/CustomTable';
 
 class HouseholdMemberTable extends React.Component {
   constructor(props) {
@@ -16,7 +15,7 @@ class HouseholdMemberTable extends React.Component {
       table: {
         colData: [
           { field: 'name', label: 'Name', isSortable: true, tooltip: null, filter: this.formatPatientName },
-          { field: 'date_of_birth', label: 'Date of Birth', isSortable: true, tooltip: null, filter: formatDate },
+          { field: 'date_of_birth', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDOB },
           { field: 'isolation', label: 'Workflow', isSortable: true, tooltip: null, options: { true: 'Isolation', false: 'Exposure' } },
           {
             field: 'monitoring',
@@ -270,6 +269,10 @@ class HouseholdMemberTable extends React.Component {
         </a>
       </React.Fragment>
     );
+  };
+
+  formatDOB = data => {
+    return formatDateOfBirthTableCell(data.rowData.date_of_birth, data.rowData.id);
   };
 
   /**

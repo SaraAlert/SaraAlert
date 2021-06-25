@@ -1,7 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Row } from 'react-bootstrap';
-import HouseholdMemberTable from './utils/HouseholdMemberTable';
+import HouseholdMemberTable from './HouseholdMemberTable';
 import RemoveFromHousehold from './actions/RemoveFromHousehold';
 
 class Dependent extends React.Component {
