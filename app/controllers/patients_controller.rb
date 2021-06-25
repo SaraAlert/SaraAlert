@@ -53,6 +53,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_create_patient?
 
     dashboard_crumb(params.permit(:nav)[:nav] || (params.permit(:isolation)[:isolation] ? 'isolation' : 'global'), nil)
+    @title = 'Enroll New Monitoree'
 
     # If this is a close contact that is being fully enrolled, grab that record to auto-populate fields
     @close_contact = CloseContact.where(patient_id: current_user.viewable_patients).where(id: params.permit(:cc)[:cc])&.first if params[:cc].present?
