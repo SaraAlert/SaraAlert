@@ -288,13 +288,13 @@ export const advancedFilterOptions = [
         name: 'result',
         title: 'result',
         type: 'select',
-        options: ['positive', 'negative', 'indeterminate', 'other'],
+        options: ['positive', 'negative', 'indeterminate', 'other', ''],
       },
       {
         name: 'lab-type',
         title: 'test type',
         type: 'select',
-        options: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'],
+        options: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other', ''],
       },
       {
         name: 'specimen-collection',

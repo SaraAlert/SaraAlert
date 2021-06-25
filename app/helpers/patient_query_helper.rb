@@ -511,23 +511,35 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     filter[:value].each do |field|
       case field[:name]
       when 'lab-type'
-        labs = labs.where('laboratories.lab_type = ?', field[:value])
+        labs = if field[:value].blank?
+                 labs.where(laboratories: { lab_type: ['', nil] })
+               else
+                 labs.where(laboratories: { lab_type: field[:value] })
+               end
       when 'result'
-        labs = labs.where('laboratories.result = ?', field[:value])
+        labs = if field[:value].blank?
+                 labs.where(laboratories: { result: ['', nil] })
+               else
+                 labs.where(laboratories: { result: field[:value] })
+               end
       when 'specimen-collection'
-        case field[:value][:when]
-        when 'before'
-          labs = labs.where('laboratories.specimen_collection < ?', field[:value][:date])
-        when 'after'
-          labs = labs.where('laboratories.specimen_collection > ?', field[:value][:date])
-        end
+        labs = case field[:value][:when]
+               when 'before'
+                 labs.where('laboratories.specimen_collection < ?', field[:value][:date])
+               when 'after'
+                 labs.where('laboratories.specimen_collection > ?', field[:value][:date])
+               else
+                 labs.where(laboratories: { specimen_collection: nil })
+               end
       when 'report'
-        case field[:value][:when]
-        when 'before'
-          labs = labs.where('laboratories.report < ?', field[:value][:date])
-        when 'after'
-          labs = labs.where('laboratories.report > ?', field[:value][:date])
-        end
+        labs = case field[:value][:when]
+               when 'before'
+                 labs.where('laboratories.report < ?', field[:value][:date])
+               when 'after'
+                 labs.where('laboratories.report > ?', field[:value][:date])
+               else
+                 labs.where(laboratories: { report: nil })
+               end
       end
     end
 
@@ -539,24 +551,23 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     filter[:value].each do |field|
       case field[:name]
       when 'vaccine-group'
-        vaccines = vaccines.where('vaccines.group_name = ?', field[:value])
+        vaccines = vaccines.where(vaccines: { group_name: field[:value] })
       when 'product-name'
-        vaccines = vaccines.where('vaccines.product_name = ?', field[:value])
+        vaccines = vaccines.where(vaccines: { product_name: field[:value] })
       when 'administration-date'
-        case field[:value][:when]
-        when 'before'
-          vaccines = vaccines.where('vaccines.administration_date < ?', field[:value][:date])
-        when 'after'
-          vaccines = vaccines.where('vaccines.administration_date > ?', field[:value][:date])
-        end
+        vaccines = case field[:value][:when]
+                   when 'before'
+                     vaccines.where('vaccines.administration_date < ?', field[:value][:date])
+                   when 'after'
+                     vaccines.where('vaccines.administration_date > ?', field[:value][:date])
+                   else
+                     vaccines = vaccines.where(vaccines: { administration_date: nil })
+                   end
       when 'dose-number'
         vaccines = if field[:value].blank?
-                     vaccines.where('vaccines.dose_number IS NULL')
-                             .or(
-                               vaccines.where('vaccines.dose_number = ?', '')
-                             )
+                     vaccines.where(vaccines: { dose_number: ['', nil] })
                    else
-                     vaccines.where('vaccines.dose_number = ?', field[:value])
+                     vaccines.where(vaccines: { dose_number: field[:value] })
                    end
       end
     end
@@ -566,13 +577,21 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
   # Filter patients by a set time range for the given field
   def advanced_filter_date(patients, field, filter, tz_diff, type)
-    timeframe = { after: Chronic.parse(filter[:value]).beginning_of_day + 1.day } if filter[:dateOption] == 'after'
-    timeframe = { before: Chronic.parse(filter[:value]).end_of_day - 1.day } if filter[:dateOption] == 'before'
-    if filter[:dateOption] == 'within'
-      timeframe = { after: Chronic.parse(filter[:value][:start]).beginning_of_day, before: Chronic.parse(filter[:value][:end]).end_of_day }
-    end
+    if filter[:dateOption].blank?
+      # blank for created at is not supported because that field cannot be nil
+      patients = patients.where(latest_assessment_at: nil) if field == :latest_assessment_at
+      patients = patients.where(last_date_of_exposure: nil) if field == :last_date_of_exposure
+      patients = patients.where(symptom_onset: nil) if field == :symptom_onset
+      patients
+    else
+      timeframe = { after: Chronic.parse(filter[:value]).beginning_of_day + 1.day } if filter[:dateOption] == 'after'
+      timeframe = { before: Chronic.parse(filter[:value]).end_of_day - 1.day } if filter[:dateOption] == 'before'
+      if filter[:dateOption] == 'within'
+        timeframe = { after: Chronic.parse(filter[:value][:start]).beginning_of_day, before: Chronic.parse(filter[:value][:end]).end_of_day }
+      end
 
-    patients_by_field_timeframe(patients, field, timeframe, tz_diff, type)
+      patients_by_field_timeframe(patients, field, timeframe, tz_diff, type)
+    end
   end
 
   # Filter patients by a relative time range for the given field
