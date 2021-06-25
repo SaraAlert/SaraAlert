@@ -512,15 +512,15 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       case field[:name]
       when 'lab-type'
         labs = if field[:value].blank?
-                 labs.where('laboratories.lab_type = ?', '').or(labs.where('laboratories.lab_type IS NULL'))
+                 labs.where(laboratories: { lab_type: ['', nil] })
                else
-                 labs.where('laboratories.lab_type = ?', field[:value])
+                 labs.where(laboratories: { lab_type: field[:value] })
                end
       when 'result'
         labs = if field[:value].blank?
-                 labs.where('laboratories.result = ?', '').or(labs.where('laboratories.result IS NULL'))
+                 labs.where(laboratories: { result: ['', nil] })
                else
-                 labs.where('laboratories.result = ?', field[:value])
+                 labs.where(laboratories: { result: field[:value] })
                end
       when 'specimen-collection'
         labs = case field[:value][:when]
@@ -529,7 +529,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                when 'after'
                  labs.where('laboratories.specimen_collection > ?', field[:value][:date])
                else
-                 labs.where('laboratories.specimen_collection IS NULL')
+                 labs.where(laboratories: { specimen_collection: nil })
                end
       when 'report'
         labs = case field[:value][:when]
@@ -538,7 +538,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                when 'after'
                  labs.where('laboratories.report > ?', field[:value][:date])
                else
-                 labs.where('laboratories.report IS NULL')
+                 labs.where(laboratories: { report: nil })
                end
       end
     end
@@ -551,9 +551,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     filter[:value].each do |field|
       case field[:name]
       when 'vaccine-group'
-        vaccines = vaccines.where('vaccines.group_name = ?', field[:value])
+        vaccines = vaccines.where(vaccines: { group_name: field[:value] })
       when 'product-name'
-        vaccines = vaccines.where('vaccines.product_name = ?', field[:value])
+        vaccines = vaccines.where(vaccines: { product_name: field[:value] })
       when 'administration-date'
         vaccines = case field[:value][:when]
                    when 'before'
@@ -561,16 +561,13 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                    when 'after'
                      vaccines.where('vaccines.administration_date > ?', field[:value][:date])
                    else
-                     vaccines.where('vaccines.administration_date IS NULL')
+                     vaccines = vaccines.where(vaccines: { administration_date: nil })
                    end
       when 'dose-number'
         vaccines = if field[:value].blank?
-                     vaccines.where('vaccines.dose_number IS NULL')
-                             .or(
-                               vaccines.where('vaccines.dose_number = ?', '')
-                             )
+                     vaccines.where(vaccines: { dose_number: ['', nil] })
                    else
-                     vaccines.where('vaccines.dose_number = ?', field[:value])
+                     vaccines.where(vaccines: { dose_number: field[:value] })
                    end
       end
     end
