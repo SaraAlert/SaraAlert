@@ -96,6 +96,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
+    @title = "Edit #{@patient.initials_age('-')}"
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
