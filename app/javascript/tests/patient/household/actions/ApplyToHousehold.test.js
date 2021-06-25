@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Form } from 'react-bootstrap';
 import ApplyToHousehold from '../../../../components/patient/household/actions/ApplyToHousehold';
-import HouseholdMemberTable from '../../../../components/patient/household/utils/HouseholdMemberTable';
+import HouseholdMemberTable from '../../../../components/patient/household/HouseholdMemberTable';
 import { mockUser1 } from '../../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../../mocks/mockJurisdiction';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../../mocks/mockPatients';

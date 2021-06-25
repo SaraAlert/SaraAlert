@@ -5,13 +5,13 @@ import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import BadgeHoH from './household/utils/BadgeHoH';
+import BadgeHoH from './icons/BadgeHoH';
 import InfoTooltip from '../util/InfoTooltip';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
-import { formatName, formatPhoneNumber, formatRace } from '../../utils/Patient';
+import { formatName, formatPhoneNumber, formatRace, isMinor } from '../../utils/Patient';
 import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
-import { navQueryParam } from '../../utils/Navigation';
+import { navQueryParam, patientHref } from '../../utils/Navigation';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -190,6 +190,7 @@ class Patient extends React.Component {
               <Col sm={10} className="item-group">
                 <div>
                   <b>DOB:</b> <span>{this.props.details.date_of_birth && moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
+                  {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && <span className="text-danger"> (Minor)</span>}
                 </div>
                 <div>
                   <b>Age:</b> <span>{this.props.details.age || '--'}</span>
@@ -238,6 +239,19 @@ class Patient extends React.Component {
               {this.renderEditLink('Contact Information', 2)}
             </div>
             <div className="item-group">
+              {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
+                <React.Fragment>
+                  <span className="text-danger">Monitoree is a minor</span>
+                  {!this.props.details.head_of_household && this.props.hoh && (
+                    <div>
+                      View contact info for head of household:
+                      <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
+                        {formatName(this.props.hoh)}
+                      </a>
+                    </div>
+                  )}
+                </React.Fragment>
+              )}
               <div>
                 <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 {this.props.details.blocked_sms && (
@@ -704,6 +718,7 @@ class Patient extends React.Component {
 Patient.propTypes = {
   current_user: PropTypes.object,
   details: PropTypes.object,
+  hoh: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   goto: PropTypes.func,
   edit_mode: PropTypes.bool,
