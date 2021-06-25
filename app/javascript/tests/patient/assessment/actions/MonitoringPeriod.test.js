@@ -18,7 +18,7 @@ describe('MonitoringPeriod', () => {
   it('Properly renders symptom onset and extended isolation when patient is in isolation workflow', () => {
     const wrapper = getWrapper(mockPatient1);
     expect(wrapper.find(SymptomOnset).exists()).toBeTruthy();
-    expect(wrapper.find(LastDateExposure).exists()).toBeFalsy();
+    expect(wrapper.find(LastDateExposure).exists()).toBeTruthy();
     expect(wrapper.find(ExtendedIsolation).exists()).toBeTruthy();
     expect(wrapper.find(InfoTooltip).exists()).toBeFalsy();
     expect(wrapper.find('#end_of_monitoring_date').exists()).toBeFalsy();
