@@ -812,7 +812,15 @@ class PatientsController < ApplicationController
 
   # Fetches table data for viable HoH options.
   def head_of_household_options
-    render json: patients_table_data(params, current_user)
+    begin
+      patients = patients_table_data(params, current_user)
+    rescue ActionController::ParameterMissing
+      raise
+    rescue StandardError => e
+      return render json: e, status: :bad_request
+    end
+
+    render json: patients
   end
 
   # Parameters allowed for saving to database
