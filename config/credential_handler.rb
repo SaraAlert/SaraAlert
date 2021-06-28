@@ -66,7 +66,7 @@ module CredentialHandler
     end
 
     # Get expected JWT aud value: the request token endpoint.
-    aud = request.original_url
+    aud = request.original_url.split('?').first
 
     # Begin process of decoding and validating JWT assertion required for this flow.
     begin
