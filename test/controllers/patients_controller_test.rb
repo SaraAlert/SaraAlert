@@ -138,7 +138,7 @@ class PatientsControllerTest < ActionController::TestCase
       query: {
         search: "",
         entries: 5,
-        workflow: "all",
+        workflow: "global",
         tab: "all",
         scope: "all",
         tz_offset: 240,
