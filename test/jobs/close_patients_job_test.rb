@@ -103,9 +103,10 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now,
-                     last_date_of_exposure: 14.days.ago,
                      created_at: Time.now)
-
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 14.days)
+    assert_not_nil Patient.enrolled_last_day_monitoring_period.find_by_id(patient.id)
+    assert_not_nil Patient.close_eligible(:enrolled_last_day_monitoring_period).find_by_id(patient.id)
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
     assert_equal(updated_patient.monitoring_reason, 'Enrolled on last day of monitoring period (system)')
