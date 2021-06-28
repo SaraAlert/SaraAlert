@@ -115,7 +115,7 @@ class ImportController < ApplicationController
           # Validate using Vaccine model validators without saving
           vaccines.each do |vaccine_data|
             validation_vaccine = Vaccine.new(vaccine_data)
-            next if validation_vaccine.valid?(:import)
+            next if validation_vaccine.valid?
 
             format_model_validation_errors(validation_vaccine).each do |error|
               @errors << ValidationError.new(error, row_ind).message

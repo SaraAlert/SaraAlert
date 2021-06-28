@@ -157,7 +157,10 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     additional_planned_travel_destination_state: [*VALID_STATES, nil, ''],
     # Since languages keys need to be converted to strings, we do this in the languages.rb initializer to save time on initial load after restart.
     primary_language: [*VALID_LANGUAGES, nil, ''],
-    secondary_language: [*VALID_LANGUAGES, nil, '']
+    secondary_language: [*VALID_LANGUAGES, nil, ''],
+    group_name: Vaccine.group_name_options,
+    product_name: (Vaccine.group_name_options.map { |group_name| Vaccine.product_name_options(group_name) }).flatten,
+    dose_number: Vaccine::DOSE_OPTIONS
   }.freeze
 
   VALID_EXPOSURE_ENUMS = {
@@ -234,11 +237,11 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     continuous_exposure: { label: 'Continuous Exposure', checks: [:bool] },
     patient_id: { label: 'Patient ID', checks: [] },
     contact_attempts: { label: 'Contact Attempts', checks: [] },
-    administration_date: { label: 'Administration Date', checks: [] },
-    dose_number: { label: 'Dose Number', checks: [] },
-    notes: { label: 'Notes', checks: [] },
-    group_name: { label: 'Vaccine Group', checks: [] },
-    product_name: { label: 'Product Name', checks: [] }
+    group_name: { label: 'Vaccine Group', checks: [:enum] },
+    product_name: { label: 'Product Name', checks: [:enum] },
+    administration_date: { label: 'Administration Date', checks: [:date] },
+    dose_number: { label: 'Dose Number', checks: [:enum] },
+    notes: { label: 'Notes', checks: [] }
   }.freeze
 
   # Validates if a given date value is between (inclusive) two dates.

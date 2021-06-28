@@ -169,7 +169,7 @@ class PatientsController < ApplicationController
     # Create a history for the enrollment
     History.enrollment(patient: patient, created_by: current_user.email)
 
-    # Create histories for lab results if presentt
+    # Create histories for lab results if present
     if allowed_params[:laboratories_attributes].present?
       patient.laboratories.order(created_at: :desc).limit(allowed_params[:laboratories_attributes].size).pluck(:id).reverse.each do |laboratory_id|
         History.lab_result(patient: patient.id, created_by: current_user.email, comment: "User added a new lab result (ID: #{laboratory_id}).")
