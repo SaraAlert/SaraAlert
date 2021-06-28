@@ -72,211 +72,207 @@ class Demographics extends React.Component {
   }
 
   renderBarGraphs = () => (
-    <Card.Body className="mt-5">
-      <Row>
-        {this.barGraphData.map((graphData, i) => (
-          <Col xl="12" key={i}>
-            <div className="mx-2 mt-3 analytics-chart-borders">
-              <div className="text-center h4">
-                {graphData.title}
-                {graphData.title === 'Current Age (Years)' ? (
-                  <span className="h6">
-                    <InfoTooltip tooltipTextKey="analyticsAgeTip" location="right"></InfoTooltip>
-                  </span>
-                ) : (
-                  ''
-                )}
-              </div>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart
-                  width={500}
-                  height={300}
-                  data={graphData.data}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" interval={0} tick={<CustomizedAxisTick />} height={100} />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="Exposure" stackId="a" fill="#557385" />
-                  <Bar dataKey="Isolation" stackId="a" fill="#DCC5A7" />
-                </BarChart>
-              </ResponsiveContainer>
+    <Row>
+      {this.barGraphData.map((graphData, i) => (
+        <Col xl="12" key={i}>
+          <div className="mx-2 mt-3 analytics-chart-borders">
+            <div className="text-center h4">
+              {graphData.title}
+              {graphData.title === 'Current Age (Years)' ? (
+                <span className="h6">
+                  <InfoTooltip tooltipTextKey="analyticsAgeTip" location="right"></InfoTooltip>
+                </span>
+              ) : (
+                ''
+              )}
             </div>
-          </Col>
-        ))}
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart
+                width={500}
+                height={300}
+                data={graphData.data}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" interval={0} tick={<CustomizedAxisTick />} height={100} />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="Exposure" stackId="a" fill="#557385" />
+                <Bar dataKey="Isolation" stackId="a" fill="#DCC5A7" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Col>
+      ))}
       </Row>
-    </Card.Body>
   );
 
   renderTables = () => (
-    <Card.Body className="mt-4">
-      <Row>
-        <Col md="12">
-          <div className="text-left mt-2 mb-n1">
-            <span className="h4">Current Age (Years)</span>
-            <span className="h6">
-              <InfoTooltip tooltipTextKey="analyticsAgeTip" location="right"></InfoTooltip>
-            </span>
+    <Row>
+      <Col md="12">
+        <div className="text-left mt-2 mb-n1">
+          <span className="h4">Current Age (Years)</span>
+          <span className="h6">
+            <InfoTooltip tooltipTextKey="analyticsAgeTip" location="right"></InfoTooltip>
+          </span>
+        </div>
+        <table className="analytics-table">
+          <thead>
+            <tr>
+              <th className="py-0"></th>
+              {WORKFLOWS.map((header, index) => (
+                <th key={index} className="font-weight-bold">
+                  {' '}
+                  <u>{_.upperCase(header)}</u>{' '}
+                </th>
+              ))}
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {_.initial(AGEGROUPS).map((val, index1) => (
+              <tr key={`workflow-table-${index1}`} className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
+                <td className="font-weight-bold"> {val} </td>
+                {this.ageData[Number(index1)].map((data, subIndex1) => (
+                  <td key={subIndex1}> {data} </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {this.hasFakeBirthdateData && (
+          <div className="text-secondary fake-demographic-text mb-3">
+            <i className="fas fa-info-circle mr-3"></i>
+            &gt;=80 years category includes {this.numberOfFakeBirthdates} monitorees where age is greater than 110.
           </div>
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th className="py-0"></th>
-                {WORKFLOWS.map((header, index) => (
-                  <th key={index} className="font-weight-bold">
-                    {' '}
-                    <u>{_.upperCase(header)}</u>{' '}
-                  </th>
-                ))}
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {_.initial(AGEGROUPS).map((val, index1) => (
-                <tr key={`workflow-table-${index1}`} className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
-                  <td className="font-weight-bold"> {val} </td>
-                  {this.ageData[Number(index1)].map((data, subIndex1) => (
-                    <td key={subIndex1}> {data} </td>
-                  ))}
-                </tr>
+        )}
+      </Col>
+      <Col md="12">
+        <div className="text-left mt-2 mb-n1 h4">Race</div>
+        <table className="analytics-table">
+          <thead>
+            <tr>
+              <th className="py-0"></th>
+              {WORKFLOWS.map((header, index) => (
+                <th key={index} className="font-weight-bold">
+                  {' '}
+                  <u>{_.upperCase(header)}</u>{' '}
+                </th>
               ))}
-            </tbody>
-          </table>
-          {this.hasFakeBirthdateData && (
-            <div className="text-secondary fake-demographic-text mb-3">
-              <i className="fas fa-info-circle mr-3"></i>
-              &gt;=80 years category includes {this.numberOfFakeBirthdates} monitorees where age is greater than 110.
-            </div>
-          )}
-        </Col>
-        <Col md="12">
-          <div className="text-left mt-2 mb-n1 h4">Race</div>
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th className="py-0"></th>
-                {WORKFLOWS.map((header, index) => (
-                  <th key={index} className="font-weight-bold">
-                    {' '}
-                    <u>{_.upperCase(header)}</u>{' '}
-                  </th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RACES.map((val, index4) => (
+              <tr key={`workflow-table-${index4}`} className={index4 % 2 ? '' : 'analytics-zebra-bg'}>
+                <td className="font-weight-bold"> {val} </td>
+                {this.raceData[Number(index4)].map((data, subIndex4) => (
+                  <td key={subIndex4}> {data} </td>
                 ))}
-                <th>Total</th>
               </tr>
-            </thead>
-            <tbody>
-              {RACES.map((val, index4) => (
-                <tr key={`workflow-table-${index4}`} className={index4 % 2 ? '' : 'analytics-zebra-bg'}>
-                  <td className="font-weight-bold"> {val} </td>
-                  {this.raceData[Number(index4)].map((data, subIndex4) => (
-                    <td key={subIndex4}> {data} </td>
-                  ))}
-                </tr>
+            ))}
+          </tbody>
+        </table>
+      </Col>
+      <Col md="12">
+        <div className="text-left mt-3 mb-n1 h4">Sex</div>
+        <table className="analytics-table">
+          <thead>
+            <tr>
+              <th className="py-0"></th>
+              {WORKFLOWS.map((header, index) => (
+                <th key={index} className="font-weight-bold">
+                  {' '}
+                  <u>{_.upperCase(header)}</u>{' '}
+                </th>
               ))}
-            </tbody>
-          </table>
-        </Col>
-        <Col md="12">
-          <div className="text-left mt-3 mb-n1 h4">Sex</div>
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th className="py-0"></th>
-                {WORKFLOWS.map((header, index) => (
-                  <th key={index} className="font-weight-bold">
-                    {' '}
-                    <u>{_.upperCase(header)}</u>{' '}
-                  </th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SEXES.map((val, index2) => (
+              <tr key={`workflow-table-${index2}`} className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
+                <td className="font-weight-bold"> {val} </td>
+                {this.sexData[Number(index2)].map((data, subIndex2) => (
+                  <td key={subIndex2}> {data} </td>
                 ))}
-                <th>Total</th>
               </tr>
-            </thead>
-            <tbody>
-              {SEXES.map((val, index2) => (
-                <tr key={`workflow-table-${index2}`} className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
-                  <td className="font-weight-bold"> {val} </td>
-                  {this.sexData[Number(index2)].map((data, subIndex2) => (
-                    <td key={subIndex2}> {data} </td>
-                  ))}
-                </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="text-left mt-3 mb-n1 h4">Ethnicity</div>
+        <table className="analytics-table">
+          <thead>
+            <tr>
+              <th className="py-0"></th>
+              {WORKFLOWS.map((header, index) => (
+                <th key={index} className="font-weight-bold">
+                  {' '}
+                  <u>{_.upperCase(header)}</u>{' '}
+                </th>
               ))}
-            </tbody>
-          </table>
-          <div className="text-left mt-3 mb-n1 h4">Ethnicity</div>
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th className="py-0"></th>
-                {WORKFLOWS.map((header, index) => (
-                  <th key={index} className="font-weight-bold">
-                    {' '}
-                    <u>{_.upperCase(header)}</u>{' '}
-                  </th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ETHNICITIES.map((val, index3) => (
+              <tr key={`workflow-table-${index3}`} className={index3 % 2 ? '' : 'analytics-zebra-bg'}>
+                <td className="font-weight-bold"> {val} </td>
+                {this.ethnicityData[Number(index3)].map((data, subIndex3) => (
+                  <td key={subIndex3}> {data} </td>
                 ))}
-                <th>Total</th>
               </tr>
-            </thead>
-            <tbody>
-              {ETHNICITIES.map((val, index3) => (
-                <tr key={`workflow-table-${index3}`} className={index3 % 2 ? '' : 'analytics-zebra-bg'}>
-                  <td className="font-weight-bold"> {val} </td>
-                  {this.ethnicityData[Number(index3)].map((data, subIndex3) => (
-                    <td key={subIndex3}> {data} </td>
+            ))}
+          </tbody>
+        </table>
+      </Col>
+      <Col md="12">
+        {this.showSexualOrientationData && (
+          <div>
+            <div className="text-left mt-3 mb-n1 h4">Sexual Orientation</div>
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th className="py-0"></th>
+                  {WORKFLOWS.map((header, index) => (
+                    <th key={index} className="font-weight-bold">
+                      {' '}
+                      <u>{_.upperCase(header)}</u>{' '}
+                    </th>
                   ))}
+                  <th>Total</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </Col>
-        <Col md="12">
-          {this.showSexualOrientationData && (
-            <div>
-              <div className="text-left mt-3 mb-n1 h4">Sexual Orientation</div>
-              <table className="analytics-table">
-                <thead>
-                  <tr>
-                    <th className="py-0"></th>
-                    {WORKFLOWS.map((header, index) => (
-                      <th key={index} className="font-weight-bold">
-                        {' '}
-                        <u>{_.upperCase(header)}</u>{' '}
-                      </th>
+              </thead>
+              <tbody>
+                {SEXUAL_ORIENTATIONS.map((val, index5) => (
+                  <tr key={`workflow-table-${index5}`} className={index5 % 2 ? '' : 'analytics-zebra-bg'}>
+                    <td className="font-weight-bold"> {val} </td>
+                    {this.soData[Number(index5)].map((data, subIndex5) => (
+                      <td key={subIndex5}> {data} </td>
                     ))}
-                    <th>Total</th>
                   </tr>
-                </thead>
-                <tbody>
-                  {SEXUAL_ORIENTATIONS.map((val, index5) => (
-                    <tr key={`workflow-table-${index5}`} className={index5 % 2 ? '' : 'analytics-zebra-bg'}>
-                      <td className="font-weight-bold"> {val} </td>
-                      {this.soData[Number(index5)].map((data, subIndex5) => (
-                        <td key={subIndex5}> {data} </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Col>
-      </Row>
-    </Card.Body>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Col>
+    </Row>
   );
 
   render() {
     return (
-      <React.Fragment>
-        <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5"> Demographics (Active Records Only) ​ ​</div>
+      <Card>
+        <Card.Header as="h4" className="text-center">Demographics (Active Records Only)</Card.Header>
+        <Card.Body>
           {this.props.showGraphs ? this.renderBarGraphs() : this.renderTables()}
-        </Card>
-      </React.Fragment>
+        </Card.Body>
+      </Card>
     );
   }
 }

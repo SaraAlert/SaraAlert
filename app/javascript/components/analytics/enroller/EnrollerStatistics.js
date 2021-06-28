@@ -10,8 +10,8 @@ class EnrollerStatistics extends React.Component {
   render() {
     return (
       <Card>
-        <h5 className="analytics-card-header text-center font-weight-bold">{this.props.title}</h5>
-        <Card.Body className="mx-4">
+        <Card.Header as="h4" className="text-center">{this.props.title}</Card.Header>
+        <Card.Body>
           <Row id="monitoree-analytics" className="g-border-bottom-2 mt-4">
             <Col className="my-3">
               <h4>TOTAL MONITOREES</h4>
