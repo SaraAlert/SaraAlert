@@ -7,5 +7,5 @@
 <% end %>
 
 <% if @can_view_epi_analytics %>
-  <%= react_component('analytics/PublicHealthAnalytics', { current_user: current_user, stats: @stats }) %>
+  <%= react_component('analytics/public_health/PublicHealthAnalytics', { current_user: current_user, stats: @stats }) %>
 <% end %>

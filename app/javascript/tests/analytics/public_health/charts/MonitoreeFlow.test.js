@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Card } from 'react-bootstrap';
 import MonitoreeFlow from '../../../components/analytics/widgets/MonitoreeFlow';
-import mockAnalytics from '../../mocks/mockAnalytics';
+import mockAnalytics from '../../../mocks/mockAnalytics';
 
 const monitoreeFlowTableHeaders = ['Last 24 Hours  n (col %)', 'Last 7 Days  n (col %)', 'Last 14 Days  n (col %)', 'Total  n (col %)'];
 const exposureNewEnrollmentValues = ['54 (88.5%)', '164 (88.6%)', '192 (89.7%)', '223 (89.9%)'];

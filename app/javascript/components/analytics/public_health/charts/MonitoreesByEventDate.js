@@ -3,8 +3,8 @@ import { PropTypes } from 'prop-types';
 import { Card, Col, Form, Row } from 'react-bootstrap';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { formatDate } from '../../../utils/DateTime';
-import { mapToChartFormat, parseOutFields } from '../../../utils/Analytics';
+import { formatDate } from '../../../../utils/DateTime';
+import { mapToChartFormat, parseOutFields } from '../../../../utils/Analytics';
 import _ from 'lodash';
 
 import 'resize-observer-polyfill/dist/ResizeObserver.global';

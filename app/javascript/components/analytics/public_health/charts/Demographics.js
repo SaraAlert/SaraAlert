@@ -2,12 +2,10 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card, Col, Row } from 'react-bootstrap';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-
-import { mapToChartFormat, parseOutFields } from '../../../utils/Analytics';
 import _ from 'lodash';
-
-import CustomizedAxisTick from './CustomizedAxisTick';
-import InfoTooltip from '../../util/InfoTooltip';
+import CustomizedAxisTick from '../../display/CustomizedAxisTick';
+import InfoTooltip from '../../../util/InfoTooltip';
+import { mapToChartFormat, parseOutFields } from '../../../../utils/Analytics';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
 const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80', 'Missing', 'FAKE_BIRTHDATE'];
