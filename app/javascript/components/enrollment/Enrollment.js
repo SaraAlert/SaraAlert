@@ -14,6 +14,7 @@ import Contact from './steps/Contact';
 import Arrival from './steps/Arrival';
 import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
 import Exposure from './steps/Exposure';
+import CaseStatus from './steps/CaseStatus';
 import Review from './steps/Review';
 import confirmDialog from '../util/ConfirmDialog';
 import reportError from '../util/ReportError';
@@ -21,13 +22,14 @@ import { navQueryParam } from '../../utils/Navigation';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
+const maxEnrollmentSteps = 7;
 
 class Enrollment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      index: props.enrollment_step != undefined ? props.enrollment_step : props.edit_mode ? 6 : 0,
-      lastIndex: props.enrollment_step != undefined ? 6 : null,
+      index: props.enrollment_step != undefined ? props.enrollment_step : props.edit_mode ? maxEnrollmentSteps : 0,
+      lastIndex: props.enrollment_step != undefined ? maxEnrollmentSteps : null,
       direction: null,
       enrollmentState: {
         patient: pickBy(props.patient, identity),
@@ -184,8 +186,12 @@ class Enrollment extends React.Component {
         this.setState({ index: lastIndex, lastIndex: null });
       });
     } else {
+      let step = 1;
+      if ((this.state.enrollmentState.isolation ? 4 : 5) == index) {
+        step = 2;
+      }
       this.setState({ direction: 'next' }, () => {
-        this.setState({ index: index + 1, lastIndex: null });
+        this.setState({ index: index + step, lastIndex: null });
       });
     }
   };
@@ -193,8 +199,12 @@ class Enrollment extends React.Component {
   previous = () => {
     window.scroll(0, 0);
     let index = this.state.index;
+    let step = 1;
+    if (this.state.enrollmentState.isolation && index == 6) {
+      step = 2;
+    }
     this.setState({ direction: 'prev' }, () => {
-      this.setState({ index: index - 1, lastIndex: null });
+      this.setState({ index: index - step, lastIndex: null });
     });
   };
 
@@ -234,7 +244,13 @@ class Enrollment extends React.Component {
             />
           </Carousel.Item>
           <Carousel.Item>
-            <Address currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
+            <Address
+              currentState={this.state.enrollmentState}
+              setEnrollmentState={this.setEnrollmentState}
+              previous={this.previous}
+              next={this.next}
+              edit_mode={this.props.edit_mode}
+            />
           </Carousel.Item>
           <Carousel.Item>
             <Contact
@@ -242,11 +258,18 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
+              edit_mode={this.props.edit_mode}
               blocked_sms={this.props.blocked_sms}
             />
           </Carousel.Item>
           <Carousel.Item>
-            <Arrival currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
+            <Arrival
+              currentState={this.state.enrollmentState}
+              setEnrollmentState={this.setEnrollmentState}
+              previous={this.previous}
+              next={this.next}
+              edit_mode={this.props.edit_mode}
+            />
           </Carousel.Item>
           <Carousel.Item>
             <AdditionalPlannedTravel
@@ -254,10 +277,27 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
+              edit_mode={this.props.edit_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
             <Exposure
+              currentState={this.state.enrollmentState}
+              setEnrollmentState={this.setEnrollmentState}
+              previous={this.previous}
+              next={this.next}
+              patient={this.props.patient}
+              has_dependents={this.props.has_dependents}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              assigned_users={this.props.assigned_users}
+              first_positive_lab={this.props.first_positive_lab}
+              symptomatic_assessments_exist={this.props.symptomatic_assessments_exist}
+              edit_mode={this.props.edit_mode}
+              authenticity_token={this.props.authenticity_token}
+            />
+          </Carousel.Item>
+          <Carousel.Item>
+            <CaseStatus
               currentState={this.state.enrollmentState}
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
