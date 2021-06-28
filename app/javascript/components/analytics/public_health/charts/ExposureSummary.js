@@ -2,11 +2,9 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-
-import { mapToChartFormat, parseOutFields } from '../../../utils/Analytics';
 import _ from 'lodash';
-
-import CustomizedAxisTick from './CustomizedAxisTick';
+import CustomizedAxisTick from '../../display/CustomizedAxisTick';
+import { mapToChartFormat, parseOutFields } from '../../../../utils/Analytics';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
 const RISKFACTORS = [

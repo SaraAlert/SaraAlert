@@ -10,9 +10,9 @@ import Demographics from '../../components/analytics/widgets/Demographics';
 import ExposureSummary from '../../components/analytics/widgets/ExposureSummary';
 import MonitoreesByEventDate from '../../components/analytics/widgets/MonitoreesByEventDate';
 import GeographicSummary from '../../components/analytics/widgets/GeographicSummary';
-import { mockUser1 } from '../mocks/mockUsers';
-import mockAnalyticsData from '../mocks/mockAnalytics';
-import { formatTimestamp } from '../util.js';
+import { mockUser1 } from '../../mocks/mockUsers';
+import mockAnalyticsData from '../../mocks/mockAnalytics';
+import { formatTimestamp } from '../../util.js';
 
 function getWrapper(stats) {
   return shallow(<PublicHealthAnalytics current_user={mockUser1} stats={stats} />);

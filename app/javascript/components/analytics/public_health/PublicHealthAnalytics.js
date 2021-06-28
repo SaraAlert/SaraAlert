@@ -1,21 +1,20 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Col, Row } from 'react-bootstrap';
-
-import { formatTimestamp } from '../../utils/DateTime';
+import ReactTooltip from 'react-tooltip';
 import moment from 'moment-timezone';
 import domtoimage from 'dom-to-image';
 import Switch from 'react-switch';
 import 'rc-slider/assets/index.css';
-import ReactTooltip from 'react-tooltip';
 
-import MonitoreeFlow from './widgets/MonitoreeFlow';
-import Demographics from './widgets/Demographics';
-import ExposureSummary from './widgets/ExposureSummary';
-import PreferredReportingMethod from './widgets/PreferredReportingMethod';
-import MonitoreesByEventDate from './widgets/MonitoreesByEventDate';
-import GeographicSummary from './widgets/GeographicSummary';
-import reportError from '../util/ReportError';
+import MonitoreeFlow from './charts/MonitoreeFlow';
+import Demographics from './charts/Demographics';
+import ExposureSummary from './charts/ExposureSummary';
+import PreferredReportingMethod from './charts/PreferredReportingMethod';
+import MonitoreesByEventDate from './charts/MonitoreesByEventDate';
+import GeographicSummary from './charts/GeographicSummary';
+import reportError from '../../util/ReportError';
+import { formatTimestamp } from '../../../utils/DateTime';
 
 class PublicHealthAnalytics extends React.Component {
   constructor(props) {

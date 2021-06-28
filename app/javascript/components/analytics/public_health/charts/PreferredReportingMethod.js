@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import _ from 'lodash';
 import { Card } from 'react-bootstrap';
-import { formatPercentage } from '../../../utils/Analytics';
+import { formatPercentage } from '../../../../utils/Analytics';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
 
