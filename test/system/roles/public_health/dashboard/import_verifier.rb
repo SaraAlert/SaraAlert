@@ -338,10 +338,10 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   def verify_vaccine(patient, data)
     vaccine = Vaccine.where(
       patient_id: patient.id,
-      group_name: data[0].to_s,
-      product_name: data[1].to_s,
+      group_name: NORMALIZED_ENUMS[:group_name][normalize_enum_field_value(data[0])],
+      product_name: NORMALIZED_ENUMS[:product_name][normalize_enum_field_value(data[1])],
       administration_date: data[2],
-      dose_number: data[3].to_s,
+      dose_number: NORMALIZED_ENUMS[:dose_number][normalize_enum_field_value(data[3])],
       notes: data[4]
     )
     assert vaccine.exists?, "Vaccination for patient: #{patient.first_name} #{patient.last_name} not found"
