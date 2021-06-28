@@ -60,114 +60,110 @@ class ExposureSummary extends React.Component {
   };
 
   renderBarGraphs = () => (
-    <Card.Body className="mt-5">
-      <Row>
-        {this.barGraphData.map((graphData, i) => (
-          <Col xl="12" key={i}>
-            <div className="mx-2 mt-3 analytics-chart-borders">
-              <div className="text-center h4">{graphData.title}</div>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart
-                  width={500}
-                  height={300}
-                  data={graphData.data}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" interval={0} tick={<CustomizedAxisTick />} height={100} />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="Exposure" stackId="a" fill="#557385" />
-                  <Bar dataKey="Isolation" stackId="a" fill="#DCC5A7" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </Col>
-        ))}
-      </Row>
-    </Card.Body>
+    <Row>
+      {this.barGraphData.map((graphData, i) => (
+        <Col xl="12" key={i}>
+          <div className="mx-2 mt-3 analytics-chart-borders">
+            <div className="text-center h4">{graphData.title}</div>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart
+                width={500}
+                height={300}
+                data={graphData.data}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" interval={0} tick={<CustomizedAxisTick />} height={100} />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="Exposure" stackId="a" fill="#557385" />
+                <Bar dataKey="Isolation" stackId="a" fill="#DCC5A7" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Col>
+      ))}
+    </Row>
   );
 
   renderTables = () => {
     return (
-      <Card.Body className="mt-4">
-        <Row>
-          <Col md="12">
-            <div className="text-left mt-3 mb-n1 h4"> Risk Factors </div>
-            <table className="analytics-table">
-              <thead>
-                <tr>
-                  <th className="py-0"></th>
-                  {WORKFLOWS.map((header, index) => (
-                    <th key={index} className="font-weight-bold">
-                      {' '}
-                      <u>{_.upperCase(header)}</u>{' '}
-                    </th>
+      <Row>
+        <Col md="12">
+          <div className="text-left mt-3 mb-n1 h4"> Risk Factors </div>
+          <table className="analytics-table">
+            <thead>
+              <tr>
+                <th className="py-0"></th>
+                {WORKFLOWS.map((header, index) => (
+                  <th key={index} className="font-weight-bold">
+                    {' '}
+                    <u>{_.upperCase(header)}</u>{' '}
+                  </th>
+                ))}
+                <th>Total</th>
+              </tr>
+            </thead>
+            {RISKFACTORS.map((val, index1) => (
+              <tbody key={`workflow-table-${index1}`}>
+                <tr className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
+                  <td className="font-weight-bold"> {val} </td>
+                  {this.rfData[Number(index1)].map((data, subIndex1) => (
+                    <td key={subIndex1}> {data} </td>
                   ))}
-                  <th>Total</th>
                 </tr>
-              </thead>
-              {RISKFACTORS.map((val, index1) => (
-                <tbody key={`workflow-table-${index1}`}>
-                  <tr className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
-                    <td className="font-weight-bold"> {val} </td>
-                    {this.rfData[Number(index1)].map((data, subIndex1) => (
-                      <td key={subIndex1}> {data} </td>
-                    ))}
-                  </tr>
-                </tbody>
-              ))}
-            </table>
-          </Col>
-          <Col md="12">
-            <div className="text-left mt-3 mb-n1 h4"> Country of Exposure </div>
-            <table className="analytics-table">
-              <thead>
-                <tr>
-                  <th className="py-0"></th>
-                  {WORKFLOWS.map((header, index) => (
-                    <th key={index} className="font-weight-bold">
-                      {' '}
-                      <u>{_.upperCase(header)}</u>{' '}
-                    </th>
+              </tbody>
+            ))}
+          </table>
+        </Col>
+        <Col md="12">
+          <div className="text-left mt-3 mb-n1 h4"> Country of Exposure </div>
+          <table className="analytics-table">
+            <thead>
+              <tr>
+                <th className="py-0"></th>
+                {WORKFLOWS.map((header, index) => (
+                  <th key={index} className="font-weight-bold">
+                    {' '}
+                    <u>{_.upperCase(header)}</u>{' '}
+                  </th>
+                ))}
+                <th>Total</th>
+              </tr>
+            </thead>
+            {this.COUNTRY_HEADERS.map((val, index2) => (
+              <tbody key={`workflow-table-${index2}`}>
+                <tr className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
+                  <td className="font-weight-bold"> {val} </td>
+                  {this.countryData[Number(index2)].map((data, subIndex2) => (
+                    <td key={subIndex2}> {data} </td>
                   ))}
-                  <th>Total</th>
                 </tr>
-              </thead>
-              {this.COUNTRY_HEADERS.map((val, index2) => (
-                <tbody key={`workflow-table-${index2}`}>
-                  <tr className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
-                    <td className="font-weight-bold"> {val} </td>
-                    {this.countryData[Number(index2)].map((data, subIndex2) => (
-                      <td key={subIndex2}> {data} </td>
-                    ))}
-                  </tr>
-                </tbody>
-              ))}
-            </table>
-            <Button variant="primary" className="float-right mt-3 btn-square" onClick={this.exportFullCountryData}>
-              <i className="fas fa-download mr-1"></i>
-              Export Complete Country Data
-            </Button>
-          </Col>
-        </Row>
-      </Card.Body>
+              </tbody>
+            ))}
+          </table>
+          <Button variant="primary" className="float-right mt-3 btn-square" onClick={this.exportFullCountryData}>
+            <i className="fas fa-download mr-1"></i>
+            Export Complete Country Data
+          </Button>
+        </Col>
+      </Row>
     );
   };
 
   render() {
     return (
-      <React.Fragment>
-        <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5"> Exposure Summary (Active Records Only) ​</div>
+      <Card>
+        <Card.Header as="h4" className="text-center">Exposure Summary (Active Records Only)</Card.Header>
+        <Card.Body>
           {this.props.showGraphs ? this.renderBarGraphs() : this.renderTables()}
-        </Card>
-      </React.Fragment>
+        </Card.Body>
+      </Card>
     );
   }
 }

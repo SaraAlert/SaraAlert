@@ -117,18 +117,16 @@ class MonitoreeFlow extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
-        <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5">Monitoree Flow Over Time (All Records)</div>
-          <Card.Body className="mt-4">
-            <Row>{this.tableData.map((data, index) => this.renderWorkflowTable(data, index))}</Row>
-            <div className="text-secondary fake-demographic-text mb-1">
-              <i className="fas fa-info-circle mr-1"></i>
-              Total includes all incoming and outgoing counts ever recorded for this jurisdiction
-            </div>
-          </Card.Body>
-        </Card>
-      </React.Fragment>
+      <Card>
+        <Card.Header as="h4" className="text-center">Monitoree Flow Over Time (All Records)</Card.Header>
+        <Card.Body>
+          <Row>{this.tableData.map((data, index) => this.renderWorkflowTable(data, index))}</Row>
+          <div className="text-secondary fake-demographic-text mb-1">
+            <i className="fas fa-info-circle mr-1"></i>
+            Total includes all incoming and outgoing counts ever recorded for this jurisdiction
+          </div>
+        </Card.Body>
+      </Card>
     );
   }
 }

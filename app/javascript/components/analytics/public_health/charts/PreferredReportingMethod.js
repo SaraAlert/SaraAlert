@@ -102,50 +102,48 @@ class PreferredReportingMethod extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
-        <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5">Monitorees by Reporting Method (Active Records Only)</div>
-          <Card.Body className="mt-4">
-            <table className="analytics-table">
-              <thead>
+      <Card>
+        <Card.Header as="h4" className="text-center">Monitorees by Reporting Method (Active Records Only)</Card.Header>
+        <Card.Body>
+          <table className="analytics-table">
+            <thead>
+              <tr>
+                <th></th>
+                {CONTACT_METHOD_HEADERS.map((contactMethodHeaders, index) => (
+                  <th key={index}>
+                    <div> {contactMethodHeaders} </div>
+                    <div className="text-secondary"> n (col %) </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            {this.tableData.map((workflow, index1) => (
+              <tbody key={`workflow-table-${index1}`}>
+                <tr style={{ height: '0px' }}></tr>
                 <tr>
-                  <th></th>
-                  {CONTACT_METHOD_HEADERS.map((contactMethodHeaders, index) => (
-                    <th key={index}>
-                      <div> {contactMethodHeaders} </div>
-                      <div className="text-secondary"> n (col %) </div>
-                    </th>
-                  ))}
+                  <td className="font-weight-bold text-left">
+                    <u>{workflow['workflow']} WORKFLOW</u>{' '}
+                  </td>
                 </tr>
-              </thead>
-              {this.tableData.map((workflow, index1) => (
-                <tbody key={`workflow-table-${index1}`}>
-                  <tr style={{ height: '0px' }}></tr>
-                  <tr>
-                    <td className="font-weight-bold text-left">
-                      <u>{workflow['workflow']} WORKFLOW</u>{' '}
-                    </td>
+                {workflow.data.map((data, index2) => (
+                  <tr key={`data-${index2}`} className={data.linelistClass}>
+                    <td className="text-right font-weight-bold">{data.linelist}</td>
+                    {data.contactMethodData.map((value, index3) => (
+                      <td key={`value-${index3}`}>
+                        {value.value}
+                        {index2 < workflow.data.length - 1 && (
+                          // Don't show the percentages for the Total
+                          <span className="analytics-percentage"> {`(${value.percentageOfTotal})`} </span>
+                        )}
+                      </td>
+                    ))}
                   </tr>
-                  {workflow.data.map((data, index2) => (
-                    <tr key={`data-${index2}`} className={data.linelistClass}>
-                      <td className="text-right font-weight-bold">{data.linelist}</td>
-                      {data.contactMethodData.map((value, index3) => (
-                        <td key={`value-${index3}`}>
-                          {value.value}
-                          {index2 < workflow.data.length - 1 && (
-                            // Don't show the percentages for the Total
-                            <span className="analytics-percentage"> {`(${value.percentageOfTotal})`} </span>
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              ))}
-            </table>
-          </Card.Body>
-        </Card>
-      </React.Fragment>
+                ))}
+              </tbody>
+            ))}
+          </table>
+        </Card.Body>
+      </Card>
     );
   }
 }
