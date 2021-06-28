@@ -10,6 +10,7 @@ const mockMonitoringReasons = [
   'Case confirmed',
   'Past monitoring period',
   'Meets criteria to discontinue isolation',
+  'Fully Vaccinated',
   'Deceased',
   'Duplicate',
   'Other',

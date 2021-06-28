@@ -85,6 +85,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     'Case confirmed',
     'Past monitoring period',
     'Meets criteria to discontinue isolation',
+    'Fully Vaccinated',
     'Deceased',
     'Duplicate',
     'Other'
