@@ -191,16 +191,14 @@ namespace :stats do
       reporting_days_exp = []
       reporting_days_responded_to_all_exp = []
       responded_to_all_reminders_self_exp = 0
+      responded_to_50_reminders_self_exp = 0
+      responded_to_75_reminders_self_exp = 0
       responded_to_all_reminders_self_and_user_exp = 0
-      responded_to_all_reminders_user_exp = 0
       not_respond_to_all_reminders_self_exp = 0
       not_respond_to_all_reminders_self_and_user_exp = 0
-      not_respond_to_all_reminders_user_exp = 0
       days_no_response_self_exp = []
       days_no_response_self_and_user_exp = []
-      days_no_response_user_exp = []
       cons_days_no_response_self_exp = []
-      cons_days_no_response_user_exp = []
       cons_days_no_response_self_and_user_exp = []
       emailed_rates_exp = []
       sms_weblink_rates_exp = []
@@ -223,15 +221,14 @@ namespace :stats do
         times_recv_self_and_user = patient.assessments.created_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         times_recv_user = patient.assessments.created_since(start).created_by_user.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         responded_to_all_reminders_self_exp += 1 if times_sent.count <= times_recv_self.count
+        responded_to_50_reminders_self_exp += 1 if (times_sent.count * 0.50) <= times_recv_self.count
+        responded_to_75_reminders_self_exp += 1 if (times_sent.count * 0.75) <= times_recv_self.count
         responded_to_all_reminders_self_and_user_exp += 1 if times_sent.count <= times_recv_self_and_user.count
-        responded_to_all_reminders_user_exp += 1 if times_sent.count <= times_recv_user.count
         reporting_days_responded_to_all_exp << times_sent.count if times_sent.count <= times_recv_self_and_user.count
         not_respond_to_all_reminders_self_exp += 1 if times_sent.count > times_recv_self.count
         not_respond_to_all_reminders_self_and_user_exp += 1 if times_sent.count > times_recv_self_and_user.count
-        not_respond_to_all_reminders_user_exp += 1 if times_sent.count > times_recv_user.count
         days_no_response_self_exp << times_sent.count - times_recv_self.count if times_sent.count > times_recv_self.count
         days_no_response_self_and_user_exp << times_sent.count - times_recv_self_and_user.count if times_sent.count > times_recv_self_and_user.count
-        days_no_response_user_exp << times_sent.count - times_recv_user.count if times_sent.count > times_recv_user.count
         if times_sent.count > times_recv_self.count
           all_cons = []
           last_cons = 0
@@ -239,14 +236,6 @@ namespace :stats do
           missed_times.each_cons(2) { |a, b| (b.mjd - a.mjd) == 1 ? last_cons += ( last_cons == 0 ? 2 : 1) : (all_cons << last_cons && last_cons = 0) }
           all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
           cons_days_no_response_self_exp << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
-        end
-        if times_sent.count > times_recv_user.count
-          all_cons = []
-          last_cons = 0
-          missed_times = (times_sent - times_recv_user)
-          missed_times.each_cons(2) { |a, b| (b.mjd - a.mjd) == 1 ? last_cons += ( last_cons == 0 ? 2 : 1) : (all_cons << last_cons && last_cons = 0) }
-          all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
-          cons_days_no_response_user_exp << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
         end
         if times_sent.count > times_recv_self_and_user.count
           all_cons = []
@@ -276,16 +265,14 @@ namespace :stats do
       reporting_days_iso = []
       reporting_days_responded_to_all_iso = []
       responded_to_all_reminders_self_iso = 0
+      responded_to_50_reminders_self_iso = 0
+      responded_to_75_reminders_self_iso = 0
       responded_to_all_reminders_self_and_user_iso = 0
-      responded_to_all_reminders_user_iso = 0
       not_respond_to_all_reminders_self_iso = 0
       not_respond_to_all_reminders_self_and_user_iso = 0
-      not_respond_to_all_reminders_user_iso = 0
       days_no_response_self_iso = []
       days_no_response_self_and_user_iso = []
-      days_no_response_user_iso = []
       cons_days_no_response_self_iso = []
-      cons_days_no_response_user_iso = []
       cons_days_no_response_self_and_user_iso = []
       emailed_rates_iso = []
       sms_weblink_rates_iso = []
@@ -307,15 +294,14 @@ namespace :stats do
         times_recv_self_and_user = patient.assessments.created_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         times_recv_user = patient.assessments.created_since(start).created_by_user.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         responded_to_all_reminders_self_iso += 1 if times_sent.count <= times_recv_self.count
+        responded_to_50_reminders_self_iso += 1 if (times_sent.count * 0.50) <= times_recv_self.count
+        responded_to_75_reminders_self_iso += 1 if (times_sent.count * 0.75) <= times_recv_self.count
         responded_to_all_reminders_self_and_user_iso += 1 if times_sent.count <= times_recv_self_and_user.count
-        responded_to_all_reminders_user_iso += 1 if times_sent.count <= times_recv_user.count
         reporting_days_responded_to_all_iso << times_sent.count if times_sent.count <= times_recv_self_and_user.count
         not_respond_to_all_reminders_self_iso += 1 if times_sent.count > times_recv_self.count
         not_respond_to_all_reminders_self_and_user_iso += 1 if times_sent.count > times_recv_self_and_user.count
-        not_respond_to_all_reminders_user_iso += 1 if times_sent.count > times_recv_user.count
         days_no_response_self_iso << times_sent.count - times_recv_self.count if times_sent.count > times_recv_self.count
         days_no_response_self_and_user_iso << times_sent.count - times_recv_self_and_user.count if times_sent.count > times_recv_self_and_user.count
-        days_no_response_user_iso << times_sent.count - times_recv_user.count if times_sent.count > times_recv_user.count
         if times_sent.count > times_recv_self.count
           all_cons = []
           last_cons = 0
@@ -323,14 +309,6 @@ namespace :stats do
           missed_times.each_cons(2) { |a, b| (b.mjd - a.mjd) == 1 ? last_cons += ( last_cons == 0 ? 2 : 1) : (all_cons << last_cons && last_cons = 0) }
           all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
           cons_days_no_response_self_iso << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
-        end
-        if times_sent.count > times_recv_user.count
-          all_cons = []
-          last_cons = 0
-          missed_times = (times_sent - times_recv_user)
-          missed_times.each_cons(2) { |a, b| (b.mjd - a.mjd) == 1 ? last_cons += ( last_cons == 0 ? 2 : 1) : (all_cons << last_cons && last_cons = 0) }
-          all_cons << (last_cons == 0 ? 1 : last_cons) unless missed_times.count == 0
-          cons_days_no_response_user_iso << all_cons.inject{ |sum, el| sum + el }.to_f / all_cons.size unless all_cons.empty?
         end
         if times_sent.count > times_recv_self_and_user.count
           all_cons = []
@@ -366,13 +344,17 @@ namespace :stats do
         exposure: responded_to_all_reminders_self_exp,
         isolation: responded_to_all_reminders_self_iso
       }
+      results[title]['Number of monitorees responding to at least 50% of messages (monitoree or proxy response only)'] = {
+        exposure: responded_to_50_reminders_self_exp,
+        isolation: responded_to_50_reminders_self_iso
+      }
+      results[title]['Number of monitorees responding to at least 75% of messages (monitoree or proxy response only)'] = {
+        exposure: responded_to_75_reminders_self_exp,
+        isolation: responded_to_75_reminders_self_iso
+      }
       results[title]['Number of monitorees responding to ALL automated messages (any response documented, including by public health user)'] = {
         exposure: responded_to_all_reminders_self_and_user_exp,
         isolation: responded_to_all_reminders_self_and_user_iso
-      }
-      results[title]['Number of monitorees responding to ALL automated messages (public health user only)'] = {
-        exposure: responded_to_all_reminders_user_exp,
-        isolation: responded_to_all_reminders_user_iso
       }
       results[title]['Number of Monitorees who DID NOT RESPOND to all daily automated messages (monitoree or proxy response only)'] = {
         exposure: not_respond_to_all_reminders_self_exp,
@@ -397,18 +379,6 @@ namespace :stats do
       results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (any response documented, including by public health user) - Mean number of consecutive days with no response'] = {
         exposure: cons_days_no_response_self_and_user_exp.empty? ? 0 : cons_days_no_response_self_and_user_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_and_user_exp.size,
         isolation: cons_days_no_response_self_and_user_iso.empty? ? 0 : cons_days_no_response_self_and_user_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_self_and_user_iso.size
-      }
-      results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (public health user only)'] = {
-        exposure: not_respond_to_all_reminders_user_exp,
-        isolation: not_respond_to_all_reminders_user_iso
-      }
-      results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (public health user only) - Mean number of days with no response'] = {
-        exposure: days_no_response_user_exp.empty? ? 0 : days_no_response_user_exp.inject{ |sum, el| sum + el }.to_f / days_no_response_user_exp.size,
-        isolation: days_no_response_user_iso.empty? ? 0 : days_no_response_user_iso.inject{ |sum, el| sum + el }.to_f / days_no_response_user_iso.size
-      }
-      results[title]['Number of Monitorees who DID NOT RESPOND to all automated messages (public health user only) - Mean number of consecutive days with no response'] = {
-        exposure: cons_days_no_response_user_exp.empty? ? 0 : cons_days_no_response_user_exp.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_user_exp.size,
-        isolation: cons_days_no_response_user_iso.empty? ? 0 : cons_days_no_response_user_iso.inject{ |sum, el| sum + el }.to_f / cons_days_no_response_user_iso.size
       }
       results[title]['Monitoree Response Rate - E-mailed Web Link'] = {
         exposure: emailed_rates_exp.empty? ? 0 : emailed_rates_exp.inject{ |sum, el| sum + el }.to_f / emailed_rates_exp.size,
@@ -536,6 +506,18 @@ namespace :stats do
         exposure: active_exp.count - (results[title]['Race - White only'][:exposure] + results[title]['Race - Black or African American only'][:exposure] + results[title]['Race - American Indian or Alaska Native only'][:exposure] + results[title]['Race - Asian only'][:exposure] + results[title]['Race - Native Hawaiian or Pacific Islander only'][:exposure] + results[title]['Race - Missing'][:exposure]),
         isolation: active_iso.count - (results[title]['Race - White only'][:isolation] + results[title]['Race - Black or African American only'][:isolation] + results[title]['Race - American Indian or Alaska Native only'][:isolation] + results[title]['Race - Asian only'][:isolation] + results[title]['Race - Native Hawaiian or Pacific Islander only'][:isolation] + results[title]['Race - Missing'][:isolation])
       }
+      results[title]['Race - Other indicated'] = {
+        exposure: active_exp.where(race_other: true).count,
+        isolation: active_iso.where(race_other: true).count
+      }
+      results[title]['Race - Unknown indicated'] = {
+        exposure: active_exp.where(race_unknown: true).count,
+        isolation: active_iso.where(race_unknown: true).count
+      }
+      results[title]['Race - Refused to answer indicated'] = {
+        exposure: active_exp.where(race_refused_to_answer: true).count,
+        isolation: active_iso.where(race_refused_to_answer: true).count
+      }
       results[title]['Ethnicity - Hispanic or Latino'] = {
         exposure: active_exp.where(ethnicity: 'Hispanic or Latino').count,
         isolation: active_iso.where(ethnicity: 'Hispanic or Latino').count
@@ -549,60 +531,60 @@ namespace :stats do
         isolation: active_iso.where(ethnicity: ['', nil]).count
       }
       results[title]['Missing All Demographics (blank sex, ethnicity, and race)'] = {
-        exposure: active_exp.where(sex: ['', nil], ethnicity: ['', nil], white: [false, nil], black_or_african_american: [false, nil], american_indian_or_alaska_native: [false, nil], asian: [false, nil], native_hawaiian_or_other_pacific_islander: [false, nil]).count,
-        isolation: active_iso.where(sex: ['', nil], ethnicity: ['', nil], white: [false, nil], black_or_african_american: [false, nil], american_indian_or_alaska_native: [false, nil], asian: [false, nil], native_hawaiian_or_other_pacific_islander: [false, nil]).count
+        exposure: active_exp.where(sex: ['', nil], ethnicity: ['', nil], race_other: [false, nil], race_unknown: [false, nil], race_refused_to_answer: [false, nil], white: [false, nil], black_or_african_american: [false, nil], american_indian_or_alaska_native: [false, nil], asian: [false, nil], native_hawaiian_or_other_pacific_islander: [false, nil]).count,
+        isolation: active_iso.where(sex: ['', nil], ethnicity: ['', nil], race_other: [false, nil], race_unknown: [false, nil], race_refused_to_answer: [false, nil], white: [false, nil], black_or_african_american: [false, nil], american_indian_or_alaska_native: [false, nil], asian: [false, nil], native_hawaiian_or_other_pacific_islander: [false, nil]).count
       }
       results[title]['Age - <= 5'] = {
-        exposure: active_exp.where('date_of_birth > ?', 6.years.ago).count,
-        isolation: active_iso.where('date_of_birth > ?', 6.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 6').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 6').count
       }
       results[title]['Age - 6-11'] = {
-        exposure: active_exp.where('date_of_birth <= ?', 6.years.ago).where('date_of_birth > ?', 12.years.ago).count,
-        isolation: active_iso.where('date_of_birth <= ?', 6.years.ago).where('date_of_birth > ?', 12.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 6').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 12').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 6').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 12').count
       }
       results[title]['Age - 12-18'] = {
-        exposure: active_exp.where('date_of_birth <= ?', 12.years.ago).where('date_of_birth > ?', 19.years.ago).count,
-        isolation: active_iso.where('date_of_birth <= ?', 12.years.ago).where('date_of_birth > ?', 19.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 12').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 19').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 12').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 19').count
       }
       results[title]['Age - <= 18'] = {
-        exposure: active_exp.where('date_of_birth > ?', 19.years.ago).count,
-        isolation: active_iso.where('date_of_birth > ?', 19.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 19').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 19').count
       }
       results[title]['Age - 19-29'] = {
-        exposure: active_exp.where('date_of_birth <= ?', 19.years.ago).where('date_of_birth > ?', 30.years.ago).count,
-        isolation: active_iso.where('date_of_birth <= ?', 19.years.ago).where('date_of_birth > ?', 30.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 19').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 30').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 19').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 30').count
       }
       results[title]['Age - 30-39'] = {
-        exposure: active_exp.where('date_of_birth <= ?', 30.years.ago).where('date_of_birth > ?', 40.years.ago).count,
-        isolation: active_iso.where('date_of_birth <= ?', 30.years.ago).where('date_of_birth > ?', 40.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 30').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 40').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 30').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 40').count
       }
       results[title]['Age - 40-49'] = {
-        exposure: active_exp.where('date_of_birth <= ?', 40.years.ago).where('date_of_birth > ?', 50.years.ago).count,
-        isolation: active_iso.where('date_of_birth <= ?', 40.years.ago).where('date_of_birth > ?', 50.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 40').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 50').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 40').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 50').count
       }
       results[title]['Age - 50-59'] = {
-        exposure: active_exp.where('date_of_birth <= ?', 50.years.ago).where('date_of_birth > ?', 60.years.ago).count,
-        isolation: active_iso.where('date_of_birth <= ?', 50.years.ago).where('date_of_birth > ?', 60.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 50').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 60').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 50').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 60').count
       }
       results[title]['Age - 60-69'] = {
-        exposure: active_exp.where('date_of_birth <= ?', 60.years.ago).where('date_of_birth > ?', 70.years.ago).count,
-        isolation: active_iso.where('date_of_birth <= ?', 60.years.ago).where('date_of_birth > ?', 70.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 60').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 70').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 60').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 70').count
       }
       results[title]['Age - 70-79'] = {
-        exposure: active_exp.where('date_of_birth <= ?', 70.years.ago).where('date_of_birth > ?', 80.years.ago).count,
-        isolation: active_iso.where('date_of_birth <= ?', 70.years.ago).where('date_of_birth > ?', 80.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 70').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 80').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 70').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 80').count
       }
       results[title]['Age - >= 80'] = {
-        exposure: active_exp.where('date_of_birth <= ?', 80.years.ago).where('date_of_birth > ?', 110.years.ago).count,
-        isolation: active_iso.where('date_of_birth <= ?', 80.years.ago).where('date_of_birth > ?', 110.years.ago).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 80').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 80').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').count
       }
       results[title]['Age - Flagged for possible missing age'] = {
-        exposure: active_exp.where('date_of_birth <= ?', 110.years.ago).or(active_exp.where(date_of_birth: ['', nil])).count,
-        isolation: active_iso.where('date_of_birth <= ?', 110.years.ago).or(active_exp.where(date_of_birth: ['', nil])).count
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 110').or(active_exp.where(date_of_birth: ['', nil])).count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 110').or(active_exp.where(date_of_birth: ['', nil])).count
       }
       begin
-        dates_exp = active_exp.where('date_of_birth > ?', 110.years.ago).pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
-        dates_iso = active_exp.where('date_of_birth > ?', 110.years.ago).pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
+        dates_exp = active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
+        dates_iso = active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
         results[title]['Age - Continuous mean'] = {
           exposure: dates_exp.empty? ? 'NULL' : (DateTime.now.year - Date.strptime((dates_exp.sum / dates_exp.count).to_i.to_s, "%s").year),
           isolation: dates_iso.empty? ? 'NULL' : (DateTime.now.year - Date.strptime((dates_iso.sum / dates_iso.count).to_i.to_s, "%s").year)
@@ -657,9 +639,17 @@ namespace :stats do
         exposure: active_exp.where(primary_language: 'spa-pr').count,
         isolation: active_iso.where(primary_language: 'spa-pr').count
       }
+      results[title]['Preferred Language - French'] = {
+        exposure: active_exp.where(primary_language: 'fra').count,
+        isolation: active_iso.where(primary_language: 'fra').count
+      }
+      results[title]['Preferred Language - Somali'] = {
+        exposure: active_exp.where(primary_language: 'som').count,
+        isolation: active_iso.where(primary_language: 'som').count
+      }
       results[title]['Preferred Language - Other'] = {
-        exposure: active_exp.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr']).count,
-        isolation: active_iso.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr']).count
+        exposure: active_exp.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr', 'fra', 'som']).count,
+        isolation: active_iso.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr', 'fra', 'som']).count
       }
       results[title]['Preferred Language - blank'] = {
         exposure: active_exp.where(primary_language: ['', nil]).count,
@@ -692,8 +682,8 @@ namespace :stats do
       json[today] = results
       puts JSON.pretty_generate(json, { allow_nan: true })
       Stat.create!(contents: json.to_json, jurisdiction_id: jur.id, tag: tag)
-      UserMailer.stats_eval_email(ids).deliver_now
     end
+    UserMailer.stats_eval_email(ids).deliver_later
   end
 
   task eval_queries_export: :environment do
@@ -701,9 +691,13 @@ namespace :stats do
 
     raise 'You must provide at least one id (e.g. ids=1,2,3)' if ids.nil? || ids.empty?
 
+    raise 'No stats found for those ids, are you sure you have specified a valid id?' unless Stat.where(jurisdiction_id: ids).exists?
+
     tag = ENV['tag']
 
     raise 'You must provide a tag (e.g. tag=blah)' if tag.nil?
+
+    raise 'No stats found for that tag, are you sure you have specified a valid tag?' unless Stat.where(tag: tag).exists?
 
     jurisdictions = Jurisdiction.where(id: ids)
     package = Axlsx::Package.new
