@@ -10,8 +10,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     # Validate filter and sorting params
     begin
       query = validate_patients_query(params.require(:query))
-    rescue StandardError => e
-      return render json: e, status: :bad_request
+    rescue StandardError
+      raise
     end
 
     # Validate pagination params

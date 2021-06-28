@@ -8,6 +8,12 @@ class PublicHealthController < ApplicationController
   before_action :authenticate_user_role
 
   def patients
+    begin
+      patients = patients_table_data(params, current_user)
+    rescue StandardError => e
+      return render json: e, status: :bad_request
+    end
+
     render json: patients_table_data(params, current_user)
   end
 
