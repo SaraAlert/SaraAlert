@@ -3,7 +3,7 @@
 <% end %>
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Analytics', href: nil }] } %>
 <% if current_user.role?(Roles::ENROLLER) %>
-  <%= react_component('analytics/EnrollerAnalytics', { current_user: current_user, stats: @stats }) %>
+  <%= react_component('analytics/enroller/EnrollerAnalytics', { current_user: current_user, stats: @stats }) %>
 <% end %>
 
 <% if @can_view_epi_analytics %>
