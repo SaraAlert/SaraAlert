@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Card } from 'react-bootstrap';
-import MonitoreeFlow from '../../../components/analytics/public_health/charts/MonitoreeFlow';
+import MonitoreeFlow from '../../../../components/analytics/public_health/charts/MonitoreeFlow';
 import mockAnalytics from '../../../mocks/mockAnalytics';
 
 const monitoreeFlowTableHeaders = ['Last 24 Hours  n (col %)', 'Last 7 Days  n (col %)', 'Last 14 Days  n (col %)', 'Total  n (col %)'];
@@ -22,7 +22,7 @@ describe('MonitoreeFlow', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
     expect(wrapper.find(Card).exists()).toBeTruthy();
-    expect(wrapper.find('.analytics-card-header').text()).toEqual('Monitoree Flow Over Time (All Records)');
+    expect(wrapper.find(Card.Header).text()).toEqual('Monitoree Flow Over Time (All Records)');
     expect(wrapper.find(Card.Body).exists()).toBeTruthy();
     expect(wrapper.find('table').exists()).toBeTruthy();
     expect(wrapper.find('.fake-demographic-text').exists()).toBeTruthy();
