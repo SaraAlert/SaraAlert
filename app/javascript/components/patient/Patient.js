@@ -555,7 +555,7 @@ class Patient extends React.Component {
                   <h4 className="section-title">
                     Potential Exposure <span className="d-none d-lg-inline">Information</span>
                   </h4>
-                  {!this.props.details.isolation && this.renderEditLink('Potential Exposure Information', 5)}
+                  {this.renderEditLink('Potential Exposure Information', 5)}
                 </div>
                 {!(showPotentialExposureInfo || showRiskFactors || this.props.details.exposure_notes) && <div className="none-text">None</div>}
                 {(showPotentialExposureInfo || showRiskFactors) && (
@@ -653,7 +653,7 @@ class Patient extends React.Component {
                 <Col id="case-information" md={10} xl={12} className="col-xxxl-8">
                   <div className="section-header">
                     <h4 className="section-title">Case Information</h4>
-                    {this.renderEditLink('Case Information', 5)}
+                    {this.renderEditLink('Case Information', 6)}
                   </div>
                   <div className="item-group">
                     <div>

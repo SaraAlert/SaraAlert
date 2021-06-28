@@ -1,7 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Alert, Button, Card, Col, Form } from 'react-bootstrap';
-import ReactTooltip from 'react-tooltip';
+import { Button, Card, Col, Form } from 'react-bootstrap';
 import * as yup from 'yup';
 import axios from 'axios';
 import moment from 'moment';
@@ -9,7 +8,6 @@ import _ from 'lodash';
 
 import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
-import FirstPositiveLaboratory from '../../patient/laboratory/FirstPositiveLaboratory';
 import InfoTooltip from '../../util/InfoTooltip';
 import { countryOptions } from '../../../data/countryOptions';
 
@@ -277,111 +275,6 @@ class Exposure extends React.Component {
           self.setState({ errors: issues });
         }
       });
-  };
-
-  isolationFields = () => {
-    return (
-      <React.Fragment>
-        {!this.state.current.patient.symptom_onset && !this.state.current.first_positive_lab && (
-          <Alert variant="warning" className="alert-warning-text">
-            You must enter a Symptom Onset Date AND/OR a <b style={{ fontWeight: 800 }}>positive</b> lab result (with a Specimen Collection Date) to enroll this
-            case.
-          </Alert>
-        )}
-        <Form.Row>
-          <Form.Group as={Col} md={12} xs={24} controlId="symptom_onset" className="mb-2">
-            <Form.Label className="input-label">
-              <React.Fragment>
-                SYMPTOM ONSET DATE
-                {this.props.patient.symptom_onset && this.state.current.patient.symptom_onset && (
-                  <div style={{ display: 'inline' }}>
-                    <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-2">
-                      {this.props.patient.user_defined_symptom_onset ? <i className="fas fa-user"></i> : <i className="fas fa-desktop"></i>}
-                    </span>
-                    <ReactTooltip
-                      id="user_defined_symptom_onset_tooltip"
-                      multiline={true}
-                      place="right"
-                      type="dark"
-                      effect="solid"
-                      className="tooltip-container">
-                      {this.props.patient.user_defined_symptom_onset ? (
-                        <span>This date was set by a user</span>
-                      ) : (
-                        <span>
-                          This date is auto-populated by the system as the date of the earliest report flagged as symptomatic (red highlight) in the reports
-                          table. Field is blank when there are no symptomatic reports.
-                        </span>
-                      )}
-                    </ReactTooltip>
-                  </div>
-                )}
-              </React.Fragment>
-            </Form.Label>
-            <DateInput
-              id="symptom_onset"
-              aria-label="Symptom Onset Date"
-              date={this.state.current.patient.symptom_onset}
-              minDate={'2020-01-01'}
-              maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
-              onChange={date => this.handleDateChange('symptom_onset', date)}
-              placement="bottom"
-              isInvalid={!!this.state.errors['symptom_onset']}
-              isClearable={!!this.props.patient.user_defined_symptom_onset || !this.props.patient.symptom_onset}
-              customClass="form-control-lg"
-              ariaLabel="Symptom Onset Date Input"
-            />
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['symptom_onset']}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group as={Col} md={12} xs={24} controlId="first_positive_lab" className="mb-2">
-            <FirstPositiveLaboratory lab={this.state.current.first_positive_lab} onChange={this.handleLabChange} size="lg" displayedLabClass="mx-1 mb-2" />
-          </Form.Group>
-          <Form.Group as={Col} md={12} xs={24} controlId="case_status" className="mb-2">
-            <Form.Label className="input-label">CASE STATUS{schema?.fields?.case_status?._exclusive?.required && ' *'}</Form.Label>
-            <Form.Control
-              isInvalid={this.state.errors['case_status']}
-              as="select"
-              size="lg"
-              className="form-square"
-              aria-label="Case Status Select"
-              onChange={this.handleChange}
-              value={this.state.current.patient.case_status || ''}>
-              <option></option>
-              <option>Confirmed</option>
-              <option>Probable</option>
-            </Form.Control>
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['case_status']}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} md="24" className="mb-2">
-            <Form.Label htmlFor="exposure_notes" className="input-label ml-1">
-              NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
-            </Form.Label>
-            <Form.Control
-              id="exposure_notes"
-              isInvalid={this.state.errors['exposure_notes']}
-              as="textarea"
-              rows="4"
-              size="lg"
-              className="form-square"
-              placeholder="enter additional information about case"
-              maxLength="2000"
-              value={this.state.current.patient.exposure_notes || ''}
-              onChange={this.handleChange}
-            />
-            <div className="character-limit-text">{2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining</div>
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['exposure_notes']}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
-      </React.Fragment>
-    );
   };
 
   exposureFields = () => {
@@ -662,149 +555,152 @@ class Exposure extends React.Component {
   render() {
     return (
       <React.Fragment>
-        {!this.props.currentState.isolation && <h1 className="sr-only">Monitoree Potential Exposure Information</h1>}
-        {this.props.currentState.isolation && <h1 className="sr-only">Monitoree Case Information</h1>}
+        <h1 className="sr-only">Monitoree Potential Exposure Information</h1>
         <Card className="mx-2 card-square">
-          {!this.props.currentState.isolation && <Card.Header className="h5">Monitoree Potential Exposure Information</Card.Header>}
-          {this.props.currentState.isolation && <Card.Header className="h5">Monitoree Case Information</Card.Header>}
+          <Card.Header className="h5">Monitoree Potential Exposure Information</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row className="pb-3 h-100">
                 <Form.Group as={Col} className="my-auto">
-                  {!this.props.currentState.isolation && this.exposureFields()}
-                  {this.props.currentState.isolation && this.isolationFields()}
-                  <Form.Row className="pt-2 g-border-bottom-2" />
-                  <Form.Row className="pt-2">
-                    <Form.Group as={Col} className="mb-2">
-                      <Form.Label className="input-label">PUBLIC HEALTH RISK ASSESSMENT AND MANAGEMENT</Form.Label>
-                    </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
-                    <Form.Group as={Col} md="18" className="mb-2 pt-2" controlId="jurisdiction_id">
-                      <Form.Label className="input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['jurisdiction_id']}
-                        as="input"
-                        list="jurisdiction_paths"
-                        autoComplete="off"
-                        size="lg"
-                        className="form-square"
-                        onChange={this.handleChange}
-                        value={this.state.jurisdiction_path}
-                      />
-                      <datalist id="jurisdiction_paths">
-                        {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
-                          return (
-                            <option value={jurisdiction} key={index}>
-                              {jurisdiction}
-                            </option>
-                          );
-                        })}
-                      </datalist>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['jurisdiction_id']}
-                      </Form.Control.Feedback>
-                      {this.props.has_dependents &&
-                        this.state.current.patient.jurisdiction_id !== this.state.originalJurisdictionId &&
-                        Object.keys(this.props.jurisdiction_paths).includes(this.state.current.patient.jurisdiction_id.toString()) && (
-                          <Form.Group className="mt-2">
-                            <Form.Check
-                              type="switch"
-                              id="update_group_member_jurisdiction_id"
-                              name="jurisdiction_id"
-                              label="Apply this change to the entire household that this monitoree is responsible for"
-                              onChange={this.handlePropagatedFieldChange}
-                              checked={this.state.current.propagatedFields.jurisdiction_id}
-                            />
-                          </Form.Group>
-                        )}
-                    </Form.Group>
-                    <Form.Group as={Col} md="6" className="mb-2 pt-2" controlId="assigned_user">
-                      <Form.Label className="input-label">
-                        ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
-                        <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
-                      </Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['assigned_user']}
-                        as="input"
-                        list="assigned_users"
-                        autoComplete="off"
-                        size="lg"
-                        className="form-square"
-                        onChange={this.handleChange}
-                        value={this.state.current.patient.assigned_user || ''}
-                      />
-                      <datalist id="assigned_users">
-                        {this.state.assigned_users?.map(num => {
-                          return (
-                            <option value={num} key={num}>
-                              {num}
-                            </option>
-                          );
-                        })}
-                      </datalist>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['assigned_user']}
-                      </Form.Control.Feedback>
-                      {this.props.has_dependents &&
-                        this.state.current.patient.assigned_user !== this.state.originalAssignedUser &&
-                        (this.state.current.patient.assigned_user === null ||
-                          (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 999999)) && (
-                          <Form.Group className="mt-2">
-                            <Form.Check
-                              type="switch"
-                              id="update_group_member_assigned_user"
-                              name="assigned_user"
-                              label="Apply this change to the entire household that this monitoree is responsible for"
-                              onChange={this.handlePropagatedFieldChange}
-                              checked={this.state.current.propagatedFields.assigned_user}
-                            />
-                          </Form.Group>
-                        )}
-                    </Form.Group>
-                    <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="mb-2 pt-2">
-                      <Form.Label className="input-label">RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}</Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['exposure_risk_assessment']}
-                        as="select"
-                        size="lg"
-                        className="form-square"
-                        onChange={this.handleChange}
-                        value={this.state.current.patient.exposure_risk_assessment || ''}>
-                        <option></option>
-                        <option>High</option>
-                        <option>Medium</option>
-                        <option>Low</option>
-                        <option>No Identified Risk</option>
-                      </Form.Control>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['exposure_risk_assessment']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group as={Col} md="16" controlId="monitoring_plan" className="mb-2 pt-2">
-                      <Form.Label className="input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['monitoring_plan']}
-                        as="select"
-                        size="lg"
-                        className="form-square"
-                        onChange={this.handleChange}
-                        value={this.state.current.patient.monitoring_plan || ''}>
-                        <option>None</option>
-                        <option>Daily active monitoring</option>
-                        <option>Self-monitoring with public health supervision</option>
-                        <option>Self-monitoring with delegated supervision</option>
-                        <option>Self-observation</option>
-                      </Form.Control>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['monitoring_plan']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Form.Row>
+                  {this.exposureFields()}
+                  {!this.props.currentState.isolation && (
+                    <>
+                      <Form.Row className="pt-2 g-border-bottom-2" />
+                      <Form.Row className="pt-2">
+                        <Form.Group as={Col} className="mb-2">
+                          <Form.Label className="input-label">PUBLIC HEALTH RISK ASSESSMENT AND MANAGEMENT</Form.Label>
+                        </Form.Group>
+                      </Form.Row>
+                      <Form.Row>
+                        <Form.Group as={Col} md="18" className="mb-2 pt-2" controlId="jurisdiction_id">
+                          <Form.Label className="input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
+                          <Form.Control
+                            isInvalid={this.state.errors['jurisdiction_id']}
+                            as="input"
+                            list="jurisdiction_paths"
+                            autoComplete="off"
+                            size="lg"
+                            className="form-square"
+                            onChange={this.handleChange}
+                            value={this.state.jurisdiction_path}
+                          />
+                          <datalist id="jurisdiction_paths">
+                            {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
+                              return (
+                                <option value={jurisdiction} key={index}>
+                                  {jurisdiction}
+                                </option>
+                              );
+                            })}
+                          </datalist>
+                          <Form.Control.Feedback className="d-block" type="invalid">
+                            {this.state.errors['jurisdiction_id']}
+                          </Form.Control.Feedback>
+                          {this.props.has_dependents &&
+                            this.state.current.patient.jurisdiction_id !== this.state.originalJurisdictionId &&
+                            Object.keys(this.props.jurisdiction_paths).includes(this.state.current.patient.jurisdiction_id.toString()) && (
+                              <Form.Group className="mt-2">
+                                <Form.Check
+                                  type="switch"
+                                  id="update_group_member_jurisdiction_id"
+                                  name="jurisdiction_id"
+                                  label="Apply this change to the entire household that this monitoree is responsible for"
+                                  onChange={this.handlePropagatedFieldChange}
+                                  checked={this.state.current.propagatedFields.jurisdiction_id}
+                                />
+                              </Form.Group>
+                            )}
+                        </Form.Group>
+                        <Form.Group as={Col} md="6" className="mb-2 pt-2" controlId="assigned_user">
+                          <Form.Label className="input-label">
+                            ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
+                            <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
+                          </Form.Label>
+                          <Form.Control
+                            isInvalid={this.state.errors['assigned_user']}
+                            as="input"
+                            list="assigned_users"
+                            autoComplete="off"
+                            size="lg"
+                            className="form-square"
+                            onChange={this.handleChange}
+                            value={this.state.current.patient.assigned_user || ''}
+                          />
+                          <datalist id="assigned_users">
+                            {this.state.assigned_users?.map(num => {
+                              return (
+                                <option value={num} key={num}>
+                                  {num}
+                                </option>
+                              );
+                            })}
+                          </datalist>
+                          <Form.Control.Feedback className="d-block" type="invalid">
+                            {this.state.errors['assigned_user']}
+                          </Form.Control.Feedback>
+                          {this.props.has_dependents &&
+                            this.state.current.patient.assigned_user !== this.state.originalAssignedUser &&
+                            (this.state.current.patient.assigned_user === null ||
+                              (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 999999)) && (
+                              <Form.Group className="mt-2">
+                                <Form.Check
+                                  type="switch"
+                                  id="update_group_member_assigned_user"
+                                  name="assigned_user"
+                                  label="Apply this change to the entire household that this monitoree is responsible for"
+                                  onChange={this.handlePropagatedFieldChange}
+                                  checked={this.state.current.propagatedFields.assigned_user}
+                                />
+                              </Form.Group>
+                            )}
+                        </Form.Group>
+                        <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="mb-2 pt-2">
+                          <Form.Label className="input-label">
+                            RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
+                          </Form.Label>
+                          <Form.Control
+                            isInvalid={this.state.errors['exposure_risk_assessment']}
+                            as="select"
+                            size="lg"
+                            className="form-square"
+                            onChange={this.handleChange}
+                            value={this.state.current.patient.exposure_risk_assessment || ''}>
+                            <option></option>
+                            <option>High</option>
+                            <option>Medium</option>
+                            <option>Low</option>
+                            <option>No Identified Risk</option>
+                          </Form.Control>
+                          <Form.Control.Feedback className="d-block" type="invalid">
+                            {this.state.errors['exposure_risk_assessment']}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group as={Col} md="16" controlId="monitoring_plan" className="mb-2 pt-2">
+                          <Form.Label className="input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
+                          <Form.Control
+                            isInvalid={this.state.errors['monitoring_plan']}
+                            as="select"
+                            size="lg"
+                            className="form-square"
+                            onChange={this.handleChange}
+                            value={this.state.current.patient.monitoring_plan || ''}>
+                            <option>None</option>
+                            <option>Daily active monitoring</option>
+                            <option>Self-monitoring with public health supervision</option>
+                            <option>Self-monitoring with delegated supervision</option>
+                            <option>Self-observation</option>
+                          </Form.Control>
+                          <Form.Control.Feedback className="d-block" type="invalid">
+                            {this.state.errors['monitoring_plan']}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Form.Row>
+                    </>
+                  )}
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && (
+            {this.props.previous && !this.props.edit_mode && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
