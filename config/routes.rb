@@ -116,7 +116,7 @@ Rails.application.routes.draw do
 
   resources :vaccines, only: [:index, :create, :update, :destroy]
 
-  resources :close_contacts, only: [:index, :create, :update]
+  resources :close_contacts, only: [:index, :create, :update, :destroy]
 
   resources :user_filters, only: [:index, :create, :update, :destroy]
 

@@ -1,6 +1,4 @@
 import React from 'react';
-
-const MAX_NOTES_LENGTH = 2000;
 import PropTypes from 'prop-types';
 import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
 
@@ -14,6 +12,8 @@ import DateInput from '../../util/DateInput';
 import ReactTooltip from 'react-tooltip';
 import PhoneInput from '../../util/PhoneInput';
 import InfoTooltip from '../../util/InfoTooltip';
+
+const MAX_NOTES_LENGTH = 2000;
 
 class CloseContactModal extends React.Component {
   constructor(props) {
