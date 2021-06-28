@@ -7,17 +7,13 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     workflow = params.require(:query).require(:workflow).to_sym
     tab = params.require(:query).require(:tab).to_sym
 
-    # Validate filter and sorting params
-    begin
-      query = validate_patients_query(params.require(:query))
-    rescue StandardError
-      raise
-    end
+    query = validate_patients_query(params.require(:query))
 
     # Validate pagination params
     entries = params.require(:query)[:entries]&.to_i || 25
+    raise InvalidQueryError.new(:entries, entries) unless entries >= 0
     page = params.require(:query)[:page]&.to_i || 0
-    return render json: { error: 'Invalid entries or page' }, status: :bad_request unless entries >= 0 && page >= 0
+    raise InvalidQueryError.new(:page, page) unless page >= 0
 
     # Get filtered patients
     patients = patients_by_query(current_user, query)
