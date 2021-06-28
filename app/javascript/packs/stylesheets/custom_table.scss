@@ -46,8 +46,8 @@
 // This is how we deal with slight vertical overflow from a dropdown in a table that needs to be horizontal scrollable.
 // See this for the core issue: https://stackoverflow.com/a/6433475
 .table-has-dropdown {
-  padding-top: 80px;
-  margin-top: -80px;
+  padding-top: 120px;
+  margin-top: -120px;
 }
 
 // REMOVE WHEN CLOSE CONTACT AND LAB TABLES ARE CONVERTED

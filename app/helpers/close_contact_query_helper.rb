@@ -23,7 +23,7 @@ module CloseContactQueryHelper
       raise StandardError, error_message
     end
 
-    if sort_order.present? && !%w[id first_name last_name primary_telephone email last_date_of_exposure assigned_user contact_attempts
+    if sort_order.present? && !%w[first_name last_name primary_telephone email last_date_of_exposure assigned_user contact_attempts enrolled_id
                                   notes].include?(sort_order)
       error_message = "Unable to sort by specified column in request: '#{sort_order}'"
       raise StandardError, error_message
@@ -55,15 +55,15 @@ module CloseContactQueryHelper
   def search(close_contact, search)
     return close_contact if search.blank?
 
-    close_contact.where('id like ?', search&.downcase.to_s).or(
-      close_contact.where('first_name like ?', search&.downcase.to_s).or(
-        close_contact.where('last_name like ?', search&.downcase.to_s).or(
+    close_contact.where('id like ?', "#{search&.downcase}%").or(
+      close_contact.where('first_name like ?', "#{search&.downcase}%").or(
+        close_contact.where('last_name like ?', "#{search&.downcase}%").or(
           close_contact.where('primary_telephone like ?', Phonelib.parse(search, 'US').full_e164).or(
-            close_contact.where('email like ?', search&.downcase.to_s).or(
-              close_contact.where('last_date_of_exposure like ?', search&.downcase.to_s).or(
-                close_contact.where('assigned_user like ?', search&.downcase.to_s).or(
-                  close_contact.where('contact_attempts like ?', search&.downcase.to_s).or(
-                    close_contact.where('notes like ?', search&.downcase.to_s)
+            close_contact.where('email like ?', "#{search&.downcase}%").or(
+              close_contact.where('last_date_of_exposure like ?', "#{search&.downcase}%").or(
+                close_contact.where('assigned_user like ?', "#{search&.downcase}%").or(
+                  close_contact.where('contact_attempts like ?', "#{search&.downcase}%").or(
+                    close_contact.where('notes like ?', "#{search&.downcase}%")
                   )
                 )
               )
@@ -83,22 +83,22 @@ module CloseContactQueryHelper
     dir = direction == 'asc' ? 'asc' : 'desc'
 
     case order
-    when 'id'
-      close_contacts = close_contacts.order(id: dir)
     when 'first_name'
-      close_contacts = close_contacts.order(first_name: dir)
+      close_contacts = close_contacts.order(Arel.sql('CASE WHEN first_name IS NULL THEN 1 ELSE 0 END, first_name ' + dir))
     when 'last_name'
-      close_contacts = close_contacts.order(last_name: dir)
+      close_contacts = close_contacts.order(Arel.sql('CASE WHEN last_name IS NULL THEN 1 ELSE 0 END, last_name ' + dir))
     when 'primary_telephone'
       close_contacts = close_contacts.order(Arel.sql('CASE WHEN primary_telephone IS NULL THEN 1 ELSE 0 END, primary_telephone ' + dir))
     when 'email'
       close_contacts = close_contacts.order(Arel.sql('CASE WHEN email IS NULL THEN 1 ELSE 0 END, email ' + dir))
+    when 'enrolled_id'
+      close_contacts = close_contacts.order(Arel.sql('CASE WHEN enrolled_id IS NULL THEN 1 ELSE 0 END, enrolled_id ' + dir))
     when 'last_date_of_exposure'
-      close_contacts = close_contacts.order(last_date_of_exposure: dir)
+      close_contacts = close_contacts.order(Arel.sql('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir))
     when 'assigned_user'
-      close_contacts = close_contacts.order(assigned_user: dir)
+      close_contacts = close_contacts.order(Arel.sql('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + dir))
     when 'contact_attempts'
-      close_contacts = close_contacts.order(contact_attempts: dir)
+      close_contacts = close_contacts.order(Arel.sql('CASE WHEN contact_attempts IS NULL THEN 1 ELSE 0 END, contact_attempts ' + dir))
     when 'notes'
       close_contacts = close_contacts.order(Arel.sql("CASE WHEN notes IS NULL THEN 2 WHEN notes = '' THEN 1 ELSE 0 END, notes " + dir))
     end

@@ -24,7 +24,7 @@ class VaccineTable extends React.Component {
           { label: 'Product Name', field: 'product_name', isSortable: true },
           { label: 'Administration Date', field: 'administration_date', isSortable: true, filter: formatDate },
           { label: 'Dose Number', field: 'dose_number', isSortable: true },
-          { label: 'Notes', field: 'notes', isSortable: true, filter: formatDate },
+          { label: 'Notes', field: 'notes', isSortable: true },
         ],
         rowData: [],
         totalRows: 0,

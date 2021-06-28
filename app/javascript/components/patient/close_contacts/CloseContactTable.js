@@ -13,6 +13,7 @@ import CloseContactModal from './CloseContactModal';
 import confirmDialog from '../../util/ConfirmDialog';
 import CustomTable from '../../layout/CustomTable';
 import reportError from '../../util/ReportError';
+import DeleteDialog from '../../util/DeleteDialog';
 
 class CloseContactTable extends React.Component {
   constructor(props) {
@@ -49,6 +50,10 @@ class CloseContactTable extends React.Component {
       editRow: null,
       showEditCCModal: false,
       showAddCloseContactModal: false,
+      showDeleteCCModal: false,
+      selectedCloseContactID: null,
+      delete_reason: null,
+      delete_reason_text: null,
     };
   }
 
@@ -274,6 +279,46 @@ class CloseContactTable extends React.Component {
     );
   };
 
+  // Toggles the delete modal and clears any reason or reason text
+  toggleCloseContactDeleteModal = id => {
+    let selectedCloseContactID = _.isNumber(id) ? id : null;
+    this.setState({
+      showDeleteCCModal: !this.state.showDeleteCCModal,
+      selectedCloseContactID,
+      delete_reason: null,
+      delete_reason_text: null,
+    });
+  };
+
+  handleDeleteCloseContact = () => {
+    let delete_reason = this.state.delete_reason;
+    if (delete_reason === 'Other' && this.state.delete_reason_text) {
+      delete_reason += ', ' + this.state.delete_reason_text;
+    }
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .delete(`${window.BASE_PATH}/close_contacts/${this.state.selectedCloseContactID}`, {
+          data: {
+            patient_id: this.props.patient.id,
+            delete_reason,
+          },
+        })
+        .then(() => {
+          location.reload();
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
+  };
+
+  handleCCDeleteUpdate = event => {
+    if (['delete_reason', 'delete_reason_text'].includes(event?.target?.id)) {
+      this.setState({ [event.target.id]: event?.target?.value });
+    }
+  };
+
   /**
    * Makes a request to update an existing close contact record on the backend and reloads page once complete.
    * @param {*} newCloseContactData
@@ -324,39 +369,39 @@ class CloseContactTable extends React.Component {
     // NOTE: If this dropdown increases in height, the custom table class passed to CustomTable will need to be updated.
     const direction = this.state.table.rowData && this.state.table.rowData.length > 4 ? null : 'up';
     return (
-      <Dropdown drop={direction}>
-        <Dropdown.Toggle id={`close-contact-action-button-${rowData.id}`} size="sm" variant="primary" aria-label={`close-contact-action-button-${rowData.id}`}>
-          <i className="fas fa-cogs fw"></i>
+      <Dropdown drop={direction} className="close-contact-action-button">
+        <Dropdown.Toggle
+          id={`close-contact-action-button-${rowData.id}`}
+          size="sm"
+          variant="primary"
+          aria-label={`Close Contact Action Button for Close Contact ${rowData.id}`}>
+          <i className="fas fa-cogs fw" />
         </Dropdown.Toggle>
-        <Dropdown.Menu drop={'up'}>
-          {rowData.id && (
-            <div>
-              <Dropdown.Item onClick={() => this.handleEditCC(rowIndex)}>
-                <i className="fas fa-edit fa-fw"></i>
-                <span className="ml-2">Edit</span>
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => this.handleContactAttempt(rowIndex)}>
-                <i className="fas fa-phone fa-flip-horizontal"></i>
-                <span className="ml-2">Contact Attempt</span>
-              </Dropdown.Item>
-            </div>
-          )}
-          {rowData.id && rowData.enrolled_id && (
-            <Dropdown.Item
-              onClick={() => {
-                location.href = window.BASE_PATH + `/patients/${rowData.enrolled_id}`;
-              }}>
-              <i className="fas fa-search"></i> View Record
+        <Dropdown.Menu drop={direction}>
+          <Dropdown.Item className="px-4" onClick={() => this.handleEditCC(rowIndex)}>
+            <i className="fas fa-edit fa-fw" />
+            <span className="ml-2"> Edit</span>
+          </Dropdown.Item>
+          <Dropdown.Item className="px-4" onClick={() => this.handleContactAttempt(rowIndex)}>
+            <i className="fas fa-phone fa-flip-horizontal" />
+            <span className="ml-2">Contact Attempt</span>
+          </Dropdown.Item>
+          {rowData.enrolled_id && (
+            <Dropdown.Item className="px-4" onClick={() => (location.href = `${window.BASE_PATH}/patients/${rowData.enrolled_id}`)}>
+              <i className="fas fa-search" />
+              <span className="ml-2">View Record</span>
             </Dropdown.Item>
           )}
-          {rowData.id && !rowData.enrolled_id && this.props.can_enroll_close_contacts && (
-            <Dropdown.Item
-              onClick={() => {
-                location.href = window.BASE_PATH + `/patients/new?cc=${rowData.id}`;
-              }}>
-              <i className="fas fa-plus"></i> Enroll
+          {!rowData.enrolled_id && this.props.can_enroll_close_contacts && (
+            <Dropdown.Item className="px-4" onClick={() => (location.href = `${window.BASE_PATH}/patients/new?cc=${rowData.id}`)}>
+              <i className="fas fa-plus" />
+              <span className="ml-2"> Enroll</span>
             </Dropdown.Item>
           )}
+          <Dropdown.Item className="px-4" onClick={() => this.toggleCloseContactDeleteModal(rowData.id)}>
+            <i className="fas fa-trash" />
+            <span className="ml-2"> Delete</span>
+          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     );
@@ -372,10 +417,9 @@ class CloseContactTable extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Card id="close-contacts-table" className="mx-2 mt-3 mb-4 card-square">
-          <Card.Header className="h5">
-            Close Contacts
-            <InfoTooltip tooltipTextKey="closeContacts" location="right"></InfoTooltip>
+        <Card className="mx-2 mt-3 mb-4 card-square">
+          <Card.Header as="h5">
+            Close Contacts <InfoTooltip tooltipTextKey="closeContacts" location="right" />
           </Card.Header>
           <Card.Body>
             <div className="mt-4">
@@ -389,10 +433,14 @@ class CloseContactTable extends React.Component {
                 <Col xl={6} lg={10} md={12}>
                   <InputGroup size="md" className="mt-3 mt-md-0 ">
                     <InputGroup.Prepend>
-                      <OverlayTrigger overlay={<Tooltip>Search by ID, Group Name, or Product Name.</Tooltip>}>
+                      <OverlayTrigger
+                        overlay={<Tooltip>Search by First Name, Last Name, Phone Number, Email, Assigned User, Contact Attepts, or Notes.</Tooltip>}>
                         <InputGroup.Text className="rounded-0">
                           <i className="fas fa-search"></i>
-                          <label htmlFor="close-contact-search-input" className="ml-2 mb-0">
+                          <label
+                            htmlFor="close-contact-search-input"
+                            className="ml-2 mb-0"
+                            aria-label="Search Close Contact Table by First Name, Last Name, Phone Number, Email, Assigned User, Contact Attepts, or Notes.">
                             Search
                           </label>
                         </InputGroup.Text>
@@ -422,11 +470,21 @@ class CloseContactTable extends React.Component {
                   handlePageUpdate={this.handlePageUpdate}
                   entryOptions={this.state.entryOptions}
                   entries={this.state.query.entries}
+                  tableCustomClass="table-has-dropdown"
                 />
               </div>
             </div>
           </Card.Body>
         </Card>
+        {this.state.showDeleteCCModal && (
+          <DeleteDialog
+            type={'Close Contact'}
+            delete={this.handleDeleteCloseContact}
+            toggle={this.toggleCloseContactDeleteModal}
+            onChange={this.handleCCDeleteUpdate}
+            show_text_input={true}
+          />
+        )}
         {(this.state.showAddCloseContactModal || this.state.showEditCCModal) && (
           <CloseContactModal
             title={this.state.showAddCloseContactModal ? 'Add New Close Contact' : 'Edit Close Contact'}
