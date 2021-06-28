@@ -524,6 +524,12 @@ class PatientsTable extends React.Component {
     return `Monitoree ${rowData.name}`;
   };
 
+  // Adds the className `selected-row` to those rows who have been selected with the Bulk Action checkcbox
+  getRowClassName = rowData => {
+    const isSelected = this.state.selectedPatients.filter(x => this.state.table.rowData[Number(x)].id === rowData.id).length;
+    return isSelected ? 'selected-row' : null;
+  };
+
   createEligibilityTooltip = data => {
     const reportEligibility = data.value;
     const rowData = data.rowData;
@@ -724,27 +730,30 @@ class PatientsTable extends React.Component {
                   )}
                 </InputGroup>
               </Form>
-              <CustomTable
-                dataType="patients"
-                columnData={this.state.table.displayedColData}
-                rowData={this.state.table.rowData}
-                totalRows={this.state.table.totalRows}
-                handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
-                handleSelect={this.handleSelect}
-                handleEntriesChange={this.handleEntriesChange}
-                handlePageUpdate={this.handlePageUpdate}
-                getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
-                isSelectable={true}
-                isEditable={false}
-                isLoading={this.state.loading}
-                page={this.state.query.page}
-                selectedRows={this.state.selectedPatients}
-                selectAll={this.state.selectAll}
-                entryOptions={this.state.entryOptions}
-                entries={parseInt(this.state.query.entries)}
-                orderBy={this.state.query.order !== undefined ? this.state.query.order : ''}
-                sortDirection={this.state.query.direction !== undefined ? this.state.query.direction : ''}
-              />
+              <div className="patients-table">
+                <CustomTable
+                  dataType="patients"
+                  columnData={this.state.table.displayedColData}
+                  rowData={this.state.table.rowData}
+                  totalRows={this.state.table.totalRows}
+                  handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
+                  handleSelect={this.handleSelect}
+                  handleEntriesChange={this.handleEntriesChange}
+                  handlePageUpdate={this.handlePageUpdate}
+                  getRowClassName={this.getRowClassName}
+                  getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
+                  isSelectable={true}
+                  isEditable={false}
+                  isLoading={this.state.loading}
+                  page={this.state.query.page}
+                  selectedRows={this.state.selectedPatients}
+                  selectAll={this.state.selectAll}
+                  entryOptions={this.state.entryOptions}
+                  entries={parseInt(this.state.query.entries)}
+                  orderBy={this.state.query.order !== undefined ? this.state.query.order : ''}
+                  sortDirection={this.state.query.direction !== undefined ? this.state.query.direction : ''}
+                />
+              </div>
             </Card.Body>
           </Card>
         </TabContent>

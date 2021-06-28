@@ -233,7 +233,7 @@ class CustomTable extends React.Component {
                         value = colData.filter(filterData);
                       }
                       return (
-                        <td key={colIndex} id={`${this.props.dataType}-`} className={colData.className ? colData.className : ''}>
+                        <td key={colIndex} className={colData.className ? colData.className : ''}>
                           {colData.onClick && <span onClick={() => (colData.onClick(rowData.id.toString()) ? colData.onClick : null)}>{value}</span>}
                           {!colData.onClick && value}
                         </td>
