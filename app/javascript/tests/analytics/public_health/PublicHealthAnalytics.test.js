@@ -3,13 +3,13 @@ import { shallow } from 'enzyme';
 import { Button, Col } from 'react-bootstrap';
 import Switch from 'react-switch';
 import ReactTooltip from 'react-tooltip';
-import PublicHealthAnalytics from '../../components/analytics/public_health/PublicHealthAnalytics';
-import MonitoreeFlow from '../../components/analytics/public_health/charts/MonitoreeFlow';
-import PreferredReportingMethod from '../../components/analytics/public_health/charts/PreferredReportingMethod';
-import Demographics from '../../components/analytics/public_health/charts/Demographics';
-import ExposureSummary from '../../components/analytics/public_health/charts/ExposureSummary';
-import MonitoreesByEventDate from '../../components/analytics/public_health/charts/MonitoreesByEventDate';
-import GeographicSummary from '../../components/analytics/public_health/charts/GeographicSummary';
+import PublicHealthAnalytics from '../../../components/analytics/public_health/PublicHealthAnalytics';
+import MonitoreeFlow from '../../../components/analytics/public_health/charts/MonitoreeFlow';
+import PreferredReportingMethod from '../../../components/analytics/public_health/charts/PreferredReportingMethod';
+import Demographics from '../../../components/analytics/public_health/charts/Demographics';
+import ExposureSummary from '../../../components/analytics/public_health/charts/ExposureSummary';
+import MonitoreesByEventDate from '../../../components/analytics/public_health/charts/MonitoreesByEventDate';
+import GeographicSummary from '../../../components/analytics/public_health/charts/GeographicSummary';
 import { mockUser1 } from '../../mocks/mockUsers';
 import mockAnalyticsData from '../../mocks/mockAnalytics';
 import { formatTimestamp } from '../../util.js';
@@ -62,12 +62,12 @@ describe('PublicHealthAnalytics', () => {
     expect(exportSpy).toHaveBeenCalled();
   });
 
-  it('Clicking "Epidemiological Summary" switch updates state.showEpidemiologicalGraphs', () => {
+  it('Clicking "Epidemiological Summary" switch updates state.showGraphs', () => {
     const wrapper = getWrapper(mockAnalyticsData);
-    expect(wrapper.state('showEpidemiologicalGraphs')).toBeFalsy();
+    expect(wrapper.state('showGraphs')).toBeFalsy();
     wrapper.find(Switch).simulate('change', true);
-    expect(wrapper.state('showEpidemiologicalGraphs')).toBeTruthy();
+    expect(wrapper.state('showGraphs')).toBeTruthy();
     wrapper.find(Switch).simulate('change', false);
-    expect(wrapper.state('showEpidemiologicalGraphs')).toBeFalsy();
+    expect(wrapper.state('showGraphs')).toBeFalsy();
   });
 });
