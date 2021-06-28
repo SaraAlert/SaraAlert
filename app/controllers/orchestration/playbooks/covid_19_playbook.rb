@@ -35,7 +35,7 @@ module Orchestration::Playbooks::Covid19Playbook
               },
               export: {
                   label: 'Export',
-                  type: 'subset',
+                  type: 'all',
                   config: {
                     set: %i[saf]
                   }
