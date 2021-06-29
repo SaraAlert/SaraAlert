@@ -136,23 +136,10 @@ class PatientsControllerTest < ActionController::TestCase
     exclude_patient_id = current_patient.id
     post :head_of_household_options, params: {
       query: {
-        search: '',
         entries: 5,
         workflow: 'global',
         tab: 'all',
-        scope: 'all',
-        tz_offset: 240,
-        exclude_patient_id: exclude_patient_id,
-        filter: [{
-          dateOption: nil,
-          filterOption: {
-            description: 'Monitorees that are a Head of Household or self-reporter',
-            name: 'hoh',
-            title: 'Daily Reporters (Boolean)',
-            type: 'boolean'
-          },
-          value: true
-        }]
+        exclude_patient_id: exclude_patient_id
       }
     }
 
