@@ -906,8 +906,8 @@ class PatientQueryHelperTest < ActionView::TestCase
     Patient.destroy_all
     user = create(:public_health_enroller_user)
     exclude_patient = create(:patient, creator: user)
-    create(:patient, creator: user)
-    create(:patient, creator: user)
+    patient_2 = create(:patient, creator: user)
+    patient_3 = create(:patient, creator: user)
 
     exclude_patient_id = exclude_patient.id
     params = ActionController::Parameters.new({
@@ -918,17 +918,7 @@ class PatientQueryHelperTest < ActionView::TestCase
                                                   tab: 'all',
                                                   scope: 'all',
                                                   tz_offset: 240,
-                                                  exclude_patient_id: exclude_patient_id,
-                                                  filter: [{
-                                                    dateOption: nil,
-                                                    filterOption: {
-                                                      description: 'Monitorees that are a Head of Household or self-reporter',
-                                                      name: 'hoh',
-                                                      title: 'Daily Reporters (Boolean)',
-                                                      type: 'boolean'
-                                                    },
-                                                    value: true
-                                                  }]
+                                                  exclude_patient_id: exclude_patient_id
                                                 }
                                               })
 
@@ -938,7 +928,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
 
     # Check that current monitoree is not in patients list
-    patients_by_id = patients[:linelist]&.pluck(:id)
+    patients_by_id = filtered_patients[:linelist]&.pluck(:id)
     assert_not_includes(patients_by_id, exclude_patient_id)
   end
 
@@ -949,6 +939,8 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
     create(:patient, creator: user)
 
+    patients = Patient.all
+
     params = ActionController::Parameters.new({
                                                 query: {
                                                   search: '',
@@ -956,24 +948,13 @@ class PatientQueryHelperTest < ActionView::TestCase
                                                   workflow: 'global',
                                                   tab: 'all',
                                                   scope: 'all',
-                                                  tz_offset: 240,
-                                                  filter: [{
-                                                    dateOption: nil,
-                                                    filterOption: {
-                                                      description: 'Monitorees that are a Head of Household or self-reporter',
-                                                      name: 'hoh',
-                                                      title: 'Daily Reporters (Boolean)',
-                                                      type: 'boolean'
-                                                    },
-                                                    value: true
-                                                  }]
+                                                  tz_offset: 240
                                                 }
                                               })
 
-    # Check for monitorees that are HoH or self-reporter
+    # Check that no patients were filtered out
     filtered_patients = patients_table_data(params, user)
-    filtered_patients_array = [patient_1, patient_2, patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+    assert_equal patients.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
   end
 
   test 'patients table data returns patients when exclude_patient_id is not valid' do
@@ -991,24 +972,12 @@ class PatientQueryHelperTest < ActionView::TestCase
                                                   tab: 'all',
                                                   scope: 'all',
                                                   tz_offset: 240,
-                                                  exclude_patient_id: -1,
-                                                  filter: [{
-                                                    dateOption: nil,
-                                                    filterOption: {
-                                                      description: 'Monitorees that are a Head of Household or self-reporter',
-                                                      name: 'hoh',
-                                                      title: 'Daily Reporters (Boolean)',
-                                                      type: 'boolean'
-                                                    },
-                                                    value: true
-                                                  }]
+                                                  exclude_patient_id: -1
                                                 }
                                               })
 
-    # Check for monitorees that are HoH or self-reporter
-    filtered_patients = patients_table_data(params, user)
-    filtered_patients_array = [patient_1, patient_2, patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+    # Check bad_request error is thrown
+    assert_raises(InvalidQueryError) { patients_table_data(params, user) }
   end
 end
 # rubocop:enable Metrics/ClassLength
