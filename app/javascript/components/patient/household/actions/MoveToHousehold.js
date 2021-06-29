@@ -34,6 +34,7 @@ class MoveToHousehold extends React.Component {
         tab: 'all',
         scope: 'all',
         tz_offset: new Date().getTimezoneOffset(),
+        exclude_patient_id: this.props.patient.id,
         // This query should always filter out records that are not self-reporters
         filter: [
           {
