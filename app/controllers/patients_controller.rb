@@ -77,6 +77,8 @@ class PatientsController < ApplicationController
   def new_group_member
     redirect_to(root_url) && return unless current_user.can_create_patient?
 
+    @title = 'Enroll Household Member'
+
     # Find the parent subject
     parent = current_user.get_patient(params.permit(:id)[:id])
 
