@@ -449,7 +449,7 @@ class PatientsController < ApplicationController
       dependent_ids = current_user.patients.where(responder_id: patient_ids).pluck(:id)
       # If apply_to_household was set, and there exists a patient that has dependents in a different
       # jurisdiction - one that the user may not have access to - those patients will get filtered out.
-      not_viewable = Patient.where(responder_id: patient_ids).pluck(:id) - dependent_ids
+      not_viewable = Patient.where(purged: false, responder_id: patient_ids).pluck(:id) - dependent_ids
 
       unless not_viewable.empty?
         responders = Patient.find(not_viewable).map(&:responder)
