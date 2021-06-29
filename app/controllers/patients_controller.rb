@@ -14,6 +14,10 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_create_patient?
   end
 
+  def monitoree_unavailable
+    @title = 'Monitoree Unavailable'
+  end
+
   # The single subject view
   def show
     redirect_to(root_url) && return unless current_user.can_view_patient?
