@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Card} from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import EnrollerStatistics from '../../../components/analytics/enroller/EnrollerStatistics';
 import { mockEnrollerStatistics1 } from '../../mocks/mockEnrollerStatistics';
 

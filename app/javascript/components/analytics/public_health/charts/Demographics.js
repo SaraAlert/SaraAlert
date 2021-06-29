@@ -1,9 +1,8 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card, Col, Row } from 'react-bootstrap';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import _ from 'lodash';
-import CustomizedAxisTick from '../../display/CustomizedAxisTick';
+import BarGraph from '../../display/BarGraph';
 import InfoTooltip from '../../../util/InfoTooltip';
 import { mapToChartFormat, parseOutFields } from '../../../../utils/Analytics';
 
@@ -63,7 +62,7 @@ class Demographics extends React.Component {
     this.raceChartData = mapToChartFormat(RACES, this.raceData);
     this.soChartData = mapToChartFormat(SEXUAL_ORIENTATIONS, this.soData);
     this.barGraphData = [
-      { title: 'Current Age (Years)', data: this.ageChartData },
+      { title: 'Current Age (Years)', data: this.ageChartData, tooltipKey: 'analyticsAgeTip' },
       { title: 'Sex', data: this.sexChartData },
       { title: 'Ethnicity', data: this.ethnicityChartData },
       { title: 'Race', data: this.raceChartData },
@@ -75,41 +74,10 @@ class Demographics extends React.Component {
     <Row>
       {this.barGraphData.map((graphData, i) => (
         <Col xl="12" key={i}>
-          <div className="mx-2 mt-3 analytics-chart-borders">
-            <div className="text-center h4">
-              {graphData.title}
-              {graphData.title === 'Current Age (Years)' ? (
-                <span className="h6">
-                  <InfoTooltip tooltipTextKey="analyticsAgeTip" location="right"></InfoTooltip>
-                </span>
-              ) : (
-                ''
-              )}
-            </div>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart
-                width={500}
-                height={300}
-                data={graphData.data}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" interval={0} tick={<CustomizedAxisTick />} height={100} />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="Exposure" stackId="a" fill="#557385" />
-                <Bar dataKey="Isolation" stackId="a" fill="#DCC5A7" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <BarGraph title={graphData.title} tooltipKey={graphData.tooltipKey} data={graphData.data} />
         </Col>
       ))}
-      </Row>
+    </Row>
   );
 
   renderTables = () => (
@@ -268,10 +236,10 @@ class Demographics extends React.Component {
   render() {
     return (
       <Card>
-        <Card.Header as="h4" className="text-center">Demographics (Active Records Only)</Card.Header>
-        <Card.Body>
-          {this.props.showGraphs ? this.renderBarGraphs() : this.renderTables()}
-        </Card.Body>
+        <Card.Header as="h4" className="text-center">
+          Demographics (Active Records Only)
+        </Card.Header>
+        <Card.Body>{this.props.showGraphs ? this.renderBarGraphs() : this.renderTables()}</Card.Body>
       </Card>
     );
   }

@@ -56,7 +56,9 @@ class MonitoreesByEventDate extends React.Component {
   render() {
     return (
       <Card>
-        <Card.Header as="h4" className="text-center">Monitorees by Event Date ​(Active Records Only)</Card.Header>
+        <Card.Header as="h4" className="text-center">
+          Monitorees by Event Date ​(Active Records Only)
+        </Card.Header>
         <Card.Body className="text-center">
           <Form.Row className="justify-content-center">
             <Form.Group as={Col} md="8" onChange={val => this.setTimeResolution(val.target.value)}>

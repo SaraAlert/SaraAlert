@@ -103,7 +103,9 @@ class PreferredReportingMethod extends React.Component {
   render() {
     return (
       <Card>
-        <Card.Header as="h4" className="text-center">Monitorees by Reporting Method (Active Records Only)</Card.Header>
+        <Card.Header as="h4" className="text-center">
+          Monitorees by Reporting Method (Active Records Only)
+        </Card.Header>
         <Card.Body>
           <table className="analytics-table">
             <thead>
