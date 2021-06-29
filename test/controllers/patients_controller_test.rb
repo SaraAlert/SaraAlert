@@ -125,31 +125,31 @@ class PatientsControllerTest < ActionController::TestCase
 
   test 'head_of_household_options filters out exclude_patient_id from table' do
     user = create(:public_health_enroller_user)
-    patient_1 = create(:patient, creator: user)
-    patient_2 = create(:patient, creator: user)
-    patient_3 = create(:patient, creator: user)
-    patient_4 = create(:patient, creator: user)
-    patient_5 = create(:patient, creator: user)
+    current_patient = create(:patient, creator: user)
+    create(:patient, creator: user)
+    create(:patient, creator: user)
+    create(:patient, creator: user)
+    create(:patient, creator: user)
 
     sign_in user
 
-    exclude_patient_id = patient_1.id
+    exclude_patient_id = current_patient.id
     post :head_of_household_options, params: {
       query: {
-        search: "",
+        search: '',
         entries: 5,
-        workflow: "global",
-        tab: "all",
-        scope: "all",
+        workflow: 'global',
+        tab: 'all',
+        scope: 'all',
         tz_offset: 240,
         exclude_patient_id: exclude_patient_id,
         filter: [{
           dateOption: nil,
           filterOption: {
-            description: "Monitorees that are a Head of Household or self-reporter",
-            name: "hoh",
-            title: "Daily Reporters (Boolean)",
-            type: "boolean"
+            description: 'Monitorees that are a Head of Household or self-reporter',
+            name: 'hoh',
+            title: 'Daily Reporters (Boolean)',
+            type: 'boolean'
           },
           value: true
         }]

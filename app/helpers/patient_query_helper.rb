@@ -12,6 +12,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     # Validate pagination params
     entries = params.require(:query)[:entries]&.to_i || 25
     raise InvalidQueryError.new(:entries, entries) unless entries >= 0
+
     page = params.require(:query)[:page]&.to_i || 0
     raise InvalidQueryError.new(:page, page) unless page >= 0
 
@@ -31,8 +32,10 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
   def validate_patients_query(unsanitized_query)
     # Only allow permitted params
-    query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :tz_offset, :exclude_patient_id,
-                                     filter: [:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption, { filterOption: {}, value: {} }])
+    query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries,
+                                     :page, :order, :direction, :tz_offset, :exclude_patient_id,
+                                     filter: [:value, :numberOption, :dateOption, :relativeOption,
+                                              :additionalFilterOption, { filterOption: {}, value: {} }])
 
     # Validate workflow
     workflow = query[:workflow]&.to_sym || :global
