@@ -104,7 +104,7 @@ class Demographics extends React.Component {
           </thead>
           <tbody>
             {_.initial(AGEGROUPS).map((val, index1) => (
-              <tr key={`workflow-table-${index1}`} className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
+              <tr key={`workflow-table-${index1}`} className={index1 % 2 ? '' : 'row-striped-dark'}>
                 <td className="font-weight-bold"> {val} </td>
                 {this.ageData[Number(index1)].map((data, subIndex1) => (
                   <td key={subIndex1}> {data} </td>
@@ -137,7 +137,7 @@ class Demographics extends React.Component {
           </thead>
           <tbody>
             {RACES.map((val, index4) => (
-              <tr key={`workflow-table-${index4}`} className={index4 % 2 ? '' : 'analytics-zebra-bg'}>
+              <tr key={`workflow-table-${index4}`} className={index4 % 2 ? '' : 'row-striped-dark'}>
                 <td className="font-weight-bold"> {val} </td>
                 {this.raceData[Number(index4)].map((data, subIndex4) => (
                   <td key={subIndex4}> {data} </td>
@@ -164,7 +164,7 @@ class Demographics extends React.Component {
           </thead>
           <tbody>
             {SEXES.map((val, index2) => (
-              <tr key={`workflow-table-${index2}`} className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
+              <tr key={`workflow-table-${index2}`} className={index2 % 2 ? '' : 'row-striped-dark'}>
                 <td className="font-weight-bold"> {val} </td>
                 {this.sexData[Number(index2)].map((data, subIndex2) => (
                   <td key={subIndex2}> {data} </td>
@@ -189,7 +189,7 @@ class Demographics extends React.Component {
           </thead>
           <tbody>
             {ETHNICITIES.map((val, index3) => (
-              <tr key={`workflow-table-${index3}`} className={index3 % 2 ? '' : 'analytics-zebra-bg'}>
+              <tr key={`workflow-table-${index3}`} className={index3 % 2 ? '' : 'row-striped-dark'}>
                 <td className="font-weight-bold"> {val} </td>
                 {this.ethnicityData[Number(index3)].map((data, subIndex3) => (
                   <td key={subIndex3}> {data} </td>
@@ -218,7 +218,7 @@ class Demographics extends React.Component {
               </thead>
               <tbody>
                 {SEXUAL_ORIENTATIONS.map((val, index5) => (
-                  <tr key={`workflow-table-${index5}`} className={index5 % 2 ? '' : 'analytics-zebra-bg'}>
+                  <tr key={`workflow-table-${index5}`} className={index5 % 2 ? '' : 'row-striped-dark'}>
                     <td className="font-weight-bold"> {val} </td>
                     {this.soData[Number(index5)].map((data, subIndex5) => (
                       <td key={subIndex5}> {data} </td>

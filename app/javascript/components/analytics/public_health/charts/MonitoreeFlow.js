@@ -68,7 +68,7 @@ class MonitoreeFlow extends React.Component {
                 <u>INCOMING</u>
               </td>
             </tr>
-            <tr className="analytics-zebra-bg">
+            <tr className="row-striped-dark">
               <td className="text-right">NEW ENROLLMENTS</td>
               {data.map((x, index) => (
                 <td key={index}>
@@ -91,7 +91,7 @@ class MonitoreeFlow extends React.Component {
                 <u>OUTGOING</u>
               </td>
             </tr>
-            <tr className="analytics-zebra-bg">
+            <tr className="row-striped-dark">
               <td className="text-right">CLOSED</td>
               {data.map((x, index) => (
                 <td key={index}>
