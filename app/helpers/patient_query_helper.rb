@@ -2,37 +2,42 @@
 
 # Helper methods for filtering through patients
 module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
-  def patients_table_data(params)
+  def patients_table_data(params, current_user)
     # Require workflow and tab params
     workflow = params.require(:query).require(:workflow).to_sym
     tab = params.require(:query).require(:tab).to_sym
 
-    # Validate filter and sorting params
-    begin
-      query = validate_patients_query(params.require(:query))
-    rescue StandardError => e
-      return render json: e, status: :bad_request
-    end
+    query = validate_patients_query(params.require(:query))
 
     # Validate pagination params
     entries = params.require(:query)[:entries]&.to_i || 25
+    raise InvalidQueryError.new(:entries, entries) unless entries >= 0
+
     page = params.require(:query)[:page]&.to_i || 0
-    return render json: { error: 'Invalid entries or page' }, status: :bad_request unless entries >= 0 && page >= 0
+    raise InvalidQueryError.new(:page, page) unless page >= 0
 
     # Get filtered patients
     patients = patients_by_query(current_user, query)
+
+    # Filter out current monitoree if exclude_patient_id is defined
+    exclude_patient_id = query[:exclude_patient_id]&.to_i
+    raise InvalidQueryError.new(:exclude_patient_id, exclude_patient_id) if exclude_patient_id.present? && exclude_patient_id.negative?
+
+    patients = patients.where.not(id: exclude_patient_id) if exclude_patient_id.present?
 
     # Paginate
     patients = patients.paginate(per_page: entries, page: page + 1)
 
     # Extract only relevant fields to be displayed by workflow and tab
-    render json: linelist(patients, workflow, tab)
+    linelist(patients, workflow, tab)
   end
 
   def validate_patients_query(unsanitized_query)
     # Only allow permitted params
-    query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :tz_offset,
-                                     filter: [:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption, { filterOption: {}, value: {} }])
+    query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries,
+                                     :page, :order, :direction, :tz_offset, :exclude_patient_id,
+                                     filter: [:value, :numberOption, :dateOption, :relativeOption,
+                                              :additionalFilterOption, { filterOption: {}, value: {} }])
 
     # Validate workflow
     workflow = query[:workflow]&.to_sym || :global

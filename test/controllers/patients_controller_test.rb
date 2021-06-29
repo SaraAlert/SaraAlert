@@ -123,6 +123,36 @@ class PatientsControllerTest < ActionController::TestCase
 
   # ------- Household Updates -----
 
+  test 'head_of_household_options filters out exclude_patient_id from table' do
+    user = create(:public_health_enroller_user)
+    current_patient = create(:patient, creator: user)
+    create(:patient, creator: user)
+    create(:patient, creator: user)
+    create(:patient, creator: user)
+    create(:patient, creator: user)
+
+    sign_in user
+
+    exclude_patient_id = current_patient.id
+    post :head_of_household_options, params: {
+      query: {
+        entries: 5,
+        workflow: 'global',
+        tab: 'all',
+        exclude_patient_id: exclude_patient_id
+      }
+    }
+
+    patients_by_id = JSON.parse(response.body)['linelist'].map { |p| p['id'] }
+
+    # Check that current monitoree is not in patients list
+    assert_response :success
+    assert_equal(4, JSON.parse(response.body)['total'])
+    assert_not_includes(patients_by_id, exclude_patient_id)
+
+    sign_out user
+  end
+
   test 'move_to_household successfully moves to household' do
     user = create(:public_health_enroller_user)
     desired_hoh = create(:patient, creator: user)

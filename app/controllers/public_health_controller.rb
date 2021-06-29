@@ -8,7 +8,13 @@ class PublicHealthController < ApplicationController
   before_action :authenticate_user_role
 
   def patients
-    patients_table_data(params)
+    begin
+      patients = patients_table_data(params, current_user)
+    rescue InvalidQueryError => e
+      return render json: e, status: :bad_request
+    end
+
+    render json: patients
   end
 
   def patients_count

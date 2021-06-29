@@ -899,5 +899,81 @@ class PatientQueryHelperTest < ActionView::TestCase
     filtered_patients_array = [patient_1, patient_4]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
+
+  # --- PATIENTS TABLE DATA TESTS --- #
+
+  test 'patients table data filters out current monitoree' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    exclude_patient = create(:patient, creator: user)
+    patient_2 = create(:patient, creator: user)
+    patient_3 = create(:patient, creator: user)
+
+    exclude_patient_id = exclude_patient.id
+    params = ActionController::Parameters.new({
+                                                query: {
+                                                  search: '',
+                                                  entries: 5,
+                                                  workflow: 'global',
+                                                  tab: 'all',
+                                                  scope: 'all',
+                                                  tz_offset: 240,
+                                                  exclude_patient_id: exclude_patient_id
+                                                }
+                                              })
+
+    # Check for monitorees that are HoH or self-reporter
+    filtered_patients = patients_table_data(params, user)
+    filtered_patients_array = [patient_2, patient_3]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+
+    # Check that current monitoree is not in patients list
+    patients_by_id = filtered_patients[:linelist]&.pluck(:id)
+    assert_not_includes(patients_by_id, exclude_patient_id)
+  end
+
+  test 'patients table data returns patients when exclude_patient_id is nil' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    3.times { create(:patient, creator: user) }
+
+    patients = Patient.all
+
+    params = ActionController::Parameters.new({
+                                                query: {
+                                                  search: '',
+                                                  entries: 5,
+                                                  workflow: 'global',
+                                                  tab: 'all',
+                                                  scope: 'all',
+                                                  tz_offset: 240
+                                                }
+                                              })
+
+    # Check that no patients were filtered out
+    filtered_patients = patients_table_data(params, user)
+    assert_equal patients.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+  end
+
+  test 'patients table data raises InvalidQueryError when exclude_patient_id is not valid' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    3.times { create(:patient, creator: user) }
+
+    params = ActionController::Parameters.new({
+                                                query: {
+                                                  search: '',
+                                                  entries: 5,
+                                                  workflow: 'global',
+                                                  tab: 'all',
+                                                  scope: 'all',
+                                                  tz_offset: 240,
+                                                  exclude_patient_id: -1
+                                                }
+                                              })
+
+    # Check bad_request error is thrown
+    assert_raises(InvalidQueryError) { patients_table_data(params, user) }
+  end
 end
 # rubocop:enable Metrics/ClassLength
