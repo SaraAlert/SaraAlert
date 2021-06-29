@@ -10,9 +10,7 @@ class PublicHealthController < ApplicationController
   def patients
     begin
       patients = patients_table_data(params, current_user)
-    rescue ActionController::ParameterMissing
-      raise
-    rescue StandardError => e
+    rescue InvalidQueryError => e
       return render json: e, status: :bad_request
     end
 
