@@ -90,8 +90,10 @@ class CacheAnalyticsJob < ApplicationJob
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 50 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 60 THEN '50-59'
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 60 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 70 THEN '60-69'
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 70 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 80 THEN '70-79'
-        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 80 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 110 THEN '>=80'
-        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 110 THEN 'FAKE_BIRTHDATE'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 80 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 90 THEN '80-89'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 90 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 100 THEN '90-99'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 100 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 110 THEN '100-109'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 110 THEN '≥ 110'
       END
     SQL
     monitorees.monitoring_open
