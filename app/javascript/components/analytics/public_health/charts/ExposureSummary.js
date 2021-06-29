@@ -3,9 +3,9 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import _ from 'lodash';
 import BarGraph from '../../display/BarGraph';
+import ExposureIsolationTable from '../../display/ExposureIsolationTable';
 import { mapToChartFormat, parseOutFields } from '../../../../utils/Analytics';
 
-const WORKFLOWS = ['Exposure', 'Isolation'];
 const RISKFACTORS = [
   'Close Contact with Known Case',
   'Travel from Affected Country or Area',
@@ -36,11 +36,9 @@ class ExposureSummary extends React.Component {
     this.COUNTRY_HEADERS = this.COUNTRY_HEADERS.slice(0, NUM_COUNTRIES_TO_SHOW); // and trim the headers so it wont display all the countries
 
     // Map and translate all of the Tabular Data to the Chart Format
-    this.rfChartData = mapToChartFormat(RISKFACTORS, this.rfData);
-    this.countryChartData = mapToChartFormat(this.COUNTRY_HEADERS, this.countryData);
     this.barGraphData = [
-      { title: 'Risk Factors', data: this.rfChartData },
-      { title: 'Country of Exposure', data: this.countryChartData },
+      { title: 'Risk Factors', data: mapToChartFormat(RISKFACTORS, this.rfData) },
+      { title: 'Country of Exposure', data: mapToChartFormat(this.COUNTRY_HEADERS, this.countryData) },
     ];
   }
 
@@ -71,60 +69,12 @@ class ExposureSummary extends React.Component {
   renderTables = () => {
     return (
       <Row>
-        <Col md="12">
-          <div className="text-left mt-3 mb-n1 h4"> Risk Factors </div>
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th className="py-0"></th>
-                {WORKFLOWS.map((header, index) => (
-                  <th key={index} className="font-weight-bold">
-                    {' '}
-                    <u>{_.upperCase(header)}</u>{' '}
-                  </th>
-                ))}
-                <th>Total</th>
-              </tr>
-            </thead>
-            {RISKFACTORS.map((val, index1) => (
-              <tbody key={`workflow-table-${index1}`}>
-                <tr className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
-                  <td className="font-weight-bold"> {val} </td>
-                  {this.rfData[Number(index1)].map((data, subIndex1) => (
-                    <td key={subIndex1}> {data} </td>
-                  ))}
-                </tr>
-              </tbody>
-            ))}
-          </table>
+        <Col md="12" className="mb-3 mb-md-0">
+          <ExposureIsolationTable title={'Risk Factors'} rowHeaders={RISKFACTORS} data={this.rfData} />
         </Col>
-        <Col md="12">
-          <div className="text-left mt-3 mb-n1 h4"> Country of Exposure </div>
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th className="py-0"></th>
-                {WORKFLOWS.map((header, index) => (
-                  <th key={index} className="font-weight-bold">
-                    {' '}
-                    <u>{_.upperCase(header)}</u>{' '}
-                  </th>
-                ))}
-                <th>Total</th>
-              </tr>
-            </thead>
-            {this.COUNTRY_HEADERS.map((val, index2) => (
-              <tbody key={`workflow-table-${index2}`}>
-                <tr className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
-                  <td className="font-weight-bold"> {val} </td>
-                  {this.countryData[Number(index2)].map((data, subIndex2) => (
-                    <td key={subIndex2}> {data} </td>
-                  ))}
-                </tr>
-              </tbody>
-            ))}
-          </table>
-          <Button variant="primary" className="float-right mt-3 btn-square" onClick={this.exportFullCountryData}>
+        <Col md="12" className="mb-3">
+          <ExposureIsolationTable title={'Country of Exposure'} rowHeaders={this.COUNTRY_HEADERS} data={this.countryData} />
+          <Button variant="primary" className="float-right mt-3" onClick={this.exportFullCountryData}>
             <i className="fas fa-download mr-1"></i>
             Export Complete Country Data
           </Button>

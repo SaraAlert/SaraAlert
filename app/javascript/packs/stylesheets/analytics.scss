@@ -1,3 +1,112 @@
+@import './constants';
+
+/* TABLE STYLING */
+
+.analytics-table-header {
+  font-size: 1.25em;
+  font-weight: 500;
+  margin-bottom: -3px;
+}
+
+.analytics-table {
+  width: 100%;
+
+  th {
+    padding: 3px 5px;
+  }
+
+  td {
+    padding: 8px 5px;
+  }
+
+  .header {
+    font-weight: 600;
+    font-size: .9em;
+  }
+
+  .row-striped-light {
+    background-color: #fff;
+  
+    .total-column {
+      background-color: #eee;
+    }
+  }
+  
+  .row-striped-dark {
+    background-color: #eee;
+  
+    .total-column {
+      background-color: #ddd;
+    }
+  }
+}
+
+.analytics-table-success {
+  background-color: #d1e6a5;
+}
+
+.analytics-table-caution {
+  background-color: #ffe09e;
+}
+
+.analytics-table-danger {
+  background-color: #f5988c;
+}
+
+.analytics-table-secondary {
+  background-color: #e2e2e2;
+}
+
+.analytics-mf-subheader {
+  font-size: .8rem;
+  color: #4c4c4c;
+}
+
+.analytics-percentage { // check me
+  font-size: .8rem;
+  color: #555 !important;
+  font-weight: bold;
+}
+
+.fake-demographic-text { // rename me
+  font-size: .8rem;
+  font-weight: bold;
+}
+
+
+/* SWITCH STYLING */
+
+.custom-react-switch {
+  .react-switch-bg {
+    border-radius: 4px !important;
+  }
+
+  .react-switch-handle {
+    height: 20px !important;
+    top: 5px !important;
+    margin-left: 5px !important;
+    margin-right: 5px !important;
+    width: 20px !important;
+    border-radius: 4px !important;
+  }
+}
+
+
+/* GRAPH STYLING */
+
+.analytics-chart-borders {
+  border: 1px solid #cecece6e;
+  padding-top: 10px;
+  margin-bottom: 30px;
+}
+
+.recharts-custom-tick {
+  font-size: .9rem;
+}
+
+
+/* MAP STYLING */
+
 .geographic-summary-header {
   font-weight: bold;
   border-bottom: 4px solid rgb(28,84,126);
@@ -62,72 +171,4 @@
 
 .clm-tooltip-container {
   width: 475px;
-}
-
-.analytics-table {
-  width: 100%;
-}
-
-.analytics-table tbody tr {
-  height: 50px; // the height of each row
-}
-
-.analytics-chart-borders {
-  border: 1px solid #cecece6e;
-  padding-top: 10px;
-  margin-bottom: 30px;
-}
-
-.analytics-table-success {
-  background-color: #d1e6a5;
-}
-
-.analytics-table-caution {
-  background-color: #ffe09e;
-}
-
-.analytics-table-danger {
-  background-color: #f5988c;
-}
-
-.analytics-table-secondary {
-  background-color: #e2e2e2;
-}
-
-.analytics-zebra-bg {
-  background-color: #0000000d;
-}
-
-.analytics-mf-subheader {
-  font-size: .8rem;
-  color: #4c4c4c;
-}
-
-.analytics-percentage {
-  font-size: .8rem;
-  color: #555 !important;
-  font-weight: bold;
-}
-
-.fake-demographic-text {
-  font-size: .8rem;
-  font-weight: bold;
-}
-
-.custom-react-switch {
-  .react-switch-bg {
-    border-radius: 4px !important;
-  }
-  .react-switch-handle {
-    height: 20px !important;
-    top: 5px !important;
-    margin-left: 5px !important;
-    margin-right: 5px !important;
-    width: 20px !important;
-    border-radius: 4px !important;
-  }
-}
-
-.recharts-custom-tick {
-  font-size: .9rem;
 }
