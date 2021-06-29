@@ -935,9 +935,7 @@ class PatientQueryHelperTest < ActionView::TestCase
   test 'patients table data returns patients when exclude_patient_id is nil' do
     Patient.destroy_all
     user = create(:public_health_enroller_user)
-    create(:patient, creator: user)
-    create(:patient, creator: user)
-    create(:patient, creator: user)
+    3.times { create(:patient, creator: user) }
 
     patients = Patient.all
 
@@ -957,12 +955,10 @@ class PatientQueryHelperTest < ActionView::TestCase
     assert_equal patients.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
   end
 
-  test 'patients table data returns patients when exclude_patient_id is not valid' do
+  test 'patients table data raises InvalidQueryError when exclude_patient_id is not valid' do
     Patient.destroy_all
     user = create(:public_health_enroller_user)
-    create(:patient, creator: user)
-    create(:patient, creator: user)
-    create(:patient, creator: user)
+    3.times { create(:patient, creator: user) }
 
     params = ActionController::Parameters.new({
                                                 query: {

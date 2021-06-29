@@ -20,8 +20,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     patients = patients_by_query(current_user, query)
 
     # Filter out current monitoree if exclude_patient_id is defined
-    exclude_patient_id = query[:exclude_patient_id]&.to_i || nil
-    raise InvalidQueryError.new(:exclude_patient_id, exclude_patient_id) unless exclude_patient_id.nil? || (exclude_patient_id >= 0)
+    exclude_patient_id = query[:exclude_patient_id]&.to_i
+    raise InvalidQueryError.new(:exclude_patient_id, exclude_patient_id) if exclude_patient_id.present? && exclude_patient_id.negative?
 
     patients = patients.where.not(id: exclude_patient_id) if exclude_patient_id.present?
 
