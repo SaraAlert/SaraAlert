@@ -90,11 +90,11 @@ class ImportController < ApplicationController
           end
         end
 
-        # Import lab results if present
+        # Import lab results and vaccinations if present
         if format == :sara_alert_format
           lab_results = []
-          lab_results.push(lab_result(row[87..90], row_ind)) if !row[87].blank? || !row[88].blank? || !row[89].blank? || !row[90].blank?
-          lab_results.push(lab_result(row[91..94], row_ind)) if !row[91].blank? || !row[92].blank? || !row[93].blank? || !row[94].blank?
+          lab_results.push(lab_result(row[87..90], row_ind)) if row[87..90].filter(&:present?).any?
+          lab_results.push(lab_result(row[91..94], row_ind)) if row[91..94].filter(&:present?).any?
           patient[:laboratories_attributes] = lab_results unless lab_results.empty?
 
           # Validate using Laboratory model validators without saving
@@ -103,6 +103,21 @@ class ImportController < ApplicationController
             next if validation_lab_result.valid?(:import)
 
             format_model_validation_errors(validation_lab_result).each do |error|
+              @errors << ValidationError.new(error, row_ind).message
+            end
+          end
+
+          vaccines = []
+          vaccines.push(vaccination(row[102..106], row_ind)) if row[102..106].filter(&:present?).any?
+          vaccines.push(vaccination(row[107..111], row_ind)) if row[107..111].filter(&:present?).any?
+          patient[:vaccines_attributes] = vaccines unless vaccines.empty?
+
+          # Validate using Vaccine model validators without saving
+          vaccines.each do |vaccine_data|
+            validation_vaccine = Vaccine.new(vaccine_data)
+            next if validation_vaccine.valid?
+
+            format_model_validation_errors(validation_vaccine).each do |error|
               @errors << ValidationError.new(error, row_ind).message
             end
           end
@@ -186,6 +201,16 @@ class ImportController < ApplicationController
       specimen_collection: import_field(:specimen_collection, data[1], row_ind),
       report: import_field(:report, data[2], row_ind),
       result: import_field(:result, data[3], row_ind)
+    }
+  end
+
+  def vaccination(data, row_ind)
+    {
+      group_name: import_field(:group_name, data[0], row_ind),
+      product_name: import_field(:product_name, data[1], row_ind),
+      administration_date: import_field(:administration_date, data[2], row_ind),
+      dose_number: import_field(:dose_number, data[3], row_ind),
+      notes: import_field(:notes, data[4], row_ind)
     }
   end
 

@@ -55,7 +55,9 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                 member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan exposure_notes full_status symptom_onset
                                 case_status lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report
                                 lab_2_result jurisdiction_path assigned_user gender_identity sexual_orientation race_other race_unknown
-                                race_refused_to_answer].freeze
+                                race_refused_to_answer vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number
+                                vaccine_1_notes vaccine_2_group_name vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number
+                                vaccine_2_notes].freeze
 
   SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                                'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -80,7 +82,9 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Exposure Notes', 'Status', 'Symptom Onset Date', 'Case Status', 'Lab 1 Test Type', 'Lab 1 Specimen Collection Date',
                                'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type', 'Lab 2 Specimen Collection Date', 'Lab 2 Report Date', 'Lab 2 Result',
                                'Full Assigned Jurisdiction Path', 'Assigned User', 'Gender Identity', 'Sexual Orientation', 'Race Other', 'Race Unknown',
-                               'Race Refused to Answer'].freeze
+                               'Race Refused to Answer', 'Vaccine 1 Group Name', 'Vaccine 1 Product Name', 'Vaccine 1 Administration Date',
+                               'Vaccine 1 Dose Number', 'Vaccine 1 Notes', 'Vaccine 2 Group Name', 'Vaccine 2 Product Name', 'Vaccine 2 Administration Date',
+                               'Vaccine 2 Dose Number', 'Vaccine 2 Notes'].freeze
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
