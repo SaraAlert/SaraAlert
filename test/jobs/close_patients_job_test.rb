@@ -134,7 +134,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     assert_equal(closed_email.header['subject'].value, 'Sara Alert Reporting Complete')
     assert_includes(
       closed_email.text_part.body.to_s.gsub("\r", ' ').gsub("\n", ' '),
-      "Sara Alert monitoring for #{patient.initials_age('-')} completed on #{DateTime.now.strftime('%m-%d-%Y')}! Thank you for your participation."
+      "Sara Alert monitoring for #{patient.initials_age('-')} completed on #{DateTime.now.utc.strftime('%m-%d-%Y')}! Thank you for your participation."
     )
     assert_equal(closed_email.to[0], patient.email)
     assert_histories_contain(patient, 'Monitoring Complete message was sent.')
