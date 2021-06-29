@@ -142,7 +142,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     histories = History.where(patient: @lab_1.patient_id)
     assert_equal(1, histories.count)
     assert_equal 'system-test-everything (API)', histories.first.created_by
-    assert_match(/Lab Result edited.*API/, histories.first.comment)
+    assert_match(/Lab result edited.*API/, histories.first.comment)
   end
 
   test 'should update Observation via patch update' do
