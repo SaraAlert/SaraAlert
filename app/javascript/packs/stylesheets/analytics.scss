@@ -4,19 +4,19 @@
 
 .analytics-table-header {
   font-size: 1.25em;
-  font-weight: 500;
-  margin-bottom: -3px;
+  margin-bottom: -12px;
 }
 
 .analytics-table {
   width: 100%;
+  margin-bottom: 20px;
 
-  th {
-    padding: 3px 5px;
-  }
+  th, td {
+    padding: 8px 15px;
 
-  td {
-    padding: 8px 5px;
+    &:last-child {
+      padding-right: 5px;
+    }
   }
 
   .header {

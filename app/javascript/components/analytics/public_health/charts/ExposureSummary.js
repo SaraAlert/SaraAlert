@@ -58,9 +58,9 @@ class ExposureSummary extends React.Component {
 
   renderBarGraphs = () => (
     <Row>
-      {this.barGraphData.map((graphData, i) => (
+      {this.barGraphData.map((graph, i) => (
         <Col xl="12" key={i}>
-          <BarGraph title={graphData.title} data={graphData.data} />
+          <BarGraph title={graph.title} data={graph.data} />
         </Col>
       ))}
     </Row>
@@ -69,12 +69,12 @@ class ExposureSummary extends React.Component {
   renderTables = () => {
     return (
       <Row>
-        <Col md="12" className="mb-3 mb-md-0">
+        <Col lg="12">
           <ExposureIsolationTable title={'Risk Factors'} rowHeaders={RISKFACTORS} data={this.rfData} />
         </Col>
-        <Col md="12" className="mb-3">
+        <Col lg="12">
           <ExposureIsolationTable title={'Country of Exposure'} rowHeaders={this.COUNTRY_HEADERS} data={this.countryData} />
-          <Button variant="primary" className="float-right mt-3" onClick={this.exportFullCountryData}>
+          <Button variant="primary" className="float-right" onClick={this.exportFullCountryData}>
             <i className="fas fa-download mr-1"></i>
             Export Complete Country Data
           </Button>

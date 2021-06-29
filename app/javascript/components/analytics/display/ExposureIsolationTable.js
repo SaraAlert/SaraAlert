@@ -1,12 +1,19 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-// import InfoTooltip from '../../util/InfoTooltip';
+import InfoTooltip from '../../util/InfoTooltip';
 
 class ExposureIsolationTable extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div className="analytics-table-header">{this.props.title}</div>
+        <div className="analytics-table-header">
+          {this.props.title}
+          {this.props.tooltipKey && (
+            <span className="h6 text-left">
+              <InfoTooltip tooltipTextKey={this.props.tooltipKey} location="right"></InfoTooltip>
+            </span>
+          )}
+        </div>
         <table className="analytics-table text-right">
           <thead>
             <tr className="header">
@@ -41,31 +48,3 @@ ExposureIsolationTable.propTypes = {
 };
 
 export default ExposureIsolationTable;
-
-{
-  /* <div className="text-left mt-3 mb-n1 h4"> Country of Exposure </div>
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th className="py-0"></th>
-                {WORKFLOWS.map((header, index) => (
-                  <th key={index} className="font-weight-bold">
-                    {' '}
-                    <u>{_.upperCase(header)}</u>{' '}
-                  </th>
-                ))}
-                <th>Total</th>
-              </tr>
-            </thead>
-            {this.COUNTRY_HEADERS.map((val, index2) => (
-              <tbody key={`workflow-table-${index2}`}>
-                <tr className={index2 % 2 ? '' : 'row-striped-dark'}>
-                  <td className="font-weight-bold"> {val} </td>
-                  {this.countryData[Number(index2)].map((data, subIndex2) => (
-                    <td key={subIndex2}> {data} </td>
-                  ))}
-                </tr>
-              </tbody>
-            ))}
-          </table> */
-}
