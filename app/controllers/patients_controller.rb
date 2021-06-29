@@ -9,6 +9,7 @@ class PatientsController < ApplicationController
 
   # Enroller view to see enrolled subjects and button to enroll new subjects
   def index
+    @title = 'Enroller Dashboard'
     @enrolled_patients = current_user.enrolled_patients.eager_load(:jurisdiction)
     redirect_to(root_url) && return unless current_user.can_create_patient?
   end
