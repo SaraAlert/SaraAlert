@@ -21,7 +21,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     # Filter out current monitoree if exclude_patient_id is defined
     exclude_patient_id = query[:exclude_patient_id]&.to_i || nil
-    patients = patients.where.not(id: exclude_patient_id) unless exclude_patient_id.nil?
+    raise InvalidQueryError.new(:exclude_patient_id, exclude_patient_id) unless exclude_patient_id.nil? or exclude_patient_id >= 0
+    patients = patients.where.not(id: exclude_patient_id) if exclude_patient_id.present?
 
     # Paginate
     patients = patients.paginate(per_page: entries, page: page + 1)
