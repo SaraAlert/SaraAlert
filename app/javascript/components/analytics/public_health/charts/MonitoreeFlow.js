@@ -118,7 +118,9 @@ class MonitoreeFlow extends React.Component {
   render() {
     return (
       <Card>
-        <Card.Header as="h4" className="text-center">Monitoree Flow Over Time (All Records)</Card.Header>
+        <Card.Header as="h4" className="text-center">
+          Monitoree Flow Over Time (All Records)
+        </Card.Header>
         <Card.Body>
           <Row>{this.tableData.map((data, index) => this.renderWorkflowTable(data, index))}</Row>
           <div className="text-secondary fake-demographic-text mb-1">

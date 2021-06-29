@@ -139,10 +139,10 @@ class PublicHealthAnalytics extends React.Component {
           </Row>
           <Row className="mx-2 mb-2">
             <Col className="p-0">
-              <span className="h5 text-secondary">
-                Among Those Currently Under Active Monitoring
-              </span>
-              <label htmlFor="epidemiological-graph-switch"className="h5 float-right text-secondary">View Data as Graph</label>
+              <span className="h5 text-secondary">Among Those Currently Under Active Monitoring</span>
+              <label htmlFor="epidemiological-graph-switch" className="h5 float-right text-secondary">
+                View Data as Graph
+              </label>
             </Col>
           </Row>
           <Row className="mx-2">

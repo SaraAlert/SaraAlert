@@ -1,9 +1,8 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Row } from 'react-bootstrap';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import _ from 'lodash';
-import CustomizedAxisTick from '../../display/CustomizedAxisTick';
+import BarGraph from '../../display/BarGraph';
 import { mapToChartFormat, parseOutFields } from '../../../../utils/Analytics';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
@@ -63,29 +62,7 @@ class ExposureSummary extends React.Component {
     <Row>
       {this.barGraphData.map((graphData, i) => (
         <Col xl="12" key={i}>
-          <div className="mx-2 mt-3 analytics-chart-borders">
-            <div className="text-center h4">{graphData.title}</div>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart
-                width={500}
-                height={300}
-                data={graphData.data}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" interval={0} tick={<CustomizedAxisTick />} height={100} />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="Exposure" stackId="a" fill="#557385" />
-                <Bar dataKey="Isolation" stackId="a" fill="#DCC5A7" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <BarGraph title={graphData.title} data={graphData.data} />
         </Col>
       ))}
     </Row>
@@ -159,10 +136,10 @@ class ExposureSummary extends React.Component {
   render() {
     return (
       <Card>
-        <Card.Header as="h4" className="text-center">Exposure Summary (Active Records Only)</Card.Header>
-        <Card.Body>
-          {this.props.showGraphs ? this.renderBarGraphs() : this.renderTables()}
-        </Card.Body>
+        <Card.Header as="h4" className="text-center">
+          Exposure Summary (Active Records Only)
+        </Card.Header>
+        <Card.Body>{this.props.showGraphs ? this.renderBarGraphs() : this.renderTables()}</Card.Body>
       </Card>
     );
   }
