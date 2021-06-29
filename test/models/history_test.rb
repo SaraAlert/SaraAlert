@@ -85,7 +85,7 @@ class HistoryTest < ActiveSupport::TestCase
     end
 
     assert_difference("History.in_time_frame('Last 14 Days').size", 1) do
-      create(:history, history_type: 'Comment').update(created_at: 1.day.ago)
+      create(:history, history_type: 'Comment').update(created_at: Date.today.to_datetime - 1.hour)
     end
 
     assert_difference("History.in_time_frame('Total').size", 1) do
