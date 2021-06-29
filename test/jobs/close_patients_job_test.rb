@@ -44,7 +44,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
 
     # Verify fields changed
     updated_patient = Patient.find_by(id: patient.id)
-    assert_equal(updated_patient.closed_at.to_date, DateTime.now.to_date)
+    assert_equal(updated_patient.closed_at.to_date, DateTime.now.utc.to_date)
     assert_equal(updated_patient.monitoring, false)
   end
 
