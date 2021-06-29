@@ -6,6 +6,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   DATA_ABSENT_URL = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
   OMB_URL = 'ombCategory'
   DETAILED_URL = 'detailed'
+  INTERPRETER_URL = 'http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired'
 
   # Switch the context of the paths on a fhir_map from old_context to new_context. For example
   # A Patient resource may have paths such as Patient.birthDate, but if that Patient resource
@@ -112,7 +113,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.member_of_a_common_exposure_cohort_type, 'common-exposure-cohort-name'),
         to_string_extension(patient.potential_exposure_location, 'potential-exposure-location'),
         to_string_extension(patient.potential_exposure_country, 'potential-exposure-country'),
-        to_bool_extension(patient.interpretation_required, 'interpretation-required'),
+        to_interpreter_required_extension(patient.interpretation_required),
         to_date_extension(patient.extended_isolation, 'extended-isolation'),
         to_string_extension(patient.monitoring_reason, 'reason-for-closure')
       ].reject(&:nil?)
@@ -197,7 +198,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       user_defined_id_statelocal: from_identifier(patient&.identifier, 'state-local-id', 'Patient'),
       user_defined_id_cdc: from_identifier(patient&.identifier, 'cdc-id', 'Patient'),
       user_defined_id_nndss: from_identifier(patient&.identifier, 'nndss-id', 'Patient'),
-      interpretation_required: from_bool_extension_nil_default(patient, 'Patient', 'interpretation-required'),
+      interpretation_required: from_interpreter_required_extension(patient, 'Patient'),
       last_date_of_exposure: from_date_extension(patient, 'Patient', %w[last-date-of-exposure last-exposure-date]),
       isolation: from_bool_extension_false_default(patient, 'Patient', 'isolation'),
       jurisdiction_id: from_full_assigned_jurisdiction_path_extension(patient, 'Patient', default_jurisdiction_id),
@@ -700,6 +701,20 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       value: phone_telecom&.extension&.find { |e| e.url.include?('phone-type') }&.valueString,
       path: str_ext_path("#{base_path}.telecom[#{element&.telecom&.index(phone_telecom)}]", 'phone-type')
     }
+  end
+
+  def from_interpreter_required_extension(element, base_path)
+    {
+      value: element&.extension&.find { |e| e.url.include?(INTERPRETER_URL) }&.valueBoolean,
+      path: "#{base_path}.extension(#{INTERPRETER_URL}).valueBoolean"
+    }
+  end
+
+  def to_interpreter_required_extension(value)
+    value.nil? ? nil : FHIR::Extension.new(
+      url: INTERPRETER_URL,
+      valueBoolean: value
+    )
   end
 
   def from_fhir_phone_number(value)
