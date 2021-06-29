@@ -169,9 +169,18 @@ class PatientsController < ApplicationController
     # Create a history for the enrollment
     History.enrollment(patient: patient, created_by: current_user.email)
 
-    # Create a history for the first positive lab if presentt
+    # Create histories for lab results if present
     if allowed_params[:laboratories_attributes].present?
-      History.lab_result(patient: patient.id, created_by: current_user.email, comment: "User added a new lab result (ID: #{patient.laboratories.last.id}).")
+      patient.laboratories.order(created_at: :desc).limit(allowed_params[:laboratories_attributes].size).pluck(:id).reverse.each do |laboratory_id|
+        History.lab_result(patient: patient.id, created_by: current_user.email, comment: "User added a new lab result (ID: #{laboratory_id}).")
+      end
+    end
+
+    # Create histories for vaccinations if presentt
+    if allowed_params[:vaccines_attributes].present?
+      patient.vaccines.order(created_at: :desc).limit(allowed_params[:vaccines_attributes].size).pluck(:id).reverse.each do |vaccine_id|
+        History.vaccination(patient: patient.id, created_by: current_user.email, comment: "User added a new vaccination (ID: #{vaccine_id}).")
+      end
     end
 
     if params[:cc_id].present?
@@ -913,6 +922,13 @@ class PatientsController < ApplicationController
         specimen_collection
         report
         result
+      ],
+      vaccines_attributes: %i[
+        group_name
+        product_name
+        administration_date
+        dose_number
+        notes
       ]
     )
   end

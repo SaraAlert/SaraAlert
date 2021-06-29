@@ -121,7 +121,7 @@ class Patient < ApplicationRecord
   around_destroy :inform_responder
   before_update :handle_update
 
-  accepts_nested_attributes_for :laboratories
+  accepts_nested_attributes_for :laboratories, :vaccines
 
   # Most recent assessment
   def latest_assessment

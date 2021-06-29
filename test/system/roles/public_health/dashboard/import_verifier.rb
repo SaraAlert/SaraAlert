@@ -25,7 +25,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   # TODO: when workflow specific case status validation re-enabled: uncomment
   # WORKFLOW_SPECIFIC_FIELDS = %i[case_status].freeze
   NON_IMPORTED_PATIENT_FIELDS = %i[full_status lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report
-                                   lab_2_result].freeze
+                                   lab_2_result vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number vaccine_1_notes
+                                   vaccine_2_group_name vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number vaccine_2_notes].freeze
   EPI_X_MONITORED_ADDRESS_FIELDS = {
     monitored_address_line_1: :address_line_1,
     monitored_address_city: :address_city,
@@ -237,8 +238,10 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end
         end
-        verify_laboratory(patient, row[87..90])
-        verify_laboratory(patient, row[91..94])
+        verify_laboratory(patient, row[87..90]) if row[87..90].filter(&:present?).any?
+        verify_laboratory(patient, row[91..94]) if row[91..94].filter(&:present?).any?
+        verify_vaccine(patient, row[102..106]) if row[102..106].filter(&:present?).any?
+        verify_vaccine(patient, row[107..111]) if row[107..111].filter(&:present?).any?
         assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_num}")
       end
     end
@@ -322,16 +325,26 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   end
 
   def verify_laboratory(patient, data)
-    return unless !data[0].blank? || !data[1].blank? || !data[2].blank? || !data[3].blank?
-
-    count = Laboratory.where(
+    laboratory = Laboratory.where(
       patient_id: patient.id,
       lab_type: data[0].to_s,
       specimen_collection: data[1],
       report: data[2],
       result: data[3].to_s
-    ).count
-    assert_equal(1, count, "Lab result for patient: #{patient.first_name} #{patient.last_name} not found")
+    )
+    assert laboratory.exists?, "Lab result for patient: #{patient.first_name} #{patient.last_name} not found"
+  end
+
+  def verify_vaccine(patient, data)
+    vaccine = Vaccine.where(
+      patient_id: patient.id,
+      group_name: NORMALIZED_ENUMS[:group_name][normalize_enum_field_value(data[0])],
+      product_name: NORMALIZED_ENUMS[:product_name][normalize_enum_field_value(data[1])],
+      administration_date: data[2],
+      dose_number: NORMALIZED_ENUMS[:dose_number][normalize_enum_field_value(data[3])],
+      notes: data[4]
+    )
+    assert vaccine.exists?, "Vaccination for patient: #{patient.first_name} #{patient.last_name} not found"
   end
 
   def verify_existence(element, label, value, index)
