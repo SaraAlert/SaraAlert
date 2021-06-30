@@ -57,7 +57,7 @@ class MonitoreesByEventDate extends React.Component {
     return (
       <Card>
         <Card.Header as="h4" className="text-center">
-          Monitorees by Event Date ​(Active Records Only)
+          Monitorees by Event Date (Active Records Only)
         </Card.Header>
         <Card.Body className="text-center">
           <Form.Row className="justify-content-center">
