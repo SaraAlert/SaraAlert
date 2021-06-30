@@ -12,7 +12,7 @@ import InfoTooltip from '../../util/InfoTooltip';
 import { countryOptions } from '../../../data/countryOptions';
 import PublicHealthManagement from './PublicHealthManagement';
 
-class Exposure extends React.Component {
+class ExposureInformation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -563,7 +563,7 @@ const staticValidations = {
 
 var schema = yup.object().shape(staticValidations);
 
-Exposure.propTypes = {
+ExposureInformation.propTypes = {
   currentState: PropTypes.object,
   setEnrollmentState: PropTypes.func,
   previous: PropTypes.func,
@@ -578,4 +578,4 @@ Exposure.propTypes = {
   authenticity_token: PropTypes.string,
 };
 
-export default Exposure;
+export default ExposureInformation;

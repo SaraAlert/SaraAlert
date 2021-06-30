@@ -12,7 +12,7 @@ import DateInput from '../../util/DateInput';
 import FirstPositiveLaboratory from '../../patient/laboratory/FirstPositiveLaboratory';
 import PublicHealthManagement from './PublicHealthManagement';
 
-class CaseStatus extends React.Component {
+class CaseInformation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -382,7 +382,7 @@ const staticValidations = {
 
 var schema = yup.object().shape(staticValidations);
 
-CaseStatus.propTypes = {
+CaseInformation.propTypes = {
   currentState: PropTypes.object,
   setEnrollmentState: PropTypes.func,
   previous: PropTypes.func,
@@ -397,4 +397,4 @@ CaseStatus.propTypes = {
   authenticity_token: PropTypes.string,
 };
 
-export default CaseStatus;
+export default CaseInformation;
