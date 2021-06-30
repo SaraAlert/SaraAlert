@@ -21,6 +21,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   def patient_as_fhir(patient)
     return nil if patient.nil?
 
+    STDERR.puts "\n patient as fhir \n"
+    STDERR.puts "\n #{patient.follow_up_reason} \n"
+
     creator_agent_ref = FHIR::Reference.new
     if patient.creator.is_api_proxy
       # Created with an M2M workflow client
@@ -115,7 +118,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.potential_exposure_country, 'potential-exposure-country'),
         to_interpreter_required_extension(patient.interpretation_required),
         to_date_extension(patient.extended_isolation, 'extended-isolation'),
-        to_string_extension(patient.monitoring_reason, 'reason-for-closure')
+        to_string_extension(patient.monitoring_reason, 'reason-for-closure'),
+        to_string_extension(patient.follow_up_reason, 'follow-up-reason'),
+        to_string_extension(patient.follow_up_note, 'follow-up-note')
       ].reject(&:nil?)
     )
   end
@@ -195,7 +200,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       preferred_contact_time: from_string_extension(patient, 'Patient', 'preferred-contact-time'),
       symptom_onset: symptom_onset,
       user_defined_symptom_onset: { value: !symptom_onset[:value]&.nil?, path: date_ext_path('Patient', 'symptom-onset-date') },
-      user_defined_id_statelocal: from_identifier(patient&.identifier, 'state-local-id', 'Patient'),
+      # user_defined_id_statelocal: from_identifier(patient&.identifier, 'state-local-id', 'Patient'),
       user_defined_id_cdc: from_identifier(patient&.identifier, 'cdc-id', 'Patient'),
       user_defined_id_nndss: from_identifier(patient&.identifier, 'nndss-id', 'Patient'),
       interpretation_required: from_interpreter_required_extension(patient, 'Patient'),
@@ -223,7 +228,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       member_of_a_common_exposure_cohort_type: from_string_extension(patient, 'Patient', 'common-exposure-cohort-name'),
       potential_exposure_location: from_string_extension(patient, 'Patient', 'potential-exposure-location'),
       potential_exposure_country: from_string_extension(patient, 'Patient', 'potential-exposure-country'),
-      extended_isolation: from_date_extension(patient, 'Patient', ['extended-isolation'])
+      extended_isolation: from_date_extension(patient, 'Patient', ['extended-isolation']),
+      user_defined_id_statelocal: from_statelocal_id_extension(patient, 'Patient'),
+      follow_up_reason: from_string_extension(patient, 'Patient', 'follow-up-reason'),
+      follow_up_note: from_string_extension(patient, 'Patient', 'follow-up-note')
     }
   end
 

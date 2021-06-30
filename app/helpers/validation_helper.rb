@@ -157,6 +157,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other'],
     foreign_monitored_address_state: [*VALID_STATES, nil, ''],
     additional_planned_travel_destination_state: [*VALID_STATES, nil, ''],
+    follow_up_reason: FOLLOW_UP_FLAG_REASONS,
     # Since languages keys need to be converted to strings, we do this in the languages.rb initializer to save time on initial load after restart.
     primary_language: [*VALID_LANGUAGES, nil, ''],
     secondary_language: [*VALID_LANGUAGES, nil, ''],

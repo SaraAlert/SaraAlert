@@ -53,6 +53,11 @@ class Patient < ApplicationRecord
     }
   end
 
+  validates :follow_up_reason, on: :api, inclusion: { 
+    in: VALID_PATIENT_ENUMS[:follow_up_reason],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:follow_up_reason].reject(&:blank?).join("', '")}'"
+  }
+
   %i[primary_telephone
      secondary_telephone].each do |phone_field|
     validates phone_field, on: %i[api import], phone_number: true
