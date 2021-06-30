@@ -3,8 +3,8 @@
 /* TABLE STYLING */
 
 .analytics-table-header {
-  font-size: 1.25em;
-  margin-bottom: -12px;
+  font-size: 1.3em;
+  margin-bottom: -15px;
 }
 
 .analytics-table {
@@ -12,11 +12,11 @@
   margin-bottom: 20px;
 
   th, td {
-    padding: 8px 15px;
+    padding: 3px 5px;
+  }
 
-    &:last-child {
-      padding-right: 5px;
-    }
+  th:last-child {
+    text-transform: uppercase;
   }
 
   .header {
@@ -24,11 +24,24 @@
     font-size: .9em;
   }
 
+  .sub-header {
+    font-size: .9em;
+    padding-left: 45px;
+  }
+
   .row-striped-light {
     background-color: #fff;
   
     .total-column {
       background-color: #eee;
+    }
+
+    th, td {
+      padding: 8px 15px;
+
+      &:last-child {
+        padding-right: 5px;
+      }
     }
   }
   
@@ -38,9 +51,37 @@
     .total-column {
       background-color: #ddd;
     }
+
+    th, td {
+      padding: 8px 15px;
+      
+      &:last-child {
+        padding-right: 5px;
+      }
+    }
+  }
+
+  .count-percent-container {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .percentage {
+    font-size: .8rem;
+    color: #555;
+    text-align: right;
+    width: 65px;
   }
 }
 
+.info-text {
+  font-size: .8rem;
+  font-weight: 500;
+}
+
+// move us
 .analytics-table-success {
   background-color: #d1e6a5;
 }
@@ -55,22 +96,6 @@
 
 .analytics-table-secondary {
   background-color: #e2e2e2;
-}
-
-.analytics-mf-subheader {
-  font-size: .8rem;
-  color: #4c4c4c;
-}
-
-.analytics-percentage { // check me
-  font-size: .8rem;
-  color: #555 !important;
-  font-weight: bold;
-}
-
-.fake-demographic-text { // rename me
-  font-size: .8rem;
-  font-weight: bold;
 }
 
 

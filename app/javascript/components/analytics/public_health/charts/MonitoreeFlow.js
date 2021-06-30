@@ -44,68 +44,66 @@ class MonitoreeFlow extends React.Component {
 
   renderWorkflowTable(data, index) {
     return (
-      <Col lg="12" key={index} className="pb-3">
+      <Col xl="12" key={index}>
+        <div className="analytics-table-header">{WORKFLOWS[Number(index)]} Workflow</div>
         <table className="analytics-table">
           <thead>
-            <tr>
-              <th className="py-0"></th>
-              {MONITOREE_FLOW_HEADERS.map((monitoreeFlowHeader, index) => (
-                <th key={index}>
-                  <div> {monitoreeFlowHeader} </div>
-                  <div className="text-secondary"> n (col %) </div>
-                </th>
-              ))}
+            <tr className="g-border-bottom text-center header">
+              <th></th>
+              <th>Last 24h</th>
+              <th>Last 7d</th>
+              <th>Last 14d</th>
+              <th>Cumulative</th>
             </tr>
           </thead>
-          <tbody key={index}>
-            <tr style={{ height: '25px' }}>
-              <td className="font-weight-bold text-left p-0">
-                <u>{_.upperCase(WORKFLOWS[Number(index)])} WORKFLOW</u>
-              </td>
+          <tbody>
+            <tr>
+              <td className="header">Incoming</td>
             </tr>
-            <tr style={{ height: '25px' }}>
-              <td className="font-weight-bold text-left analytics-mf-subheader align-bottom">
-                <u>INCOMING</u>
-              </td>
+            <tr>
+              <td className="sub-header">New Enrollments</td>
+              {data.map((x, i) => (
+                <td key={i}>
+                  <div className="count-percent-container">
+                    <span className="number">{x.new_enrollments.value}</span>
+                    <span className="percentage align-bottom">({x.new_enrollments.percentage})</span>
+                  </div>
+                </td>
+              ))}
             </tr>
-            <tr className="row-striped-dark">
-              <td className="text-right">NEW ENROLLMENTS</td>
-              {data.map((x, index) => (
-                <td key={index}>
-                  <div>{x.new_enrollments.value}</div>
-                  <span className="analytics-percentage"> {`(${x.new_enrollments.percentage})`}</span>
+            <tr className="g-border-bottom">
+              <td className="sub-header">Transferred In</td>
+              {data.map((x, i) => (
+                <td key={i}>
+                  <div className="count-percent-container">
+                    <span className="number">{x.transferred_in.value}</span>
+                    <span className="percentage">({x.transferred_in.percentage})</span>
+                  </div>
                 </td>
               ))}
             </tr>
             <tr>
-              <td className="text-right">TRANSFERRED IN</td>
-              {data.map((x, index) => (
-                <td key={index}>
-                  <div>{x.transferred_in.value}</div>
-                  <span className="analytics-percentage"> {`(${x.transferred_in.percentage})`}</span>
-                </td>
-              ))}
-            </tr>
-            <tr style={{ height: '25px' }}>
-              <td className="font-weight-bold text-left analytics-mf-subheader align-bottom">
-                <u>OUTGOING</u>
-              </td>
-            </tr>
-            <tr className="row-striped-dark">
-              <td className="text-right">CLOSED</td>
-              {data.map((x, index) => (
-                <td key={index}>
-                  <div>{x.closed.value}</div>
-                  <span className="analytics-percentage"> {`(${x.closed.percentage})`}</span>
-                </td>
-              ))}
+              <td className="header">Outgoing</td>
             </tr>
             <tr>
-              <td className="text-right">TRANSFERRED OUT</td>
-              {data.map((x, index) => (
-                <td key={index}>
-                  <div>{x.transferred_out.value}</div>
-                  <span className="analytics-percentage"> {`(${x.transferred_out.percentage})`}</span>
+              <td className="sub-header">Closed</td>
+              {data.map((x, i) => (
+                <td key={i}>
+                  <div className="count-percent-container">
+                    <span className="number">{x.closed.value}</span>
+                    <span className="percentage">({x.closed.percentage})</span>
+                  </div>
+                </td>
+              ))}
+            </tr>
+            <tr className="g-border-bottom">
+              <td className="sub-header">Transferred Out</td>
+              {data.map((x, i) => (
+                <td key={i}>
+                  <div className="count-percent-container">
+                    <span className="number">{x.transferred_out.value}</span>
+                    <span className="percentage">({x.transferred_out.percentage})</span>
+                  </div>
                 </td>
               ))}
             </tr>
@@ -123,7 +121,7 @@ class MonitoreeFlow extends React.Component {
         </Card.Header>
         <Card.Body>
           <Row>{this.tableData.map((data, index) => this.renderWorkflowTable(data, index))}</Row>
-          <div className="text-secondary fake-demographic-text mb-1">
+          <div className="text-center text-secondary info-text my-1">
             <i className="fas fa-info-circle mr-1"></i>
             Total includes all incoming and outgoing counts ever recorded for this jurisdiction
           </div>

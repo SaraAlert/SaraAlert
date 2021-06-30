@@ -20,7 +20,7 @@ class ExposureIsolationTable extends React.Component {
               <th></th>
               <th>Exposure</th>
               <th>Isolation</th>
-              <th>TOTAL</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
