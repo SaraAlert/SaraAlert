@@ -677,7 +677,7 @@ class Patient extends React.Component {
                 <Col id="exposure-notes" md={10} xl={12} className="notes-section col-xxxl-8">
                   <div className="section-header">
                     <h4 className="section-title">Notes</h4>
-                    {this.renderEditLink('Edit Notes', 5)}
+                    {this.renderEditLink('Edit Notes', this.props.workflow === 'isolation' ? 6 : 5)}
                   </div>
                   {!this.props.details.exposure_notes && <div className="none-text">None</div>}
                   {this.props.details.exposure_notes && this.props.details.exposure_notes.length < 400 && (
