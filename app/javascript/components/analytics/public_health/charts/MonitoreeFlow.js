@@ -58,10 +58,12 @@ class MonitoreeFlow extends React.Component {
           </thead>
           <tbody>
             <tr>
-              <td className="header">Incoming</td>
+              <td className="header" colSpan="5">
+                Incoming
+              </td>
             </tr>
             <tr>
-              <td className="sub-header">New Enrollments</td>
+              <td className="sub-header indent">New Enrollments</td>
               {data.map((x, i) => (
                 <td key={i}>
                   <div className="count-percent-container">
@@ -72,7 +74,7 @@ class MonitoreeFlow extends React.Component {
               ))}
             </tr>
             <tr className="g-border-bottom">
-              <td className="sub-header">Transferred In</td>
+              <td className="sub-header indent">Transferred In</td>
               {data.map((x, i) => (
                 <td key={i}>
                   <div className="count-percent-container">
@@ -83,10 +85,12 @@ class MonitoreeFlow extends React.Component {
               ))}
             </tr>
             <tr>
-              <td className="header">Outgoing</td>
+              <td className="header" colSpan="5">
+                Outgoing
+              </td>
             </tr>
             <tr>
-              <td className="sub-header">Closed</td>
+              <td className="sub-header indent">Closed</td>
               {data.map((x, i) => (
                 <td key={i}>
                   <div className="count-percent-container">
@@ -97,7 +101,7 @@ class MonitoreeFlow extends React.Component {
               ))}
             </tr>
             <tr className="g-border-bottom">
-              <td className="sub-header">Transferred Out</td>
+              <td className="sub-header indent">Transferred Out</td>
               {data.map((x, i) => (
                 <td key={i}>
                   <div className="count-percent-container">
