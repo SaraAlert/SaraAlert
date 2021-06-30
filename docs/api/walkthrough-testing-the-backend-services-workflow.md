@@ -113,7 +113,7 @@ If using DEMO server:
 {
   "iss":"myTestApp", // Example value that should be replaced with your Client ID
   "sub":"myTestApp", // Example value that should be replaced with your Client ID
-  "aud":"http://demo.saraalert.org/oauth/token",
+  "aud":"https://demo.saraalert.org/oauth/token",
   "exp":1599600491, // Make sure this time is in the future otherwise you will see a SignatureExpired error
   "jti":"1599600191" // Must be a random unique identifier for this JWT
 }
@@ -204,7 +204,7 @@ REQUEST
 
 If using DEMO server:
 ```
-curl  --location --request GET 'http://demo.saraalert.org/fhir/r4/Patient/1' \
+curl  --location --request GET 'https://demo.saraalert.org/fhir/r4/Patient/1' \
       --header 'Accept: application/fhir+json' \
       --header 'Authorization: Bearer fXHoedJMq-mdf8cqQvw5a4AY7SOb92McbJvDzNSP5q4'
 ```
