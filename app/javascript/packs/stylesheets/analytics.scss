@@ -26,7 +26,80 @@
 
   .sub-header {
     font-size: .9em;
-    padding-left: 45px;
+
+    &.indent {
+      padding-left: 40px;
+    }
+  }
+
+  &.reporting-method {
+    th {
+      padding-top: 8px;
+    }
+
+    tr td:nth-child(9) {
+      padding-right: 12px;
+    }
+
+    tr th:last-child, td:last-child {
+      background-color: #eee;
+    }
+  }
+
+  .row-success {
+    & td:nth-child(2) {
+      background-color: $table-row-success;
+    }
+
+    &:hover {
+      background-color: $table-row-success;
+
+      & td:last-child {
+        background-color: darken($table-row-success, 8%);
+      }
+    }
+  }
+
+  .row-caution {
+    & td:nth-child(2) {
+      background-color: $table-row-caution;
+    }
+
+    &:hover {
+      background-color: $table-row-caution;
+
+      & td:last-child {
+        background-color: darken($table-row-caution, 8%);
+      }
+    }
+  }
+
+  .row-danger {
+    & td:nth-child(2) {
+      background-color: $table-row-warning;
+    }
+
+    &:hover {
+      background-color: $table-row-warning;
+
+      & td:last-child {
+        background-color: darken($table-row-warning, 8%);
+      }
+    }
+  }
+
+  .row-secondary {
+    & td:nth-child(2) {
+        background-color: $table-row-secondary;
+    }
+
+    &:hover {
+      background-color: $table-row-secondary;
+
+      & td:last-child {
+        background-color: darken($table-row-secondary, 8%);
+      }
+    }
   }
 
   .row-striped-light {
@@ -61,6 +134,22 @@
     }
   }
 
+  .row-total {
+    border-top: 1px solid #000;
+
+    td {
+      padding: 5px;
+    }
+
+    & td:first-child {
+      border-top: 1px solid #fff;
+    }
+
+    & td:nth-child(2) {
+      font-weight: 600;
+    }
+  }
+
   .count-percent-container {
     display: flex;
     justify-content: flex-end;
@@ -74,28 +163,19 @@
     text-align: right;
     width: 65px;
   }
+
+  .placeholder-cell {
+    background-color: #fff;
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
 }
 
 .info-text {
   font-size: .8rem;
   font-weight: 500;
-}
-
-// move us
-.analytics-table-success {
-  background-color: #d1e6a5;
-}
-
-.analytics-table-caution {
-  background-color: #ffe09e;
-}
-
-.analytics-table-danger {
-  background-color: #f5988c;
-}
-
-.analytics-table-secondary {
-  background-color: #e2e2e2;
 }
 
 
