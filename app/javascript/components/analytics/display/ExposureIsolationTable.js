@@ -26,7 +26,7 @@ class ExposureIsolationTable extends React.Component {
           <tbody>
             {this.props.data.map((row, r_index) => (
               <tr key={`row${r_index}`} className={r_index % 2 ? 'row-striped-light' : 'row-striped-dark'}>
-                <td className="text-left header">{this.props.rowHeaders[r_index]}</td>
+                <td className="text-left header">{this.props.rowHeaders[parseInt(r_index)]}</td>
                 {row.map((cell, c_index) => (
                   <td key={`cell${c_index}`} className={c_index === 2 ? 'total-column' : ''}>
                     {cell}
@@ -43,6 +43,7 @@ class ExposureIsolationTable extends React.Component {
 
 ExposureIsolationTable.propTypes = {
   title: PropTypes.string,
+  tooltipKey: PropTypes.string,
   rowHeaders: PropTypes.array,
   data: PropTypes.array,
 };
