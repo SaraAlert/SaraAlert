@@ -46,36 +46,71 @@ namespace :demo do
     patient_ids = Patient.where('patients.responder_id = patients.id').limit(num_patients).pluck(:id).shuffle
 
     pids = []
+    readers = []
+    outputs = []
 
     ::ActiveRecord::Base.clear_all_connections!
     slices = patient_ids.each_slice(patient_ids.size / num_forks).to_a
-    num_forks.times.with_index do |index|
-      fork_num = index + 1
+    num_forks.times do |index|
       slice = slices[index]
       next if slice.nil?
 
+      reader, writer = IO.pipe
+
       pids << fork do
-        start_time = Time.now
+        reader.close
         ::ActiveRecord::Base.establish_connection
 
-        num_to_create = num_patients / num_forks
+        num_to_create = (num_patients / num_forks) + (index < num_patients % num_forks ? 1 : 0)
         num_created = 0
+        start_time = Time.now
         while num_created < num_to_create do
           # deep_duplicate returns exactly how many patients were created (including duplicated dependents)
           num_created += deep_duplicate_patient(Patient.find(slice.sample))
-          print "\r#{(num_created / (Time.now - start_time)).truncate(2)} p/s"
-        end
 
-        elapsed = Time.now - start_time
-        puts "\n\nFork #{fork_num} has created #{num_created} patients in #{elapsed} seconds. (#{(num_created / elapsed).truncate(2)} patients / sec)"
+          # Send output to parent process
+          writer.puts "#{num_created} of #{num_to_create} patients created at #{(num_created / (Time.now - start_time)).truncate(2)} p/s\n"
+        end
       ensure
         ::ActiveRecord::Base.clear_all_connections!
+        writer.close
         Process.exit! true
+      end
+
+      readers << reader
+      writer.close
+    end
+
+    # Update outputs from child processes
+    Thread.new do
+      while true do
+        readers.each_with_index do |reader, index|
+          output = reader.gets
+          outputs[index] = output unless output.blank?
+        end
       end
     end
 
-    pids.each { |pid| Process.waitpid(pid, 0)  }
-    puts "\nDone!"
+    # Print combined output
+    puts ''
+    t1 = Time.now
+    loop do
+      num_created = 0
+      readers.each_with_index do |reader, index|
+        puts "Fork #{index + 1} (pid #{pids[index]}): #{outputs[index]}"
+        num_created += outputs[index]&.split&.first&.to_i || 0
+      end
+      print "\nTotal: #{num_created} of #{num_patients} patients created at #{(num_created / (Time.now - t1)).truncate(2)} p/s\n\n"
+      sleep 0.1
+
+      if num_created < num_patients
+        puts "\r" + ("\e[A\e[K" * (num_forks + 4))
+      else
+        break
+      end
+    end
+
+    puts "Done!"
   end
 
   desc 'Configure the database for demo use'
@@ -239,7 +274,7 @@ namespace :demo do
       printf("\n")
     end
   end
-  
+
   desc 'Add synthetic patient/monitoree data to the database for a single day (today)'
   task update: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
@@ -1105,7 +1140,7 @@ namespace :demo do
          patients_created += 1
       end
     end
-    patient.assessments.each do |assessment| 
+    patient.assessments.each do |assessment|
         # Assessment
         new_assessment = assessment.dup
         new_assessment.patient_id = new_patient.id
