@@ -340,7 +340,7 @@ class CustomTable extends React.Component {
 }
 
 CustomTable.propTypes = {
-  title: PropTypes.string,
+  title: PropTypes.string, // titles should not include the word 'Table', as assistive technologies will include that automatically
   dataType: PropTypes.string.isRequired,
   columnData: PropTypes.array,
   rowData: PropTypes.array,

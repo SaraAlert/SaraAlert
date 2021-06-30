@@ -259,7 +259,6 @@ class HouseholdMemberTable extends React.Component {
 
     return (
       <React.Fragment>
-        {rowData.head_of_household && <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />}
         <a
           id={rowData.head_of_household ? 'dependent-hoh-link' : null}
           href={patientHref(rowData.id, this.props.workflow)}
@@ -267,6 +266,7 @@ class HouseholdMemberTable extends React.Component {
           rel="noreferrer">
           {monitoreeName}
         </a>
+        {rowData.head_of_household && <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />}
       </React.Fragment>
     );
   };
@@ -286,6 +286,7 @@ class HouseholdMemberTable extends React.Component {
   render() {
     return (
       <CustomTable
+        title="Household Member"
         dataType="household-members"
         columnData={this.state.table.colData}
         rowData={this.state.table.rowData}

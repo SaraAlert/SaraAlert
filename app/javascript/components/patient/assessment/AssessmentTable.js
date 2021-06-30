@@ -340,7 +340,7 @@ class AssessmentTable extends React.Component {
                       <OverlayTrigger overlay={<Tooltip>Search by id or reporter.</Tooltip>}>
                         <InputGroup.Text className="rounded-0">
                           <i className="fas fa-search"></i>
-                          <label htmlFor="reports-search-input" className="ml-1 mb-0">
+                          <label htmlFor="reports-search-input" className="ml-1 mb-0" aria-label="Search Reports Table by ID or reporter.">
                             Search
                           </label>
                         </InputGroup.Text>
