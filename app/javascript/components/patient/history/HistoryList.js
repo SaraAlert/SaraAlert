@@ -160,10 +160,14 @@ class HistoryList extends React.Component {
                 onChange={this.handleTypeFilterChange}
               />
             </Row>
-            {this.state.displayedHistories.map(histories => (
-              <History key={histories[0].id} versions={histories} current_user={this.props.current_user} authenticity_token={this.props.authenticity_token} />
-            ))}
-            <Row className="mx-3 mt-3 justify-content-end">
+            <section role="list" aria-label="History Items">
+              {this.state.displayedHistories.map((histories, index) => (
+                <div role="listitem" key={`history-item-${index}`} aria-label={`History Entry ${index}`}>
+                  <History versions={histories} current_user={this.props.current_user} authenticity_token={this.props.authenticity_token} />
+                </div>
+              ))}
+            </section>
+            <Row role="region" className="mx-3 mt-3 justify-content-end">
               <Pagination pageSize={5} maxPages={5} items={this.state.filteredHistories} onChangePage={this.onChangePage} />
             </Row>
             <Card className="mb-4 mt-4 mx-3 card-square shadow-sm">
