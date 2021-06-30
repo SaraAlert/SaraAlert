@@ -2,14 +2,13 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, Form } from 'react-bootstrap';
 
-import { phoneSchemaValidator } from '../../../utils/Patient';
-
 import axios from 'axios';
 import libphonenumber from 'google-libphonenumber';
 import * as yup from 'yup';
 
 import InfoTooltip from '../../util/InfoTooltip';
 import PhoneInput from '../../util/PhoneInput';
+import { phoneSchemaValidator } from '../../../utils/Patient';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();

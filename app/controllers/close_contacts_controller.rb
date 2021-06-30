@@ -23,14 +23,14 @@ class CloseContactsController < ApplicationController
     # Verify user has access to patient, patient exists, and the patient has close_contacts
     patient = current_user.get_patient(data[:patient_id])
     close_contacts = CloseContact.where(patient_id: patient.id)
-    redirect_to(root_url) && return if patient.nil? || close_contacts.nil?
+    render json: { error: 'Invalid patient_id' }, status: :bad_request if patient.nil?
 
     # Get close_contacts table data
     close_contacts = search(close_contacts, data[:search_text])
     close_contacts = sort(close_contacts, data[:sort_order], data[:sort_direction])
     close_contacts = paginate(close_contacts, data[:entries], data[:page])
 
-    render json: { table_data: close_contacts, total: close_contacts.count }
+    render json: { table_data: close_contacts, total: close_contacts.size }
   end
 
   # Create a new close contact

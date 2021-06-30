@@ -23,7 +23,7 @@ module CloseContactQueryHelper
       raise StandardError, error_message
     end
 
-    if sort_order.present? && !%w[id first_name last_name primary_telephone email last_date_of_exposure assigned_user contact_attempts enrolled_id
+    if sort_order.present? && !%w[first_name last_name primary_telephone email last_date_of_exposure assigned_user contact_attempts enrolled_id
                                   notes].include?(sort_order)
       error_message = "Unable to sort by specified column in request: '#{sort_order}'"
       raise StandardError, error_message
@@ -83,8 +83,6 @@ module CloseContactQueryHelper
     dir = direction == 'asc' ? 'asc' : 'desc'
 
     case order
-    when 'id'
-      close_contacts = close_contacts.order(Arel.sql('CASE WHEN id IS NULL THEN 1 ELSE 0 END, id ' + dir))
     when 'first_name'
       close_contacts = close_contacts.order(Arel.sql('CASE WHEN first_name IS NULL THEN 1 ELSE 0 END, first_name ' + dir))
     when 'last_name'
