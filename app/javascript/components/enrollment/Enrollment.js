@@ -31,6 +31,7 @@ class Enrollment extends React.Component {
       index: props.enrollment_step != undefined ? props.enrollment_step : props.edit_mode ? maxEnrollmentSteps : 0,
       lastIndex: props.enrollment_step != undefined ? maxEnrollmentSteps : null,
       direction: null,
+      reviewing: false,
       enrollmentState: {
         patient: pickBy(props.patient, identity),
         propagatedFields: {},
@@ -193,6 +194,9 @@ class Enrollment extends React.Component {
       this.setState({ direction: 'next' }, () => {
         this.setState({ index: index + step, lastIndex: null });
       });
+      if (index + step == maxEnrollmentSteps) {
+        this.setState({ reviewing: true });
+      }
     }
   };
 
@@ -249,7 +253,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              edit_mode={this.props.edit_mode}
+              edit_mode={this.props.edit_mode || this.state.reviewing}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -258,7 +262,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              edit_mode={this.props.edit_mode}
+              edit_mode={this.props.edit_mode || this.state.reviewing}
               blocked_sms={this.props.blocked_sms}
             />
           </Carousel.Item>
@@ -268,7 +272,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              edit_mode={this.props.edit_mode}
+              edit_mode={this.props.edit_mode || this.state.reviewing}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -277,7 +281,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              edit_mode={this.props.edit_mode}
+              edit_mode={this.props.edit_mode || this.state.reviewing}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -291,8 +295,7 @@ class Enrollment extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
-              symptomatic_assessments_exist={this.props.symptomatic_assessments_exist}
-              edit_mode={this.props.edit_mode}
+              edit_mode={this.props.edit_mode || this.state.reviewing}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
@@ -307,8 +310,7 @@ class Enrollment extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
-              symptomatic_assessments_exist={this.props.symptomatic_assessments_exist}
-              edit_mode={this.props.edit_mode}
+              edit_mode={this.props.edit_mode || this.state.reviewing}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
@@ -347,7 +349,6 @@ Enrollment.propTypes = {
   has_dependents: PropTypes.bool,
   blocked_sms: PropTypes.bool,
   first_positive_lab: PropTypes.object,
-  symptomatic_assessments_exist: PropTypes.bool,
   workflow: PropTypes.string,
 };
 
