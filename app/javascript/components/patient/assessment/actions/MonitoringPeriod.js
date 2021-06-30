@@ -70,7 +70,7 @@ class MonitoringPeriod extends React.Component {
             this.renderEndOfMonitoring()
           )}
         </Col>
-        {!this.props.patient.symptom_onset && !this.props.symptomatic_assessments_exist && this.props.num_pos_labs === 0 && (
+        {this.props.patient.isolation && !this.props.patient.symptom_onset && !this.props.symptomatic_assessments_exist && this.props.num_pos_labs === 0 && (
           <Col md={{ span: 24, order: 4 }} xs={{ span: 24, order: 2 }}>
             <Alert variant="warning" className="alert-warning-text">
               <b>Warning: </b>This case does not have a Symptom Onset Date or positive lab result and may never become eligible to end monitoring
