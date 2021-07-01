@@ -65,7 +65,7 @@ class AssessmentsController < ApplicationController
     @assessment = Assessment.new
     reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
     @symptoms = reporting_condition.symptoms
-    @threshold_hash = jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash
+    @threshold_hash = jurisdiction[:current_threshold_condition_hash]
     @translations = @assessment.translations
     @contact_info = jurisdiction.contact_info
 
