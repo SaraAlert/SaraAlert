@@ -8,6 +8,8 @@ class AnalyticsController < ApplicationController
     # Restrict access to analytics users only
     redirect_to(root_url) && return unless current_user.can_view_analytics?
 
+    @title = 'Analytics'
+
     # Stats for enrollers
     @stats = enroller_stats if current_user.role?(Roles::ENROLLER)
 

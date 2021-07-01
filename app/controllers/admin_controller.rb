@@ -6,6 +6,8 @@ class AdminController < ApplicationController
 
   def index
     redirect_to(root_url) && return unless current_user.can_access_admin_panel?
+
+    @title = 'Admin Panel'
   end
 
   # Retrieve users for the admin user table.
