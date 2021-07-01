@@ -3163,36 +3163,47 @@ class PatientTest < ActiveSupport::TestCase
   test 'no_recent_activity reason in close_eligible scope' do
     patient = create(:patient, isolation: false, monitoring: true, created_at: 100.days.ago)
 
+    # ineligible because upon creation the update_at is set to `now`
     assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
+    # ineligible because patient was updated too recently
     patient.update(updated_at: 1.day.ago)
     assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
+    # ineligible because patient was updated too recently
     patient.update(updated_at: 5.days.ago)
     assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
+    # ineligible because patient was updated too recently
     patient.update(updated_at: 10.days.ago)
     assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
+    # ineligible because patient was updated too recently
     patient.update(updated_at: 20.days.ago)
     assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
+    # ineligible because patient was updated too recently
     patient.update(updated_at: 29.days.ago)
     assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
+    # eligible because patient was updated exactly 30 days ago
     patient.update(updated_at: 30.days.ago)
     assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
+    # eligible because patient was updated over 30 days ago
     patient.update(updated_at: 31.days.ago)
     assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
+    # eligible because patient was updated over 30 days ago
     patient.update(updated_at: 300.days.ago)
     assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
+    # ineligible because patient 
     patient.update(isolation: true)
     patient.update(updated_at: 300.days.ago)
     assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
+    # ineligible because the patient must be monitoring to be non reporting
     patient.update(monitoring: false, updated_at: 300.days.ago)
     assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
   end
