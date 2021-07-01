@@ -21,14 +21,14 @@ function getWrapper(stats) {
 describe('PublicHealthAnalytics', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper(mockAnalyticsData);
-    expect(wrapper.find('.sr-only').text().includes('Analytics')).toBeTruthy();
+    expect(wrapper.find('.sr-only').text()).toEqual('Analytics');
     expect(wrapper.find(Col).at(0).find('i').hasClass('fa-info-circle')).toBeTruthy();
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(Col).at(0).text().includes('Last Updated At')).toBeTruthy();
-    expect(wrapper.find(Col).at(0).text().includes(formatTimestamp(mockAnalyticsData.last_updated_at))).toBeTruthy();
+    expect(wrapper.find(Col).at(0).text()).toContain('Last Updated At');
+    expect(wrapper.find(Col).at(0).text()).toContain(formatTimestamp(mockAnalyticsData.last_updated_at));
     expect(wrapper.find('.export-png').exists()).toBeTruthy();
     expect(wrapper.find('.export-png').find('i').hasClass('fa-download')).toBeTruthy();
-    expect(wrapper.find('.export-png').text().includes('EXPORT ANALYSIS AS PNG')).toBeTruthy();
+    expect(wrapper.find('.export-png').text()).toContain('EXPORT ANALYSIS AS PNG');
     expect(wrapper.find(MonitoreeFlow).exists()).toBeTruthy();
     expect(wrapper.find(PreferredReportingMethod).exists()).toBeTruthy();
     expect(wrapper.find('.display-5').text()).toEqual('Epidemiological Summary');
@@ -43,7 +43,7 @@ describe('PublicHealthAnalytics', () => {
 
   it('Properly renders error message if stats is not provided', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find('.sr-only').text().includes('Analytics')).toBeTruthy();
+    expect(wrapper.find('.sr-only').text()).toEqual('Analytics');
     expect(wrapper.find('.h5').at(0).text()).toEqual('We are still crunching the latest numbers.');
     expect(wrapper.find('.h5').at(1).text()).toEqual('Please check back later...');
     expect(wrapper.find(MonitoreeFlow).exists()).toBeFalsy();
