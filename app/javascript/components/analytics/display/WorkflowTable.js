@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import InfoTooltip from '../../util/InfoTooltip';
 
-class ExposureIsolationTable extends React.Component {
+class WorkflowTable extends React.Component {
   render() {
     return (
       <React.Fragment>
@@ -41,11 +41,11 @@ class ExposureIsolationTable extends React.Component {
   }
 }
 
-ExposureIsolationTable.propTypes = {
+WorkflowTable.propTypes = {
   title: PropTypes.string,
   tooltipKey: PropTypes.string,
   rowHeaders: PropTypes.array,
   data: PropTypes.array,
 };
 
-export default ExposureIsolationTable;
+export default WorkflowTable;
