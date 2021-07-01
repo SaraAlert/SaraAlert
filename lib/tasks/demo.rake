@@ -245,6 +245,9 @@ namespace :demo do
     # Get symptoms for each jurisdiction
     threshold_conditions = fetch_all_threshold_conditions
 
+    enroller_users = User.where(role: 'enroller').pluck(:id, :email)
+    public_health_users = User.where(role: 'public_health').pluck(:id, :email)
+
     days.times do |day|
       if created_patients > patient_limit
         puts "Patient limit of #{patient_limit} has been reached!"
@@ -259,7 +262,7 @@ namespace :demo do
       printf("Simulating day #{day + 1} (#{beginning_of_day.to_date}):\n")
 
       # Populate patients, assessments, laboratories, transfers, histories, analytics
-      demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions)
+      demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions, enroller_users, public_health_users)
       created_patients += num_patients_today
 
       # Cases increase 10-20% every day
@@ -291,7 +294,10 @@ namespace :demo do
     # Used in demo_populate_assessments
     threshold_conditions = fetch_all_threshold_conditions
 
-    demo_populate_day(DateTime.now.beginning_of_day, num_patients_today, 0, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions)
+    enroller_users = User.where(role: 'enroller').pluck(:id, :email)
+    public_health_users = User.where(role: 'public_health').pluck(:id, :email)
+
+    demo_populate_day(DateTime.now.beginning_of_day, num_patients_today, 0, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions, enroller_users, public_health_users)
   end
 
   def fetch_all_threshold_conditions
@@ -308,32 +314,32 @@ namespace :demo do
     threshold_conditions
   end
 
-  def demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions)
+  def demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions, enroller_users, public_health_users)
     # Transactions speeds things up a bit
     ActiveRecord::Base.transaction do
       # Patients created before today
       existing_patients = Patient.monitoring_open.where('created_at < ?', beginning_of_day)
 
       # Create patients
-      demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes)
+      demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes, enroller_users, public_health_users)
 
       # Create assessments
-      demo_populate_assessments(beginning_of_day, days_ago, existing_patients, threshold_conditions)
+      demo_populate_assessments(beginning_of_day, days_ago, existing_patients, threshold_conditions, public_health_users)
 
       # Create laboratories
-      demo_populate_laboratories(beginning_of_day, days_ago, existing_patients)
+      demo_populate_laboratories(beginning_of_day, days_ago, existing_patients, public_health_users)
 
       # Create vaccinations
-      demo_populate_vaccines(beginning_of_day, existing_patients)
+      demo_populate_vaccines(beginning_of_day, existing_patients, public_health_users)
 
       # Create transfers
-      demo_populate_transfers(beginning_of_day, existing_patients, jurisdictions, assigned_users)
+      demo_populate_transfers(beginning_of_day, existing_patients, jurisdictions, assigned_users, public_health_users)
 
       # Create close contacts
-      demo_populate_close_contacts(beginning_of_day, existing_patients)
+      demo_populate_close_contacts(beginning_of_day, existing_patients, public_health_users)
 
       # Create contact attempts
-      demo_populate_contact_attempts(beginning_of_day, existing_patients)
+      demo_populate_contact_attempts(beginning_of_day, existing_patients, public_health_users)
     end
 
     # Update linelist fields (separate transaction)
@@ -343,15 +349,14 @@ namespace :demo do
     demo_cache_analytics(beginning_of_day) if cache_analytics
   end
 
-  def demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes)
+  def demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes, enroller_users, public_health_users)
     territory_names = ['American Samoa', 'District of Columbia', 'Federated States of Micronesia', 'Guam', 'Marshall Islands', 'Northern Mariana Islands',
                        'Palau', 'Puerto Rico', 'Virgin Islands'].freeze
 
+    rand_enroller = enroller_users.sample
     printf('Generating monitorees...')
     patients = []
     histories = []
-    enroller_ids = User.all.where(role: 'enroller').pluck(:id)
-    enroller_emails = User.all.where(role: 'enroller').pluck(:email)
     num_patients_today.times do |i|
       printf("\rGenerating monitoree #{i + 1} of #{num_patients_today}...") unless ENV['APP_IN_CI']
       patient = Patient.new
@@ -499,7 +504,7 @@ namespace :demo do
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
-      patient[:creator_id] = enroller_ids.sample
+      patient[:creator_id] = rand_enroller[0]
       patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
       patient_ts = create_fake_timestamp(beginning_of_day)
       patient[:created_at] = patient_ts
@@ -569,7 +574,7 @@ namespace :demo do
       # enrollment
       histories << History.new(
         patient_id: patient[:id],
-        created_by: enroller_emails.sample,
+        created_by: rand_enroller[1],
         comment: 'User enrolled monitoree.',
         history_type: 'Enrollment',
         created_at: patient[:created_at],
@@ -579,7 +584,7 @@ namespace :demo do
       unless patient[:monitoring]
         histories << History.new(
           patient_id: patient[:id],
-          created_by: enroller_emails.sample,
+          created_by: rand_enroller[1],
           comment: "User changed monitoring status to \"Not Monitoring\". Reason: #{patient[:monitoring_reason]}",
           history_type: 'Monitoring Change',
           created_at: patient[:updated_at],
@@ -589,7 +594,7 @@ namespace :demo do
       # exposure risk assessment
       if patient[:exposure_risk_assessment].present?
         histories << History.new(
-          created_by: enroller_emails.sample,
+          created_by: rand_enroller[1],
           comment: "User changed exposure risk assessment to \"#{patient[:exposure_risk_assessment]}\".",
           patient_id: patient[:id],
           history_type: 'Monitoring Change',
@@ -601,7 +606,7 @@ namespace :demo do
       if patient[:case_status].present?
         histories << History.new(
           patient_id: patient[:id],
-          created_by: enroller_emails.sample,
+          created_by: rand_enroller[1],
           comment: "User changed case status to \"#{patient[:case_status]}\", and chose to \"Continue Monitoring in Isolation Workflow\".",
           history_type: 'Monitoring Change',
           created_at: patient[:updated_at],
@@ -612,7 +617,7 @@ namespace :demo do
       unless patient[:public_health_action] == 'None'
         histories << History.new(
           patient_id: patient[:id],
-          created_by: enroller_emails.sample,
+          created_by: rand_enroller[1],
           comment: "User changed latest public health action to \"#{patient[:public_health_action]}\".",
           history_type: 'Monitoring Change',
           created_at: patient[:updated_at],
@@ -624,7 +629,7 @@ namespace :demo do
 
       histories << History.new(
         patient_id: patient[:id],
-        created_by: enroller_emails.sample,
+        created_by: rand_enroller[1],
         comment: 'User paused notifications for this monitoree.',
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -636,12 +641,11 @@ namespace :demo do
     puts 'done!'
   end
 
-  def demo_populate_assessments(beginning_of_day, days_ago, existing_patients, threshold_conditions)
+  def demo_populate_assessments(beginning_of_day, days_ago, existing_patients, threshold_conditions, public_health_users)
     printf('Generating assessments...')
     assessments = []
     assessment_receipts = []
     histories = []
-    public_health_emails = User.where(role: 'public_health').pluck(:email)
     patient_ids_and_sub_tokens = existing_patients.limit(existing_patients.count * rand(55..60) / 100).order('RAND()').pluck(:id, :submission_token)
     patient_ids_and_sub_tokens.each_with_index do |(patient_id, sub_token), index|
       printf("\rGenerating assessment #{index + 1} of #{patient_ids_and_sub_tokens.length}...") unless ENV['APP_IN_CI']
@@ -667,7 +671,7 @@ namespace :demo do
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: public_health_emails.sample,
+        created_by: public_health_users.sample[1],
         comment: 'User created a new report.',
         history_type: 'Report Created',
         created_at: assessment_ts,
@@ -751,11 +755,10 @@ namespace :demo do
     puts 'done!'
   end
 
-  def demo_populate_laboratories(beginning_of_day, days_ago, existing_patients)
+  def demo_populate_laboratories(beginning_of_day, days_ago, existing_patients, public_health_users)
     printf('Generating laboratories...')
     laboratories = []
     histories = []
-    public_health_emails = User.where(role: 'public_health').pluck(:email)
     isolation_patients = existing_patients.where(isolation: true)
     patient_ids_lab = if days_ago > 10
                         isolation_patients.limit(isolation_patients.count * rand(90..95) / 100).order('RAND()').pluck(:id)
@@ -784,7 +787,7 @@ namespace :demo do
       laboratories << laboratory
       histories << History.new(
         patient_id: patient_id,
-        created_by: public_health_emails.sample,
+        created_by: public_health_users.sample[1],
         comment: 'User added a new lab result.',
         history_type: 'Lab Result',
         created_at: lab_ts,
@@ -797,12 +800,11 @@ namespace :demo do
     puts 'done!'
   end
 
-  def demo_populate_vaccines(beginning_of_day, existing_patients)
+  def demo_populate_vaccines(beginning_of_day, existing_patients, public_health_users)
     printf('Generating vaccinations...')
     vaccines = []
     histories = []
     patient_ids = existing_patients.limit(existing_patients.count * rand(15..25) / 100).order('RAND()').pluck(:id)
-    public_health_emails = User.where(role: 'public_health').pluck(:email)
     patient_ids.each_with_index do |patient_id, index|
       printf("\rGenerating vaccine #{index + 1} of #{patient_ids.length}...")
       vaccine_ts = create_fake_timestamp(beginning_of_day)
@@ -821,7 +823,7 @@ namespace :demo do
 
       histories << History.new(
         patient_id: patient_id,
-        created_by: public_health_emails.sample,
+        created_by: public_health_users.sample[1],
         comment: 'User added a new vaccine.',
         history_type: History::HISTORY_TYPES[:vaccination],
         created_at: vaccine_ts,
@@ -834,13 +836,11 @@ namespace :demo do
     puts 'done!'
   end
 
-  def demo_populate_transfers(beginning_of_day, existing_patients, jurisdictions, assigned_users)
+  def demo_populate_transfers(beginning_of_day, existing_patients, jurisdictions, assigned_users, public_health_users)
     printf('Generating transfers...')
     transfers = []
     histories = []
     patient_updates = {}
-    public_health_ids = User.where(role: 'public_health').pluck(:id)
-    public_health_emails = User.where(role: 'public_health').pluck(:email)
     jurisdiction_paths = jurisdictions.pluck(:id, :path).to_h
     patients_transfer = existing_patients.limit(existing_patients.count * rand(5..10) / 100).order('RAND()').pluck(:id, :jurisdiction_id, :assigned_user)
     patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
@@ -855,13 +855,13 @@ namespace :demo do
         patient_id: patient_id,
         to_jurisdiction_id: to_jurisdiction,
         from_jurisdiction_id: jur_id,
-        who_id: public_health_ids.sample,
+        who_id: public_health_users.sample[0],
         created_at: transfer_ts,
         updated_at: transfer_ts
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: public_health_emails.sample,
+        created_by: public_health_users.sample[1],
         comment: "User changed jurisdiction from \"#{jurisdiction_paths[jur_id]}\" to #{jurisdiction_paths[to_jurisdiction]}.",
         history_type: 'Monitoring Change',
         created_at: transfer_ts,
@@ -875,12 +875,11 @@ namespace :demo do
     puts 'done!'
   end
 
-  def demo_populate_close_contacts(beginning_of_day, existing_patients)
+  def demo_populate_close_contacts(beginning_of_day, existing_patients, public_health_users)
     printf('Generating close contacts...')
     close_contacts = []
     histories = []
     patient_ids = existing_patients.limit(existing_patients.count * rand(15..25) / 100).order('RAND()').pluck(:id)
-    public_health_emails = User.where(role: 'public_health').pluck(:email)
     enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).limit(existing_patients.count * rand(5..15) / 100).order('RAND()').pluck(:id)
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
@@ -909,7 +908,7 @@ namespace :demo do
       close_contacts << close_contact
       histories << History.new(
         patient_id: patient_id,
-        created_by: public_health_emails.sample,
+        created_by: public_health_users.sample[1],
         comment: 'User created a new close contact.',
         history_type: 'Close Contact',
         created_at: close_contact_ts,
@@ -922,11 +921,10 @@ namespace :demo do
     puts 'done!'
   end
 
-  def demo_populate_contact_attempts(beginning_of_day, existing_patients)
+  def demo_populate_contact_attempts(beginning_of_day, existing_patients, public_health_users)
     printf('Generating contact attempts...')
     contact_attempts = []
     histories = []
-    public_health_users = User.where(role: 'public_health').pluck(:id, :email)
     patients_contact_attempts = existing_patients.limit(existing_patients.count * rand(10..20) / 100).order('RAND()').pluck(:id)
     patients_contact_attempts.each_with_index do |patient_id, index|
       printf("\rGenerating contact attempt #{index + 1} of #{patients_contact_attempts.length}...") unless ENV['APP_IN_CI']
