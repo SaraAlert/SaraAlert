@@ -437,7 +437,10 @@ class CloseContactTable extends React.Component {
                         overlay={<Tooltip>Search by First Name, Last Name, Phone Number, Email, Assigned User, Contact Attepts, or Notes.</Tooltip>}>
                         <InputGroup.Text className="rounded-0">
                           <i className="fas fa-search"></i>
-                          <label htmlFor="close-contact-search-input" className="ml-2 mb-0">
+                          <label
+                            htmlFor="close-contact-search-input"
+                            className="ml-2 mb-0"
+                            aria-label="Search Close Contact Table by First Name, Last Name, Phone Number, Email, Assigned User, Contact Attepts, or Notes.">
                             Search
                           </label>
                         </InputGroup.Text>
