@@ -231,7 +231,9 @@ namespace :demo do
     cache_analytics = (ENV['SKIP_ANALYTICS'] != 'true')
 
     jurisdictions = Jurisdiction.all
-    assigned_users = Hash[jurisdictions.pluck(:id).map { |id| [id, 10.times.map { rand(1..100_000) }] }]
+
+    # Create different set of assigned users for each jurisdiction with relatively low variance to mimic data distribution in the context of SaraAlert
+    assigned_users = (jurisdictions.pluck(:id).map { |id| [id, 10.times.map { rand(1..100_000) }] }).to_h
     case_ids = (jurisdictions.pluck(:id).map { |id| [id, 15.times.map { Faker::Number.leading_zero_number(digits: 8) }] }).to_h
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
