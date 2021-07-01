@@ -27,7 +27,7 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(action: 'monitoree_unavailable', id: params[:id]) && return if @patient.nil? || @patient.purged
 
-    @title = @patient.initials_age('-')
+    @title = "#{@patient.initials_age('-')} (ID: #{@patient.id})"
 
     dashboard_crumb(params.permit(:nav)[:nav], @patient)
 
@@ -109,7 +109,7 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
-    @title = "Edit #{@patient.initials_age('-')}"
+    @title = "Edit #{@patient.initials_age('-')} (ID: #{@patient.id})"
 
     dashboard_crumb(params.permit(:nav)[:nav], @patient)
 
