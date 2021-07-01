@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 import CustomizedAxisTick from '../display/CustomizedAxisTick';
 import InfoTooltip from '../../util/InfoTooltip';
 
-class BarGraph extends React.Component {
+class WorkflowChart extends React.Component {
   render() {
     return (
       <div className="analytics-chart-borders">
@@ -41,10 +41,10 @@ class BarGraph extends React.Component {
   }
 }
 
-BarGraph.propTypes = {
+WorkflowChart.propTypes = {
   title: PropTypes.string,
   tooltipKey: PropTypes.string,
   data: PropTypes.array,
 };
 
-export default BarGraph;
+export default WorkflowChart;

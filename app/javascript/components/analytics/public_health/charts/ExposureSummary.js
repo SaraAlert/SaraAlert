@@ -2,8 +2,8 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import _ from 'lodash';
-import BarGraph from '../../display/BarGraph';
-import ExposureIsolationTable from '../../display/ExposureIsolationTable';
+import WorkflowChart from '../../display/WorkflowChart';
+import WorkflowTable from '../../display/WorkflowTable';
 import { mapToChartFormat, parseOutFields } from '../../../../utils/Analytics';
 
 const RISKFACTORS = [
@@ -60,7 +60,7 @@ class ExposureSummary extends React.Component {
     <Row>
       {this.barGraphData.map((graph, i) => (
         <Col xl="12" key={i}>
-          <BarGraph title={graph.title} data={graph.data} />
+          <WorkflowChart title={graph.title} data={graph.data} />
         </Col>
       ))}
     </Row>
@@ -70,10 +70,10 @@ class ExposureSummary extends React.Component {
     return (
       <Row>
         <Col lg="12">
-          <ExposureIsolationTable title={'Risk Factors'} rowHeaders={RISKFACTORS} data={this.rfData} />
+          <WorkflowTable title={'Risk Factors'} rowHeaders={RISKFACTORS} data={this.rfData} />
         </Col>
         <Col lg="12">
-          <ExposureIsolationTable title={'Country of Exposure'} rowHeaders={this.COUNTRY_HEADERS} data={this.countryData} />
+          <WorkflowTable title={'Country of Exposure'} rowHeaders={this.COUNTRY_HEADERS} data={this.countryData} />
           <Button variant="primary" className="float-right" onClick={this.exportFullCountryData}>
             <i className="fas fa-download mr-1"></i>
             Export Complete Country Data

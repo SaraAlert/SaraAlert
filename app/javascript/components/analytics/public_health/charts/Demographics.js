@@ -2,8 +2,8 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card, Col, Row } from 'react-bootstrap';
 import _ from 'lodash';
-import BarGraph from '../../display/BarGraph';
-import ExposureIsolationTable from '../../display/ExposureIsolationTable';
+import WorkflowChart from '../../display/WorkflowChart';
+import WorkflowTable from '../../display/WorkflowTable';
 import { mapToChartFormat, parseOutFields } from '../../../../utils/Analytics';
 
 const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80-89', '90-99', '100-109', '≥ 110', 'Missing'];
@@ -55,7 +55,7 @@ class Demographics extends React.Component {
     <Row>
       {this.barGraphData.map((graph, i) => (
         <Col xl="12" key={i}>
-          <BarGraph title={graph.title} tooltipKey={graph.tooltipKey} data={graph.data} />
+          <WorkflowChart title={graph.title} tooltipKey={graph.tooltipKey} data={graph.data} />
         </Col>
       ))}
     </Row>
@@ -64,13 +64,13 @@ class Demographics extends React.Component {
   renderTables = () => (
     <Row>
       <Col lg="12">
-        <ExposureIsolationTable title={'Current Age (Years)'} rowHeaders={AGEGROUPS} data={this.ageData} tooltipKey={'analyticsAgeTip'} />
-        <ExposureIsolationTable title={'Sex'} rowHeaders={SEXES} data={this.sexData} />
+        <WorkflowTable title={'Current Age (Years)'} rowHeaders={AGEGROUPS} data={this.ageData} tooltipKey={'analyticsAgeTip'} />
+        <WorkflowTable title={'Sex'} rowHeaders={SEXES} data={this.sexData} />
       </Col>
       <Col lg="12">
-        <ExposureIsolationTable title={'Ethnicity'} rowHeaders={ETHNICITIES} data={this.ethnicityData} />
-        <ExposureIsolationTable title={'Race'} rowHeaders={RACES} data={this.raceData} />
-        {this.showSexualOrientationData && <ExposureIsolationTable title={'Sexual Orientation'} rowHeaders={SEXUAL_ORIENTATIONS} data={this.soData} />}
+        <WorkflowTable title={'Ethnicity'} rowHeaders={ETHNICITIES} data={this.ethnicityData} />
+        <WorkflowTable title={'Race'} rowHeaders={RACES} data={this.raceData} />
+        {this.showSexualOrientationData && <WorkflowTable title={'Sexual Orientation'} rowHeaders={SEXUAL_ORIENTATIONS} data={this.soData} />}
       </Col>
     </Row>
   );
