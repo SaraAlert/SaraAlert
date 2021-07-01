@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
 namespace :demo do
   desc 'Clear all sidekiq queues'
   task clear_sidekiq: :environment do
@@ -42,37 +43,32 @@ namespace :demo do
 
     num_patients = (ENV['COUNT'] || 100_000).to_i
     num_forks = (ENV['FORKS'] || 8).to_i
-
-    # Found that forks were consistently performing drastically differently when id's were not shuffled
-    # i.e. fork 1 was always the slowest between 5 to 10 p/s and fork 8 was always the fastest between 20 to 25 p/s
-    # After shuffling, all forks end up at a much more similar 9 to 10 p/s
-    patient_ids = Patient.where('patients.responder_id = patients.id').limit(num_patients).pluck(:id).shuffle
+    batch_size = [(num_patients / num_forks) / 10, 1].max
 
     pids = []
     readers = []
     outputs = []
 
     ::ActiveRecord::Base.clear_all_connections!
-    slices = patient_ids.each_slice(patient_ids.size / num_forks).to_a
-    num_forks.times do |index|
-      slice = slices[index]
-      next if slice.nil?
-
+    num_forks.times do |fork_num|
+      patients = Patient.where('patients.responder_id = patients.id AND patients.id % ? = ?', num_forks, fork_num)
       reader, writer = IO.pipe
 
       pids << fork do
         reader.close
+        writer.puts '0 patients created @ 0 p/s\n'
         ::ActiveRecord::Base.establish_connection
 
-        num_to_create = (num_patients / num_forks) + (index < num_patients % num_forks ? 1 : 0)
+        num_to_create = (num_patients / num_forks) + (fork_num < num_patients % num_forks ? 1 : 0)
         num_created = 0
         start_time = Time.now
+
         while num_created < num_to_create
-          # deep_duplicate returns exactly how many patients were created (including duplicated dependents)
-          num_created += deep_duplicate_patient(Patient.find(slice.sample))
+          # deep_duplicate returns an array with of old and new patient ids (including duplicated dependents)
+          num_created += deep_duplicate_patients(patients.offset(rand(patients.size)).limit(batch_size), [], num_to_create).size
 
           # Send output to parent process
-          writer.puts "#{num_created} of #{num_to_create} patients created at #{(num_created / (Time.now - start_time)).truncate(2)} p/s\n"
+          writer.puts "#{num_created} patients created @ #{(num_created / (Time.now - start_time)).truncate(2)} p/s\n"
         end
       ensure
         ::ActiveRecord::Base.clear_all_connections!
@@ -100,10 +96,10 @@ namespace :demo do
     loop do
       num_created = 0
       num_forks.times do |index|
-        puts "Fork #{index + 1} (pid #{pids[index]}): #{outputs[index]}"
+        puts "Fork #{index + 1} (pid = #{pids[index]}): #{outputs[index]}"
         num_created += outputs[index]&.split&.first&.to_i || 0
       end
-      print "\nTotal: #{num_created} of #{num_patients} patients created at #{(num_created / (Time.now - start_time)).truncate(2)} p/s\n\n"
+      print "\nTotal: #{num_created} patients created @ #{(num_created / (Time.now - start_time)).truncate(2)} p/s\n\n"
       sleep 0.1
 
       puts "\r" + ("\e[A\e[K" * (num_forks + 4)) if num_created < num_patients
@@ -1074,66 +1070,59 @@ namespace :demo do
     Faker::Time.between(from: from, to: to > Time.now ? Time.now : to)
   end
 
-  def duplicate_timestamps(from, to)
-    to.created_at = from.created_at
-    to.updated_at = from.updated_at
-  end
-
-  def duplicate_collection(collection, new_pat)
-    new_collection = []
-    collection.each do |resource|
-      new_resource = resource.dup
-      duplicate_timestamps(resource, new_resource)
-      new_resource.patient_id = new_pat.id
-      new_collection << new_resource
-    end
-    new_collection
-  end
-
   # Duplicate patient and all nested relations and change last name
-  def deep_duplicate_patient(patient, responder: nil)
-    patients_created = 1
-    new_patient = patient.dup
-    new_patient.responder = responder || new_patient
-    new_patient.submission_token = new_patient.new_submission_token
-    duplicate_timestamps(patient, new_patient)
-    new_patient.save(validate: false)
+  def deep_duplicate_patients(patients, old_and_new_patient_ids, num_to_create, responder: nil)
+    patients.each do |patient|
+      break if old_and_new_patient_ids.size >= num_to_create
 
-    patient.dependents.each do |p|
-      if p.id != p.responder_id
-        deep_duplicate_patient(p, responder: new_patient)
-        patients_created += 1
+      new_patient = duplicate_resource(patient)
+      new_patient.responder = responder || new_patient
+      new_patient.submission_token = new_patient.new_submission_token
+      new_patient.save(validate: false)
+
+      old_and_new_patient_ids << [patient.id, new_patient.id]
+      old_and_new_patient_ids = deep_duplicate_patients(patient.dependents_exclude_self, old_and_new_patient_ids, num_to_create, responder: patient)
+    end
+
+    duplicate_nested_relations(*old_and_new_patient_ids.transpose) if responder.nil?
+
+    old_and_new_patient_ids
+  end
+
+  def duplicate_nested_relations(old_patient_ids, new_patient_ids)
+    # Duplicate directly nested relations
+    [Assessment, Laboratory, Vaccine, CloseContact, ContactAttempt, Transfer, History].each do |collection|
+      old_records = collection.where(patient_id: old_patient_ids).order(:id).to_a
+      new_records = old_records.map do |resource|
+        duplicate_resource(resource, foreign_keys: { patient_id: new_patient_ids[old_patient_ids.index(resource.patient_id)] })
       end
+      collection.import! new_records
     end
 
-    patient.assessments.each do |assessment|
-      # Assessment
-      new_assessment = assessment.dup
-      new_assessment.patient_id = new_patient.id
-      duplicate_timestamps(assessment, new_assessment)
-      new_assessment.save(validate: false)
-
-      # Reported Condition
-      rep_condition = assessment.reported_condition
-      new_reported_condition = rep_condition.dup
-      new_reported_condition.assessment_id = new_assessment.id
-      duplicate_timestamps(rep_condition, new_reported_condition)
-      new_reported_condition.save(validate: false)
-
-      # Symptoms
-      symptoms = []
-      assessment.reported_condition.symptoms.each do |s|
-        new_symptom = s.dup
-        duplicate_timestamps(s, new_symptom)
-        new_symptom.condition_id = new_reported_condition.id
-        symptoms << new_symptom
-      end
-      Symptom.import symptoms, validate: false
+    # Duplicate reported conditions
+    old_assessment_ids = Assessment.where(patient_id: old_patient_ids).order(:id).pluck(:id)
+    new_assessment_ids = Assessment.where(patient_id: new_patient_ids).order(:id).pluck(:id)
+    old_conditions = ReportedCondition.where(assessment_id: old_assessment_ids).to_a
+    new_conditions = old_conditions.map do |condition|
+      duplicate_resource(condition, foreign_keys: { assessment_id: new_assessment_ids[old_assessment_ids.index(condition.assessment_id)] })
     end
+    ReportedCondition.import! new_conditions
 
-    [History, Transfer, Laboratory, CloseContact, ContactAttempt, Vaccine].each do |collection|
-      collection.import duplicate_collection(collection.where(patient_id: patient.id), new_patient), validate: false
+    # Duplicate symptoms
+    old_condition_ids = old_conditions.map(&:id)
+    new_condition_ids = ReportedCondition.where(assessment_id: new_assessment_ids).order(:id).pluck(:id)
+    new_symptoms = Symptom.where(condition_id: old_condition_ids).map do |symptom|
+      duplicate_resource(symptom, foreign_keys: { condition_id: new_condition_ids[old_condition_ids.index(symptom.condition_id)] })
     end
-    patients_created
+    Symptom.import! new_symptoms
+  end
+
+  def duplicate_resource(resource, foreign_keys: {})
+    new_resource = resource.dup
+    new_resource.created_at = resource.created_at
+    new_resource.updated_at = resource.updated_at
+    foreign_keys.each { |fk, val| new_resource[fk] = val }
+    new_resource
   end
 end
+# rubocop:enable Layout/LineLength
