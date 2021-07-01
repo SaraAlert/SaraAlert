@@ -9,8 +9,13 @@ class PatientsController < ApplicationController
 
   # Enroller view to see enrolled subjects and button to enroll new subjects
   def index
+    @title = 'Enroller Dashboard'
     @enrolled_patients = current_user.enrolled_patients.eager_load(:jurisdiction)
     redirect_to(root_url) && return unless current_user.can_create_patient?
+  end
+
+  def monitoree_unavailable
+    @title = 'Monitoree Unavailable'
   end
 
   # The single subject view
@@ -21,6 +26,8 @@ class PatientsController < ApplicationController
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(action: 'monitoree_unavailable', id: params[:id]) && return if @patient.nil? || @patient.purged
+
+    @title = "#{@patient.initials_age('-')} (ID: #{@patient.id})"
 
     dashboard_crumb(params.permit(:nav)[:nav], @patient)
 
@@ -52,6 +59,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_create_patient?
 
     dashboard_crumb(params.permit(:nav)[:nav] || (params.permit(:isolation)[:isolation] ? 'isolation' : 'global'), nil)
+    @title = 'Enroll New Monitoree'
 
     # If this is a close contact that is being fully enrolled, grab that record to auto-populate fields
     @close_contact = CloseContact.where(patient_id: current_user.viewable_patients).where(id: params.permit(:cc)[:cc])&.first if params[:cc].present?
@@ -73,6 +81,8 @@ class PatientsController < ApplicationController
   # Similar to 'new', except used for creating a new group member
   def new_group_member
     redirect_to(root_url) && return unless current_user.can_create_patient?
+
+    @title = 'Enroll Household Member'
 
     # Find the parent subject
     parent = current_user.get_patient(params.permit(:id)[:id])
@@ -98,6 +108,8 @@ class PatientsController < ApplicationController
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
+
+    @title = "Edit #{@patient.initials_age('-')} (ID: #{@patient.id})"
 
     dashboard_crumb(params.permit(:nav)[:nav], @patient)
 

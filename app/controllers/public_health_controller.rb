@@ -7,6 +7,18 @@ class PublicHealthController < ApplicationController
   before_action :authenticate_user!
   before_action :authenticate_user_role
 
+  def exposure
+    @title = 'Exposure Dashboard'
+  end
+
+  def isolation
+    @title = 'Isolation Dashboard'
+  end
+
+  def global
+    @title = 'Global Dashboard'
+  end
+
   def patients
     begin
       patients = patients_table_data(params, current_user)
