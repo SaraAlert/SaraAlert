@@ -31,7 +31,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
 
     # Get all of the field data based on the config
-    field_data, symptom_names = get_field_data(config, patients)
+    field_data = get_field_data(config, patients)
 
     files = []
     csvs = {}
@@ -50,7 +50,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     # The reorder('') here allows this ordering done later on to work properly.
     patients.reorder('').in_batches(of: inner_batch_size).each do |batch_group|
       # Get export data in batches to decrease size of export data hash maintained in memory
-      exported_data = get_export_data(batch_group.order(:id), config[:data], field_data, symptom_names)
+      exported_data = get_export_data(batch_group.order(:id), config[:data], field_data)
       data_types.each do |data_type|
         exported_data[data_type]&.each { |record| csvs[data_type] << record }
       end
@@ -70,7 +70,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
 
     # Get all of the field data based on the config
-    field_data, symptom_names = get_field_data(config, patients)
+    field_data = get_field_data(config, patients)
+
     # Declare variables in scope outside of batch loop
     sheets = nil
     last_row_nums = nil
@@ -90,7 +91,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     # The reorder('') here allows this ordering done later on to work properly.
     patients.reorder('').in_batches(of: inner_batch_size).each do |batch_group|
       # Get export data in batches to decrease size of export data hash maintained in memory
-      exported_data = get_export_data(batch_group.order(:id), config[:data], field_data, symptom_names)
+      exported_data = get_export_data(batch_group.order(:id), config[:data], field_data)
       data_types.each do |data_type|
         exported_data[data_type]&.each do |record|
           # fast_excel unfortunately does not provide a method to modify the @last_row_number class variable so it needs to be manually kept track of
@@ -119,9 +120,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
     # Update the checked and header data for assessment symptoms
     # NOTE: this must be done after updating the general headers above
-    symptom_names = update_assessment_symptom_data(data, patients)
+    update_assessment_symptom_data(data, patients)
 
-    [data, symptom_names]
+    data
   end
 
   # Finds the race values that should be included if the Race (All Race Fields) option is checked in custom export
@@ -148,38 +149,25 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   # Finds the symptoms needed for the reports columns
   def update_assessment_symptom_data(data, patients)
     # Don't update if assessment symptom data isn't needed
-    return unless data.dig(:assessments, :checked)&.include?(:symptoms)
+    return [] unless data.dig(:assessments, :checked)&.include?(:symptoms)
 
     data[:assessments][:checked].delete(:symptoms)
     data[:assessments][:headers].delete('Symptoms Reported')
 
-    # For large queries (e.g. 100k patients) of the `Symptom.where(...) query below
-    # we saw MySQL give up on queries and throw an exception.
-    # The workaround for this is to collect the symptom ids in a set and find them
-    # using batches of patients.
-    symptoms = Set.new
-    patients.pluck(:id).in_groups_of(10_000, false) do |batch|
-      Symptom.where(
-        condition_id: ReportedCondition.where(
-          assessment_id: Assessment.where(
-            patient_id: batch
-          ).pluck(:id)
-        ).pluck(:id)
-      ).where.not(label: nil).where.not(name: nil).distinct.pluck(:name, :label).each { |symptom| symptoms.add(symptom) }
-    end
-    symptom_names_and_labels = symptoms.to_a.sort { |a, b| a[1] <=> b[1] }.transpose
+    # Query symptom names and labels
+    threshold_condition_hashes = ReportedCondition.where(assessment_id: Assessment.where(patient_id: patients)).distinct.select(:threshold_condition_hash)
+    symptom_names_and_labels = Symptom.where(condition_id: ThresholdCondition.where(threshold_condition_hash: threshold_condition_hashes))
+                                      .where.not(label: nil).where.not(name: nil).order(:label).distinct.pluck(:name, :label).transpose
 
     # Empty symptoms check
     return [] unless symptom_names_and_labels.present?
 
     data[:assessments][:checked].concat(symptom_names_and_labels.first.map(&:to_sym))
     data[:assessments][:headers].concat(symptom_names_and_labels.second)
-
-    symptom_names_and_labels.first.map(&:to_sym)
   end
 
   # Gets all associated relevant data for patients group based on queries and fields
-  def get_export_data(patients, data, field_data, symptom_names)
+  def get_export_data(patients, data, field_data)
     exported_data = {}
     exported_data[:patients] = extract_patients_details(patients, field_data[:patients][:checked]) if data.dig(:patients, :checked).present?
 

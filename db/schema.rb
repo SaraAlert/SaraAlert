@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_14_190551) do
+ActiveRecord::Schema.define(version: 2021_06_16_203622) do
 
   create_table "active_storage_attachments", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -183,6 +183,7 @@ ActiveRecord::Schema.define(version: 2021_06_14_190551) do
     t.string "message"
     t.boolean "send_digest", default: false
     t.boolean "send_close", default: false
+    t.string "current_threshold_condition_hash"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 
