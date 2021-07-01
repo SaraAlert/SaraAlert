@@ -1,7 +1,15 @@
-
 # frozen_string_literal: true
 
 namespace :perf do
+  ##
+  # PATIENT_COUNT=500000 bundle exec rails perf:trim
+  #
+  # This task is meant to take a database that contains more patients than intended
+  # and trim it down to a specifiec number of patients using the PATIENT_COUNT env variable.
+  #
+  # ENV:
+  #  PATIENT_COUNT (integer) The max number of patients that should be in the database.
+  #
   desc 'Trim database down to a specific number of patients'
   task trim: :environment do
     unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
@@ -9,13 +17,13 @@ namespace :perf do
       raise 'This task is only for use in a development environment' 
     end
 
-    if ENV['COUNT'].nil? || ENV['COUNT'].to_i <= 0
-      puts "\nMust provide COUNT environment variable to indicate how many patients should be in the DB"
-      puts 'export COUNT=500000'
+    if ENV['PATIENT_COUNT'].nil? || ENV['PATIENT_COUNT'].to_i <= 0
+      puts "\nMust provide PATIENT_COUNT environment variable to indicate how many patients should be in the DB"
+      puts 'export PATIENT_COUNT=500000'
       exit 1
     end
 
-    desired_patient_count = ENV['COUNT'].to_i
+    desired_patient_count = ENV['PATIENT_COUNT'].to_i
     current_patient_count = Patient.count
 
     puts "Currently at #{current_patient_count} patients"
@@ -78,6 +86,15 @@ namespace :perf do
     return removed_patients
   end
 
+  ##
+  # PATIENT_COUNT=500000 bundle exec rails perf:populate
+  #
+  # This task is meant to take create a completely new performance database
+  # (deleting the existing database completely).
+  #
+  # ENV:
+  #  PATIENT_COUNT (integer) The number of patients to populate in the database.
+  #
   desc 'Completely populate the performance database'
   task populate: :environment do
     unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
@@ -112,6 +129,18 @@ namespace :perf do
     Rake::Task["perf:populate_and_simulate_patients"].invoke
   end
 
+  ##
+  # PATIENT_COUNT=500000 bundle exec rails perf:populate_and_simulate_patients
+  #
+  # This task is meant to populate a database with BOTH demo:populate and
+  # demo:create_bulk_data. It will create the number of patients specified in
+  # the PATIENT_COUNT environment variable (default 500,000) by creating 10%
+  # with demo:populate (up to a max of 30,000) and the remainder with
+  # demo:create_bulk_data
+  #
+  # ENV:
+  #  PATIENT_COUNT (integer) The number of patients to populate in the database.
+  #
   desc 'Generate patients for performance testing'
   task populate_and_simulate_patients: :environment do
     # Configurable variables
@@ -130,6 +159,13 @@ namespace :perf do
     Rake::Task["demo:create_bulk_data"].invoke
   end
 
+  ##
+  # bundle exec rails perf:setup_performance_test_users
+  #
+  # This task is meant to populate users for a very large number of
+  # jurisdictions. If the # of jurisdictions if less than 50 or if there are
+  # any users in the database, then this will not execute.
+  #
   desc 'Configure the users in the database for performance testing'
   task setup_performance_test_users: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
