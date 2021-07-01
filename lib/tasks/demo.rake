@@ -246,7 +246,7 @@ namespace :demo do
     threshold_conditions = fetch_all_threshold_conditions
 
     days.times do |day|
-      if patient_limit - created_patients <= 0
+      if created_patients > patient_limit
         puts "Patient limit of #{patient_limit} has been reached!"
         break
       end
