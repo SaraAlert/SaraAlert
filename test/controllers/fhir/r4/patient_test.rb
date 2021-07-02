@@ -44,6 +44,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
+    assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
+    assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
   end
 
   test 'should get patient via show using _format parameter' do
@@ -212,6 +214,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
+    assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
+    assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
   end
 
   test 'USER FLOW: should create Patient via create' do
@@ -251,6 +255,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
     assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
+    assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
+    assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
   end
 
   test 'should calculate Patient age via create' do

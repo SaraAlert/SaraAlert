@@ -46,17 +46,13 @@ class Patient < ApplicationRecord
      secondary_telephone_type
      additional_planned_travel_type
      case_status
-     public_health_action].each do |enum_field|
+     public_health_action
+     follow_up_reason].each do |enum_field|
     validates enum_field, on: %i[api import], inclusion: {
       in: VALID_PATIENT_ENUMS[enum_field],
       message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].reject(&:blank?).join("', '")}'"
     }
   end
-
-  validates :follow_up_reason, on: :api, inclusion: { 
-    in: VALID_PATIENT_ENUMS[:follow_up_reason],
-    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:follow_up_reason].reject(&:blank?).join("', '")}'"
-  }
 
   %i[primary_telephone
      secondary_telephone].each do |phone_field|
