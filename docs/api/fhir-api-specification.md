@@ -519,7 +519,7 @@ Get a monitoree via an id, e.g.:
       "valueString": "Angola"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/interpretation-required",
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
       "valueBoolean": true
     }
   ],
@@ -1036,7 +1036,7 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
             "valueString": "Angola"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/interpretation-required",
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
             "valueBoolean": true
           }
         ],
@@ -1349,7 +1349,7 @@ To create a new monitoree, simply POST a FHIR Patient resource.
       "valueString": "Angola"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/interpretation-required",
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
       "valueBoolean": true
     }
   ],
@@ -1513,7 +1513,7 @@ On success, the server will return the newly created resource with an id. This i
       "valueString": "Angola"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/interpretation-required",
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
       "valueBoolean": true
     }
   ],
@@ -1780,10 +1780,10 @@ Use `http://saraalert.org/StructureDefinition/potential-exposure-country` to spe
 }
 ```
 
-Use `http://saraalert.org/StructureDefinition/interpretation-required` to specify if the monitoree needs a language interpreter when speaking with public health representatives.
+Use `http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired` to specify if the monitoree needs a language interpreter when speaking with public health representatives.
 ```json
 {
-  "url": "http://saraalert.org/StructureDefinition/interpretation-required",
+  "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
   "valueBoolean": true
 }
 ```
@@ -2180,7 +2180,7 @@ An update request creates a new current version for an existing resource.
       "valueString": "Angola"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/interpretation-required",
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
       "valueBoolean": true
     }
   ],
@@ -2344,7 +2344,7 @@ On success, the server will update the existing resource given the id.
       "valueString": "Angola"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/interpretation-required",
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
       "valueBoolean": true
     }
   ],
@@ -2676,7 +2676,7 @@ On success, the server will update the attributes indicated by the request.
       "valueString": "Angola"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/interpretation-required",
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
       "valueBoolean": true
     }
   ],
@@ -2924,7 +2924,7 @@ GET `[base]/Patient?given=john&family=doe`
             "valueString": "Angola"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/interpretation-required",
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
             "valueBoolean": true
           }
         ],
@@ -3581,7 +3581,7 @@ GET `[base]/Patient?_count=2`
             "valueString": "Angola"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/interpretation-required",
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
             "valueBoolean": true
           }
         ],
