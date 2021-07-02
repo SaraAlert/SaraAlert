@@ -21,9 +21,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   def patient_as_fhir(patient)
     return nil if patient.nil?
 
-    STDERR.puts "\n patient as fhir \n"
-    STDERR.puts "\n #{patient.follow_up_reason} \n"
-
     creator_agent_ref = FHIR::Reference.new
     if patient.creator.is_api_proxy
       # Created with an M2M workflow client
