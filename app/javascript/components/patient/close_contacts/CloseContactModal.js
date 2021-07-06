@@ -55,19 +55,18 @@ class CloseContactModal extends React.Component {
   handleDateChange = event => this.setState({ last_date_of_exposure: event });
 
   handleChange = event => {
-    let stateKey = event.target.id;
+    let stateKey = _.startsWith(event.target.id, 'cc_') ? _.trim(event.target.id, 'cc_') : event.target.id;
     if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.match(/^\s*$/) !== null) {
       // Empty spaces are allowed to be typed (for example, a first name may be 'Mary Beth')
       // But empty starting first spaces should not be allowed
       event.target.value = '';
     }
     let value;
-    if (event?.target?.id && event.target.id === 'cc_assigned_user') {
-      stateKey = 'assigned_user';
+    if (stateKey === 'assigned_user') {
       if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
       // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
       value = _.trim(event.target.value) === '' ? null : parseInt(event.target.value);
-    } else if (event?.target?.id && event.target.id === 'primary_telephone') {
+    } else if (stateKey === 'primary_telephone') {
       value = event.target.value.replace(/-/g, '');
     } else {
       value = event.target.value;
@@ -89,14 +88,14 @@ class CloseContactModal extends React.Component {
         </Modal.Header>
         <Modal.Body className="px-5">
           <Row className="mt-3">
-            <Form.Group as={Col} lg="12" controlId="first_name">
+            <Form.Group as={Col} lg="12" controlId="cc_first_name">
               <Form.Label className="input-label">First Name {schema?.fields?.first_name?._exclusive?.required && '*'} </Form.Label>
               <Form.Control size="lg" className="form-square" value={this.state.first_name || ''} onChange={this.handleChange} />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['first_name']}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} lg="12" controlId="last_name">
+            <Form.Group as={Col} lg="12" controlId="cc_last_name">
               <Form.Label className="input-label">Last Name {schema?.fields?.last_name?._exclusive?.required && '*'} </Form.Label>
               <Form.Control size="lg" className="form-square" value={this.state.last_name || ''} onChange={this.handleChange} />
               <Form.Control.Feedback className="d-block" type="invalid">
@@ -105,7 +104,7 @@ class CloseContactModal extends React.Component {
             </Form.Group>
           </Row>
           <Row>
-            <Form.Group as={Col} lg="12" controlId="primary_telephone">
+            <Form.Group as={Col} lg="12" controlId="cc_primary_telephone">
               <Form.Label className="input-label">Phone Number {schema?.fields?.primary_telephone?._exclusive?.required && '*'}</Form.Label>
               <PhoneInput
                 id="primary_telephone"
@@ -118,7 +117,7 @@ class CloseContactModal extends React.Component {
                 {this.state.errors['primary_telephone']}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} lg="12" controlId="email">
+            <Form.Group as={Col} lg="12" controlId="cc_email">
               <Form.Label className="input-label">Email {schema?.fields?.email?._exclusive?.required && '*'} </Form.Label>
               <Form.Control size="lg" className="form-square" value={this.state.email || ''} onChange={this.handleChange} />
               <Form.Control.Feedback className="d-block" type="invalid">

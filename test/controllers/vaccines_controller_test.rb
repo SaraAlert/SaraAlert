@@ -128,12 +128,14 @@ class VaccinesControllerTest < ActionController::TestCase
     sign_out user
   end
 
-  test 'index: redirects if patient cannot be found' do
+  test 'index: returns bad_request if patient cannot be found' do
     user = create(:public_health_enroller_user)
     sign_in user
 
+    mock_invalid_id = 'test'
+
     get :index, params: {
-      patient_id: 'test', # invalid ID
+      patient_id: mock_invalid_id,
       entries: 10,
       page: 0,
       search: '',
@@ -141,7 +143,8 @@ class VaccinesControllerTest < ActionController::TestCase
       direction: nil
     }
 
-    assert_redirected_to(@controller.root_url)
+    assert_response(:bad_request)
+    assert_equal("Vaccination cannot be modified for unknown monitoree with ID: #{mock_invalid_id&.to_i}", JSON.parse(response.body)['error'])
 
     sign_out user
   end

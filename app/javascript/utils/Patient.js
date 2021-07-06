@@ -50,6 +50,7 @@ function phoneSchemaValidator (data) {
  * @param {String} phone - patient's phone number
  */
 function formatPhoneNumber (data) {
+  if (!data) return ''
   // Some components will call this with an object containing a value field containing a phone number
   // Others will pass in a phone value directly
   const phone = (Object.prototype.hasOwnProperty.call(data, 'value')) ? data.value : data
