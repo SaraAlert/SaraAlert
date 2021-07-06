@@ -236,7 +236,20 @@ class CustomExport extends React.Component {
                       {this.props.patient_query.filter?.map((filter, index) => {
                         return (
                           <Badge key={`filter-${index}`} variant="primary" className="mr-1">
-                            {filter.filterOption?.title}: {filter.filterOption?.type === 'boolean' && <span>{filter.value ? 'True' : 'False'}</span>}
+                            {`${filter.filterOption?.title}: `}
+                            {['search', 'select', 'number'].includes(filter.filterOption?.type) && <span>{filter.value}</span>}
+                            {filter.filterOption?.type === 'boolean' && <span>{filter.value ? 'True' : 'False'}</span>}
+                            {filter.filterOption?.type === 'date' && (
+                              <span>
+                                {filter.dateOption === ''
+                                  ? 'blank'
+                                  : `${filter.dateOption} ${
+                                      filter.dateOption === 'within'
+                                        ? moment(filter.value?.start).format('MM/DD/YYYY') + ' and ' + moment(filter.value?.end).format('MM/DD/YYYY')
+                                        : moment(filter.value).format('MM/DD/YYYY')
+                                    }`}
+                              </span>
+                            )}
                             {filter.filterOption?.type === 'relative' && (
                               <span>
                                 {filter.relativeOption === 'custom'
@@ -244,15 +257,21 @@ class CustomExport extends React.Component {
                                   : filter.relativeOption}
                               </span>
                             )}
-                            {filter.filterOption?.type === 'date' && (
-                              <span>
-                                {filter.dateOption}{' '}
-                                {filter.dateOption === 'within'
-                                  ? moment(filter.value?.start).format('MM/DD/YYYY') + ' and ' + moment(filter.value?.end).format('MM/DD/YYYY')
-                                  : moment(filter.value).format('MM/DD/YYYY')}
-                              </span>
-                            )}
-                            {!['boolean', 'relative', 'date'].includes(filter.filterOption?.type) && <span>{filter.value}</span>}
+                            {filter.filterOption?.type === 'multi' &&
+                              filter.value
+                                ?.map(
+                                  f =>
+                                    `(${f.name} - ${
+                                      typeof f.value === 'string'
+                                        ? f.value === ''
+                                          ? 'blank'
+                                          : f.value
+                                        : f.value?.when === ''
+                                        ? 'blank'
+                                        : `${f.value.when}  ${moment(filter.value.date).format('MM/DD/YYYY')}`
+                                    })`
+                                )
+                                .join(' ')}
                           </Badge>
                         );
                       })}
