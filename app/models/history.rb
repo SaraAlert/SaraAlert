@@ -206,7 +206,7 @@ class History < ApplicationRecord
   end
 
   def self.report_reminder(patient: nil, created_by: 'Sara Alert System', comment: 'User sent a report reminder to the monitoree.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:report_reminder], comment, create: create)
+    create_history(patient, created_by, HISTORY_TYPES[:report_reminder], comment)
   end
 
   def self.unsuccessful_report_reminder(patient: nil, created_by: 'Sara Alert System', comment: 'Unsuccessful report reminder.', create: true)
