@@ -247,7 +247,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     notes: { label: 'Vaccine Notes', checks: [] },
     public_health_action: { label: 'Public Health Action', checks: [] },
     extended_isolation: { label: 'Extended Isolation', checks: [:date] },
-    follow_up_reason: { label: 'Follow Up Reason', checks: [:enum] }
+    follow_up_reason: { label: 'Follow Up Reason', checks: [:enum] },
     follow_up_note: { label: 'Follow Up Note', checks: [] }
   }.freeze
 

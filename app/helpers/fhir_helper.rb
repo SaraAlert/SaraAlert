@@ -197,7 +197,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       preferred_contact_time: from_string_extension(patient, 'Patient', 'preferred-contact-time'),
       symptom_onset: symptom_onset,
       user_defined_symptom_onset: { value: !symptom_onset[:value]&.nil?, path: date_ext_path('Patient', 'symptom-onset-date') },
-      # user_defined_id_statelocal: from_identifier(patient&.identifier, 'state-local-id', 'Patient'),
+      user_defined_id_statelocal: from_identifier(patient&.identifier, 'state-local-id', 'Patient'),
       user_defined_id_cdc: from_identifier(patient&.identifier, 'cdc-id', 'Patient'),
       user_defined_id_nndss: from_identifier(patient&.identifier, 'nndss-id', 'Patient'),
       interpretation_required: from_interpreter_required_extension(patient, 'Patient'),
@@ -226,7 +226,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       potential_exposure_location: from_string_extension(patient, 'Patient', 'potential-exposure-location'),
       potential_exposure_country: from_string_extension(patient, 'Patient', 'potential-exposure-country'),
       extended_isolation: from_date_extension(patient, 'Patient', ['extended-isolation']),
-      user_defined_id_statelocal: from_statelocal_id_extension(patient, 'Patient'),
       follow_up_reason: from_string_extension(patient, 'Patient', 'follow-up-reason'),
       follow_up_note: from_string_extension(patient, 'Patient', 'follow-up-note')
     }

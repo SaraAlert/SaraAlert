@@ -37,7 +37,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   #
   # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization, Provenance
   #
-  # GET /[:resource_type]/[:id]
+  # GET /fhir/r4/[:resource_type]/[:id]
   def show
     status_not_acceptable && return unless accept_header?
 
@@ -1089,6 +1089,10 @@ class Fhir::R4::ApiController < ApplicationApiController
     # alongside monitoring fields
     info_updates = updates.filter { |attr, _value| !PatientHelper.monitoring_fields.include?(attr) || attr == :isolation }
     Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, @current_actor_label)
+
+    p patient_before
+    puts "\n\n\n\n"
+    p patient
 
     # Handle History for monitoree monitoring information updates
     history_data = {
