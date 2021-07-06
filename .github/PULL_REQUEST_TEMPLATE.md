@@ -25,6 +25,8 @@ Please list important files (meaning substantial or integral to the PR) along wi
 `example_file.js`
 - Example change (ex: refactored import function)
 
+## Testing Recommendations
+Please list any recommendations regarding what reviewers should test and if there is any specific guidance on how to test certain aspects of the PR. Be sure to mention edge cases that should be tried, particularly in the UI.
 
 # Checklists
 
@@ -32,6 +34,7 @@ Please list important files (meaning substantial or integral to the PR) along wi
 - [ ] This PR describes why these changes were made.
 - [ ] This PR is into the correct branch.
 - [ ] This PR includes the correct JIRA ticket reference.
+- [ ] Comment added to the relevant JIRA ticket(s) with a link to this PR
 - [ ] Code diff has been reviewed (it **does not** contain: additional white space, not applicable code changes, debug statements, etc.)
 - [ ] If UI changes have been made, Chrome Dev Tools Lighthouse accessibility test has been executed to ensure no 508 issues were introduced.
 - [ ] Tests are included and test edge cases
@@ -44,6 +47,7 @@ Please list important files (meaning substantial or integral to the PR) along wi
 - [ ] The tests appropriately test the new code, including edge cases
 - [ ] You have tried to break the code
 - [ ] If applicable, you have tested changes against a large database, and considered possible performance regressions
+- [ ] Tested all recommendations listed in the "Testing Recommendations" section. The application behaves as expected with this PR.
 
 
 @ :
@@ -51,6 +55,7 @@ Please list important files (meaning substantial or integral to the PR) along wi
 - [ ] The tests appropriately test the new code, including edge cases
 - [ ] You have tried to break the code
 - [ ] If applicable, you have tested changes against a large database, and considered possible performance regressions
+- [ ] Tested all recommendations listed in the "Testing Recommendations" section. The application behaves as expected with this PR.
 
 
 @ :
@@ -58,3 +63,4 @@ Please list important files (meaning substantial or integral to the PR) along wi
 - [ ] The tests appropriately test the new code, including edge cases
 - [ ] You have tried to break the code
 - [ ] If applicable, you have tested changes against a large database, and considered possible performance regressions
+- [ ] Tested all recommendations listed in the "Testing Recommendations" section. The application behaves as expected with this PR.
