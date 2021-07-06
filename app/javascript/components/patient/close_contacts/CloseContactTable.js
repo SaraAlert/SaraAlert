@@ -21,7 +21,7 @@ class CloseContactTable extends React.Component {
     this.state = {
       table: {
         colData: [
-          { label: 'Actions', field: '', isSortable: false, className: 'text-center', filter: this.createActionsButton },
+          { label: 'Actions', field: '', isSortable: false, className: 'text-center', filter: this.renderActionsDropdown },
           { label: 'First Name', field: 'first_name', isSortable: true },
           { label: 'Last Name', field: 'last_name', isSortable: true },
           { label: 'Phone Number', field: 'primary_telephone', isSortable: true, filter: formatPhoneNumber },
@@ -125,6 +125,13 @@ class CloseContactTable extends React.Component {
   }, 500);
 
   /**
+   * Gets the data for the current close contact if there is one selected/being edited.
+   */
+  getCurrentCloseContact = () => {
+    return this.state.editRow !== null && !!this.state.table.rowData ? this.state.table.rowData[this.state.editRow] : {};
+  };
+
+  /**
    * Called when table is to be updated because of a query change.
    * @param {Object} query - Updated query for table data after change.
    */
@@ -212,29 +219,19 @@ class CloseContactTable extends React.Component {
   };
 
   /**
-   * Called when the Add New CloseContact button is clicked.
-   * Updates the state to show the appropriate modal for adding a close contact.
+   * Toggle the Add New Close Contact modal by updating state.
    */
-  handleAddCC = () => {
+  toggleAddModal = () => {
     this.setState({
-      showAddCloseContactModal: true,
+      showAddCloseContactModal: !this.state.showAddCloseContactModal,
     });
   };
 
   /**
-   * Closes the Add New CloseContact modal by updating state.
-   */
-  handleAddCCModalClose = () => {
-    this.setState({
-      showAddCloseContactModal: false,
-    });
-  };
-
-  /**
-   * Closes the Add New CloseContact modal and makes a request to add a new close contact to the db.
+   * Closes the Add New Close Contact modal and makes a request to add a new close contact to the db.
    * @param {*} newCloseContactData - State from close contact modal containing needed close contact data.
    */
-  handleAddCCModalSave = newCloseContactData => {
+  handleAddSubmit = newCloseContactData => {
     this.setState({ showAddCloseContactModal: false }, () => {
       this.updateCloseContact(newCloseContactData, false);
     });
@@ -244,7 +241,7 @@ class CloseContactTable extends React.Component {
    * Called when the edit close contact button is clicked.
    * Updates the state to show the appropriate modal for editing a close contact.
    */
-  handleEditCC = row => {
+  toggleEditModal = row => {
     this.setState({
       showEditCCModal: true,
       editRow: row,
@@ -262,10 +259,10 @@ class CloseContactTable extends React.Component {
   };
 
   /**
-   * Closes the EditCloseContacat modal and makes a request to update an existing close contact record.
+   * Closes the Edit Close Contact modal and makes a request to update an existing close contact record.
    * @param {*} updatedCloseContactData - State from close contact modal containing updated close contact data.
    */
-  handleEditCCModalSave = updatedCloseContactData => {
+  handleEditSubmit = updatedCloseContactData => {
     const currentCloseContactId = this.state.table.rowData[this.state.editRow]?.id;
     updatedCloseContactData['id'] = currentCloseContactId;
     this.setState(
@@ -280,7 +277,7 @@ class CloseContactTable extends React.Component {
   };
 
   // Toggles the delete modal and clears any reason or reason text
-  toggleCloseContactDeleteModal = id => {
+  toggleDeleteModal = id => {
     let selectedCloseContactID = _.isNumber(id) ? id : null;
     this.setState({
       showDeleteCCModal: !this.state.showDeleteCCModal,
@@ -290,7 +287,7 @@ class CloseContactTable extends React.Component {
     });
   };
 
-  handleDeleteCloseContact = () => {
+  handleDeleteSubmit = () => {
     let delete_reason = this.state.delete_reason;
     if (delete_reason === 'Other' && this.state.delete_reason_text) {
       delete_reason += ', ' + this.state.delete_reason_text;
@@ -322,7 +319,7 @@ class CloseContactTable extends React.Component {
   /**
    * Makes a request to update an existing close contact record on the backend and reloads page once complete.
    * @param {*} newCloseContactData
-   * @param {*} isEdit - whether this is an edit or
+   * @param {*} isEdit - whether this is an edit or a new close contact
    */
   updateCloseContact = (ccData, isEdit) => {
     this.setState({ isLoading: true }, () => {
@@ -361,7 +358,7 @@ class CloseContactTable extends React.Component {
    * Creates the action button & dropdown for each row in the table.
    * @param {Object} data - Data about the cell this filter is called on.
    */
-  createActionsButton = data => {
+  renderActionsDropdown = data => {
     const rowIndex = data.rowIndex;
     const rowData = data.rowData;
     // Set the direction to be "up" when there are not enough rows in the table to have space for the dropdown.
@@ -378,7 +375,7 @@ class CloseContactTable extends React.Component {
           <i className="fas fa-cogs fw" />
         </Dropdown.Toggle>
         <Dropdown.Menu drop={direction}>
-          <Dropdown.Item className="px-4" onClick={() => this.handleEditCC(rowIndex)}>
+          <Dropdown.Item className="px-4" onClick={() => this.toggleEditModal(rowIndex)}>
             <i className="fas fa-edit fa-fw" />
             <span className="ml-2"> Edit</span>
           </Dropdown.Item>
@@ -398,20 +395,13 @@ class CloseContactTable extends React.Component {
               <span className="ml-2"> Enroll</span>
             </Dropdown.Item>
           )}
-          <Dropdown.Item className="px-4" onClick={() => this.toggleCloseContactDeleteModal(rowData.id)}>
+          <Dropdown.Item className="px-4" onClick={() => this.toggleDeleteModal(rowData.id)}>
             <i className="fas fa-trash" />
             <span className="ml-2"> Delete</span>
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     );
-  };
-
-  /**
-   * Gets the data for the current close contact if there is one selected/being edited.
-   */
-  getCurrentCloseContact = () => {
-    return this.state.editRow !== null && !!this.state.table.rowData ? this.state.table.rowData[this.state.editRow] : {};
   };
 
   render() {
@@ -425,7 +415,7 @@ class CloseContactTable extends React.Component {
             <div className="mt-4">
               <Row className="my-4">
                 <Col>
-                  <Button variant="primary" className="mr-2" onClick={this.handleAddCC}>
+                  <Button variant="primary" className="mr-2" onClick={() => this.toggleAddModal()}>
                     <i className="fas fa-plus fa-fw"></i>
                     <span className="ml-2">Add New Close Contact</span>
                   </Button>
@@ -479,9 +469,9 @@ class CloseContactTable extends React.Component {
         {this.state.showDeleteCCModal && (
           <DeleteDialog
             type={'Close Contact'}
-            delete={this.handleDeleteCloseContact}
-            toggle={this.toggleCloseContactDeleteModal}
-            onChange={this.handleCCDeleteUpdate}
+            delete={this.handleDeleteSubmit}
+            toggle={this.toggleDeleteModal}
+            onChange={() => this.handleCCDeleteUpdate}
             show_text_input={true}
           />
         )}
@@ -489,8 +479,8 @@ class CloseContactTable extends React.Component {
           <CloseContactModal
             title={this.state.showAddCloseContactModal ? 'Add New Close Contact' : 'Edit Close Contact'}
             currentCloseContact={this.state.showAddCloseContactModal ? {} : this.getCurrentCloseContact()}
-            onClose={this.state.showAddCloseContactModal ? this.handleAddCCModalClose : this.handleEditCCModalClose}
-            onSave={this.state.showAddCloseContactModal ? this.handleAddCCModalSave : this.handleEditCCModalSave}
+            onClose={this.toggleAddModal}
+            onSave={this.state.showAddCloseContactModal ? this.handleAddSubmit : this.handleEditSubmit}
             isEditing={this.state.showEditCCModal}
             assigned_users={this.props.assigned_users}
           />
