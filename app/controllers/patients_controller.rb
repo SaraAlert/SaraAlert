@@ -223,7 +223,7 @@ class PatientsController < ApplicationController
       redirect_to(root_url) && return unless first_positive_lab.present?
 
       first_positive_lab.update(laboratory)
-      History.lab_result(patient: patient, created_by: current_user.email, comment: "User edited a lab result (ID: #{laboratory[:id]}).")
+      History.lab_result(patient: patient, created_by: current_user.email, comment: "User edited a lab result (SARA ALert ID: #{laboratory[:id]}).")
     end
 
     # Propagate desired fields to household except jurisdiction_id
@@ -339,12 +339,12 @@ class PatientsController < ApplicationController
 
     if updated
       # Create history item for new HoH
-      comment = "User added monitoree with ID #{current_patient.id} to a household. This monitoree"\
+      comment = "User added monitoree with SARA Alert ID #{current_patient.id} to a household. This monitoree"\
                 ' will now be responsible for handling the reporting on their behalf.'
       History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
 
       # Create history item for current patient being moved to a household
-      comment = "User added monitoree to a household. Monitoree with ID #{new_hoh_id} will now be responsible"\
+      comment = "User added monitoree to a household. Monitoree with SARA Alert ID #{new_hoh_id} will now be responsible"\
                 ' for handling the reporting on their behalf.'
       History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
     else
@@ -382,12 +382,12 @@ class PatientsController < ApplicationController
 
     if updated
       # Create history item for old HoH
-      comment = "User removed dependent monitoree with ID #{current_patient.id} from the household. This monitoree"\
+      comment = "User removed dependent monitoree with SARA Alert ID #{current_patient.id} from the household. This monitoree"\
                 ' will no longer be responsible for handling their reporting.'
       History.monitoring_change(patient: old_hoh, created_by: current_user.email, comment: comment)
 
       # Create history item on current patient
-      comment = "User removed monitoree from a household. Monitoree with ID #{old_hoh.id} will"\
+      comment = "User removed monitoree from a household. Monitoree with SARA Alert ID #{old_hoh.id} will"\
                 ' no longer be responsible for handling their reporting.'
       History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
     else
@@ -413,7 +413,7 @@ class PatientsController < ApplicationController
 
     # Check to make sure selected HoH record exists.
     unless current_user_patients.exists?(new_hoh_id)
-      error_message = "Change head of household action failed: selected Head of Household with ID #{new_hoh_id} is not accessible."
+      error_message = "Change head of household action failed: selected Head of Household with SARA Alert ID #{new_hoh_id} is not accessible."
       render(json: { error: error_message }, status: :forbidden) && return
     end
 
@@ -448,8 +448,8 @@ class PatientsController < ApplicationController
       render(json: { error: error_message }, status: :bad_request) && return
     end
 
-    comment = "User changed head of household from monitoree with ID #{old_hoh.id} to monitoree with ID #{new_hoh_id}."\
-              " Monitoree with ID #{new_hoh_id} will now be responsible for handling the reporting for the household."
+    comment = "User changed head of household from monitoree with SARA Alert ID #{old_hoh.id} to monitoree with SARA Alert ID #{new_hoh_id}."\
+              " Monitoree with SARA Alert ID #{new_hoh_id} will now be responsible for handling the reporting for the household."
 
     # Create history item for old HoH
     History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
@@ -701,7 +701,7 @@ class PatientsController < ApplicationController
 
     comment = 'User reviewed all reports'
     comment += " and updated Symptom Onset Date to #{patient[:symptom_onset]&.strftime('%m/%d/%Y')}" if isolation_updates.include?(:symptom_onset)
-    comment += " and added a new lab result (ID: #{lab_id})" if lab_id.present?
+    comment += " and added a new lab result (SARA Alert ID: #{lab_id})" if lab_id.present?
     comment += '.'
     comment += ' Reason: ' + permitted_params[:reasoning] unless permitted_params[:reasoning].blank?
     History.reports_reviewed(patient: patient, created_by: current_user.email, comment: comment)
@@ -723,9 +723,9 @@ class PatientsController < ApplicationController
     # Create first positive lab if present
     lab_id = create_lab_result(params, patient, false)
 
-    comment = 'User reviewed a report (ID: ' + assessment.id.to_s + ')'
+    comment = 'User reviewed a report (SARA Alert ID: ' + assessment.id.to_s + ')'
     comment += " and updated Symptom Onset Date to #{patient[:symptom_onset]&.strftime('%m/%d/%Y')}" if isolation_updates.include?(:symptom_onset)
-    comment += " and added a new lab result (ID: #{lab_id})" if lab_id.present?
+    comment += " and added a new lab result (SARA Alert ID: #{lab_id})" if lab_id.present?
     comment += '.'
     comment += ' Reason: ' + permitted_params[:reasoning] unless permitted_params[:reasoning].blank?
     History.report_reviewed(patient: patient, created_by: current_user.email, comment: comment)
@@ -766,7 +766,7 @@ class PatientsController < ApplicationController
     # Create history item on successful create
     ActiveRecord::Base.transaction do
       if lab.save && create_history
-        History.lab_result(patient: patient.id, created_by: current_user.email, comment: "User added a new lab result (ID: #{lab.id}).")
+        History.lab_result(patient: patient.id, created_by: current_user.email, comment: "User added a new lab result (SARA Alert ID: #{lab.id}).")
       end
     end
 
