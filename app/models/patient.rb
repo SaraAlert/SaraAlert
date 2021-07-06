@@ -694,9 +694,7 @@ class Patient < ApplicationRecord
   }
 
   # Patients are eligible to be automatically closed by the system IF:
-  #  - in exposure workflow
-  #     AND
-  #  - patient is non-reporting
+  #  - patient is non-reporting (in exposure or isolation)
   #    AND
   #  - patient has no recent activity
   #
@@ -718,9 +716,9 @@ class Patient < ApplicationRecord
 
     # If a patient record has been inactive for 30 days or more
     # in the exposure workflow and is non-reporting
-    no_recent_activity = where(isolation: false)
-                         .non_reporting
+    no_recent_activity = isolation_non_reporting
                          .where('updated_at <= ?', 30.days.ago)
+                         .or(exposure_non_reporting.where('updated_at <= ?', 30.days.ago))
 
     case reason
     when nil
@@ -994,8 +992,7 @@ class Patient < ApplicationRecord
     end
   end
 
-  # Send a daily assessment to this monitoree (if currently eligible). By setting send_now to true, an assessment
-  # will be sent immediately without any consideration of the monitoree's preferred_contact_time.
+  # Send a daily assessment to this monitoree (if currently eligible).
   def send_assessment
     # Return UNLESS:
     # - in exposure: NOT closed AND within monitoring period OR
@@ -1013,7 +1010,7 @@ class Patient < ApplicationRecord
 
     # Check last_assessment_reminder_sent before enqueueing to cover potential race condition of multiple reports
     # being sent out for the same monitoree.
-    return unless last_assessment_reminder_sent_eligible? || send_now
+    return unless last_assessment_reminder_sent_eligible?
 
     contact_method = preferred_contact_method&.downcase
     if contact_method == 'sms text-message' && ADMIN_OPTIONS['enable_sms']
