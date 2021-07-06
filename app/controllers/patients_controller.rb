@@ -594,7 +594,7 @@ class PatientsController < ApplicationController
     history_data = {}
     if clear_flag
       clear_flag_reason = params.permit(:clear_flag_reason)[:clear_flag_reason]
-      clear_follow_up_flag(patient, clear_flag_reason)
+      clear_follow_up_flag(patient, patient.id, clear_flag_reason)
     else
       follow_up_reason = params.permit(:follow_up_reason)[:follow_up_reason]
       follow_up_note = params.permit(:follow_up_note)[:follow_up_note]
@@ -603,6 +603,7 @@ class PatientsController < ApplicationController
       history_data = {
         created_by: current_user.email,
         patient: patient,
+        household_status: patient.id,
         follow_up_reason: follow_up_reason,
         follow_up_note: follow_up_note,
         follow_up_reason_before: patient.follow_up_reason,
@@ -630,7 +631,7 @@ class PatientsController < ApplicationController
         next if member.nil?
 
         clear_flag_reason = params.permit(:clear_flag_reason)[:clear_flag_reason]
-        clear_follow_up_flag(member, clear_flag_reason)
+        clear_follow_up_flag(member, patient.id, clear_flag_reason)
       end
     else
       apply_to_household_ids.each do |id|
@@ -656,11 +657,12 @@ class PatientsController < ApplicationController
   #
   # patient - The Patient to update.
   # clear_flag_reason - The note to include in the history item
-  def clear_follow_up_flag(patient, clear_flag_reason)
+  def clear_follow_up_flag(patient, household_status, clear_flag_reason)
     # Prep data needed to create history items based on this update
     history_data = {
       created_by: current_user.email,
       patient: patient,
+      household_status: household_status,
       clear_flag_reason: clear_flag_reason,
       follow_up_reason_before: patient.follow_up_reason
     }

@@ -370,7 +370,7 @@ class History < ApplicationRecord
     return if field[:old_value] == field[:new_value]
 
     creator = history[:household_status].nil? ? 'System' : 'User'
-    comment = "#{creator} #{field[:new_value]} notifications for this monitoree#{compose_explanation(history, field)}."
+    comment = "#{creator} #{field[:new_value]} notifications for this monitoree#{compose_explanation(history)}."
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
@@ -409,7 +409,7 @@ class History < ApplicationRecord
     return if field[:old_value] == field[:new_value]
 
     creator = history[:household_status].nil? ? 'System' : 'User'
-    comment = "#{creator} turned #{field[:new_value]} #{field[:name]}#{compose_explanation(history, field)}."
+    comment = "#{creator} turned #{field[:new_value]} #{field[:name]}#{compose_explanation(history)}."
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
@@ -439,7 +439,9 @@ class History < ApplicationRecord
   def self.follow_up_flag_edit(history)
     return if history[:follow_up_reason] == history[:follow_up_reason_before] && history[:follow_up_note] == history[:follow_up_note_before]
 
-    comment = "Flagged for Follow-up. Reason: \"#{history[:follow_up_reason]}"
+    comment = 'User flagged for follow-up'
+    comment += compose_explanation(history)
+    comment += ". Reason: \"#{history[:follow_up_reason]}"
     comment += ": #{history[:follow_up_note]}" unless history[:follow_up_note].blank?
     comment += '"'
 
@@ -449,8 +451,9 @@ class History < ApplicationRecord
   def self.clear_follow_up_flag(history)
     return if history[:follow_up_reason_before].nil?
 
-    comment = 'User cleared flag for follow-up.'
-    comment += " Reason: #{history[:clear_flag_reason]}" unless history[:clear_flag_reason].blank?
+    comment = 'User cleared flag for follow-up'
+    comment += compose_explanation(history)
+    comment += ". Reason: #{history[:clear_flag_reason]}" unless history[:clear_flag_reason].blank?
 
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment)
   end
@@ -469,38 +472,36 @@ class History < ApplicationRecord
     to_text = field[:new_value].blank? ? 'blank' : "\"#{field[:new_value]}\""
 
     comment = "#{creator} #{verb} #{field[:name]} from #{from_text} to #{to_text}"
-    comment += compose_explanation(history, field)
+    comment += compose_explanation(history)
     comment += history[:note] unless history[:note].blank?
     comment += '.'
     comment += " Reason: #{history[:reason]}" unless history[:reason].blank?
     comment
   end
 
-  private_class_method def self.compose_explanation(history, _field)
+  private_class_method def self.compose_explanation(history)
     if history[:household_status] == history[:patient].id && history[:propagation] == :group
       ' and applied that change to all household members'
     elsif history[:household_status] == history[:patient].id && history[:propagation] == :group_cm
       ' and applied that change to household members under continuous exposure'
-    elsif history[:household_status] == history[:patient].id
-      ''
     elsif history[:household_status] == history[:patient].responder_id && history[:propagation] == :group
-      " by making that change for monitoree's head of household (SARA Alert ID: #{history[:household_status]})
-        and applying that change to all household members"
+      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:household_status]})
+        and for all household members"
     elsif history[:household_status] == history[:patient].responder_id && history[:propagation] == :group_cm
-      " by making that change for monitoree's head of household (SARA Alert ID: #{history[:household_status]})
-        and applying that change to household members under continuous exposure"
-    elsif history[:household_status] == history[:patient].responder_id
-      " by making that change for monitoree's head of household (SARA Alert ID: #{history[:household_status]})
-        and applying that change to this monitoree"
-    elsif !history[:household_status].nil? && history[:propagation] == :group
-      " by making that change for a household member (SARA ALERT ID: #{history[:household_status]})
-        and applying that change to all household members"
-    elsif !history[:household_status].nil? && history[:propagation] == :group_cm
-      " by making that change for for a household member (SARA ALERT ID: #{history[:household_status]})
-        and applying that change to household members under continuous exposure"
-    elsif !history[:household_status].nil?
-      " by making that change for a household member (SARA ALERT ID: #{history[:household_status]})
-        and applying that change to this monitoree"
+      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:household_status]})
+        and for household members under continuous exposure"
+    elsif history[:household_status] != history[:patient].id && history[:household_status] == history[:patient].responder_id
+      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:household_status]})
+        and for this monitoree"
+    elsif history[:household_status] != history[:patient].id && !history[:household_status].nil? && history[:propagation] == :group
+      " by making that change for a household member (Sara Alert ID: #{history[:household_status]})
+        and applied that change to all household members"
+    elsif history[:household_status] != history[:patient].id && !history[:household_status].nil? && history[:propagation] == :group_cm
+      " by making that change for a household member (Sara Alert ID: #{history[:household_status]})
+        and for household members under continuous exposure"
+    elsif history[:household_status] != history[:patient].id && !history[:household_status].nil?
+      " by making that change for a household member (Sara Alert ID: #{history[:household_status]})
+        and for this monitoree"
     else
       ''
     end
