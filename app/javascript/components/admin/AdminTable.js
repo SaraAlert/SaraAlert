@@ -134,6 +134,12 @@ class AdminTable extends React.Component {
     return `User: ${rowData.email}`;
   }
 
+  // Adds the className `selected-row` to those rows who have been selected
+  getRowClassName = rowData => {
+    const isSelected = this.state.table.selectedRows.filter(x => this.state.table.rowData[Number(x)].id === rowData.id).length;
+    return isSelected ? 'selected-row' : null;
+  };
+
   /**
    * Makes an axios POST request based on input.
    * @param {String} path - Admin route to POST to (after the /admin/ string)
@@ -776,6 +782,7 @@ class AdminTable extends React.Component {
             handleEdit={this.handleEditClick}
             handleEntriesChange={this.handleEntriesChange}
             handlePageUpdate={this.handlePageUpdate}
+            getRowClassName={this.getRowClassName}
             getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
             isSelectable={true}
             isEditable={true}
