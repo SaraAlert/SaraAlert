@@ -1097,7 +1097,7 @@ class PatientsControllerTest < ActionController::TestCase
     patient.reload
     assert_match('Hospitalized', patient.follow_up_reason)
     assert_match('Test Note', patient.follow_up_note)
-    assert_histories_contain(patient, 'Flagged for Follow-up. Reason: "Hospitalized: Test Note"')
+    assert_histories_contain(patient, 'User flagged for follow-up. Reason: "Hospitalized: Test Note"')
 
     post :update_follow_up_flag, params: {
       id: patient.id,
@@ -1138,19 +1138,19 @@ class PatientsControllerTest < ActionController::TestCase
     patient.reload
     assert_match('Hospitalized', patient.follow_up_reason)
     assert_match('Test Note', patient.follow_up_note)
-    assert_histories_contain(patient, 'Flagged for Follow-up. Reason: "Hospitalized: Test Note"')
+    assert_histories_contain(patient, 'User flagged for follow-up. Reason: "Hospitalized: Test Note"')
     household_member_1.reload
     assert_match('Hospitalized', household_member_1.follow_up_reason)
     assert_match('Test Note', household_member_1.follow_up_note)
-    assert_histories_contain(household_member_1, 'Flagged for Follow-up. Reason: "Hospitalized: Test Note"')
+    assert_histories_contain(household_member_1, 'User flagged for follow-up. Reason: "Hospitalized: Test Note"')
     household_member_2.reload
     assert_match('Hospitalized', household_member_2.follow_up_reason)
     assert_match('Test Note', household_member_2.follow_up_note)
-    assert_histories_contain(household_member_2, 'Flagged for Follow-up. Reason: "Hospitalized: Test Note"')
+    assert_histories_contain(household_member_2, 'User flagged for follow-up. Reason: "Hospitalized: Test Note"')
     household_member_3.reload
     assert_nil household_member_3.follow_up_reason
     assert_nil household_member_3.follow_up_note
-    assert_not_histories_contain(household_member_3, 'Flagged for Follow-up. Reason: "Hospitalized: Test Note"')
+    assert_not_histories_contain(household_member_3, 'User flagged for follow-up. Reason: "Hospitalized: Test Note"')
 
     post :update_follow_up_flag, params: {
       id: patient.id,
@@ -1201,12 +1201,12 @@ class PatientsControllerTest < ActionController::TestCase
     patient_1.reload
     assert_match('In Need of Follow-up', patient_1.follow_up_reason)
     assert_match('Test Note', patient_1.follow_up_note)
-    assert_histories_contain(patient_1, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+    assert_histories_contain(patient_1, 'User flagged for follow-up. Reason: "In Need of Follow-up: Test Note"')
 
     patient_2.reload
     assert_match('In Need of Follow-up', patient_2.follow_up_reason)
     assert_match('Test Note', patient_2.follow_up_note)
-    assert_histories_contain(patient_2, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+    assert_histories_contain(patient_2, 'User flagged for follow-up. Reason: "In Need of Follow-up: Test Note"')
 
     post :bulk_update, params: {
       ids: [patient_1.id, patient_2.id],
@@ -1253,24 +1253,24 @@ class PatientsControllerTest < ActionController::TestCase
     household_1_hoh.reload
     assert_match('In Need of Follow-up', household_1_hoh.follow_up_reason)
     assert_match('Test Note', household_1_hoh.follow_up_note)
-    assert_histories_contain(household_1_hoh, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+    assert_histories_contain(household_1_hoh, 'User flagged for follow-up. Reason: "In Need of Follow-up: Test Note"')
     household_1_member_1.reload
     assert_match('In Need of Follow-up', household_1_member_1.follow_up_reason)
     assert_match('Test Note', household_1_member_1.follow_up_note)
-    assert_histories_contain(household_1_member_1, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+    assert_histories_contain(household_1_member_1, 'User flagged for follow-up. Reason: "In Need of Follow-up: Test Note"')
 
     household_2_member_1.reload
     assert_match('In Need of Follow-up', household_2_member_1.follow_up_reason)
     assert_match('Test Note', household_2_member_1.follow_up_note)
-    assert_histories_contain(household_2_member_1, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+    assert_histories_contain(household_2_member_1, 'User flagged for follow-up. Reason: "In Need of Follow-up: Test Note"')
     household_2_member_2.reload
     assert_nil household_2_member_2.follow_up_reason
     assert_nil household_2_member_2.follow_up_note
-    assert_not_histories_contain(household_2_member_2, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+    assert_not_histories_contain(household_2_member_2, 'User flagged for follow-up. Reason: "In Need of Follow-up: Test Note"')
     household_2_hoh.reload
     assert_nil household_2_hoh.follow_up_reason
     assert_nil household_2_hoh.follow_up_note
-    assert_not_histories_contain(household_2_hoh, 'Flagged for Follow-up. Reason: "In Need of Follow-up: Test Note"')
+    assert_not_histories_contain(household_2_hoh, 'User flagged for follow-up. Reason: "In Need of Follow-up: Test Note"')
 
     post :bulk_update, params: {
       ids: [household_1_hoh.id, household_2_member_1.id],
