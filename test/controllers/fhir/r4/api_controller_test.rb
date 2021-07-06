@@ -273,7 +273,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       travel_related_notes: 'travel notes',
       additional_planned_travel_related_notes: 'additional travel notes',
       follow_up_reason: 'Duplicate',
-      follow_up_note: 'This is a duplicate.'
+      follow_up_note: 'This is a follow up note.'
     )
     @patient_1 = Patient.find_by(id: 1).as_fhir
 
@@ -301,7 +301,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       black_or_african_american: true,
       asian: true,
       continuous_exposure: true,
-      last_date_of_exposure: nil
+      last_date_of_exposure: nil,
     )
     @patient_2 = Patient.find_by(id: 2).as_fhir
 

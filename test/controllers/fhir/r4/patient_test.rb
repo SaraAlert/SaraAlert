@@ -284,7 +284,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     json_response = JSON.parse(response.body)
     issues = json_response['issue']
 
-    assert_equal 18, issues.length
+    assert_equal 19, issues.length
     monitoring_plan_iss = issues.find { |e| /Invalid.*Monitoring Plan/.match(e['diagnostics']) }
     assert(FHIRPath.evaluate(monitoring_plan_iss['expression'].first, json_patient) == 'Invalid')
     state_iss = issues.find { |e| /Old York.*State/.match(e['diagnostics']) }
@@ -321,6 +321,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, json_patient) == 1_000_000)
     email_iss = issues.find { |e| /Email.*Primary Contact Method/.match(e['diagnostics']) }
     assert_not_nil email_iss # Email is omitted from the request, so don't eval the FHIRPath
+    follow_up_reason_iss = issues.find { |e| /Invalid reason.*Follow Up Reason/.match(e['diagnostics']) }
+    assert_not_nil follow_up_reason_iss
   end
 
   test 'should group Patients in households with matching phone numbers' do
@@ -406,6 +408,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
+    assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal patient.jurisdiction_id, Transfer.find_by(patient_id: patient_id).to_jurisdiction_id
   end
 
@@ -450,7 +453,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_match(/"Monitoring" to "Not Monitoring"/, histories.find_by(history_type: 'Monitoring Change').comment)
   end
 
-  test 'should update Patient via update and set omitted fields to nil ' do
+  test 'should update Patient via update and set omitted fields to nil' do
     # Possible update request that omits all fields that can be updated except for the "active" field.
     patient_update = {
       'id' => @patient_2.id,
@@ -478,6 +481,89 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' })
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' })
     assert_equal false, json_response['active']
+  end
+
+  test 'should update Patient follow up reason via update' do
+    Patient.find_by(id: 1).update!(
+      follow_up_reason: 'High-Risk'
+    )
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: Patient.find_by(id: 1).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+    assert_equal 'Patient', json_response['resourceType']
+    assert_equal p.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
+    assert_equal 'High-Risk', p.follow_up_reason
+  end
+
+  test 'should not be able to update Patient follow up reason to invalid reason' do
+    patient_follow_up_reason = Patient.find_by(id: 1).follow_up_reason
+
+    Patient.find_by(id: 1).update!(
+      follow_up_reason: 'Some invalid reason'
+    )
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: Patient.find_by(id: 1).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    issues = json_response['issue']
+
+    assert_equal 1, issues.length
+    assert(json_response['issue'][0]['diagnostics'].include?('\'Follow Up Reason\' is not an acceptable value'))
+  end
+
+  test 'should update Patient 1 follow up note via update' do
+    Patient.find_by(id: 1).update!(
+      follow_up_note: 'New follow up note'
+    )
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: Patient.find_by(id: 1).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+    assert_equal 'Patient', json_response['resourceType']
+    assert_equal p.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
+    assert_equal 'New follow up note', p.follow_up_note
+  end
+
+  test 'should flag Patient for follow up via update' do
+    Patient.find_by(id: 2).update!(
+      follow_up_reason: 'Deceased'
+    )
+    
+    put(
+      '/fhir/r4/Patient/2',
+      params: Patient.find_by(id: 2).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 2, json_response['id']
+    p = Patient.find_by(id: 2)
+
+    assert_not p.nil?
+    assert_equal 'Patient', json_response['resourceType']
+    assert_equal p.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
+    assert_equal 'Deceased', p.follow_up_reason
   end
 
   test 'should properly close Patient record via update' do
@@ -636,7 +722,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     json_response = JSON.parse(response.body)
     issues = json_response['issue']
 
-    assert_equal 18, issues.length
+    assert_equal 19, issues.length
     monitoring_plan_iss = issues.find { |e| /Invalid.*Monitoring Plan/.match(e['diagnostics']) }
     assert(FHIRPath.evaluate(monitoring_plan_iss['expression'].first, json_patient) == 'Invalid')
     state_iss = issues.find { |e| /Old York.*State/.match(e['diagnostics']) }
@@ -673,6 +759,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, json_patient) == 1_000_000)
     email_iss = issues.find { |e| /Email.*Primary Contact Method/.match(e['diagnostics']) }
     assert_not_nil email_iss # Email is omitted from the request, so don't eval the FHIRPath
+    follow_up_reason_iss = issues.find { |e| /Invalid reason.*Follow Up Reason/.match(e['diagnostics']) }
+    assert_not_nil follow_up_reason_iss
   end
 
   test 'SYSTEM FLOW: should allow jurisdiction transfers when jurisdiction exists' do

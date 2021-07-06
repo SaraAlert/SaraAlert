@@ -577,6 +577,7 @@ class PatientsController < ApplicationController
 
   # Update the patient's follow-up flag fields
   def update_follow_up_flag
+    puts "\n\nHELLOOOOO\n\n"
     redirect_to(root_url) && return unless current_user.can_edit_patient_monitoring_info?
 
     patient = current_user.get_patient(params.permit(:id)[:id])
@@ -590,6 +591,8 @@ class PatientsController < ApplicationController
   # patient - The Patient to update.
   # params - The request params.
   def update_follow_up_flag_fields(patient, params)
+    puts "\n\nparams:\n\n#{params}\n\n"
+    
     clear_flag = params.permit(:clear_flag)[:clear_flag]
     history_data = {}
     if clear_flag
@@ -925,8 +928,8 @@ class PatientsController < ApplicationController
       :gender_identity,
       :sexual_orientation,
       :user_defined_symptom_onset,
-      # :follow_up_reason,
-      # :follow_up_note,
+      :follow_up_reason,
+      :follow_up_note,
       laboratories_attributes: %i[
         lab_type
         specimen_collection
