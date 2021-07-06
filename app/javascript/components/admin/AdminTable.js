@@ -765,26 +765,28 @@ class AdminTable extends React.Component {
             </InputGroup>
           </Col>
         </Row>
-        <CustomTable
-          dataType="users"
-          columnData={this.state.table.colData}
-          rowData={this.state.table.rowData}
-          totalRows={this.state.table.totalRows}
-          handleTableUpdate={this.handleTableUpdate}
-          handleSelect={this.handleSelect}
-          handleEdit={this.handleEditClick}
-          handleEntriesChange={this.handleEntriesChange}
-          handlePageUpdate={this.handlePageUpdate}
-          getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
-          isSelectable={true}
-          isEditable={true}
-          isLoading={this.state.isLoading}
-          page={this.state.query.page}
-          selectedRows={this.state.table.selectedRows}
-          selectAll={this.state.table.selectAll}
-          entryOptions={this.state.entryOptions}
-          entries={this.state.query.entries}
-        />
+        <div className="admin-table">
+          <CustomTable
+            dataType="users"
+            columnData={this.state.table.colData}
+            rowData={this.state.table.rowData}
+            totalRows={this.state.table.totalRows}
+            handleTableUpdate={this.handleTableUpdate}
+            handleSelect={this.handleSelect}
+            handleEdit={this.handleEditClick}
+            handleEntriesChange={this.handleEntriesChange}
+            handlePageUpdate={this.handlePageUpdate}
+            getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
+            isSelectable={true}
+            isEditable={true}
+            isLoading={this.state.isLoading}
+            page={this.state.query.page}
+            selectedRows={this.state.table.selectedRows}
+            selectAll={this.state.table.selectAll}
+            entryOptions={this.state.entryOptions}
+            entries={this.state.query.entries}
+          />
+        </div>
         {Object.keys(this.state.jurisdiction_paths).length && (this.state.showEditUserModal || this.state.showAddUserModal) && (
           <UserModal
             show={this.state.showEditUserModal || this.state.showAddUserModal}

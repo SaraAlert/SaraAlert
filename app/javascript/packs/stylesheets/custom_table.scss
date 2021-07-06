@@ -55,7 +55,7 @@
   font-size: 0.9em;
 }
 
-.patients-table tbody tr:hover {
+.admin-table tbody tr:hover, .patients-table tbody tr:hover {
   background-color: #ddd;
 
   td {
