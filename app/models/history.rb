@@ -32,7 +32,8 @@ class History < ApplicationRecord
     contact_attempt: 'Contact Attempt',
     welcome_message_sent: 'Welcome Message Sent',
     record_automatically_closed: 'Record Automatically Closed',
-    monitoring_complete_message_sent: 'Monitoring Complete Message Sent'
+    monitoring_complete_message_sent: 'Monitoring Complete Message Sent',
+    assessment_email_error: 'Assessment Email Error'
   }.freeze
 
   columns.each do |column|
@@ -49,13 +50,18 @@ class History < ApplicationRecord
   belongs_to :patient
   belongs_to :original_comment, class_name: 'History', optional: true
 
-  # Patient updated_at should not be updated if history was created by a monitoree data download
+  # Patient updated_at should not be updated if history was created by:
+  # - report_reminder
+  # - monitoree data download
+  # - unsuccessful_report_reminder
+  # - assessment_email_error
   after_create(
     proc do
       patient.touch unless [
         HISTORY_TYPES[:report_reminder],
         HISTORY_TYPES[:monitoree_data_downloaded],
-        HISTORY_TYPES[:unsuccessful_report_reminder]
+        HISTORY_TYPES[:unsuccessful_report_reminder],
+        HISTORY_TYPES[:assessment_email_error]
       ].include? history_type
     end
   )
@@ -273,6 +279,13 @@ class History < ApplicationRecord
     comment = 'The system was unable to send a monitoring complete message to this monitoree'\
               ' because the recipient phone number blocked communication with Sara Alert'
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment, create: create)
+  end
+
+  def self.assessment_email_error(patient: nil,
+                                  created_by: 'Sara Alert System',
+                                  comment: 'Sara Alert was unable to send a daily assessment email because of an error.',
+                                  create: true)
+    create_history(patient, created_by, HISTORY_TYPES[:assessment_email_error], comment, create: create)
   end
 
   def self.monitoring_status(history, create: true)
