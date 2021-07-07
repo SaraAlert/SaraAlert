@@ -64,7 +64,8 @@ class Patient < ApplicationRecord
      additional_planned_travel_start_date
      additional_planned_travel_end_date
      date_of_departure
-     date_of_arrival].each do |date_field|
+     date_of_arrival
+     extended_isolation].each do |date_field|
     validates date_field, on: %i[api import], date: true
   end
 
@@ -78,7 +79,6 @@ class Patient < ApplicationRecord
             on: :api,
             absence: { message: "is not allowed unless 'Isolation' is 'true'" },
             if: -> { !isolation }
-  validates :extended_isolation, on: :api, date: true
 
   validates :last_date_of_exposure,
             on: :api,
