@@ -1142,7 +1142,6 @@ class PatientsControllerTest < ActionController::TestCase
     household_member_1.reload
     assert_match('Hospitalized', household_member_1.follow_up_reason)
     assert_match('Test Note', household_member_1.follow_up_note)
-    puts household_member_1.histories.pluck(:comment)
     assert_histories_contain(household_member_1, "User flagged for follow-up by making that change for a household member (Sara Alert ID: #{patient.id})"\
                                                  ' and for this monitoree. Reason: "Hospitalized: Test Note"')
     household_member_2.reload
@@ -1175,17 +1174,17 @@ class PatientsControllerTest < ActionController::TestCase
     assert_nil household_member_1.follow_up_reason
     assert_nil household_member_1.follow_up_note
     assert_histories_contain(household_member_1, 'User cleared flag for follow-up by making that change for a household member'\
-                                                 " (Sara Alert ID: #{patient.id}) and for this monitoree. Reason: \"Test Note\"")
+                                                 " (Sara Alert ID: #{patient.id}) and for this monitoree. Reason: Test Note")
     household_member_2.reload
     assert_match('Hospitalized', household_member_2.follow_up_reason)
     assert_match('Test Note', household_member_2.follow_up_note)
     assert_not_histories_contain(household_member_2, 'User cleared flag for follow-up by making that change for a household member'\
-                                                     " (Sara Alert ID: #{patient.id}) and for this monitoree. Reason: \"Test Note\"")
+                                                     " (Sara Alert ID: #{patient.id}) and for this monitoree. Reason: Test Note")
     household_member_3.reload
     assert_nil household_member_3.follow_up_reason
     assert_nil household_member_3.follow_up_note
     assert_not_histories_contain(household_member_3, 'User cleared flag for follow-up by making that change for a household member'\
-                                                     " (Sara Alert ID: #{patient.id}) and for this monitoree. Reason: \"Test Note\"")
+                                                     " (Sara Alert ID: #{patient.id}) and for this monitoree. Reason: Test Note")
   end
 
   test 'bulk action for setting and clearing follow up flag for patients without applying update to household members' do
