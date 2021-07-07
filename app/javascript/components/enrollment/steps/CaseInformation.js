@@ -342,7 +342,7 @@ class CaseInformation extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.edit_mode && (
+            {this.props.previous && !this.props.hidePreviousButton && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -393,7 +393,7 @@ CaseInformation.propTypes = {
   assigned_users: PropTypes.array,
   selected_jurisdiction: PropTypes.object,
   first_positive_lab: PropTypes.object,
-  edit_mode: PropTypes.bool,
+  hidePreviousButton: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };
 

@@ -13,8 +13,8 @@ import Address from './steps/Address';
 import Contact from './steps/Contact';
 import Arrival from './steps/Arrival';
 import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
-import Exposure from './steps/ExposureInformation';
-import CaseStatus from './steps/CaseInformation';
+import ExposureInformation from './steps/ExposureInformation';
+import CaseInformation from './steps/CaseInformation';
 import Review from './steps/Review';
 import confirmDialog from '../util/ConfirmDialog';
 import reportError from '../util/ReportError';
@@ -22,14 +22,14 @@ import { navQueryParam } from '../../utils/Navigation';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
-const maxEnrollmentSteps = 7;
+const MAX_STEPS = 7;
 
 class Enrollment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      index: props.enrollment_step != undefined ? props.enrollment_step : props.edit_mode ? maxEnrollmentSteps : 0,
-      lastIndex: props.enrollment_step != undefined ? maxEnrollmentSteps : null,
+      index: props.enrollment_step != undefined ? props.enrollment_step : props.hidePreviousButton ? MAX_STEPS : 0,
+      lastIndex: props.enrollment_step != undefined ? MAX_STEPS : null,
       direction: null,
       reviewing: false,
       enrollmentState: {
@@ -65,8 +65,8 @@ class Enrollment extends React.Component {
     if (await confirmDialog(confirmText)) {
       data['bypass_duplicate'] = true;
       axios({
-        method: this.props.edit_mode ? 'patch' : 'post',
-        url: window.BASE_PATH + (this.props.edit_mode ? '/patients/' + this.props.patient.id : '/patients'),
+        method: this.props.hidePreviousButton ? 'patch' : 'post',
+        url: window.BASE_PATH + (this.props.hidePreviousButton ? '/patients/' + this.props.patient.id : '/patients'),
         data: data,
       })
         .then(response => {
@@ -94,7 +94,7 @@ class Enrollment extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
 
     // If enrolling, include ALL fields in diff keys. If editing, only include the ones that have changed
-    let diffKeys = this.props.edit_mode
+    let diffKeys = this.props.hidePreviousButton
       ? Object.keys(this.state.enrollmentState.patient).filter(k => _.get(this.state.enrollmentState.patient, k) !== _.get(this.props.patient, k) || k === 'id')
       : Object.keys(this.state.enrollmentState.patient);
 
@@ -109,7 +109,7 @@ class Enrollment extends React.Component {
     data.patient.secondary_telephone = data.patient.secondary_telephone
       ? phoneUtil.format(phoneUtil.parse(data.patient.secondary_telephone, 'US'), PNF.E164)
       : data.patient.secondary_telephone;
-    const message = this.props.edit_mode ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
+    const message = this.props.hidePreviousButton ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
     if (this.props.parent_id) {
       data['responder_id'] = this.props.parent_id;
     }
@@ -131,8 +131,8 @@ class Enrollment extends React.Component {
     }
     data['bypass_duplicate'] = false;
     axios({
-      method: this.props.edit_mode ? 'patch' : 'post',
-      url: window.BASE_PATH + (this.props.edit_mode ? '/patients/' + this.props.patient.id : '/patients'),
+      method: this.props.hidePreviousButton ? 'patch' : 'post',
+      url: window.BASE_PATH + (this.props.hidePreviousButton ? '/patients/' + this.props.patient.id : '/patients'),
       data: data,
     })
       .then(response => {
@@ -187,14 +187,10 @@ class Enrollment extends React.Component {
         this.setState({ index: lastIndex, lastIndex: null });
       });
     } else {
-      let step = 1;
-      if ((this.state.enrollmentState.isolation ? 4 : 5) == index) {
-        step = 2;
-      }
       this.setState({ direction: 'next' }, () => {
-        this.setState({ index: index + step, lastIndex: null });
+        this.setState({ index: index + ((this.state.enrollmentState.isolation ? 4 : 5) == index ? 2 : 1), lastIndex: null });
       });
-      if (index + step == maxEnrollmentSteps) {
+      if (index + ((this.state.enrollmentState.isolation ? 4 : 5) == index ? 2 : 1) == MAX_STEPS) {
         this.setState({ reviewing: true });
       }
     }
@@ -203,12 +199,8 @@ class Enrollment extends React.Component {
   previous = () => {
     window.scroll(0, 0);
     let index = this.state.index;
-    let step = 1;
-    if (this.state.enrollmentState.isolation && index == 6) {
-      step = 2;
-    }
     this.setState({ direction: 'prev' }, () => {
-      this.setState({ index: index - step, lastIndex: null });
+      this.setState({ index: index - (this.state.enrollmentState.isolation && index == 6 ? 2 : 1), lastIndex: null });
     });
   };
 
@@ -253,7 +245,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              edit_mode={this.props.edit_mode || this.state.reviewing}
+              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -262,7 +254,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              edit_mode={this.props.edit_mode || this.state.reviewing}
+              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
               blocked_sms={this.props.blocked_sms}
             />
           </Carousel.Item>
@@ -272,7 +264,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              edit_mode={this.props.edit_mode || this.state.reviewing}
+              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -281,11 +273,11 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              edit_mode={this.props.edit_mode || this.state.reviewing}
+              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
             />
           </Carousel.Item>
           <Carousel.Item>
-            <Exposure
+            <ExposureInformation
               currentState={this.state.enrollmentState}
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
@@ -295,12 +287,12 @@ class Enrollment extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
-              edit_mode={this.props.edit_mode || this.state.reviewing}
+              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
           <Carousel.Item>
-            <CaseStatus
+            <CaseInformation
               currentState={this.state.enrollmentState}
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
@@ -310,7 +302,7 @@ class Enrollment extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
-              edit_mode={this.props.edit_mode || this.state.reviewing}
+              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
@@ -340,7 +332,7 @@ Enrollment.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   assigned_users: PropTypes.array,
-  edit_mode: PropTypes.bool,
+  hidePreviousButton: PropTypes.bool,
   enrollment_step: PropTypes.number,
   race_options: PropTypes.object,
   parent_id: PropTypes.number,
