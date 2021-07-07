@@ -46,7 +46,8 @@ class Patient < ApplicationRecord
      secondary_telephone_type
      additional_planned_travel_type
      case_status
-     public_health_action].each do |enum_field|
+     public_health_action
+     follow_up_reason].each do |enum_field|
     validates enum_field, on: %i[api import], inclusion: {
       in: VALID_PATIENT_ENUMS[enum_field],
       message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].reject(&:blank?).join("', '")}'"
