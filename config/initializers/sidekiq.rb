@@ -6,8 +6,11 @@ Sidekiq.configure_server do |config|
   # Set the network timeout to be 5 seconds instead of the default 1 to help with
   # cloud network latency and longer batch commands
   config.redis = { url: ENV['REDIS_URL'], network_timeout: 5 }
+  Sidekiq::Status.configure_server_middleware config, expiration: 30.minutes
+  Sidekiq::Status.configure_client_middleware config, expiration: 30.minutes
 end
 
 Sidekiq.configure_client do |config|
   config.redis = { url: ENV['REDIS_URL'], network_timeout: 5 }
+  Sidekiq::Status.configure_client_middleware config, expiration: 30.minutes
 end

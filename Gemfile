@@ -107,6 +107,9 @@ gem 'aws-sdk-s3', require: false # Require false since this is only used in Expo
 # Easier ordering for queries
 gem 'order_as_specified'
 
+# Checking status of sidekiq jobs
+gem 'sidekiq-status'
+
 group :development, :test do
   gem 'benchmark-ips'
   gem 'brakeman'

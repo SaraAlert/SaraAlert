@@ -426,6 +426,113 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_ok(bundle) && return
   end
 
+  # Kick off async generation of bulk FHIR data for all accessible patients
+  #
+  # GET /fhir/r4/Patient/$export
+  def bulk_data_export
+    # Require all scopes for all possible resources being returned
+    return if doorkeeper_authorize!(*PATIENT_READ_SCOPES)
+    return if doorkeeper_authorize!(*OBSERVATION_READ_SCOPES)
+    return if doorkeeper_authorize!(*QUESTIONNAIRE_RESPONSE_READ_SCOPES)
+    return if doorkeeper_authorize!(*RELATED_PERSON_READ_SCOPES)
+    return if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
+    return if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
+
+    status_not_acceptable_with_custom_errors(["'Accept' header must have a value of 'application/fhir+json'"]) && return unless accept_header?
+
+    unless request.headers['Prefer']&.include?('respond-async')
+      status_unprocessable_entity_with_custom_errors(["'Prefer' header must have value of 'respond-async'"],
+                                                     '') && return
+    end
+
+    unless @m2m_workflow
+      status_unauthorized_with_custom_errors(['Bulk export requires a client application registered for the Backend Services Workflow']) && return
+    end
+
+    client_app = current_client_application
+    if client_app.exported_recently?
+      status_too_many_requests_with_custom_errors(['Client already initiated an export of this type in the last 15 minutes. Please try again later']) && return
+    end
+
+    # Create the download to uniquely id this request, and queue the ExportFhirJob
+    download = ApiDownload.create(application_id: client_app.id, url: request.url)
+    export_job = ExportFhirJob.perform_later(client_app, download)
+    # Add the job_id of the job to the download for reference in status requests
+    download.update(job_id: export_job.provider_job_id)
+
+    respond_to do |format|
+      format.any { head(:accepted, content_location: "#{root_url}fhir/r4/ExportStatus/#{download.id}") }
+    end
+  end
+
+  # Give an update on the status of a bulk FHIR data request
+  #
+  # GET /fhir/r4/ExportStatus/[:id]
+  def export_status
+    id = params.permit(:id)[:id]
+    download = ApiDownload.find_by_id(id)
+
+    case Sidekiq::Status.status(download&.job_id)
+    when :complete
+      response_json = {
+        transactionTime: Sidekiq::Status.get(download.job_id, :transaction_time),
+        request: download.url,
+        requiresAccessToken: true,
+        output: ActiveStorage::Blob.where(id: download.files.pluck(:blob_id)).pluck(:filename).map do |file|
+          {
+            type: file.split('.').first,
+            url: "#{root_url}fhir/r4/ExportFiles/#{id}/#{file}"
+          }
+        end
+      }
+      render json: response_json.to_json, status: :ok
+    when :failed
+      status_server_error(['Export failed'])
+    when :working, :queued, :retrying
+      head :accepted
+    else
+      status_not_found_with_custom_errors(['No export found for this ID'])
+    end
+  end
+
+  # Return an bulk exported ndjson file
+  #
+  # GET /ExportFiles/[:id]/[:filename]
+  def export_files
+    id = params.permit(:id)[:id]
+    filename = params.permit(:filename)[:filename]
+    resource_type = filename&.split('.')&.first&.downcase
+
+    case resource_type
+    when 'patient'
+      return if doorkeeper_authorize!(*PATIENT_READ_SCOPES)
+    when 'observation'
+      return if doorkeeper_authorize!(*OBSERVATION_READ_SCOPES)
+    when 'questionnaireresponse'
+      return if doorkeeper_authorize!(*QUESTIONNAIRE_RESPONSE_READ_SCOPES)
+    when 'relatedperson'
+      return if doorkeeper_authorize!(*RELATED_PERSON_READ_SCOPES)
+    when 'immunization'
+      return if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
+    when 'provenance'
+      return if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
+    else
+      status_not_found_with_custom_errors(["Invalid ResourceType '#{resource_type}'"]) && return
+    end
+
+    download = current_client_application&.api_downloads&.find_by_id(id)
+    status_not_found_with_custom_errors(['No file found at this URL']) && return if download.nil?
+
+    # Set the headers before streaming the returned content
+    response.headers['Content-Type'] = 'application/fhir+ndjson'
+    # Find and return the specific attachment associated with the given filename
+    ActiveStorage::Blob.where(id: download.files.pluck(:blob_id)).find_by(filename: filename)&.download do |chunk|
+      response.stream.write chunk
+    end
+  ensure
+    response.stream.close
+  end
+
   # Return a FHIR::CapabilityStatement
   #
   # GET /fhir/r4/metadata
@@ -767,6 +874,43 @@ class Fhir::R4::ApiController < ApplicationApiController
   def status_not_found(errors = [])
     respond_to do |format|
       format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :not_found }
+    end
+  end
+
+  # 406 not acceptable status with custom error messages
+  def status_not_acceptable_with_custom_errors(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :not_acceptable }
+    end
+  end
+
+  # 401 unauthorized with custom error messages
+  def status_unauthorized_with_custom_errors(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :unauthorized }
+    end
+  end
+
+  # 404 not found with custom error messages
+  def status_not_found_with_custom_errors(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :not_found }
+    end
+  end
+
+  # 429 too many requests with custom error messages
+  def status_too_many_requests_with_custom_errors(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :too_many_requests }
+    end
+  end
+
+  # 500 server error status with custom error messages
+  def status_server_error(errors = [])
+    respond_to do |format|
+      format.any do
+        render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :internal_server_error
+      end
     end
   end
 
