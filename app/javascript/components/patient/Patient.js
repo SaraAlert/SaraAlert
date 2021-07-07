@@ -17,7 +17,7 @@ class Patient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: props.edit_mode || !props.collapse,
+      expanded: props.hidePreviousButton || !props.collapse,
       expandNotes: false,
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
@@ -140,7 +140,7 @@ class Patient extends React.Component {
     return (
       <React.Fragment>
         <Row id="monitoree-details-header" className="mb-3">
-          {this.props.can_modify_subject_status && !this.props.edit_mode && this.props.details.follow_up_reason && (
+          {this.props.can_modify_subject_status && !this.props.hidePreviousButton && this.props.details.follow_up_reason && (
             <FollowUpFlagPanel
               patient={this.props.details}
               current_user={this.props.current_user}
@@ -157,7 +157,7 @@ class Patient extends React.Component {
               </span>
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
-            {this.props.can_modify_subject_status && !this.props.edit_mode && !this.props.details.follow_up_reason && (
+            {this.props.can_modify_subject_status && !this.props.hidePreviousButton && !this.props.details.follow_up_reason && (
               <Button id="set-follow-up-flag-link" size="sm" aria-label="Set Flag for Follow-up" onClick={() => this.setState({ showSetFlagModal: true })}>
                 <span>
                   {' '}
@@ -285,7 +285,7 @@ class Patient extends React.Component {
             </div>
           </Col>
         </Row>
-        {!this.props.edit_mode && (
+        {!this.props.hidePreviousButton && (
           <div className="details-expander mb-3">
             <Button
               id="details-expander-link"
@@ -721,7 +721,7 @@ Patient.propTypes = {
   hoh: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   goto: PropTypes.func,
-  edit_mode: PropTypes.bool,
+  hidePreviousButton: PropTypes.bool,
   collapse: PropTypes.bool,
   other_household_members: PropTypes.array,
   can_modify_subject_status: PropTypes.bool,
