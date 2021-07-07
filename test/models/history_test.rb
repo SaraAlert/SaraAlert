@@ -106,5 +106,8 @@ class HistoryTest < ActiveSupport::TestCase
 
     History.monitoree_data_downloaded(patient: patient)
     assert patient.updated_at < 98.days.ago
+
+    History.assessment_email_error(patient: patient)
+    assert patient.updated_at < 98.days.ago
   end
 end
