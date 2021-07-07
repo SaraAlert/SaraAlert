@@ -132,35 +132,43 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
   ].freeze
 
   VALID_PATIENT_ENUMS = {
+    # identification
+    sex: ['Male', 'Female', 'Unknown', nil, ''],
     gender_identity: ['Male (Identifies as male)', 'Female (Identifies as female)', 'Transgender Male (Female-to-Male [FTM])',
                       'Transgender Female (Male-to-Female [MTF])', 'Genderqueer / gender nonconforming (neither exclusively male nor female)', 'Another',
                       'Chose not to disclose'],
     sexual_orientation: ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'],
     ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino', 'Unknown', 'Refused to Answer', nil, ''],
+    primary_language: [*VALID_LANGUAGES, nil, ''],
+    secondary_language: [*VALID_LANGUAGES, nil, ''],
+    # address
+    address_state: [*VALID_STATES, nil, ''],
+    monitored_address_state: [*VALID_STATES, nil, ''],
+    foreign_monitored_address_state: [*VALID_STATES, nil, ''],
+    # contact info
     preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown', nil, ''],
     primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
     secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
     preferred_contact_time: ['Morning', 'Afternoon', 'Evening', nil, ''],
+    # arrival
+    source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other'],
+    # additional planned travel
     additional_planned_travel_type: ['Domestic', 'International', nil, ''],
+    additional_planned_travel_destination_state: [*VALID_STATES, nil, ''],
+    # potential exposure/case info
+    case_status: ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case', nil, ''],
     exposure_risk_assessment: ['High', 'Medium', 'Low', 'No Identified Risk', nil, ''],
-    monitoring_reason: USER_SELECTABLE_MONITORING_REASONS + SYSTEM_SELECTABLE_MONITORING_REASONS,
     monitoring_plan: ['None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision',
                       'Self-observation', '', nil],
-    case_status: ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case', nil, ''],
-    lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other', nil, ''],
-    result: ['positive', 'negative', 'indeterminate', 'other', nil, ''],
-    sex: ['Male', 'Female', 'Unknown', nil, ''],
-    address_state: [*VALID_STATES, nil, ''],
-    monitored_address_state: [*VALID_STATES, nil, ''],
+    # other monitoring fields
     public_health_action: ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing',
                            nil, ''],
-    source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other'],
-    foreign_monitored_address_state: [*VALID_STATES, nil, ''],
-    additional_planned_travel_destination_state: [*VALID_STATES, nil, ''],
-    follow_up_reason: [*FOLLOW_UP_FLAG_REASONS, nil],
-    # Since languages keys need to be converted to strings, we do this in the languages.rb initializer to save time on initial load after restart.
-    primary_language: [*VALID_LANGUAGES, nil, ''],
-    secondary_language: [*VALID_LANGUAGES, nil, ''],
+    monitoring_reason: USER_SELECTABLE_MONITORING_REASONS + SYSTEM_SELECTABLE_MONITORING_REASONS,
+    follow_up_reason: [*FOLLOW_UP_FLAG_REASONS, nil, ''],
+    # laboratories
+    lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other', nil, ''],
+    result: ['positive', 'negative', 'indeterminate', 'other', nil, ''],
+    # vaccines
     group_name: Vaccine.group_name_options,
     product_name: (Vaccine.group_name_options.map { |group_name| Vaccine.product_name_options(group_name) }).flatten,
     dose_number: Vaccine::DOSE_OPTIONS
@@ -187,6 +195,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
   NORMALIZED_ISOLATION_ENUMS = normalize_enums(VALID_ISOLATION_ENUMS)
 
   VALIDATION = {
+    # identification
     first_name: { label: 'First Name', checks: [:required] },
     last_name: { label: 'Last Name', checks: [:required] },
     date_of_birth: { label: 'Date of Birth', checks: %i[required date] },
@@ -203,24 +212,31 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     primary_language: { label: 'Primary Language', checks: [:lang] },
     secondary_language: { label: 'Secondary Language', checks: [:lang] },
     interpretation_required: { label: 'Interpretation Required?', checks: [:bool] },
+    # address
     address_state: { label: 'State', checks: %i[required state] },
     monitored_address_state: { label: 'Monitored Address State', checks: [:state] },
     foreign_monitored_address_state: { label: 'Foreign Monitored Address State', checks: [:state] },
+    # contact info
     preferred_contact_method: { label: 'Preferred Contact Method', checks: [:enum] },
+    preferred_contact_time: { label: 'Preferred Contact Time', checks: [:enum] },
     primary_telephone: { label: 'Primary Telephone', checks: [:phone] },
     primary_telephone_type: { label: 'Primary Telephone Type', checks: [:enum] },
     secondary_telephone: { label: 'Secondary Telephone', checks: [:phone] },
     secondary_telephone_type: { label: 'Secondary Telephone Type', checks: [:enum] },
-    preferred_contact_time: { label: 'Preferred Contact Time', checks: [:enum] },
     email: { label: 'Email', checks: [:email] },
-    jurisdiction_id: { label: 'Jurisdiction ID', checks: [] },
+    # arrival info
     date_of_departure: { label: 'Date of Departure', checks: [:date] },
     date_of_arrival: { label: 'Date of Arrival', checks: [:date] },
+    # additional planned travel
     additional_planned_travel_type: { label: 'Additional Planned Travel Type', checks: [:enum] },
     additional_planned_travel_destination_state: { label: 'Additional Planned Travel Destination State', checks: [:state] },
     additional_planned_travel_start_date: { label: 'Additional Planned Travel Start Date', checks: [:date] },
     additional_planned_travel_end_date: { label: 'Additional Planned Travel End Date', checks: [:date] },
+    # potential exposure/case info
     last_date_of_exposure: { label: 'Last Date of Exposure', checks: %i[required date] },
+    continuous_exposure: { label: 'Continuous Exposure', checks: [:bool] },
+    symptom_onset: { label: 'Symptom Onset', checks: [:date] },
+    case_status: { label: 'Case Status', checks: [:enum] },
     contact_of_known_case: { label: 'Contact of Known Case?', checks: [:bool] },
     travel_to_affected_country_or_area: { label: 'Travel from Affected Country or Area?', checks: [:bool] },
     was_in_health_care_facility_with_known_cases: { label: 'Was in Health Care Facility With Known Cases?', checks: [:bool] },
@@ -228,27 +244,28 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     healthcare_personnel: { label: 'Healthcare Personnel?', checks: [:bool] },
     crew_on_passenger_or_cargo_flight: { label: 'Crew on Passenger or Cargo Flight?', checks: [:bool] },
     member_of_a_common_exposure_cohort: { label: 'Member of a Common Exposure Cohort?', checks: [:bool] },
+    jurisdiction_id: { label: 'Jurisdiction ID', checks: [] },
+    assigned_user: { label: 'Assigned User', checks: [] },
     exposure_risk_assessment: { label: 'Exposure Risk Assessment', checks: [:enum] },
     monitoring_plan: { label: 'Monitoring Plan', checks: [:enum] },
-    symptom_onset: { label: 'Symptom Onset', checks: [:date] },
-    case_status: { label: 'Case Status', checks: [:enum] },
+    # other monitoring fields
+    patient_id: { label: 'Patient ID', checks: [] },
+    public_health_action: { label: 'Public Health Action', checks: [] },
+    extended_isolation: { label: 'Extended Isolation', checks: [:date] },
+    contact_attempts: { label: 'Contact Attempts', checks: [] },
+    follow_up_reason: { label: 'Follow-Up Reason', checks: [:enum] },
+    follow_up_note: { label: 'Follow-Up Note', checks: [] },
+    # laboratories
     lab_type: { label: 'Lab Test Type', checks: [:enum] },
     specimen_collection: { label: 'Lab Specimen Collection Date', checks: [:date] },
     report: { label: 'Lab Report Date', checks: [:date] },
     result: { label: 'Lab Result', checks: [:enum] },
-    assigned_user: { label: 'Assigned User', checks: [] },
-    continuous_exposure: { label: 'Continuous Exposure', checks: [:bool] },
-    patient_id: { label: 'Patient ID', checks: [] },
-    contact_attempts: { label: 'Contact Attempts', checks: [] },
+    # vaccines
     group_name: { label: 'Vaccine Group Name', checks: [:enum] },
     product_name: { label: 'Vaccine Product Name', checks: [:enum] },
     administration_date: { label: 'Vaccine Administration Date', checks: [:date] },
     dose_number: { label: 'Vaccine Dose Number', checks: [:enum] },
-    notes: { label: 'Vaccine Notes', checks: [] },
-    public_health_action: { label: 'Public Health Action', checks: [] },
-    extended_isolation: { label: 'Extended Isolation', checks: [:date] },
-    follow_up_reason: { label: 'Follow-up Reason', checks: [:enum] },
-    follow_up_note: { label: 'Follow-up Note', checks: [] }
+    notes: { label: 'Vaccine Notes', checks: [] }
   }.freeze
 
   # Validates if a given date value is between (inclusive) two dates.
