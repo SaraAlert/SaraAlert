@@ -454,9 +454,16 @@ class Fhir::R4::ApiController < ApplicationApiController
       status_too_many_requests_with_custom_errors(['Client already initiated an export of this type in the last 15 minutes. Please try again later']) && return
     end
 
+    begin
+      since = params.permit(:_since)[:_since]
+      since = DateTime.parse(since) unless since.nil?
+    rescue Date::Error
+      status_unprocessable_entity_with_custom_errors(['Invalid Date in _since parameter. Please use the FHIR instant datatype'], '') && return
+    end
+
     # Create the download to uniquely id this request, and queue the ExportFhirJob
     download = ApiDownload.create(application_id: client_app.id, url: request.url)
-    export_job = ExportFhirJob.perform_later(client_app, download)
+    export_job = ExportFhirJob.perform_later(client_app, download, { since: since })
     # Add the job_id of the job to the download for reference in status requests
     download.update(job_id: export_job.provider_job_id)
 
