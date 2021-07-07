@@ -534,9 +534,9 @@ class PatientsController < ApplicationController
   #
   # patient - The Patient to update.
   # params - The request params.
-  # household - Indicates if the Patient was updated directly (household = :patient) or updated because their head of household was (household = :dependent)
+  # initiator_id - Indicates the id of the record that was originally modified to cause the change, for instance if the change was propagated to the patient.
   # propogation - Indicates why the updates are being propogated to the Patient.
-  def update_monitoring_fields(patient, params, household, propagation)
+  def update_monitoring_fields(patient, params, initiator_id, propagation)
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
     permitted_params = if diff_state.nil?
@@ -567,7 +567,7 @@ class PatientsController < ApplicationController
       patient_before: patient_before,
       patient: patient,
       updates: updates,
-      household_status: household,
+      initiator_id: initiator_id,
       propagation: propagation,
       reason: params[:reasoning]
     }
@@ -603,7 +603,7 @@ class PatientsController < ApplicationController
       history_data = {
         created_by: current_user.email,
         patient: patient,
-        household_status: patient.id,
+        initiator_id: patient.id,
         follow_up_reason: follow_up_reason,
         follow_up_note: follow_up_note,
         follow_up_reason_before: patient.follow_up_reason,
@@ -657,12 +657,12 @@ class PatientsController < ApplicationController
   #
   # patient - The Patient to update.
   # clear_flag_reason - The note to include in the history item
-  def clear_follow_up_flag(patient, household_status, clear_flag_reason)
+  def clear_follow_up_flag(patient, initiator_id, clear_flag_reason)
     # Prep data needed to create history items based on this update
     history_data = {
       created_by: current_user.email,
       patient: patient,
-      household_status: household_status,
+      initiator_id: initiator_id,
       clear_flag_reason: clear_flag_reason,
       follow_up_reason_before: patient.follow_up_reason
     }
