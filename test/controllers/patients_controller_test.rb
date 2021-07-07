@@ -1142,6 +1142,7 @@ class PatientsControllerTest < ActionController::TestCase
     household_member_1.reload
     assert_match('Hospitalized', household_member_1.follow_up_reason)
     assert_match('Test Note', household_member_1.follow_up_note)
+    puts household_member_1.histories.pluck(:comment)
     assert_histories_contain(household_member_1, "User flagged for follow-up by making that change for a household member (Sara Alert ID: #{patient.id})"\
                                                  ' and for this monitoree. Reason: "Hospitalized: Test Note"')
     household_member_2.reload

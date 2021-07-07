@@ -382,8 +382,8 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    creator = history[:household_status].nil? ? 'System' : 'User'
-    comment = "#{creator} #{field[:new_value]} notifications for this monitoree#{compose_explanation(history, field)}."
+    creator = history[:initiator_id].nil? ? 'System' : 'User'
+    comment = "#{creator} #{field[:new_value]} notifications for this monitoree#{compose_explanation(history)}."
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
@@ -421,8 +421,8 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    creator = history[:household_status].nil? ? 'System' : 'User'
-    comment = "#{creator} turned #{field[:new_value]} #{field[:name]}#{compose_explanation(history, field)}."
+    creator = history[:initiator_id].nil? ? 'System' : 'User'
+    comment = "#{creator} turned #{field[:new_value]} #{field[:name]}#{compose_explanation(history)}."
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
@@ -483,7 +483,7 @@ class History < ApplicationRecord
   end
 
   private_class_method def self.compose_message(history, field)
-    creator = history[:household_status].nil? ? 'System' : 'User'
+    creator = history[:initiator_id].nil? ? 'System' : 'User'
     verb = field[:new_value].blank? ? 'cleared' : 'changed'
     from_text = field[:old_value].blank? ? 'blank' : "\"#{field[:old_value]}\""
     to_text = field[:new_value].blank? ? 'blank' : "\"#{field[:new_value]}\""
@@ -497,28 +497,28 @@ class History < ApplicationRecord
   end
 
   private_class_method def self.compose_explanation(history)
-    if history[:household_status] == history[:patient].id && history[:propagation] == :group
+    if history[:initiator_id] == history[:patient].id && history[:propagation] == :group
       ' and applied that change to all household members'
-    elsif history[:household_status] == history[:patient].id && history[:propagation] == :group_cm
+    elsif history[:initiator_id] == history[:patient].id && history[:propagation] == :group_cm
       ' and applied that change to household members under continuous exposure'
-    elsif history[:household_status] == history[:patient].responder_id && history[:propagation] == :group
-      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:household_status]})
-        and for all household members"
-    elsif history[:household_status] == history[:patient].responder_id && history[:propagation] == :group_cm
-      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:household_status]})
-        and for household members under continuous exposure"
-    elsif history[:household_status] != history[:patient].id && history[:household_status] == history[:patient].responder_id
-      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:household_status]})
-        and for this monitoree"
-    elsif history[:household_status] != history[:patient].id && !history[:household_status].nil? && history[:propagation] == :group
-      " by making that change for a household member (Sara Alert ID: #{history[:household_status]})
-        and applied that change to all household members"
-    elsif history[:household_status] != history[:patient].id && !history[:household_status].nil? && history[:propagation] == :group_cm
-      " by making that change for a household member (Sara Alert ID: #{history[:household_status]})
-        and for household members under continuous exposure"
-    elsif history[:household_status] != history[:patient].id && !history[:household_status].nil?
-      " by making that change for a household member (Sara Alert ID: #{history[:household_status]})
-        and for this monitoree"
+    elsif history[:initiator_id] == history[:patient].responder_id && history[:propagation] == :group
+      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and for all household members'
+    elsif history[:initiator_id] == history[:patient].responder_id && history[:propagation] == :group_cm
+      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and for household members under continuous exposure'
+    elsif history[:initiator_id] != history[:patient].id && history[:initiator_id] == history[:patient].responder_id
+      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and for this monitoree'
+    elsif history[:initiator_id] != history[:patient].id && !history[:initiator_id].nil? && history[:propagation] == :group
+      " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and applied that change to all household members'
+    elsif history[:initiator_id] != history[:patient].id && !history[:initiator_id].nil? && history[:propagation] == :group_cm
+      " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and for household members under continuous exposure'
+    elsif history[:initiator_id] != history[:patient].id && !history[:initiator_id].nil?
+      " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and for this monitoree'
     else
       ''
     end
