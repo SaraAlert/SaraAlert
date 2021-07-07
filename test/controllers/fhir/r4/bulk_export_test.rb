@@ -32,7 +32,37 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     download_id = response.headers['Content-Location'].split('/').last
     assert_not_nil download_id
     assert_enqueued_jobs 1
-    assert_enqueued_with(job: ExportFhirJob, args: [@system_everything_app, ApiDownload.find_by_id(download_id)])
+    assert_enqueued_with(job: ExportFhirJob, args: [@system_everything_app, ApiDownload.find_by_id(download_id), { since: nil }])
+  end
+
+  test 'should kick off an export with _since parameter' do
+    since = 2.days.ago.strftime('%FT%T%:z')
+    get(
+      "/fhir/r4/Patient/$export?_since=#{since}",
+      headers: {
+        Authorization: "Bearer #{@system_everything_token.token}",
+        Accept: 'application/fhir+json',
+        Prefer: 'respond-async'
+      }
+    )
+    assert_response :accepted
+    download_id = response.headers['Content-Location'].split('/').last
+    assert_not_nil download_id
+    assert_enqueued_jobs 1
+    assert_enqueued_with(job: ExportFhirJob, args: [@system_everything_app, ApiDownload.find_by_id(download_id), { since: DateTime.parse(since) }])
+  end
+
+  test 'should be 422 unprocessable when _since is invalid' do
+    since = 'foo'
+    get(
+      "/fhir/r4/Patient/$export?_since=#{since}",
+      headers: {
+        Authorization: "Bearer #{@system_everything_token.token}",
+        Accept: 'application/fhir+json',
+        Prefer: 'respond-async'
+      }
+    )
+    assert_response :unprocessable_entity
   end
 
   test 'should be 403 forbidden when required scopes are missing' do

@@ -22,7 +22,7 @@ class ExportFhirJobTest < ActiveSupport::TestCase
   end
 
   test 'should add files for all resource_types when they are present' do
-    ExportFhirJob.perform_now(@client_app, @download)
+    ExportFhirJob.perform_now(@client_app, @download, {})
     assert_equal 6, @download.files.count
 
     patient = ActiveStorage::Blob.where(id: @download.files.pluck(:blob_id)).find_by(filename: 'Patient.ndjson')&.download
@@ -44,10 +44,32 @@ class ExportFhirJobTest < ActiveSupport::TestCase
     assert_equal @close_contact.as_fhir.to_hash, JSON.parse(close_contact)
   end
 
+  test 'should only add files for resources updated since the since date, if since is given' do
+    @lab.update(updated_at: 3.days.ago)
+    @assessment.update(updated_at: 3.days.ago)
+    @patient.reload
+    ExportFhirJob.perform_now(@client_app, @download, { since: 2.days.ago })
+
+    # No assessment or lab, because those have not been updated since the since parameter
+    assert_equal 4, @download.files.count
+
+    patient = ActiveStorage::Blob.where(id: @download.files.pluck(:blob_id)).find_by(filename: 'Patient.ndjson')&.download
+    assert_equal @patient.as_fhir.to_hash, JSON.parse(patient)
+
+    history = ActiveStorage::Blob.where(id: @download.files.pluck(:blob_id)).find_by(filename: 'Provenance.ndjson')&.download
+    assert_equal @history.as_fhir.to_hash, JSON.parse(history)
+
+    vaccine = ActiveStorage::Blob.where(id: @download.files.pluck(:blob_id)).find_by(filename: 'Immunization.ndjson')&.download
+    assert_equal @vaccine.as_fhir.to_hash, JSON.parse(vaccine)
+
+    close_contact = ActiveStorage::Blob.where(id: @download.files.pluck(:blob_id)).find_by(filename: 'RelatedPerson.ndjson')&.download
+    assert_equal @close_contact.as_fhir.to_hash, JSON.parse(close_contact)
+  end
+
   test 'should not add files for a given resource_type if that type is not present in the jurisdiction' do
     @vaccine.update(patient_id: create(:patient).id)
     @patient.reload
-    ExportFhirJob.perform_now(@client_app, @download)
+    ExportFhirJob.perform_now(@client_app, @download, {})
     assert_equal 5, @download.files.count
 
     patient = ActiveStorage::Blob.where(id: @download.files.pluck(:blob_id)).find_by(filename: 'Patient.ndjson')&.download
@@ -68,14 +90,14 @@ class ExportFhirJobTest < ActiveSupport::TestCase
 
   test 'should do nothing if the jurisdiction has no accessible patients' do
     @client_app.jurisdiction_id = create(:jurisdiction)
-    ExportFhirJob.perform_now(@client_app, @download)
+    ExportFhirJob.perform_now(@client_app, @download, {})
     assert_equal 0, @download.files.count
   end
 
   test 'should destroy existing downloads when generating a new one' do
     create(:api_download, application_id: @client_app.id)
     assert_equal 2, @client_app.api_downloads.count
-    ExportFhirJob.perform_now(@client_app, @download)
+    ExportFhirJob.perform_now(@client_app, @download, {})
     assert_equal 1, @client_app.api_downloads.count
   end
 end

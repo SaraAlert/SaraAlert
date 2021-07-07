@@ -6,19 +6,23 @@ class ExportFhirJob < ApplicationJob
   include Sidekiq::Status::Worker
   sidekiq_options retry: 0
 
-  def perform(current_client_application, download)
-    patients = Jurisdiction.find_by(id: current_client_application[:jurisdiction_id])&.all_patients_excluding_purged
-    return if patients.nil?
+  def perform(current_client_application, download, params)
+    patient_ids = Jurisdiction.find_by(id: current_client_application[:jurisdiction_id])&.all_patients_excluding_purged&.pluck(:id)
+    return if patient_ids.nil?
 
     store transaction_time: DateTime.now.utc.strftime('%FT%T%:z')
 
-    patient_ids = patients.pluck(:id)
-    add_file(download, patients, 'Patient.ndjson')
-    add_file(download, Assessment.where(patient_id: patient_ids), 'QuestionnaireResponse.ndjson')
-    add_file(download, History.where(patient_id: patient_ids), 'Provenance.ndjson')
-    add_file(download, Laboratory.where(patient_id: patient_ids), 'Observation.ndjson')
-    add_file(download, Vaccine.where(patient_id: patient_ids), 'Immunization.ndjson')
-    add_file(download, CloseContact.where(patient_id: patient_ids), 'RelatedPerson.ndjson')
+    patient_query = { id: patient_ids }
+    patient_query[:updated_at] = (params[:since]..) unless params[:since].nil?
+    add_file(download, Patient.where(patient_query), 'Patient.ndjson')
+
+    resource_query = { patient_id: patient_ids }
+    resource_query[:updated_at] = (params[:since]..) unless params[:since].nil?
+    add_file(download, Assessment.where(resource_query), 'QuestionnaireResponse.ndjson')
+    add_file(download, History.where(resource_query), 'Provenance.ndjson')
+    add_file(download, Laboratory.where(resource_query), 'Observation.ndjson')
+    add_file(download, Vaccine.where(resource_query), 'Immunization.ndjson')
+    add_file(download, CloseContact.where(resource_query), 'RelatedPerson.ndjson')
 
     # Remove any old downloads besides the current one
     current_client_application.api_downloads.where.not(id: download.id).destroy_all
