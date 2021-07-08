@@ -524,7 +524,7 @@ class PatientsTable extends React.Component {
     return `Monitoree ${rowData.name}`;
   };
 
-  // Adds the className `selected-row` to those rows who have been selected with the Bulk Action checkcbox
+  // Adds the className `selected-row` to those rows who have been selected with the Bulk Action checkbox
   getRowClassName = rowData => {
     const isSelected = this.state.selectedPatients.filter(x => this.state.table.rowData[Number(x)].id === rowData.id).length;
     return isSelected ? 'selected-row' : null;
