@@ -152,7 +152,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     sex: ['Male', 'Female', 'Unknown', nil, ''],
     address_state: [*VALID_STATES, nil, ''],
     monitored_address_state: [*VALID_STATES, nil, ''],
-    public_health_action: ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing'],
+    public_health_action: ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing',
+                           nil, ''],
     source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other'],
     foreign_monitored_address_state: [*VALID_STATES, nil, ''],
     additional_planned_travel_destination_state: [*VALID_STATES, nil, ''],
@@ -242,7 +243,9 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     product_name: { label: 'Product Name', checks: [:enum] },
     administration_date: { label: 'Administration Date', checks: [:date] },
     dose_number: { label: 'Dose Number', checks: [:enum] },
-    notes: { label: 'Notes', checks: [] }
+    notes: { label: 'Notes', checks: [] },
+    public_health_action: { label: 'Public Health Action', checks: [] },
+    extended_isolation: { label: 'Extended Isolation', checks: [:date] }
   }.freeze
 
   # Validates if a given date value is between (inclusive) two dates.
