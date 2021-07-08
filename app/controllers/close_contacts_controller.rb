@@ -11,8 +11,6 @@ class CloseContactsController < ApplicationController
   before_action :check_close_contact, only: %i[update destroy]
 
   def index
-    redirect_to(root_url) && return unless current_user&.can_view_patient_close_contacts?
-
     # Validate params and handle errors if invalid
     begin
       data = validate_close_contact_query(params)
@@ -20,10 +18,9 @@ class CloseContactsController < ApplicationController
       render(json: { error: e.message }, status: :bad_request) && return
     end
 
-    # Verify user has access to patient, patient exists, and the patient has close_contacts
-    patient = current_user.get_patient(data[:patient_id])
-    close_contacts = CloseContact.where(patient_id: patient.id)
-    render json: { error: 'Invalid patient_id' }, status: :bad_request if patient.nil?
+    # @patient is set in the check_patient hook above
+    close_contacts = CloseContact.where(patient_id: @patient.id)
+    render json: { error: 'Invalid patient_id' }, status: :bad_request if @patient.nil?
 
     # Get close_contacts table data
     close_contacts = search(close_contacts, data[:search_text])

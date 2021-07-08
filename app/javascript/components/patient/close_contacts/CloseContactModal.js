@@ -55,7 +55,7 @@ class CloseContactModal extends React.Component {
   handleDateChange = event => this.setState({ last_date_of_exposure: event });
 
   handleChange = event => {
-    let stateKey = _.startsWith(event.target.id, 'cc_') ? _.trim('event.target.id', 'cc_') : event.target.id;
+    let stateKey = _.startsWith(event.target.id, 'cc_') ? _.trim(event.target.id, 'cc_') : event.target.id;
     if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.match(/^\s*$/) !== null) {
       // Empty spaces are allowed to be typed (for example, a first name may be 'Mary Beth')
       // But empty starting first spaces should not be allowed
