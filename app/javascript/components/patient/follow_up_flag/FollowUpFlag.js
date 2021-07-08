@@ -195,9 +195,8 @@ class FollowUpFlag extends React.Component {
               </Form.Group>
               <Form.Group controlId="follow_up_note">
                 <Form.Label>Please include any additional details:</Form.Label>
-                <Form.Control as="textarea" rows="4" maxLength={MAX_NOTES_LENGTH} value={this.state.follow_up_note} onChange={this.handleChange} />
+                <Form.Control as="textarea" rows="4" maxLength={MAX_NOTES_LENGTH} value={this.state.follow_up_note || ''} onChange={this.handleChange} />
                 <div className="character-limit-text">{MAX_NOTES_LENGTH - (this.state.follow_up_note || '').length} characters remaining</div>
-                {/* <div className="character-limit-text">{MAX_NOTES_LENGTH - this.state.follow_up_note.length} characters remaining</div> */}
               </Form.Group>
             </React.Fragment>
           )}
