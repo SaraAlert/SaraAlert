@@ -616,6 +616,7 @@ class PatientMailerTest < ActionMailer::TestCase
   test 'assessment_email creates an assessment_email_error history when it fails' do
     ActionMailer::Base.deliveries.clear
     patient = create(:patient,
+                     submission_token: SecureRandom.urlsafe_base64[0, 10],
                      preferred_contact_method: 'E-mailed Web Link',
                      email: 'testpatient@example.com')
     original_updated_at = patient.updated_at
@@ -632,8 +633,10 @@ class PatientMailerTest < ActionMailer::TestCase
   test 'assessment_email logs to sentry when it fails' do
     ActionMailer::Base.deliveries.clear
     patient = create(:patient,
+                     submission_token: SecureRandom.urlsafe_base64[0, 10],
                      preferred_contact_method: 'E-mailed Web Link',
                      email: 'testpatient@example.com')
+    allow_any_instance_of(Patient).to(receive(:select_language).and_raise('Testing assessment_email'))
     allow(Raven).to receive(:capture_exception)
     PatientMailer.assessment_email(patient).deliver_now
     expect(Raven).to have_received(:capture_exception)
