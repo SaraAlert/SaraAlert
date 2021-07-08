@@ -164,7 +164,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     public_health_action: ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing',
                            nil, ''],
     monitoring_reason: USER_SELECTABLE_MONITORING_REASONS + SYSTEM_SELECTABLE_MONITORING_REASONS,
-    follow_up_reason: [*FOLLOW_UP_FLAG_REASONS, nil, ''],
+    follow_up_reason: [*FOLLOW_UP_FLAG_REASONS, nil],
     # laboratories
     lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other', nil, ''],
     result: ['positive', 'negative', 'indeterminate', 'other', nil, ''],
