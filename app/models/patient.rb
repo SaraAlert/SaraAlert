@@ -45,7 +45,8 @@ class Patient < ApplicationRecord
      primary_telephone_type
      secondary_telephone_type
      additional_planned_travel_type
-     case_status].each do |enum_field|
+     case_status
+     public_health_action].each do |enum_field|
     validates enum_field, on: %i[api import], inclusion: {
       in: VALID_PATIENT_ENUMS[enum_field],
       message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].reject(&:blank?).join("', '")}'"
@@ -63,7 +64,8 @@ class Patient < ApplicationRecord
      additional_planned_travel_start_date
      additional_planned_travel_end_date
      date_of_departure
-     date_of_arrival].each do |date_field|
+     date_of_arrival
+     extended_isolation].each do |date_field|
     validates date_field, on: %i[api import], date: true
   end
 
@@ -72,6 +74,11 @@ class Patient < ApplicationRecord
      last_name].each do |required_field|
     validates required_field, on: :api, presence: { message: 'is required' }
   end
+
+  validates :extended_isolation,
+            on: :api,
+            absence: { message: "is not allowed unless 'Isolation' is 'true'" },
+            if: -> { !isolation }
 
   validates :last_date_of_exposure,
             on: :api,
