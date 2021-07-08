@@ -43,20 +43,24 @@ class Demographics extends React.Component {
 
     // Map and translate all of the Tabular Data to the Chart Format
     this.barGraphData = [
-      { title: 'Current Age (Years)', data: mapToChartFormat(_.initial(AGEGROUPS), this.ageData), tooltipKey: 'analyticsAgeTip' },
-      { title: 'Sex', data: mapToChartFormat(SEXES, this.sexData) },
-      { title: 'Ethnicity', data: mapToChartFormat(ETHNICITIES, this.ethnicityData) },
-      { title: 'Race', data: mapToChartFormat(RACES, this.raceData) },
-      { title: 'Sexual Orientation', data: mapToChartFormat(SEXUAL_ORIENTATIONS, this.soData) },
+      { title: 'Current Age (Years)', data: mapToChartFormat(_.initial(AGEGROUPS), this.ageData), show: true, tooltipKey: 'analyticsAgeTip' },
+      { title: 'Sex', data: mapToChartFormat(SEXES, this.sexData), show: true },
+      { title: 'Ethnicity', data: mapToChartFormat(ETHNICITIES, this.ethnicityData), show: true },
+      { title: 'Race', data: mapToChartFormat(RACES, this.raceData), show: true },
+      { title: 'Sexual Orientation', data: mapToChartFormat(SEXUAL_ORIENTATIONS, this.soData), show: this.showSexualOrientationData },
     ];
   }
 
   renderBarGraphs = () => (
     <Row>
       {this.barGraphData.map((graph, i) => (
-        <Col xl="12" key={i}>
-          <WorkflowChart title={graph.title} tooltipKey={graph.tooltipKey} data={graph.data} />
-        </Col>
+        <React.Fragment key={i}>
+          {graph.show && (
+            <Col xl="12">
+              <WorkflowChart title={graph.title} tooltipKey={graph.tooltipKey} data={graph.data} />
+            </Col>
+          )}
+        </React.Fragment>
       ))}
     </Row>
   );

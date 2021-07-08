@@ -61,9 +61,9 @@ class MonitoreesByEventDate extends React.Component {
         </Card.Header>
         <Card.Body className="text-center">
           <Form.Row className="justify-content-center">
-            <Form.Group as={Col} md="8" onChange={val => this.setTimeResolution(val.target.value)}>
-              <Form.Label htmlFor="time-resolution-select">Time Resolution</Form.Label>
-              <Form.Control id="time-resolution-select" as="select" size="md">
+            <Form.Group as={Col} md="8" controlId="time-resolution-select">
+              <Form.Label>Time Resolution</Form.Label>
+              <Form.Control as="select" size="md" onChange={event => this.setTimeResolution(event.target.value)}>
                 <option>Day</option>
                 <option>Week</option>
                 <option>Month</option>
@@ -73,7 +73,7 @@ class MonitoreesByEventDate extends React.Component {
           <Row className="mx-2 px-0">
             {GRAPH_CONFIGS.map((val, index) => (
               <Col xs="12" key={index}>
-                <div className="font-weight-bold h5 ml-5"> {val.dataKey} Workflow </div>
+                <div className="font-weight-bold h5 ml-5">{val.dataKey} Workflow</div>
                 <ResponsiveContainer width="100%" height={400}>
                   <BarChart width={500} height={300} data={this.state.graphData[Number(index)]} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -83,7 +83,7 @@ class MonitoreesByEventDate extends React.Component {
                     <Bar dataKey={val.dataKey} stackId="a" fill={val.fill} />
                   </BarChart>
                 </ResponsiveContainer>
-                <div className="font-weight-bold h6 ml-5 mb-2"> {val.legendText} </div>
+                <div className="font-weight-bold h6 ml-5 my-2">{val.legendText}</div>
               </Col>
             ))}
           </Row>
