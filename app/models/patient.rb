@@ -1013,7 +1013,7 @@ class Patient < ApplicationRecord
 
     # Check last_assessment_reminder_sent before enqueueing to cover potential race condition of multiple reports
     # being sent out for the same monitoree.
-    return unless last_assessment_reminder_sent_eligible? || send_now
+    return unless last_assessment_reminder_sent_eligible?
 
     contact_method = preferred_contact_method&.downcase
     if contact_method == 'sms text-message' && ADMIN_OPTIONS['enable_sms']
