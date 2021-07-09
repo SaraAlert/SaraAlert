@@ -721,11 +721,20 @@ class Patient < ApplicationRecord
                  .submitted_assessment_today
                  .end_of_monitoring_period
 
+    # If extended isolation date is set on a patient in isolation, then they must be at least two
+    # days PAST the extended isolation date to be eligible for closure. This gives those patients
+    # a chance to be moved back to the RRR line list if they are eligible for that.
+    no_recent_activity_isolation = isolation_non_reporting
+                                   .where(
+                                     'patients.extended_isolation IS NULL'\
+                                     ' OR DATE(CONVERT_TZ(?, "UTC", patients.time_zone)) >= patients.extended_isolation',
+                                     Time.now.utc - 2.days
+                                   )
+                                   .where('updated_at <= ?', 30.days.ago)
     # If a patient record has been inactive for 30 days or more
     # in the exposure workflow and is non-reporting
-    no_recent_activity = isolation_non_reporting
-                         .where('updated_at <= ?', 30.days.ago)
-                         .or(exposure_non_reporting.where('updated_at <= ?', 30.days.ago))
+    no_recent_activity_exposure = exposure_non_reporting.where('updated_at <= ?', 30.days.ago)
+    no_recent_activity = no_recent_activity_isolation.or(no_recent_activity_exposure)
 
     case reason
     when nil
