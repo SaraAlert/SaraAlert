@@ -487,7 +487,7 @@ class PatientsController < ApplicationController
       patients.each do |patient|
         # We never want to update closed records monitoring status via the bulk_update
         update_params = patient.monitoring ? params : closed_params
-        update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? patient.id : nil,
+        update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? patient.id : patient.responder_id,
                                  update_params[:apply_to_household] ? :group : :none)
       end
     end

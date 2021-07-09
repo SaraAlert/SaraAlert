@@ -483,12 +483,11 @@ class History < ApplicationRecord
   end
 
   private_class_method def self.compose_message(history, field)
-    creator = history[:initiator_id].nil? ? 'System' : 'User'
     verb = field[:new_value].blank? ? 'cleared' : 'changed'
     from_text = field[:old_value].blank? ? 'blank' : "\"#{field[:old_value]}\""
     to_text = field[:new_value].blank? ? 'blank' : "\"#{field[:new_value]}\""
 
-    comment = "#{creator} #{verb} #{field[:name]} from #{from_text} to #{to_text}"
+    comment = "User #{verb} #{field[:name]} from #{from_text} to #{to_text}"
     comment += compose_explanation(history)
     comment += history[:note] unless history[:note].blank?
     comment += '.'
@@ -510,13 +509,13 @@ class History < ApplicationRecord
     elsif history[:initiator_id] != history[:patient].id && history[:initiator_id] == history[:patient].responder_id
       " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
       ' and for this monitoree'
-    elsif history[:initiator_id] != history[:patient].id && !history[:initiator_id].nil? && history[:propagation] == :group
+    elsif history[:initiator_id] != history[:patient].id && history[:propagation] == :group
       " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
       ' and applied that change to all household members'
-    elsif history[:initiator_id] != history[:patient].id && !history[:initiator_id].nil? && history[:propagation] == :group_cm
+    elsif history[:initiator_id] != history[:patient].id && history[:propagation] == :group_cm
       " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
       ' and for household members under continuous exposure'
-    elsif history[:initiator_id] != history[:patient].id && !history[:initiator_id].nil?
+    elsif history[:initiator_id] != history[:patient].id
       " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
       ' and for this monitoree'
     else
