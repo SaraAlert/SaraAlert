@@ -574,9 +574,21 @@ namespace :stats do
         exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 70').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 80').count,
         isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 70').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 80').count
       }
-      results[title]['Age - >= 80'] = {
-        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 80').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').count,
-        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 80').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').count
+      results[title]['Age - 80-89'] = {
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 80').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 90').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 80').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 90').count
+      }
+      results[title]['Age - 90-99'] = {
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 90').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 100').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 90').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 100').count
+      }
+      results[title]['Age - 100-109'] = {
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 100').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 100').where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').count
+      }
+      results[title]['Age - ≥ 110'] = {
+        exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 110').count,
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 100').count
       }
       results[title]['Age - Flagged for possible missing age'] = {
         exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 110').or(active_exp.where(date_of_birth: ['', nil])).count,
