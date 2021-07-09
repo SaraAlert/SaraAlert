@@ -4,10 +4,6 @@ import { Row, Col } from 'react-bootstrap';
 import EnrollerStatistics from './EnrollerStatistics';
 
 class EnrollerAnalytics extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <React.Fragment>
