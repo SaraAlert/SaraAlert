@@ -407,7 +407,7 @@ class PatientsController < ApplicationController
 
     # If the current patient is not accessible, current_patient.dependents will be nil so
     # in that case we just include the current patient ID in the househld.
-    household_ids = current_patient&.dependents&.pluck(:id) || [current_patient_id]
+    household_ids = current_patient&.dependents&.where(purged: false)&.pluck(:id) || [current_patient_id]
 
     # ----- Error Checking -----
 
@@ -427,7 +427,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return if current_patient.responder_id == new_hoh_id
 
     # If the new head of household was removed from the household, don't allow the change
-    unless current_patient.dependents.pluck(:id).include?(new_hoh_id)
+    unless current_patient.dependents.where(purged: false).pluck(:id).include?(new_hoh_id)
       error_message = 'Change head of household action failed: selected Head of Household is no longer in household. Please refresh.'
       render(json: { error: error_message }, status: :bad_request) && return
     end
