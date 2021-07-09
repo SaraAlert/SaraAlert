@@ -3,10 +3,6 @@ import { PropTypes } from 'prop-types';
 import { Row, Col, Card } from 'react-bootstrap';
 
 class EnrollerStatistics extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <Card>
