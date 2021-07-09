@@ -484,6 +484,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should update Patient follow up reason via update' do
+    # Patient already flagged but change reason
     Patient.find_by(id: 1).update!(
       follow_up_reason: 'High-Risk'
     )
@@ -502,6 +503,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Patient', json_response['resourceType']
     assert_equal p.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal 'High-Risk', p.follow_up_reason
+    assert_equal 'This is a follow up note.', p.follow_up_note
   end
 
   test 'should not be able to update Patient follow up reason to invalid reason' do
@@ -524,7 +526,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert(json_response['issue'][0]['diagnostics'].include?('\'Follow Up Reason\' is not an acceptable value'))
   end
 
-  test 'should update Patient 1 follow up note via update' do
+  test 'should update Patient follow up note via update' do
     Patient.find_by(id: 1).update!(
       follow_up_note: 'New follow up note'
     )
@@ -546,6 +548,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should flag Patient for follow up via update' do
+    # Patient not already flagged
     Patient.find_by(id: 2).update!(
       follow_up_reason: 'Deceased'
     )
