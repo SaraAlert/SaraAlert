@@ -211,8 +211,8 @@ class AssessmentsController < ApplicationController
           delta << "#{symptom.label} (\"#{old_val}\" to \"#{new_val}\")"
         end
       end
-
       assessment.symptomatic = assessment.symptomatic?
+      old_reporter = assessment.who_reported
       # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
       assessment.who_reported = current_user.email
 
@@ -220,7 +220,10 @@ class AssessmentsController < ApplicationController
       return unless assessment.save
 
       comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
-      comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
+      unless delta.empty?
+        comment += ' Symptom updates: ' + delta.join(', ') + '.'
+        comment += " Reporter updated: (\"#{old_reporter}\" to \"#{current_user.email}\")." unless old_reporter == current_user.email
+      end
       History.report_updated(patient: patient, created_by: current_user.email, comment: comment)
     end
   end
