@@ -17,7 +17,7 @@ class EnrollerStatistics extends React.Component {
           <Row id="monitoree-analytics" className="g-border-bottom-2 mt-4">
             <Col className="my-3">
               <h4>TOTAL MONITOREES</h4>
-              <h3 className="display-3"> {this.props.total_monitorees}</h3>
+              <h3 className="display-3">{this.props.total_monitorees}</h3>
             </Col>
             <Col className="my-3">
               <h4>NEW LAST 24 HOURS</h4>

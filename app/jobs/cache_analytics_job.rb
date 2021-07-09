@@ -77,10 +77,6 @@ class CacheAnalyticsJob < ApplicationJob
   # Monitoree counts by age group
   def self.monitoree_counts_by_age_group(analytic_id, monitorees)
     counts = []
-    # Some jurisdictions are using `1-1-1900` as a "fake birthdate" where data might be invalid or unknown
-    # This can skew the `>=80` analytics data, so we collect the count of monitoree's over 110 years old
-    # And inform the user that that number is bundled in with `>=80`
-    # The client will perform the logic to combine the "FAKE_BIRTHDATE" in with `>=80`
     age_groups = <<-SQL
       CASE
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 20 THEN '0-19'
