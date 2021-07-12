@@ -498,23 +498,12 @@ class History < ApplicationRecord
   private_class_method def self.compose_explanation(history)
     if history[:initiator_id] == history[:patient].id && history[:propagation] == :group
       ' and applied that change to all household members'
-    elsif history[:initiator_id] == history[:patient].id && history[:propagation] == :group_cm
-      ' and applied that change to household members under continuous exposure'
     elsif history[:initiator_id] == history[:patient].responder_id && history[:propagation] == :group
       " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
       ' and for all household members'
-    elsif history[:initiator_id] == history[:patient].responder_id && history[:propagation] == :group_cm
-      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
-      ' and for household members under continuous exposure'
     elsif history[:initiator_id] != history[:patient].id && history[:initiator_id] == history[:patient].responder_id
       " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
       ' and for this monitoree'
-    elsif history[:initiator_id] != history[:patient].id && history[:propagation] == :group
-      " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
-      ' and applied that change to all household members'
-    elsif history[:initiator_id] != history[:patient].id && history[:propagation] == :group_cm
-      " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
-      ' and for household members under continuous exposure'
     elsif history[:initiator_id] != history[:patient].id
       " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
       ' and for this monitoree'
