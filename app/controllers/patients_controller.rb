@@ -487,7 +487,7 @@ class PatientsController < ApplicationController
       patients.each do |patient|
         # We never want to update closed records monitoring status via the bulk_update
         update_params = patient.monitoring ? params : closed_params
-        update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent,
+        update_monitoring_fields(patient, update_params, non_dependent_patient_ids.include?(patient[:id]) ? patient.id : patient.responder_id,
                                  update_params[:apply_to_household] ? :group : :none)
       end
     end
@@ -515,7 +515,7 @@ class PatientsController < ApplicationController
     end
 
     # Update patient
-    update_monitoring_fields(patient, params, :patient, :none)
+    update_monitoring_fields(patient, params, patient.id, :none)
 
     # Grab the patient IDs of houshold members to also update
     apply_to_household_ids = find_household_ids(patient, params)
@@ -525,7 +525,7 @@ class PatientsController < ApplicationController
     # Update selected group members if applying to household and ids are supplied
     apply_to_household_ids.each do |id|
       member = current_user.get_patient(id)
-      update_monitoring_fields(member, params, :patient, :none) unless member.nil?
+      update_monitoring_fields(member, params, patient.id, :none) unless member.nil?
     end
   end
 
@@ -534,9 +534,9 @@ class PatientsController < ApplicationController
   #
   # patient - The Patient to update.
   # params - The request params.
-  # household - Indicates if the Patient was updated directly (household = :patient) or updated because their head of household was (household = :dependent)
+  # initiator_id - Indicates the id of the record that was originally modified to cause the change, for instance if the change was propagated to the patient.
   # propogation - Indicates why the updates are being propogated to the Patient.
-  def update_monitoring_fields(patient, params, household, propagation)
+  def update_monitoring_fields(patient, params, initiator_id, propagation)
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
     permitted_params = if diff_state.nil?
@@ -567,7 +567,7 @@ class PatientsController < ApplicationController
       patient_before: patient_before,
       patient: patient,
       updates: updates,
-      household_status: household,
+      initiator_id: initiator_id,
       propagation: propagation,
       reason: params[:reasoning]
     }
@@ -594,7 +594,7 @@ class PatientsController < ApplicationController
     history_data = {}
     if clear_flag
       clear_flag_reason = params.permit(:clear_flag_reason)[:clear_flag_reason]
-      clear_follow_up_flag(patient, clear_flag_reason)
+      clear_follow_up_flag(patient, patient.id, clear_flag_reason)
     else
       follow_up_reason = params.permit(:follow_up_reason)[:follow_up_reason]
       follow_up_note = params.permit(:follow_up_note)[:follow_up_note]
@@ -603,6 +603,7 @@ class PatientsController < ApplicationController
       history_data = {
         created_by: current_user.email,
         patient: patient,
+        initiator_id: patient.id,
         follow_up_reason: follow_up_reason,
         follow_up_note: follow_up_note,
         follow_up_reason_before: patient.follow_up_reason,
@@ -630,7 +631,7 @@ class PatientsController < ApplicationController
         next if member.nil?
 
         clear_flag_reason = params.permit(:clear_flag_reason)[:clear_flag_reason]
-        clear_follow_up_flag(member, clear_flag_reason)
+        clear_follow_up_flag(member, patient.id, clear_flag_reason)
       end
     else
       apply_to_household_ids.each do |id|
@@ -656,11 +657,12 @@ class PatientsController < ApplicationController
   #
   # patient - The Patient to update.
   # clear_flag_reason - The note to include in the history item
-  def clear_follow_up_flag(patient, clear_flag_reason)
+  def clear_follow_up_flag(patient, initiator_id, clear_flag_reason)
     # Prep data needed to create history items based on this update
     history_data = {
       created_by: current_user.email,
       patient: patient,
+      initiator_id: initiator_id,
       clear_flag_reason: clear_flag_reason,
       follow_up_reason_before: patient.follow_up_reason
     }
