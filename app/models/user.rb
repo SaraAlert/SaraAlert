@@ -61,10 +61,8 @@ class User < ApplicationRecord
   # Get a patient (that this user is allowed to get)
   def get_patient(id)
     if role?(Roles::ENROLLER)
-      p enrolled_patients.find_by_id(id)
       enrolled_patients.find_by_id(id)
     elsif role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER)
-      p viewable_patients.find_by_id(id)
       viewable_patients.find_by_id(id)
     elsif role?(Roles::ADMIN)
       nil

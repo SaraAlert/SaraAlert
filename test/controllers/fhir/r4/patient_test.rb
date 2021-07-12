@@ -321,7 +321,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, json_patient) == 1_000_000)
     email_iss = issues.find { |e| /Email.*Primary Contact Method/.match(e['diagnostics']) }
     assert_not_nil email_iss # Email is omitted from the request, so don't eval the FHIRPath
-    follow_up_reason_iss = issues.find { |e| /Invalid reason.*Follow Up Reason/.match(e['diagnostics']) }
+    follow_up_reason_iss = issues.find { |e| /Invalid reason.*Follow-up Reason/.match(e['diagnostics']) }
     assert_not_nil follow_up_reason_iss
   end
 
@@ -361,6 +361,25 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     json_response = JSON.parse(response.body)
     # Should be their own reporter since they have a unique phone number and email
     assert_equal json_response['id'], Patient.find_by(id: json_response['id']).responder_id
+  end
+
+  test 'should not be able to create Patient with follow up note without a reason' do
+    Patient.find_by(id: 2).update!(
+      follow_up_note: 'New follow up note'
+    )
+
+    post(
+      '/fhir/r4/Patient',
+      params: Patient.find_by(id: 2).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    issues = json_response['issue']
+
+    assert_equal 1, issues.length
+    assert(json_response['issue'][0]['diagnostics'].include?('\'Follow-up Note\' must be blank when \'Follow-up Reason\' is blank'))
   end
 
   #----- update tests -----
@@ -409,6 +428,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
     assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
+    assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
     assert_equal patient.jurisdiction_id, Transfer.find_by(patient_id: patient_id).to_jurisdiction_id
   end
 
@@ -484,7 +504,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should update Patient follow up reason via update' do
-    # Patient already flagged but change reason
     Patient.find_by(id: 1).update!(
       follow_up_reason: 'High-Risk'
     )
@@ -503,12 +522,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Patient', json_response['resourceType']
     assert_equal p.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal 'High-Risk', p.follow_up_reason
-    assert_equal 'This is a follow up note.', p.follow_up_note
   end
 
   test 'should not be able to update Patient follow up reason to invalid reason' do
-    patient_follow_up_reason = Patient.find_by(id: 1).follow_up_reason
-
     Patient.find_by(id: 1).update!(
       follow_up_reason: 'Some invalid reason'
     )
@@ -523,7 +539,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     issues = json_response['issue']
 
     assert_equal 1, issues.length
-    assert(json_response['issue'][0]['diagnostics'].include?('\'Follow Up Reason\' is not an acceptable value'))
+    assert(json_response['issue'][0]['diagnostics'].include?('Value \'Some invalid reason\' for \'Follow-up Reason\' is not an acceptable value'))
   end
 
   test 'should update Patient follow up note via update' do
@@ -547,12 +563,91 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'New follow up note', p.follow_up_note
   end
 
+  test 'should remove Patient follow up note via update' do
+    Patient.find_by(id: 1).update!(
+      follow_up_note: nil
+    )
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: Patient.find_by(id: 1).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+    assert_equal 'Patient', json_response['resourceType']
+    assert_not_nil p.follow_up_reason
+    assert_nil p.follow_up_note
+  end
+
+  test 'should add Patient follow up note via update' do
+    Patient.find_by(id: 1).update!(
+      follow_up_reason: 'Other',
+      follow_up_note: 'Note.'
+    )
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: Patient.find_by(id: 1).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+    assert_equal 'Patient', json_response['resourceType']
+    assert_equal p.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
+    assert_equal 'Note.', p.follow_up_note
+  end
+
+  test 'should not be able to update Patient follow up note without a reason' do
+    Patient.find_by(id: 2).update!(
+      follow_up_reason: nil,
+      follow_up_note: 'New follow up note'
+    )
+
+    put(
+      '/fhir/r4/Patient/2',
+      params: Patient.find_by(id: 2).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    issues = json_response['issue']
+
+    assert_equal 1, issues.length
+    assert(json_response['issue'][0]['diagnostics'].include?('\'Follow-up Note\' must be blank when \'Follow-up Reason\' is blank'))
+  end
+
+  test 'should not be able to set Patient follow up reason to invalid reason' do
+    Patient.find_by(id: 2).update!(
+      follow_up_reason: 'Invalid reason!!'
+    )
+
+    put(
+      '/fhir/r4/Patient/2',
+      params: Patient.find_by(id: 2).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    issues = json_response['issue']
+
+    assert_equal 1, issues.length
+    assert(json_response['issue'][0]['diagnostics'].include?('Value \'Invalid reason!!\' for \'Follow-up Reason\' is not an acceptable value'))
+  end
+
   test 'should flag Patient for follow up via update' do
-    # Patient not already flagged
     Patient.find_by(id: 2).update!(
       follow_up_reason: 'Deceased'
     )
-    
+
     put(
       '/fhir/r4/Patient/2',
       params: Patient.find_by(id: 2).as_fhir.to_json,
@@ -567,6 +662,45 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Patient', json_response['resourceType']
     assert_equal p.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal 'Deceased', p.follow_up_reason
+  end
+
+  test 'should not be able to clear Patient flag when there is a note' do
+    Patient.find_by(id: 2).update!(
+      follow_up_reason: nil,
+      follow_up_note: 'Here is a note.'
+    )
+
+    put(
+      '/fhir/r4/Patient/2',
+      params: Patient.find_by(id: 2).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    issues = json_response['issue']
+
+    assert_equal 1, issues.length
+    assert(json_response['issue'][0]['diagnostics'].include?('\'Follow-up Note\' must be blank when \'Follow-up Reason\' is blank'))
+  end
+
+  test 'should clear Patient flag via update' do
+    Patient.find_by(id: 2).update!(
+      follow_up_reason: nil
+    )
+
+    put(
+      '/fhir/r4/Patient/2',
+      params: Patient.find_by(id: 2).as_fhir.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 2, json_response['id']
+    p = Patient.find_by(id: 2)
+
+    assert_not p.nil?
+    assert_equal 'Patient', json_response['resourceType']
+    assert_nil p.follow_up_reason
   end
 
   test 'should properly close Patient record via update' do
@@ -762,7 +896,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, json_patient) == 1_000_000)
     email_iss = issues.find { |e| /Email.*Primary Contact Method/.match(e['diagnostics']) }
     assert_not_nil email_iss # Email is omitted from the request, so don't eval the FHIRPath
-    follow_up_reason_iss = issues.find { |e| /Invalid reason.*Follow Up Reason/.match(e['diagnostics']) }
+    follow_up_reason_iss = issues.find { |e| /Invalid reason.*Follow-up Reason/.match(e['diagnostics']) }
     assert_not_nil follow_up_reason_iss
   end
 
