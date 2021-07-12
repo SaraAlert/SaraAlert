@@ -7,10 +7,10 @@ import * as am4core from '@amcharts/amcharts4/core';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 import usaLow from '@amcharts/amcharts4-geodata/usaLow.js';
 
-import { insularAreas } from '../mapData';
-import { stateOptions } from '../../../data/stateOptions';
-import separatorLines from '../../assets/separatorLines.js';
-import usaTerritories2High from '../../assets/usaTerritories.json';
+import { insularAreas } from '../maps/mapData';
+import { stateOptions } from '../../../../data/stateOptions';
+import separatorLines from '../../../assets/separatorLines.js';
+import usaTerritories2High from '../../../assets/usaTerritories.json';
 
 // There are no GEOJSON files provided by AMCHARTS for these Territories
 // (It does have files for `US-PR` and `US-AS` but those aren't implemented yet)
