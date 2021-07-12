@@ -453,8 +453,8 @@ class History < ApplicationRecord
     return if history[:follow_up_reason] == history[:follow_up_reason_before] && history[:follow_up_note] == history[:follow_up_note_before]
 
     comment = 'User flagged for follow-up'
-    comment += compose_explanation(history)
-    comment += ". Reason: \"#{history[:follow_up_reason]}"
+    comment += compose_explanation(history) + '.'
+    comment += " Reason: \"#{history[:follow_up_reason]}"
     comment += ": #{history[:follow_up_note]}" unless history[:follow_up_note].blank?
     comment += '"'
 
@@ -465,8 +465,8 @@ class History < ApplicationRecord
     return if history[:follow_up_reason_before].nil?
 
     comment = 'User cleared flag for follow-up'
-    comment += compose_explanation(history)
-    comment += ". Reason: #{history[:clear_flag_reason]}" unless history[:clear_flag_reason].blank?
+    comment += compose_explanation(history) + '.'
+    comment += " Reason: #{history[:clear_flag_reason]}" unless history[:clear_flag_reason].blank?
 
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment, create: create)
   end
