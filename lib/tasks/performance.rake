@@ -77,8 +77,7 @@ namespace :perf do
         assessment.reported_condition&.symptoms&.delete_all
         assessment.reported_condition&.delete
       end
-      dependents = patient.dependents.filter { |d| d.id != d.responder_id}
-      dependents.each do |dependent|
+      patient.dependents_exclude_self.each do |dependent|
         removed_patients += remove_patient(dependent)
       end
       patient.delete
