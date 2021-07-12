@@ -66,18 +66,14 @@ class Review extends React.Component {
           <Card.Body>
             <Patient
               goto={this.props.goto}
-              edit_mode={true}
+              hidePreviousButton={true}
               jurisdiction_paths={this.props.jurisdiction_paths}
               details={{ ...this.props.currentState.patient, blocked_sms: this.props.currentState.blocked_sms } || {}}
               authenticity_token={this.props.authenticity_token}
               workflow={this.props.workflow}
             />
             <div className="pb-4"></div>
-            {this.props.previous && (
-              <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
-                Previous
-              </Button>
-            )}
+
             {this.props.submit && (
               <Button
                 variant="secondary"
