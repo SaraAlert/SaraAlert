@@ -12,12 +12,10 @@ class ConsumeAssessmentsJob < ApplicationJob
 
     while (msg = queue.pop)
       begin
-        message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array',
-                                         'patient_submission_token', 'experiencing_symptoms',
-                                         'response_status', 'error_code')
+        message = JSON.parse(msg)
         # Invalid message
-        if message.nil?
-          Rails.logger.info 'ConsumeAssessmentsJob: skipping nil message...'
+        unless SaraSchema::Validator.validate(:assessment, message)
+          Rails.logger.info 'ConsumeAssessmentsJob: skipping invalid message...'
           queue.commit
           next
         end

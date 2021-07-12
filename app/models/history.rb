@@ -50,7 +50,15 @@ class History < ApplicationRecord
   belongs_to :original_comment, class_name: 'History', optional: true
 
   # Patient updated_at should not be updated if history was created by a monitoree data download
-  after_create(proc { patient.touch unless history_type == HISTORY_TYPES[:monitoree_data_downloaded] })
+  after_create(
+    proc do
+      patient.touch unless [
+        HISTORY_TYPES[:report_reminder],
+        HISTORY_TYPES[:monitoree_data_downloaded],
+        HISTORY_TYPES[:unsuccessful_report_reminder]
+      ].include? history_type
+    end
+  )
 
   # All histories within the given time frame
   scope :in_time_frame, lambda { |time_frame|
@@ -192,8 +200,7 @@ class History < ApplicationRecord
   end
 
   def self.report_reminder(patient: nil, created_by: 'Sara Alert System', comment: 'User sent a report reminder to the monitoree.')
-    create_history(patient, created_by, HISTORY_TYPES[:report_reminder],
-                   comment)
+    create_history(patient, created_by, HISTORY_TYPES[:report_reminder], comment)
   end
 
   def self.unsuccessful_report_reminder(patient: nil, created_by: 'Sara Alert System', comment: 'Unsuccessful report reminder.')
