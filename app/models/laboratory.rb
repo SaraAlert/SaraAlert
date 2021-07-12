@@ -30,7 +30,10 @@ class Laboratory < ApplicationRecord
     **LAB_TYPE_TO_CODE
   }.invert.freeze
 
-  validates :result, inclusion: { in: ['positive', 'negative', 'indeterminate', 'other', nil, ''] }
+  validates :result, inclusion: {
+    in: [*RESULT_TO_CODE.keys.map(&:to_s), nil, ''],
+    message: "is not an acceptable value, acceptable values are: '#{RESULT_TO_CODE.keys.map(&:to_s).reject(&:blank?).join("', '")}'"
+  }
 
   validates :lab_type, on: %i[api import], inclusion: {
     in: VALID_PATIENT_ENUMS[:lab_type],
