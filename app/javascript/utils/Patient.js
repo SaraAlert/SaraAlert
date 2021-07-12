@@ -2,7 +2,9 @@ import React from 'react';
 import IconMinor from '../components/patient/icons/IconMinor';
 import { formatDate } from '../utils/DateTime';
 import moment from 'moment-timezone';
-import { faDatabase } from '@fortawesome/free-solid-svg-icons';
+import libphonenumber from 'google-libphonenumber';
+const PNF = libphonenumber.PhoneNumberFormat;
+const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
 /**
  * Formats a patient's name (first middle last) as a string.
@@ -21,18 +23,44 @@ function formatNameAlt(patient) {
 }
 
 /**
+ * Provides the yup validation for Patient phone numbers
+ * @param {Object} data - the input to validate using yup
+ */
+function phoneSchemaValidator (data) {
+  return this.test({
+    name: 'phone',
+    exclusive: true,
+    message: 'Please enter a valid Phone Number',
+    test: value => {
+      try {
+        if (!value) {
+          return true; // Blank numbers are allowed
+        }
+        // Make sure we'll be able to convert to E164 format at submission time
+        return !!phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) && /(0|[2-9])\d{9}/.test(value.replace('+1', '').replace(/\D/g, ''));
+      } catch (e) {
+        return false;
+      }
+    },
+  });
+}
+
+/**
  * Formats patient's phone number in E164 format.
  * @param {String} phone - patient's phone number
  */
-function formatPhoneNumber(phone) {
-  if (phone === null || phone === undefined) return '';
+function formatPhoneNumber (data) {
+  // Some components will call this with an object containing a value field containing a phone number
+  // Others will pass in a phone value directly
+  const phone = (Object.prototype.hasOwnProperty.call(data, 'value')) ? data.value : data
+  if (phone === null) return ''
 
   const match = phone
     .replace('+1', '')
     .replace(/\D/g, '')
     .match(/^(\d{3})(\d{3})(\d{4})$/);
   return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
-}
+};
 
 /**
  * Formats patient's races as a string.
@@ -73,7 +101,7 @@ function formatRace(patient) {
  * @returns boolean true if patient is under 18, false if not
  */
 function isMinor(date) {
-  return moment(date, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years')); 
+  return moment(date, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'));
 }
 
 /**
@@ -93,4 +121,4 @@ function formatDateOfBirthTableCell(dateOfBirth, id) {
   return formatDate(dateOfBirth);
 }
 
-export { formatName, formatNameAlt, formatPhoneNumber, formatRace, isMinor, formatDateOfBirthTableCell };
+export { formatName, formatNameAlt, formatPhoneNumber, phoneSchemaValidator, formatRace, isMinor, formatDateOfBirthTableCell };

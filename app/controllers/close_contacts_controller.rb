@@ -2,11 +2,33 @@
 
 # CloseContactsController: close contacts
 class CloseContactsController < ApplicationController
+  include CloseContactQueryHelper
+
   before_action :authenticate_user!
   before_action :check_can_create, only: %i[create]
   before_action :check_can_edit, only: %i[update destroy]
   before_action :check_patient
   before_action :check_close_contact, only: %i[update destroy]
+
+  def index
+    # Validate params and handle errors if invalid
+    begin
+      data = validate_close_contact_query(params)
+    rescue StandardError => e
+      render(json: { error: e.message }, status: :bad_request) && return
+    end
+
+    # @patient is set in the check_patient hook above
+    close_contacts = CloseContact.where(patient_id: @patient.id)
+    render json: { error: 'Invalid patient_id' }, status: :bad_request if @patient.nil?
+
+    # Get close_contacts table data
+    close_contacts = search(close_contacts, data[:search_text])
+    close_contacts = sort(close_contacts, data[:sort_order], data[:sort_direction])
+    close_contacts = paginate(close_contacts, data[:entries], data[:page])
+
+    render json: { table_data: close_contacts, total: close_contacts.size }
+  end
 
   # Create a new close contact
   def create
