@@ -74,28 +74,28 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate
         dashboard_table_columns: {
           options: {
             symptomatic: {
-              options: %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
             },
             non_reporting: {
-              options: %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
             },
             asymptomatic: {
-              options: %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
             },
             pui: {
-              options: %i[jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility]
             },
             closed: {
-              options: %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
             },
             transferred_in: {
-              options: %i[transferred_from end_of_monitoring risk_level monitoring_plan transferred_at] 
+              options: %i[flagged_for_follow_up transferred_from end_of_monitoring risk_level monitoring_plan transferred_at] 
             },
             transferred_out: {
               options: %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at]
             },
             all: {
-              options: %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility]
             }
           }
         }
@@ -165,29 +165,96 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate
         dashboard_table_columns: {
           options: {
             requiring_review: {
-              options: %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
             },
             non_reporting: {
-              options: %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
             },
             reporting: {
-              options: %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report report_eligibility]
             },
             closed: {
-              options: %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
             },
             transferred_in: {
-              options: %i[transferred_from monitoring_plan transferred_at]
+              options: %i[flagged_for_follow_up transferred_from monitoring_plan transferred_at]
             },
             transferred_out: {
               options: %i[transferred_to monitoring_plan transferred_at]
             },
             all: {
-              options: %i[jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report status report_eligibility]
+              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report status report_eligibility]
             }
           }
         }
-      }
+      },
+      global: {
+        # Public Health Dashboard Configurations
+        dashboard_tabs: {
+          options: {
+            active: {
+                label: 'Active',
+                variant: 'success',
+                description: 'Monitorees currently being actively monitored across both the exposure and isolation workflows.'
+            },
+            priority_review: {
+              label: 'Priority Review',
+              variant: 'danger',
+              description: 'Monitorees who meet the criteria to appear on either the Symptomatic line list (exposure) or Records Requiring Review line list (isolation) which need to be reviewed.'
+            },
+            non_reporting: {
+              label: 'Non-Reporting',
+              variant: 'warning',
+              description: 'All monitorees who have failed to report in the last day across both the exposure and isolation workflows.'
+            },
+            closed: {
+              label: 'Closed',
+              variant: 'secondary',
+              description: 'Monitorees not currently being monitored across both the exposure and isolation workflows.'
+            },
+            all: {
+              label: 'All Monitorees',
+              variant: 'primary',
+              description: 'All Monitorees in this jurisdiction across both the exposure and isolation workflows.'
+            }
+          }
+        },
+        header_action_buttons: {
+          options: {
+            enroll: { label: 'Enroll New Monitoree'},
+            export: { label: 'Export', options: {
+              csv: { label: 'Line list CSV' },
+              saf: { label: 'Sara Alert Format' },
+              purge_eligible: { label: 'Excel Export for Purge-Eligible Monitorees' },
+              all: { label: 'Excel Export For All Monitorees' },
+              custom_format: { label: 'Custom Format...'}
+            }},
+            import: { label: 'Import', options: {
+              epix: { label: 'Epi-X' },
+              saf: { label: 'Sara Alert Format'}
+            }}
+          }
+        },
+        dashboard_table_columns: {
+          options: {
+            active: {
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status report_eligibility]
+            },
+            priority_review: {
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status report_eligibility]
+            },
+            non_reporting: {
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status report_eligibility]
+            },
+            closed: {
+              options: %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at workflow]
+            },
+            all: {
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status report_eligibility]
+            }
+          }
+        }
+      },
     },
     general: {
       patient_page_sections: {

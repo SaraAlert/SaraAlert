@@ -51,7 +51,7 @@ module PatientHelper
 
   def dashboard_crumb_title(dashboard, playbook)
     title = dashboard.nil? ? 'Return To Dashboard' : "Return to #{dashboard.titleize} Dashboard"
-    return title + playbook.nil? ? '' : " (#{playbook_label(playbook)})"
+    return title + (playbook.nil? ? '' : " (#{playbook_label(playbook)})")
   end
 
   def self.monitoring_fields

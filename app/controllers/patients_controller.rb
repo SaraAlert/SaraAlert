@@ -63,8 +63,8 @@ class PatientsController < ApplicationController
 
     dashboard_crumb(params.permit(:nav)[:nav], @playbook, @patient)
 
-    @patient_page_sections = custom_configuration(@playbook, nil, :patient_page_sections)
-    @columns = custom_configuration(@playbook, :exposure, :dashboard_table_columns)
+    @patient_page_sections = workflow_configuration(@playbook, nil, :patient_page_sections)
+    @columns = workflow_configuration(@playbook, :exposure, :dashboard_table_columns)
 
   end
 
@@ -1061,13 +1061,7 @@ class PatientsController < ApplicationController
       @dashboard = %w[global isolation exposure].include?(dashboard) ? dashboard : (patient&.isolation ? 'isolation' : 'exposure')
     end
 
-    @dashboard_path = case @dashboard
-                      when 'isolation'
-                        "/dashboard/#{playbook}/isolation"
-                      when 'exposure'
-                        "/dashboard/#{playbook}/exposure"
-                      else
-                        current_user.enroller? ? patients_path : public_health_global_path
-                      end
+    @dashboard_path = current_user.enroller? && @dashboard == 'global' ? patients_path : "/dashboard/#{playbook}/#{dashboard}"
+
   end
 end

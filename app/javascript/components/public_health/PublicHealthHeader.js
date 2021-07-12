@@ -31,8 +31,9 @@ class PublicHealthHeader extends React.Component {
         isolation: 'fa-street-view',
         global: 'fa-globe',
       },
-      workflowsToShow:
-        props.available_workflows.length > 1 ? [...props.available_workflows, ...[{ name: 'global', label: 'Global' }]] : props.available_workflows,
+      workflowsToShow: props.available_workflows,
+      // workflowsToShow:
+      //   props.available_workflows.length > 1 ? [...props.available_workflows, ...[{ name: 'global', label: 'Global' }]] : props.available_workflows,
       importOptions: allowedImportOptions,
     };
   }
@@ -191,7 +192,7 @@ class PublicHealthHeader extends React.Component {
                   jurisdiction={this.props.jurisdiction}
                   tabs={this.props.tabs}
                   workflow={this.props.workflow}
-                  export_options={this.props.header_action_buttons.export_options}
+                  export_options={this.props.header_action_buttons}
                   query={this.props.query}
                   all_monitorees_count={this.state.counts.exposure + this.state.counts.isolation}
                   current_monitorees_count={this.props.current_monitorees_count}
@@ -202,7 +203,7 @@ class PublicHealthHeader extends React.Component {
                 <DropdownButton
                   as={ButtonGroup}
                   size="md"
-                  className="ml-2 mb-4"
+                  className="ml-2 mb-2"
                   title={
                     <React.Fragment>
                       <i className="fas fa-upload"></i> {this.props.header_action_buttons.import.label || 'Import'}{' '}
