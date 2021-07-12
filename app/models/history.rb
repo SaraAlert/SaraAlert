@@ -283,7 +283,7 @@ class History < ApplicationRecord
 
   def self.assessment_email_error(patient: nil,
                                   created_by: 'Sara Alert System',
-                                  comment: 'Sara Alert was unable to send a daily assessment email because of an error.',
+                                  comment: 'Sara Alert was unable to send a report email to the monitoree because of an unexpected error.',
                                   create: true)
     create_history(patient, created_by, HISTORY_TYPES[:assessment_email_error], comment, create: create)
   end
