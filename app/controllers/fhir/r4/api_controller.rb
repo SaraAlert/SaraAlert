@@ -1090,10 +1090,6 @@ class Fhir::R4::ApiController < ApplicationApiController
     info_updates = updates.filter { |attr, _value| !PatientHelper.monitoring_fields.include?(attr) || attr == :isolation }
     Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, @current_actor_label)
 
-    p patient_before
-    puts "\n\n\n\n"
-    p patient
-
     # Handle History for monitoree monitoring information updates
     history_data = {
       created_by: @current_actor_label,

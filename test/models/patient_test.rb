@@ -2008,6 +2008,21 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
+  test 'validates follow_up_note is a valid note in api context' do
+    patient = valid_patient
+
+    patient.follow_up_reason = 'Deceased'
+    patient.follow_up_note = 'Note.'
+    assert patient.valid?(:api)
+
+    patient.follow_up_reason = nil
+    assert_not patient.valid?(:api)
+
+    patient.follow_up_note = nil
+    assert patient.valid?(:api)
+    assert patient.valid?
+  end
+
   test 'validates one of address_state or foreign_address_country is required in api context' do
     patient = valid_patient
 

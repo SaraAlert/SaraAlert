@@ -93,9 +93,9 @@ class Patient < ApplicationRecord
 
   validates :follow_up_note,
             on: %i[api import],
-            absence: { message: "must be blank when 'Follow-Up Reason' is blank" },
+            absence: { message: "must be blank when '#{VALIDATION[:follow_up_reason][:label]}' is blank" },
             if: -> { follow_up_reason.nil? }
-  
+
   validates :email, on: %i[api import], email: true
 
   validates :assigned_user, numericality: { only_integer: true,

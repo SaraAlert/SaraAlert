@@ -301,7 +301,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       black_or_african_american: true,
       asian: true,
       continuous_exposure: true,
-      last_date_of_exposure: nil,
+      last_date_of_exposure: nil
     )
     @patient_2 = Patient.find_by(id: 2).as_fhir
 
