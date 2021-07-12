@@ -13,7 +13,7 @@ module Orchestration::Playbooks::Covid19Playbook
         dashboard_tabs: {
           type: 'all',
           config: {
-            set: %i[symptomatic non_reporting],
+            set: %i[symptomatic non_reporting all],
             custom_options: {
               symptomatic: {
                 label: 'Some random label'
@@ -22,20 +22,13 @@ module Orchestration::Playbooks::Covid19Playbook
           }
         },
         header_action_buttons: {
-          type: 'subset',
+          type: 'all',
           config: {
             set: %i[enroll import],
             custom_options: {
               import: {
                   label: 'Import',
                   type: 'subset',
-                  config: {
-                    set: %i[saf]
-                  }
-              },
-              export: {
-                  label: 'Export',
-                  type: 'all',
                   config: {
                     set: %i[saf]
                   }
@@ -48,7 +41,7 @@ module Orchestration::Playbooks::Covid19Playbook
           config: {
             custom_options: {
               symptomatic: {
-                type: 'subset',
+                type: 'all',
                 config: {
                   set: %i[jurisdiction end_of_monitoring risk_level]
                 }
@@ -67,6 +60,8 @@ module Orchestration::Playbooks::Covid19Playbook
         header_action_buttons: {
           type: 'all'
         },
+      } },
+      global: { label: 'Global', base: INFECTIOUS[:workflows][:global], custom_options: {
       } }
     },
     general: {

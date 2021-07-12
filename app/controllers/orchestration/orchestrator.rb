@@ -88,8 +88,11 @@ module Orchestration::Orchestrator
     PLAYBOOKS.keys.collect { |key| { name: key, label: PLAYBOOKS[key][:label] } }
   end
 
-  def available_workflows(playbook)
-    PLAYBOOKS[playbook][:workflows].keys.collect { |key| { name: key, label: PLAYBOOKS[playbook][:workflows][key][:label] } }
+  def available_workflows(playbook, filter_out_global=true)
+    workflows = PLAYBOOKS[playbook][:workflows].keys.collect { |key| { name: key, label: PLAYBOOKS[playbook][:workflows][key][:label] } }
+    workflows = workflows.reject { |key| key[:name] == :global} if filter_out_global
+
+    return workflows
   end
 
   # NOTE: Since we're currently assuming that really we just have exposure/isolation
