@@ -751,7 +751,7 @@ class Patient < ApplicationRecord
     where.not(last_date_of_exposure: nil)
          .where(
            'DATE_ADD(DATE(patients.last_date_of_exposure), INTERVAL ? DAY)'\
-           ' < DATE(patients.created_at)',
+           ' < DATE(CONVERT_TZ(patients.created_at, "UTC", patients.time_zone))',
            ADMIN_OPTIONS['monitoring_period_days']
          )
   }
@@ -764,7 +764,7 @@ class Patient < ApplicationRecord
     where.not(last_date_of_exposure: nil)
          .where(
            'DATE_ADD(DATE(patients.last_date_of_exposure), INTERVAL ? DAY)'\
-           ' = DATE(patients.created_at)',
+           ' = DATE(CONVERT_TZ(patients.created_at, "UTC", patients.time_zone))',
            ADMIN_OPTIONS['monitoring_period_days']
          )
   }
