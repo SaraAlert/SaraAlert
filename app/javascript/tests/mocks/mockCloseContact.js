@@ -18,12 +18,12 @@ const mockCloseContact1 = {
 };
 
 const mockCloseContact2 = {
-  id: 2,
+  id: 18,
   patient_id: 4,
   first_name: 'Captain',
   last_name: 'Rogers',
   primary_telephone: '+15555550146',
-  email: null,
+  email: 'captain_america@example.com',
   notes: 'I can do this all day, Tony',
   enrolled_id: 25,
   contact_attempts: null,
@@ -36,12 +36,12 @@ const mockCloseContact2 = {
   user_defined_id_nndss: null,
 };
 const mockCloseContact3 = {
-  id: 2,
+  id: 18,
   patient_id: null,
   first_name: 'Thor',
   last_name: 'Odinson',
   primary_telephone: '+15555150256',
-  email: null,
+  email: 'strongest_avenger@example.com',
   notes: "Because that's what superheros do",
   enrolled_id: null,
   contact_attempts: null,

@@ -151,7 +151,7 @@ class CloseContactModal extends React.Component {
               <Form.Control
                 isInvalid={this.state.errors['assigned_user']}
                 as="input"
-                list="assigned_users"
+                list="cc_assigned_users"
                 autoComplete="off"
                 size="lg"
                 className="d-block"
