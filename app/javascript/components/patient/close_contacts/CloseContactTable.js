@@ -49,7 +49,7 @@ class CloseContactTable extends React.Component {
       isLoading: false,
       activeRow: null,
       showEditModal: false,
-      showAddCloseContactModal: false,
+      showAddModal: false,
       showDeleteModal: false,
       delete_reason: null,
       delete_reason_text: null,
@@ -222,7 +222,7 @@ class CloseContactTable extends React.Component {
    */
   toggleAddModal = () => {
     this.setState({
-      showAddCloseContactModal: !this.state.showAddCloseContactModal,
+      showAddModal: !this.state.showAddModal,
     });
   };
 
@@ -231,7 +231,7 @@ class CloseContactTable extends React.Component {
    * @param {*} newCloseContactData - State from close contact modal containing needed close contact data.
    */
   handleAddSubmit = newCloseContactData => {
-    this.setState({ showAddCloseContactModal: false }, () => {
+    this.setState({ showAddModal: false }, () => {
       this.updateCloseContact(newCloseContactData, false);
     });
   };
@@ -463,12 +463,12 @@ class CloseContactTable extends React.Component {
             show_text_input={true}
           />
         )}
-        {(this.state.showAddCloseContactModal || this.state.showEditModal) && (
+        {(this.state.showAddModal || this.state.showEditModal) && (
           <CloseContactModal
-            title={this.state.showAddCloseContactModal ? 'Add New Close Contact' : 'Edit Close Contact'}
-            currentCloseContact={this.state.showAddCloseContactModal ? {} : this.getCurrentCloseContact()}
+            title={this.state.showAddModal ? 'Add New Close Contact' : 'Edit Close Contact'}
+            currentCloseContact={this.state.showAddModal ? {} : this.getCurrentCloseContact()}
             onClose={this.toggleAddModal}
-            onSave={this.state.showAddCloseContactModal ? this.handleAddSubmit : this.handleEditSubmit}
+            onSave={this.state.showAddModal ? this.handleAddSubmit : this.handleEditSubmit}
             isEditing={this.state.showEditModal}
             assigned_users={this.props.assigned_users}
           />
