@@ -37,7 +37,7 @@ Rails.application.routes.draw do
       get '/.well-known/smart-configuration', to: 'api#well_known'
       get '/Patient/$export', to: 'api#bulk_data_export'
       get '/ExportStatus/:id', to: 'api#export_status'
-      get '/ExportFiles/:id/:filename', to: 'api#export_files', constraints: { filename: /[^\/]+/ }
+      get '/ExportFiles/:id/:resource_type', to: 'api#export_files'
       get '/:resource_type/:id', to: 'api#show'
       put '/:resource_type/:id', to: 'api#update'
       patch '/:resource_type/:id', to: 'api#update'
