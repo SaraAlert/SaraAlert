@@ -1991,15 +1991,6 @@ class PatientTest < ActiveSupport::TestCase
     patient.follow_up_reason = 'Deceased'
     assert patient.valid?(:api)
 
-    patient.follow_up_reason = 'Duplicate'
-    assert patient.valid?(:api)
-
-    patient.follow_up_reason = 'High-Risk'
-    assert patient.valid?(:api)
-
-    patient.follow_up_reason = 'Other'
-    assert patient.valid?(:api)
-
     patient.follow_up_reason = ''
     assert_not patient.valid?(:api)
 
@@ -2008,7 +1999,7 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-  test 'validates follow_up_note is a valid note in api context' do
+  test 'validates follow_up_note is only defined when follow_up_reason has a value in api context' do
     patient = valid_patient
 
     patient.follow_up_reason = 'Deceased'
