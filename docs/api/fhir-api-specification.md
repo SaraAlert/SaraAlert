@@ -1796,6 +1796,22 @@ Use `http://saraalert.org/StructureDefinition/extended-isolation` to specify a u
 }
 ```
 
+Use `http://saraalert.org/StructureDefinition/follow-up-reason` to specify a reason to follow up on the monitoree (options are: `Deceased`, `Duplicate`, `High-Risk`, `Hospitalized`, `In Need of Follow-up`, `Lost to Follow-up`, `Needs Interpretation`, `Quality Assurance`, `Refused Active Monitoring`, and `Other`).
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/follow-up-reason",
+  "valueString": "Duplicate"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/follow-up-note` to specify additional details for follow up reason on the monitoree. This requires the follow up reason to be set.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/follow-up-note",
+  "valueString": "This is a duplicate."
+}
+```
+
 Use `http://saraalert.org/StructureDefinition/phone-type` to specify the type of phone attached to the primary or secondary phone number (options are: `Smartphone`, `Plain Cell`, and `Landline`). Note that this extension should be placed on the first element in the `Patient.telecom` array to specify the monitoree's primary phone type, and the second element in the `Patient.telecom` array to specify the monitoree's secondary phone type.
 ```json
 "telecom": [
