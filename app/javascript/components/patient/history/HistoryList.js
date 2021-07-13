@@ -163,7 +163,12 @@ class HistoryList extends React.Component {
             <section role="list" aria-label="History Items">
               {this.state.displayedHistories.map((histories, index) => (
                 <div role="listitem" key={`history-item-${index}`} aria-label={`History Entry ${index}`}>
-                  <History versions={histories} current_user={this.props.current_user} authenticity_token={this.props.authenticity_token} />
+                  <History
+                    key={histories[0].id}
+                    versions={histories}
+                    current_user={this.props.current_user}
+                    authenticity_token={this.props.authenticity_token}
+                  />
                 </div>
               ))}
             </section>
