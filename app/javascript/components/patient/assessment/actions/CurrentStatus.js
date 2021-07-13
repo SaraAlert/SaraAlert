@@ -142,7 +142,7 @@ class CurrentStatus extends React.Component {
       : this.props.report_eligibility.sent
       ? 'Waiting for a response'
       : 'Not eligible for notifications';
-    return ` Notification Status is: ${eligibilityStatus}.`;
+    return `Notification Status is: ${eligibilityStatus}.`;
   };
 
   render() {
