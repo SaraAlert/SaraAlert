@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
-require 'test_helper'
-require 'test_case'
-require 'rspec/mocks/minitest_integration'
-require 'controllers/fhir/r4/api_controller_test'
+require 'api_controller_test_case'
 
-class ApiControllerTest < ActionDispatch::IntegrationTest
+class BulkExportTest < ApiControllerTestCase
   def setup
+    setup_system_applications
+    setup_system_tokens
+    setup_user_applications
+    setup_logger
     @patient = create(:patient)
     @patient_io = StringIO.new
     @patient_io.write(JSON.generate(@patient.as_fhir.to_hash) + "\n")
@@ -38,7 +39,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should kick off an export with _since parameter' do
     since = 2.days.ago.strftime('%FT%T%:z')
     get(
-      "/fhir/r4/Patient/$export?_since=#{since}",
+      "/fhir/r4/Patient/$export?_since=#{CGI.escape(since)}",
       headers: {
         Authorization: "Bearer #{@system_everything_token.token}",
         Accept: 'application/fhir+json',
@@ -55,7 +56,31 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be 422 unprocessable when _since is invalid' do
     since = 'foo'
     get(
-      "/fhir/r4/Patient/$export?_since=#{since}",
+      "/fhir/r4/Patient/$export?_since=#{CGI.escape(since)}",
+      headers: {
+        Authorization: "Bearer #{@system_everything_token.token}",
+        Accept: 'application/fhir+json',
+        Prefer: 'respond-async'
+      }
+    )
+    assert_response :unprocessable_entity
+  end
+
+  test 'should be 422 unprocessable when _type is passed' do
+    get(
+      '/fhir/r4/Patient/$export?_type=foo',
+      headers: {
+        Authorization: "Bearer #{@system_everything_token.token}",
+        Accept: 'application/fhir+json',
+        Prefer: 'respond-async'
+      }
+    )
+    assert_response :unprocessable_entity
+  end
+
+  test 'should be 422 unprocessable when _outputFormat is passed' do
+    get(
+      '/fhir/r4/Patient/$export?_outputFormat=foo',
       headers: {
         Authorization: "Bearer #{@system_everything_token.token}",
         Accept: 'application/fhir+json',
@@ -142,6 +167,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be 200 ok for a complete job' do
     download = create(:api_download, application_id: @system_everything_app.id)
     allow(::Sidekiq::Status).to(receive(:status).and_return(:complete))
+    allow(::Sidekiq::Status).to(receive(:get).and_return(DateTime.now.utc.to_s))
     get(
       "/fhir/r4/ExportStatus/#{download.id}",
       headers: { Authorization: "Bearer #{@system_everything_token.token}" }
@@ -175,7 +201,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     download.files.attach(io: @patient_io, filename: 'Patient.ndjson', content_type: 'application/fhir+ndjson')
     @system_everything_app.api_downloads << download
     get(
-      "/fhir/r4/ExportFiles/#{download.id}/Patient.ndjson",
+      "/fhir/r4/ExportFiles/#{download.id}/Patient",
       headers: {
         Authorization: "Bearer #{@system_everything_token.token}",
         Accept: 'application/fhir+ndjson'
@@ -191,7 +217,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     download.files.attach(io: @patient_io, filename: 'Patient.ndjson', content_type: 'application/fhir+ndjson')
     @system_patient_read_app.api_downloads << download
     get(
-      "/fhir/r4/ExportFiles/#{download.id}/Patient.ndjson",
+      "/fhir/r4/ExportFiles/#{download.id}/Patient",
       headers: {
         Authorization: "Bearer #{@system_patient_token_r.token}",
         Accept: 'application/fhir+ndjson'
@@ -202,12 +228,28 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal @patient.as_fhir.to_hash, json_response
   end
 
+  test 'should be 406 not acceptable when incorrect accept header' do
+    download = create(:api_download, application_id: @system_everything_app.id)
+    download.files.attach(io: @patient_io, filename: 'Patient.ndjson', content_type: 'application/fhir+ndjson')
+    @system_everything_app.api_downloads << download
+    get(
+      "/fhir/r4/ExportFiles/#{download.id}/Patient",
+      headers: {
+        Authorization: "Bearer #{@system_everything_token.token}",
+        Accept: 'application/xml'
+      }
+    )
+    assert_response :not_acceptable
+    json_response = JSON.parse(response.body)
+    assert_match(/Accept/, json_response['issue'][0]['diagnostics'])
+  end
+
   test 'should be not found when the file does not match an expected resource_type' do
     download = create(:api_download, application_id: @system_patient_read_app.id)
     download.files.attach(io: @patient_io, filename: 'foo.ndjson', content_type: 'application/fhir+ndjson')
     @system_patient_read_app.api_downloads << download
     get(
-      "/fhir/r4/ExportFiles/#{download.id}/foo.ndjson",
+      "/fhir/r4/ExportFiles/#{download.id}/foo",
       headers: {
         Authorization: "Bearer #{@system_patient_token_r.token}",
         Accept: 'application/fhir+ndjson'
@@ -221,7 +263,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be not found when the file does not exist' do
     download = create(:api_download, application_id: @system_everything_app.id)
     get(
-      "/fhir/r4/ExportFiles/#{download.id}/Patient.ndjson",
+      "/fhir/r4/ExportFiles/#{download.id}/Patient",
       headers: {
         Authorization: "Bearer #{@system_patient_token_r.token}",
         Accept: 'application/fhir+ndjson'
@@ -235,7 +277,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should be unauthorized when the client application has no available downloads' do
     download = create(:api_download, application_id: @system_everything_app.id)
     get(
-      "/fhir/r4/ExportFiles/#{download.id}/Patient.ndjson",
+      "/fhir/r4/ExportFiles/#{download.id}/Patient",
       headers: {
         Authorization: "Bearer #{@system_patient_token_r.token}",
         Accept: 'application/fhir+ndjson'

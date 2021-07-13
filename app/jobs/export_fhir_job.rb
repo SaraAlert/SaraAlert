@@ -10,7 +10,7 @@ class ExportFhirJob < ApplicationJob
     patient_ids = Jurisdiction.find_by(id: current_client_application[:jurisdiction_id])&.all_patients_excluding_purged&.pluck(:id)
     return if patient_ids.nil?
 
-    store transaction_time: DateTime.now.utc.strftime('%FT%T%:z')
+    store transaction_time: DateTime.now.utc
 
     patient_query = { id: patient_ids }
     patient_query[:updated_at] = (params[:since]..) unless params[:since].nil?
@@ -39,6 +39,7 @@ class ExportFhirJob < ApplicationJob
     file.rewind
     download.files.attach(io: file, filename: filename, content_type: 'application/fhir+ndjson')
   ensure
+    file&.close
     FileUtils.remove_entry(File.dirname(file)) if file.is_a?(File) && File.exist?(file)
   end
 end
