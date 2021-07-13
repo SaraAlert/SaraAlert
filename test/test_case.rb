@@ -12,6 +12,7 @@ class ActiveSupport::TestCase
 
   def setup
     Sidekiq::Worker.clear_all
+    super
   end
 
   def assert_histories_contain(patient, history_comment_substring)

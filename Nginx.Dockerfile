@@ -1,11 +1,10 @@
 # Base image:
 ARG sara_alert_image
 FROM ${sara_alert_image} as base
-FROM nginx:latest
-
+FROM nginx:alpine
 
 # Install dependencies
-RUN apt-get update -qq && apt-get -y install apache2-utils
+RUN apk --update add --no-cache apache2-utils
 
 # establish where Nginx should look for files
 ENV RAILS_ROOT /var/www/saraalert
