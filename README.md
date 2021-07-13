@@ -302,6 +302,8 @@ See [API documentation](https://saraalert.github.io/SaraAlert/api/) for more inf
 
 ### Backend Tests
 
+Our backend test suite has multiple tests to ensure that time-sensitive operations work across time zones. To support these tests, zone info needs to be loaded into your local MySQL database with the following command on macOS: `mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u $MYSQL_USER -p mysql`
+
 ```
 bundle exec rails test
 ```
