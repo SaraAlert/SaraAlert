@@ -36,10 +36,8 @@ module VaccineQueryHelper
       raise StandardError, error_message
     end
 
-    if entries.negative? || page.negative?
-      error_message = "Invalid pagination options. Number of entries: #{entries}. Page: #{page}"
-      raise StandardError, error_message
-    end
+    raise InvalidQueryError.new(:entries, entries) if entries.negative?
+    raise InvalidQueryError.new(:page, page) if page.negative?
 
     {
       patient_id: patient_id,
