@@ -19,8 +19,7 @@ class CloseContactsController < ApplicationController
     end
 
     # @patient is set in the check_patient hook above
-    close_contacts = CloseContact.where(patient_id: @patient.id)
-    render json: { error: 'Invalid patient_id' }, status: :bad_request if @patient.nil?
+    close_contacts = @patient.close_contacts
 
     # Get close_contacts table data
     close_contacts = search(close_contacts, data[:search_text])
@@ -122,7 +121,7 @@ class CloseContactsController < ApplicationController
     patient_id = params.require(:patient_id).to_i
     # Check if Patient ID is valid
     unless Patient.exists?(patient_id)
-      error_message = "Close Contact cannot be modified for unknown monitoree with ID: #{patient_id}"
+      error_message = "Unknown patient with ID: #{patient_id}"
       render(json: { error: error_message }, status: :bad_request) && return
     end
 

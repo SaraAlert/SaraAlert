@@ -24,9 +24,8 @@ function formatNameAlt(patient) {
 
 /**
  * Provides the yup validation for Patient phone numbers
- * @param {Object} data - the input to validate using yup
  */
-function phoneSchemaValidator (data) {
+function phoneSchemaValidator() {
   return this.test({
     name: 'phone',
     exclusive: true,
@@ -49,8 +48,8 @@ function phoneSchemaValidator (data) {
  * Formats patient's phone number in E164 format.
  * @param {String} phone - patient's phone number
  */
-function formatPhoneNumber (data) {
-  if (!data) return ''
+function formatPhoneNumber(data) {
+  if (data === null || data === undefined) return '';
   // Some components will call this with an object containing a value field containing a phone number
   // Others will pass in a phone value directly
   const phone = (Object.prototype.hasOwnProperty.call(data, 'value')) ? data.value : data

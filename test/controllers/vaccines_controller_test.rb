@@ -52,15 +52,15 @@ class VaccinesControllerTest < ActionController::TestCase
 
     post :create, params: { patient_id: 'test' }
     assert_response(:bad_request)
-    assert_equal("Vaccination cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID #{'test'.to_i}", JSON.parse(response.body)['error'])
 
     put :update, params: { id: 'test', patient_id: 'test' }
     assert_response(:bad_request)
-    assert_equal("Vaccination cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID #{'test'.to_i}", JSON.parse(response.body)['error'])
 
     put :destroy, params: { id: 'test', patient_id: 'test' }
     assert_response(:bad_request)
-    assert_equal("Vaccination cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID #{'test'.to_i}", JSON.parse(response.body)['error'])
 
     sign_out user
   end
@@ -104,7 +104,7 @@ class VaccinesControllerTest < ActionController::TestCase
 
   # --- INDEX --- #
 
-  test 'index: returns error if params cannot be validated' do
+  test 'index: returns error if entries params cannot be validated' do
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
     create(:vaccine, patient: patient)
@@ -123,7 +123,31 @@ class VaccinesControllerTest < ActionController::TestCase
     get :index, params: params
 
     assert_response(:bad_request)
-    assert_equal("Invalid pagination options. Number of entries: #{params[:entries]}. Page: #{params[:page]}", JSON.parse(response.body)['error'])
+    assert_equal("Invalid Query (entries): #{params[:entries]}", JSON.parse(response.body)['error'])
+
+    sign_out user
+  end
+
+  test 'index: returns error if page params cannot be validated' do
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    create(:vaccine, patient: patient)
+
+    sign_in user
+
+    params = {
+      patient_id: patient.id,
+      entries: 5,
+      page: -1, # invalid param
+      search: '',
+      order: nil,
+      direction: nil
+    }
+
+    get :index, params: params
+
+    assert_response(:bad_request)
+    assert_equal("Invalid Query (page): #{params[:page]}", JSON.parse(response.body)['error'])
 
     sign_out user
   end
@@ -144,7 +168,7 @@ class VaccinesControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal("Vaccination cannot be modified for unknown monitoree with ID: #{mock_invalid_id&.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID #{mock_invalid_id&.to_i}", JSON.parse(response.body)['error'])
 
     sign_out user
   end
@@ -162,8 +186,10 @@ class VaccinesControllerTest < ActionController::TestCase
       order: nil,
       direction: nil
     }
-
-    assert_redirected_to(@controller.root_url)
+    assert_equal([], JSON.parse(response.body)['table_data'])
+    assert_equal(0, JSON.parse(response.body)['total'])
+    # assert_equal("Unknown patient with ID #{mock_invalid_id&.to_i}", JSON.parse(response.body)['error'])
+    # assert_redirected_to(@controller.root_url)
 
     sign_out user
   end
