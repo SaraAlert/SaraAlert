@@ -16,6 +16,8 @@
 .browserslistrc
 .ruby-version
 .travis.yml
+.erb-lint.yml
+.yarnrc
 
 .git
 .github
@@ -44,3 +46,4 @@ nginx.conf
 **/.DS_Store
 
 performance/
+config/sara/performance_jurisdictions.yml
