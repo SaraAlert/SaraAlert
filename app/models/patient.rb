@@ -638,15 +638,15 @@ class Patient < ApplicationRecord
   # - has no symptomatic reports
   # - have reported within 10-13 days after their last date of exposure
   # - be 10 or more days past their last date of exposure
-  scope :ten_day_quarantine_candidates, lambda { |user_curr_datetime|
+  scope :ten_day_quarantine_candidates, lambda {
     where(purged: false, monitoring: true, isolation: false, continuous_exposure: false)
       .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_exists(:assessments) do
         # CAST is necessary to guarantee correct comparison between datetime and date.
-        where('CAST(assessments.created_at AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 10 DAY) '\
+        where('CAST(CONVERT_TZ(assessments.created_at, "UTC", patients.time_zone) AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 10 DAY) '\
               'AND DATE_ADD(last_date_of_exposure, INTERVAL 13 DAY)')
       end
-      .where('? >= DATE_ADD(patients.last_date_of_exposure, INTERVAL 10 DAY)', user_curr_datetime.to_date)
+      .where('CAST(CONVERT_TZ(?, "UTC", patients.time_zone) AS DATE) >= DATE_ADD(patients.last_date_of_exposure, INTERVAL 10 DAY)', Time.now.utc)
   }
 
   # Criteria for this CDC quarantine guidance which can be found here:
@@ -659,15 +659,15 @@ class Patient < ApplicationRecord
   # - be 7 or more days past their last date of exposure
   # - have a negative PCR or Antigen test that was collected between 5-9 days after their last date of exposure
   # rubocop:disable Style/MultilineBlockChain
-  scope :seven_day_quarantine_candidates, lambda { |user_curr_datetime|
+  scope :seven_day_quarantine_candidates, lambda {
     where(purged: false, monitoring: true, isolation: false, continuous_exposure: false)
       .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_exists(:assessments) do
         # CAST is necessary to guarantee correct comparison between datetime and date.
-        where('CAST(assessments.created_at AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY) '\
+        where('CAST(CONVERT_TZ(assessments.created_at, "UTC", patients.time_zone) AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY) '\
               'AND DATE_ADD(last_date_of_exposure, INTERVAL 9 DAY)')
       end
-      .where('? >= DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY)', user_curr_datetime.to_date)
+      .where('CAST(CONVERT_TZ(?, "UTC", patients.time_zone) AS DATE) >= DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY)', Time.now.utc)
       .where_assoc_exists(:laboratories) do
         where(result: 'negative', lab_type: %w[PCR ANTIGEN])
           .where('specimen_collection BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 5 DAY) AND DATE_ADD(last_date_of_exposure, INTERVAL 9 DAY)')
