@@ -18,8 +18,9 @@ class WorkflowTable extends React.Component {
           <thead>
             <tr className="header">
               <th></th>
-              <th>Exposure</th>
-              <th>Isolation</th>
+              {this.props.workflows.map((workflow, i) => (
+                <th key={i}>{workflow}</th>
+              ))}
               <th>Total</th>
             </tr>
           </thead>
@@ -44,8 +45,13 @@ class WorkflowTable extends React.Component {
 WorkflowTable.propTypes = {
   title: PropTypes.string,
   tooltipKey: PropTypes.string,
+  workflows: PropTypes.array,
   rowHeaders: PropTypes.array,
   data: PropTypes.array,
+};
+
+WorkflowTable.defaultProps = {
+  workflows: ['Exposure', 'Isolation'],
 };
 
 export default WorkflowTable;

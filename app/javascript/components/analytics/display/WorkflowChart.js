@@ -4,6 +4,8 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 import CustomizedAxisTick from '../display/CustomizedAxisTick';
 import InfoTooltip from '../../util/InfoTooltip';
 
+const COLORS = ['#226891', '#3d8f8f', '#90ad8a', '#dcc5a7'];
+
 class WorkflowChart extends React.Component {
   render() {
     return (
@@ -16,10 +18,9 @@ class WorkflowChart extends React.Component {
             </span>
           )}
         </h5>
-        <ResponsiveContainer width="100%" height={400}>
+        <div>
+        <ResponsiveContainer width="100%" height={500}>
           <BarChart
-            width={500}
-            height={300}
             data={this.props.data}
             margin={{
               top: 20,
@@ -32,10 +33,12 @@ class WorkflowChart extends React.Component {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="Exposure" stackId="a" fill="#557385" />
-            <Bar dataKey="Isolation" stackId="a" fill="#DCC5A7" />
+            {this.props.workflows.map((workflow, i) => (
+              <Bar key={i} dataKey={workflow} stackId="a" fill={COLORS[i]} />
+            ))}
           </BarChart>
         </ResponsiveContainer>
+        </div>
       </div>
     );
   }
@@ -44,7 +47,12 @@ class WorkflowChart extends React.Component {
 WorkflowChart.propTypes = {
   title: PropTypes.string,
   tooltipKey: PropTypes.string,
+  workflows: PropTypes.array,
   data: PropTypes.array,
+};
+
+WorkflowChart.defaultProps = {
+  workflows: ['Exposure', 'Isolation'],
 };
 
 export default WorkflowChart;

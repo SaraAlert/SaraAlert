@@ -6,13 +6,12 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { formatDate } from '../../../../utils/DateTime';
 import { mapToChartFormat, parseOutFields } from '../../../../utils/Analytics';
 import _ from 'lodash';
-
 import 'resize-observer-polyfill/dist/ResizeObserver.global';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
 const GRAPH_CONFIGS = [
-  { dataKey: 'Exposure', fill: '#557385', legendText: 'Last Date of Exposure' },
-  { dataKey: 'Isolation', fill: '#DCC5A7', legendText: 'Symptom Onset Date' },
+  { dataKey: 'Exposure', fill: '#226891', legendText: 'Last Date of Exposure' },
+  { dataKey: 'Isolation', fill: '#3d8f8f', legendText: 'Symptom Onset Date' },
 ];
 let DATES_OF_INTEREST = []; // If certain dates are desired, they can be specified here
 
@@ -73,7 +72,7 @@ class MonitoreesByEventDate extends React.Component {
           <Row className="mx-2 px-0">
             {GRAPH_CONFIGS.map((val, index) => (
               <Col xs="12" key={index}>
-                <div className="font-weight-bold h5 ml-5">{val.dataKey} Workflow</div>
+                <div className="font-weight-bold h5 ml-5 pb-2">{val.dataKey} Workflow</div>
                 <ResponsiveContainer width="100%" height={400}>
                   <BarChart width={500} height={300} data={this.state.graphData[Number(index)]} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
