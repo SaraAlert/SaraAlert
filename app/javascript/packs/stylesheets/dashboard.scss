@@ -7,6 +7,10 @@
       border-color:#b5b5b5;
       background-color:white;
     }
+
+    .small-tab {
+      display: none !important;
+    }
   }
 
   .nav-item:last-child {
@@ -77,7 +81,7 @@
   .isolation-dashboard {
     .nav-tabs {
       .nav-link {
-        width: 300px;
+        width: 230px;
         border: 1px #dee2e6 solid;
         margin-bottom: -.05px;
 
@@ -91,6 +95,14 @@
 
         .badge {
           float: right !important
+        }
+
+        .small-tab {
+          display: inline !important;
+        }
+
+        .large-tab {
+          display: none !important;
         }
       }
     }
