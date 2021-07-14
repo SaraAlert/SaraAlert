@@ -203,7 +203,14 @@ class CustomTable extends React.Component {
           </div>
         )}
         <div className={this.props.tableCustomClass ? `table-responsive ${this.props.tableCustomClass}` : 'table-responsive'}>
-          <Table striped bordered hover size="sm" id={`${this.props.dataType}-table`} className="opaque-table">
+          <Table
+            striped
+            bordered
+            hover
+            size="sm"
+            id={`${this.props.dataType}-table`}
+            className="opaque-table"
+            title={this.props.title ? this.props.title : null}>
             <thead>
               <tr>
                 {this.props.isSelectable && this.props.checkboxColumnLocation === 'left' && this.renderSelectAllCheckbox()}
@@ -220,7 +227,7 @@ class CustomTable extends React.Component {
                   <tr
                     key={rowIndex}
                     id={`${this.props.dataType}-${rowData.id ? rowData.id : `row-${rowIndex}`}`}
-                    className={this.props.getRowClassName ? this.props.getRowClassName(rowData) : ''}>
+                    className={this.props.getRowClassName ? this.props.getRowClassName(rowData) : null}>
                     {this.props.isSelectable && this.props.checkboxColumnLocation === 'left' && this.renderRowCheckbox(rowData, rowIndex)}
                     {Object.values(this.props.columnData).map((colData, colIndex) => {
                       let value = rowData[colData.field];
@@ -233,7 +240,7 @@ class CustomTable extends React.Component {
                         value = colData.filter(filterData);
                       }
                       return (
-                        <td key={colIndex} className={colData.className ? colData.className : ''}>
+                        <td key={colIndex} className={colData.className ? colData.className : null}>
                           {colData.onClick && <span onClick={() => (colData.onClick(rowData.id.toString()) ? colData.onClick : null)}>{value}</span>}
                           {!colData.onClick && value}
                         </td>
@@ -333,6 +340,7 @@ class CustomTable extends React.Component {
 }
 
 CustomTable.propTypes = {
+  title: PropTypes.string, // titles should not include the word 'Table', as assistive technologies will include that automatically
   dataType: PropTypes.string.isRequired,
   columnData: PropTypes.array,
   rowData: PropTypes.array,

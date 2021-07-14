@@ -111,6 +111,7 @@ class AssessmentTable extends React.Component {
               const symptomColData = this.getSymptomCols(response.data.symptoms);
               updatedColData = state.table.colData.concat(symptomColData);
             }
+
             return {
               table: {
                 ...state.table,
@@ -317,7 +318,9 @@ class AssessmentTable extends React.Component {
     return (
       <React.Fragment>
         <Card id="reports" className="mx-2 my-4 card-square">
-          <Card.Header className="h5">Reports</Card.Header>
+          <Card.Header as="h1" className="patient-card-header">
+            Reports
+          </Card.Header>
           <Card.Body>
             <div className="mt-4">
               <CurrentStatus report_eligibility={this.props.report_eligibility} status={this.props.patient_status} isolation={this.props.patient?.isolation} />
@@ -337,7 +340,7 @@ class AssessmentTable extends React.Component {
                       <OverlayTrigger overlay={<Tooltip>Search by id or reporter.</Tooltip>}>
                         <InputGroup.Text className="rounded-0">
                           <i className="fas fa-search"></i>
-                          <label htmlFor="reports-search-input" className="ml-1 mb-0">
+                          <label htmlFor="reports-search-input" className="ml-1 mb-0" aria-label="Search Reports Table by ID or reporter.">
                             Search
                           </label>
                         </InputGroup.Text>
@@ -349,6 +352,7 @@ class AssessmentTable extends React.Component {
               </Row>
               <div className="mb-4">
                 <CustomTable
+                  title="Reports"
                   dataType="assessments"
                   columnData={this.state.table.colData}
                   rowData={this.state.table.rowData}
