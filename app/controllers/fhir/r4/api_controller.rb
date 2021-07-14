@@ -37,7 +37,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   #
   # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization, Provenance
   #
-  # GET /[:resource_type]/[:id]
+  # GET /fhir/r4/[:resource_type]/[:id]
   def show
     status_not_acceptable && return unless accept_header?
 
