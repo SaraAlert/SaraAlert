@@ -172,13 +172,13 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal(desired_hoh.id, dependent.responder_id)
 
     # Verify history item was created for new HoH
-    comment = "User added monitoree with ID #{dependent.id} to a household. This monitoree"\
+    comment = "User added monitoree with Sara Alert ID #{dependent.id} to a household. This monitoree"\
               ' will now be responsible for handling the reporting on their behalf.'
     assert_equal(1, desired_hoh.histories.count)
     assert_equal(comment, desired_hoh.histories.last.comment)
 
     # Verify history item for was created for current patient being moved to a household
-    comment = "User added monitoree to a household. Monitoree with ID #{desired_hoh.id} will now be responsible"\
+    comment = "User added monitoree to a household. Monitoree with Sara Alert ID #{desired_hoh.id} will now be responsible"\
               ' for handling the reporting on their behalf.'
     assert_equal(1, dependent.histories.count)
     assert_equal(comment, dependent.histories.last.comment)
@@ -347,13 +347,13 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal(dependent.id, dependent.responder_id)
 
     # Verify history item was created for old HoH
-    comment = "User removed dependent monitoree with ID #{dependent.id} from the household. This monitoree"\
+    comment = "User removed dependent monitoree with Sara Alert ID #{dependent.id} from the household. This monitoree"\
               ' will no longer be responsible for handling their reporting.'
     assert_equal(1, hoh.histories.count)
     assert_equal(comment, hoh.histories.last.comment)
 
     # Verify history item was created on current patient
-    comment = "User removed monitoree from a household. Monitoree with ID #{hoh.id} will no longer be responsible for handling their reporting."
+    comment = "User removed monitoree from a household. Monitoree with Sara Alert ID #{hoh.id} will no longer be responsible for handling their reporting."
     assert_equal(1, dependent.histories.count)
     assert_equal(comment, dependent.histories.last.comment)
 
@@ -550,8 +550,8 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal(dependent.id, dependent.responder_id)
     assert_equal(dependent.id, hoh.responder_id)
 
-    history_comment = "User changed head of household from monitoree with ID #{hoh.id} to monitoree with ID #{dependent.id}."\
-                      " Monitoree with ID #{dependent.id} will now be responsible for handling the reporting for the household."
+    history_comment = "User changed head of household from monitoree with Sara Alert ID #{hoh.id} to monitoree with Sara Alert ID #{dependent.id}."\
+                      " Monitoree with Sara Alert ID #{dependent.id} will now be responsible for handling the reporting for the household."
 
     # Verify history item was created for old HoH
     assert_equal(1, hoh.histories.count)
@@ -586,8 +586,8 @@ class PatientsControllerTest < ActionController::TestCase
     assert_equal(dependent_2.id, hoh.responder_id)
     assert_equal(dependent_2.id, dependent_2.responder_id)
 
-    history_comment = "User changed head of household from monitoree with ID #{hoh.id} to monitoree with ID #{dependent_2.id}."\
-                      " Monitoree with ID #{dependent_2.id} will now be responsible for handling the reporting for the household."
+    history_comment = "User changed head of household from monitoree with Sara Alert ID #{hoh.id} to monitoree with Sara Alert ID #{dependent_2.id}."\
+                      " Monitoree with Sara Alert ID #{dependent_2.id} will now be responsible for handling the reporting for the household."
 
     # Verify history item was created for old HoH
     assert_equal(1, hoh.histories.count)

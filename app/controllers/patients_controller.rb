@@ -329,12 +329,12 @@ class PatientsController < ApplicationController
 
     if updated
       # Create history item for new HoH
-      comment = "User added monitoree with ID #{current_patient.id} to a household. This monitoree"\
+      comment = "User added monitoree with Sara Alert ID #{current_patient.id} to a household. This monitoree"\
                 ' will now be responsible for handling the reporting on their behalf.'
       History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
 
       # Create history item for current patient being moved to a household
-      comment = "User added monitoree to a household. Monitoree with ID #{new_hoh_id} will now be responsible"\
+      comment = "User added monitoree to a household. Monitoree with Sara Alert ID #{new_hoh_id} will now be responsible"\
                 ' for handling the reporting on their behalf.'
       History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
     else
@@ -372,12 +372,12 @@ class PatientsController < ApplicationController
 
     if updated
       # Create history item for old HoH
-      comment = "User removed dependent monitoree with ID #{current_patient.id} from the household. This monitoree"\
+      comment = "User removed dependent monitoree with Sara Alert ID #{current_patient.id} from the household. This monitoree"\
                 ' will no longer be responsible for handling their reporting.'
       History.monitoring_change(patient: old_hoh, created_by: current_user.email, comment: comment)
 
       # Create history item on current patient
-      comment = "User removed monitoree from a household. Monitoree with ID #{old_hoh.id} will"\
+      comment = "User removed monitoree from a household. Monitoree with Sara Alert ID #{old_hoh.id} will"\
                 ' no longer be responsible for handling their reporting.'
       History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
     else
@@ -438,8 +438,8 @@ class PatientsController < ApplicationController
       render(json: { error: error_message }, status: :bad_request) && return
     end
 
-    comment = "User changed head of household from monitoree with ID #{old_hoh.id} to monitoree with ID #{new_hoh_id}."\
-              " Monitoree with ID #{new_hoh_id} will now be responsible for handling the reporting for the household."
+    comment = "User changed head of household from monitoree with Sara Alert ID #{old_hoh.id} to monitoree with Sara Alert ID #{new_hoh_id}."\
+              " Monitoree with Sara Alert ID #{new_hoh_id} will now be responsible for handling the reporting for the household."
 
     # Create history item for old HoH
     History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
