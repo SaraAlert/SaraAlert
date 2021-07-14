@@ -84,6 +84,10 @@
     {
       "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
       "valueString": "additional travel notes"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/follow-up-reason",
+      "valueString": "Invalid reason"
     }
   ],
   "active": true,

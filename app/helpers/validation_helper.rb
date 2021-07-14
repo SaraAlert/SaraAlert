@@ -157,6 +157,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other'],
     foreign_monitored_address_state: [*VALID_STATES, nil, ''],
     additional_planned_travel_destination_state: [*VALID_STATES, nil, ''],
+    follow_up_reason: [*FOLLOW_UP_FLAG_REASONS, nil],
     # Since languages keys need to be converted to strings, we do this in the languages.rb initializer to save time on initial load after restart.
     primary_language: [*VALID_LANGUAGES, nil, ''],
     secondary_language: [*VALID_LANGUAGES, nil, ''],
@@ -245,7 +246,9 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     dose_number: { label: 'Vaccine Dose Number', checks: [:enum] },
     notes: { label: 'Vaccine Notes', checks: [] },
     public_health_action: { label: 'Public Health Action', checks: [] },
-    extended_isolation: { label: 'Extended Isolation', checks: [:date] }
+    extended_isolation: { label: 'Extended Isolation', checks: [:date] },
+    follow_up_reason: { label: 'Follow-up Reason', checks: [:enum] },
+    follow_up_note: { label: 'Follow-up Note', checks: [] }
   }.freeze
 
   # Validates if a given date value is between (inclusive) two dates.
