@@ -521,6 +521,14 @@ Get a monitoree via an id, e.g.:
     {
       "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
       "valueBoolean": true
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-reason",
+      "valueString": "Duplicate"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-note",
+      "valueString": "This is a duplicate."
     }
   ],
   "active": true,
@@ -1351,6 +1359,14 @@ To create a new monitoree, simply POST a FHIR Patient resource.
     {
       "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
       "valueBoolean": true
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-reason",
+      "valueString": "Duplicate"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-note",
+      "valueString": "This is a duplicate."
     }
   ],
   "active": true,
@@ -2198,6 +2214,14 @@ An update request creates a new current version for an existing resource.
     {
       "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
       "valueBoolean": true
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-reason",
+      "valueString": "Duplicate"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-note",
+      "valueString": "This is a duplicate."
     }
   ],
   "active": true,
