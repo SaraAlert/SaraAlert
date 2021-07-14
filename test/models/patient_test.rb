@@ -3242,8 +3242,29 @@ class PatientTest < ActiveSupport::TestCase
     patient.update(updated_at: 300.days.ago)
     assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
-    # ineligible because patient
+    # eligibe in isolation keeping all else the same
     patient.update(isolation: true)
+    patient.update(updated_at: 300.days.ago)
+    assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+
+    # (yesterday) ineligible if local date is not two days past extended isolation date
+    patient.update(extended_isolation: Time.now.getlocal(patient.address_timezone_offset).to_date - 1.day)
+    patient.update(updated_at: 300.days.ago)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+    # (today)
+    patient.update(extended_isolation: Time.now.getlocal(patient.address_timezone_offset).to_date)
+    patient.update(updated_at: 300.days.ago)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+    # (tomorrow)
+    patient.update(extended_isolation: Time.now.getlocal(patient.address_timezone_offset).to_date + 1.day)
+    patient.update(updated_at: 300.days.ago)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+
+    # eligible if local date is two days or more past extended isolation date
+    patient.update(extended_isolation: Time.now.getlocal(patient.address_timezone_offset).to_date - 2.days)
+    patient.update(updated_at: 300.days.ago)
+    assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+    patient.update(extended_isolation: Time.now.getlocal(patient.address_timezone_offset).to_date - 5.days)
     patient.update(updated_at: 300.days.ago)
     assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
