@@ -369,8 +369,8 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    creator = history[:household_status] == :patient ? 'User' : 'System'
-    comment = "#{creator} #{field[:new_value]} notifications for this monitoree#{compose_explanation(history, field)}."
+    creator = history[:initiator_id].nil? ? 'System' : 'User'
+    comment = "#{creator} #{field[:new_value]} notifications for this monitoree#{compose_explanation(history)}."
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
@@ -408,8 +408,8 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    creator = history[:household_status] == :patient ? 'User' : 'System'
-    comment = "#{creator} turned #{field[:new_value]} #{field[:name]}#{compose_explanation(history, field)}."
+    creator = history[:initiator_id].nil? ? 'System' : 'User'
+    comment = "#{creator} turned #{field[:new_value]} #{field[:name]}#{compose_explanation(history)}."
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
@@ -439,7 +439,9 @@ class History < ApplicationRecord
   def self.follow_up_flag_edit(history)
     return if history[:follow_up_reason] == history[:follow_up_reason_before] && history[:follow_up_note] == history[:follow_up_note_before]
 
-    comment = "Flagged for Follow-up. Reason: \"#{history[:follow_up_reason]}"
+    comment = 'User flagged for follow-up'
+    comment += compose_explanation(history) + '.'
+    comment += " Reason: \"#{history[:follow_up_reason]}"
     comment += ": #{history[:follow_up_note]}" unless history[:follow_up_note].blank?
     comment += '"'
 
@@ -449,7 +451,8 @@ class History < ApplicationRecord
   def self.clear_follow_up_flag(history)
     return if history[:follow_up_reason_before].nil?
 
-    comment = 'User cleared flag for follow-up.'
+    comment = 'User cleared flag for follow-up'
+    comment += compose_explanation(history) + '.'
     comment += " Reason: #{history[:clear_flag_reason]}" unless history[:clear_flag_reason].blank?
 
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment)
@@ -463,30 +466,30 @@ class History < ApplicationRecord
   end
 
   private_class_method def self.compose_message(history, field)
-    creator = history[:household_status] == :patient ? 'User' : 'System'
     verb = field[:new_value].blank? ? 'cleared' : 'changed'
     from_text = field[:old_value].blank? ? 'blank' : "\"#{field[:old_value]}\""
     to_text = field[:new_value].blank? ? 'blank' : "\"#{field[:new_value]}\""
 
-    comment = "#{creator} #{verb} #{field[:name]} from #{from_text} to #{to_text}"
-    comment += compose_explanation(history, field)
+    comment = "User #{verb} #{field[:name]} from #{from_text} to #{to_text}"
+    comment += compose_explanation(history)
     comment += history[:note] unless history[:note].blank?
     comment += '.'
     comment += " Reason: #{history[:reason]}" unless history[:reason].blank?
     comment
   end
 
-  private_class_method def self.compose_explanation(history, field)
-    if history[:household_status] == :patient && history[:propagation] == :group
-      " and chose to update this #{field[:type]} for all household members"
-    elsif history[:household_status] == :patient && history[:propagation] == :group_cm
-      " and chose to update this #{field[:type]} for household members under continuous exposure"
-    elsif history[:household_status] != :patient && history[:propagation] == :group
-      " because User updated #{field[:name]} for another member in this monitoree's household and chose to update this
-        #{field[:type].nil? ? 'field' : field[:type]} for all household members"
-    elsif history[:household_status] != :patient && history[:propagation] == :group_cm
-      " because User updated #{field[:name]} for another member in this monitoree's household and chose to update this
-        #{field[:type].nil? ? 'field' : field[:type]} for household members under continuous exposure"
+  private_class_method def self.compose_explanation(history)
+    if history[:initiator_id] == history[:patient].id && history[:propagation] == :group
+      ' and applied that change to all household members'
+    elsif history[:initiator_id] == history[:patient].responder_id && history[:propagation] == :group
+      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and for all household members'
+    elsif history[:initiator_id] != history[:patient].id && history[:initiator_id] == history[:patient].responder_id
+      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and for this monitoree'
+    elsif history[:initiator_id] != history[:patient].id
+      " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and for this monitoree'
     else
       ''
     end
