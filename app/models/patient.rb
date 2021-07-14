@@ -46,7 +46,8 @@ class Patient < ApplicationRecord
      secondary_telephone_type
      additional_planned_travel_type
      case_status
-     public_health_action].each do |enum_field|
+     public_health_action
+     follow_up_reason].each do |enum_field|
     validates enum_field, on: %i[api import], inclusion: {
       in: VALID_PATIENT_ENUMS[enum_field],
       message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[enum_field].reject(&:blank?).join("', '")}'"
@@ -89,6 +90,11 @@ class Patient < ApplicationRecord
             on: :api,
             absence: { message: "cannot be 'true' when 'Last Date of Exposure' is specified" },
             if: -> { last_date_of_exposure.present? }
+
+  validates :follow_up_note,
+            on: %i[api import],
+            absence: { message: "must be blank when '#{VALIDATION[:follow_up_reason][:label]}' is blank" },
+            if: -> { follow_up_reason.nil? }
 
   validates :email, on: %i[api import], email: true
 

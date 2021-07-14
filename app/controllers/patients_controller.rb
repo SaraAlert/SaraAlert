@@ -925,6 +925,8 @@ class PatientsController < ApplicationController
       :gender_identity,
       :sexual_orientation,
       :user_defined_symptom_onset,
+      :follow_up_reason,
+      :follow_up_note,
       laboratories_attributes: %i[
         lab_type
         specimen_collection
