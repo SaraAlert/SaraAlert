@@ -7,7 +7,7 @@ nav_order: 2
 
 **Below you will find a list of ongoing work that affects the Sara Alert™ API. This page will be updated regularly. If you have any questions on the information here, please email them to our API Help Desk, saraalert-interop@mitre.org. For past release notes, please see [API Release Notes](api-release-notes).**
 
-## Planned for 1.33\*:
+## Planned for 1.34\*:
 
 - Add support for additional fields which are not yet supported in the API. These fields include read and write support for:
   - Exposure Risk Assessment
