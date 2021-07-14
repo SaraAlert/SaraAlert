@@ -16,12 +16,8 @@ class VaccineTest < ActiveSupport::TestCase
 
     # Group name is required and must be from a select list of values
     assert_not vaccine.update(group_name: nil)
-    assert_equal(2, vaccine.errors.messages[:group_name].length)
-    assert_equal(
-      "is not an acceptable value, acceptable values are: '#{Vaccine::VACCINE_STANDARDS.keys.join("', '")}'",
-      vaccine.errors.messages[:group_name][0]
-    )
-    assert_equal('is required', vaccine.errors.messages[:group_name][1])
+    assert_equal(1, vaccine.errors.messages[:group_name].length)
+    assert_equal('is required', vaccine.errors.messages[:group_name][0])
 
     assert_not vaccine.update(group_name: '')
     assert_equal(2, vaccine.errors.messages[:group_name].length)
@@ -48,13 +44,8 @@ class VaccineTest < ActiveSupport::TestCase
 
     # Product name is required and must be from a select list of values based on the group name or 'Unknown
     assert_not vaccine.update(product_name: nil)
-    assert_equal(2, vaccine.errors.messages[:product_name].length)
-    assert_equal(
-      "is not an acceptable value, acceptable values for vaccine group #{vaccine[:group_name]} are: "\
-      "'#{Vaccine.product_name_options(vaccine[:group_name]).join("', '")}'",
-      vaccine.errors.messages[:product_name][0]
-    )
-    assert_equal('is required', vaccine.errors.messages[:product_name][1])
+    assert_equal(1, vaccine.errors.messages[:product_name].length)
+    assert_equal('is required', vaccine.errors.messages[:product_name][0])
 
     assert_not vaccine.update(product_name: '')
     assert_equal(2, vaccine.errors.messages[:product_name].length)
@@ -83,7 +74,7 @@ class VaccineTest < ActiveSupport::TestCase
     vaccine.group_name = nil
     assert_not vaccine.update(product_name: nil)
     assert_equal(0, vaccine.errors.messages[:product_name].length)
-    assert_equal(2, vaccine.errors.messages[:group_name].length)
+    assert_equal(1, vaccine.errors.messages[:group_name].length)
   end
 
   test 'validates administration_date' do
