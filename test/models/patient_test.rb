@@ -1771,6 +1771,44 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
+  test 'validates follow_up_reason inclusion in api and import context' do
+    patient = valid_patient
+
+    patient.follow_up_reason = 'Hospitalized'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.follow_up_reason = ''
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+
+    patient.follow_up_reason = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.follow_up_reason = 'foo'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
+  test 'validates follow_up_reason is required when follow_up_note is present' do
+    patient = valid_patient
+
+    patient.follow_up_reason = 'Hospitalized'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.follow_up_note = 'note'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.follow_up_reason = nil
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
   test 'validates primary phone is a possible phone number in api and import context' do
     patient = valid_patient
 

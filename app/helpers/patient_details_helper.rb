@@ -71,7 +71,8 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       symptom_onset: symptom_onset&.strftime('%F') || '',
       extended_isolation: extended_isolation || '',
       responder_id: responder_id || '',
-      workflow: isolation ? 'Isolation' : 'Exposure'
+      workflow: isolation ? 'Isolation' : 'Exposure',
+      first_positive_lab_at: first_positive_lab_at || ''
     }
   end
 
