@@ -102,3 +102,9 @@ County 1 or County 2 will be asked about 8 total symptoms as part of their asses
                 'County 3':
                 'County 4':
 ```
+
+### Jurisdiction Config Files In This Directory
+
+* `jurisdictions.yml` - Use this jurisdiction config when doing local development or standing up a demo server.
+
+* `performance_jurisdictions.yml` - Use this jurisdiction config when performance testing. It has many more jurisdictions and more closely resembles production.

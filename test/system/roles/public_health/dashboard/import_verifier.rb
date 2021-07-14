@@ -161,12 +161,6 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
           elsif international_address && field == :address_state
             assert_equal(normalize_state_field(row[index].to_s), patient[ImportController::FOREIGN_ADDRESS_MAPPINGS[field]].to_s,
                          "#{field} mismatch in row #{row_num}")
-          # copy over monitored address if address is nil
-          elsif !international_address && field == :monitored_address_state && row[index].nil?
-            assert_equal(normalize_state_field(row[EPI_X_FIELDS.index(EPI_X_MONITORED_ADDRESS_FIELDS[field])].to_s).to_s,
-                         patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif !international_address && %i[monitored_address_line_1 monitored_address_city].include?(field) && row[index].nil?
-            assert_equal(row[EPI_X_FIELDS.index(EPI_X_MONITORED_ADDRESS_FIELDS[field])].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           # normalize state fields
           elsif field == :address_state || (field == :monitored_address_state && row[index].present?)
             assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
@@ -210,10 +204,6 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(normalize_bool_field(row[index]).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif STATE_FIELDS.include?(field) || (field == :monitored_address_state && !row[index].nil?)
             assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif field == :monitored_address_state && row[index].nil? # copy over monitored address state if state is nil
-            assert_equal(normalize_state_field(row[index - 13].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif MONITORED_ADDRESS_FIELDS.include?(field) & row[index].nil? # copy over address fields if address is nil
-            assert_equal(row[index - 13].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :symptom_onset # isolation workflow specific field
             assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           # TODO: when workflow specific case status validation re-enabled: remove the next 3 lines

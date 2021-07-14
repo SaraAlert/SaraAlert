@@ -152,7 +152,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     sex: ['Male', 'Female', 'Unknown', nil, ''],
     address_state: [*VALID_STATES, nil, ''],
     monitored_address_state: [*VALID_STATES, nil, ''],
-    public_health_action: ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing'],
+    public_health_action: ['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing',
+                           nil, ''],
     source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other'],
     foreign_monitored_address_state: [*VALID_STATES, nil, ''],
     additional_planned_travel_destination_state: [*VALID_STATES, nil, ''],
@@ -233,16 +234,18 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     lab_type: { label: 'Lab Test Type', checks: [:enum] },
     specimen_collection: { label: 'Lab Specimen Collection Date', checks: [:date] },
     report: { label: 'Lab Report Date', checks: [:date] },
-    result: { label: 'Result', checks: [:enum] },
+    result: { label: 'Lab Result', checks: [:enum] },
     assigned_user: { label: 'Assigned User', checks: [] },
     continuous_exposure: { label: 'Continuous Exposure', checks: [:bool] },
     patient_id: { label: 'Patient ID', checks: [] },
     contact_attempts: { label: 'Contact Attempts', checks: [] },
-    group_name: { label: 'Vaccine Group', checks: [:enum] },
-    product_name: { label: 'Product Name', checks: [:enum] },
-    administration_date: { label: 'Administration Date', checks: [:date] },
-    dose_number: { label: 'Dose Number', checks: [:enum] },
-    notes: { label: 'Notes', checks: [] }
+    group_name: { label: 'Vaccine Group Name', checks: [:enum] },
+    product_name: { label: 'Vaccine Product Name', checks: [:enum] },
+    administration_date: { label: 'Vaccine Administration Date', checks: [:date] },
+    dose_number: { label: 'Vaccine Dose Number', checks: [:enum] },
+    notes: { label: 'Vaccine Notes', checks: [] },
+    public_health_action: { label: 'Public Health Action', checks: [] },
+    extended_isolation: { label: 'Extended Isolation', checks: [:date] }
   }.freeze
 
   # Validates if a given date value is between (inclusive) two dates.

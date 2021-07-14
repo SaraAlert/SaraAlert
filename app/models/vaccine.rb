@@ -3,7 +3,8 @@
 # Represents a vaccination for a Patient
 class Vaccine < ApplicationRecord
   include FhirHelper
-  belongs_to :patient
+
+  belongs_to :patient, touch: true
 
   VACCINE_STANDARDS = Rails.configuration.vaccine_standards.freeze
 
@@ -21,7 +22,7 @@ class Vaccine < ApplicationRecord
   # --- FIELD VALIDATION --- #
   validates :group_name, inclusion: {
     # This method syntax is necessary for the getter method to be in scope
-    in: ->(_vaccine) { group_name_options },
+    in: ->(_vaccine) { [*group_name_options, nil] },
     message: lambda { |_vaccine, _data|
       "is not an acceptable value, acceptable values are: '#{group_name_options.join("', '")}'"
     }
@@ -29,7 +30,7 @@ class Vaccine < ApplicationRecord
 
   # Product name valid options depend on the current group name
   validates :product_name, inclusion: {
-    in: ->(vaccine) { product_name_options(vaccine[:group_name]) },
+    in: ->(vaccine) { [*product_name_options(vaccine[:group_name]), nil] },
     message: lambda { |vaccine, _data|
       'is not an acceptable value, acceptable values for vaccine ' \
         "group #{vaccine[:group_name]} are: '#{product_name_options(vaccine[:group_name]).join("', '")}'"

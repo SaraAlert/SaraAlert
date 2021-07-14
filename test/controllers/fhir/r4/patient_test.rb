@@ -400,6 +400,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
+    assert_equal patient.jurisdiction_id, Transfer.find_by(patient_id: patient_id).to_jurisdiction_id
   end
 
   test 'should create "Record Edit" and not "Monitoring Change" History item when updating patient with record edit' do

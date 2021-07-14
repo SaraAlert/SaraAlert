@@ -6,6 +6,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   DATA_ABSENT_URL = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
   OMB_URL = 'ombCategory'
   DETAILED_URL = 'detailed'
+  INTERPRETER_URL = 'http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired'
 
   # Switch the context of the paths on a fhir_map from old_context to new_context. For example
   # A Patient resource may have paths such as Patient.birthDate, but if that Patient resource
@@ -54,7 +55,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         }
       )],
       id: patient.id,
-      identifier: [to_statelocal_identifier(patient.user_defined_id_statelocal)],
+      identifier: [
+        to_identifier(patient.user_defined_id_statelocal, 'state-local-id'),
+        to_identifier(patient.user_defined_id_cdc, 'cdc-id'),
+        to_identifier(patient.user_defined_id_nndss, 'nndss-id')
+      ],
       active: patient.monitoring,
       name: [FHIR::HumanName.new(given: [patient.first_name, patient.middle_name].reject(&:blank?), family: patient.last_name)],
       telecom: [
@@ -73,15 +78,14 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       birthDate: patient.date_of_birth&.strftime('%F'),
       address: [to_address_by_type_extension(patient, 'USA'), to_address_by_type_extension(patient, 'Foreign')].reject(&:blank?),
       communication: [
-        language_coding(patient.primary_language) ? FHIR::Patient::Communication.new(
-          language: FHIR::CodeableConcept.new(coding: [language_coding(patient.primary_language)]),
-          preferred: patient.interpretation_required
-        ) : nil
+        to_communication(patient.primary_language, true),
+        to_communication(patient.secondary_language, false)
       ].reject(&:nil?),
       extension: [
         to_us_core_race(races_as_hash(patient)),
         to_us_core_ethnicity(patient.ethnicity),
         to_us_core_birthsex(patient.sex),
+        to_latest_transfer_extension(patient),
         to_string_extension(patient.preferred_contact_method, 'preferred-contact-method'),
         to_string_extension(patient.preferred_contact_time, 'preferred-contact-time'),
         to_date_extension(patient.symptom_onset, 'symptom-onset-date'),
@@ -99,7 +103,19 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.exposure_notes, 'exposure-notes'),
         to_string_extension(patient.travel_related_notes, 'travel-related-notes'),
         to_string_extension(patient.additional_planned_travel_related_notes, 'additional-planned-travel-notes'),
-        to_bool_extension(patient.continuous_exposure, 'continuous-exposure')
+        to_bool_extension(patient.continuous_exposure, 'continuous-exposure'),
+        to_string_extension(patient.end_of_monitoring, 'end-of-monitoring'),
+        to_datetime_extension(patient.expected_purge_ts, 'expected-purge-date'),
+        to_string_extension(patient.exposure_risk_assessment, 'exposure-risk-assessment'),
+        to_string_extension(patient.public_health_action, 'public-health-action'),
+        to_bool_extension(patient.contact_of_known_case, 'contact-of-known-case'),
+        to_string_extension(patient.contact_of_known_case_id, 'contact-of-known-case-id'),
+        to_string_extension(patient.member_of_a_common_exposure_cohort_type, 'common-exposure-cohort-name'),
+        to_string_extension(patient.potential_exposure_location, 'potential-exposure-location'),
+        to_string_extension(patient.potential_exposure_country, 'potential-exposure-country'),
+        to_interpreter_required_extension(patient.interpretation_required),
+        to_date_extension(patient.extended_isolation, 'extended-isolation'),
+        to_string_extension(patient.monitoring_reason, 'reason-for-closure')
       ].reject(&:nil?)
     )
   end
@@ -132,15 +148,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     primary_phone = patient&.telecom&.find { |t| t&.system == 'phone' }
     secondary_phone = patient&.telecom&.select { |t| t&.system == 'phone' }&.second
     email = patient&.telecom&.find { |t| t&.system == 'email' }
-    # We want to allow the users to provide either the code or name of the Language
-    if patient&.communication&.first&.language&.coding&.first&.code.nil?
-      pl = patient&.communication&.first&.language&.coding&.first&.display
-      pl_path = 'Patient.communication[0].language.coding[0].display'
-    else
-      pl = patient&.communication&.first&.language&.coding&.first&.code
-      pl_path = 'Patient.communication[0].language.coding[0].code'
-    end
-    primary_language = Languages.attempt_language_matching(pl)
     {
       monitoring: { value: patient&.active.nil? ? false : patient.active, path: 'Patient.active' },
       first_name: { value: patient&.name&.first&.given&.first, path: 'Patient.name[0].given[0]' },
@@ -172,8 +179,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       monitored_address_county: { value: address&.district, path: "Patient.address[#{address_index}].district" },
       monitored_address_state: { value: address&.state, path: "Patient.address[#{address_index}].state" },
       monitored_address_zip: { value: address&.postalCode, path: "Patient.address[#{address_index}].postalCode" },
-      primary_language: { value: primary_language, path: pl_path },
-      interpretation_required: { value: patient&.communication&.first&.preferred, path: 'Patient.communication[0].preferred' },
+      primary_language: from_communication(patient&.communication, 0),
+      secondary_language: from_communication(patient&.communication, 1),
       white: race_code?(patient, '2106-3', OMB_URL),
       black_or_african_american: race_code?(patient, '2054-5', OMB_URL),
       american_indian_or_alaska_native: race_code?(patient, '1002-5', OMB_URL),
@@ -188,6 +195,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       preferred_contact_time: from_string_extension(patient, 'Patient', 'preferred-contact-time'),
       symptom_onset: symptom_onset,
       user_defined_symptom_onset: { value: !symptom_onset[:value]&.nil?, path: date_ext_path('Patient', 'symptom-onset-date') },
+      user_defined_id_statelocal: from_identifier(patient&.identifier, 'state-local-id', 'Patient'),
+      user_defined_id_cdc: from_identifier(patient&.identifier, 'cdc-id', 'Patient'),
+      user_defined_id_nndss: from_identifier(patient&.identifier, 'nndss-id', 'Patient'),
+      interpretation_required: from_interpreter_required_extension(patient, 'Patient'),
       last_date_of_exposure: from_date_extension(patient, 'Patient', %w[last-date-of-exposure last-exposure-date]),
       isolation: from_bool_extension_false_default(patient, 'Patient', 'isolation'),
       jurisdiction_id: from_full_assigned_jurisdiction_path_extension(patient, 'Patient', default_jurisdiction_id),
@@ -204,8 +215,15 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       additional_planned_travel_related_notes: from_string_extension(patient, 'Patient', 'additional-planned-travel-notes'),
       primary_telephone_type: from_primary_phone_type_extension(patient, 'Patient'),
       secondary_telephone_type: from_secondary_phone_type_extension(patient, 'Patient'),
-      user_defined_id_statelocal: from_statelocal_id_extension(patient, 'Patient'),
-      continuous_exposure: from_bool_extension_false_default(patient, 'Patient', 'continuous-exposure')
+      continuous_exposure: from_bool_extension_false_default(patient, 'Patient', 'continuous-exposure'),
+      exposure_risk_assessment: from_string_extension(patient, 'Patient', 'exposure-risk-assessment'),
+      public_health_action: from_string_extension(patient, 'Patient', 'public-health-action'),
+      contact_of_known_case: from_bool_extension_nil_default(patient, 'Patient', 'contact-of-known-case'),
+      contact_of_known_case_id: from_string_extension(patient, 'Patient', 'contact-of-known-case-id'),
+      member_of_a_common_exposure_cohort_type: from_string_extension(patient, 'Patient', 'common-exposure-cohort-name'),
+      potential_exposure_location: from_string_extension(patient, 'Patient', 'potential-exposure-location'),
+      potential_exposure_country: from_string_extension(patient, 'Patient', 'potential-exposure-country'),
+      extended_isolation: from_date_extension(patient, 'Patient', ['extended-isolation'])
     }
   end
 
@@ -550,6 +568,19 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     { value: converted || code, path: "Patient.extension('http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex').valueCode" }
   end
 
+  # Convert to a complex extension representing the Patient's latest transfer
+  def to_latest_transfer_extension(patient)
+    return nil if patient.latest_transfer_at.nil? || patient.latest_transfer_from.nil?
+
+    FHIR::Extension.new(
+      url: SA_EXT_BASE_URL + 'latest-transfer',
+      extension: [
+        to_datetime_extension(patient.latest_transfer_at, 'transferred-at'),
+        to_string_extension(Jurisdiction.where(id: patient.latest_transfer_from)&.pluck(:path)&.first, 'transferred-from')
+      ]
+    )
+  end
+
   # Given a language string, try to find the corresponding BCP 47 code for it and construct a FHIR::Coding.
   def language_coding(language)
     mapped_lang = Languages.normalize_and_get_language_code(language)
@@ -575,8 +606,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueBoolean || false, path: bool_ext_path(base_path, extension_id) }
   end
 
+  # Convert from a boolean extension, treating omission (nil) as different than false
+  def from_bool_extension_nil_default(element, base_path, extension_id)
+    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueBoolean, path: bool_ext_path(base_path, extension_id) }
+  end
+
   def to_date_extension(value, extension_id)
-    value.nil? ? nil : FHIR::Extension.new(
+    value.blank? ? nil : FHIR::Extension.new(
       url: SA_EXT_BASE_URL + extension_id,
       valueDate: value
     )
@@ -592,6 +628,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       break unless val.nil?
     end
     { value: val, path: date_ext_path(base_path, ext_id) }
+  end
+
+  def to_datetime_extension(value, extension_id)
+    value.blank? ? nil : FHIR::Extension.new(
+      url: SA_EXT_BASE_URL + extension_id,
+      valueDateTime: value.strftime('%FT%T%:z')
+    )
   end
 
   def to_string_extension(value, extension_id)
@@ -660,6 +703,20 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     }
   end
 
+  def from_interpreter_required_extension(element, base_path)
+    {
+      value: element&.extension&.find { |e| e.url.include?(INTERPRETER_URL) }&.valueBoolean,
+      path: "#{base_path}.extension(#{INTERPRETER_URL}).valueBoolean"
+    }
+  end
+
+  def to_interpreter_required_extension(value)
+    value.nil? ? nil : FHIR::Extension.new(
+      url: INTERPRETER_URL,
+      valueBoolean: value
+    )
+  end
+
   def from_fhir_phone_number(value)
     Phonelib.parse(value, 'US').full_e164.presence || value
   end
@@ -668,9 +725,32 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     FHIR::Identifier.new(value: statelocal_identifier, system: 'http://saraalert.org/SaraAlert/state-local-id') unless statelocal_identifier.blank?
   end
 
-  def from_statelocal_id_extension(element, base_path)
-    statelocal_id = element&.identifier&.find { |i| i&.system == 'http://saraalert.org/SaraAlert/state-local-id' }
-    { value: statelocal_id&.value, path: "#{base_path}.identifier[#{element&.identifier&.index(statelocal_id)}].value" }
+  def to_identifier(value, system_id)
+    FHIR::Identifier.new(value: value, system: "http://saraalert.org/SaraAlert/#{system_id}") unless value.blank?
+  end
+
+  def from_identifier(identifier, system_id, base_path)
+    id = identifier&.find { |i| i&.system == "http://saraalert.org/SaraAlert/#{system_id}" }
+    { value: id&.value, path: "#{base_path}.identifier[#{identifier&.index(id)}].value" }
+  end
+
+  def to_communication(language, preferred)
+    coded_language = language_coding(language)
+    coded_language ? FHIR::Patient::Communication.new(
+      language: FHIR::CodeableConcept.new(coding: [coded_language]),
+      preferred: preferred
+    ) : nil
+  end
+
+  def from_communication(communication, index)
+    if communication&.dig(index)&.language&.coding&.first&.code.nil?
+      lang = communication&.dig(index)&.language&.coding&.first&.display
+      lang_path = "Patient.communication[#{index}].language.coding[0].display"
+    else
+      lang = communication&.dig(index)&.language&.coding&.first&.code
+      lang_path = "Patient.communication[#{index}].language.coding[0].code"
+    end
+    { value: Languages.attempt_language_matching(lang), path: lang_path }
   end
 
   def to_address_by_type_extension(patient, address_type)

@@ -92,4 +92,19 @@ class HistoryTest < ActiveSupport::TestCase
       create(:history, history_type: 'Comment').update(created_at: 15.days.ago)
     end
   end
+
+  test 'history types that should not touch the patient record' do
+    patient = create(:patient)
+    patient.update(updated_at: 100.days.ago)
+    assert patient.updated_at < 98.days.ago
+
+    History.report_reminder(patient: patient)
+    assert patient.updated_at < 98.days.ago
+
+    History.unsuccessful_report_reminder(patient: patient)
+    assert patient.updated_at < 98.days.ago
+
+    History.monitoree_data_downloaded(patient: patient)
+    assert patient.updated_at < 98.days.ago
+  end
 end
