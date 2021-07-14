@@ -1,12 +1,14 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Alert, Card, Button, Form, Col } from 'react-bootstrap';
-import * as yup from 'yup';
+import { Alert, Button, Card, Col, Form } from 'react-bootstrap';
+
 import axios from 'axios';
 import libphonenumber from 'google-libphonenumber';
+import * as yup from 'yup';
 
 import InfoTooltip from '../../util/InfoTooltip';
 import PhoneInput from '../../util/PhoneInput';
+import { phoneSchemaValidator } from '../../../utils/Patient';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
@@ -414,24 +416,7 @@ class Contact extends React.Component {
   }
 }
 
-yup.addMethod(yup.string, 'phone', function () {
-  return this.test({
-    name: 'phone',
-    exclusive: true,
-    message: 'Please enter a valid Phone Number',
-    test: value => {
-      try {
-        if (!value) {
-          return true; // Blank numbers are allowed
-        }
-        // Make sure we'll be able to convert to E164 format at submission time
-        return !!phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) && /(0|[2-9])\d{9}/.test(value.replace('+1', '').replace(/\D/g, ''));
-      } catch (e) {
-        return false;
-      }
-    },
-  });
-});
+yup.addMethod(yup.string, 'phone', phoneSchemaValidator);
 
 var schema = yup.object().shape({
   primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),

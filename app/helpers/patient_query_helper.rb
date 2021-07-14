@@ -765,10 +765,3 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     end
   end
 end
-
-# Exception used for reporting validation errors
-class InvalidQueryError < StandardError
-  def initialize(field, value)
-    super("Invalid Query (#{field}): #{value}")
-  end
-end
