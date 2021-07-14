@@ -91,10 +91,10 @@ class Patient < ApplicationRecord
             absence: { message: "cannot be 'true' when 'Last Date of Exposure' is specified" },
             if: -> { last_date_of_exposure.present? }
 
-  validates :follow_up_note,
+  validates :follow_up_reason,
             on: %i[api import],
-            absence: { message: "must be blank when '#{VALIDATION[:follow_up_reason][:label]}' is blank" },
-            if: -> { follow_up_reason.nil? }
+            presence: { message: "is required when 'Follow-Up Note' is present" },
+            if: -> { follow_up_note.present? }
 
   validates :email, on: %i[api import], email: true
 
