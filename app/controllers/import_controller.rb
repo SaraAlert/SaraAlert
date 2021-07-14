@@ -222,7 +222,7 @@ class ImportController < ApplicationController
 
         err_msg = "Invalid header in column #{col_num} should be '#{field}' instead of '#{headers[col_num]}'. "\
                   'Please make sure to use the latest format specified by the Sara Alert Format guidance doc.'
-        raise ValidationError.new(err_msg, 1)
+        raise ValidationError.new(err_msg, 0)
       end
     when :epix
       EPI_X_HEADERS.each_with_index do |field, col_num|
@@ -230,7 +230,7 @@ class ImportController < ApplicationController
 
         err_msg = "Invalid header in column #{col_num} should be '#{field}' instead of '#{headers[col_num]}'. "\
                   'Please make sure to use the latest Epi-X format.'
-        raise ValidationError.new(err_msg, 1)
+        raise ValidationError.new(err_msg, 0)
       end
     end
   end
