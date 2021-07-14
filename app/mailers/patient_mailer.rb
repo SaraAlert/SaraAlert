@@ -170,6 +170,7 @@ class PatientMailer < ApplicationMailer
     end
 
     # Cover potential race condition where multiple messages are sent for the same monitoree.
+    # Do not send an assessment when patient's last_assessment_reminder_sent is set or a reminder was sent less than 12 hours ago.
     return unless patient.last_assessment_reminder_sent_eligible?
 
     @lang = patient.select_language
@@ -186,11 +187,15 @@ class PatientMailer < ApplicationMailer
       format.html { render layout: 'main_mailer' }
     end
     patient.active_dependents_and_self.each { |pat| add_success_history(pat) }
+  # This method is called in in the main loop of the send_assessments_job
+  # It is important to capture and log all errors and let the loop continue to send assessments
   rescue StandardError => e
     # Reset send attempt timestamp on failure
     patient.last_assessment_reminder_sent = nil
     patient.save(touch: false)
-    raise "Failed to send email for patient id: #{patient.id}; #{e.message}"
+    # assessment_email_error History will not update associated patient updated_at
+    History.assessment_email_error(patient: patient)
+    Raven.capture_exception(e)
   end
 
   def closed_email(patient)
