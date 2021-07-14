@@ -345,7 +345,8 @@ const TOOLTIP_TEXT = {
   analyticsAgeTip: (
     <div>
       Current Age is calculated as:
-      <div>Current Date - Date of Birth</div>
+      <br />
+      Current Date - Date of Birth
     </div>
   ),
 };
