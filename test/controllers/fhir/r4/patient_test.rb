@@ -365,6 +365,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'should not be able to create Patient with follow up note without a reason' do
     Patient.find_by(id: 2).update!(
+      follow_up_reason: nil,
       follow_up_note: 'New follow up note'
     )
 
@@ -603,7 +604,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'should clear Patient flag via update' do
     Patient.find_by(id: 2).update!(
-      follow_up_reason: nil
+      follow_up_reason: nil,
+      follow_up_note: nil
     )
 
     put(
