@@ -7,6 +7,11 @@ import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, m
 const onCloseMock = jest.fn();
 const mockToken = 'testMockTokenString12345';
 const CASE_STATUS_OPTIONS = ['', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'];
+const available_workflows = [
+  { name: 'exposure', label: 'Exposure' },
+  { name: 'isolation', label: 'Isolation' },
+  { name: 'global', label: 'Global' },
+];
 
 function simulateStateChange(patientsArray) {
   // UpdateCaseStatus makes an asynchronous call to obtain values about the selectedPatients
@@ -33,7 +38,7 @@ function simulateStateChange(patientsArray) {
 }
 
 function getWrapper(patientsArray) {
-  let wrapper = shallow(<UpdateCaseStatus authenticity_token={mockToken} patients={patientsArray} monitoring_reasons={mockMonitoringReasons} close={onCloseMock} />);
+  let wrapper = shallow(<UpdateCaseStatus authenticity_token={mockToken} patients={patientsArray} monitoring_reasons={mockMonitoringReasons} close={onCloseMock} available_workflows={available_workflows} />);
 
   let state_updates = simulateStateChange(patientsArray);
   if (Object.keys(state_updates).length) {
@@ -52,31 +57,79 @@ describe('UpdateCaseStatus', () => {
   it('Properly renders all main components for Patients who are in Exposure only', () => {
     // mockPatien2 and mockPatient3 are both in the Exposure workflow
     const wrapper = getWrapper([mockPatient2, mockPatient5]);
-    expect(wrapper.find('ModalBody').find('p').at(0).text()).toContain('Please select the desired case status to be assigned to all selected patients:');
+    expect(
+      wrapper
+        .find('ModalBody')
+        .find('p')
+        .at(0)
+        .text()
+    ).toContain('Please select the desired case status to be assigned to all selected patients:');
     wrapper
       .find('#case_status')
       .find('option')
       .forEach((option, index) => {
         expect(option.text()).toEqual(CASE_STATUS_OPTIONS[Number(index)]);
       });
-    expect(wrapper.find('ModalBody').find('p').at(1).text()).toContain('The selected cases will remain in the exposure workflow.');
-    expect(wrapper.find('ModalFooter').find('Button').at(0).text()).toEqual('Cancel');
-    expect(wrapper.find('ModalFooter').find('Button').at(1).text()).toEqual('Submit');
+    expect(
+      wrapper
+        .find('ModalBody')
+        .find('p')
+        .at(1)
+        .text()
+    ).toContain('The selected cases will remain in the exposure workflow.');
+    expect(
+      wrapper
+        .find('ModalFooter')
+        .find('Button')
+        .at(0)
+        .text()
+    ).toEqual('Cancel');
+    expect(
+      wrapper
+        .find('ModalFooter')
+        .find('Button')
+        .at(1)
+        .text()
+    ).toEqual('Submit');
   });
 
   it('Properly renders all main components for Patients who are in Isolation only', () => {
     // mockPatient6 is in the Isolation workflow, but is not closed
     const wrapper = getWrapper([mockPatient6]);
-    expect(wrapper.find('ModalBody').find('p').at(0).text()).toContain('Please select the desired case status to be assigned to all selected patients:');
+    expect(
+      wrapper
+        .find('ModalBody')
+        .find('p')
+        .at(0)
+        .text()
+    ).toContain('Please select the desired case status to be assigned to all selected patients:');
     wrapper
       .find('#case_status')
       .find('option')
       .forEach((option, index) => {
         expect(option.text()).toEqual(CASE_STATUS_OPTIONS[Number(index)]);
       });
-    expect(wrapper.find('ModalBody').find('p').at(1).text()).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
-    expect(wrapper.find('ModalFooter').find('Button').at(0).text()).toEqual('Cancel');
-    expect(wrapper.find('ModalFooter').find('Button').at(1).text()).toEqual('Submit');
+    expect(
+      wrapper
+        .find('ModalBody')
+        .find('p')
+        .at(1)
+        .text()
+    ).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
+    expect(
+      wrapper
+        .find('ModalFooter')
+        .find('Button')
+        .at(0)
+        .text()
+    ).toEqual('Cancel');
+    expect(
+      wrapper
+        .find('ModalFooter')
+        .find('Button')
+        .at(1)
+        .text()
+    ).toEqual('Submit');
   });
 
   it('Properly sets the correct follow-up options for "Confirmed", and "Probable" in the Exposure Workflow', () => {
@@ -106,7 +159,12 @@ describe('UpdateCaseStatus', () => {
         .simulate('change', { target: { id: 'follow_up', type: 'change', value: 'End Monitoring' }, persist: jest.fn() });
       expect(wrapper.state('follow_up')).toEqual('End Monitoring');
       expect(wrapper.find('FormControl').length).toEqual(4);
-      expect(wrapper.find('p').at(2).text()).toContain('The selected monitorees will be moved into the Closed line list, and will no longer be monitored.');
+      expect(
+        wrapper
+          .find('p')
+          .at(2)
+          .text()
+      ).toContain('The selected monitorees will be moved into the Closed line list, and will no longer be monitored.');
       const monitoringReasonOptions = [''].concat(mockMonitoringReasons);
       wrapper
         .find('#monitoring_reason')
@@ -123,7 +181,12 @@ describe('UpdateCaseStatus', () => {
         .find('FormControl')
         .simulate('change', { target: { id: 'reasoning', value: mockReasoning }, persist: jest.fn() });
       expect(wrapper.state('reasoning')).toEqual(mockReasoning);
-      expect(wrapper.find('.character-limit-text').first().text()).toContain(`${2000 - mockReasoning.length} characters remaining`);
+      expect(
+        wrapper
+          .find('.character-limit-text')
+          .first()
+          .text()
+      ).toContain(`${2000 - mockReasoning.length} characters remaining`);
 
       // > `Continue Monitoring in Isolation Workflow` Tests
       wrapper
@@ -131,7 +194,12 @@ describe('UpdateCaseStatus', () => {
         .at(1)
         .simulate('change', { target: { id: 'follow_up', type: 'change', value: 'Continue Monitoring in Isolation Workflow' }, persist: jest.fn() });
       expect(wrapper.state('follow_up')).toEqual('Continue Monitoring in Isolation Workflow');
-      expect(wrapper.find('p').at(2).text()).toContain('The selected monitorees will be moved to the isolation workflow and placed in the requiring review, non-reporting, or reporting line list as appropriate.');
+      expect(
+        wrapper
+          .find('p')
+          .at(2)
+          .text()
+      ).toContain('The selected monitorees will be moved to the isolation workflow and placed in the requiring review, non-reporting, or reporting line list as appropriate.');
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
       expect(wrapper.state('apply_to_household')).toBeFalsy();
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
@@ -148,9 +216,19 @@ describe('UpdateCaseStatus', () => {
         .first()
         .simulate('change', { target: { id: 'case_status', type: 'change', value: case_status_option }, persist: jest.fn() });
       expect(wrapper.state('case_status')).toEqual(case_status_option);
-      expect(wrapper.find('p').at(1).text()).toContain('The selected cases will remain in the isolation workflow.');
+      expect(
+        wrapper
+          .find('p')
+          .at(1)
+          .text()
+      ).toContain('The selected cases will remain in the isolation workflow.');
       // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
-      expect(wrapper.find('FormControl').at(1).exists()).toBeFalsy();
+      expect(
+        wrapper
+          .find('FormControl')
+          .at(1)
+          .exists()
+      ).toBeFalsy();
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
       expect(wrapper.state('apply_to_household')).toBeFalsy();
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
@@ -188,7 +266,12 @@ describe('UpdateCaseStatus', () => {
         .find('FormControl')
         .simulate('change', { target: { id: 'reasoning', value: mockReasoning }, persist: jest.fn() });
       expect(wrapper.state('reasoning')).toEqual(mockReasoning);
-      expect(wrapper.find('.character-limit-text').first().text()).toContain(`${2000 - mockReasoning.length} characters remaining`);
+      expect(
+        wrapper
+          .find('.character-limit-text')
+          .first()
+          .text()
+      ).toContain(`${2000 - mockReasoning.length} characters remaining`);
     });
   });
 
@@ -202,9 +285,19 @@ describe('UpdateCaseStatus', () => {
         .first()
         .simulate('change', { target: { id: 'case_status', type: 'change', value: case_status_option }, persist: jest.fn() });
 
-      expect(wrapper.find('p').at(1).text()).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
+      expect(
+        wrapper
+          .find('p')
+          .at(1)
+          .text()
+      ).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
       // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
-      expect(wrapper.find('FormControl').at(1).exists()).toBeFalsy();
+      expect(
+        wrapper
+          .find('FormControl')
+          .at(1)
+          .exists()
+      ).toBeFalsy();
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
       expect(wrapper.state('apply_to_household')).toBeFalsy();
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
@@ -222,9 +315,19 @@ describe('UpdateCaseStatus', () => {
         .first()
         .simulate('change', { target: { id: 'case_status', type: 'change', value: case_status_option }, persist: jest.fn() });
 
-      expect(wrapper.find('p').at(1).text()).toContain('The selected cases will remain in the exposure workflow.');
+      expect(
+        wrapper
+          .find('p')
+          .at(1)
+          .text()
+      ).toContain('The selected cases will remain in the exposure workflow.');
       // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
-      expect(wrapper.find('FormControl').at(1).exists()).toBeFalsy();
+      expect(
+        wrapper
+          .find('FormControl')
+          .at(1)
+          .exists()
+      ).toBeFalsy();
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
       expect(wrapper.state('apply_to_household')).toBeFalsy();
       wrapper.find('FormCheck').simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
@@ -234,9 +337,17 @@ describe('UpdateCaseStatus', () => {
 
   it('Properly calls the close method', () => {
     const wrapper = getWrapper([mockPatient1, mockPatient2, mockPatient3, mockPatient4]);
-    expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
+    expect(
+      wrapper
+        .find('Button')
+        .at(0)
+        .text()
+    ).toContain('Cancel');
     expect(onCloseMock).toHaveBeenCalledTimes(0);
-    wrapper.find('Button').at(0).simulate('click');
+    wrapper
+      .find('Button')
+      .at(0)
+      .simulate('click');
     expect(onCloseMock).toHaveBeenCalled();
   });
 
@@ -245,9 +356,17 @@ describe('UpdateCaseStatus', () => {
     const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
     wrapper.instance().forceUpdate(); // must forceUpdate to properly mount the spy
 
-    expect(wrapper.find('Button').at(1).text()).toContain('Submit');
+    expect(
+      wrapper
+        .find('Button')
+        .at(1)
+        .text()
+    ).toContain('Submit');
     expect(submitSpy).toHaveBeenCalledTimes(0);
-    wrapper.find('Button').at(1).simulate('click');
+    wrapper
+      .find('Button')
+      .at(1)
+      .simulate('click');
     expect(submitSpy).toHaveBeenCalled();
   });
 });

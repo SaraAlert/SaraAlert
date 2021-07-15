@@ -30,11 +30,7 @@ class CaseStatus extends React.Component {
       loading: false,
       disabled: false,
       noMembersSelected: false,
-      isolationWorkflowAvailable:
-        -1 <
-        props.available_workflows.findIndex(w => {
-          if (w.name.toLowerCase() == 'isolation') return true;
-        }),
+      isolationWorkflowAvailable: props.available_workflows.some(w => w.name.toLowerCase() == 'isolation'),
     };
     this.origState = Object.assign({}, this.state);
   }
@@ -50,9 +46,8 @@ class CaseStatus extends React.Component {
       // changing case status of monitoree in the closed line list (either workflow)
       if (!this.props.patient.monitoring) {
         this.setState({
-          modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status || 'blank'} to ${
-            value || 'blank'
-          }? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`,
+          modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status || 'blank'} to ${value ||
+            'blank'}? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`,
         });
 
         // changing case status to Unknown, Suspect or Not a Case from Confirmed or Probable in the isolation workflow
@@ -74,9 +69,8 @@ class CaseStatus extends React.Component {
       ) {
         this.setState({
           isolation: true,
-          modal_text: `Are you sure you want to change the case status from ${this.props.patient.case_status || 'blank'} to ${
-            value || 'blank'
-          }? The record will remain in the isolation workflow.`,
+          modal_text: `Are you sure you want to change the case status from ${this.props.patient.case_status || 'blank'} to ${value ||
+            'blank'}? The record will remain in the isolation workflow.`,
         });
 
         // changing case status to Confirmed or Probable (excluding case directly above)
@@ -87,18 +81,16 @@ class CaseStatus extends React.Component {
       } else if (!confirmedOrProbable && this.state.isolation) {
         this.setState({
           isolation: false,
-          modal_text: `The case status for the selected record will be updated to ${
-            value || 'blank'
-          } and moved to the appropriate line list in the Exposure Workflow.`,
+          modal_text: `The case status for the selected record will be updated to ${value ||
+            'blank'} and moved to the appropriate line list in the Exposure Workflow.`,
         });
 
         // changing case status to Unknown, Suspect or Not a Case while on the PUI line list in the exposure workflow
       } else if (!confirmedOrProbable && !this.state.isolation && this.props.patient.public_health_action != 'None') {
         this.setState({
           isolation: false,
-          modal_text: `Are you sure you want to change case status to "${
-            value || 'blank'
-          }"? The monitoree will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring and the Latest Public Health Action will be set to "None".`,
+          modal_text: `Are you sure you want to change case status to "${value ||
+            'blank'}"? The monitoree will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring and the Latest Public Health Action will be set to "None".`,
         });
         // changing case status to Unknown, Suspect or Not a Case while not on the PUI line list in the exposure workflow
       } else if (!confirmedOrProbable && !this.state.isolation) {

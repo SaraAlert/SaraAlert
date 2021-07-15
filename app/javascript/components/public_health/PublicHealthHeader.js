@@ -166,6 +166,7 @@ class PublicHealthHeader extends React.Component {
   }
 
   render() {
+    console.log(this.props.header_action_buttons);
     return (
       <React.Fragment>
         <Row className="mx-2 my-2">

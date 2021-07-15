@@ -24,13 +24,38 @@ describe('HistoryList', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
     expect(wrapper.find('#histories').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('span').text()).toEqual('History');
-    expect(wrapper.find(Card.Header).find(InfoTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).find(InfoTooltip).prop('tooltipTextKey')).toEqual('history');
+    expect(
+      wrapper
+        .find(Card.Header)
+        .find('span')
+        .text()
+    ).toContain('History');
+    expect(
+      wrapper
+        .find(Card.Header)
+        .find(InfoTooltip)
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Header)
+        .find(InfoTooltip)
+        .prop('tooltipTextKey')
+    ).toEqual('history');
     expect(wrapper.find('#history-filters').exists()).toBeTruthy();
     expect(wrapper.find(Select).length).toEqual(2);
-    expect(wrapper.find(Select).at(0).prop('placeholder')).toEqual('Filter by Creator');
-    expect(wrapper.find(Select).at(0).prop('options')[0].label).toEqual('History Creator');
+    expect(
+      wrapper
+        .find(Select)
+        .at(0)
+        .prop('placeholder')
+    ).toEqual('Filter by Creator');
+    expect(
+      wrapper
+        .find(Select)
+        .at(0)
+        .prop('options')[0].label
+    ).toEqual('History Creator');
     wrapper
       .find(Select)
       .at(0)
@@ -39,8 +64,18 @@ describe('HistoryList', () => {
         expect(option.label).toEqual(historyCreators[Number(index)]);
         expect(option.value).toEqual(historyCreators[Number(index)]);
       });
-    expect(wrapper.find(Select).at(1).prop('placeholder')).toEqual('Filter by Type');
-    expect(wrapper.find(Select).at(1).prop('options')[0].label).toEqual('History Type');
+    expect(
+      wrapper
+        .find(Select)
+        .at(1)
+        .prop('placeholder')
+    ).toEqual('Filter by Type');
+    expect(
+      wrapper
+        .find(Select)
+        .at(1)
+        .prop('options')[0].label
+    ).toEqual('History Type');
     wrapper
       .find(Select)
       .at(1)
@@ -49,16 +84,67 @@ describe('HistoryList', () => {
         expect(option.label).toEqual(historyTypes[Number(index)]);
         expect(option.value).toEqual(historyTypes[Number(index)]);
       });
-    expect(wrapper.find(Card.Body).find(History).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Pagination).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Card).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Card.Header).text()).toEqual('Add Comment');
-    expect(wrapper.find(Card.Body).find('#comment').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.character-limit-text').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.character-limit-text').text()).toEqual('10000 characters remaining');
-    expect(wrapper.find(Card.Body).find(Button).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Button).text()).toEqual(' Add Comment');
-    expect(wrapper.find(Card.Body).find(Button).find('i').hasClass('fa-comment-dots')).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(History)
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Pagination)
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Card)
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Card.Header)
+        .text()
+    ).toEqual('Add Comment');
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find('#comment')
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find('.character-limit-text')
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find('.character-limit-text')
+        .text()
+    ).toEqual('10000 characters remaining');
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Button)
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Button)
+        .text()
+    ).toEqual(' Add Comment');
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Button)
+        .find('i')
+        .hasClass('fa-comment-dots')
+    ).toBeTruthy();
   });
 
   it('Selecting history creators in dropdown properly updates state', () => {
@@ -66,10 +152,16 @@ describe('HistoryList', () => {
     let filterValue = [];
     expect(wrapper.state('filters').creatorFilters).toEqual(filterValue);
     filterValue.push({ label: historyCreators[0], value: historyCreators[0] });
-    wrapper.find(Select).at(0).simulate('change', filterValue);
+    wrapper
+      .find(Select)
+      .at(0)
+      .simulate('change', filterValue);
     expect(wrapper.state('filters').creatorFilters).toEqual(historyCreators.slice(0, 1));
     filterValue.push({ label: historyCreators[1], value: historyCreators[1] });
-    wrapper.find(Select).at(0).simulate('change', filterValue);
+    wrapper
+      .find(Select)
+      .at(0)
+      .simulate('change', filterValue);
     expect(wrapper.state('filters').creatorFilters).toEqual(historyCreators);
   });
 
@@ -78,10 +170,16 @@ describe('HistoryList', () => {
     let filterValue = [];
     expect(wrapper.state('filters').typeFilters).toEqual(filterValue);
     filterValue.push({ label: historyTypes[0], value: historyTypes[0] });
-    wrapper.find(Select).at(1).simulate('change', filterValue);
+    wrapper
+      .find(Select)
+      .at(1)
+      .simulate('change', filterValue);
     expect(wrapper.state('filters').typeFilters).toEqual(historyTypes.slice(0, 1));
     filterValue.push({ label: historyTypes[1], value: historyTypes[1] });
-    wrapper.find(Select).at(1).simulate('change', filterValue);
+    wrapper
+      .find(Select)
+      .at(1)
+      .simulate('change', filterValue);
     expect(wrapper.state('filters').typeFilters).toEqual(historyTypes);
   });
 
@@ -110,7 +208,10 @@ describe('HistoryList', () => {
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
     filteredHistories = histories.filter(history_group => history_group[0].history_type === historyTypes[0]);
-    wrapper.find(Select).at(0).simulate('change', []);
+    wrapper
+      .find(Select)
+      .at(0)
+      .simulate('change', []);
     expect(wrapper.find(History).length).toEqual(filteredHistories.length);
     expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
@@ -127,7 +228,10 @@ describe('HistoryList', () => {
     expect(wrapper.state('filteredHistories')).toEqual(filteredHistories);
     expect(wrapper.state('displayedHistories')).toEqual(filteredHistories);
 
-    wrapper.find(Select).at(1).simulate('change', []);
+    wrapper
+      .find(Select)
+      .at(1)
+      .simulate('change', []);
     expect(wrapper.find(History).length).toEqual(histories.length);
     expect(wrapper.state('filteredHistories')).toEqual(histories);
     expect(wrapper.state('displayedHistories')).toEqual(histories);

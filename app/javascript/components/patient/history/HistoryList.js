@@ -124,7 +124,7 @@ class HistoryList extends React.Component {
           <Card.Header>
             <div className="d-flex flex-row align-items-center">
               <div className="float-left flex-grow-1 mb-0 h5">
-                <span>{this.props.section_label} </span>
+                <span> {this.props.section_label || 'History'} </span>
                 <InfoTooltip tooltipTextKey="history" location="right"></InfoTooltip>
               </div>
             </div>
