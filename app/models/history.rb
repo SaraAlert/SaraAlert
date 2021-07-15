@@ -499,14 +499,14 @@ class History < ApplicationRecord
     if history[:initiator_id] == history[:patient].id && history[:propagation] == :group
       ' and applied that change to all household members'
     elsif history[:initiator_id] == history[:patient].responder_id && history[:propagation] == :group
-      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
-      ' and for all household members'
+      " by making that change to monitoree's Head of Household (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and to all household members'
     elsif history[:initiator_id] != history[:patient].id && history[:initiator_id] == history[:patient].responder_id
-      " by making that change for monitoree's head of household (Sara Alert ID: #{history[:initiator_id]})"\
-      ' and for this monitoree'
+      " by making that change to monitoree's Head of Household (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and to this monitoree'
     elsif history[:initiator_id] != history[:patient].id
-      " by making that change for a household member (Sara Alert ID: #{history[:initiator_id]})"\
-      ' and for this monitoree'
+      " by making that change to a household member (Sara Alert ID: #{history[:initiator_id]})"\
+      ' and to this monitoree'
     else
       ''
     end
