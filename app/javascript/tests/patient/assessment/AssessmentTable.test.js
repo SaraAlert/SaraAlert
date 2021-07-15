@@ -38,7 +38,7 @@ describe('AssessmentTable', () => {
     const wrapper = getWrapperIsolation();
     expect(wrapper.find(Card).exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).text()).toEqual('Reports');
+    expect(wrapper.find(Card.Header).text()).toContain('Reports');
     expect(wrapper.find(Card.Body).exists()).toBeTruthy();
     expect(wrapper.find(CurrentStatus).exists()).toBeTruthy();
     expect(wrapper.find(InputGroup).exists()).toBeTruthy();
@@ -50,8 +50,18 @@ describe('AssessmentTable', () => {
   it('Properly renders report action button group when in isolation', () => {
     const wrapper = getWrapperIsolation();
     expect(wrapper.find(Button).exists()).toBeTruthy();
-    expect(wrapper.find(Button).find('i').hasClass('fa-plus')).toBeTruthy();
-    expect(wrapper.find(Button).find('span').text()).toEqual('Add New Report');
+    expect(
+      wrapper
+        .find(Button)
+        .find('i')
+        .hasClass('fa-plus')
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Button)
+        .find('span')
+        .text()
+    ).toEqual('Add New Report');
     expect(wrapper.find(ClearAssessments).exists()).toBeTruthy();
     expect(wrapper.find(PauseNotifications).exists()).toBeTruthy();
     expect(wrapper.find(ContactAttempt).exists()).toBeTruthy();
@@ -60,8 +70,18 @@ describe('AssessmentTable', () => {
   it('Properly renders report action button group when in exposure', () => {
     const wrapper = getWrapperExposure();
     expect(wrapper.find(Button).exists()).toBeTruthy();
-    expect(wrapper.find(Button).find('i').hasClass('fa-plus')).toBeTruthy();
-    expect(wrapper.find(Button).find('span').text()).toEqual('Add New Report');
+    expect(
+      wrapper
+        .find(Button)
+        .find('i')
+        .hasClass('fa-plus')
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Button)
+        .find('span')
+        .text()
+    ).toEqual('Add New Report');
     expect(wrapper.find(ClearAssessments).exists()).toBeTruthy();
     expect(wrapper.find(PauseNotifications).exists()).toBeTruthy();
     expect(wrapper.find(ContactAttempt).exists()).toBeTruthy();
@@ -81,9 +101,24 @@ describe('AssessmentTable', () => {
     expect(wrapper.find(InputGroup.Prepend).exists()).toBeTruthy();
     expect(wrapper.find(OverlayTrigger).exists()).toBeTruthy();
     expect(wrapper.find(InputGroup.Text).exists()).toBeTruthy();
-    expect(wrapper.find(InputGroup.Text).find('i').hasClass('fa-search')).toBeTruthy();
-    expect(wrapper.find(InputGroup.Text).find('label').text()).toEqual('Search');
-    expect(wrapper.find(InputGroup).find(Form.Control).exists()).toBeTruthy();
+    expect(
+      wrapper
+        .find(InputGroup.Text)
+        .find('i')
+        .hasClass('fa-search')
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(InputGroup.Text)
+        .find('label')
+        .text()
+    ).toEqual('Search');
+    expect(
+      wrapper
+        .find(InputGroup)
+        .find(Form.Control)
+        .exists()
+    ).toBeTruthy();
   });
 
   it('Inputing a search term updates state and calls updateTable', () => {

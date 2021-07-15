@@ -22,5 +22,5 @@ module Orchestration::Playbooks::EbolaPlaybook
     },
     other_properties: {
     }
-  }
+  }.freeze
 end

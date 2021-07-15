@@ -26,16 +26,24 @@ const race_options = {
   ],
 };
 
+const available_workflows = [
+  { name: 'exposure', label: 'Exposure' },
+  { name: 'isolation', label: 'Isolation' },
+  { name: 'global', label: 'Global' },
+];
+
 describe('Identification', () => {
   it('Properly renders all main components', () => {
-    const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} race_options={race_options} />);
+    const aw = available_workflows;
+    const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} race_options={race_options} available_workflows={aw} />);
     requiredStrings.forEach(requiredString => {
       expect(wrapper.text().includes(requiredString)).toBe(true);
     });
   });
 
   it('Properly allows setting of all identification information', () => {
-    const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} race_options={race_options} />);
+    const aw = available_workflows;
+    const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} race_options={race_options} available_workflows={aw} />);
     expect(wrapper.find('#first_name').instance().value).toEqual('');
     expect(wrapper.find('#middle_name').instance().value).toEqual('');
     expect(wrapper.find('#last_name').instance().value).toEqual('');

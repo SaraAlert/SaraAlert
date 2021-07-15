@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-include Orchestration::Orchestrator
-
 # ValidationHelper: Helper constants and methods for validation.
 module ValidationHelper # rubocop:todo Metrics/ModuleLength
+  include Orchestration::Orchestrator
+
   SEX_ABBREVIATIONS = {
     M: 'Male',
     F: 'Female',
@@ -78,16 +78,9 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
   ISOLATION_AVAILABLE = isolation_available?(default_playbook).freeze
 
   USER_SELECTABLE_MONITORING_REASONS = [
-    *['Completed Monitoring',
-      'Meets criteria to shorten quarantine',
-      'Does not meet criteria for monitoring',
-      'Meets Case Definition',
-      'Lost to follow-up during monitoring period',
-      'Lost to follow-up (contact never established)',
-      'Transferred to another jurisdiction',
-      'Person Under Investigation (PUI)',
-      'Case confirmed',
-      'Past monitoring period'],
+    'Completed Monitoring', 'Meets criteria to shorten quarantine', 'Does not meet criteria for monitoring', 'Meets Case Definition',
+    'Lost to follow-up during monitoring period', 'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
+    'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
     *(['Meets criteria to discontinue isolation'] if ISOLATION_AVAILABLE),
     *['Fully Vaccinated',
       'Deceased',

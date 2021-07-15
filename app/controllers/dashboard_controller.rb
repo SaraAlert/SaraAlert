@@ -19,9 +19,9 @@ class DashboardController < ApplicationController
     redirect_to('/404') && return if @playbook_label.nil? || @workflow_label.nil?
 
     tabs = workflow_configuration(playbook, workflow, :dashboard_tabs)
-    @tabs = tabs.dig(:options)
+    @tabs = tabs[:options]
     button = workflow_configuration(playbook, workflow, :header_action_buttons)
-    @header_action_buttons = button.nil? ? nil : button.dig(:options)
+    @header_action_buttons = button.nil? ? nil : button[:options]
     @available_workflows = available_workflows(playbook, false)
     @available_line_lists = available_line_lists(playbook)
   end
@@ -43,7 +43,7 @@ class DashboardController < ApplicationController
 
     redirect_to('/404') && return if workflow.nil?
 
-    redirect_to ("/dashboard/#{playbook}/" + workflow[:name].to_s)
+    redirect_to("/dashboard/#{playbook}/" + workflow[:name].to_s)
   end
 
   def authenticate_user_role

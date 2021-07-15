@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-include Orchestration::Orchestrator
-
 # Helper methods for the patient model
 module PatientHelper
+  include Orchestration::Orchestrator
+
   # This list contains all of the same states listed in app/javascript/components/data.js
   def state_names
     PATIENT_HELPER_FILES[:state_names]
@@ -51,7 +51,7 @@ module PatientHelper
 
   def dashboard_crumb_title(dashboard, playbook)
     title = dashboard.nil? ? 'Return To Dashboard' : "Return to #{dashboard.titleize} Dashboard"
-    return title + (playbook.nil? ? '' : " (#{playbook_label(playbook)})")
+    title + (playbook.nil? ? '' : " (#{playbook_label(playbook)})")
   end
 
   def self.monitoring_fields

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Orchestrator: Methods for managing active playbook context
-module Orchestration::Orchestrator
+module Orchestration::Orchestrator # rubocop:todo Metrics/ModuleLength
   include Orchestration::Playbooks
 
   available = Orchestration::Playbooks.constants.reject { |m| m == :Templates }
@@ -14,14 +14,14 @@ module Orchestration::Orchestrator
 
   def workflow_configuration(playbook, workflow, option)
     # For now, assume that if no workflow (ie it is nil, it is a general option)
-    base_configuration = workflow.nil? ? PLAYBOOKS.dig(playbook, :general , :base, option) : PLAYBOOKS.dig(playbook, :workflows, workflow, :base, option)
-    custom_options = workflow.nil? ? PLAYBOOKS.dig(playbook, :general, :custom_options, option) : PLAYBOOKS.dig(playbook, :workflows, workflow, :custom_options, option)
+    base_configuration = workflow.nil? ? PLAYBOOKS.dig(playbook, :general, :base, option) : PLAYBOOKS.dig(playbook, :workflows, workflow, :base, option)
+    custom_options = workflow.nil? ? PLAYBOOKS.dig(playbook, :general, :custom_options,
+                                                   option) : PLAYBOOKS.dig(playbook, :workflows, workflow, :custom_options, option)
 
     return if base_configuration.nil?
     return base_configuration if custom_options.nil?
 
     nested_configuration(base_configuration, custom_options)
-
   end
 
   # 'base': Return the whole base configuration. Do not follow nested configurations
@@ -31,34 +31,35 @@ module Orchestration::Orchestrator
   # 'custom': Overwrite the whole configuration
   def nested_configuration(base_configuration, playbook_configuration)
     # Replace label first if available
-    base_configuration[:label] = playbook_configuration[:label].nil? ? base_configuration[:label] : playbook_configuration[:label] if !base_configuration[:label].nil?
-    selected_configuration = {} 
+    unless base_configuration[:label].nil?
+      base_configuration[:label] =
+        playbook_configuration[:label].nil? ? base_configuration[:label] : playbook_configuration[:label]
+    end
+    selected_configuration = {}
     selected_configuration[:label] = base_configuration[:label] if base_configuration[:label].present?
-    
+
     # If playbook has no type, then we'll assume everything since we don't know what to do
     type = playbook_configuration[:type].nil? ? 'base' : playbook_configuration[:type]
-    
+
     case type
     when 'base'
       # Return entirety of the base configuration
-       return base_configuration
+      return base_configuration
     when 'all'
       # Select the base configuration
       selected_configuration = base_configuration
     when 'subset'
       # If a subset, then look into the configuration and only return the wanted fields
-      if base_configuration[:options].kind_of?(Array)
-        selected_configuration[:options] = base_configuration[:options].select { |key, _value| playbook_configuration[:config][:set].include?(key) }
-      else
-        selected_configuration[:options] = base_configuration[:options].select { |key| playbook_configuration[:config][:set].include?(key) }
-      end 
+      selected_configuration[:options] = if base_configuration[:options].is_a?(Array)
+                                           base_configuration[:options].select { |key, _value| playbook_configuration[:config][:set].include?(key) }
+                                         else
+                                           base_configuration[:options].select { |key| playbook_configuration[:config][:set].include?(key) }
+                                         end
     when 'remove'
       # If remove, then look into the configuration and reject the listed fields
-      if base_configuration[:options].kind_of?(Array)
-        selected_configuration[:options] = base_configuration[:options].reject { |key, _value| playbook_configuration[:config][:set].include?(key) }
-      else
-        selected_configuration[:options] = base_configuration[:options].reject { |key, _value| playbook_configuration[:config][:set].include?(key) }
-      end
+      # selected_configuration[:options] = if base_configuration[:options].is_a?(Array)
+      #                                    end
+      base_configuration[:options].reject { |key, _value| playbook_configuration[:config][:set].include?(key) }
     when 'custom'
       # TODO: This is here as a catch all, but this isn't really being implemented
       # For now the assumption is if you choose custom you need to write the whole configuration
@@ -74,11 +75,12 @@ module Orchestration::Orchestrator
     # Otherwise we'll checkout the children
     nested_options.each do |key, value|
       next if base_configuration[:options][key].nil?
+
       selected_configuration[:options][key] = nested_configuration(base_configuration[:options][key], value)
     end
 
-    return selected_configuration
-  end 
+    selected_configuration
+  end
 
   def system_configuration(playbook, option)
     PLAYBOOKS.dig(playbook, :system, option)
@@ -88,11 +90,11 @@ module Orchestration::Orchestrator
     PLAYBOOKS.keys.collect { |key| { name: key, label: PLAYBOOKS[key][:label] } }
   end
 
-  def available_workflows(playbook, filter_out_global=true)
+  def available_workflows(playbook, filter_out_global: true)
     workflows = PLAYBOOKS[playbook][:workflows].keys.collect { |key| { name: key, label: PLAYBOOKS[playbook][:workflows][key][:label] } }
-    workflows = workflows.reject { |key| key[:name] == :global} if filter_out_global
+    workflows = workflows.reject { |key| key[:name] == :global } if filter_out_global
 
-    return workflows
+    workflows
   end
 
   # NOTE: Since we're currently assuming that really we just have exposure/isolation
@@ -104,7 +106,7 @@ module Orchestration::Orchestrator
   def continuous_exposure_enabled?(playbook)
     enabled = ActiveModel::Type::Boolean.new.cast(system_configuration(playbook, :continuous_exposure_enabled))
     enabled = true if enabled.nil?
-    return enabled
+    enabled
   end
 
   # Returns array of hashes (for each available workflow that lists the available line lists.
@@ -112,11 +114,11 @@ module Orchestration::Orchestrator
     workflows = available_workflows(playbook)
 
     line_lists = {}
-    workflows.each { |wf|
+    workflows.each do |wf|
       line_lists[wf[:name]] = workflow_configuration(playbook, wf[:name], :dashboard_tabs)
-    }
+    end
 
-    return line_lists
+    line_lists
   end
 
   def default_workflow(playbook)
@@ -144,7 +146,7 @@ module Orchestration::Orchestrator
       end
     end
     Rails.logger.info("mel: *** default workflow: #{default}")
-    return default
+    default
   end
 
   # Return the symbol to the default playbook
@@ -155,7 +157,7 @@ module Orchestration::Orchestrator
     default_playbook = playbook_name.parameterize.underscore.to_sym
     redirect_to('/404') && return if PLAYBOOKS[default_playbook].nil?
 
-    return default_playbook
+    default_playbook
   end
 
   # Return the label for the specified playbook (symbol)

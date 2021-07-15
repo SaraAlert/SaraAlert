@@ -29,6 +29,7 @@ class Export extends React.Component {
       exportOptions: allowedExportOptions,
       showCustomFormatModal: false,
     };
+    console.log(props);
   }
 
   toggleExportOpen = eoIndex => {
@@ -87,7 +88,7 @@ class Export extends React.Component {
           className="ml-2 mb-2"
           title={
             <React.Fragment>
-              <i className="fas fa-download"></i> {this.props.export_options.export.label || 'Export'}{' '}
+              <i className="fas fa-download"></i> {this.props.export_options?.export.label || 'Export'}{' '}
             </React.Fragment>
           }>
           {this.state.exportOptions.map((eo, eoIndex) => {

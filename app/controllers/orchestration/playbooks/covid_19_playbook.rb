@@ -27,11 +27,11 @@ module Orchestration::Playbooks::Covid19Playbook
             set: %i[enroll import],
             custom_options: {
               import: {
-                  label: 'Import',
-                  type: 'subset',
-                  config: {
-                    set: %i[saf]
-                  }
+                label: 'Import',
+                type: 'subset',
+                config: {
+                  set: %i[saf]
+                }
               }
             }
           }
@@ -59,13 +59,13 @@ module Orchestration::Playbooks::Covid19Playbook
         },
         header_action_buttons: {
           type: 'all'
-        },
+        }
       } },
       global: { label: 'Global', base: INFECTIOUS[:workflows][:global], custom_options: {
       } }
     },
     general: {
-      base: INFECTIOUS[:general], custom_options: { 
+      base: INFECTIOUS[:general], custom_options: {
         patient_page_sections: {
           type: 'all',
           config: {
@@ -83,5 +83,5 @@ module Orchestration::Playbooks::Covid19Playbook
     other_properties: {
 
     }
-  }
+  }.freeze
 end
