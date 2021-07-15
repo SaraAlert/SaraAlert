@@ -176,12 +176,11 @@ class AssessmentsControllerTest < ActionController::TestCase
     unauthorized_user_create_report_test('admin_user')
   end
 
-  def success_update_report_test(role)
+  def success_update_report_test(user)
     patient_submission_token = patients(:patient_1).submission_token
     assessment = assessments(:patient_1_assessment_2)
 
     # edit the assessment
-    user = create(role)
     symptoms = symptoms_param(assessment.reported_condition.symptoms)
     expected_change = !symptoms.first[:value]
     symptoms.first[:value] = expected_change
@@ -204,19 +203,39 @@ class AssessmentsControllerTest < ActionController::TestCase
   end
 
   test 'successfully update report as public_health_user' do
-    success_update_report_test('public_health_user')
+    ph_user = create('public_health_user')
+    success_update_report_test(ph_user)
   end
 
   test 'successfully update report as public_health_enroller_user' do
-    success_update_report_test('public_health_enroller_user')
+    phe_user = create('public_health_enroller_user')
+    success_update_report_test(phe_user)
   end
 
   test 'successfully update report as contact_tracer_user' do
-    success_update_report_test('contact_tracer_user')
+    ct_user = create('contact_tracer_user')
+    success_update_report_test(ct_user)
   end
 
   test 'successfully update report as super_user' do
-    success_update_report_test('super_user')
+    super_user = create('super_user')
+    success_update_report_test(super_user)
+  end
+
+  test 'reported updated report history item' do
+    ph_user = create('public_health_user')
+    ct_user = create('contact_tracer_user')
+
+    # Edit report and expect a specific snippet of a history item
+    success_update_report_test(ph_user)
+    assert_histories_contain(patients(:patient_1), "Reporter updated: (\"Monitoree\" to \"#{ph_user.email}\")")
+
+    # Delete all to ensure that the history is not created again
+    patients(:patient_1).histories.delete_all
+
+    # Edit report and expect no history item because the report has not changed
+    success_update_report_test(ct_user)
+    assert_not_histories_contain(patients(:patient_1), "Reporter updated: (\"Monitoree\" to \"#{ct_user.email}\")")
   end
 
   def unauthorized_user_update_report_test(role)
