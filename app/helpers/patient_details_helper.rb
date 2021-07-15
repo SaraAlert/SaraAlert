@@ -81,6 +81,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   # All information about this subject (used by system tests export verifier)
   def full_history_details_for_export
     labs = Laboratory.where(patient_id: id).order(specimen_collection: :desc)
+    vaccines = Vaccine.where(patient_id: id).order(administration_date: :desc)
     {
       first_name: first_name || '',
       middle_name: middle_name || '',
@@ -169,14 +170,14 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       full_status: '',
       symptom_onset: symptom_onset&.strftime('%F') || '',
       case_status: case_status || '',
-      lab_1_type: labs[0] ? (labs[0].lab_type || '') : '',
-      lab_1_specimen_collection: labs[0] ? (labs[0].specimen_collection&.strftime('%F') || '') : '',
-      lab_1_report: labs[0] ? (labs[0].report&.strftime('%F') || '') : '',
-      lab_1_result: labs[0] ? (labs[0].result || '') : '',
-      lab_2_type: labs[1] ? (labs[1].lab_type || '') : '',
-      lab_2_specimen_collection: labs[1] ? (labs[1].specimen_collection&.strftime('%F') || '') : '',
-      lab_2_report: labs[1] ? (labs[1].report&.strftime('%F') || '') : '',
-      lab_2_result: labs[1] ? (labs[1].result || '') : '',
+      lab_1_type: labs[0]&.lab_type || '',
+      lab_1_specimen_collection: labs[0]&.specimen_collection&.strftime('%F') || '',
+      lab_1_report: labs[0]&.report&.strftime('%F') || '',
+      lab_1_result: labs[0]&.result || '',
+      lab_2_type: labs[1]&.lab_type || '',
+      lab_2_specimen_collection: labs[1]&.specimen_collection&.strftime('%F') || '',
+      lab_2_report: labs[1]&.report&.strftime('%F') || '',
+      lab_2_result: labs[1]&.result || '',
       jurisdiction_path: jurisdiction[:path] || '',
       assigned_user: assigned_user || '',
       gender_identity: gender_identity || '',
@@ -184,6 +185,16 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       race_other: race_other || false,
       race_unknown: race_unknown || false,
       race_refused_to_answer: race_refused_to_answer || false,
+      vaccine_1_group_name: vaccines[0]&.group_name || '',
+      vaccine_1_product_name: vaccines[0]&.product_name || '',
+      vaccine_1_administration_date: vaccines[0]&.administration_date&.strftime('%F') || '',
+      vaccine_1_dose_number: vaccines[0]&.dose_number || '',
+      vaccine_1_notes: vaccines[0]&.notes,
+      vaccine_2_group_name: vaccines[1]&.group_name || '',
+      vaccine_2_product_name: vaccines[1]&.product_name || '',
+      vaccine_2_administration_date: vaccines[1]&.administration_date&.strftime('%F') || '',
+      vaccine_2_dose_number: vaccines[1]&.dose_number || '',
+      vaccine_2_notes: vaccines[1]&.notes,
       follow_up_reason: follow_up_reason || '',
       follow_up_note: follow_up_note || ''
     }

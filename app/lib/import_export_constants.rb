@@ -138,7 +138,9 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
               race_refused_to_answer],
     languages: %i[primary_language secondary_language],
     alternative_identifiers: %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss],
-    lab_fields: %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result]
+    lab_fields: %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result],
+    vaccine_fields: %i[vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number vaccine_1_notes vaccine_2_group_name
+                       vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number vaccine_2_notes]
   }.freeze
 
   PATIENT_FIELD_NAMES = {
