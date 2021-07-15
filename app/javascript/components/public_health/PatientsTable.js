@@ -615,7 +615,9 @@ class PatientsTable extends React.Component {
               <Nav.Item key={tab}>
                 <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`}>
                   <span className="large-tab">{tabProps.label}</span>
-                  <span className="small-tab">{tabProps.abbreviatedLabel || tabProps.label}</span>
+                  <span className="small-tab" aria-label={tabProps.label}>
+                    {tabProps.abbreviatedLabel || tabProps.label}
+                  </span>
                   <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
                     <span>{`${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>
                   </Badge>

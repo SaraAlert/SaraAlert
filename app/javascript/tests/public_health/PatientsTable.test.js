@@ -174,12 +174,42 @@ describe('PatientsTable', () => {
     const wrapper = getExposureWrapper();
     for (var key of Object.keys(mockExposureTabs)) {
       expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find('.large-tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find('.large-tab').text()).toEqual(mockExposureTabs[`${key}`]['label']);
-      expect(wrapper.find('#' + key + '_tab').find('.small-tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find('.small-tab').text()).toEqual(mockExposureTabs[`${key}`]['abbreviatedLabel'] || mockExposureTabs[`${key}`]['label']);
-      expect(wrapper.find('#' + key + '_tab').find(Badge).exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find(Badge).prop('variant')).toEqual(mockExposureTabs[`${key}`]['variant']);
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.large-tab')
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.large-tab')
+          .text()
+      ).toEqual(mockExposureTabs[`${key}`]['label']);
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.small-tab')
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.small-tab')
+          .text()
+      ).toEqual(mockExposureTabs[`${key}`]['abbreviatedLabel'] || mockExposureTabs[`${key}`]['label']);
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find(Badge)
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find(Badge)
+          .prop('variant')
+      ).toEqual(mockExposureTabs[`${key}`]['variant']);
     }
   });
 
@@ -187,12 +217,42 @@ describe('PatientsTable', () => {
     const wrapper = getIsolationWrapper();
     for (var key of Object.keys(mockIsolationTabs)) {
       expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find('.large-tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find('.large-tab').text()).toEqual(mockIsolationTabs[`${key}`]['label']);
-      expect(wrapper.find('#' + key + '_tab').find('.small-tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find('.small-tab').text()).toEqual(mockIsolationTabs[`${key}`]['abbreviatedLabel'] || mockIsolationTabs[`${key}`]['label']);
-      expect(wrapper.find('#' + key + '_tab').find(Badge).exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find(Badge).prop('variant')).toEqual(mockIsolationTabs[`${key}`]['variant']);
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.large-tab')
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.large-tab')
+          .text()
+      ).toEqual(mockIsolationTabs[`${key}`]['label']);
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.small-tab')
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.small-tab')
+          .text()
+      ).toEqual(mockIsolationTabs[`${key}`]['abbreviatedLabel'] || mockIsolationTabs[`${key}`]['label']);
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find(Badge)
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find(Badge)
+          .prop('variant')
+      ).toEqual(mockIsolationTabs[`${key}`]['variant']);
     }
   });
 
@@ -200,12 +260,42 @@ describe('PatientsTable', () => {
     const wrapper = getGlobalWrapper();
     for (var key of Object.keys(mockGlobalTabs)) {
       expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find('.large-tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find('.large-tab').text()).toEqual(mockGlobalTabs[`${key}`]['label']);
-      expect(wrapper.find('#' + key + '_tab').find('.small-tab').exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find('.small-tab').text()).toEqual(mockGlobalTabs[`${key}`]['abbreviatedLabel'] || mockGlobalTabs[`${key}`]['label']);
-      expect(wrapper.find('#' + key + '_tab').find(Badge).exists()).toBeTruthy();
-      expect(wrapper.find('#' + key + '_tab').find(Badge).prop('variant')).toEqual(mockGlobalTabs[`${key}`]['variant']);
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.large-tab')
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.large-tab')
+          .text()
+      ).toEqual(mockGlobalTabs[`${key}`]['label']);
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.small-tab')
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find('.small-tab')
+          .text()
+      ).toEqual(mockGlobalTabs[`${key}`]['abbreviatedLabel'] || mockGlobalTabs[`${key}`]['label']);
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find(Badge)
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find('#' + key + '_tab')
+          .find(Badge)
+          .prop('variant')
+      ).toEqual(mockGlobalTabs[`${key}`]['variant']);
     }
   });
 });
