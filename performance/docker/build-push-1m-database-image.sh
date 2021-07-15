@@ -1,6 +1,15 @@
 # Use the commented out commands on L2-3 for debugging
-# docker run --name saraalert-1m-database -e MYSQL_ROOT_PASSWORD=root -d ghcr.io/saraalert/saraalert-1m-database:latest
-# docker exec -it saraalert-1m-database sh -c 'exec mysql -uroot -proot'
+# docker run --rm -e MYSQL_ROOT_PASSWORD=root ghcr.io/saraalert/saraalert-1m-database:latest
+# docker exec -it <container ID> sh -c 'exec mysql -uroot -proot'
+#
+# Want to migrate an existing database dump and rebuild the image?
+#
+# FILE=./path_to_backup.sql bundle exec rails demo:restore_database
+# bundle exec rails db:migrate
+# bundle exec rails db:backup_database
+# ./performance/docker/build-push-1m-database-image.sh ./path_to_migrated_db_dump.sql
+#
+
 set -ev
 
 # Expect first POSARG to be location of the .sql dump
