@@ -321,7 +321,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, json_patient) == 1_000_000)
     email_iss = issues.find { |e| /Email.*Primary Contact Method/.match(e['diagnostics']) }
     assert_not_nil email_iss # Email is omitted from the request, so don't eval the FHIRPath
-    follow_up_reason_iss = issues.find { |e| /Invalid reason.*Follow-up Reason/.match(e['diagnostics']) }
+    follow_up_reason_iss = issues.find { |e| /Invalid reason.*Follow-Up Reason/.match(e['diagnostics']) }
     assert_not_nil follow_up_reason_iss
   end
 
@@ -365,6 +365,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'should not be able to create Patient with follow up note without a reason' do
     Patient.find_by(id: 2).update!(
+      follow_up_reason: nil,
       follow_up_note: 'New follow up note'
     )
 
@@ -379,7 +380,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     issues = json_response['issue']
 
     assert_equal 1, issues.length
-    assert(json_response['issue'][0]['diagnostics'].include?('\'Follow-up Note\' must be blank when \'Follow-up Reason\' is blank'))
+    assert_includes json_response['issue'][0]['diagnostics'], '\'Follow-Up Reason\' is required when \'Follow-Up Note\' is present'
   end
 
   #----- update tests -----
@@ -539,7 +540,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     issues = json_response['issue']
 
     assert_equal 1, issues.length
-    assert(json_response['issue'][0]['diagnostics'].include?('Value \'Some invalid reason\' for \'Follow-up Reason\' is not an acceptable value'))
+    assert_includes json_response['issue'][0]['diagnostics'], 'Value \'Some invalid reason\' for \'Follow-Up Reason\' is not an acceptable value'
   end
 
   test 'should update Patient follow up note via update' do
@@ -579,7 +580,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     issues = json_response['issue']
 
     assert_equal 1, issues.length
-    assert(json_response['issue'][0]['diagnostics'].include?('\'Follow-up Note\' must be blank when \'Follow-up Reason\' is blank'))
+    assert_includes json_response['issue'][0]['diagnostics'], '\'Follow-Up Reason\' is required when \'Follow-Up Note\' is present'
   end
 
   test 'should not be able to clear Patient flag when there is a note' do
@@ -598,12 +599,13 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     issues = json_response['issue']
 
     assert_equal 1, issues.length
-    assert(json_response['issue'][0]['diagnostics'].include?('\'Follow-up Note\' must be blank when \'Follow-up Reason\' is blank'))
+    assert_includes json_response['issue'][0]['diagnostics'], '\'Follow-Up Reason\' is required when \'Follow-Up Note\' is present'
   end
 
   test 'should clear Patient flag via update' do
     Patient.find_by(id: 2).update!(
-      follow_up_reason: nil
+      follow_up_reason: nil,
+      follow_up_note: nil
     )
 
     put(
@@ -657,7 +659,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_not p.monitoring
 
     # Closed at date should have been set to today
-    assert_equal DateTime.now.to_date, p.closed_at&.to_date
+    assert_equal DateTime.now.utc.to_date, p.closed_at&.to_date
   end
 
   test 'should differentiate USA and Foreign addresses in update' do
@@ -814,7 +816,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert(FHIRPath.evaluate(assigned_usr_iss['expression'].first, json_patient) == 1_000_000)
     email_iss = issues.find { |e| /Email.*Primary Contact Method/.match(e['diagnostics']) }
     assert_not_nil email_iss # Email is omitted from the request, so don't eval the FHIRPath
-    follow_up_reason_iss = issues.find { |e| /Invalid reason.*Follow-up Reason/.match(e['diagnostics']) }
+    follow_up_reason_iss = issues.find { |e| /Invalid reason.*Follow-Up Reason/.match(e['diagnostics']) }
     assert_not_nil follow_up_reason_iss
   end
 
@@ -860,7 +862,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['issue'].length
-    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction does not exist'))
+    assert_includes json_response['issue'][0]['diagnostics'], 'Jurisdiction does not exist'
   end
 
   test 'USER FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
@@ -873,7 +875,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['issue'].length
-    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction does not exist'))
+    assert_includes json_response['issue'][0]['diagnostics'], 'Jurisdiction does not exist'
   end
 
   test 'should update Patient via patch update' do

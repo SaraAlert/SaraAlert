@@ -228,12 +228,23 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     # query user emails in bulk if requested
     patients_creators = patients.joins('JOIN users ON patients.creator_id = users.id').pluck('users.id', 'users.email').to_h if fields.include?(:creator)
 
+    # query patient_ids
+    patient_ids = patients.pluck(:id)
+
     # query patients laboratories in bulk if requested
     if (fields & PATIENT_FIELD_TYPES[:lab_fields]).any?
-      patients_laboratories = Laboratory.where(patient_id: patients.pluck(:id))
+      patients_laboratories = Laboratory.where(patient_id: patient_ids)
                                         .order(specimen_collection: :desc)
                                         .group_by(&:patient_id)
                                         .transform_values { |v| v.take(2) }
+    end
+
+    # query patients vaccines in bulk if requested
+    if (fields & PATIENT_FIELD_TYPES[:vaccine_fields]).any?
+      patients_vaccines = Vaccine.where(patient_id: patient_ids)
+                                 .order(administration_date: :desc)
+                                 .group_by(&:patient_id)
+                                 .transform_values { |v| v.take(2) }
     end
 
     # construct patient details
@@ -290,6 +301,29 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
             end
             patient_details[:lab_2_report] = patients_laboratories[patient.id].second[:report]&.strftime('%F') if fields.include?(:lab_2_report)
             patient_details[:lab_2_result] = patients_laboratories[patient.id].second[:result] if fields.include?(:lab_2_result)
+          end
+        end
+
+        # populate vaccines if requested
+        if patients_vaccines&.key?(patient.id)
+          if patients_vaccines[patient.id]&.first&.present?
+            patient_details[:vaccine_1_group_name] = patients_vaccines[patient.id].first[:group_name] if fields.include?(:vaccine_1_group_name)
+            patient_details[:vaccine_1_product_name] = patients_vaccines[patient.id].first[:product_name] if fields.include?(:vaccine_1_product_name)
+            if fields.include?(:vaccine_1_administration_date)
+              patient_details[:vaccine_1_administration_date] = patients_vaccines[patient.id].first[:administration_date]&.strftime('%F')
+            end
+            patient_details[:vaccine_1_dose_number] = patients_vaccines[patient.id].first[:dose_number] if fields.include?(:vaccine_1_dose_number)
+            patient_details[:vaccine_1_notes] = patients_vaccines[patient.id].first[:notes] if fields.include?(:vaccine_1_notes)
+          end
+
+          if patients_vaccines[patient.id]&.second&.present?
+            patient_details[:vaccine_2_group_name] = patients_vaccines[patient.id].second[:group_name] if fields.include?(:vaccine_2_group_name)
+            patient_details[:vaccine_2_product_name] = patients_vaccines[patient.id].second[:product_name] if fields.include?(:vaccine_2_product_name)
+            if fields.include?(:vaccine_2_administration_date)
+              patient_details[:vaccine_2_administration_date] = patients_vaccines[patient.id].second[:administration_date]&.strftime('%F')
+            end
+            patient_details[:vaccine_2_dose_number] = patients_vaccines[patient.id].second[:dose_number] if fields.include?(:vaccine_2_dose_number)
+            patient_details[:vaccine_2_notes] = patients_vaccines[patient.id].second[:notes] if fields.include?(:vaccine_2_notes)
           end
         end
 
