@@ -51,15 +51,17 @@ module Orchestration::Orchestrator # rubocop:todo Metrics/ModuleLength
     when 'subset'
       # If a subset, then look into the configuration and only return the wanted fields
       selected_configuration[:options] = if base_configuration[:options].is_a?(Array)
-                                           base_configuration[:options].select { |key, _value| playbook_configuration[:config][:set].include?(key) }
-                                         else
                                            base_configuration[:options].select { |key| playbook_configuration[:config][:set].include?(key) }
+                                         else
+                                           base_configuration[:options].select { |key, _value| playbook_configuration[:config][:set].include?(key) }
                                          end
     when 'remove'
       # If remove, then look into the configuration and reject the listed fields
-      # selected_configuration[:options] = if base_configuration[:options].is_a?(Array)
-      #                                    end
-      base_configuration[:options].reject { |key, _value| playbook_configuration[:config][:set].include?(key) }
+      selected_configuration[:options] = if base_configuration[:options].is_a?(Array)
+                                           base_configuration[:options].reject { |key| playbook_configuration[:config][:set].include?(key) }
+                                         else
+                                           base_configuration[:options].reject { |key, _value| playbook_configuration[:config][:set].include?(key) }
+                                         end
     when 'custom'
       # TODO: This is here as a catch all, but this isn't really being implemented
       # For now the assumption is if you choose custom you need to write the whole configuration
