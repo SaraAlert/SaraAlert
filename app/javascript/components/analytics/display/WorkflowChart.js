@@ -33,7 +33,7 @@ class WorkflowChart extends React.Component {
             <Tooltip />
             <Legend />
             {this.props.workflows.map((workflow, i) => (
-              <Bar key={i} dataKey={workflow} stackId="a" fill={COLORS[i]} />
+              <Bar key={i} dataKey={workflow} stackId="a" fill={COLORS[parseInt(i)]} />
             ))}
           </BarChart>
         </ResponsiveContainer>
