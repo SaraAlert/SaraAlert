@@ -147,7 +147,6 @@ module Orchestration::Orchestrator # rubocop:todo Metrics/ModuleLength
                     label: (label.nil? ? '' : label.to_s) }
       end
     end
-    Rails.logger.info("mel: *** default workflow: #{default}")
     default
   end
 

@@ -22,7 +22,7 @@ class DashboardController < ApplicationController
     @tabs = tabs[:options]
     button = workflow_configuration(playbook, workflow, :header_action_buttons)
     @header_action_buttons = button.nil? ? nil : button[:options]
-    @available_workflows = available_workflows(playbook, false)
+    @available_workflows = available_workflows(playbook, filter_out_global: false)
     @available_line_lists = available_line_lists(playbook)
   end
 
