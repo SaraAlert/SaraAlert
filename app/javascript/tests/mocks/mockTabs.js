@@ -73,6 +73,7 @@ const mockIsolationTabs = {
   requiring_review: {
     description: 'Cases who preliminarily meet the recovery definition and require review.',
     label: 'Records Requiring Review',
+    abbreviatedLabel: 'RRR',
     tooltip: 'isolation_records_requiring_review',
     variant: 'danger',
   },
