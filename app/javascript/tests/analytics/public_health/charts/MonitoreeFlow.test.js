@@ -71,7 +71,7 @@ describe('MonitoreeFlow', () => {
     expect(wrapper.find(Card.Body).find('table').length).toEqual(2);
     expect(wrapper.find(Card.Body).find('.info-text').exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find('.info-text').find('i').hasClass('fa-info-circle')).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.info-text').text().includes('Total includes all incoming and outgoing counts ever recorded for this jurisdiction')).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('.info-text').text()).toContain('Cumulative includes all incoming and outgoing counts ever recorded for this jurisdiction');
   });
 
   it('Properly renders exposure monitoree flow table', () => {

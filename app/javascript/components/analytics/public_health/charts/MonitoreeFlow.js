@@ -126,7 +126,7 @@ class MonitoreeFlow extends React.Component {
           <Row>{this.tableData.map((data, index) => this.renderWorkflowTable(data, index))}</Row>
           <div className="text-center text-secondary info-text my-1">
             <i className="fas fa-info-circle mr-1"></i>
-            Total includes all incoming and outgoing counts ever recorded for this jurisdiction
+            Cumulative includes all incoming and outgoing counts ever recorded for this jurisdiction
           </div>
         </Card.Body>
       </Card>
