@@ -695,6 +695,8 @@ class PatientsTable extends React.Component {
                     advancedFilterUpdate={this.advancedFilterUpdate}
                     authenticity_token={this.props.authenticity_token}
                     updateStickySettings={true}
+                    jurisdiction_paths={this.props.jurisdiction_paths}
+                    assigned_users={this.state.assigned_users}
                   />
                   {this.state.query.tab !== 'transferred_out' && (
                     <DropdownButton

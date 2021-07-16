@@ -41,6 +41,15 @@ class AdvancedFilter extends React.Component {
       }
     });
 
+    // Get jurisdiction options for jurisdiction multi-select advanced filter
+    if (this.props.jurisdiction_paths) {
+      let index = advancedFilterOptions.findIndex(x => x.name === 'jurisdiction');
+      let paths = Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
+        return { value: id, label: path };
+      });
+      advancedFilterOptions[Number(index)].options = paths;
+    }
+
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
       this.addStatement();
@@ -65,6 +74,18 @@ class AdvancedFilter extends React.Component {
         }
       });
     });
+  }
+
+  componentDidUpdate(prevProps) {
+    // Get list of assigned users for assigned users multi-select advanced filter
+    if (this.props.assigned_users !== prevProps.assigned_users) {
+      let index = advancedFilterOptions.findIndex(x => x.name === 'assigned-user');
+      let assigned_users = _.values(this.props.assigned_users).map(assigned_user => {
+        return { value: assigned_user, label: assigned_user };
+      });
+
+      advancedFilterOptions[Number(index)].options = assigned_users;
+    }
   }
 
   /**
@@ -357,6 +378,8 @@ class AdvancedFilter extends React.Component {
       value = '';
     } else if (filterOption.type === 'combination') {
       value = [this.getDefaultCombinationValue(filterOption, filterOption.fields[0].name)];
+    } else if (filterOption.type === 'multi') {
+      value = [];
     }
 
     activeFilterOptions[parseInt(index)] = {
@@ -365,7 +388,7 @@ class AdvancedFilter extends React.Component {
       numberOption: filterOption.type === 'number' ? 'equal' : null,
       dateOption: filterOption.type === 'date' ? 'within' : null,
       relativeOption: filterOption.type === 'relative' ? 'today' : null,
-      additionalFilterOption: filterOption.type !== 'select' && filterOption.options ? filterOption.options[0] : null,
+      additionalFilterOption: filterOption.type !== 'select' && filterOption.type !== 'multi' && filterOption.options ? filterOption.options[0] : null,
     };
     this.setState({ activeFilterOptions });
   };
@@ -1176,6 +1199,37 @@ class AdvancedFilter extends React.Component {
   };
 
   /**
+   * Renders multi-select type line "statement"
+   * @param {Object} filter - Filter currently selected
+   * @param {Number} index - Filter index
+   * @param {Array} value - Current values selected
+   * @param {Function} handleChange - Function to handle onChange
+   */
+  renderMultiStatement = (filter, index, value, handleChange) => {
+    // Function here to pass in selected options and index
+    function handleMultiStatementChange(selectedOptions) {
+      handleChange(index, selectedOptions);
+    }
+
+    return (
+      <React.Fragment>
+        <div className="d-flex justify-content-between py-0 my-0">
+          <Select
+            closeMenuOnSelect={false}
+            isMulti
+            value={value}
+            options={filter.options}
+            className="advanced-filter-multi-select w-50 mr-3"
+            placeholder=""
+            aria-label="Advanced Filter Multi-select Options"
+            onChange={handleMultiStatementChange}
+          />
+        </div>
+      </React.Fragment>
+    );
+  };
+
+  /**
    * Renders a single line "statement"
    * @param {Object} filterOption - Filter currently selected
    * @param {*} value - Current value for this statement (could be a string, bool, date or object)
@@ -1201,7 +1255,7 @@ class AdvancedFilter extends React.Component {
             {this.renderOptions(filterOption?.name, index)}
           </Col>
           {/* specific dropdown for filters with a type that requires additional options (not type option) */}
-          {filterOption?.type !== 'select' && filterOption?.options && (
+          {filterOption?.type !== 'select' && filterOption?.type !== 'multi' && filterOption?.options && (
             <Col className="pl-0" md={4}>
               {this.renderAdditionalFilterOptions(additionalFilterOption, index, filterOption.options, value, numberOption, dateOption, relativeOption)}
             </Col>
@@ -1220,6 +1274,7 @@ class AdvancedFilter extends React.Component {
                 })}
               </React.Fragment>
             )}
+            {filterOption?.type === 'multi' && this.renderMultiStatement(filterOption, index, value, this.changeValue)}
           </Col>
           {filterOption?.type !== 'combination' && (
             <Col className="py-0" md="auto">
@@ -1435,6 +1490,8 @@ AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
   updateStickySettings: PropTypes.bool,
+  jurisdiction_paths: PropTypes.object,
+  assigned_users: PropTypes.array,
 };
 
 export default AdvancedFilter;

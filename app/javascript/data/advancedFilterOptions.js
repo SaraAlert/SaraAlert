@@ -341,4 +341,20 @@ export const advancedFilterOptions = [
       },
     ],
   },
+
+  /* MULTI-SELECT OPTIONS */
+  {
+    name: 'assigned-user',
+    title: 'Assigned User (Multi-select)',
+    description: 'Monitorees who have a specific assigned user',
+    type: 'multi',
+    options: [], // Populated asynchronously in the AdvancedFilter component
+  },
+  {
+    name: 'jurisdiction',
+    title: 'Jurisdiction (Multi-select)',
+    description: 'Monitorees of a specific jurisdiction',
+    type: 'multi',
+    options: [], // Populated in the AdvancedFilter component
+  },
 ];

@@ -9,14 +9,17 @@ class PublicHealthController < ApplicationController
 
   def exposure
     @title = 'Exposure Dashboard'
+    @possible_jurisdiction_paths = current_user.jurisdiction.subtree.pluck(:id, :path).to_h
   end
 
   def isolation
     @title = 'Isolation Dashboard'
+    @possible_jurisdiction_paths = current_user.jurisdiction.subtree.pluck(:id, :path).to_h
   end
 
   def global
     @title = 'Global Dashboard'
+    @possible_jurisdiction_paths = current_user.jurisdiction.subtree.pluck(:id, :path).to_h
   end
 
   def patients

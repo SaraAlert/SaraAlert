@@ -38,7 +38,7 @@ class Workflow extends React.Component {
         />
         <PatientsTable
           authenticity_token={this.props.authenticity_token}
-          jurisdiction_paths={this.state.jurisdiction_paths}
+          jurisdiction_paths={this.props.jurisdiction_paths}
           workflow={this.props.workflow}
           jurisdiction={this.props.jurisdiction}
           tabs={this.props.tabs}
@@ -59,6 +59,7 @@ Workflow.propTypes = {
   workflow: PropTypes.string,
   tabs: PropTypes.object,
   default_tab: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
   custom_export_options: PropTypes.object,
   monitoring_reasons: PropTypes.array,
 };
