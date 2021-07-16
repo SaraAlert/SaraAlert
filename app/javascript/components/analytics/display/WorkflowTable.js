@@ -14,7 +14,7 @@ class WorkflowTable extends React.Component {
             </span>
           )}
         </div>
-        <table className="analytics-table text-right">
+        <table className="analytics-table workflow-table text-right">
           <thead>
             <tr className="header">
               <th></th>

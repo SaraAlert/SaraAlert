@@ -171,6 +171,16 @@
       background-color: #fff;
     }
   }
+
+  &.workflow-table {
+    td {
+      min-width: 7em;
+    }
+
+    tr>td:first-child {
+      width: 80%;
+    }
+  }
 }
 
 .info-text {

@@ -18,7 +18,6 @@ class WorkflowChart extends React.Component {
             </span>
           )}
         </h5>
-        <div>
         <ResponsiveContainer width="100%" height={500}>
           <BarChart
             data={this.props.data}
@@ -38,7 +37,6 @@ class WorkflowChart extends React.Component {
             ))}
           </BarChart>
         </ResponsiveContainer>
-        </div>
       </div>
     );
   }

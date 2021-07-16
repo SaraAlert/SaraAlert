@@ -67,11 +67,11 @@ class Demographics extends React.Component {
 
   renderTables = () => (
     <Row>
-      <Col lg="12">
+      <Col xl="12">
         <WorkflowTable title={'Current Age (Years)'} rowHeaders={AGEGROUPS} data={this.ageData} tooltipKey={'analyticsAgeTip'} />
         <WorkflowTable title={'Sex'} rowHeaders={SEXES} data={this.sexData} />
       </Col>
-      <Col lg="12">
+      <Col xl="12">
         <WorkflowTable title={'Ethnicity'} rowHeaders={ETHNICITIES} data={this.ethnicityData} />
         <WorkflowTable title={'Race'} rowHeaders={RACES} data={this.raceData} />
         {this.showSexualOrientationData && <WorkflowTable title={'Sexual Orientation'} rowHeaders={SEXUAL_ORIENTATIONS} data={this.soData} />}

@@ -69,10 +69,10 @@ class ExposureSummary extends React.Component {
   renderTables = () => {
     return (
       <Row>
-        <Col lg="12">
+        <Col xl="12">
           <WorkflowTable title={'Risk Factors'} rowHeaders={RISKFACTORS} data={this.rfData} />
         </Col>
-        <Col lg="12">
+        <Col xl="12">
           <WorkflowTable title={'Country of Exposure'} rowHeaders={this.COUNTRY_HEADERS} data={this.countryData} />
           <Button variant="primary" className="float-right" onClick={this.exportFullCountryData}>
             <i className="fas fa-download mr-1"></i>
