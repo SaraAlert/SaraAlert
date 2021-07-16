@@ -431,7 +431,7 @@ patient_15:
   first_name: 'Jon'
   last_name: 'Snow'
   sex: 'Unknown'
-  date_of_birth: <%= 50.years.ago %>
+  date_of_birth: <%= 51.years.ago %>
   address_state: 'Massachusetts'
   address_county: 'Lake'
   exposure_risk_assessment: 'High'
