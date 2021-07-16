@@ -196,7 +196,7 @@ const mockFilterAddressForeign = {
   value: '42 Wallaby Way',
 };
 
-/* MULTI TYPE MOCK FILTERS */
+/* COMBINATION TYPE MOCK FILTERS */
 const mockFilterLabResults = {
   additionalFilterOption: null,
   dateOption: null,

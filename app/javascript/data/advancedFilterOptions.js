@@ -275,12 +275,12 @@ export const advancedFilterOptions = [
     hasTimestamp: false,
   },
 
-  /* MULTI FILTER OPTIONS */
+  /* COMBINATION OPTIONS */
   {
     name: 'lab-result',
-    title: 'Lab Result (Multi-select)',
+    title: 'Lab Result (Combination)',
     description: 'Monitorees with specified Lab Result criteria',
-    type: 'multi',
+    type: 'combination',
     tooltip:
       'Returns records that contain at least one Lab Result entry that meets all user-specified criteria (e.g., searching for a specific Lab Test Type and Report Date will only return records containing at least one Lab Result entry with matching values in both fields).',
     fields: [
@@ -310,9 +310,9 @@ export const advancedFilterOptions = [
   },
   {
     name: 'vaccination',
-    title: 'Vaccination (Multi-select)',
+    title: 'Vaccination (Combination)',
     description: 'Monitorees with specified Vaccination criteria',
-    type: 'multi',
+    type: 'combination',
     tooltip:
       'Returns records that contain at least one Vaccination entry that meets all user-specified criteria (e.g., searching for a specific Vaccination Product Name and Administration Date will only return records containing at least one Vaccination entry with matching values in both fields).',
     fields: [

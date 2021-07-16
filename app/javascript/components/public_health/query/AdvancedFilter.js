@@ -292,36 +292,36 @@ class AdvancedFilter extends React.Component {
   };
 
   /**
-   * Adds another multi filter statement at certain index
+   * Adds another combination filter statement at certain index
    * Ensures no field is repeated when a new statement is added
-   * @param {Object} filter - Current multi filter object containing all the possible fields
+   * @param {Object} filter - Current combination filter object containing all the possible fields
    * @param {Number} statementIndex - Current overall statement filter index
    */
-  addMultiStatement = (filter, statementIndex) => {
-    const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
-    let possibleFields = currentMultiFilter.filterOption.fields;
-    currentMultiFilter.value.forEach(value => {
+  addCombinationStatement = (filter, statementIndex) => {
+    const currentCombinationFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
+    let possibleFields = currentCombinationFilter.filterOption.fields;
+    currentCombinationFilter.value.forEach(value => {
       possibleFields = possibleFields.filter(field => field.name !== value.name);
     });
-    const newValue = [...currentMultiFilter.value, this.getDefaultMultiValue(filter, possibleFields[0].name)];
+    const newValue = [...currentCombinationFilter.value, this.getDefaultCombinationValue(filter, possibleFields[0].name)];
     this.changeValue(statementIndex, newValue);
   };
 
   /**
-   * Removes one of the multi filter statements at certain index
+   * Removes one of the combination filter statements at certain index
    * @param {Number} statementIndex - Current overall statement filter index
-   * @param {Number} multiIndex - Index of the statement within the multi filter that will be removed
+   * @param {Number} combinationIndex - Index of the statement within the combination filter that will be removed
    */
-  removeMultiStatement = (statementIndex, multiIndex) => {
-    const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
-    let value = [...currentMultiFilter.value];
+  removeCombinationStatement = (statementIndex, combinationIndex) => {
+    const currentCombinationFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
+    let value = [...currentCombinationFilter.value];
 
-    // if removing the last multi statement, remove the whole filter
-    // otherwise just remove that multi statement
+    // if removing the last combination statement, remove the whole filter
+    // otherwise just remove that combination statement
     if (value.length === 1) {
       this.removeStatement(statementIndex);
     } else {
-      value.splice(multiIndex, 1);
+      value.splice(combinationIndex, 1);
       this.changeValue(statementIndex, value);
     }
   };
@@ -355,8 +355,8 @@ class AdvancedFilter extends React.Component {
       value = 'today';
     } else if (filterOption.type === 'search') {
       value = '';
-    } else if (filterOption.type === 'multi') {
-      value = [this.getDefaultMultiValue(filterOption, filterOption.fields[0].name)];
+    } else if (filterOption.type === 'combination') {
+      value = [this.getDefaultCombinationValue(filterOption, filterOption.fields[0].name)];
     }
 
     activeFilterOptions[parseInt(index)] = {
@@ -479,51 +479,51 @@ class AdvancedFilter extends React.Component {
   };
 
   /**
-   * Change value of a filter statement of type multi
+   * Change value of a filter statement of type combination
    * @param {Number} statementIndex - Current overall statement filter index
-   * @param {Number} multiIndex - Index of the statement within the multi filter that needs to be updated
-   * @param {*} value - New value for the statement at the multi index
+   * @param {Number} combinationIndex - Index of the statement within the combination filter that needs to be updated
+   * @param {*} value - New value for the statement at the combination index
    */
-  changeMultiValue = (statementIndex, multiIndex, value) => {
-    const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
-    const newValue = [...currentMultiFilter.value];
-    newValue[parseInt(multiIndex)] = value;
+  changeCombinationValue = (statementIndex, combinationIndex, value) => {
+    const currentCombinationFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
+    const newValue = [...currentCombinationFilter.value];
+    newValue[parseInt(combinationIndex)] = value;
     this.changeValue(statementIndex, newValue);
   };
 
   /**
-   * Determines if a field within a multi statement should be disabled
-   * A field is disabled if it already exists in a different multi statement, but not the one it is selected in
+   * Determines if a field within a combination statement should be disabled
+   * A field is disabled if it already exists in a different combination statement, but not the one it is selected in
    * @param {String} name - Field name attribute of the dropdown option
    * @param {Number} statementIndex - Current overall statement filter index
-   * @param {Number} multiIndex - Index of the statement within the multi filter
+   * @param {Number} combinationIndex - Index of the statement within the combination filter
    */
-  multiFieldDisabled = (name, multiIndex, statementIndex) => {
-    const currentMultiFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
-    return currentMultiFilter.value.some((value, index) => value.name === name && index !== multiIndex);
+  combinationFieldDisabled = (name, combinationIndex, statementIndex) => {
+    const currentCombinationFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
+    return currentCombinationFilter.value.some((value, index) => value.name === name && index !== combinationIndex);
   };
 
   /**
    * Returns the field of a filter when given the name of that filter
-   * @param {Object} filter - Multi filter object containing all the possible fields
+   * @param {Object} filter - Combination filter object containing all the possible fields
    * @param {String} name - Field name attribute
    */
-  getMultiFilter = (filter, name) => {
+  getCombinationFilter = (filter, name) => {
     return filter.fields.find(field => field.name === name);
   };
 
   /**
-   * Given the name on of a field for a certain multi filter, returns the default value
+   * Given the name on of a field for a certain combination filter, returns the default value
    * The default value is determined by the type of the field
-   * @param {Object} filter - Multi filter object containing all the possible fields
+   * @param {Object} filter - combination filter object containing all the possible fields
    * @param {String} name - Field name attribute
    */
-  getDefaultMultiValue = (filter, name) => {
-    const multiFilter = this.getMultiFilter(filter, name);
+  getDefaultCombinationValue = (filter, name) => {
+    const combinationFilter = this.getCombinationFilter(filter, name);
     let value = null;
-    if (multiFilter.type === 'select') {
-      value = { name: name, value: multiFilter.options[0] };
-    } else if (multiFilter.type === 'date') {
+    if (combinationFilter.type === 'select') {
+      value = { name: name, value: combinationFilter.options[0] };
+    } else if (combinationFilter.type === 'date') {
       value = {
         name: name,
         value: { when: 'before', date: moment().format('YYYY-MM-DD') },
@@ -1052,79 +1052,82 @@ class AdvancedFilter extends React.Component {
   };
 
   /**
-   * Renders multi-select type line "statement"
-   * @param {Object} filter - Multi filter object containing all the possible fields
+   * Renders combination type line "statement"
+   * @param {Object} filter - Combination filter object containing all the possible fields
    * @param {Number} statementIndex - Current overall statement filter index
-   * @param {Number} multiIndex - Index of the statement within the multi filter
-   * @param {Number} total - Total number of statments within the multi filter
-   * @param {*} multiValue - Value of this statement within the multi filter (name/value pair)
+   * @param {Number} combinationIndex - Index of the statement within the combination filter
+   * @param {Number} total - Total number of statments within the combination filter
+   * @param {*} combinationValue - Value of this statement within the combination filter (name/value pair)
    */
-  renderMultiStatement = (filter, statementIndex, multiIndex, total, multiValue) => {
+  renderCombinationStatement = (filter, statementIndex, combinationIndex, total, combinationValue) => {
     return (
-      <React.Fragment key={'rowkey-filter-m' + multiIndex}>
-        {multiIndex > 0 && multiIndex < total && (
+      <React.Fragment key={'rowkey-filter-m' + combinationIndex}>
+        {combinationIndex > 0 && combinationIndex < total && (
           <Row className="and-row py-2">
             <Col className="py-0">
               <b>AND</b>
             </Col>
           </Row>
         )}
-        <Row className="advanced-filter-multi-type-statement m-0">
+        <Row className="advanced-filter-combination-type-statement m-0">
           <Col className="p-0">
             <Form.Group className="form-group-inline py-0 my-0">
               <Form.Control
                 as="select"
-                value={multiValue.name}
-                className="advanced-filter-multi-options advanced-filter-select py-0 my-0"
-                aria-label="Advanced Filter Multi Select Options"
+                value={combinationValue.name}
+                className="advanced-filter-combination-options advanced-filter-select py-0 my-0"
+                aria-label="Advanced Filter Combination Options"
                 onChange={event => {
-                  this.changeMultiValue(statementIndex, multiIndex, this.getDefaultMultiValue(filter, event.target.value));
+                  this.changeCombinationValue(statementIndex, combinationIndex, this.getDefaultCombinationValue(filter, event.target.value));
                 }}>
                 {filter.fields?.map((field, f_index) => {
                   return (
-                    <option key={f_index} value={field.name} disabled={this.multiFieldDisabled(field.name, multiIndex, statementIndex)}>
+                    <option key={f_index} value={field.name} disabled={this.combinationFieldDisabled(field.name, combinationIndex, statementIndex)}>
                       {field.title}
                     </option>
                   );
                 })}
               </Form.Control>
-              {this.getMultiFilter(filter, multiValue.name).type === 'select' && (
+              {this.getCombinationFilter(filter, combinationValue.name).type === 'select' && (
                 <Form.Control
                   as="select"
-                  value={multiValue.value}
-                  className="advanced-filter-multi-select-options advanced-filter-select my-0 mx-3 py-0"
-                  aria-label="Advanced Filter Multi Select Options"
+                  value={combinationValue.value}
+                  className="advanced-filter-combination-select-options advanced-filter-select my-0 mx-3 py-0"
+                  aria-label="Advanced Filter Combination Select Options"
                   onChange={event => {
-                    this.changeMultiValue(statementIndex, multiIndex, { name: multiValue.name, value: event.target.value });
+                    this.changeCombinationValue(statementIndex, combinationIndex, { name: combinationValue.name, value: event.target.value });
                   }}>
-                  {this.getMultiFilter(filter, multiValue.name).options.map((option, o_index) => {
+                  {this.getCombinationFilter(filter, combinationValue.name).options.map((option, o_index) => {
                     return <option key={o_index}>{option}</option>;
                   })}
                 </Form.Control>
               )}
-              {this.getMultiFilter(filter, multiValue.name).type === 'date' && (
+              {this.getCombinationFilter(filter, combinationValue.name).type === 'date' && (
                 <React.Fragment>
                   <Form.Control
                     as="select"
-                    value={multiValue.value.when}
+                    value={combinationValue.value.when}
                     className="advanced-filter-date-options py-0 my-0 mx-3"
                     aria-label="Advanced Filter Date Select Options"
                     onChange={event => {
-                      this.changeMultiValue(statementIndex, multiIndex, {
-                        name: multiValue.name,
-                        value: { when: event.target.value, date: multiValue.value.date },
+                      this.changeCombinationValue(statementIndex, combinationIndex, {
+                        name: combinationValue.name,
+                        value: { when: event.target.value, date: combinationValue.value.date },
                       });
                     }}>
                     <option value="before">before</option>
                     <option value="after">after</option>
                     <option></option>
                   </Form.Control>
-                  {(multiValue.value.when === 'before' || multiValue.value.when === 'after') && (
+                  {(combinationValue.value.when === 'before' || combinationValue.value.when === 'after') && (
                     <div className="advanced-filter-date-input mr-3">
                       <DateInput
-                        date={multiValue.value.date}
+                        date={combinationValue.value.date}
                         onChange={date => {
-                          this.changeMultiValue(statementIndex, multiIndex, { name: multiValue.name, value: { when: multiValue.value.when, date: date } });
+                          this.changeCombinationValue(statementIndex, combinationIndex, {
+                            name: combinationValue.name,
+                            value: { when: combinationValue.value.when, date: date },
+                          });
                         }}
                         placement="bottom"
                         customClass="form-control-md"
@@ -1137,36 +1140,36 @@ class AdvancedFilter extends React.Component {
                   )}
                 </React.Fragment>
               )}
-              {multiIndex + 1 === total && multiIndex + 1 < filter.fields.length && (
+              {combinationIndex + 1 === total && combinationIndex + 1 < filter.fields.length && (
                 <React.Fragment>
-                  <div className="my-auto" data-for={`${filter.name}-${statementIndex}-multi-add`} data-tip="">
+                  <div className="my-auto" data-for={`${filter.name}-${statementIndex}-combination-add`} data-tip="">
                     <Button
                       className="btn-circle"
                       variant="secondary"
                       onClick={() => {
-                        this.addMultiStatement(filter, statementIndex);
+                        this.addCombinationStatement(filter, statementIndex);
                       }}
-                      aria-label="Add Advanced Filter Multi Option">
+                      aria-label="Add Advanced Filter Combination Option">
                       <i className="fas fa-plus"></i>
                     </Button>
                   </div>
                   <ReactTooltip
-                    id={`${filter.name}-${statementIndex}-multi-add`}
+                    id={`${filter.name}-${statementIndex}-combination-add`}
                     multiline={true}
                     place="top"
                     type="dark"
                     effect="solid"
                     className="tooltip-container">
-                    <span>Select to add multiple {filter.title.replace(' (Multi-select)', '')} search criteria.</span>
+                    <span>Select to add multiple {filter.title.replace(' (Combination)', '')} search criteria.</span>
                   </ReactTooltip>
                 </React.Fragment>
               )}
             </Form.Group>
           </Col>
           <Col className="p-0" md="auto">
-            {multiIndex === 0 && filter.tooltip && this.renderStatementTooltip(filter.name, statementIndex, filter.tooltip)}
+            {combinationIndex === 0 && filter.tooltip && this.renderStatementTooltip(filter.name, statementIndex, filter.tooltip)}
           </Col>
-          <Col md="auto">{this.renderRemoveStatementButton(statementIndex, multiIndex, this.removeMultiStatement)}</Col>
+          <Col md="auto">{this.renderRemoveStatementButton(statementIndex, combinationIndex, this.removeCombinationStatement)}</Col>
         </Row>
       </React.Fragment>
     );
@@ -1210,15 +1213,15 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'number' && this.renderNumberStatement(filterOption, index, value, numberOption, additionalFilterOption)}
             {filterOption?.type === 'date' && this.renderDateStatement(filterOption, index, value, dateOption)}
             {filterOption?.type === 'relative' && this.renderRelativeDateStatement(filterOption, index, value, relativeOption)}
-            {filterOption?.type === 'multi' && (
+            {filterOption?.type === 'combination' && (
               <React.Fragment>
                 {value.map((m_value, m_index) => {
-                  return this.renderMultiStatement(filterOption, index, m_index, value.length, m_value);
+                  return this.renderCombinationStatement(filterOption, index, m_index, value.length, m_value);
                 })}
               </React.Fragment>
             )}
           </Col>
-          {filterOption?.type !== 'multi' && (
+          {filterOption?.type !== 'combination' && (
             <Col className="py-0" md="auto">
               {this.renderRemoveStatementButton(index, null, this.removeStatement)}
             </Col>

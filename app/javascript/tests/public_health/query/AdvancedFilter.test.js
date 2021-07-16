@@ -38,7 +38,7 @@ const mockToken = 'testMockTokenString12345';
 const numberOptionValues = ['less-than', 'less-than-equal', 'equal', 'greater-than-equal', 'greater-than', 'between'];
 const numberOptionValuesText = ['less than', 'less than or equal to', 'equal to', 'greater than or equal to', 'greater than', 'between'];
 const dateOptionValues = ['within', 'before', 'after'];
-const multiDateOptionValues = ['before', 'after', ''];
+const combinationDateOptionValues = ['before', 'after', ''];
 const relativeOptionValues = ['today', 'tomorrow', 'yesterday', 'custom'];
 const relativeOptionOperatorValues = ['less-than', 'greater-than'];
 const relativeOptionUnitValues = ['day(s)', 'week(s)', 'month(s)'];
@@ -539,24 +539,24 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterSevenDayQuarantine.filterOption.tooltip);
   });
 
-  it('Properly renders main components of advanced filter multi type statement', () => {
+  it('Properly renders main components of advanced filter combination type statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
     expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterLabResults.filterOption.name);
-    expect(wrapper.find('.advanced-filter-multi-type-statement').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(1);
-    expect(wrapper.find('.advanced-filter-multi-options').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(mockFilterLabResults.filterOption.fields[0].name);
-    expect(wrapper.find('.advanced-filter-multi-options').find('option').length).toEqual(mockFilterLabResults.filterOption.fields.length);
+    expect(wrapper.find('.advanced-filter-combination-type-statement').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-combination-type-statement').length).toEqual(1);
+    expect(wrapper.find('.advanced-filter-combination-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-combination-options').prop('value')).toEqual(mockFilterLabResults.filterOption.fields[0].name);
+    expect(wrapper.find('.advanced-filter-combination-options').find('option').length).toEqual(mockFilterLabResults.filterOption.fields.length);
     mockFilterLabResults.filterOption.fields.forEach((field, index) => {
-      expect(wrapper.find('.advanced-filter-multi-options').find('option').at(index).text()).toEqual(field.title);
-      expect(wrapper.find('.advanced-filter-multi-options').find('option').at(index).prop('value')).toEqual(field.name);
-      expect(wrapper.find('.advanced-filter-multi-options').find('option').at(index).prop('disabled')).toBeFalsy();
+      expect(wrapper.find('.advanced-filter-combination-options').find('option').at(index).text()).toEqual(field.title);
+      expect(wrapper.find('.advanced-filter-combination-options').find('option').at(index).prop('value')).toEqual(field.name);
+      expect(wrapper.find('.advanced-filter-combination-options').find('option').at(index).prop('disabled')).toBeFalsy();
     });
-    expect(wrapper.find('.advanced-filter-multi-type-statement').find(Button).length).toEqual(2);
-    expect(wrapper.find('.advanced-filter-multi-type-statement').find(Button).at(0).find('i').hasClass('fa-plus')).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-multi-type-statement').find(Button).at(1).find('i').hasClass('fa-minus')).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-combination-type-statement').find(Button).length).toEqual(2);
+    expect(wrapper.find('.advanced-filter-combination-type-statement').find(Button).at(0).find('i').hasClass('fa-plus')).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-combination-type-statement').find(Button).at(1).find('i').hasClass('fa-minus')).toBeTruthy();
     expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
     expect(wrapper.find(ReactTooltip).length).toEqual(2);
@@ -564,74 +564,74 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(ReactTooltip).at(1).find('span').text()).toEqual(mockFilterLabResults.filterOption.tooltip);
   });
 
-  it('Properly renders select option of advanced filter multi type statement', () => {
+  it('Properly renders select option of advanced filter combination type statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
-    expect(wrapper.find('.advanced-filter-multi-type-statement').find(Form.Control).length).toEqual(2);
-    expect(wrapper.find('.advanced-filter-multi-options').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-multi-select-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-combination-type-statement').find(Form.Control).length).toEqual(2);
+    expect(wrapper.find('.advanced-filter-combination-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-combination-select-options').exists()).toBeTruthy();
     expect(wrapper.find('.advanced-filter-date-options').exists()).toBeFalsy();
     expect(wrapper.find(DateInput).exists()).toBeFalsy();
-    expect(wrapper.find('.advanced-filter-multi-select-options').prop('value')).toEqual(mockFilterLabResults.filterOption.fields[0].options[0]);
-    expect(wrapper.find('.advanced-filter-multi-select-options').find('option').length).toEqual(mockFilterLabResults.filterOption.fields[0].options.length);
+    expect(wrapper.find('.advanced-filter-combination-select-options').prop('value')).toEqual(mockFilterLabResults.filterOption.fields[0].options[0]);
+    expect(wrapper.find('.advanced-filter-combination-select-options').find('option').length).toEqual(mockFilterLabResults.filterOption.fields[0].options.length);
     mockFilterLabResults.filterOption.fields[0].options.forEach((option, index) => {
-      expect(wrapper.find('.advanced-filter-multi-select-options').find('option').at(index).text()).toEqual(option);
-      expect(wrapper.find('.advanced-filter-multi-select-options').find('option').at(index).prop('disabled')).toBeFalsy();
+      expect(wrapper.find('.advanced-filter-combination-select-options').find('option').at(index).text()).toEqual(option);
+      expect(wrapper.find('.advanced-filter-combination-select-options').find('option').at(index).prop('disabled')).toBeFalsy();
     });
   });
 
-  it('Properly renders date option of advanced filter multi type statement', () => {
+  it('Properly renders date option of advanced filter combination type statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
-    wrapper.find('.advanced-filter-multi-options').simulate('change', { target: { value: 'report' } });
-    expect(wrapper.find('.advanced-filter-multi-type-statement').find(Form.Control).length).toEqual(2);
-    expect(wrapper.find('.advanced-filter-multi-options').exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-multi-select-options').exists()).toBeFalsy();
+    wrapper.find('.advanced-filter-combination-options').simulate('change', { target: { value: 'report' } });
+    expect(wrapper.find('.advanced-filter-combination-type-statement').find(Form.Control).length).toEqual(2);
+    expect(wrapper.find('.advanced-filter-combination-options').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-combination-select-options').exists()).toBeFalsy();
     expect(wrapper.find('.advanced-filter-date-options').exists()).toBeTruthy();
     expect(wrapper.find(DateInput).exists()).toBeTruthy();
-    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(multiDateOptionValues[0]);
-    expect(wrapper.find('.advanced-filter-date-options').find('option').length).toEqual(multiDateOptionValues.length);
-    multiDateOptionValues.forEach((value, index) => {
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(combinationDateOptionValues[0]);
+    expect(wrapper.find('.advanced-filter-date-options').find('option').length).toEqual(combinationDateOptionValues.length);
+    combinationDateOptionValues.forEach((value, index) => {
       expect(wrapper.find('.advanced-filter-date-options').find('option').at(index).text()).toEqual(value);
       expect(wrapper.find('.advanced-filter-date-options').find('option').at(index).prop('disabled')).toBeFalsy();
     });
-    expect(wrapper.find('.advanced-filter-multi-type-statement').find(DateInput).prop('date')).toEqual(moment().format('YYYY-MM-DD'));
+    expect(wrapper.find('.advanced-filter-combination-type-statement').find(DateInput).prop('date')).toEqual(moment().format('YYYY-MM-DD'));
   });
 
-  it('Clicking the multi type "+" button adds another multi statement and displays "AND" row', () => {
+  it('Clicking the combination type "+" button adds another combination statement and displays "AND" row', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
     _.times(mockFilterLabResults.filterOption.fields.length - 1, i => {
-      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(i + 1);
+      expect(wrapper.find('.advanced-filter-combination-type-statement').length).toEqual(i + 1);
       expect(wrapper.find('.and-row').length).toEqual(i);
-      expect(wrapper.find('#lab-result-0-multi-add').exists()).toBeTruthy();
+      expect(wrapper.find('#lab-result-0-combination-add').exists()).toBeTruthy();
       wrapper.find('.btn-circle').simulate('click');
     });
-    expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length);
+    expect(wrapper.find('.advanced-filter-combination-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length);
     expect(wrapper.find('.and-row').length).toEqual(mockFilterLabResults.filterOption.fields.length - 1);
-    expect(wrapper.find('#lab-result-0-multi-add').exists()).toBeFalsy();
+    expect(wrapper.find('#lab-result-0-combination-add').exists()).toBeFalsy();
   });
 
-  it('Adding additional fields to multi filter does not allow for repeats', () => {
+  it('Adding additional fields to combination filter does not allow for repeats', () => {
     const wrapper = getWrapper();
-    let activeMultiValues = [];
+    let activeCombinationValues = [];
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
     _.times(mockFilterLabResults.filterOption.fields.length, i => {
-      activeMultiValues.push(mockFilterLabResults.filterOption.fields[Number(i)].name);
-      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(i + 1);
-      wrapper.find('.advanced-filter-multi-type-statement').forEach(statement => {
-        let statementValue = statement.find('.advanced-filter-multi-options').prop('value');
-        expect(activeMultiValues.filter(value => value === statementValue).length).toEqual(1);
+      activeCombinationValues.push(mockFilterLabResults.filterOption.fields[Number(i)].name);
+      expect(wrapper.find('.advanced-filter-combination-type-statement').length).toEqual(i + 1);
+      wrapper.find('.advanced-filter-combination-type-statement').forEach(statement => {
+        let statementValue = statement.find('.advanced-filter-combination-options').prop('value');
+        expect(activeCombinationValues.filter(value => value === statementValue).length).toEqual(1);
         statement
-          .find('.advanced-filter-multi-options')
+          .find('.advanced-filter-combination-options')
           .find('option')
           .forEach(option => {
             let optionValue = option.prop('value');
-            expect(option.prop('disabled')).toEqual(activeMultiValues.includes(optionValue) && optionValue !== statementValue);
+            expect(option.prop('disabled')).toEqual(activeCombinationValues.includes(optionValue) && optionValue !== statementValue);
           });
       });
       if (i < mockFilterLabResults.filterOption.fields.length - 1) {
@@ -640,35 +640,35 @@ describe('AdvancedFilter', () => {
     });
     _.times(mockFilterLabResults.filterOption.fields.length - 1, i => {
       let random = _.random(0, wrapper.find('.remove-filter-row').length - 1);
-      activeMultiValues = activeMultiValues.slice(0, random).concat(activeMultiValues.slice(random + 1, activeMultiValues.length));
+      activeCombinationValues = activeCombinationValues.slice(0, random).concat(activeCombinationValues.slice(random + 1, activeCombinationValues.length));
       wrapper.find('.remove-filter-row').at(random).simulate('click');
-      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length - 1 - i);
-      wrapper.find('.advanced-filter-multi-type-statement').forEach(statement => {
-        let statementValue = statement.find('.advanced-filter-multi-options').prop('value');
-        expect(activeMultiValues.filter(value => value === statementValue).length).toEqual(1);
+      expect(wrapper.find('.advanced-filter-combination-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length - 1 - i);
+      wrapper.find('.advanced-filter-combination-type-statement').forEach(statement => {
+        let statementValue = statement.find('.advanced-filter-combination-options').prop('value');
+        expect(activeCombinationValues.filter(value => value === statementValue).length).toEqual(1);
         statement
-          .find('.advanced-filter-multi-options')
+          .find('.advanced-filter-combination-options')
           .find('option')
           .forEach(option => {
             let optionValue = option.prop('value');
-            expect(option.prop('disabled')).toEqual(activeMultiValues.includes(optionValue) && optionValue !== statementValue);
+            expect(option.prop('disabled')).toEqual(activeCombinationValues.includes(optionValue) && optionValue !== statementValue);
           });
       });
     });
   });
 
-  it('Removes the multi type "+" button when all the filter option fields are displayed', () => {
+  it('Removes the combination type "+" button when all the filter option fields are displayed', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
     _.times(mockFilterLabResults.filterOption.fields.length - 1, () => {
-      expect(wrapper.find('.advanced-filter-multi-type-statement').find('.btn-circle').exists()).toBeTruthy();
+      expect(wrapper.find('.advanced-filter-combination-type-statement').find('.btn-circle').exists()).toBeTruthy();
       wrapper.find('.btn-circle').simulate('click');
     });
-    expect(wrapper.find('.advanced-filter-multi-type-statement').find('.btn-circle').exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-combination-type-statement').find('.btn-circle').exists()).toBeFalsy();
   });
 
-  it('Clicking the multi type "-" removes multi statements until there is one left, then removed the entire filter statement', () => {
+  it('Clicking the combination type "-" removes combination statements until there is one left, then removed the entire filter statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
@@ -678,32 +678,32 @@ describe('AdvancedFilter', () => {
     _.times(mockFilterLabResults.filterOption.fields.length, i => {
       let random = _.random(0, wrapper.find('.remove-filter-row').length - 1);
       expect(wrapper.find('.advanced-filter-statement').length).toEqual(1);
-      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length - i);
+      expect(wrapper.find('.advanced-filter-combination-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length - i);
       wrapper.find('.remove-filter-row').at(random).simulate('click');
     });
     expect(wrapper.find('.advanced-filter-statement').exists()).toBeFalsy();
-    expect(wrapper.find('.advanced-filter-multi-type-statement').exists()).toBeFalsy();
+    expect(wrapper.find('.advanced-filter-combination-type-statement').exists()).toBeFalsy();
   });
 
-  it('Clicking the multi type "+" and "-" properly updates state and value', () => {
+  it('Clicking the combination type "+" and "-" properly updates state and value', () => {
     const wrapper = getWrapper();
-    let activeMultiValues = [];
+    let activeCombinationValues = [];
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
     _.times(mockFilterLabResults.filterOption.fields.length, i => {
       let newField = mockFilterLabResults.filterOption.fields[Number(i)];
       let newValue = newField.type === 'select' ? newField.options[0] : { when: 'before', date: moment().format('YYYY-MM-DD') };
-      activeMultiValues.push({ name: newField.name, value: newValue });
-      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(i + 1);
+      activeCombinationValues.push({ name: newField.name, value: newValue });
+      expect(wrapper.find('.advanced-filter-combination-type-statement').length).toEqual(i + 1);
       expect(wrapper.state('activeFilterOptions')[0].value.length).toEqual(i + 1);
-      expect(wrapper.state('activeFilterOptions')[0].value).toEqual(activeMultiValues);
-      wrapper.find('.advanced-filter-multi-type-statement').forEach((statement, index) => {
-        expect(statement.find('.advanced-filter-multi-options').prop('value')).toEqual(activeMultiValues[Number(index)].name);
-        if (mockFilterLabResults.filterOption.fields.filter(field => field.name === activeMultiValues[Number(index)].name).type === 'select') {
-          expect(statement.find('.advanced-filter-multi-select-options').prop('value')).toEqual(activeMultiValues[Number(index)].value);
-        } else if (mockFilterLabResults.filterOption.fields.filter(field => field.name === activeMultiValues[Number(index)].name).type === 'date') {
-          expect(statement.find('.advanced-filter-date-options').prop('value')).toEqual(activeMultiValues[Number(index)].value.when);
-          expect(statement.find(DateInput).prop('date')).toEqual(activeMultiValues[Number(index)].value.date);
+      expect(wrapper.state('activeFilterOptions')[0].value).toEqual(activeCombinationValues);
+      wrapper.find('.advanced-filter-combination-type-statement').forEach((statement, index) => {
+        expect(statement.find('.advanced-filter-combination-options').prop('value')).toEqual(activeCombinationValues[Number(index)].name);
+        if (mockFilterLabResults.filterOption.fields.filter(field => field.name === activeCombinationValues[Number(index)].name).type === 'select') {
+          expect(statement.find('.advanced-filter-combination-select-options').prop('value')).toEqual(activeCombinationValues[Number(index)].value);
+        } else if (mockFilterLabResults.filterOption.fields.filter(field => field.name === activeCombinationValues[Number(index)].name).type === 'date') {
+          expect(statement.find('.advanced-filter-date-options').prop('value')).toEqual(activeCombinationValues[Number(index)].value.when);
+          expect(statement.find(DateInput).prop('date')).toEqual(activeCombinationValues[Number(index)].value.date);
         }
       });
       if (i < mockFilterLabResults.filterOption.fields.length - 1) {
@@ -712,24 +712,24 @@ describe('AdvancedFilter', () => {
     });
     _.times(mockFilterLabResults.filterOption.fields.length - 1, i => {
       let random = _.random(0, wrapper.find('.remove-filter-row').length - 1);
-      activeMultiValues = activeMultiValues.slice(0, random).concat(activeMultiValues.slice(random + 1, activeMultiValues.length));
+      activeCombinationValues = activeCombinationValues.slice(0, random).concat(activeCombinationValues.slice(random + 1, activeCombinationValues.length));
       wrapper.find('.remove-filter-row').at(random).simulate('click');
-      expect(wrapper.find('.advanced-filter-multi-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length - 1 - i);
+      expect(wrapper.find('.advanced-filter-combination-type-statement').length).toEqual(mockFilterLabResults.filterOption.fields.length - 1 - i);
       expect(wrapper.state('activeFilterOptions')[0].value.length).toEqual(mockFilterLabResults.filterOption.fields.length - 1 - i);
-      expect(wrapper.state('activeFilterOptions')[0].value).toEqual(activeMultiValues);
-      wrapper.find('.advanced-filter-multi-type-statement').forEach((statement, index) => {
-        expect(statement.find('.advanced-filter-multi-options').prop('value')).toEqual(activeMultiValues[Number(index)].name);
-        if (mockFilterLabResults.filterOption.fields.filter(field => field.name === activeMultiValues[Number(index)].name).type === 'select') {
-          expect(statement.find('.advanced-filter-multi-select-options').prop('value')).toEqual(activeMultiValues[Number(index)].value);
-        } else if (mockFilterLabResults.filterOption.fields.filter(field => field.name === activeMultiValues[Number(index)].name).type === 'date') {
-          expect(statement.find('.advanced-filter-date-options').prop('value')).toEqual(activeMultiValues[Number(index)].value.when);
-          expect(statement.find(DateInput).prop('date')).toEqual(activeMultiValues[Number(index)].value.date);
+      expect(wrapper.state('activeFilterOptions')[0].value).toEqual(activeCombinationValues);
+      wrapper.find('.advanced-filter-combination-type-statement').forEach((statement, index) => {
+        expect(statement.find('.advanced-filter-combination-options').prop('value')).toEqual(activeCombinationValues[Number(index)].name);
+        if (mockFilterLabResults.filterOption.fields.filter(field => field.name === activeCombinationValues[Number(index)].name).type === 'select') {
+          expect(statement.find('.advanced-filter-combination-select-options').prop('value')).toEqual(activeCombinationValues[Number(index)].value);
+        } else if (mockFilterLabResults.filterOption.fields.filter(field => field.name === activeCombinationValues[Number(index)].name).type === 'date') {
+          expect(statement.find('.advanced-filter-date-options').prop('value')).toEqual(activeCombinationValues[Number(index)].value.when);
+          expect(statement.find(DateInput).prop('date')).toEqual(activeCombinationValues[Number(index)].value.date);
         }
       });
     });
   });
 
-  it('Changing the multi type dropdowns and date inputs properly updates ', () => {
+  it('Changing the combinati type dropdowns and date inputs properly updates ', () => {
     const wrapper = getWrapper();
     const selectField = mockFilterLabResults.filterOption.fields.filter(field => field.type === 'select')[0];
     const dateField = mockFilterLabResults.filterOption.fields.filter(field => field.type === 'date')[0];
@@ -739,44 +739,44 @@ describe('AdvancedFilter', () => {
 
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterLabResults.filterOption.name });
-    wrapper.find('.advanced-filter-multi-options').simulate('change', { target: { value: selectField.name } });
+    wrapper.find('.advanced-filter-combination-options').simulate('change', { target: { value: selectField.name } });
     expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: selectField.name, value: selectField.options[0] }]);
-    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(selectField.name);
-    expect(wrapper.find('.advanced-filter-multi-select-options').prop('value')).toEqual(selectField.options[0]);
+    expect(wrapper.find('.advanced-filter-combination-options').prop('value')).toEqual(selectField.name);
+    expect(wrapper.find('.advanced-filter-combination-select-options').prop('value')).toEqual(selectField.options[0]);
 
-    wrapper.find('.advanced-filter-multi-select-options').simulate('change', { target: { value: selectField.options[`${random}`] } });
+    wrapper.find('.advanced-filter-combination-select-options').simulate('change', { target: { value: selectField.options[`${random}`] } });
     expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: selectField.name, value: selectField.options[`${random}`] }]);
-    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(selectField.name);
-    expect(wrapper.find('.advanced-filter-multi-select-options').prop('value')).toEqual(selectField.options[`${random}`]);
+    expect(wrapper.find('.advanced-filter-combination-options').prop('value')).toEqual(selectField.name);
+    expect(wrapper.find('.advanced-filter-combination-select-options').prop('value')).toEqual(selectField.options[`${random}`]);
 
-    wrapper.find('.advanced-filter-multi-options').simulate('change', { target: { value: dateField.name } });
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: multiDateOptionValues[0], date: initialDate } }]);
-    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(dateField.name);
-    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(multiDateOptionValues[0]);
+    wrapper.find('.advanced-filter-combination-options').simulate('change', { target: { value: dateField.name } });
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: combinationDateOptionValues[0], date: initialDate } }]);
+    expect(wrapper.find('.advanced-filter-combination-options').prop('value')).toEqual(dateField.name);
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(combinationDateOptionValues[0]);
     expect(wrapper.find(DateInput).prop('date')).toEqual(initialDate);
 
-    wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: multiDateOptionValues[1] } });
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: multiDateOptionValues[1], date: initialDate } }]);
-    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(dateField.name);
-    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(multiDateOptionValues[1]);
+    wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: combinationDateOptionValues[1] } });
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: combinationDateOptionValues[1], date: initialDate } }]);
+    expect(wrapper.find('.advanced-filter-combination-options').prop('value')).toEqual(dateField.name);
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(combinationDateOptionValues[1]);
     expect(wrapper.find(DateInput).prop('date')).toEqual(initialDate);
 
     wrapper.find(DateInput).simulate('change', newDate);
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: multiDateOptionValues[1], date: newDate } }]);
-    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(dateField.name);
-    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(multiDateOptionValues[1]);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: combinationDateOptionValues[1], date: newDate } }]);
+    expect(wrapper.find('.advanced-filter-combination-options').prop('value')).toEqual(dateField.name);
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(combinationDateOptionValues[1]);
     expect(wrapper.find(DateInput).prop('date')).toEqual(newDate);
 
-    wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: multiDateOptionValues[0] } });
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: multiDateOptionValues[0], date: newDate } }]);
-    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(dateField.name);
-    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(multiDateOptionValues[0]);
+    wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: combinationDateOptionValues[0] } });
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: dateField.name, value: { when: combinationDateOptionValues[0], date: newDate } }]);
+    expect(wrapper.find('.advanced-filter-combination-options').prop('value')).toEqual(dateField.name);
+    expect(wrapper.find('.advanced-filter-date-options').prop('value')).toEqual(combinationDateOptionValues[0]);
     expect(wrapper.find(DateInput).prop('date')).toEqual(newDate);
 
-    wrapper.find('.advanced-filter-multi-options').simulate('change', { target: { value: selectField.name } });
+    wrapper.find('.advanced-filter-combination-options').simulate('change', { target: { value: selectField.name } });
     expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: selectField.name, value: selectField.options[0] }]);
-    expect(wrapper.find('.advanced-filter-multi-options').prop('value')).toEqual(selectField.name);
-    expect(wrapper.find('.advanced-filter-multi-select-options').prop('value')).toEqual(selectField.options[0]);
+    expect(wrapper.find('.advanced-filter-combination-options').prop('value')).toEqual(selectField.name);
+    expect(wrapper.find('.advanced-filter-combination-select-options').prop('value')).toEqual(selectField.options[0]);
   });
 
   it('Toggling boolean buttons properly updates state and value', () => {

@@ -272,7 +272,7 @@ class CustomExport extends React.Component {
                                     : filter.relativeOption}
                                 </span>
                               )}
-                              {filter.filterOption?.type === 'multi' && (
+                              {filter.filterOption?.type === 'combination' && (
                                 <div style={{ display: 'inline-grid' }}>
                                   {filter.value?.map((f, i) => {
                                     return (
