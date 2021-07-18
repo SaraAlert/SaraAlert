@@ -104,8 +104,6 @@ patient_2:
   was_in_health_care_facility_with_known_cases: true
   pause_notifications: true
   latest_assessment_at: <%= 36.days.ago %>
-  follow_up_reason: 'Other'
-  follow_up_note: 'note'
 patient_3:
   id: 3
   created_at: <%= 45.days.ago %>

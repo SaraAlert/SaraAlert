@@ -271,9 +271,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       assigned_user: '1234',
       exposure_notes: 'exposure notes',
       travel_related_notes: 'travel notes',
-      additional_planned_travel_related_notes: 'additional travel notes',
-      follow_up_reason: 'Duplicate',
-      follow_up_note: 'This is a follow up note.'
+      additional_planned_travel_related_notes: 'additional travel notes'
     )
     @patient_1 = Patient.find_by(id: 1).as_fhir
 

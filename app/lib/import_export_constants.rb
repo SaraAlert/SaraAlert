@@ -30,13 +30,11 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
 
   LINELIST_FIELDS = %i[id name jurisdiction_name assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring exposure_risk_assessment
                        monitoring_plan latest_assessment_at latest_transfer_at monitoring_reason public_health_action status closed_at transferred_from
-                       transferred_to expected_purge_ts symptom_onset extended_isolation responder_id workflow first_positive_lab_at follow_up_reason
-                       follow_up_note].freeze
+                       transferred_to expected_purge_ts symptom_onset extended_isolation responder_id workflow].freeze
 
   LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                       'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
-                      'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation', 'Reporter ID', 'Workflow',
-                      'First Positive Lab', 'Follow-Up Reason', 'Follow-Up Note'].freeze
+                      'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation', 'Reporter ID', 'Workflow'].freeze
 
   SARA_ALERT_FORMAT_FIELDS = %i[first_name middle_name last_name date_of_birth sex white black_or_african_american american_indian_or_alaska_native asian
                                 native_hawaiian_or_other_pacific_islander ethnicity primary_language secondary_language interpretation_required nationality
@@ -59,7 +57,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                 lab_2_result jurisdiction_path assigned_user gender_identity sexual_orientation race_other race_unknown
                                 race_refused_to_answer vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number
                                 vaccine_1_notes vaccine_2_group_name vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number
-                                vaccine_2_notes follow_up_reason follow_up_note].freeze
+                                vaccine_2_notes].freeze
 
   SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                                'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -86,13 +84,13 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Full Assigned Jurisdiction Path', 'Assigned User', 'Gender Identity', 'Sexual Orientation', 'Race Other', 'Race Unknown',
                                'Race Refused to Answer', 'Vaccine 1 Group Name', 'Vaccine 1 Product Name', 'Vaccine 1 Administration Date',
                                'Vaccine 1 Dose Number', 'Vaccine 1 Notes', 'Vaccine 2 Group Name', 'Vaccine 2 Product Name', 'Vaccine 2 Administration Date',
-                               'Vaccine 2 Dose Number', 'Vaccine 2 Notes', 'Follow-Up Reason', 'Follow-Up Note'].freeze
+                               'Vaccine 2 Dose Number', 'Vaccine 2 Notes'].freeze
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
-  FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + %i[first_positive_lab_at extended_isolation]).freeze
+  FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + [:extended_isolation]).freeze
 
-  FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['First Positive Lab', 'Extended Isolation Date']).freeze
+  FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['Extended Isolation Date']).freeze
 
   FULL_HISTORY_ASSESSMENTS_FIELDS = %i[patient_id symptomatic who_reported created_at updated_at symptoms].freeze
 
@@ -138,9 +136,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
               race_refused_to_answer],
     languages: %i[primary_language secondary_language],
     alternative_identifiers: %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss],
-    lab_fields: %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result],
-    vaccine_fields: %i[vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number vaccine_1_notes vaccine_2_group_name
-                       vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number vaccine_2_notes]
+    lab_fields: %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result]
   }.freeze
 
   PATIENT_FIELD_NAMES = {

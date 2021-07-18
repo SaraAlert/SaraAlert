@@ -55,13 +55,13 @@
   font-size: 0.9em;
 }
 
-.admin-table, .patients-table {
-  tbody tr:hover {
-    background-color: #ddd;
-    td {
-      border-color: white;
-    }
+.patients-table tbody tr:hover {
+  background-color: #ddd;
+
+  td {
+    border-color: white;
   }
+
 }
 
 .selected-row {

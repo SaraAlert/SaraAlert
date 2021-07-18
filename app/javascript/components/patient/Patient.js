@@ -244,7 +244,7 @@ class Patient extends React.Component {
                   <span className="text-danger">Monitoree is a minor</span>
                   {!this.props.details.head_of_household && this.props.hoh && (
                     <div>
-                      View contact info for Head of Household:
+                      View contact info for head of household:
                       <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
                         {formatName(this.props.hoh)}
                       </a>

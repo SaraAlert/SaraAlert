@@ -43,7 +43,6 @@ class PublicHealthHeader extends React.Component {
           this.setState({
             uploading: false,
             importData: response.data,
-            file: null,
             showUploadModal: false,
             showImportModal: true,
           });
@@ -120,7 +119,7 @@ class PublicHealthHeader extends React.Component {
 
   renderUploadModal() {
     return (
-      <Modal size="md" show={this.state.showUploadModal} onHide={() => this.setState({ showUploadModal: false, file: null, importType: null })}>
+      <Modal size="md" show={this.state.showUploadModal} onHide={() => this.setState({ showUploadModal: false, importType: null })}>
         <Modal.Header closeButton>
           {this.state.importType === 'epix' && <Modal.Title className="h5">{`Import Epi-X (${this.props.workflow})`}</Modal.Title>}
           {this.state.importType === 'saf' && <Modal.Title className="h5">{`Import Sara Alert Format (${this.props.workflow})`}</Modal.Title>}
@@ -128,7 +127,7 @@ class PublicHealthHeader extends React.Component {
         <Modal.Body>
           {this.state.importType === 'saf' && (
             <div className="mb-3">
-              <a href={`${window.location.origin}/Sara%20Alert%20Import%20Format.xlsx`}>Download formatting guidance</a> (Updated 7/27/2021)
+              <a href={`${window.location.origin}/Sara%20Alert%20Import%20Format.xlsx`}>Download formatting guidance</a> (Updated 7/13/2021)
             </div>
           )}
           <Form inline>

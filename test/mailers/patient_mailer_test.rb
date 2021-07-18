@@ -25,7 +25,6 @@ class PatientMailerTest < ActionMailer::TestCase
     ENV['TWILLIO_API_KEY'] = 'test'
     ENV['TWILLIO_STUDIO_FLOW'] = 'test'
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = 'test_messaging_sid'
-    ADMIN_OPTIONS['job_run_email'] = 'test@test.com'
   end
 
   def teardown
@@ -570,46 +569,5 @@ class PatientMailerTest < ActionMailer::TestCase
     )
     assert_includes email_body, I18n.t('assessments.email.closed.footer', locale: @patient.primary_language)
     assert_histories_contain(@patient, 'Monitoring Complete message was sent.')
-  end
-
-  [
-    { preferred_contact_method: 'E-mailed Web Link', email: 'testpatient@example.com' },
-    { preferred_contact_method: 'SMS Texted Weblink', primary_telephone: '+12223334444' },
-    { preferred_contact_method: 'Telephone call', primary_telephone: '+12223334444' },
-    { preferred_contact_method: 'SMS Text-message', primary_telephone: '+12223334444' }
-  ].each do |attributes|
-    test "send_assessment does not touch updated_at for #{attributes} when sending an assessment" do
-      ActionMailer::Base.deliveries.clear
-      patient = create(:patient, { submission_token: SecureRandom.urlsafe_base64[0, 10], last_date_of_exposure: Date.yesterday }.merge(attributes))
-      patient.update(updated_at: 300.days.ago)
-      assert_nil patient.last_assessment_reminder_sent
-      # If a job is created, then ensure it executes now
-      patient.send_assessment&.perform_now
-      patient.reload
-      assert_not_nil patient.last_assessment_reminder_sent
-      assert patient.updated_at < 290.days.ago
-    end
-  end
-
-  [
-    { preferred_contact_method: 'E-mailed Web Link' },
-    { preferred_contact_method: 'SMS Texted Weblink' },
-    { preferred_contact_method: 'Telephone call' },
-    { preferred_contact_method: 'SMS Text-message' },
-    { preferred_contact_method: 'SMS Texted Weblink', primary_telephone: '+12223334444' },
-    { preferred_contact_method: 'SMS Text-message', primary_telephone: '+12223334444' }
-  ].each do |attributes|
-    test "send_assessment does not touch updated_at for #{attributes} when failing to send an assessment" do
-      BlockedNumber.create(phone_number: '+12223334444')
-      ActionMailer::Base.deliveries.clear
-      patient = create(:patient, { submission_token: SecureRandom.urlsafe_base64[0, 10], last_date_of_exposure: Date.yesterday }.merge(attributes))
-      patient.update(updated_at: 300.days.ago)
-      assert_nil patient.last_assessment_reminder_sent
-      # If a job is created, then ensure it executes now
-      patient.send_assessment&.perform_now
-      patient.reload
-      assert_nil patient.last_assessment_reminder_sent
-      assert patient.updated_at < 290.days.ago
-    end
   end
 end

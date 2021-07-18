@@ -66,9 +66,7 @@ class PatientMailer < ApplicationMailer
       url = new_patient_assessment_jurisdiction_lang_initials_url(dependent.submission_token, dependent.jurisdiction.unique_identifier, lang&.to_s,
                                                                   dependent&.initials_age)
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
-      # Update last send attempt timestamp before Twilio call
-      patient.last_assessment_reminder_sent = DateTime.now
-      patient.save(touch: false)
+      patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
       threshold_hash = dependent.jurisdiction[:current_threshold_condition_hash]
       message = { prompt: contents, patient_submission_token: dependent.submission_token,
                   threshold_hash: threshold_hash }
@@ -113,9 +111,8 @@ class PatientMailer < ApplicationMailer
                try_again: I18n.t('assessments.sms.prompt.try-again', locale: lang),
                max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
-    # Update last send attempt timestamp before Twilio sms assessment
-    patient.last_assessment_reminder_sent = DateTime.now
-    patient.save(touch: false)
+
+    patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio sms assessment
     patient.active_dependents_and_self.each { |pat| add_success_history(pat) } if TwilioSender.start_studio_flow_assessment(patient, params)
   end
 
@@ -157,9 +154,8 @@ class PatientMailer < ApplicationMailer
                try_again: I18n.t('assessments.phone.try-again', locale: lang),
                max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
-    # Update last send attempt timestamp before Twilio call
-    patient.last_assessment_reminder_sent = DateTime.now
-    patient.save(touch: false)
+
+    patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before Twilio call
     patient.active_dependents_and_self.each { |pat| add_success_history(pat) } if TwilioSender.start_studio_flow_assessment(patient, params)
   end
 
@@ -179,17 +175,14 @@ class PatientMailer < ApplicationMailer
     @patients = patient.active_dependents.uniq.collect do |dependent|
       { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
     end
-    # Update last send attempt timestamp before SMTP call
-    patient.last_assessment_reminder_sent = DateTime.now
-    patient.save(touch: false)
+
+    patient.update(last_assessment_reminder_sent: DateTime.now) # Update last send attempt timestamp before SMTP call
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
     patient.active_dependents_and_self.each { |pat| add_success_history(pat) }
   rescue StandardError => e
-    # Reset send attempt timestamp on failure
-    patient.last_assessment_reminder_sent = nil
-    patient.save(touch: false)
+    patient.update(last_assessment_reminder_sent: nil) # Reset send attempt timestamp on failure
     raise "Failed to send email for patient id: #{patient.id}; #{e.message}"
   end
 

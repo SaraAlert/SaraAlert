@@ -8,10 +8,9 @@ namespace :admin do
   desc "Import/Update Jurisdictions"
   task import_or_update_jurisdictions: :environment do
     ActiveRecord::Base.transaction do
+      config_contents = YAML.load_file('config/sara/jurisdictions.yml')
 
-      config_name = ENV['PERFORMANCE'].nil? || ENV['PERFORMANCE'] == 'false' ? 'jurisdictions' : 'performance_jurisdictions'
-
-      YAML.load_file("config/sara/#{config_name}.yml").each do |jur_name, jur_values|
+      config_contents.each do |jur_name, jur_values|
         parse_jurisdiction(nil, jur_name, jur_values)
       end
 
@@ -43,12 +42,9 @@ namespace :admin do
       final_hash = Digest::SHA256.hexdigest(combined_hash)
       puts "\e[41mCompare the following hash as output by this task when run on the enrollment and assessment servers and make sure that the hashes are EXACTLY EQUAL\e[0m"
       puts "\e[41m>>>>>>>>>>#{final_hash}<<<<<<<<<<\e[0m"
-      # Either automatically accept or ask the user for input
-      unless ENV['ACCEPT_JURISDICTIONS'].present? || Rails.env == 'development'
-        puts "Do the hashes on the enrollment and assessment servers match? (y/N)"
-        res = STDIN.getc
-        exit unless res.downcase == 'y'
-      end
+      puts "Do the hashes on the enrollment and assessment servers match? (y/N)"
+      res = STDIN.getc
+      exit unless res.downcase == 'y'
     end
   end
 

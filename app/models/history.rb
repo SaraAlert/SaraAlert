@@ -50,15 +50,7 @@ class History < ApplicationRecord
   belongs_to :original_comment, class_name: 'History', optional: true
 
   # Patient updated_at should not be updated if history was created by a monitoree data download
-  after_create(
-    proc do
-      patient.touch unless [
-        HISTORY_TYPES[:report_reminder],
-        HISTORY_TYPES[:monitoree_data_downloaded],
-        HISTORY_TYPES[:unsuccessful_report_reminder]
-      ].include? history_type
-    end
-  )
+  after_create(proc { patient.touch unless history_type == HISTORY_TYPES[:monitoree_data_downloaded] })
 
   # All histories within the given time frame
   scope :in_time_frame, lambda { |time_frame|
@@ -167,84 +159,85 @@ class History < ApplicationRecord
     History.import! histories
   end
 
-  def self.record_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a record.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:record_edit], comment, create: create)
+  def self.record_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a record.')
+    create_history(patient, created_by, HISTORY_TYPES[:record_edit], comment)
   end
 
-  def self.report_created(patient: nil, created_by: 'Sara Alert System', comment: 'User created a new report.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:report_created], comment, create: create)
+  def self.report_created(patient: nil, created_by: 'Sara Alert System', comment: 'User created a new report.')
+    create_history(patient, created_by, HISTORY_TYPES[:report_created], comment)
   end
 
-  def self.report_updated(patient: nil, created_by: 'Sara Alert System', comment: 'User updated existing report.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:report_updated], comment, create: create)
+  def self.report_updated(patient: nil, created_by: 'Sara Alert System', comment: 'User updated existing report.')
+    create_history(patient, created_by, HISTORY_TYPES[:report_updated], comment)
   end
 
-  def self.enrollment(patient: nil, created_by: 'Sara Alert System', comment: 'User enrolled monitoree.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:enrollment], comment, create: create)
+  def self.enrollment(patient: nil, created_by: 'Sara Alert System', comment: 'User enrolled monitoree.')
+    create_history(patient, created_by, HISTORY_TYPES[:enrollment], comment)
   end
 
-  def self.monitoring_change(patient: nil, created_by: 'Sara Alert System', comment: 'User updated monitoree.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment, create: create)
+  def self.monitoring_change(patient: nil, created_by: 'Sara Alert System', comment: 'User updated monitoree.')
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
   end
 
-  def self.monitoree_data_downloaded(patient: nil, created_by: 'Sara Alert System', comment: 'User downloaded monitoree\'s data in Excel Export.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:monitoree_data_downloaded], comment, create: create)
+  def self.monitoree_data_downloaded(patient: nil, created_by: 'Sara Alert System', comment: 'User downloaded monitoree\'s data in Excel Export.')
+    create_history(patient, created_by, HISTORY_TYPES[:monitoree_data_downloaded], comment)
   end
 
-  def self.reports_reviewed(patient: nil, created_by: 'Sara Alert System', comment: 'User reviewed all reports.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:reports_reviewed], comment, create: create)
+  def self.reports_reviewed(patient: nil, created_by: 'Sara Alert System', comment: 'User reviewed all reports.')
+    create_history(patient, created_by, HISTORY_TYPES[:reports_reviewed], comment)
   end
 
-  def self.report_reviewed(patient: nil, created_by: 'Sara Alert System', comment: 'User reviewed a report.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:report_reviewed], comment, create: create)
+  def self.report_reviewed(patient: nil, created_by: 'Sara Alert System', comment: 'User reviewed a report.')
+    create_history(patient, created_by, HISTORY_TYPES[:report_reviewed], comment)
   end
 
-  def self.report_reminder(patient: nil, created_by: 'Sara Alert System', comment: 'User sent a report reminder to the monitoree.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:report_reminder], comment, create: create)
+  def self.report_reminder(patient: nil, created_by: 'Sara Alert System', comment: 'User sent a report reminder to the monitoree.')
+    create_history(patient, created_by, HISTORY_TYPES[:report_reminder],
+                   comment)
   end
 
-  def self.unsuccessful_report_reminder(patient: nil, created_by: 'Sara Alert System', comment: 'Unsuccessful report reminder.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:unsuccessful_report_reminder], comment, create: create)
+  def self.unsuccessful_report_reminder(patient: nil, created_by: 'Sara Alert System', comment: 'Unsuccessful report reminder.')
+    create_history(patient, created_by, HISTORY_TYPES[:unsuccessful_report_reminder], comment)
   end
 
-  def self.vaccination(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new vaccination.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:vaccination], comment, create: create)
+  def self.vaccination(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new vaccination.')
+    create_history(patient, created_by, HISTORY_TYPES[:vaccination], comment)
   end
 
-  def self.vaccination_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a vaccination.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:vaccination_edit], comment, create: create)
+  def self.vaccination_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a vaccination.')
+    create_history(patient, created_by, HISTORY_TYPES[:vaccination_edit], comment)
   end
 
-  def self.lab_result(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new lab result.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:lab_result], comment, create: create)
+  def self.lab_result(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new lab result.')
+    create_history(patient, created_by, HISTORY_TYPES[:lab_result], comment)
   end
 
-  def self.lab_result_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a lab result.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:lab_result_edit], comment, create: create)
+  def self.lab_result_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a lab result.')
+    create_history(patient, created_by, HISTORY_TYPES[:lab_result_edit], comment)
   end
 
-  def self.close_contact(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new close contact.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:close_contact], comment, create: create)
+  def self.close_contact(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new close contact.')
+    create_history(patient, created_by, HISTORY_TYPES[:close_contact], comment)
   end
 
-  def self.close_contact_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a close contact.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:close_contact_edit], comment, create: create)
+  def self.close_contact_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a close contact.')
+    create_history(patient, created_by, HISTORY_TYPES[:close_contact_edit], comment)
   end
 
-  def self.contact_attempt(patient: nil, created_by: 'Sara Alert System', comment: 'The system attempted to make contact with the monitoree.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:contact_attempt], comment, create: create)
+  def self.contact_attempt(patient: nil, created_by: 'Sara Alert System', comment: 'The system attempted to make contact with the monitoree.')
+    create_history(patient, created_by, HISTORY_TYPES[:contact_attempt], comment)
   end
 
-  def self.welcome_message_sent(patient: nil, created_by: 'Sara Alert System', comment: 'Initial Sara Alert welcome message was sent.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:welcome_message_sent], comment, create: create)
+  def self.welcome_message_sent(patient: nil, created_by: 'Sara Alert System', comment: 'Initial Sara Alert welcome message was sent.')
+    create_history(patient, created_by, HISTORY_TYPES[:welcome_message_sent], comment)
   end
 
-  def self.record_automatically_closed(patient: nil, created_by: 'Sara Alert System', comment: 'Monitoree has completed monitoring.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:record_automatically_closed], comment, create: create)
+  def self.record_automatically_closed(patient: nil, created_by: 'Sara Alert System', comment: 'Monitoree has completed monitoring.')
+    create_history(patient, created_by, HISTORY_TYPES[:record_automatically_closed], comment)
   end
 
-  def self.monitoring_complete_message_sent(patient: nil, created_by: 'Sara Alert System', comment: 'Monitoring Complete message was sent.', create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment, create: create)
+  def self.monitoring_complete_message_sent(patient: nil, created_by: 'Sara Alert System', comment: 'Monitoring Complete message was sent.')
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment)
   end
 
   def self.calculated_symptom_onset(patient: nil, created_by: 'Sara Alert System', new_symptom_onset: nil, action: 'created')
@@ -261,21 +254,21 @@ class History < ApplicationRecord
                 because a report meeting the symptomatic logic was #{action}."
               end
 
-    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment, create: create)
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
   end
 
-  def self.send_close_conact_method_blank(patient: nil, created_by: 'Sara Alert System', type: 'Unknown', create: true)
+  def self.send_close_conact_method_blank(patient: nil, created_by: 'Sara Alert System', type: 'Unknown')
     comment = "The system was unable to send a monitoring complete message to this monitoree because their preferred contact method, #{type}, was blank."
-    create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment, create: create)
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment)
   end
 
-  def self.send_close_sms_blocked(patient: nil, created_by: 'Sara Alert System', create: true)
+  def self.send_close_sms_blocked(patient: nil, created_by: 'Sara Alert System')
     comment = 'The system was unable to send a monitoring complete message to this monitoree'\
               ' because the recipient phone number blocked communication with Sara Alert'
-    create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment, create: create)
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment)
   end
 
-  def self.monitoring_status(history, create: true)
+  def self.monitoring_status(history)
     field = {
       name: 'Monitoring Status',
       old_value: history[:patient_before][:monitoring] ? 'Monitoring' : 'Not Monitoring',
@@ -284,10 +277,10 @@ class History < ApplicationRecord
 
     return if field[:old_value] == field[:new_value]
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.exposure_risk_assessment(history, create: true)
+  def self.exposure_risk_assessment(history)
     field = {
       name: 'Exposure Risk Assessment',
       old_value: history[:patient_before][:exposure_risk_assessment],
@@ -295,10 +288,10 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.monitoring_plan(history, create: true)
+  def self.monitoring_plan(history)
     field = {
       name: 'Monitoring Plan',
       old_value: history[:patient_before][:monitoring_plan],
@@ -306,10 +299,10 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.case_status(history, diff_state, create: true)
+  def self.case_status(history, diff_state)
     field = {
       name: 'Case Status',
       old_value: history[:patient_before][:case_status],
@@ -325,10 +318,10 @@ class History < ApplicationRecord
       history[:note] = ', and chose to "Continue Monitoring in Isolation Workflow"'
     end
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.public_health_action(history, create: true)
+  def self.public_health_action(history)
     field = {
       name: 'Latest Public Health Action',
       old_value: history[:patient_before][:public_health_action],
@@ -336,10 +329,10 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.jurisdiction(history, create: true)
+  def self.jurisdiction(history)
     field = {
       name: 'Jurisdiction',
       old_value: Jurisdiction.find(history[:patient_before][:jurisdiction_id])[:path],
@@ -347,10 +340,10 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.assigned_user(history, create: true)
+  def self.assigned_user(history)
     field = {
       name: 'Assigned User',
       old_value: history[:patient_before][:assigned_user],
@@ -358,10 +351,10 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.pause_notifications(history, create: true)
+  def self.pause_notifications(history)
     field = {
       name: 'Notification Status',
       old_value: history[:patient_before][:pause_notifications] ? 'paused' : 'resumed',
@@ -371,10 +364,10 @@ class History < ApplicationRecord
 
     creator = history[:household_status] == :patient ? 'User' : 'System'
     comment = "#{creator} #{field[:new_value]} notifications for this monitoree#{compose_explanation(history, field)}."
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment, create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
-  def self.symptom_onset(history, create: true)
+  def self.symptom_onset(history)
     field = {
       name: 'Symptom Onset Date',
       type: 'date',
@@ -385,10 +378,10 @@ class History < ApplicationRecord
 
     comment = compose_message(history, field)
     comment += ' The system will now populate this date.' if field[:new_value].nil?
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment, create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
-  def self.last_date_of_exposure(history, create: true)
+  def self.last_date_of_exposure(history)
     field = {
       name: 'Last Date of Exposure',
       type: 'date',
@@ -397,10 +390,10 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.continuous_exposure(history, create: true)
+  def self.continuous_exposure(history)
     field = {
       name: 'Continuous Exposure',
       old_value: history[:patient_before][:continuous_exposure] ? 'on' : 'off',
@@ -410,10 +403,10 @@ class History < ApplicationRecord
 
     creator = history[:household_status] == :patient ? 'User' : 'System'
     comment = "#{creator} turned #{field[:new_value]} #{field[:name]}#{compose_explanation(history, field)}."
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment, create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
-  def self.monitoring_reason(history, create: true)
+  def self.monitoring_reason(history)
     field = {
       name: 'Reason for Closure',
       old_value: history[:patient_before][:monitoring_reason],
@@ -421,10 +414,10 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.extended_isolation(history, create: true)
+  def self.extended_isolation(history)
     field = {
       name: 'Extended Isolation',
       type: 'date',
@@ -433,37 +426,33 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.follow_up_flag_edit(history, create: true)
+  def self.follow_up_flag_edit(history)
     return if history[:follow_up_reason] == history[:follow_up_reason_before] && history[:follow_up_note] == history[:follow_up_note_before]
 
     comment = "Flagged for Follow-up. Reason: \"#{history[:follow_up_reason]}"
     comment += ": #{history[:follow_up_note]}" unless history[:follow_up_note].blank?
     comment += '"'
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment, create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment)
   end
 
-  def self.clear_follow_up_flag(history, create: true)
+  def self.clear_follow_up_flag(history)
     return if history[:follow_up_reason_before].nil?
 
     comment = 'User cleared flag for follow-up.'
     comment += " Reason: #{history[:clear_flag_reason]}" unless history[:clear_flag_reason].blank?
 
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment, create: create)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment)
   end
 
-  private_class_method def self.create_history(patient, created_by, type, comment, create: true)
+  private_class_method def self.create_history(patient, created_by, type, comment)
     return if patient.nil?
 
     patient = patient.id if patient.respond_to?(:id)
-    if create
-      History.create!(created_by: created_by, comment: comment, patient_id: patient, history_type: type)
-    else
-      History.new(created_by: created_by, comment: comment, patient_id: patient, history_type: type)
-    end
+    History.create!(created_by: created_by, comment: comment, patient_id: patient, history_type: type)
   end
 
   private_class_method def self.compose_message(history, field)

@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
+import { Badge, Button, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CheckboxTree from 'react-checkbox-tree';
@@ -214,91 +214,46 @@ class CustomExport extends React.Component {
                     checked={this.state.selected_records === 'current'}
                   />
                   {this.state.selected_records === 'current' && (
-                    <div className="custom-export-filters">
-                      <span className="custom-export-filter-text">
-                        <small>
-                          <b className="mr-2">Linelist:</b>
-                          {`${_.capitalize(this.props.patient_query.workflow)} - ${this.props.tabs[this.props.patient_query.tab]?.label}`}
-                        </small>
-                      </span>
+                    <div className="px-1 pb-1">
+                      <Badge variant="secondary" className="mr-1">
+                        {`${_.capitalize(this.props.patient_query.workflow)} - ${this.props.tabs[this.props.patient_query.tab]?.label}`}
+                      </Badge>
                       {this.props.patient_query.jurisdiction !== this.props.jurisdiction.id && (
-                        <span className="custom-export-filter-text">
-                          <small>
-                            <b className="mr-2">Jurisdiction:</b>
-                            {this.props.jurisdiction_paths[this.props.patient_query.jurisdiction]}
-                          </small>
-                        </span>
+                        <Badge variant="secondary" className="mr-1">
+                          Jurisdiction: {this.props.jurisdiction_paths[this.props.patient_query.jurisdiction]}
+                        </Badge>
                       )}
                       {this.props.patient_query.user !== null && (
-                        <span className="custom-export-filter-text">
-                          <small>
-                            <b className="mr-2">Assigned User:</b>
-                            {this.props.patient_query.user === 'none' ? '<none>' : this.props.patient_query.user}
-                          </small>
-                        </span>
+                        <Badge variant="secondary" className="mr-1">
+                          Assigned User: {this.props.patient_query.user}
+                        </Badge>
                       )}
                       {this.props.patient_query.search !== '' && (
-                        <span className="custom-export-filter-text">
-                          <small>
-                            <b className="mr-2">Dashboard Search Terms:</b>
-                            {this.props.patient_query.search}
-                          </small>
-                        </span>
+                        <Badge variant="secondary" className="mr-1">
+                          Dashboard Search Terms: {this.props.patient_query.search}
+                        </Badge>
                       )}
                       {this.props.patient_query.filter?.map((filter, index) => {
                         return (
-                          <span key={`filter-${index}`} className="custom-export-filter-text">
-                            <small>
-                              <b className="mr-2">{filter.filterOption?.title}:</b>
-                              {['search', 'select', 'number'].includes(filter.filterOption?.type) && (
-                                <span>{filter.value === '' ? '<blank>' : filter.value}</span>
-                              )}
-                              {filter.filterOption?.type === 'boolean' && <span>{filter.value ? 'True' : 'False'}</span>}
-                              {filter.filterOption?.type === 'date' && (
-                                <span>
-                                  {filter.dateOption === ''
-                                    ? '<blank>'
-                                    : `${filter.dateOption} ${
-                                        filter.dateOption === 'within'
-                                          ? moment(filter.value?.start).format('MM/DD/YYYY') + ' and ' + moment(filter.value?.end).format('MM/DD/YYYY')
-                                          : moment(filter.value).format('MM/DD/YYYY')
-                                      }`}
-                                </span>
-                              )}
-                              {filter.filterOption?.type === 'relative' && (
-                                <span>
-                                  {filter.relativeOption === 'custom'
-                                    ? `in the ${filter.value?.when} ${filter.value?.number} ${filter.value?.unit}`
-                                    : filter.relativeOption}
-                                </span>
-                              )}
-                              {filter.filterOption?.type === 'multi' && (
-                                <div style={{ display: 'inline-grid' }}>
-                                  {filter.value?.map((f, i) => {
-                                    return (
-                                      <span key={`filter-${index}-${i}`} className="mb-0">
-                                        <b className="mr-2">
-                                          {filter.filterOption?.fields
-                                            ?.find(fields => {
-                                              return fields.name === f.name;
-                                            })
-                                            ?.title?.replace(/\b\w/g, l => l.toUpperCase())}
-                                          :
-                                        </b>
-                                        {typeof f.value === 'string'
-                                          ? f.value === ''
-                                            ? '<blank>'
-                                            : f.value
-                                          : f.value?.when === ''
-                                          ? '<blank>'
-                                          : `${f.value.when}  ${moment(filter.value.date).format('MM/DD/YYYY')}`}
-                                      </span>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            </small>
-                          </span>
+                          <Badge key={`filter-${index}`} variant="primary" className="mr-1">
+                            {filter.filterOption?.title}: {filter.filterOption?.type === 'boolean' && <span>{filter.value ? 'True' : 'False'}</span>}
+                            {filter.filterOption?.type === 'relative' && (
+                              <span>
+                                {filter.relativeOption === 'custom'
+                                  ? `in the ${filter.value?.when} ${filter.value?.number} ${filter.value?.unit}`
+                                  : filter.relativeOption}
+                              </span>
+                            )}
+                            {filter.filterOption?.type === 'date' && (
+                              <span>
+                                {filter.dateOption}{' '}
+                                {filter.dateOption === 'within'
+                                  ? moment(filter.value?.start).format('MM/DD/YYYY') + ' and ' + moment(filter.value?.end).format('MM/DD/YYYY')
+                                  : moment(filter.value).format('MM/DD/YYYY')}
+                              </span>
+                            )}
+                            {!['boolean', 'relative', 'date'].includes(filter.filterOption?.type) && <span>{filter.value}</span>}
+                          </Badge>
                         );
                       })}
                     </div>
@@ -485,7 +440,8 @@ class CustomExport extends React.Component {
                           size="sm"
                           variant="danger"
                           disabled={!this.state.preset?.id}
-                          className="mr-1 custom-export-btn"
+                          className="mr-1"
+                          style={{ outline: 'none', boxShadow: 'none' }}
                           onClick={this.delete}>
                           <FontAwesomeIcon className="mr-1" icon={['fas', 'trash']} />
                           Delete
@@ -493,14 +449,20 @@ class CustomExport extends React.Component {
                         {this.state.preset?.name === '' ? (
                           <OverlayTrigger overlay={<Tooltip>Please indicate a name for the saved Custom Export</Tooltip>}>
                             <span>
-                              <Button size="sm" variant="primary" disabled className="ml-1 custom-export-btn">
+                              <Button size="sm" variant="primary" disabled className="ml-1" style={{ outline: 'none', boxShadow: 'none' }}>
                                 <FontAwesomeIcon className="mr-1" icon={['fas', 'pen-alt']} />
                                 Update
                               </Button>
                             </span>
                           </OverlayTrigger>
                         ) : (
-                          <Button id="custom-export-action-update" size="sm" variant="primary" className="ml-1 custom-export-btn" onClick={this.update}>
+                          <Button
+                            id="custom-export-action-update"
+                            size="sm"
+                            variant="primary"
+                            className="ml-1"
+                            style={{ outline: 'none', boxShadow: 'none' }}
+                            onClick={this.update}>
                             <FontAwesomeIcon className="mr-1" icon={['fas', 'pen-alt']} />
                             Update
                           </Button>
@@ -512,14 +474,14 @@ class CustomExport extends React.Component {
                         {this.state.preset?.name === '' ? (
                           <OverlayTrigger overlay={<Tooltip>Please indicate a name for the saved Custom Export</Tooltip>}>
                             <span>
-                              <Button size="sm" variant="primary" disabled className="custom-export-btn-disabled">
+                              <Button size="sm" variant="primary" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
                                 <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
                                 Save
                               </Button>
                             </span>
                           </OverlayTrigger>
                         ) : (
-                          <Button id="custom-export-action-save" size="sm" variant="primary" className="custom-export-btn" onClick={this.save}>
+                          <Button id="custom-export-action-save" size="sm" variant="primary" style={{ outline: 'none', boxShadow: 'none' }} onClick={this.save}>
                             <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
                             Save
                           </Button>
@@ -539,7 +501,7 @@ class CustomExport extends React.Component {
               non_zero_records_selected ? (
                 <OverlayTrigger overlay={<Tooltip>Please modify filters to select at least 1 record</Tooltip>}>
                   <span>
-                    <Button variant="primary btn-square" disabled className="custom-export-btn-disabled">
+                    <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
                       Export
                     </Button>
                   </span>
@@ -552,7 +514,7 @@ class CustomExport extends React.Component {
             ) : (
               <OverlayTrigger overlay={<Tooltip>Please select at least one data element to export</Tooltip>}>
                 <span>
-                  <Button variant="primary btn-square" disabled className="custom-export-btn-disabled">
+                  <Button variant="primary btn-square" disabled style={{ outline: 'none', boxShadow: 'none', pointerEvents: 'none' }}>
                     Export
                   </Button>
                 </span>

@@ -134,12 +134,6 @@ class AdminTable extends React.Component {
     return `User: ${rowData.email}`;
   }
 
-  // Adds the className `selected-row` to those rows who have been selected
-  getRowClassName = rowData => {
-    const isSelected = this.state.table.selectedRows.filter(x => this.state.table.rowData[Number(x)].id === rowData.id).length;
-    return isSelected ? 'selected-row' : null;
-  };
-
   /**
    * Makes an axios POST request based on input.
    * @param {String} path - Admin route to POST to (after the /admin/ string)
@@ -771,29 +765,26 @@ class AdminTable extends React.Component {
             </InputGroup>
           </Col>
         </Row>
-        <div className="admin-table">
-          <CustomTable
-            dataType="users"
-            columnData={this.state.table.colData}
-            rowData={this.state.table.rowData}
-            totalRows={this.state.table.totalRows}
-            handleTableUpdate={this.handleTableUpdate}
-            handleSelect={this.handleSelect}
-            handleEdit={this.handleEditClick}
-            handleEntriesChange={this.handleEntriesChange}
-            handlePageUpdate={this.handlePageUpdate}
-            getRowClassName={this.getRowClassName}
-            getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
-            isSelectable={true}
-            isEditable={true}
-            isLoading={this.state.isLoading}
-            page={this.state.query.page}
-            selectedRows={this.state.table.selectedRows}
-            selectAll={this.state.table.selectAll}
-            entryOptions={this.state.entryOptions}
-            entries={this.state.query.entries}
-          />
-        </div>
+        <CustomTable
+          dataType="users"
+          columnData={this.state.table.colData}
+          rowData={this.state.table.rowData}
+          totalRows={this.state.table.totalRows}
+          handleTableUpdate={this.handleTableUpdate}
+          handleSelect={this.handleSelect}
+          handleEdit={this.handleEditClick}
+          handleEntriesChange={this.handleEntriesChange}
+          handlePageUpdate={this.handlePageUpdate}
+          getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
+          isSelectable={true}
+          isEditable={true}
+          isLoading={this.state.isLoading}
+          page={this.state.query.page}
+          selectedRows={this.state.table.selectedRows}
+          selectAll={this.state.table.selectAll}
+          entryOptions={this.state.entryOptions}
+          entries={this.state.query.entries}
+        />
         {Object.keys(this.state.jurisdiction_paths).length && (this.state.showEditUserModal || this.state.showAddUserModal) && (
           <UserModal
             show={this.state.showEditUserModal || this.state.showAddUserModal}
