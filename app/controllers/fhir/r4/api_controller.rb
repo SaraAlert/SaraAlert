@@ -37,7 +37,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   #
   # Supports (reading): Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization, Provenance
   #
-  # GET /[:resource_type]/[:id]
+  # GET /fhir/r4/[:resource_type]/[:id]
   def show
     status_not_acceptable && return unless accept_header?
 
@@ -134,7 +134,9 @@ class Fhir::R4::ApiController < ApplicationApiController
         end
 
         # If the jurisdiction was changed, create a Transfer
-        if request_updates&.keys&.include?(:jurisdiction_id) && !request_updates[:jurisdiction_id].nil?
+        if request_updates&.keys&.include?(:jurisdiction_id) &&
+           !request_updates[:jurisdiction_id].nil? &&
+           patient_before.jurisdiction_id != patient.jurisdiction_id
           Transfer.create!(patient: patient, from_jurisdiction: patient_before.jurisdiction, to_jurisdiction: patient.jurisdiction, who: @current_actor)
         end
 

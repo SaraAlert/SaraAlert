@@ -83,7 +83,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
   end
 
   def patient_count_under_tab(tab)
-    find("##{tab}_tab").first(:xpath, './/span').text.to_i
+    find("##{tab}_tab").first(:xpath, './/span//span').text.to_i
   end
 
   def verify_patient_info(patient, workflow, tab)

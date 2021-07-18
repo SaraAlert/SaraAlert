@@ -500,15 +500,12 @@ class PublicHealthControllerTest < ActionController::TestCase
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user, monitoring: true, last_date_of_exposure: 15.days.ago)
     assessment = create(:assessment, patient: patient, symptomatic: false)
-    js_timezone_offsets = [-120, -480, -720, 300, 360, 420, 480, 660]
     (10..15).to_a.each do |lde|
-      patient.update(last_date_of_exposure: lde.days.ago)
+      patient.update(last_date_of_exposure: Time.now.getlocal(patient.address_timezone_offset) - lde.days)
       assessment.update(created_at: 1.days.ago) if lde == 14
       assessment.update(created_at: 2.days.ago) if lde == 15
-      js_timezone_offsets.each do |offset|
-        patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, offset, :ten_day)
-        assert_equal(patients.count, 1)
-      end
+      patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, :ten_day)
+      assert_equal(patients.count, 1)
     end
   end
 
@@ -517,17 +514,14 @@ class PublicHealthControllerTest < ActionController::TestCase
     patient = create(:patient, creator: user, monitoring: true, last_date_of_exposure: 15.days.ago)
     assessment = create(:assessment, patient: patient, symptomatic: false)
     laboratory = create(:laboratory, patient: patient, result: 'negative', lab_type: 'Antigen', specimen_collection: DateTime.now)
-    js_timezone_offsets = [-120, -480, -720, 300, 360, 420, 480, 660]
     (7..12).to_a.each do |lde|
-      patient.update(last_date_of_exposure: lde.days.ago)
+      patient.update(last_date_of_exposure: Time.now.getlocal(patient.address_timezone_offset) - lde.days)
       if lde > 9
-        assessment.update(created_at: 3.days.ago)
-        laboratory.update(specimen_collection: 3.days.ago)
+        assessment.update(created_at: lde.days.ago + 8.days)
+        laboratory.update(specimen_collection: lde.days.ago + 7.days)
       end
-      js_timezone_offsets.each do |offset|
-        patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, offset, :seven_day)
-        assert_equal(1, patients.count)
-      end
+      patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, :seven_day)
+      assert_equal(1, patients.count)
     end
   end
 end
