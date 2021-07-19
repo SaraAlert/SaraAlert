@@ -12,6 +12,9 @@ import { formatName, formatPhoneNumberVisually, formatRace, isMinor } from '../.
 import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
 import { navQueryParam, patientHref } from '../../utils/Navigation';
+import generateDynamicHeaders from '../util/DynamicHeaders';
+
+let DynamicHeaders;
 
 class Patient extends React.Component {
   constructor(props) {
@@ -24,6 +27,7 @@ class Patient extends React.Component {
       primaryLanguageDisplayName: null,
       showSetFlagModal: false,
     };
+    DynamicHeaders = generateDynamicHeaders(props.priority);
   }
 
   componentDidMount() {
@@ -151,11 +155,11 @@ class Patient extends React.Component {
             />
           )}
           <Col sm={12}>
-            <h2 className="secondary-title">
+            <DynamicHeaders.two className="secondary-title">
               <span className="sr-only"> Monitoree Name: </span>
               <span className="pr-2">{formatName(this.props.details)}</span>
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
-            </h2>
+            </DynamicHeaders.two>
             {this.props.can_modify_subject_status && !this.props.edit_mode && !this.props.details.follow_up_reason && (
               <Button id="set-follow-up-flag-link" size="sm" aria-label="Set Flag for Follow-up" onClick={() => this.setState({ showSetFlagModal: true })}>
                 <span>
@@ -182,7 +186,7 @@ class Patient extends React.Component {
         <Row>
           <Col id="identification" lg={14} className="col-xxl-12">
             <div className="section-header">
-              <h3 className="section-title">Identification</h3>
+              <DynamicHeaders.three className="section-title">Identification</DynamicHeaders.three>
               {this.renderEditLink('Identification', 0)}
             </div>
             <Row>
@@ -234,7 +238,7 @@ class Patient extends React.Component {
           </Col>
           <Col id="contact-information" lg={10} className="col-xxl-12">
             <div className="section-header">
-              <h3 className="section-title">Contact Information</h3>
+              <DynamicHeaders.three className="section-title">Contact Information</DynamicHeaders.three>
               {this.renderEditLink('Contact Information', 2)}
             </div>
             <div className="item-group">
@@ -303,7 +307,7 @@ class Patient extends React.Component {
             <Row>
               <Col id="address" lg={14} xl={12} className="col-xxxl-10">
                 <div className="section-header">
-                  <h3 className="section-title">Address</h3>
+                  <DynamicHeaders.three className="section-title">Address</DynamicHeaders.three>
                   {this.renderEditLink('Address', 1)}
                 </div>
                 {!(showDomesticAddress || showMonitoredAddress || showForeignAddress || showForeignMonitoringAddress) && <div className="none-text">None</div>}
@@ -415,7 +419,7 @@ class Patient extends React.Component {
                 <Row>
                   <Col id="arrival-information" xl={24} className="col-xxxl-12">
                     <div className="section-header">
-                      <h3 className="section-title">Arrival Information</h3>
+                      <DynamicHeaders.three className="section-title">Arrival Information</DynamicHeaders.three>
                       {this.renderEditLink('Arrival Information', 3)}
                     </div>
                     {!(showArrivalSection || this.props.details.travel_related_notes) && <div className="none-text">None</div>}
@@ -479,9 +483,9 @@ class Patient extends React.Component {
                   </Col>
                   <Col id="planned-travel" xl={24} className="col-xxxl-12">
                     <div className="section-header">
-                      <h3 className="section-title">
+                      <DynamicHeaders.three className="section-title">
                         <span className="d-none d-lg-inline d-xl-none d-xxl-inline">Additional</span> Planned Travel
-                      </h3>
+                      </DynamicHeaders.three>
                       {this.renderEditLink('Planned Travel', 4)}
                     </div>
                     {!(showPlannedTravel || this.props.details.additional_planned_travel_related_notes) && <div className="none-text">None</div>}
@@ -551,9 +555,9 @@ class Patient extends React.Component {
             <Row>
               <Col id="potential-exposure-information" md={14} xl={12} className={this.props.details.isolation ? 'col-xxxl-8' : 'col-xxxl-10'}>
                 <div className="section-header">
-                  <h3 className="section-title">
+                  <DynamicHeaders.three className="section-title">
                     Potential Exposure <span className="d-none d-lg-inline">Information</span>
-                  </h3>
+                  </DynamicHeaders.three>
                   {!this.props.details.isolation && this.renderEditLink('Potential Exposure Information', 5)}
                 </div>
                 {!(showPotentialExposureInfo || showRiskFactors || this.props.details.exposure_notes) && <div className="none-text">None</div>}
@@ -651,7 +655,7 @@ class Patient extends React.Component {
               {this.props.details.isolation && (
                 <Col id="case-information" md={10} xl={12} className="col-xxxl-8">
                   <div className="section-header">
-                    <h3 className="section-title">Case Information</h3>
+                    <DynamicHeaders.three className="section-title">Case Information</DynamicHeaders.three>
                     {this.renderEditLink('Case Information', 5)}
                   </div>
                   <div className="item-group">
@@ -675,7 +679,7 @@ class Patient extends React.Component {
               {(showPotentialExposureInfo || showRiskFactors) && (
                 <Col id="exposure-notes" md={10} xl={12} className="notes-section col-xxxl-8">
                   <div className="section-header">
-                    <h3 className="section-title">Notes</h3>
+                    <DynamicHeaders.three className="section-title">Notes</DynamicHeaders.three>
                     {this.renderEditLink('Edit Notes', 5)}
                   </div>
                   {!this.props.details.exposure_notes && <div className="none-text">None</div>}
@@ -726,6 +730,7 @@ Patient.propTypes = {
   can_modify_subject_status: PropTypes.bool,
   authenticity_token: PropTypes.string,
   workflow: PropTypes.string,
+  priority: PropTypes.number,
 };
 
 export default Patient;
