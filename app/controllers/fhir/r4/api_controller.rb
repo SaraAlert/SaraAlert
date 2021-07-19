@@ -440,7 +440,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
     unless accept_header?
       status_not_acceptable_with_custom_errors(["'Accept' header must have a value of 'application/fhir+json'," \
-        " or the '_format' parameter must one of 'json', 'application/json' or 'application/fhir+json'"]) && return
+        " or the '_format' parameter must be one of 'json', 'application/json' or 'application/fhir+json'"]) && return
     end
 
     unless prefer_header?
