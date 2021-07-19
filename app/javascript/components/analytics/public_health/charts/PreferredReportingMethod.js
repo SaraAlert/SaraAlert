@@ -107,43 +107,45 @@ class PreferredReportingMethod extends React.Component {
           Monitorees by Reporting Method (Active Records Only)
         </Card.Header>
         <Card.Body>
-          <table className="analytics-table reporting-method">
-            <thead>
-              <tr className="g-border-bottom text-center header">
-                <th></th>
-                <th></th>
-                {CONTACT_METHOD_HEADERS.map((header, h_index) => (
-                  <th key={h_index}>{header}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {this.tableData.map((table, t_index) => (
-                <React.Fragment key={t_index}>
-                  <tr>
-                    <td className="header py-2" colSpan="9">
-                      {_.capitalize(table.workflow)} Workflow
-                    </td>
-                    <td></td>
-                  </tr>
-                  {table.data.map((row, r_index) => (
-                    <tr key={r_index} className={`${row.linelistClass || 'row-total g-border-bottom'}`}>
-                      <td className="placeholder-cell" style={{ width: '40px' }}></td>
-                      <td className="sub-header">{row.linelist}</td>
-                      {row.contactMethodData.map((data, d_index) => (
-                        <td key={d_index}>
-                          <div className="count-percent-container">
-                            <span className="number">{data.value}</span>
-                            <span className="percentage align-bottom">{row.linelist === 'Total' ? '' : `(${data.percentageOfTotal})`}</span>
-                          </div>
-                        </td>
-                      ))}
-                    </tr>
+          <div className="table-responsive">
+            <table className="analytics-table reporting-method">
+              <thead>
+                <tr className="g-border-bottom text-center header">
+                  <th></th>
+                  <th></th>
+                  {CONTACT_METHOD_HEADERS.map((header, h_index) => (
+                    <th key={h_index}>{header}</th>
                   ))}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
+                </tr>
+              </thead>
+              <tbody>
+                {this.tableData.map((table, t_index) => (
+                  <React.Fragment key={t_index}>
+                    <tr>
+                      <td className="header py-2" colSpan="9">
+                        {_.capitalize(table.workflow)} Workflow
+                      </td>
+                      <td></td>
+                    </tr>
+                    {table.data.map((row, r_index) => (
+                      <tr key={r_index} className={`${row.linelistClass || 'row-total g-border-bottom'}`}>
+                        <td className="placeholder-cell" style={{ width: '40px' }}></td>
+                        <td className="sub-header">{row.linelist}</td>
+                        {row.contactMethodData.map((data, d_index) => (
+                          <td key={d_index}>
+                            <div className="count-percent-container">
+                              <span className="number">{data.value}</span>
+                              <span className="percentage align-bottom">{row.linelist === 'Total' ? '' : `(${data.percentageOfTotal})`}</span>
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Card.Body>
       </Card>
     );

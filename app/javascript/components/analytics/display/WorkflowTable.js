@@ -14,29 +14,31 @@ class WorkflowTable extends React.Component {
             </span>
           )}
         </div>
-        <table className="analytics-table workflow-table text-right">
-          <thead>
-            <tr className="header">
-              <th></th>
-              {this.props.workflows.map((workflow, i) => (
-                <th key={i}>{workflow}</th>
-              ))}
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.props.data.map((row, r_index) => (
-              <tr key={`row${r_index}`} className={r_index % 2 ? 'row-striped-light' : 'row-striped-dark'}>
-                <td className="text-left header">{this.props.rowHeaders[parseInt(r_index)]}</td>
-                {row.map((cell, c_index) => (
-                  <td key={`cell${c_index}`} className={c_index === 2 ? 'total-column' : ''}>
-                    {cell}
-                  </td>
+        <div className="table-responsive">
+          <table className="analytics-table workflow-table text-right">
+            <thead>
+              <tr className="header">
+                <th></th>
+                {this.props.workflows.map((workflow, i) => (
+                  <th key={i}>{workflow}</th>
                 ))}
+                <th>Total</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {this.props.data.map((row, r_index) => (
+                <tr key={`row${r_index}`} className={r_index % 2 ? 'row-striped-light' : 'row-striped-dark'}>
+                  <td className="text-left header">{this.props.rowHeaders[parseInt(r_index)]}</td>
+                  {row.map((cell, c_index) => (
+                    <td key={`cell${c_index}`} className={c_index === 2 ? 'total-column' : ''}>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </React.Fragment>
     );
   }

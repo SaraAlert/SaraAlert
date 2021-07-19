@@ -45,73 +45,75 @@ class MonitoreeFlow extends React.Component {
     return (
       <Col xl="12" key={index}>
         <div className="analytics-table-header">{WORKFLOWS[Number(index)]} Workflow</div>
-        <table className="analytics-table">
-          <thead>
-            <tr className="g-border-bottom text-center header">
-              <th></th>
-              <th>Last 24h</th>
-              <th>Last 7d</th>
-              <th>Last 14d</th>
-              <th>Cumulative</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="header" colSpan="5">
-                Incoming
-              </td>
-            </tr>
-            <tr>
-              <td className="sub-header indent">New Enrollments</td>
-              {data.map((x, i) => (
-                <td key={i}>
-                  <div className="count-percent-container">
-                    <span className="number">{x.new_enrollments.value}</span>
-                    <span className="percentage align-bottom">({x.new_enrollments.percentage})</span>
-                  </div>
+        <div className="table-responsive">
+          <table className="analytics-table">
+            <thead>
+              <tr className="g-border-bottom text-center header">
+                <th></th>
+                <th>Last 24h</th>
+                <th>Last 7d</th>
+                <th>Last 14d</th>
+                <th>Cumulative</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="header" colSpan="5">
+                  Incoming
                 </td>
-              ))}
-            </tr>
-            <tr className="g-border-bottom">
-              <td className="sub-header indent">Transferred In</td>
-              {data.map((x, i) => (
-                <td key={i}>
-                  <div className="count-percent-container">
-                    <span className="number">{x.transferred_in.value}</span>
-                    <span className="percentage">({x.transferred_in.percentage})</span>
-                  </div>
+              </tr>
+              <tr>
+                <td className="sub-header indent">New Enrollments</td>
+                {data.map((x, i) => (
+                  <td key={i}>
+                    <div className="count-percent-container">
+                      <span className="number">{x.new_enrollments.value}</span>
+                      <span className="percentage align-bottom">({x.new_enrollments.percentage})</span>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+              <tr className="g-border-bottom">
+                <td className="sub-header indent">Transferred In</td>
+                {data.map((x, i) => (
+                  <td key={i}>
+                    <div className="count-percent-container">
+                      <span className="number">{x.transferred_in.value}</span>
+                      <span className="percentage">({x.transferred_in.percentage})</span>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td className="header" colSpan="5">
+                  Outgoing
                 </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="header" colSpan="5">
-                Outgoing
-              </td>
-            </tr>
-            <tr>
-              <td className="sub-header indent">Closed</td>
-              {data.map((x, i) => (
-                <td key={i}>
-                  <div className="count-percent-container">
-                    <span className="number">{x.closed.value}</span>
-                    <span className="percentage">({x.closed.percentage})</span>
-                  </div>
-                </td>
-              ))}
-            </tr>
-            <tr className="g-border-bottom">
-              <td className="sub-header indent">Transferred Out</td>
-              {data.map((x, i) => (
-                <td key={i}>
-                  <div className="count-percent-container">
-                    <span className="number">{x.transferred_out.value}</span>
-                    <span className="percentage">({x.transferred_out.percentage})</span>
-                  </div>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+              </tr>
+              <tr>
+                <td className="sub-header indent">Closed</td>
+                {data.map((x, i) => (
+                  <td key={i}>
+                    <div className="count-percent-container">
+                      <span className="number">{x.closed.value}</span>
+                      <span className="percentage">({x.closed.percentage})</span>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+              <tr className="g-border-bottom">
+                <td className="sub-header indent">Transferred Out</td>
+                {data.map((x, i) => (
+                  <td key={i}>
+                    <div className="count-percent-container">
+                      <span className="number">{x.transferred_out.value}</span>
+                      <span className="percentage">({x.transferred_out.percentage})</span>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </Col>
     );
   }

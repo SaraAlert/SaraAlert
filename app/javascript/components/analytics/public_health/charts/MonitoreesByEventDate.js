@@ -71,7 +71,7 @@ class MonitoreesByEventDate extends React.Component {
           </Form.Row>
           <Row className="mx-2 px-0">
             {GRAPH_CONFIGS.map((val, index) => (
-              <Col xs="12" key={index}>
+              <Col xl="12" key={index}>
                 <div className="font-weight-bold h5 ml-5 pb-2">{val.dataKey} Workflow</div>
                 <ResponsiveContainer width="100%" height={400}>
                   <BarChart width={500} height={300} data={this.state.graphData[Number(index)]} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
