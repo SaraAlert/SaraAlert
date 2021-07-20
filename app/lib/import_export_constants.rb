@@ -28,6 +28,18 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                      Days_in_US Weeks_in_US Months_in_US ConveyanceName IdentifyingNumber DateDeparture AirportCode DateArrival CityArrival CDCCaseID OnsetDate
                      Notes].freeze
 
+  SDX_FIELDS = [nil, nil, nil, :flight_or_vessel_number, :date_of_arrival, :date_of_departure, nil, :address_city, nil, :address_state, :address_line_1,
+                :address_zip, :travel_related_notes, :travel_related_notes, :port_of_entry_into_usa, :travel_related_notes, :date_of_birth, :nationality, nil,
+                nil, nil, nil, nil, :crew_on_passenger_or_cargo_flight, nil, nil, :email, :first_name, :flight_or_vessel_carrier, nil, :sex,
+                :user_defined_id_cdc, :nil, :last_name, nil, nil, nil, :primary_telephone, nil, nil, :secondary_telephone, nil, :flight_or_vessel_carrier, nil,
+                nil, nil, nil, nil, nil, nil].freeze
+
+  SDX_HEADERS = %w[RecordId CreateDate DocumentNumber FlightNumber ArrivalDate DepartureDate AcknowledgedQuestion AddressCity AddressGeoType AddressState
+                   AddressStreet AddressZip ArrivalPortCity ArrivalPortCode ArrivalPortName ArrivalPortState BirthDate Citizenship ContactFirstName
+                   ContactLastName ContactPhone ContactPhoneType ContactType Crew DocumentCountry DocumentType EmailAddress FirstName FlightCarrierCode
+                   FromOfficer Gender Id IdType LastName LicensePlate LicenseState ModeOfTransportation PrimaryPhone PrimaryPhoneType PrivacyBanner
+                   SecondaryPhone SecondaryPhoneType VesselName VoyageId AddressLatitude AddressLongitude Possible212fTravel Recency RawFileName TKey].freeze
+
   LINELIST_FIELDS = %i[id name jurisdiction_name assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring exposure_risk_assessment
                        monitoring_plan latest_assessment_at latest_transfer_at monitoring_reason public_health_action status closed_at transferred_from
                        transferred_to expected_purge_ts symptom_onset extended_isolation responder_id workflow first_positive_lab_at follow_up_reason
@@ -102,8 +114,14 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Alternate International Telephone', 'Alternate Email', 'Cohort 1 Type', 'Cohort 1 Name/Description', 'Cohort 1 Location',
                                'Cohort 2 Type', 'Cohort 2 Name/Description', 'Cohort 2 Location', 'Continuous Exposure'].freeze
 
-  # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
-  # of fields between Sara Alert Format and Full History Patients
+  IMPORT_FORMATS = {
+    epix: { fields: EPI_X_FIELDS, headers: EPI_X_HEADERS },
+    saf: { fields: SARA_ALERT_FORMAT_FIELDS, headers: SARA_ALERT_FORMAT_HEADERS },
+    sdx: { fields: SDX_FIELDS, headers: SDX_HEADERS }
+  }.freeze
+
+  # Several fields are intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering of
+  # fields between Sara Alert Format and Full History Patients
   FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + %i[first_positive_lab_at extended_isolation enrolled_workflow
                                                                         contact_became_case_at monitoring_reason closed_at expected_purge_ts]).freeze
 
