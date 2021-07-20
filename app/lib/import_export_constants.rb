@@ -491,8 +491,8 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
               rct_node(:patients, 'Monitoring Period',
                        [:last_date_of_exposure,
                         *(%i[continuous_exposure] if CONTINUOUS_EXPOSURE_AVAILABLE),
-                        *%i[symptom_onset symptom_onset_defined_by first_positive_lab_at
-                            extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_ts]]),
+                        :symptom_onset, :symptom_onset_defined_by, :first_positive_lab_at, :extended_isolation,
+                        :end_of_monitoring, :closed_at, :monitoring_reason, :expected_purge_ts]),
               rct_node(:patients, 'Reporting Info', %i[responder_id head_of_household pause_notifications last_assessment_reminder_sent]),
               rct_node(:patients, 'Follow-up Flag', %i[follow_up_reason follow_up_note])
             ]

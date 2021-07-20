@@ -10,15 +10,23 @@ import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs';
 import { mockExportPresets } from '../mocks/mockExportPresets';
 import exportOptions from '../mocks/mockExportOptions';
 
+const available_line_lists = {};
+
+const available_workflows = [
+  { name: 'exposure', label: 'Exposure' },
+  { name: 'isolation', label: 'Isolation' },
+  { name: 'global', label: 'Global' },
+];
+
 const mockToken = 'testMockTokenString12345';
 const dropdownOptions = ['Line list CSV', 'Sara Alert Format', 'Excel Export For Purge-Eligible Monitorees', 'Excel Export For All Monitorees', 'Custom Format...'];
 
 function getExposureWrapper() {
-  return shallow(<Export workflow={'exposure'} all_monitorees_count={200} authenticity_token={mockToken} current_monitorees_count={32} custom_export_options={{}} export_options={exportOptions} jurisdiction_paths={mockJurisdictionPaths} jurisdiction={mockJurisdiction1} query={mockQuery1} tabs={mockExposureTabs} />);
+  return shallow(<Export authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} jurisdiction={mockJurisdiction1} available_workflows={available_workflows} available_line_lists={available_line_lists} tabs={mockExposureTabs} export_options={exportOptions} query={mockQuery1} all_monitorees_count={200} current_monitorees_count={32} custom_export_options={{}} />);
 }
 
 function getIsolationWrapper() {
-  return shallow(<Export workflow={'isolation'} all_monitorees_count={200} authenticity_token={mockToken} current_monitorees_count={32} custom_export_options={{}} export_options={exportOptions} jurisdiction_paths={mockJurisdictionPaths} jurisdiction={mockJurisdiction1} query={mockQuery2} tabs={mockIsolationTabs} />);
+  return shallow(<Export authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} jurisdiction={mockJurisdiction1} available_workflows={available_workflows} available_line_lists={available_line_lists} tabs={mockIsolationTabs} export_options={exportOptions} query={mockQuery2} all_monitorees_count={200} current_monitorees_count={32} custom_export_options={{}} />);
 }
 
 describe('Export', () => {
@@ -79,6 +87,64 @@ describe('Export', () => {
     expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
     expect(wrapper.find(ConfirmExport).prop('exportType')).toEqual('Line list CSV');
     expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual('exposure');
+  });
+
+  it('Clicking "Sara Alert Format" option displays Confirm Export modal', () => {
+    let wrapper = getExposureWrapper();
+    expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
+    expect(
+      wrapper
+        .find(Dropdown.Item)
+        .at(1)
+        .text()
+        .includes(dropdownOptions[1])
+    ).toBeTruthy();
+    wrapper
+      .find(Dropdown.Item)
+      .at(1)
+      .simulate('click');
+    expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('exportType')).toEqual('Sara Alert Format');
+    expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual('exposure');
+  });
+
+  it('Clicking "Excel Export For Purge-Eligible Monitorees" option displays Confirm Export modal', () => {
+    const wrapper = getExposureWrapper();
+    expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
+    expect(
+      wrapper
+        .find(Dropdown.Item)
+        .at(2)
+        .text()
+    ).toEqual(dropdownOptions[2]);
+    wrapper
+      .find(Dropdown.Item)
+      .at(2)
+      .simulate('click');
+    expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('exportType')).toContain('Excel Export For Purge-Eligible Monitorees');
+    expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual(undefined);
+  });
+
+  it('Clicking "Excel Export For All Monitorees" option displays Confirm Export modal', () => {
+    const wrapper = getExposureWrapper();
+    expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
+    expect(
+      wrapper
+        .find(Dropdown.Item)
+        .at(3)
+        .text()
+    ).toEqual(dropdownOptions[3]);
+    wrapper
+      .find(Dropdown.Item)
+      .at(3)
+      .simulate('click');
+    expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
+    expect(wrapper.find(ConfirmExport).prop('exportType')).toContain('Excel Export For All Monitorees');
+    expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual(undefined);
   });
 
   it('Clicking "Custom Format..." option displays Custom Export modal', () => {
