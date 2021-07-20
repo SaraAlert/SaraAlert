@@ -23,7 +23,7 @@ class ExposureSummary extends React.Component {
 
     this.allCountryData = _.uniq(props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).map(country => {
       return {
-        country,
+        country, 
         total: _.sum(props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country' && x.category === country).map(x => x.total)),
       };
     });
@@ -33,7 +33,8 @@ class ExposureSummary extends React.Component {
     this.countryData = parseOutFields(this.props.stats.monitoree_counts, this.COUNTRY_HEADERS, 'Exposure Country');
 
     this.fullCountryData = _.cloneDeep(this.countryData); // Get the full countryData object for exporting
-    this.COUNTRY_HEADERS = this.COUNTRY_HEADERS.slice(0, NUM_COUNTRIES_TO_SHOW); // and trim the headers so it wont display all the countries
+    this.COUNTRY_HEADERS = this.COUNTRY_HEADERS.slice(0, NUM_COUNTRIES_TO_SHOW); // and trim the headers so it won't display all the countries
+    this.countryData = this.countryData.slice(0, NUM_COUNTRIES_TO_SHOW); // and trim the data so it won't display all the countries
 
     // Map and translate all of the Tabular Data to the Chart Format
     this.barGraphData = [

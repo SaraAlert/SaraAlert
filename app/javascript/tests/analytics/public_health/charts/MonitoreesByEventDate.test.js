@@ -50,7 +50,7 @@ describe('MonitoreesByEventDate', () => {
     });
   });
 
-  it('Properly filters ', () => {
+  it('Properly filters analytics data by selected time resolution', () => {
     const wrapper = getWrapper();
     expect(wrapper.state().graphData[0].length).toEqual(15); // exposure day entries
     expect(wrapper.state().graphData[1].length).toEqual(15); // isolation day entries

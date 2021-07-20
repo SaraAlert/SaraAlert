@@ -48,7 +48,7 @@ class CacheAnalyticsJob < ApplicationJob
     laboratory_personnel: 'Laboratory Personnel'
   }.freeze
   MONITOREE_SNAPSHOT_TIME_FRAMES = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'].freeze
-  NUM_EXPOSURE_COUNTRIES = 5
+  MAX_EXPOSURE_COUNTRIES = 200
   NUM_PAST_DAYS = 28
   NUM_PAST_WEEKS = 53
   NUM_PAST_MONTHS = 13
@@ -258,7 +258,7 @@ class CacheAnalyticsJob < ApplicationJob
                                    .group(:potential_exposure_country)
                                    .order(count_potential_exposure_country: :desc)
                                    .order(:potential_exposure_country)
-                                   .limit(NUM_EXPOSURE_COUNTRIES)
+                                   .limit(MAX_EXPOSURE_COUNTRIES)
                                    .count(:potential_exposure_country)
                                    .map { |c| c[0] }
     monitorees.monitoring_open
