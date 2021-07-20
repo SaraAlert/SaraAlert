@@ -4,6 +4,8 @@ require 'test_case'
 
 class ClosePatientsJobTest < ActiveSupport::TestCase
   def setup
+    # Variable's purpose is strictly to reduce line size
+    @period = ADMIN_OPTIONS['monitoring_period_days']
     ADMIN_OPTIONS['job_run_email'] = 'test@test.com'
     ENV['TWILLIO_STUDIO_FLOW'] = 'TEST'
     ActionMailer::Base.deliveries.clear
@@ -61,7 +63,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
     assert_equal(updated_patient.histories.last.history_type, History::HISTORY_TYPES[:record_automatically_closed])
-    assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Enrolled more than 14 days after last date of exposure (system)')
+    assert_histories_contain(patient, "Monitoree has completed monitoring. Reason: Enrolled more than #{@period} days after last date of exposure (system)")
   end
 
   test 'creates correct monitoring reason when record has normally completed monitoring period' do
@@ -94,8 +96,8 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
-    assert_equal(updated_patient.monitoring_reason, 'Enrolled more than 14 days after last date of exposure (system)')
-    assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Enrolled more than 14 days after last date of exposure (system)')
+    assert_equal(updated_patient.monitoring_reason, "Enrolled more than #{@period} days after last date of exposure (system)")
+    assert_histories_contain(patient, "Monitoree has completed monitoring. Reason: Enrolled more than #{@period} days after last date of exposure (system)")
   end
 
   test 'creates correct monitoring reason when record was enrolled on their last day of monitoring' do
@@ -160,7 +162,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     patient.jurisdiction.update(send_close: false)
     ClosePatientsJob.perform_now
     assert_equal(ActionMailer::Base.deliveries.count, 1)
-    assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Enrolled more than 14 days after last date of exposure (system)')
+    assert_histories_contain(patient, "Monitoree has completed monitoring. Reason: Enrolled more than #{@period} days after last date of exposure (system)")
   end
 
   ['Telephone call', 'Opt-out', 'Unknown', nil, ''].each do |preferred_contact_method|
