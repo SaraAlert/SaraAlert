@@ -7,7 +7,7 @@ import CustomExport from '../../components/public_health/CustomExport';
 import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 import { mockQuery1, mockQuery2 } from '../mocks/mockQueries';
 import { mockExposureTabs, mockIsolationTabs } from '../mocks/mockTabs';
-// import { mockExportPresets } from '../mocks/mockExportPresets';
+import { mockExportPresets } from '../mocks/mockExportPresets';
 import exportOptions from '../mocks/mockExportOptions';
 
 const mockToken = 'testMockTokenString12345';
@@ -81,73 +81,49 @@ describe('Export', () => {
     expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual('exposure');
   });
 
-  it('Clicking "Sara Alert Format" option displays Confirm Export modal', () => {
-    let wrapper = getExposureWrapper();
-    expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
+  it('Clicking "Custom Format..." option displays Custom Export modal', () => {
+    const wrapper = getExposureWrapper();
     expect(
       wrapper
         .find(Dropdown.Item)
-        .at(1)
+        .at(4)
         .text()
-        .includes(dropdownOptions[1])
-    ).toBeTruthy();
+    ).toEqual(dropdownOptions[4]);
+    expect(wrapper.find(CustomExport).exists()).toBeFalsy();
     wrapper
       .find(Dropdown.Item)
-      .at(1)
+      .at(4)
       .simulate('click');
-    expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
-    expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
-    expect(wrapper.find(ConfirmExport).prop('exportType')).toEqual('Sara Alert Format');
-    expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual('exposure');
+    expect(wrapper.find(CustomExport).exists()).toBeTruthy();
   });
 
-  // it('Clicking "Excel Export For Purge-Eligible Monitorees" option displays Confirm Export modal', () => {
-  //   const wrapper = getExposureWrapper();
-  //   expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
-  //   expect(wrapper.find(Dropdown.Item).at(2).text()).toEqual(dropdownOptions[2]);
-  //   wrapper.find(Dropdown.Item).at(2).simulate('click');
-  //   expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
-  //   expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
-  //   expect(wrapper.find(ConfirmExport).prop('exportType')).toContain('Excel Export For Purge-Eligible Monitorees');
-  //   expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual(undefined);
-  // });
+  it('Calls reloadExportPresets method when component mounts', () => {
+    const instance = getExposureWrapper().instance();
+    const reloadPresetsSpy = jest.spyOn(instance, 'reloadExportPresets');
+    expect(reloadPresetsSpy).toHaveBeenCalledTimes(0);
+    instance.componentDidMount();
+    expect(reloadPresetsSpy).toHaveBeenCalledTimes(1);
+  });
 
-  // it('Clicking "Excel Export For All Monitorees" option displays Confirm Export modal', () => {
-  //   const wrapper = getExposureWrapper();
-  //   expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
-  //   expect(wrapper.find(Dropdown.Item).at(3).text()).toEqual(dropdownOptions[3]);
-  //   wrapper.find(Dropdown.Item).at(3).simulate('click');
-  //   expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
-  //   expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
-  //   expect(wrapper.find(ConfirmExport).prop('exportType')).toContain('Excel Export For All Monitorees');
-  //   expect(wrapper.find(ConfirmExport).prop('workflow')).toEqual(undefined);
-  // });
-
-  // it('Clicking "Custom Format..." option displays Custom Export modal', () => {
-  //   const wrapper = getExposureWrapper();
-  //   expect(wrapper.find(Dropdown.Item).at(4).text()).toEqual(dropdownOptions[4]);
-  //   expect(wrapper.find(CustomExport).exists()).toBeFalsy();
-  //   wrapper.find(Dropdown.Item).at(4).simulate('click');
-  //   expect(wrapper.find(CustomExport).exists()).toBeTruthy();
-  // });
-
-  // it('Calls reloadExportPresets method when component mounts', () => {
-  //   const instance = getExposureWrapper().instance();
-  //   const reloadPresetsSpy = jest.spyOn(instance, 'reloadExportPresets');
-  //   expect(reloadPresetsSpy).toHaveBeenCalledTimes(0);
-  //   instance.componentDidMount();
-  //   expect(reloadPresetsSpy).toHaveBeenCalledTimes(1);
-  // });
-
-  // it('Adds export presets to dropdown list', () => {
-  //   const wrapper = getExposureWrapper();
-  //   expect(wrapper.find(Dropdown.Item).length).toEqual(5);
-  //   expect(wrapper.find(Dropdown.Divider).length).toEqual(1);
-  //   expect(wrapper.state('savedExportPresets')).toEqual(undefined);
-  //   wrapper.setState({ savedExportPresets: mockExportPresets });
-  //   expect(wrapper.find(Dropdown.Item).length).toEqual(7);
-  //   expect(wrapper.find(Dropdown.Divider).length).toEqual(2);
-  //   expect(wrapper.find(Dropdown.Item).at(4).text()).toEqual('custom1');
-  //   expect(wrapper.find(Dropdown.Item).at(5).text()).toEqual('custom2');
-  // });
+  it('Adds export presets to dropdown list', () => {
+    const wrapper = getExposureWrapper();
+    expect(wrapper.find(Dropdown.Item).length).toEqual(5);
+    expect(wrapper.find(Dropdown.Divider).length).toEqual(1);
+    expect(wrapper.state('savedExportPresets')).toEqual(undefined);
+    wrapper.setState({ savedExportPresets: mockExportPresets });
+    expect(wrapper.find(Dropdown.Item).length).toEqual(7);
+    expect(wrapper.find(Dropdown.Divider).length).toEqual(2);
+    expect(
+      wrapper
+        .find(Dropdown.Item)
+        .at(4)
+        .text()
+    ).toEqual('custom1');
+    expect(
+      wrapper
+        .find(Dropdown.Item)
+        .at(5)
+        .text()
+    ).toEqual('custom2');
+  });
 });

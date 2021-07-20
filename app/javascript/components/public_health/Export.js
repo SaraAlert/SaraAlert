@@ -29,7 +29,6 @@ class Export extends React.Component {
       exportOptions: allowedExportOptions,
       showCustomFormatModal: false,
     };
-    console.log(props);
   }
 
   toggleExportOpen = eoIndex => {
