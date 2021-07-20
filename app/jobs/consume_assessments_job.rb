@@ -15,7 +15,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         message = JSON.parse(msg)
         # Invalid message
         unless SaraSchema::Validator.validate(:assessment, message)
-          Rails.logger.info 'ConsumeAssessmentsJob: skipping invalid message...'
+          Rails.logger.info "ConsumeAssessmentsJob: Skipping invalid message: #{message}"
           queue.commit
           next
         end
