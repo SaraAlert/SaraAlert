@@ -23,7 +23,7 @@ class ExposureSummary extends React.Component {
 
     this.allCountryData = _.uniq(props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).map(country => {
       return {
-        country, 
+        country,
         total: _.sum(props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country' && x.category === country).map(x => x.total)),
       };
     });

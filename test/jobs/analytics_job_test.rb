@@ -27,7 +27,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(40, MonitoreeCount.where(category_type: 'Age Group').size)
     assert_equal(27, MonitoreeCount.where(category_type: 'Sex').size)
     assert_equal(8, MonitoreeCount.where(category_type: 'Risk Factor').size)
-    assert_equal(7, MonitoreeCount.where(category_type: 'Exposure Country').size)
+    assert_equal(8, MonitoreeCount.where(category_type: 'Exposure Country').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Date').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Week').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Month').size)
@@ -89,7 +89,8 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 2, true, 'Exposure Country', 'Iceland', 1)
     verify_monitoree_count(active_counts, 3, true, 'Exposure Country', 'Korea', 1)
     verify_monitoree_count(active_counts, 4, true, 'Exposure Country', 'Malaysia', 3)
-    assert_equal(5, active_counts.length)
+    verify_monitoree_count(active_counts, 5, true, 'Exposure Country', 'United States Minor Outlying Islands', 1)
+    assert_equal(6, active_counts.length)
   end
 
   test 'monitoree counts by last exposure date' do
