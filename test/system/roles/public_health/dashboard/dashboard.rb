@@ -13,11 +13,6 @@ class PublicHealthDashboard < ApplicationSystemTestCase
 
   PATIENTS = SystemTestUtils::PATIENTS
   MONITOREES = SystemTestUtils::MONITOREES
-  WORKFLOW_CLICK_MAP = {
-    exposure: 'Exposure Monitoring',
-    isolation: 'Isolation Monitoring',
-    global: 'Global Dashboard'
-  }.freeze
 
   def search_for_and_view_patient(tab, patient_label)
     @@system_test_utils.go_to_tab(tab)
@@ -52,7 +47,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def start_export(workflow, export_type, action)
-    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
+    find("##{workflow}-nav-btn").click if workflow.present?
     click_on 'Export'
     click_on export_type
     click_on action == :export ? 'Start Export' : 'Cancel'
@@ -65,7 +60,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def export_custom(user_label, settings)
-    click_on WORKFLOW_CLICK_MAP[settings[:workflow]] if settings[:workflow].present?
+    find("##{settings[:workflow]}-nav-btn").click if settings[:workflow].present?
     @@system_test_utils.go_to_tab(settings[:tab]) if settings[:tab].present?
 
     click_on 'Export'
@@ -110,46 +105,23 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     @@public_health_export_verifier.verify_custom(user_label, settings) if settings[:actions]&.include?(:export) && settings[:confirm] == :start
   end
 
-  def import_epi_x(jurisdiction, workflow, file_name, validity, rejects, accept_duplicates)
-    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
+  def import_and_verify(import_format, jurisdiction, workflow, file_name, validity, rejects, accept_duplicates)
+    find("##{workflow}-nav-btn").click if workflow.present?
     click_on 'Import'
-    find('a', text: "Epi-X (#{workflow})").click
+    find("#import-#{import_format}").click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
-    if validity == :valid
-      @@public_health_import_verifier.verify_epi_x_import_page(jurisdiction, workflow, file_name)
-      select_monitorees_to_import(rejects, accept_duplicates)
-      @@public_health_import_verifier.verify_epi_x_import_data(jurisdiction, workflow, file_name, rejects, accept_duplicates)
-    end
-    assert_content('Please make sure that your import file is a .csv file.') if validity == :invalid_file
-    assert_content('Please make sure that .csv import file is formatted in accordance with the formatting guidance.') if validity == :invalid_format
-    assert_content('Please make sure to use the latest Epi-X format.') if validity == :invalid_headers
-    assert_content('File must contain at least one monitoree to import') if validity == :invalid_monitorees
-    @@public_health_import_verifier.verify_epi_x_field_validation(jurisdiction, workflow, file_name) if validity == :invalid_fields
-    sleep(0.5) && find('.modal-header').find('.close').click unless validity == :valid
-  end
-
-  def import_sara_alert_format(jurisdiction, workflow, file_name, validity, rejects, accept_duplicates)
-    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
-    click_on 'Import'
-    find('a', text: "Sara Alert Format (#{workflow})").click
-    page.attach_file(file_fixture(file_name))
-    click_on 'Upload'
-    if validity == :valid
-      @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction, workflow, file_name)
-      select_monitorees_to_import(rejects, accept_duplicates)
-      @@public_health_import_verifier.verify_sara_alert_format_import_data(jurisdiction, workflow, file_name, rejects, accept_duplicates)
-    end
-    assert_content('Please make sure that your import file is a .xlsx file.') if validity == :invalid_file
-    assert_content('Please make sure that .xlsx import file is formatted in accordance with the formatting guidance.') if validity == :invalid_format
-    assert_content('Please make sure to use the latest format specified by the Sara Alert Format guidance doc.') if validity == :invalid_headers
-    assert_content('File must contain at least one monitoree to import') if validity == :invalid_monitorees
-    @@public_health_import_verifier.verify_sara_alert_format_field_validation(jurisdiction, workflow, file_name) if validity == :invalid_fields
+    @@public_health_import_verifier.verify_import(import_format, jurisdiction, workflow, file_name, rejects, accept_duplicates) if validity == :valid
+    @@public_health_import_verifier.verify_invalid_file_error(import_format) if validity == :invalid_file
+    @@public_health_import_verifier.verify_invalid_format_error(import_format) if validity == :invalid_format
+    @@public_health_import_verifier.verify_invalid_headers_error(import_format) if validity == :invalid_headers
+    @@public_health_import_verifier.verify_invalid_monitorees_error if validity == :invalid_monitorees
+    @@public_health_import_verifier.verify_invalid_fields_error(import_format, jurisdiction, workflow, file_name) if validity == :invalid_fields
     sleep(0.5) && find('.modal-header').find('.close').click unless validity == :valid
   end
 
   def import_and_cancel(workflow, file_name, file_type)
-    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
+    find("##{workflow}-nav-btn").click if workflow.present?
     click_on 'Import'
     find('a', text: "#{file_type} (#{workflow})").click
     page.attach_file(file_fixture(file_name))
@@ -183,7 +155,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def download_sara_alert_format_guidance(workflow)
-    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
+    find("##{workflow}-nav-btn").click if workflow.present?
     click_on 'Import'
     find('a', text: "Sara Alert Format (#{workflow})").click
     click_on 'Download formatting guidance'
@@ -193,33 +165,12 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     @@system_test_utils.wait_for_modal_animation
   end
 
-  def select_monitorees_to_import(rejects, accept_duplicates)
-    if rejects.nil?
-      click_on 'Import All'
-      find(:css, '.confirm-dialog').find(:css, '.form-check-input').set(true) if accept_duplicates
-      click_on 'OK'
-    else
-      find('.modal-body').all('div.card-body').each_with_index do |card, index|
-        if rejects.include?(index)
-          card.find('button', text: 'Reject').click
-        else
-          card.find('button', text: 'Accept').click
-        end
-        sleep(0.01) # wait for UI to update after accepting or rejecting monitoree
-      end
-    end
-  end
-
   def select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
-    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
+    find("##{workflow}-nav-btn").click if workflow.present?
     sleep(2)
     @@system_test_utils.go_to_tab(tab)
     sleep(2)
-    patient_labels.each { |patient| check_patient(patient) }
-  end
-
-  def check_patient(patient_label)
-    find_by_id("patients-#{PATIENTS[patient_label]['id']}").find('input').click
+    patient_labels.each { |patient_label| find_by_id("patients-#{PATIENTS[patient_label]['id']}").find('input').click }
   end
 
   def bulk_edit_update_case_status(workflow, case_status, next_step, apply_to_household)
@@ -229,7 +180,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     select(next_step, from: 'follow_up') if workflow != :isolation && %w[Confirmed Probable].include?(case_status)
     find_by_id('apply_to_household', { visible: :all }).check({ allow_label_click: true }) if apply_to_household
     click_on 'Submit'
-    go_to_other_workflow(workflow) if next_step != 'End Monitoring'
+    find("##{workflow == :isolation ? :exposure : :isolation}-nav-btn").click if next_step != 'End Monitoring' # go to other workflow
   end
 
   def bulk_edit_close_records(monitoring_reason, reasoning, apply_to_household)
@@ -247,11 +198,5 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     fill_in 'assigned_user_input', with: assigned_user
     find_by_id('apply_to_household', { visible: :all }).check({ allow_label_click: true }) if apply_to_household
     click_on 'Submit'
-  end
-
-  def go_to_other_workflow(workflow)
-    click_on WORKFLOW_CLICK_MAP[:isolation] if workflow == :exposure
-
-    click_on WORKFLOW_CLICK_MAP[:exposure] if workflow == :isolation
   end
 end

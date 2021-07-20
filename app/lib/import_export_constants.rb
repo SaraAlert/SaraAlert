@@ -16,17 +16,83 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
 
   EXPORT_FORMATS = %w[csv xlsx].freeze
 
-  EPI_X_FIELDS = [nil, nil, nil, :travel_related_notes, :last_name, :first_name, :middle_name, :date_of_birth, :sex, :primary_telephone, nil,
-                  :secondary_telephone, nil, nil, :address_line_1, :address_city, :address_state, :address_zip, :foreign_address_country, :email,
-                  :alternate_primary_telephone, :address_line_2, :monitored_address_line_1, :monitored_address_city, :monitored_address_state, :contact_name,
-                  nil, nil, nil, nil, nil, nil, nil, :flight_or_vessel_carrier, :flight_or_vessel_number, :date_of_departure, :port_of_entry_into_usa,
-                  :date_of_arrival, :port_of_entry_into_usa, :user_defined_id_cdc, :symptom_onset, :travel_related_notes].freeze
+  LINELIST_FIELDS = %i[id name jurisdiction_name assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring exposure_risk_assessment
+                       monitoring_plan latest_assessment_at latest_transfer_at monitoring_reason public_health_action status closed_at transferred_from
+                       transferred_to expected_purge_ts symptom_onset extended_isolation responder_id workflow first_positive_lab_at follow_up_reason
+                       follow_up_note].freeze
 
-  EPI_X_HEADERS = %w[RecordLocatorID StatusFlag IndexCase Seat_Number Last_Name First_Name Middle_Initial DOB Gender Perm_Home_Telephone Business_Telephone
-                     Perm_Cell_Pager Other_Phone Locate_Telephone Perm_Address Perm_City Perm_State Perm_Postal_Code Perm_Country Perm_Email Emergency_Telephone
-                     Perm_Address_2 Locate_Address Locate_City Locate_State Emergency_Contact Emergency_City Emergency_State Emergency_Country Live_in_US
-                     Days_in_US Weeks_in_US Months_in_US ConveyanceName IdentifyingNumber DateDeparture AirportCode DateArrival CityArrival CDCCaseID OnsetDate
-                     Notes].freeze
+  LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
+                      'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
+                      'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation', 'Reporter ID', 'Workflow',
+                      'First Positive Lab', 'Follow-Up Reason', 'Follow-Up Note'].freeze
+
+  SAF_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :white, :black_or_african_american, :american_indian_or_alaska_native, :asian,
+                :native_hawaiian_or_other_pacific_islander, :ethnicity, :primary_language, :secondary_language, :interpretation_required, :nationality,
+                :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss, :address_line_1, :address_city, :address_state, :address_line_2,
+                :address_zip, :address_county, :foreign_address_line_1, :foreign_address_city, :foreign_address_country, :foreign_address_line_2,
+                :foreign_address_zip, :foreign_address_line_3, :foreign_address_state, :monitored_address_line_1, :monitored_address_city,
+                :monitored_address_state, :monitored_address_line_2, :monitored_address_zip, :monitored_address_county, :foreign_monitored_address_line_1,
+                :foreign_monitored_address_city, :foreign_monitored_address_state, :foreign_monitored_address_line_2, :foreign_monitored_address_zip,
+                :foreign_monitored_address_county, :preferred_contact_method, :primary_telephone, :primary_telephone_type, :secondary_telephone,
+                :secondary_telephone_type, :preferred_contact_time, :email, :port_of_origin, :date_of_departure, :source_of_report, :flight_or_vessel_number,
+                :flight_or_vessel_carrier, :port_of_entry_into_usa, :date_of_arrival, :travel_related_notes, :additional_planned_travel_type,
+                :additional_planned_travel_destination, :additional_planned_travel_destination_state, :additional_planned_travel_destination_country,
+                :additional_planned_travel_port_of_departure, :additional_planned_travel_start_date, :additional_planned_travel_end_date,
+                :additional_planned_travel_related_notes, :last_date_of_exposure, :potential_exposure_location, :potential_exposure_country,
+                :contact_of_known_case, :contact_of_known_case_id, :travel_to_affected_country_or_area, :was_in_health_care_facility_with_known_cases,
+                :was_in_health_care_facility_with_known_cases_facility_name, :laboratory_personnel, :laboratory_personnel_facility_name, :healthcare_personnel,
+                :healthcare_personnel_facility_name, :crew_on_passenger_or_cargo_flight, :member_of_a_common_exposure_cohort, nil, :exposure_risk_assessment,
+                :monitoring_plan, :exposure_notes, :full_status, :symptom_onset, :case_status, :lab_1_type, :lab_1_specimen_collection, :lab_1_report,
+                :lab_1_result, :lab_2_type, :lab_2_specimen_collection, :lab_2_report, :lab_2_result, :jurisdiction_path, :assigned_user, :gender_identity,
+                :sexual_orientation, :race_other, :race_unknown, :race_refused_to_answer, :vaccine_1_group_name, :vaccine_1_product_name,
+                :vaccine_1_administration_date, :vaccine_1_dose_number, :vaccine_1_notes, :vaccine_2_group_name, :vaccine_2_product_name,
+                :vaccine_2_administration_date, :vaccine_2_dose_number, :vaccine_2_notes, :follow_up_reason, :follow_up_note, :vaccine_3_group_name,
+                :vaccine_3_product_name, :vaccine_3_administration_date, :vaccine_3_dose_number, :vaccine_3_notes, :international_telephone, :contact_type,
+                :contact_name, :alternate_contact_type, :alternate_contact_name, :alternate_preferred_contact_method, :alternate_preferred_contact_time,
+                :alternate_primary_telephone, :alternate_primary_telephone_type, :alternate_secondary_telephone, :alternate_secondary_telephone_type,
+                :alternate_international_telephone, :alternate_email, :cohort_1_type, :cohort_1_name, :cohort_1_location, :cohort_2_type, :cohort_2_name,
+                :cohort_2_location].freeze
+
+  SAF_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
+                 'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
+                 'Secondary Language', 'Interpretation Required?', 'Nationality', 'Identifier (STATE/LOCAL)', 'Identifier (CDC)', 'Identifier (NNDSS)',
+                 'Address Line 1', 'Address City', 'Address State', 'Address Line 2', 'Address Zip', 'Address County', 'Foreign Address Line 1',
+                 'Foreign Address City', 'Foreign Address Country', 'Foreign Address Line 2', 'Foreign Address Zip', 'Foreign Address Line 3',
+                 'Foreign Address State', 'Monitored Address Line 1', 'Monitored Address City', 'Monitored Address State', 'Monitored Address Line 2',
+                 'Monitored Address Zip', 'Monitored Address County', 'Foreign Monitored Address Line 1', 'Foreign Monitored Address City',
+                 'Foreign Monitored Address State', 'Foreign Monitored Address Line 2', 'Foreign Monitored Address Zip', 'Foreign Monitored Address County',
+                 'Preferred Contact Method', 'Primary Telephone', 'Primary Telephone Type', 'Secondary Telephone', 'Secondary Telephone Type',
+                 'Preferred Contact Time', 'Email', 'Port of Origin', 'Date of Departure', 'Source of Report', 'Flight or Vessel Number',
+                 'Flight or Vessel Carrier', 'Port of Entry Into USA', 'Date of Arrival', 'Travel Related Notes', 'Additional Planned Travel Type',
+                 'Additional Planned Travel Destination', 'Additional Planned Travel Destination State', 'Additional Planned Travel Destination Country',
+                 'Additional Planned Travel Port of Departure', 'Additional Planned Travel Start Date', 'Additional Planned Travel End Date',
+                 'Additional Planned Travel Related Notes', 'Last Date of Exposure', 'Potential Exposure Location', 'Potential Exposure Country',
+                 'Contact of Known Case?', 'Contact of Known Case ID', 'Travel from Affected Country or Area?', 'Was in Health Care Facility With Known Cases?',
+                 'Health Care Facility with Known Cases Name', 'Laboratory Personnel?', 'Laboratory Personnel Facility Name', 'Health Care Personnel?',
+                 'Health Care Personnel Facility Name', 'Crew on Passenger or Cargo Flight?', 'Member of a Common Exposure Cohort?',
+                 'Common Exposure Cohort Name', 'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status', 'Symptom Onset Date', 'Case Status',
+                 'Lab 1 Test Type', 'Lab 1 Specimen Collection Date', 'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type', 'Lab 2 Specimen Collection Date',
+                 'Lab 2 Report Date', 'Lab 2 Result', 'Full Assigned Jurisdiction Path', 'Assigned User', 'Gender Identity', 'Sexual Orientation', 'Race Other',
+                 'Race Unknown', 'Race Refused to Answer', 'Vaccine 1 Group Name', 'Vaccine 1 Product Name', 'Vaccine 1 Administration Date',
+                 'Vaccine 1 Dose Number', 'Vaccine 1 Notes', 'Vaccine 2 Group Name', 'Vaccine 2 Product Name', 'Vaccine 2 Administration Date',
+                 'Vaccine 2 Dose Number', 'Vaccine 2 Notes', 'Follow-Up Reason', 'Follow-Up Note', 'Vaccine 3 Group Name', 'Vaccine 3 Product Name',
+                 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes', 'International Telephone', 'Primary Contact Relationship',
+                 'Primary Contact Name', 'Alternate Contact Relationship', 'Alternate Contact Name', 'Alternate Preferred Contact Method',
+                 'Alternate Preferred Contact Time', 'Alternate Primary Telephone', 'Alternate Primary Telephone Type', 'Alternate Secondary Telephone',
+                 'Alternate Secondary Telephone Type', 'Alternate International Telephone', 'Alternate Email', 'Cohort 1 Type', 'Cohort 1 Name/Description',
+                 'Cohort 1 Location', 'Cohort 2 Type', 'Cohort 2 Name/Description', 'Cohort 2 Location'].freeze
+
+  EPIX_FIELDS = [nil, nil, nil, :travel_related_notes, :last_name, :first_name, :middle_name, :date_of_birth, :sex, :primary_telephone, nil,
+                 :secondary_telephone, nil, nil, :address_line_1, :address_city, :address_state, :address_zip, :foreign_address_country, :email,
+                 :alternate_primary_telephone, :address_line_2, :monitored_address_line_1, :monitored_address_city, :monitored_address_state, :contact_name,
+                 nil, nil, nil, nil, nil, nil, nil, :flight_or_vessel_carrier, :flight_or_vessel_number, :date_of_departure, :port_of_entry_into_usa,
+                 :date_of_arrival, :port_of_entry_into_usa, :user_defined_id_cdc, :symptom_onset, :travel_related_notes].freeze
+
+  EPIX_HEADERS = %w[RecordLocatorID StatusFlag IndexCase Seat_Number Last_Name First_Name Middle_Initial DOB Gender Perm_Home_Telephone Business_Telephone
+                    Perm_Cell_Pager Other_Phone Locate_Telephone Perm_Address Perm_City Perm_State Perm_Postal_Code Perm_Country Perm_Email Emergency_Telephone
+                    Perm_Address_2 Locate_Address Locate_City Locate_State Emergency_Contact Emergency_City Emergency_State Emergency_Country Live_in_US
+                    Days_in_US Weeks_in_US Months_in_US ConveyanceName IdentifyingNumber DateDeparture AirportCode DateArrival CityArrival CDCCaseID OnsetDate
+                    Notes].freeze
 
   SDX_FIELDS = [nil, nil, nil, :flight_or_vessel_number, :date_of_arrival, :date_of_departure, nil, :address_city, nil, :address_state, :address_line_1,
                 :address_zip, :travel_related_notes, :travel_related_notes, :port_of_entry_into_usa, :travel_related_notes, :date_of_birth, :nationality, nil,
@@ -40,94 +106,20 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                    FromOfficer Gender Id IdType LastName LicensePlate LicenseState ModeOfTransportation PrimaryPhone PrimaryPhoneType PrivacyBanner
                    SecondaryPhone SecondaryPhoneType VesselName VoyageId AddressLatitude AddressLongitude Possible212fTravel Recency RawFileName TKey].freeze
 
-  LINELIST_FIELDS = %i[id name jurisdiction_name assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring exposure_risk_assessment
-                       monitoring_plan latest_assessment_at latest_transfer_at monitoring_reason public_health_action status closed_at transferred_from
-                       transferred_to expected_purge_ts symptom_onset extended_isolation responder_id workflow first_positive_lab_at follow_up_reason
-                       follow_up_note].freeze
-
-  LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
-                      'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
-                      'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation', 'Reporter ID', 'Workflow',
-                      'First Positive Lab', 'Follow-Up Reason', 'Follow-Up Note'].freeze
-
-  SARA_ALERT_FORMAT_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :white, :black_or_african_american,
-                              :american_indian_or_alaska_native, :asian, :native_hawaiian_or_other_pacific_islander, :ethnicity, :primary_language,
-                              :secondary_language, :interpretation_required, :nationality, :user_defined_id_statelocal, :user_defined_id_cdc,
-                              :user_defined_id_nndss, :address_line_1, :address_city, :address_state, :address_line_2, :address_zip, :address_county,
-                              :foreign_address_line_1, :foreign_address_city, :foreign_address_country, :foreign_address_line_2, :foreign_address_zip,
-                              :foreign_address_line_3, :foreign_address_state, :monitored_address_line_1, :monitored_address_city, :monitored_address_state,
-                              :monitored_address_line_2, :monitored_address_zip, :monitored_address_county, :foreign_monitored_address_line_1,
-                              :foreign_monitored_address_city, :foreign_monitored_address_state, :foreign_monitored_address_line_2,
-                              :foreign_monitored_address_zip, :foreign_monitored_address_county, :preferred_contact_method, :primary_telephone,
-                              :primary_telephone_type, :secondary_telephone, :secondary_telephone_type, :preferred_contact_time, :email, :port_of_origin,
-                              :date_of_departure, :source_of_report, :flight_or_vessel_number, :flight_or_vessel_carrier, :port_of_entry_into_usa,
-                              :date_of_arrival, :travel_related_notes, :additional_planned_travel_type, :additional_planned_travel_destination,
-                              :additional_planned_travel_destination_state, :additional_planned_travel_destination_country,
-                              :additional_planned_travel_port_of_departure, :additional_planned_travel_start_date, :additional_planned_travel_end_date,
-                              :additional_planned_travel_related_notes, :last_date_of_exposure, :potential_exposure_location, :potential_exposure_country,
-                              :contact_of_known_case, :contact_of_known_case_id, :travel_to_affected_country_or_area,
-                              :was_in_health_care_facility_with_known_cases, :was_in_health_care_facility_with_known_cases_facility_name, :laboratory_personnel,
-                              :laboratory_personnel_facility_name, :healthcare_personnel, :healthcare_personnel_facility_name,
-                              :crew_on_passenger_or_cargo_flight, :member_of_a_common_exposure_cohort, nil, :exposure_risk_assessment, :monitoring_plan,
-                              :exposure_notes, :full_status, :symptom_onset, :case_status, :lab_1_type, :lab_1_specimen_collection, :lab_1_report,
-                              :lab_1_result, :lab_2_type, :lab_2_specimen_collection, :lab_2_report, :lab_2_result, :jurisdiction_path, :assigned_user,
-                              :gender_identity, :sexual_orientation, :race_other, :race_unknown, :race_refused_to_answer, :vaccine_1_group_name,
-                              :vaccine_1_product_name, :vaccine_1_administration_date, :vaccine_1_dose_number, :vaccine_1_notes, :vaccine_2_group_name,
-                              :vaccine_2_product_name, :vaccine_2_administration_date, :vaccine_2_dose_number, :vaccine_2_notes, :follow_up_reason,
-                              :follow_up_note, :vaccine_3_group_name, :vaccine_3_product_name, :vaccine_3_administration_date, :vaccine_3_dose_number,
-                              :vaccine_3_notes, :international_telephone, :contact_type, :contact_name, :alternate_contact_type, :alternate_contact_name,
-                              :alternate_preferred_contact_method, :alternate_preferred_contact_time, :alternate_primary_telephone,
-                              :alternate_primary_telephone_type, :alternate_secondary_telephone, :alternate_secondary_telephone_type,
-                              :alternate_international_telephone, :alternate_email, :cohort_1_type, :cohort_1_name, :cohort_1_location, :cohort_2_type,
-                              :cohort_2_name, :cohort_2_location].freeze
-
-  SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
-                               'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
-                               'Secondary Language', 'Interpretation Required?', 'Nationality', 'Identifier (STATE/LOCAL)', 'Identifier (CDC)',
-                               'Identifier (NNDSS)', 'Address Line 1', 'Address City', 'Address State', 'Address Line 2', 'Address Zip', 'Address County',
-                               'Foreign Address Line 1', 'Foreign Address City', 'Foreign Address Country', 'Foreign Address Line 2', 'Foreign Address Zip',
-                               'Foreign Address Line 3', 'Foreign Address State', 'Monitored Address Line 1', 'Monitored Address City',
-                               'Monitored Address State', 'Monitored Address Line 2', 'Monitored Address Zip', 'Monitored Address County',
-                               'Foreign Monitored Address Line 1', 'Foreign Monitored Address City', 'Foreign Monitored Address State',
-                               'Foreign Monitored Address Line 2', 'Foreign Monitored Address Zip', 'Foreign Monitored Address County',
-                               'Preferred Contact Method', 'Primary Telephone', 'Primary Telephone Type', 'Secondary Telephone', 'Secondary Telephone Type',
-                               'Preferred Contact Time', 'Email', 'Port of Origin', 'Date of Departure', 'Source of Report', 'Flight or Vessel Number',
-                               'Flight or Vessel Carrier', 'Port of Entry Into USA', 'Date of Arrival', 'Travel Related Notes',
-                               'Additional Planned Travel Type', 'Additional Planned Travel Destination', 'Additional Planned Travel Destination State',
-                               'Additional Planned Travel Destination Country', 'Additional Planned Travel Port of Departure',
-                               'Additional Planned Travel Start Date', 'Additional Planned Travel End Date', 'Additional Planned Travel Related Notes',
-                               'Last Date of Exposure', 'Potential Exposure Location', 'Potential Exposure Country', 'Contact of Known Case?',
-                               'Contact of Known Case ID', 'Travel from Affected Country or Area?', 'Was in Health Care Facility With Known Cases?',
-                               'Health Care Facility with Known Cases Name', 'Laboratory Personnel?', 'Laboratory Personnel Facility Name',
-                               'Health Care Personnel?', 'Health Care Personnel Facility Name', 'Crew on Passenger or Cargo Flight?',
-                               'Member of a Common Exposure Cohort?', 'Common Exposure Cohort Name', 'Exposure Risk Assessment', 'Monitoring Plan',
-                               'Exposure Notes', 'Status', 'Symptom Onset Date', 'Case Status', 'Lab 1 Test Type', 'Lab 1 Specimen Collection Date',
-                               'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type', 'Lab 2 Specimen Collection Date', 'Lab 2 Report Date', 'Lab 2 Result',
-                               'Full Assigned Jurisdiction Path', 'Assigned User', 'Gender Identity', 'Sexual Orientation', 'Race Other', 'Race Unknown',
-                               'Race Refused to Answer', 'Vaccine 1 Group Name', 'Vaccine 1 Product Name', 'Vaccine 1 Administration Date',
-                               'Vaccine 1 Dose Number', 'Vaccine 1 Notes', 'Vaccine 2 Group Name', 'Vaccine 2 Product Name', 'Vaccine 2 Administration Date',
-                               'Vaccine 2 Dose Number', 'Vaccine 2 Notes', 'Follow-Up Reason', 'Follow-Up Note', 'Vaccine 3 Group Name',
-                               'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes', 'International Telephone',
-                               'Primary Contact Relationship', 'Primary Contact Name', 'Alternate Contact Relationship', 'Alternate Contact Name',
-                               'Alternate Preferred Contact Method', 'Alternate Preferred Contact Time', 'Alternate Primary Telephone',
-                               'Alternate Primary Telephone Type', 'Alternate Secondary Telephone', 'Alternate Secondary Telephone Type',
-                               'Alternate International Telephone', 'Alternate Email', 'Cohort 1 Type', 'Cohort 1 Name/Description', 'Cohort 1 Location',
-                               'Cohort 2 Type', 'Cohort 2 Name/Description', 'Cohort 2 Location'].freeze
-
   IMPORT_FORMATS = {
-    epix: { fields: EPI_X_FIELDS, headers: EPI_X_HEADERS },
-    saf: { fields: SARA_ALERT_FORMAT_FIELDS, headers: SARA_ALERT_FORMAT_HEADERS },
+    saf: { fields: SAF_FIELDS, headers: SAF_HEADERS },
+    epix: { fields: EPIX_FIELDS, headers: EPIX_HEADERS },
     sdx: { fields: SDX_FIELDS, headers: SDX_HEADERS }
   }.freeze
 
   # Several fields are intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering of
   # fields between Sara Alert Format and Full History Patients
-  FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + %i[first_positive_lab_at extended_isolation enrolled_workflow
-                                                                        contact_became_case_at monitoring_reason closed_at expected_purge_ts]).freeze
+  FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SAF_FIELDS + %i[first_positive_lab_at extended_isolation enrolled_workflow contact_became_case_at monitoring_reason
+                                                          closed_at expected_purge_ts]).freeze
 
-  FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['First Positive Lab', 'Extended Isolation Date', 'Enrolled Workflow',
-                                                                                 'Exposure Monitorees that became Cases at', 'Reason for Closure', 'Closed At',
-                                                                                 'Expected Purge Date']).freeze
+  FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SAF_HEADERS + ['First Positive Lab', 'Extended Isolation Date', 'Enrolled Workflow',
+                                                                   'Exposure Monitorees that became Cases at', 'Reason for Closure', 'Closed At',
+                                                                   'Expected Purge Date']).freeze
 
   FULL_HISTORY_ASSESSMENTS_FIELDS = %i[patient_id symptomatic who_reported reported_at created_at updated_at symptoms].freeze
 

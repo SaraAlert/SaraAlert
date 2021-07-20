@@ -51,8 +51,7 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
       monitoring: next_step != 'End Monitoring'
     }
     patient_labels.each do |label|
-      @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions,
-                                                                                          apply_to_household: apply_to_household)
+      @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions, apply_to_household: apply_to_household)
     end
     @@system_test_utils.logout
   end
@@ -230,15 +229,9 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def import_epi_x(user_label, workflow, file_name, validity, rejects, accept_duplicates: false)
+  def import(user_label, workflow, import_format, file_name, validity, rejects, accept_duplicates: false)
     jurisdiction = @@system_test_utils.login(user_label)
-    @@public_health_dashboard.import_epi_x(jurisdiction, workflow, file_name, validity, rejects, accept_duplicates)
-    @@system_test_utils.logout
-  end
-
-  def import_sara_alert_format(user_label, workflow, file_name, validity, rejects, accept_duplicates: false)
-    jurisdiction = @@system_test_utils.login(user_label)
-    @@public_health_dashboard.import_sara_alert_format(jurisdiction, workflow, file_name, validity, rejects, accept_duplicates)
+    @@public_health_dashboard.import_and_verify(import_format, jurisdiction, workflow, file_name, validity, rejects, accept_duplicates)
     @@system_test_utils.logout
   end
 
@@ -248,9 +241,9 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def download_sara_alert_format_guidance(user_label, workflow)
+  def download_saf_guidance(user_label, workflow)
     @@system_test_utils.login(user_label)
-    @@public_health_dashboard.download_sara_alert_format_guidance(workflow)
+    @@public_health_dashboard.download_saf_guidance(workflow)
     @@system_test_utils.logout
   end
 

@@ -111,12 +111,12 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   def verify_sara_alert_format_export(xlsx, patients)
     monitorees = xlsx.sheet('Monitorees')
     assert_equal(patients.size, monitorees.last_row - 1, 'Number of patients')
-    SARA_ALERT_FORMAT_HEADERS.each_with_index do |header, col|
+    SAF_HEADERS.each_with_index do |header, col|
       assert_equal(header, monitorees.cell(1, col + 1), "For header: #{header}")
     end
     patients.each_with_index do |patient, row|
       details = patient.full_history_details_for_export
-      SARA_ALERT_FORMAT_FIELDS.each_with_index do |field, col|
+      SAF_FIELDS.each_with_index do |field, col|
         cell_value = monitorees.cell(row + 2, col + 1)
         if field == :full_status
           assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field} (row #{row + 1})")
