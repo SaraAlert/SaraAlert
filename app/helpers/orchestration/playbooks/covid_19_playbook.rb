@@ -28,7 +28,7 @@ module Orchestration::Playbooks::Covid19Playbook
             custom_options: {
               import: {
                 label: 'Import',
-                type: 'subset',
+                type: 'all',
                 config: {
                   set: %i[saf]
                 }

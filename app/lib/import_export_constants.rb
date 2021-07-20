@@ -2,7 +2,7 @@
 
 # Constants for imports and exports
 module ImportExportConstants # rubocop:todo Metrics/ModuleLength
-  include Orchestration::Orchestrator
+  extend Orchestration::Orchestrator
 
   CONTINUOUS_EXPOSURE_AVAILABLE = continuous_exposure_enabled?(default_playbook).freeze
 
