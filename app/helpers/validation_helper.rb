@@ -2,7 +2,7 @@
 
 # ValidationHelper: Helper constants and methods for validation.
 module ValidationHelper # rubocop:todo Metrics/ModuleLength
-  include Orchestration::Orchestrator
+  extend Orchestration::Orchestrator
 
   SEX_ABBREVIATIONS = {
     M: 'Male',
