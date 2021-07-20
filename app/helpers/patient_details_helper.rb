@@ -72,13 +72,9 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       extended_isolation: extended_isolation || '',
       responder_id: responder_id || '',
       workflow: isolation ? 'Isolation' : 'Exposure',
-<<<<<<< HEAD
       first_positive_lab_at: first_positive_lab_at || '',
       follow_up_reason: follow_up_reason || '',
       follow_up_note: follow_up_note || ''
-=======
-      first_positive_lab_at: first_positive_lab_at || ''
->>>>>>> SARAALERT-1521: Import/export follow-up fields (#983)
     }
   end
 
