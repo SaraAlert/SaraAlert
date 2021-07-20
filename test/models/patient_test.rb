@@ -3336,8 +3336,24 @@ class PatientTest < ActiveSupport::TestCase
     assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
 
     # ineligible because the patient must be monitoring to be non reporting
-    patient.update(monitoring: false, updated_at: 300.days.ago)
+    patient.update(monitoring: false)
+    patient.update(updated_at: 300.days.ago)
     assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+
+    # ineligible because continuous exposure and LDoE is not at least 1 day ago
+    patient.update(monitoring: true, isolation: false, continuous_exposure: true, last_date_of_exposure: Date.today + 3.days)
+    patient.update(updated_at: 300.days.ago)
+    assert_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+
+    # eligible because continuous exposure and LDoE is yesterday
+    patient.update(last_date_of_exposure: Time.now.getlocal(patient.address_timezone_offset).to_date - 1.day)
+    patient.update(updated_at: 300.days.ago)
+    assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
+
+    # eligible because continuous exposure and LDoE is more than 1 day ago
+    patient.update(last_date_of_exposure: Date.today - 10.days)
+    patient.update(updated_at: 300.days.ago)
+    assert_not_nil Patient.close_eligible(:no_recent_activity).find_by(id: patient.id)
   end
 
   test 'invalid reason in close_eligible scope' do
