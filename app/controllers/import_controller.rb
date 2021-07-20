@@ -38,7 +38,7 @@ class ImportController < ApplicationController
     redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
 
     import_format = permitted_params[:format].to_sym
-    redirect_to(root_url) && return unless %i[epix saf sdx].include?(import_format)
+    redirect_to(root_url) && return unless IMPORT_FORMATS.keys.include?(import_format)
 
     # Only query valid jurisdiction ids once
     valid_jurisdiction_ids = current_user.jurisdiction.subtree.pluck(:id)
@@ -48,32 +48,29 @@ class ImportController < ApplicationController
     @warnings = {}
 
     begin
-      # Load and parse patient import
-      if import_format == :saf
-        xlsx = Roo::Excelx.new(params[:file].tempfile.path, file_warning: :ignore)
-        validate_headers(import_format, xlsx.sheet(0).row(1))
-      else
-        ext = File.extname(params[:file].tempfile.path)
-        raise FileFormatError.new('File format must be .csv', ext) unless ext == '.csv'
+      # Load and parse patients to import
+      extension = import_format == :saf ? :xlsx : :csv
+      sheet = Roo::Spreadsheet.open(params[:file].tempfile.path, extension: extension).sheet(0)
 
-        csv = CSV.read(params[:file].tempfile.path, headers: true, skip_blanks: true, skip_lines: /^(?:,\s*)+$/)
-        validate_headers(import_format, csv.headers)
-      end
+      # CSV file extensions need to be manually validated
+      raise Zip::Error if extension == :csv && File.extname(params[:file].tempfile.path) != '.csv'
+
+      validate_headers(import_format, sheet.row(1))
 
       # Validate number of patients to import
-      num_rows = import_format == :saf ? xlsx.sheet(0).last_row - 1 : csv.length
-      raise ValidationError.new('File must contain at least one monitoree to import', 2) if num_rows < 1
+      num_rows = sheet.last_row - 1
+      raise ValidationError.new('File must contain at least one monitoree to import.', 2) if num_rows < 1
       raise ValidationError.new('Please limit each import to 1000 monitorees.', 1000) if num_rows > 1000
 
-      records = import_format == :saf ? xlsx.sheet(0) : csv
-      records.each_with_index do |row, row_ind|
-        next if row_ind.zero? && import_format == :saf # Skip headers for excel file
+      sheet.each_with_index do |row, row_ind|
+        # Skip headers
+        next if row_ind.zero?
 
         patient = { isolation: workflow == :isolation }
 
         # Determine whether perm address is domestic or international for epix format
-        international_address = import_format == :epix && row[EPI_X_FIELDS.index(:foreign_address_country)].present? &&
-                                row[EPI_X_FIELDS.index(:foreign_address_country)]&.downcase&.strip != 'united states'
+        international_address = import_format == :epix && row[EPIX_FIELDS.index(:foreign_address_country)].present? &&
+                                row[EPIX_FIELDS.index(:foreign_address_country)]&.downcase&.strip != 'united states'
 
         # Import patient fields
         IMPORT_FORMATS[import_format][:fields].each_with_index do |field, col_num|
@@ -81,11 +78,12 @@ class ImportController < ApplicationController
           next if field.nil?
 
           begin
-            import_sara_alert_format_field(patient, field, row, row_ind, col_num, workflow, valid_jurisdiction_ids) if import_format == :saf
-            import_epi_x_field(patient, field, row, row_ind, col_num, international_address) if import_format == :epix
+            import_saf_field(patient, field, row, row_ind, col_num, workflow, valid_jurisdiction_ids) if import_format == :saf
+            import_epix_field(patient, field, row, row_ind, col_num, international_address) if import_format == :epix
             import_sdx_field(patient, field, row, row_ind, col_num) if import_format == :sdx
           rescue Date::Error
-            @errors << "Validation Error (row #{row_ind + 1}): '#{row[col_num]}' is not a valid date for '#{EPI_X_HEADERS[EPI_X_FIELDS.index(field)]}'"
+            header_label = IMPORT_FORMATS[import_format][:headers][IMPORT_FORMATS[import_format][:fields].index(field)]
+            @errors << "Validation Error (row #{row_ind + 1}): '#{row[col_num]}' is not a valid date for '#{header_label}'"
           rescue StandardError => e
             @errors << e&.message || "Unexpected error on row #{row_ind + 1} for #{field}: #{row[col_num]}"
           end
@@ -108,17 +106,16 @@ class ImportController < ApplicationController
         @patients << patient
       end
     rescue ValidationError => e
-      @errors << e&.message || "Unknown error on row #{row_ind + 1}"
-    rescue Zip::Error, FileFormatError
-      # Roo throws this if the file is not an excel file
-      @errors << "File Error: Please make sure that your import file is a .#{format == :epix ? 'csv' : 'xlsx'} file."
+      @errors << e&.message || "Validation error on row #{row_ind + 1}"
+    rescue Zip::Error
+      # Roo throws this if the file is not a valid spreadsheet file
+      @errors << "File Error: Please make sure that your import file is a .#{extension} file."
     rescue ArgumentError, NoMethodError
       # Roo throws this error when the columns are not what we expect
-      @errors << "Format Error: Please make sure that .#{format == :epix ? 'csv' : 'xlsx'} import file is formatted in accordance with the formatting guidance."
+      @errors << "Format Error: Please make sure that .#{extension} import file is formatted in accordance with the formatting guidance."
     rescue StandardError => e
       # This is a catch all for any other unexpected error
-      @errors << "Unexpected Error: '#{e&.message}' Please make sure that .#{format == :epix ? 'csv' : 'xlsx'} import file is formatted in accordance with the"\
-                 ' formatting guidance.'
+      @errors << "Unexpected Error: '#{e&.message}' Please make sure that .#{extension} import file is formatted in accordance with the formatting guidance."
     end
 
     render json: { patients: @patients, errors: @errors, warnings: @warnings }
@@ -126,14 +123,14 @@ class ImportController < ApplicationController
 
   private
 
-  def import_sara_alert_format_field(patient, field, row, row_ind, col_num, workflow, valid_jurisdiction_ids)
+  def import_saf_field(patient, field, row, row_ind, col_num, workflow, valid_jurisdiction_ids)
     if field == :jurisdiction_path
-      patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[SARA_ALERT_FORMAT_FIELDS.index(:jurisdiction_path)],
+      patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[SAF_FIELDS.index(:jurisdiction_path)],
                                                                                      row_ind, valid_jurisdiction_ids)
     elsif field == :assigned_user
-      patient[:assigned_user] = row[SARA_ALERT_FORMAT_FIELDS.index(:assigned_user)].presence
+      patient[:assigned_user] = row[SAF_FIELDS.index(:assigned_user)].presence
     elsif field == :symptom_onset && workflow == :isolation
-      patient[:user_defined_symptom_onset] = row[SARA_ALERT_FORMAT_FIELDS.index(:symptom_onset)].present?
+      patient[:user_defined_symptom_onset] = row[SAF_FIELDS.index(:symptom_onset)].present?
       patient[field] = import_field(field, row[col_num], row_ind)
     # TODO: when workflow specific case status validation re-enabled: uncomment
     # elsif field == :case_status
@@ -147,13 +144,13 @@ class ImportController < ApplicationController
     end
   end
 
-  def import_epi_x_field(patient, field, row, row_ind, col_num, international_address)
+  def import_epix_field(patient, field, row, row_ind, col_num, international_address)
     return if field == :foreign_address_country && !international_address
 
     if %i[travel_related_notes port_of_entry_into_usa].include?(field) # fields represented by multiple columns
-      value = "#{EPI_X_HEADERS[col_num]}: #{import_field(field, row[col_num], row_ind)}"
+      value = "#{EPIX_HEADERS[col_num]}: #{import_field(field, row[col_num], row_ind)}"
       patient[field] = patient[field].blank? ? value : "#{patient[field]}, #{value}"
-    elsif field == :secondary_telephone && row[EPI_X_FIELDS.index(:primary_telephone)].blank? # populate primary telephone before secondary
+    elsif field == :secondary_telephone && row[EPIX_FIELDS.index(:primary_telephone)].blank? # populate primary telephone before secondary
       patient[:primary_telephone] = import_field(field, row[col_num], row_ind)
     elsif international_address && %i[address_line_1 address_city address_state address_zip address_line_2].include?(field)
       patient[FOREIGN_ADDRESS_MAPPINGS[field]] = import_field(field, row[col_num], row_ind)
@@ -167,7 +164,7 @@ class ImportController < ApplicationController
   end
 
   def import_sdx_field(patient, field, row, row_ind, col_num)
-    row[col_num] = row[col_num] == 'N/A' ? nil : row[col_num]
+    return if row[col_num] == 'N/A'
 
     if %i[travel_related_notes flight_or_vessel_carrier].include?(field) # fields represented by multiple columns
       value = "#{SDX_HEADERS[col_num]}: #{import_field(field, row[col_num], row_ind)}"

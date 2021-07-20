@@ -61,8 +61,8 @@ class ExportController < ApplicationController
       filename_data_type: false,
       data: {
         patients: {
-          checked: SARA_ALERT_FORMAT_FIELDS,
-          headers: SARA_ALERT_FORMAT_HEADERS,
+          checked: SAF_FIELDS,
+          headers: SAF_HEADERS,
           query: { workflow: params[:workflow] }
         }
       }
