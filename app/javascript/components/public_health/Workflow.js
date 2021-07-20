@@ -14,6 +14,7 @@ class Workflow extends React.Component {
       query: {},
       current_monitorees_count: 0,
     };
+    console.log(props);
   }
 
   componentDidMount() {

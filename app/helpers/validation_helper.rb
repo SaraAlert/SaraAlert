@@ -82,10 +82,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     'Lost to follow-up during monitoring period', 'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
     'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
     *(['Meets criteria to discontinue isolation'] if ISOLATION_AVAILABLE),
-    *['Fully Vaccinated',
-      'Deceased',
-      'Duplicate',
-      'Other']
+    'Fully Vaccinated', 'Deceased', 'Duplicate', 'Other'
   ].freeze
 
   # Please note, this array is only used for the demo.rake file.
