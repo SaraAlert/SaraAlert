@@ -61,6 +61,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
     assert_equal(updated_patient.histories.last.history_type, History::HISTORY_TYPES[:record_automatically_closed])
+    assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Enrolled more than 14 days after last date of exposure (system)')
   end
 
   test 'creates correct monitoring reason when record has normally completed monitoring period' do
@@ -77,6 +78,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
     assert_equal(updated_patient.monitoring_reason, 'Completed Monitoring (system)')
+    assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Completed Monitoring (system)')
   end
 
   test 'creates correct monitoring reason when record was enrolled past their monitoring period' do
@@ -93,6 +95,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
     assert_equal(updated_patient.monitoring_reason, 'Enrolled more than 14 days after last date of exposure (system)')
+    assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Enrolled more than 14 days after last date of exposure (system)')
   end
 
   test 'creates correct monitoring reason when record was enrolled on their last day of monitoring' do
@@ -109,6 +112,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
     assert_equal(updated_patient.monitoring_reason, 'Enrolled on last day of monitoring period (system)')
+    assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Enrolled on last day of monitoring period (system)')
   end
 
   test 'sends closed email if closed record is a reporter' do
@@ -139,7 +143,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     assert_equal(closed_email.to[0], patient.email)
     assert_histories_contain(patient, 'Monitoring Complete message was sent.')
     assert_not_histories_contain(patient, 'because the monitoree email was blank.')
-    assert_histories_contain(patient, 'Monitoree has completed monitoring.')
+    assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Completed Monitoring (system)')
   end
 
   test 'does not send closed notification if jurisdiction send_close is false' do
@@ -156,7 +160,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     patient.jurisdiction.update(send_close: false)
     ClosePatientsJob.perform_now
     assert_equal(ActionMailer::Base.deliveries.count, 1)
-    assert_histories_contain(patient, 'Monitoree has completed monitoring.')
+    assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Enrolled more than 14 days after last date of exposure (system)')
   end
 
   ['Telephone call', 'Opt-out', 'Unknown', nil, ''].each do |preferred_contact_method|
@@ -176,7 +180,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
       ClosePatientsJob.perform_now
       history_friendly_method = patient.preferred_contact_method.blank? ? patient.preferred_contact_method : 'Unknown'
       assert_histories_contain(patient, "#{history_friendly_method}, is not supported for this message type.")
-      assert_histories_contain(patient, 'Monitoree has completed monitoring.')
+      assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Completed Monitoring (system)')
     end
   end
 
@@ -196,7 +200,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
       ClosePatientsJob.perform_now
       method_text = preferred_contact_method == 'E-mailed Web Link' ? 'email' : 'primary phone number'
       assert_histories_contain(patient, "because their preferred contact method, #{method_text}, was blank.")
-      assert_histories_contain(patient, 'Monitoree has completed monitoring.')
+      assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Completed Monitoring (system)')
     end
 
     test "sends closed email if closed record is a reporter with #{preferred_contact_method} preferred" do
@@ -216,7 +220,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
       ClosePatientsJob.perform_now
       method_text = preferred_contact_method == 'E-mailed Web Link' ? 'email' : 'primary phone number'
       assert_not_histories_contain(patient, "because their preferred contact method, #{method_text}, was blank.")
-      assert_histories_contain(patient, 'Monitoree has completed monitoring.')
+      assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Completed Monitoring (system)')
       assert_histories_contain(patient, 'Monitoring Complete message was sent.')
     end
   end
@@ -243,7 +247,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
         ' because the recipient phone number blocked communication with Sara Alert'
       )
       assert_not_histories_contain(patient, "because their preferred contact method, #{method_text}, was blank.")
-      assert_histories_contain(patient, 'Monitoree has completed monitoring.')
+      assert_histories_contain(patient, 'Monitoree has completed monitoring. Reason: Completed Monitoring (system)')
     end
   end
 

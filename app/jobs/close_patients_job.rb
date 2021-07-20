@@ -83,7 +83,7 @@ class ClosePatientsJob < ApplicationJob
         end
 
         # History item for automatically closing the record
-        histories << History.record_automatically_closed(patient: patient, create: false)
+        histories << History.record_automatically_closed(patient: patient, reason: monitoring_reason, create: false)
 
         closed << { id: patient.id }
       rescue StandardError => e
