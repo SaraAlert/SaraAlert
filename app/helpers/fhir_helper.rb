@@ -130,8 +130,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.additional_planned_travel_port_of_departure, 'additional-planned-travel-port-of-departure'),
         to_string_extension(patient.additional_planned_travel_type, 'additional-planned-travel-type'),
         to_string_extension(patient.case_status, 'case-status'),
-        to_bool_extension(patient.contact_of_known_case, 'contact-of-known-case'),
-        to_string_extension(patient.contact_of_known_case_id, 'contact-of-known-case-id'),
         to_datetime_extension(patient.closed_at, 'closed-at'),
         to_string_extension(patient.gender_identity, 'gender-identity'),
         to_string_extension(patient.sexual_orientation, 'sexual-orientation'),
@@ -285,6 +283,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     }
   end
 
+  # Returns a representative FHIR::Provenance for an instance of a Sara Alert History.
+  # https://www.hl7.org/fhir/provenance.html
   def history_as_fhir(history)
     FHIR::Provenance.new(
       meta: FHIR::Meta.new(lastUpdated: history.updated_at.strftime('%FT%T%:z')),
@@ -337,6 +337,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
           ],
           doseNumberString: vaccine.dose_number
         }
+      ],
+      extension: [
+        to_datetime_extension(vaccine.created_at, 'created-at')
       ]
     )
   end
@@ -453,6 +456,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     }
   end
 
+  # Returns a representative FHIR::QuestionnaireResponse for an instance of a Sara Alert Assessment.
+  # https://www.hl7.org/fhir/questionnaireresponse.html
   def assessment_as_fhir(assessment)
     FHIR::QuestionnaireResponse.new(
       meta: FHIR::Meta.new(lastUpdated: assessment.updated_at.strftime('%FT%T%:z')),
@@ -623,13 +628,14 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     { value: converted || code, path: "Patient.extension('http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex').valueCode" }
   end
 
+  # Return an array of extensions representing the Sara Alert Transfers for a monitoree
   def to_transfer_extensions(patient)
     nil if patient.transfers.empty?
 
     fields_to_pluck = {
       id: { url: 'id', type: 'valuePositiveInt' },
-      updated_at: { url: 'updated_at', type: 'valueDateTime' },
-      created_at: { url: 'created_at', type: 'valueDateTime' },
+      updated_at: { url: 'updated-at', type: 'valueDateTime' },
+      created_at: { url: 'created-at', type: 'valueDateTime' },
       'users.email': { url: 'who-initiated-transfer', type: 'valueString' },
       'j_from.path': { url: 'from-jurisdiction', type: 'valueString' },
       'j_to.path': { url: 'to-jurisdiction', type: 'valueString' }
@@ -644,27 +650,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       FHIR::Extension.new(
         url: SA_EXT_BASE_URL + 'transfer',
         extension: fields_to_pluck.values.each_with_index.map do |val, i|
-          extension_value = val[:type] == 'valueDateTime' ? transfer[i].strftime('%FT%T%:z') : transfer[i]
           FHIR::Extension.new(
             url: val[:url],
-            "#{val[:type]}": extension_value
+            "#{val[:type]}": val[:type] == 'valueDateTime' ? transfer[i].strftime('%FT%T%:z') : transfer[i]
           )
         end
       )
     end
-  end
-
-  # Convert to a complex extension representing a Patient's transfer
-  def to_transfer_extension(_transfer)
-    return nil if patient.latest_transfer_at.nil? || patient.latest_transfer_from.nil?
-
-    FHIR::Extension.new(
-      url: SA_EXT_BASE_URL + 'latest-transfer',
-      extension: [
-        to_datetime_extension(patient.latest_transfer_at, 'transferred-at'),
-        to_string_extension(Jurisdiction.where(id: patient.latest_transfer_from)&.pluck(:path)&.first, 'transferred-from')
-      ]
-    )
   end
 
   # Given a language string, try to find the corresponding BCP 47 code for it and construct a FHIR::Coding.
@@ -856,7 +848,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
        patient.foreign_address_city,
        patient.foreign_address_country,
        patient.foreign_address_zip,
-       patient.foreign_address_state].any? ?
+       patient.foreign_address_state].any?(&:present?) ?
       FHIR::Address.new(
         line: [patient.foreign_address_line_1, patient.foreign_address_line_2, patient.foreign_address_line_3].reject(&:blank?),
         city: patient.foreign_address_city,
@@ -871,7 +863,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
        patient.monitored_address_city,
        patient.monitored_address_county,
        patient.monitored_address_zip,
-       patient.monitored_address_state].any? ?
+       patient.monitored_address_state].any?(&:present?) ?
        FHIR::Address.new(
          line: [patient.monitored_address_line_1, patient.monitored_address_line_2].reject(&:blank?),
          city: patient.monitored_address_city,
@@ -886,7 +878,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
        patient.foreign_monitored_address_city,
        patient.foreign_monitored_address_county,
        patient.foreign_monitored_address_zip,
-       patient.foreign_monitored_address_state].any? ?
+       patient.foreign_monitored_address_state].any?(&:present?) ?
        FHIR::Address.new(
          line: [patient.foreign_monitored_address_line_1, patient.foreign_monitored_address_line_2].reject(&:blank?),
          city: patient.foreign_monitored_address_city,
@@ -912,34 +904,42 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     address
   end
 
+  # Return an extension that captures all of the exposure risk factors for a monitoree
   def to_exposure_risk_factors_extension(patient)
+    subextensions = [
+      to_risk_factor_subextension('contact-of-known-case', 'contact-of-known-case-id', patient.contact_of_known_case, patient.contact_of_known_case_id),
+      to_risk_factor_subextension('was-in-health-care-facility-with-known-cases', 'was-in-health-care-facility-with-known-cases-facility-name',
+                                  patient.was_in_health_care_facility_with_known_cases, patient.was_in_health_care_facility_with_known_cases_facility_name),
+      to_risk_factor_subextension('laboratory-personnel', 'laboratory-personnel-facility-name', patient.laboratory_personnel,
+                                  patient.laboratory_personnel_facility_name),
+      to_risk_factor_subextension('healthcare-personnel', 'healthcare-personnel-facility-name', patient.healthcare_personnel,
+                                  patient.healthcare_personnel_facility_name),
+      to_risk_factor_subextension('member-of-a-common-exposure-cohort', 'member-of-a-common-exposure-cohort-type',
+                                  patient.member_of_a_common_exposure_cohort, patient.member_of_a_common_exposure_cohort_type),
+      to_bool_extension(patient.travel_to_affected_country_or_area, 'travel-from-affected-country-or-area'),
+      to_bool_extension(patient.crew_on_passenger_or_cargo_flight, 'crew-on-passenger-or-cargo-flight')
+    ]
+
+    return nil if subextensions.all?(&:nil?)
+
     FHIR::Extension.new(
       url: "#{SA_EXT_BASE_URL}exposure-risk-factors",
-      extension: [
-        to_risk_factor_subextension('contact-of-known-case', 'contact-of-known-case-id', patient.contact_of_known_case, patient.contact_of_known_case_id),
-        to_risk_factor_subextension('was-in-health-care-facility-with-known-cases', 'was-in-health-care-facility-with-known-cases-facility-name',
-                                    patient.was_in_health_care_facility_with_known_cases, patient.was_in_health_care_facility_with_known_cases_facility_name),
-        to_risk_factor_subextension('laboratory-personnel', 'laboratory-personnel-facility-name', patient.laboratory_personnel,
-                                    patient.laboratory_personnel_facility_name),
-        to_risk_factor_subextension('healthcare-personnel', 'healthcare-personnel-facility-name', patient.healthcare_personnel,
-                                    patient.healthcare_personnel_facility_name),
-        to_risk_factor_subextension('member-of-a-common-exposure-cohort', 'member-of-a-common-exposure-cohort-type',
-                                    patient.member_of_a_common_exposure_cohort, patient.member_of_a_common_exposure_cohort_type),
-        to_bool_extension(patient.travel_to_affected_country_or_area, 'travel-from-affected-country-or-area'),
-        to_bool_extension(patient.crew_on_passenger_or_cargo_flight, 'crew-on-passenger-or-cargo-flight')
-      ]
+      extension: subextensions
     )
   end
 
+  # Return a sub-extension which represents a certain risk factor bool/string pair
   def to_risk_factor_subextension(risk_factor_id, string_id, bool_value, string_value)
+    return nil if bool_value.nil? && string_value.blank?
+
     FHIR::Extension.new(
       url: "#{SA_EXT_BASE_URL}#{risk_factor_id}",
       extension: [
-        FHIR::Extension.new(
+        bool_value.nil? ? nil : FHIR::Extension.new(
           url: risk_factor_id,
           valueBoolean: bool_value
         ),
-        string_value.nil? ? nil : FHIR::Extension.new(
+        string_value.blank? ? nil : FHIR::Extension.new(
           url: string_id,
           valueString: string_value
         )
@@ -947,8 +947,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
+  # Return an extension which represents the source of report for a monitoree
   def to_report_source_extension(patient)
-    return nil if patient.source_of_report.nil?
+    return nil if patient.source_of_report.blank?
 
     FHIR::Extension.new(
       url: SA_EXT_BASE_URL + 'source-of-report',
@@ -957,7 +958,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
           url: 'source-of-report',
           valueString: patient.source_of_report
         ),
-        patient.source_of_report_specify.nil? ? nil : FHIR::Extension.new(
+        patient.source_of_report_specify.blank? ? nil : FHIR::Extension.new(
           url: 'specify',
           valueString: patient.source_of_report_specify
         )
