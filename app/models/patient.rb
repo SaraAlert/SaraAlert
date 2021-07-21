@@ -737,22 +737,11 @@ class Patient < ApplicationRecord
     # If a patient record has been inactive for 30 days or more
     # in the exposure workflow and is non-reporting
     #
-    # For patient records in continuous exposure there needs to be an additional check that
-    # it has been at least one day past the LDoE because Sara Alert allows the LDoE to be set
-    # to a date in the future.
+    # To be eligible, the patient must not have continuous_exposure enabled and it must be
+    # past their last date of monitoring.
     no_recent_activity_exposure = exposure_non_reporting
                                   .where('updated_at <= ?', 30.days.ago)
-                                  .where(continuous_exposure: false)
-                                  .or(
-                                    exposure_non_reporting
-                                    .where('updated_at <= ?', 30.days.ago)
-                                    .where(continuous_exposure: true)
-                                    .where(
-                                      'patients.last_date_of_exposure IS NULL OR'\
-                                      ' patients.last_date_of_exposure <= DATE(CONVERT_TZ(?, "UTC", patients.time_zone))',
-                                      Time.now.utc - 1.days
-                                    )
-                                  )
+                                  .end_of_monitoring_period
     no_recent_activity = no_recent_activity_isolation.or(no_recent_activity_exposure)
 
     case reason
