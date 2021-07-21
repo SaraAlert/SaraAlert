@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Text } from 'recharts';
+
 // The purpose of this file is to provide a customized axis for the recharts bar-graphs.
 // By default, the library selects x-axis values for each bar. If they are too long,
 // the library seemingly randomly selects to show some and not others. This can make it
@@ -9,9 +10,6 @@ import { Text } from 'recharts';
 // for the XAxis. It essentially text-wraps all bar-values so they are all shown, and none
 // are hidden.
 class CustomizedAxisTick extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     const { x, y, payload } = this.props;
     return (
@@ -21,9 +19,11 @@ class CustomizedAxisTick extends React.Component {
     );
   }
 }
+
 CustomizedAxisTick.propTypes = {
   x: PropTypes.number,
   y: PropTypes.number,
-  payload: PropTypes.object, // top, right, bottom, left
+  payload: PropTypes.object,
 };
+
 export default CustomizedAxisTick;

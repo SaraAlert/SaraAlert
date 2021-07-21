@@ -7,9 +7,9 @@ import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
 
-import { insularAreas } from '../mapData';
-import { stateOptions } from '../../../data/stateOptions';
-import CountyLevelMaps from './CountyLevelMaps';
+import { insularAreas } from '../maps/mapData';
+import { stateOptions } from '../../../../data/stateOptions';
+import CountyLevelMaps from '../maps/CountyLevelMaps';
 
 const TERRITORY_GEOJSON_FILE = 'usaTerritories.json';
 
