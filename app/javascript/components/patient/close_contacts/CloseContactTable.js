@@ -102,7 +102,6 @@ class CloseContactTable extends React.Component {
           });
         } else {
           reportError(error);
-          this.setState({ isLoading: false });
         }
       })
       .then(response => {
@@ -331,13 +330,9 @@ class CloseContactTable extends React.Component {
           contact_attempts: ccData.contact_attempts || 0,
         })
         .then(() => {
-          this.setState({ isLoading: false });
-          // In the future this should be change to call a callback and update the UI without the need
-          // for a page reload
           location.reload();
         })
         .catch(error => {
-          this.setState({ isLoading: false });
           reportError(error);
         });
     });
