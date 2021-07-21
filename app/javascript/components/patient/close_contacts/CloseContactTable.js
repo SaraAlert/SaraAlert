@@ -230,9 +230,7 @@ class CloseContactTable extends React.Component {
    * @param {*} newCloseContactData - State from close contact modal containing needed close contact data.
    */
   handleAddSubmit = newCloseContactData => {
-    this.setState({ showAddModal: false }, () => {
-      this.updateCloseContact(newCloseContactData, false);
-    });
+    this.updateCloseContact(newCloseContactData, false);
   };
 
   /**
@@ -241,7 +239,7 @@ class CloseContactTable extends React.Component {
    */
   toggleEditModal = row => {
     this.setState({
-      showEditModal: true,
+      showEditModal: !this.state.showEditModal,
       activeRow: row,
     });
   };
@@ -253,15 +251,7 @@ class CloseContactTable extends React.Component {
   handleEditSubmit = updatedCloseContactData => {
     const currentCloseContactId = this.state.table.rowData[this.state.activeRow]?.id;
     updatedCloseContactData['id'] = currentCloseContactId;
-    this.setState(
-      {
-        showEditModal: false,
-        activeRow: null,
-      },
-      () => {
-        this.updateCloseContact(updatedCloseContactData, true);
-      }
-    );
+    this.updateCloseContact(updatedCloseContactData, true);
   };
 
   // Toggles the delete modal and clears any reason or reason text
@@ -333,6 +323,7 @@ class CloseContactTable extends React.Component {
           location.reload();
         })
         .catch(error => {
+          this.setState({ isLoading: false });
           reportError(error);
         });
     });
@@ -462,7 +453,7 @@ class CloseContactTable extends React.Component {
           <CloseContactModal
             title={this.state.showAddModal ? 'Add New Close Contact' : 'Edit Close Contact'}
             currentCloseContact={this.state.showAddModal ? {} : this.getCurrentCloseContact()}
-            onClose={this.toggleAddModal}
+            onClose={this.state.showAddModal ? this.toggleAddModal : this.toggleEditModal}
             onSave={this.state.showAddModal ? this.handleAddSubmit : this.handleEditSubmit}
             isEditing={this.state.showEditModal}
             assigned_users={this.props.assigned_users}
