@@ -207,7 +207,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     observation_json = json_response['entry'][1]['resource']
     original_json = JSON.parse(@bundle.to_json)['entry'][1]['resource']
-    assert_equal original_json.except('id', 'meta', 'subject'), observation_json.except('id', 'meta', 'subject')
+    assert_equal original_json.except('id', 'meta', 'subject', 'extension'), observation_json.except('id', 'meta', 'subject', 'extension')
+    original_json['extension'].all? { |e| observation_json['extension'].include?(e) || observation_json['extension']['url'] == 'created-at' }
 
     created_patient_id = patient_json['id']
     created_lab_id = observation_json['id']

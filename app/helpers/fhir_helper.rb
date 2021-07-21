@@ -92,6 +92,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_us_core_birthsex(patient.sex),
         *to_transfer_extensions(patient),
         to_exposure_risk_factors_extension(patient),
+        to_report_source_extension(patient),
         to_string_extension(patient.preferred_contact_method, 'preferred-contact-method'),
         to_string_extension(patient.preferred_contact_time, 'preferred-contact-time'),
         to_date_extension(patient.symptom_onset, 'symptom-onset-date'),
@@ -262,7 +263,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_positive_integer_extension(close_contact.assigned_user, 'assigned-user'),
         to_unsigned_integer_extension(close_contact.contact_attempts, 'contact-attempts'),
         to_string_extension(close_contact.notes, 'notes'),
-        to_reference_extension(close_contact.enrolled_id, 'Patient', 'enrolled-patient')
+        to_reference_extension(close_contact.enrolled_id, 'Patient', 'enrolled-patient'),
+        to_datetime_extension(close_contact.created_at, 'created-at')
       ]
     )
   end
@@ -297,7 +299,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       ],
       extension: [
         to_string_extension(history.comment, 'comment'),
-        to_string_extension(history.history_type, 'history-type')
+        to_string_extension(history.history_type, 'history-type'),
+        to_string_extension(history.deleted_by, 'deleted-by'),
+        to_string_extension(history.delete_reason, 'delete-reason'),
+        to_positive_integer_extension(history.original_comment_id, 'original-id')
       ]
     )
   end
@@ -409,7 +414,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
             code: coded_result[:code]
           )
         ]
-      )
+      ),
+      extension: [
+        to_datetime_extension(laboratory.created_at, 'created-at')
+      ]
     )
   end
 
@@ -443,6 +451,36 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       report: { value: observation&.issued&.split('T')&.first, path: 'Observation.issued' },
       result: { value: result, path: 'Observation.valueCodeableConcept.coding[0]', errors: result_errors }
     }
+  end
+
+  def assessment_as_fhir(assessment)
+    FHIR::QuestionnaireResponse.new(
+      meta: FHIR::Meta.new(lastUpdated: assessment.updated_at.strftime('%FT%T%:z')),
+      id: assessment.id,
+      subject: FHIR::Reference.new(reference: "Patient/#{assessment.patient_id}"),
+      status: 'completed',
+      extension: [
+        to_bool_extension(assessment.symptomatic, 'symptomatic'),
+        to_datetime_extension(assessment.created_at, 'created-at'),
+        to_string_extension(assessment.who_reported, 'who-reported')
+      ],
+      item: assessment.reported_condition.symptoms.enum_for(:each_with_index).collect do |s, index|
+        case s.type
+        when 'IntegerSymptom'
+          FHIR::QuestionnaireResponse::Item.new(text: s.name,
+                                                answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueInteger: s.int_value),
+                                                linkId: index.to_s)
+        when 'FloatSymptom'
+          FHIR::QuestionnaireResponse::Item.new(text: s.name,
+                                                answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueDecimal: s.float_value),
+                                                linkId: index.to_s)
+        when 'BoolSymptom'
+          FHIR::QuestionnaireResponse::Item.new(text: s.name,
+                                                answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueBoolean: s.bool_value),
+                                                linkId: index.to_s)
+        end
+      end
+    )
   end
 
   # Build a FHIR US Core Race Extension given Sara Alert race booleans.
@@ -904,6 +942,24 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         string_value.nil? ? nil : FHIR::Extension.new(
           url: string_id,
           valueString: string_value
+        )
+      ]
+    )
+  end
+
+  def to_report_source_extension(patient)
+    return nil if patient.source_of_report.nil?
+
+    FHIR::Extension.new(
+      url: SA_EXT_BASE_URL + 'source-of-report',
+      extension: [
+        FHIR::Extension.new(
+          url: 'source-of-report',
+          valueString: patient.source_of_report
+        ),
+        patient.source_of_report_specify.nil? ? nil : FHIR::Extension.new(
+          url: 'specify',
+          valueString: patient.source_of_report_specify
         )
       ]
     )
