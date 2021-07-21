@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import _ from 'lodash';
 import { Card } from 'react-bootstrap';
-import { formatPercentage } from '../../../utils/Analytics';
+import { formatPercentage } from '../../../../utils/Analytics';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
 
@@ -25,28 +25,28 @@ const CONTACT_METHOD_MAPPINGS = {
 const LINELIST_STYLE_OPTIONS = [
   {
     linelist: 'Symptomatic',
-    class: 'analytics-table-danger',
+    class: 'row-danger',
   },
   {
     linelist: 'Non-Reporting',
-    class: 'analytics-table-caution',
+    class: 'row-caution',
   },
   {
     linelist: 'Asymptomatic',
-    class: 'analytics-table-success',
+    class: 'row-success',
   },
   {
     linelist: 'PUI',
-    class: 'analytics-table-secondary',
+    class: 'row-secondary',
   },
   {
     linelist: 'Requiring Review',
     linelistRewording: 'Records Requiring Review',
-    class: 'analytics-table-danger',
+    class: 'row-danger',
   },
   {
     linelist: 'Reporting',
-    class: 'analytics-table-success',
+    class: 'row-success',
   },
 ];
 
@@ -102,50 +102,52 @@ class PreferredReportingMethod extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
-        <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5">Monitorees by Reporting Method (Active Records Only)</div>
-          <Card.Body className="mt-4">
-            <table className="analytics-table">
+      <Card>
+        <Card.Header as="h4" className="text-center">
+          Monitorees by Reporting Method (Active Records Only)
+        </Card.Header>
+        <Card.Body>
+          <div className="table-responsive">
+            <table className="analytics-table reporting-method">
               <thead>
-                <tr>
+                <tr className="g-border-bottom text-center header">
                   <th></th>
-                  {CONTACT_METHOD_HEADERS.map((contactMethodHeaders, index) => (
-                    <th key={index}>
-                      <div> {contactMethodHeaders} </div>
-                      <div className="text-secondary"> n (col %) </div>
-                    </th>
+                  <th></th>
+                  {CONTACT_METHOD_HEADERS.map((header, h_index) => (
+                    <th key={h_index}>{header}</th>
                   ))}
                 </tr>
               </thead>
-              {this.tableData.map((workflow, index1) => (
-                <tbody key={`workflow-table-${index1}`}>
-                  <tr style={{ height: '0px' }}></tr>
-                  <tr>
-                    <td className="font-weight-bold text-left">
-                      <u>{workflow['workflow']} WORKFLOW</u>{' '}
-                    </td>
-                  </tr>
-                  {workflow.data.map((data, index2) => (
-                    <tr key={`data-${index2}`} className={data.linelistClass}>
-                      <td className="text-right font-weight-bold">{data.linelist}</td>
-                      {data.contactMethodData.map((value, index3) => (
-                        <td key={`value-${index3}`}>
-                          {value.value}
-                          {index2 < workflow.data.length - 1 && (
-                            // Don't show the percentages for the Total
-                            <span className="analytics-percentage"> {`(${value.percentageOfTotal})`} </span>
-                          )}
-                        </td>
-                      ))}
+              <tbody>
+                {this.tableData.map((table, t_index) => (
+                  <React.Fragment key={t_index}>
+                    <tr>
+                      <td className="header py-2" colSpan="9">
+                        {_.capitalize(table.workflow)} Workflow
+                      </td>
+                      <td></td>
                     </tr>
-                  ))}
-                </tbody>
-              ))}
+                    {table.data.map((row, r_index) => (
+                      <tr key={r_index} className={`${row.linelistClass || 'row-total g-border-bottom'}`}>
+                        <td className="placeholder-cell" style={{ width: '40px' }}></td>
+                        <td className="sub-header">{row.linelist}</td>
+                        {row.contactMethodData.map((data, d_index) => (
+                          <td key={d_index}>
+                            <div className="count-percent-container">
+                              <span className="number">{data.value}</span>
+                              <span className="percentage align-bottom">{row.linelist === 'Total' ? '' : `(${data.percentageOfTotal})`}</span>
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </tbody>
             </table>
-          </Card.Body>
-        </Card>
-      </React.Fragment>
+          </div>
+        </Card.Body>
+      </Card>
     );
   }
 }
