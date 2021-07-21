@@ -76,7 +76,12 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         patient.email ? FHIR::ContactPoint.new(system: 'email', value: patient.email, rank: 1) : nil
       ].reject(&:nil?),
       birthDate: patient.date_of_birth&.strftime('%F'),
-      address: [to_address_by_type_extension(patient, 'USA'), to_address_by_type_extension(patient, 'Foreign')].reject(&:blank?),
+      address: [
+        to_address_by_type_extension(patient, 'USA'),
+        to_address_by_type_extension(patient, 'Foreign'),
+        to_address_by_type_extension(patient, 'Monitored'),
+        to_address_by_type_extension(patient, 'ForeignMonitored')
+      ].reject(&:blank?),
       communication: [
         to_communication(patient.primary_language, true),
         to_communication(patient.secondary_language, false)
@@ -85,7 +90,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_us_core_race(races_as_hash(patient)),
         to_us_core_ethnicity(patient.ethnicity),
         to_us_core_birthsex(patient.sex),
-        to_latest_transfer_extension(patient),
+        *to_transfer_extensions(patient),
+        to_exposure_risk_factors_extension(patient),
         to_string_extension(patient.preferred_contact_method, 'preferred-contact-method'),
         to_string_extension(patient.preferred_contact_time, 'preferred-contact-time'),
         to_date_extension(patient.symptom_onset, 'symptom-onset-date'),
@@ -95,7 +101,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.monitoring_plan, 'monitoring-plan'),
         to_positive_integer_extension(patient.assigned_user, 'assigned-user'),
         to_date_extension(patient.additional_planned_travel_start_date, 'additional-planned-travel-start-date'),
+        to_date_extension(patient.additional_planned_travel_end_date, 'additional-planned-travel-end-date'),
         to_string_extension(patient.port_of_origin, 'port-of-origin'),
+        to_string_extension(patient.port_of_entry_into_usa, 'port-of-entry-into-usa'),
         to_date_extension(patient.date_of_departure, 'date-of-departure'),
         to_string_extension(patient.flight_or_vessel_number, 'flight-or-vessel-number'),
         to_string_extension(patient.flight_or_vessel_carrier, 'flight-or-vessel-carrier'),
@@ -108,16 +116,30 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_datetime_extension(patient.expected_purge_ts, 'expected-purge-date'),
         to_string_extension(patient.exposure_risk_assessment, 'exposure-risk-assessment'),
         to_string_extension(patient.public_health_action, 'public-health-action'),
-        to_bool_extension(patient.contact_of_known_case, 'contact-of-known-case'),
-        to_string_extension(patient.contact_of_known_case_id, 'contact-of-known-case-id'),
-        to_string_extension(patient.member_of_a_common_exposure_cohort_type, 'common-exposure-cohort-name'),
         to_string_extension(patient.potential_exposure_location, 'potential-exposure-location'),
         to_string_extension(patient.potential_exposure_country, 'potential-exposure-country'),
         to_interpreter_required_extension(patient.interpretation_required),
         to_date_extension(patient.extended_isolation, 'extended-isolation'),
         to_string_extension(patient.monitoring_reason, 'reason-for-closure'),
         to_string_extension(patient.follow_up_reason, 'follow-up-reason'),
-        to_string_extension(patient.follow_up_note, 'follow-up-note')
+        to_string_extension(patient.follow_up_note, 'follow-up-note'),
+        to_string_extension(patient.additional_planned_travel_destination, 'additional-planned-travel-destination'),
+        to_string_extension(patient.additional_planned_travel_destination_state, 'additional-planned-travel-destination-state'),
+        to_string_extension(patient.additional_planned_travel_destination_country, 'additional-planned-travel-destination-country'),
+        to_string_extension(patient.additional_planned_travel_port_of_departure, 'additional-planned-travel-port-of-departure'),
+        to_string_extension(patient.additional_planned_travel_type, 'additional-planned-travel-type'),
+        to_string_extension(patient.case_status, 'case-status'),
+        to_bool_extension(patient.contact_of_known_case, 'contact-of-known-case'),
+        to_string_extension(patient.contact_of_known_case_id, 'contact-of-known-case-id'),
+        to_datetime_extension(patient.closed_at, 'closed-at'),
+        to_string_extension(patient.gender_identity, 'gender-identity'),
+        to_string_extension(patient.sexual_orientation, 'sexual-orientation'),
+        to_bool_extension(patient.head_of_household, 'head-of-household'),
+        to_positive_integer_extension(patient.responder_id, 'id-of-reporter'),
+        to_datetime_extension(patient.last_assessment_reminder_sent, 'last-assessment-reminder-sent'),
+        to_bool_extension(patient.pause_notifications, 'paused-notifications'),
+        to_string_extension(patient.status_as_string, 'status'),
+        to_bool_extension(patient.user_defined_symptom_onset, 'user-defined-symptom-onset')
       ].reject(&:nil?)
     )
   end
@@ -175,12 +197,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       address_county: { value: address&.district, path: "Patient.address[#{address_index}].district" },
       address_state: { value: address&.state, path: "Patient.address[#{address_index}].state" },
       address_zip: { value: address&.postalCode, path: "Patient.address[#{address_index}].postalCode" },
-      monitored_address_line_1: { value: address&.line&.first, path: "Patient.address[#{address_index}].line[0]" },
-      monitored_address_line_2: { value: address&.line&.second, path: "Patient.address[#{address_index}].line[1]" },
-      monitored_address_city: { value: address&.city, path: "Patient.address[#{address_index}].city" },
-      monitored_address_county: { value: address&.district, path: "Patient.address[#{address_index}].district" },
-      monitored_address_state: { value: address&.state, path: "Patient.address[#{address_index}].state" },
-      monitored_address_zip: { value: address&.postalCode, path: "Patient.address[#{address_index}].postalCode" },
       primary_language: from_communication(patient&.communication, 0),
       secondary_language: from_communication(patient&.communication, 1),
       white: race_code?(patient, '2106-3', OMB_URL),
@@ -220,9 +236,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       continuous_exposure: from_bool_extension_false_default(patient, 'Patient', 'continuous-exposure'),
       exposure_risk_assessment: from_string_extension(patient, 'Patient', 'exposure-risk-assessment'),
       public_health_action: from_string_extension(patient, 'Patient', 'public-health-action'),
-      contact_of_known_case: from_bool_extension_nil_default(patient, 'Patient', 'contact-of-known-case'),
-      contact_of_known_case_id: from_string_extension(patient, 'Patient', 'contact-of-known-case-id'),
-      member_of_a_common_exposure_cohort_type: from_string_extension(patient, 'Patient', 'common-exposure-cohort-name'),
       potential_exposure_location: from_string_extension(patient, 'Patient', 'potential-exposure-location'),
       potential_exposure_country: from_string_extension(patient, 'Patient', 'potential-exposure-country'),
       extended_isolation: from_date_extension(patient, 'Patient', ['extended-isolation']),
@@ -572,8 +585,39 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     { value: converted || code, path: "Patient.extension('http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex').valueCode" }
   end
 
-  # Convert to a complex extension representing the Patient's latest transfer
-  def to_latest_transfer_extension(patient)
+  def to_transfer_extensions(patient)
+    nil if patient.transfers.empty?
+
+    fields_to_pluck = {
+      id: { url: 'id', type: 'valuePositiveInt' },
+      updated_at: { url: 'updated_at', type: 'valueDateTime' },
+      created_at: { url: 'created_at', type: 'valueDateTime' },
+      'users.email': { url: 'who-initiated-transfer', type: 'valueString' },
+      'j_from.path': { url: 'from-jurisdiction', type: 'valueString' },
+      'j_to.path': { url: 'to-jurisdiction', type: 'valueString' }
+    }
+    transfers = patient.transfers
+                       .joins('JOIN jurisdictions j_from ON transfers.from_jurisdiction_id = j_from.id')
+                       .joins('JOIN jurisdictions j_to ON transfers.to_jurisdiction_id = j_to.id')
+                       .joins('JOIN users ON transfers.who_id = users.id')
+                       .pluck(*fields_to_pluck.keys)
+
+    transfers.map do |transfer|
+      FHIR::Extension.new(
+        url: SA_EXT_BASE_URL + 'transfer',
+        extension: fields_to_pluck.values.each_with_index.map do |val, i|
+          extension_value = val[:type] == 'valueDateTime' ? transfer[i].strftime('%FT%T%:z') : transfer[i]
+          FHIR::Extension.new(
+            url: val[:url],
+            "#{val[:type]}": extension_value
+          )
+        end
+      )
+    end
+  end
+
+  # Convert to a complex extension representing a Patient's transfer
+  def to_transfer_extension(_transfer)
     return nil if patient.latest_transfer_at.nil? || patient.latest_transfer_from.nil?
 
     FHIR::Extension.new(
@@ -783,6 +827,36 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         postalCode: patient.foreign_address_zip,
         extension: [FHIR::Extension.new(url: "#{SA_EXT_BASE_URL}address-type", valueString: 'Foreign')]
       ) : nil
+    when 'Monitored'
+      [patient.monitored_address_line_1,
+       patient.monitored_address_line_2,
+       patient.monitored_address_city,
+       patient.monitored_address_county,
+       patient.monitored_address_zip,
+       patient.monitored_address_state].any? ?
+       FHIR::Address.new(
+         line: [patient.monitored_address_line_1, patient.monitored_address_line_2].reject(&:blank?),
+         city: patient.monitored_address_city,
+         district: patient.monitored_address_county,
+         state: patient.monitored_address_state,
+         postalCode: patient.monitored_address_zip,
+         extension: [FHIR::Extension.new(url: "#{SA_EXT_BASE_URL}address-type", valueString: 'Monitored')]
+       ) : nil
+    when 'ForeignMonitored'
+      [patient.foreign_monitored_address_line_1,
+       patient.foreign_monitored_address_line_2,
+       patient.foreign_monitored_address_city,
+       patient.foreign_monitored_address_county,
+       patient.foreign_monitored_address_zip,
+       patient.foreign_monitored_address_state].any? ?
+       FHIR::Address.new(
+         line: [patient.foreign_monitored_address_line_1, patient.foreign_monitored_address_line_2].reject(&:blank?),
+         city: patient.foreign_monitored_address_city,
+         district: patient.foreign_monitored_address_county,
+         state: patient.foreign_monitored_address_state,
+         postalCode: patient.foreign_monitored_address_zip,
+         extension: [FHIR::Extension.new(url: "#{SA_EXT_BASE_URL}address-type", valueString: 'ForeignMonitored')]
+       ) : nil
     end
   end
 
@@ -798,6 +872,41 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     end
 
     address
+  end
+
+  def to_exposure_risk_factors_extension(patient)
+    FHIR::Extension.new(
+      url: "#{SA_EXT_BASE_URL}exposure-risk-factors",
+      extension: [
+        to_risk_factor_subextension('contact-of-known-case', 'contact-of-known-case-id', patient.contact_of_known_case, patient.contact_of_known_case_id),
+        to_risk_factor_subextension('was-in-health-care-facility-with-known-cases', 'was-in-health-care-facility-with-known-cases-facility-name',
+                                    patient.was_in_health_care_facility_with_known_cases, patient.was_in_health_care_facility_with_known_cases_facility_name),
+        to_risk_factor_subextension('laboratory-personnel', 'laboratory-personnel-facility-name', patient.laboratory_personnel,
+                                    patient.laboratory_personnel_facility_name),
+        to_risk_factor_subextension('healthcare-personnel', 'healthcare-personnel-facility-name', patient.healthcare_personnel,
+                                    patient.healthcare_personnel_facility_name),
+        to_risk_factor_subextension('member-of-a-common-exposure-cohort', 'member-of-a-common-exposure-cohort-type',
+                                    patient.member_of_a_common_exposure_cohort, patient.member_of_a_common_exposure_cohort_type),
+        to_bool_extension(patient.travel_to_affected_country_or_area, 'travel-from-affected-country-or-area'),
+        to_bool_extension(patient.crew_on_passenger_or_cargo_flight, 'crew-on-passenger-or-cargo-flight')
+      ]
+    )
+  end
+
+  def to_risk_factor_subextension(risk_factor_id, string_id, bool_value, string_value)
+    FHIR::Extension.new(
+      url: "#{SA_EXT_BASE_URL}#{risk_factor_id}",
+      extension: [
+        FHIR::Extension.new(
+          url: risk_factor_id,
+          valueBoolean: bool_value
+        ),
+        string_value.nil? ? nil : FHIR::Extension.new(
+          url: string_id,
+          valueString: string_value
+        )
+      ]
+    )
   end
 
   def str_ext_path(base_path, ext_id)

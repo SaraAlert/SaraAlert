@@ -39,6 +39,10 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
     :isolation_non_reporting
   end
 
+  def status_as_string
+    status&.to_s&.humanize&.downcase&.sub('exposure ', '')&.sub('isolation ', '')
+  end
+
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
