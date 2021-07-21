@@ -468,29 +468,31 @@ class ExposureInformation extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} md="24" className="pt-3 mb-2">
-            <Form.Label htmlFor="exposure_notes" className="input-label">
-              NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
-            </Form.Label>
-            <Form.Control
-              id="exposure_notes"
-              isInvalid={this.state.errors['exposure_notes']}
-              as="textarea"
-              rows="4"
-              size="lg"
-              className="form-square"
-              placeholder="enter additional information about monitoree’s potential exposure"
-              maxLength="2000"
-              value={this.state.current.patient.exposure_notes || ''}
-              onChange={this.handleChange}
-            />
-            <div className="character-limit-text">{2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining</div>
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['exposure_notes']}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
+        {!this.props.currentState.isolation && (
+          <Form.Row>
+            <Form.Group as={Col} md="24" className="pt-3 mb-2">
+              <Form.Label htmlFor="exposure_notes" className="input-label">
+                NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
+              </Form.Label>
+              <Form.Control
+                id="exposure_notes"
+                isInvalid={this.state.errors['exposure_notes']}
+                as="textarea"
+                rows="4"
+                size="lg"
+                className="form-square"
+                placeholder="enter additional information about monitoree’s potential exposure"
+                maxLength="2000"
+                value={this.state.current.patient.exposure_notes || ''}
+                onChange={this.handleChange}
+              />
+              <div className="character-limit-text">{2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining</div>
+              <Form.Control.Feedback className="d-block" type="invalid">
+                {this.state.errors['exposure_notes']}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Form.Row>
+        )}
       </React.Fragment>
     );
   };

@@ -46,15 +46,4 @@ describe('CaseInformation', () => {
       expect(wrapper.find('#case_status').instance().value).toEqual(mockPatient4.case_status);
     });
   });
-
-  //   it('Properly allows setting of Notes', () => {
-  //     const wrapper = mount(<CaseInformation goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState}
-  //     patient={blankMockPatient}  has_dependents={false} jurisdiction_paths={mockJurisdictionPaths}
-  //     assigned_users={[]} selected_jurisdiction ={mockJurisdiction1} first_positive_lab = {mockLaboratory1} edit_mode={false} authenticity_token = {'123'} />);
-  //     //console.log(...wrapper)
-  //     expect(wrapper.find('#exposure_notes').instance().value).toEqual(null);
-  //       wrapper.setState({ current: { ...wrapper.state.current, patient: mockPatient1 } }, () => {
-  //       expect(wrapper.find('#exposure_notes').instance().value).toEqual(mockPatient1.exposure_notes);
-  //     });
-  //   });
 });

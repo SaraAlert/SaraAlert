@@ -36,15 +36,4 @@ describe('PublicHealthManagement', () => {
       expect(wrapper.find('#exposure_risk_assessment').instance().value).toEqual(mockPatient1.exposure_risk_assessment);
     });
   });
-
-  //   it('Properly allows setting of Monitoring Plan', () => {
-  //       // console.log(mockPatient1.monitoring_plan) // = 'Daily active monitoring'
-  //     const wrapper = mount(<PublicHealthManagement goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState}
-  //     patient={blankMockPatient}  has_dependents={false} jurisdiction_paths={mockJurisdictionPaths}
-  //     assigned_users={[]} selected_jurisdiction ={mockJurisdiction1} first_positive_lab = {mockLaboratory1} edit_mode={false} authenticity_token = {'123'} /> );
-  //     expect(wrapper.find('#monitoring_plan').instance().value).toEqual("");
-  //       wrapper.setState({ current: { ...wrapper.state.current, patient: mockPatient1 } }, () => {
-  //       expect(wrapper.find('#monitoring_plan').instance().value).toEqual(mockPatient1.monitoring_plan); // Expected: "" Recieved: "None"
-  //     });
-  //   });
 });
