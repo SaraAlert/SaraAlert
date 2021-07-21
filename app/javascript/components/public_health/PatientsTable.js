@@ -19,9 +19,6 @@ import {
 } from 'react-bootstrap';
 import { ToastContainer } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
-
-import { formatDate, formatTimestamp } from '../../utils/DateTime';
-import { formatDateOfBirthTableCell } from '../../utils/Patient';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
@@ -39,6 +36,8 @@ import AssignedUserFilter from './query/AssignedUserFilter';
 import EligibilityTooltip from '../util/EligibilityTooltip';
 import confirmDialog from '../util/ConfirmDialog';
 import { patientHref } from '../../utils/Navigation';
+import { formatDate, formatTimestamp } from '../../utils/DateTime';
+import { formatDateOfBirthTableCell } from '../../utils/Patient';
 
 class PatientsTable extends React.Component {
   constructor(props) {
@@ -635,7 +634,7 @@ class PatientsTable extends React.Component {
                     {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u>{' '}
                     {this.props.workflow === 'global' ? 'dashboard' : 'workflow'}.
                     {this.props.tabs[this.state.query.tab].tooltip && (
-                      <InfoTooltip tooltipTextKey={this.props.tabs[this.state.query.tab].tooltip} location="right"></InfoTooltip>
+                      <InfoTooltip tooltipTextKey={_.camelCase(this.props.tabs[this.state.query.tab].tooltip)} location="right"></InfoTooltip>
                     )}
                   </div>
                 </Col>

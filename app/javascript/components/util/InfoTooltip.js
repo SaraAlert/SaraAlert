@@ -4,7 +4,7 @@ import ReactTooltip from 'react-tooltip';
 
 // When adding a new tooltip in the UI create an entry in this object, and pass in the entry `key` as props
 const TOOLTIP_TEXT = {
-  // MONITOREE DETAILS
+  /* MONITOREE DETAILS */
   preferredContactTime: (
     <div>
       The monitoree will be sent a reminder as soon as they move to non-reporting. If monitorees home address state is left blank, the Eastern time zone is used
@@ -64,7 +64,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  // MONITORING ACTIONS
+  /* MONITORING ACTIONS */
   monitoringStatus: (
     <div>
       If set to{' '}
@@ -167,8 +167,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  // REPORTS
-
+  /* REPORTS */
   exposureNeedsReviewColumn: (
     <div>
       The “Needs Review” column tells you which reports the system considers as symptomatic (red highlight). The “Review” and “Mark All As Reviewed” functions
@@ -251,7 +250,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  // LAB RESULTS
+  /* LAB RESULTS */
   labResults: (
     <div>
       Lab Results are used in the isolation workflow to determine if a case might meet the test-based or asymptomatic non-test based recovery definitions.
@@ -265,7 +264,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  // HISTORY
+  /* HISTORY */
   history: (
     <div>
       Use to view past changes made by users and a log of system contact attempts. Comments can be added to this section to document information not captured
@@ -273,31 +272,31 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  // EXPOSURE WORKFLOW LINE LIST DEFINITIONS
-  exposure_symptomatic: (
+  /* DASHBOARD */
+  exposureSymptomatic: (
     <div>
       Monitorees on this list require public health follow-up to determine if disease is suspected. Follow-up should be based on current guidelines and
       available resources.
     </div>
   ),
 
-  exposure_non_reporting: (
+  exposureNonReporting: (
     <div>
       Monitorees on this list require public health follow-up to collect missing symptom report(s). Follow-up with these monitorees should be based on current
       guidelines and available resources.
     </div>
   ),
 
-  exposure_asymptomatic: <div>Monitorees on this list do not require public health follow-up unless otherwise indicated.</div>,
+  exposureAsymptomatic: <div>Monitorees on this list do not require public health follow-up unless otherwise indicated.</div>,
 
-  exposure_under_investigation: (
+  exposureUnderInvestigation: (
     <div>
       A ‘Latest Public Health Action’ other than “None” has been documented in the monitoree’s record. Monitorees on this list do not receive daily reminder
       notifications because they are already being contacted by public health.
     </div>
   ),
 
-  exposure_closed: (
+  exposureClosed: (
     <div>
       Monitorees on this list do not receive daily reminder notifications. Records on this list are accessible by users until the expected purge date. Your
       local administrator receives a weekly email notification about records eligible for purge and will coordinate with a public health user to export records
@@ -305,8 +304,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  // ISOLATION WORKFLOW LINE LIST DEFINITIONS
-  isolation_records_requiring_review: (
+  isolationRecordsRequiringReview: (
     <div>
       These cases meet one of the recovery definitions and require review by public health to validate that it is safe to discontinue isolation. The recovery
       definition logic has been designed to be sensitive; as a result, cases that do not meet requirements for recovery may appear. To view which recovery
@@ -315,16 +313,16 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  isolation_non_reporting: (
+  isolationNonReporting: (
     <div>
       Monitorees on this list require public health follow-up to collect missing symptom report(s). Follow-up with these cases should be based on current
       guidelines and available resources.
     </div>
   ),
 
-  isolation_reporting: <div>Monitorees on this list do not require public health follow-up unless otherwise indicated.</div>,
+  isolationReporting: <div>Monitorees on this list do not require public health follow-up unless otherwise indicated.</div>,
 
-  isolation_closed: (
+  isolationClosed: (
     <div>
       Cases on this list do not receive notifications. Records on this list are accessible by users until the expected purge date. Your local administrator
       receives a weekly email notification about records eligible for purge and will coordinate with a public health user to export records for local retention
@@ -332,7 +330,6 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  // CLOSED TABLE HEADERS
   purgeDate: (
     <div>
       {' '}
@@ -342,10 +339,13 @@ const TOOLTIP_TEXT = {
       See User Guide for list of fields that are not purged for use in the analytics summary.{' '}
     </div>
   ),
+
+  /* ANALYTICS */
   analyticsAgeTip: (
     <div>
       Current Age is calculated as:
-      <div>Current Date - Date of Birth</div>
+      <br />
+      Current Date - Date of Birth
     </div>
   ),
 };
