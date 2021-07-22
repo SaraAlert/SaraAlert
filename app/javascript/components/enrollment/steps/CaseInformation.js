@@ -26,7 +26,6 @@ class CaseInformation extends React.Component {
       originalAssignedUser: this.props.currentState.patient.assigned_user,
       assigned_users: this.props.assigned_users,
       selected_jurisdiction: this.props.selected_jurisdiction,
-      isEditMode: window.location.href.includes('edit'),
     };
   }
 
@@ -343,7 +342,7 @@ class CaseInformation extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.hidePreviousButton && !this.state.isEditMode && (
+            {this.props.previous && !this.props.hidePreviousButton && !this.props.isEditMode && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -396,6 +395,7 @@ CaseInformation.propTypes = {
   first_positive_lab: PropTypes.object,
   hidePreviousButton: PropTypes.bool,
   authenticity_token: PropTypes.string,
+  isEditMode: PropTypes.bool,
 };
 
 export default CaseInformation;

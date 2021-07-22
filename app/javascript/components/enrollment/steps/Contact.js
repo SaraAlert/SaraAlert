@@ -16,11 +16,11 @@ const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 class Contact extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, isEditMode: window.location.href.includes('edit') };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
   }
 
   componentDidMount() {
-    if (this.state.isEditMode) {
+    if (this.props.isEditMode) {
       // Update the Schema Validator by simulating the user changing their preferred_contact_method to what their actual preferred_contact_method really is.
       // This is to trigger schema validation when editing.
       this.updatePrimaryContactMethodValidations({
@@ -399,7 +399,7 @@ class Contact extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.hidePreviousButton && !this.state.isEditMode && (
+            {this.props.previous && !this.props.hidePreviousButton && !this.props.isEditMode && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -438,6 +438,7 @@ Contact.propTypes = {
   previous: PropTypes.func,
   next: PropTypes.func,
   hidePreviousButton: PropTypes.bool,
+  isEditMode: PropTypes.bool,
 };
 
 export default Contact;

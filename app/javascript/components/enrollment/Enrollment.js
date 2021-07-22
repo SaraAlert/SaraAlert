@@ -185,8 +185,8 @@ class Enrollment extends React.Component {
     if (lastIndex) {
       this.setState({ index: lastIndex, lastIndex: null });
     } else {
-      this.setState({ index: index + ((this.state.enrollmentState.isolation ? 4 : 5) == index ? 2 : 1), lastIndex: null });
-      if (index + ((this.state.enrollmentState.isolation ? 4 : 5) == index ? 2 : 1) == MAX_STEPS) {
+      this.setState({ index: index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1), lastIndex: null });
+      if (index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1) === MAX_STEPS) {
         this.setState({ reviewing: true });
       }
     }
@@ -195,7 +195,7 @@ class Enrollment extends React.Component {
   previous = () => {
     window.scroll(0, 0);
     let index = this.state.index;
-    this.setState({ index: index - (this.state.enrollmentState.isolation && index == 6 ? 2 : 1), lastIndex: null });
+    this.setState({ index: index - (this.state.enrollmentState.isolation && index === 6 ? 2 : 1), lastIndex: null });
   };
 
   goto = targetIndex => {
@@ -240,6 +240,7 @@ class Enrollment extends React.Component {
               previous={this.previous}
               next={this.next}
               hidePreviousButton={this.props.edit_mode || this.state.reviewing}
+              isEditMode={this.props.edit_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -250,6 +251,7 @@ class Enrollment extends React.Component {
               next={this.next}
               hidePreviousButton={this.props.edit_mode || this.state.reviewing}
               blocked_sms={this.props.blocked_sms}
+              isEditMode={this.props.edit_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -259,6 +261,7 @@ class Enrollment extends React.Component {
               previous={this.previous}
               next={this.next}
               hidePreviousButton={this.props.edit_mode || this.state.reviewing}
+              isEditMode={this.props.edit_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -268,6 +271,7 @@ class Enrollment extends React.Component {
               previous={this.previous}
               next={this.next}
               hidePreviousButton={this.props.edit_mode || this.state.reviewing}
+              isEditMode={this.props.edit_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -283,6 +287,7 @@ class Enrollment extends React.Component {
               first_positive_lab={this.props.first_positive_lab}
               hidePreviousButton={this.props.edit_mode || this.state.reviewing}
               authenticity_token={this.props.authenticity_token}
+              isEditMode={this.props.edit_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -298,6 +303,7 @@ class Enrollment extends React.Component {
               first_positive_lab={this.props.first_positive_lab}
               hidePreviousButton={this.props.edit_mode || this.state.reviewing}
               authenticity_token={this.props.authenticity_token}
+              isEditMode={this.props.edit_mode}
             />
           </Carousel.Item>
           <Carousel.Item>

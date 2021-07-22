@@ -11,7 +11,7 @@ import { stateOptions } from '../../../data/stateOptions';
 class AdditionalPlannedTravel extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, modified: {}, errors: {}, isEditMode: window.location.href.includes('edit') };
+    this.state = { ...this.props, current: { ...this.props.currentState }, modified: {}, errors: {} };
   }
 
   handleChange = event => {
@@ -232,7 +232,7 @@ class AdditionalPlannedTravel extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.hidePreviousButton && !this.state.isEditMode && (
+            {this.props.previous && !this.props.hidePreviousButton && !this.props.isEditMode && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -273,6 +273,7 @@ AdditionalPlannedTravel.propTypes = {
   previous: PropTypes.func,
   next: PropTypes.func,
   hidePreviousButton: PropTypes.bool,
+  isEditMode: PropTypes.bool,
 };
 
 export default AdditionalPlannedTravel;

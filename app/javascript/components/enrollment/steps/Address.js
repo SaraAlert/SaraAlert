@@ -14,7 +14,6 @@ class Address extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
-      isEditMode: window.location.href.includes('edit'),
       selectedTab: 'domestic',
     };
     if (typeof this.props.currentState.monitored_address_state !== 'undefined') {
@@ -591,7 +590,7 @@ class Address extends React.Component {
                 </Form>
               </Tab>
             </Tabs>
-            {this.props.previous && !this.props.hidePreviousButton && !this.state.isEditMode && (
+            {this.props.previous && !this.props.hidePreviousButton && !this.props.isEditMode && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -658,6 +657,7 @@ Address.propTypes = {
   previous: PropTypes.func,
   next: PropTypes.func,
   hidePreviousButton: PropTypes.bool,
+  isEditMode: PropTypes.bool,
 };
 
 export default Address;
