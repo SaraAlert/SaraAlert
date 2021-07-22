@@ -190,7 +190,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
     error = assert_raise(StandardError) { validate_vaccines_query(controller_params) }
-    assert_equal("Invalid pagination options. Number of entries: #{params[:entries]}. Page: #{params[:page]}", error.message)
+    assert_equal("Invalid Query (page): #{params[:page]}", error.message)
 
     # INVALID - NEGATIVE ENTRIES
     params = {
@@ -204,7 +204,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
     controller_params = ActionController::Parameters.new(params.merge({ controller: 'vaccines', action: 'index' }))
 
     error = assert_raise(StandardError) { validate_vaccines_query(controller_params) }
-    assert_equal("Invalid pagination options. Number of entries: #{params[:entries]}. Page: #{params[:page]}", error.message)
+    assert_equal("Invalid Query (entries): #{params[:entries]}", error.message)
   end
 
   test 'validate_vaccines_query: assumes default pagination values if not provided' do

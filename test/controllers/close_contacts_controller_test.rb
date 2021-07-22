@@ -49,15 +49,15 @@ class CloseContactsControllerTest < ActionController::TestCase
 
     post :create, params: { patient_id: 'test' }
     assert_response(:bad_request)
-    assert_equal("Close Contact cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
 
     put :update, params: { id: 'test', patient_id: 'test' }
     assert_response(:bad_request)
-    assert_equal("Close Contact cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
 
     put :destroy, params: { id: 'test', patient_id: 'test' }
     assert_response(:bad_request)
-    assert_equal("Close Contact cannot be modified for unknown monitoree with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
 
     sign_out user
   end

@@ -8,7 +8,7 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import BadgeHoH from './icons/BadgeHoH';
 import InfoTooltip from '../util/InfoTooltip';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
-import { formatName, formatPhoneNumber, formatRace, isMinor } from '../../utils/Patient';
+import { formatName, formatPhoneNumberVisually, formatRace, isMinor } from '../../utils/Patient';
 import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
 import { navQueryParam, patientHref } from '../../utils/Navigation';
@@ -253,7 +253,7 @@ class Patient extends React.Component {
                 </React.Fragment>
               )}
               <div>
-                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
+                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumberVisually(this.props.details.primary_telephone)}` : '--'}</span>
                 {this.props.details.blocked_sms && (
                   <span className="font-weight-bold pl-2">
                     SMS Blocked
