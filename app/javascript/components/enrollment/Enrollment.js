@@ -28,7 +28,7 @@ class Enrollment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      index: props.enrollment_step != undefined ? props.enrollment_step : props.hidePreviousButton ? MAX_STEPS : 0,
+      index: props.enrollment_step != undefined ? props.enrollment_step : props.edit_mode ? MAX_STEPS : 0,
       lastIndex: props.enrollment_step != undefined ? MAX_STEPS : null,
       direction: null,
       reviewing: false,
@@ -65,8 +65,8 @@ class Enrollment extends React.Component {
     if (await confirmDialog(confirmText)) {
       data['bypass_duplicate'] = true;
       axios({
-        method: this.props.hidePreviousButton ? 'patch' : 'post',
-        url: window.BASE_PATH + (this.props.hidePreviousButton ? '/patients/' + this.props.patient.id : '/patients'),
+        method: this.props.edit_mode ? 'patch' : 'post',
+        url: window.BASE_PATH + (this.props.edit_mode ? '/patients/' + this.props.patient.id : '/patients'),
         data: data,
       })
         .then(response => {
@@ -91,10 +91,10 @@ class Enrollment extends React.Component {
 
   submit = (_event, groupMember, reenableButtons) => {
     window.onbeforeunload = null;
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
 
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     // If enrolling, include ALL fields in diff keys. If editing, only include the ones that have changed
-    let diffKeys = this.props.hidePreviousButton
+    let diffKeys = this.props.edit_mode
       ? Object.keys(this.state.enrollmentState.patient).filter(k => _.get(this.state.enrollmentState.patient, k) !== _.get(this.props.patient, k) || k === 'id')
       : Object.keys(this.state.enrollmentState.patient);
 
@@ -109,7 +109,7 @@ class Enrollment extends React.Component {
     data.patient.secondary_telephone = data.patient.secondary_telephone
       ? phoneUtil.format(phoneUtil.parse(data.patient.secondary_telephone, 'US'), PNF.E164)
       : data.patient.secondary_telephone;
-    const message = this.props.hidePreviousButton ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
+    const message = this.props.edit_mode ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
     if (this.props.parent_id) {
       data['responder_id'] = this.props.parent_id;
     }
@@ -131,8 +131,8 @@ class Enrollment extends React.Component {
     }
     data['bypass_duplicate'] = false;
     axios({
-      method: this.props.hidePreviousButton ? 'patch' : 'post',
-      url: window.BASE_PATH + (this.props.hidePreviousButton ? '/patients/' + this.props.patient.id : '/patients'),
+      method: this.props.edit_mode ? 'patch' : 'post',
+      url: window.BASE_PATH + (this.props.edit_mode ? '/patients/' + this.props.patient.id : '/patients'),
       data: data,
     })
       .then(response => {
@@ -245,7 +245,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
+              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -254,7 +254,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
+              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
               blocked_sms={this.props.blocked_sms}
             />
           </Carousel.Item>
@@ -264,7 +264,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
+              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -273,7 +273,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
+              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -287,7 +287,7 @@ class Enrollment extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
-              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
+              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
@@ -302,7 +302,7 @@ class Enrollment extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
-              hidePreviousButton={this.props.hidePreviousButton || this.state.reviewing}
+              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
@@ -332,7 +332,7 @@ Enrollment.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   assigned_users: PropTypes.array,
-  hidePreviousButton: PropTypes.bool,
+  edit_mode: PropTypes.bool,
   enrollment_step: PropTypes.number,
   race_options: PropTypes.object,
   parent_id: PropTypes.number,
