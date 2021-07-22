@@ -8,6 +8,7 @@ import { formatPhoneNumberVisually, phoneNumberToE164Format } from '../../../uti
 import axios from 'axios';
 import _ from 'lodash';
 
+import { patientHref } from '../../../utils/Navigation';
 import InfoTooltip from '../../util/InfoTooltip';
 import CloseContactModal from './CloseContactModal';
 import confirmDialog from '../../util/ConfirmDialog';
@@ -359,13 +360,13 @@ class CloseContactTable extends React.Component {
             <span className="ml-2">Contact Attempt</span>
           </Dropdown.Item>
           {rowData.enrolled_id && (
-            <Dropdown.Item className="px-4" onClick={() => (location.href = `${window.BASE_PATH}/patients/${rowData.enrolled_id}`)}>
+            <Dropdown.Item className="px-4" onClick={() => (location.href = patientHref(rowData.enrolled_id, this.props.workflow))}>
               <i className="fas fa-search" />
               <span className="ml-2">View Record</span>
             </Dropdown.Item>
           )}
           {!rowData.enrolled_id && this.props.can_enroll_close_contacts && (
-            <Dropdown.Item className="px-4" onClick={() => (location.href = `${window.BASE_PATH}/patients/new?cc=${rowData.id}`)}>
+            <Dropdown.Item className="px-4" onClick={() => (location.href = patientHref(rowData.enrolled_id, this.props.workflow))}>
               <i className="fas fa-plus" />
               <span className="ml-2"> Enroll</span>
             </Dropdown.Item>
@@ -469,6 +470,7 @@ CloseContactTable.propTypes = {
   authenticity_token: PropTypes.string,
   assigned_users: PropTypes.array,
   can_enroll_close_contacts: PropTypes.bool,
+  workflow: PropTypes.string,
 };
 
 export default CloseContactTable;

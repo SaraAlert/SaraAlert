@@ -17,11 +17,13 @@ const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEU
 const ASSIGNED_USERS = [123234, 512678, 910132];
 
 function getShallowWrapper(mockPatient, canEnroll, assigned_users) {
-  return shallow(<CloseContactTable patient={mockPatient} authenticity_token={authyToken} can_enroll_close_contacts={canEnroll} assigned_users={assigned_users} />);
+  // the workflow prop is only for navigating to the patient page. It doesn't impact component functionality
+  return shallow(<CloseContactTable patient={mockPatient} authenticity_token={authyToken} can_enroll_close_contacts={canEnroll} assigned_users={assigned_users} workflow={'exposure'} />);
 }
 
 function getMountedWrapper(mockPatient, canEnroll, assigned_users) {
-  let wrapper = mount(<CloseContactTable patient={mockPatient} authenticity_token={authyToken} can_enroll_close_contacts={canEnroll} assigned_users={assigned_users} />);
+  // the workflow prop is only for navigating to the patient page. It doesn't impact component functionality
+  let wrapper = mount(<CloseContactTable patient={mockPatient} authenticity_token={authyToken} can_enroll_close_contacts={canEnroll} assigned_users={assigned_users} workflow={'exposure'} />);
   // The Table Data is loaded asynchronously, so we have to mock it
   const closeContactsOfPatient = _.values(mockCloseContacts).filter(x => x.id === mockPatient.id);
   const tableData = wrapper.state('table');

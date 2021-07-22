@@ -129,7 +129,8 @@
                         patient: @patient,
                         can_enroll_close_contacts: current_user.can_enroll_patient_close_contacts?,
                         authenticity_token: form_authenticity_token,
-                        assigned_users: @possible_assigned_users
+                        assigned_users: @possible_assigned_users,
+                        workflow: @dashboard
                       })%>
 <% end %>
 
