@@ -30,11 +30,13 @@ module ReportsHelper
 
     raise 'JSON parsed correctly but no submission_token was found' if submission_token.empty?
 
-    Rails.logger.error("reports:queue_reports process #{worker_number}: Unable to process a report for #{submission_token} because of #{error}. The report has been skipped.")
+    Rails.logger.error("reports:queue_reports process #{worker_number}: Unable to process a report for "\
+       "#{submission_token} because of #{error}. The report has been skipped.")
   rescue JSON::ParserError
     # Do not print the JSON parser error. If the incomming report is legitimate, there is a good chance the ParserError will contain PHI or PII.
     # Instead, print the original error from Redis or Sidekiq
-    Rails.logger.error("reports:queue_reports process #{worker_number}: Unable to process a report because of #{error}. No submission token could be parsed; the report failed parsing. The report has been skipped.")
+    Rails.logger.error("reports:queue_reports process #{worker_number}: Unable to process a report because of #{error}. "\
+      'No submission token could be parsed; the report failed parsing. The report has been skipped.')
   rescue RuntimeError => e
     Rails.logger.error("reports:queue_reports process #{worker_number}: #{e}. Original error: #{error}")
   ensure
