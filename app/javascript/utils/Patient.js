@@ -2,7 +2,9 @@ import React from 'react';
 import IconMinor from '../components/patient/icons/IconMinor';
 import { formatDate } from '../utils/DateTime';
 import moment from 'moment-timezone';
-import { faDatabase } from '@fortawesome/free-solid-svg-icons';
+import libphonenumber from 'google-libphonenumber';
+const PNF = libphonenumber.PhoneNumberFormat;
+const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
 /**
  * Formats a patient's name (first middle last) as a string.
@@ -21,17 +23,54 @@ function formatNameAlt(patient) {
 }
 
 /**
- * Formats patient's phone number in E164 format.
- * @param {String} phone - patient's phone number
+ * Provides the yup validation for Patient phone numbers
  */
-function formatPhoneNumber(phone) {
-  if (phone === null || phone === undefined) return '';
+function phoneSchemaValidator() {
+  return this.test({
+    name: 'phone',
+    exclusive: true,
+    message: 'Please enter a valid Phone Number',
+    test: value => {
+      try {
+        if (!value) {
+          return true; // Blank numbers are allowed
+        }
+        // Make sure we'll be able to convert to E164 format at submission time
+        return !!phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) && /(0|[2-9])\d{9}/.test(value.replace('+1', '').replace(/\D/g, ''));
+      } catch (e) {
+        return false;
+      }
+    },
+  });
+}
 
-  const match = phone
+/**
+ * Transforms an e164 formatted number to an easier-to-read number
+ * This should only be done for visual purposes.
+ * Example: '+11234567890' => '123-456-7890'
+ * @param {String} phone_number - phone number in e164 format
+ */
+function formatPhoneNumberVisually(phone_number) {
+  if (phone_number === null || phone_number === undefined) return '';
+
+  const match = phone_number
     .replace('+1', '')
     .replace(/\D/g, '')
     .match(/^(\d{3})(\d{3})(\d{4})$/);
-  return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
+  return match ? `${match[1]}-${match[2]}-${match[3]}` : '';
+};
+
+/**
+ * Transforms a phone number string into the e164 format that the server uses
+ * Example: '(123) 456-7890' => '+11234567890'
+ * Example: '123-456-7890' => '+11234567890'
+ * Example: '+1-123-456-7890' => '+11234567890'
+ * Example: '+11234567890' => '+11234567890'
+ * @param {String} phone_number - valid phone number to be transformed to E164 format
+ */
+function phoneNumberToE164Format(phone_number) {
+  if (phone_number === null || phone_number === undefined) return '';
+  return phoneUtil.format(phoneUtil.parse(phone_number, 'US'), PNF.E164);
 }
 
 /**
@@ -73,7 +112,7 @@ function formatRace(patient) {
  * @returns boolean true if patient is under 18, false if not
  */
 function isMinor(date) {
-  return moment(date, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years')); 
+  return moment(date, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'));
 }
 
 /**
@@ -93,4 +132,4 @@ function formatDateOfBirthTableCell(dateOfBirth, id) {
   return formatDate(dateOfBirth);
 }
 
-export { formatName, formatNameAlt, formatPhoneNumber, formatRace, isMinor, formatDateOfBirthTableCell };
+export { formatName, formatNameAlt, formatPhoneNumberVisually, phoneNumberToE164Format, phoneSchemaValidator, formatRace, isMinor, formatDateOfBirthTableCell };

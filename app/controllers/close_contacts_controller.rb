@@ -2,11 +2,32 @@
 
 # CloseContactsController: close contacts
 class CloseContactsController < ApplicationController
+  include CloseContactQueryHelper
+
   before_action :authenticate_user!
   before_action :check_can_create, only: %i[create]
   before_action :check_can_edit, only: %i[update destroy]
   before_action :check_patient
   before_action :check_close_contact, only: %i[update destroy]
+
+  def index
+    # Validate params and handle errors if invalid
+    begin
+      data = validate_close_contact_query(params)
+    rescue StandardError => e
+      render(json: { error: e.message }, status: :bad_request) && return
+    end
+
+    # @patient is set in the check_patient hook above
+    close_contacts = @patient.close_contacts
+
+    # Get close_contacts table data
+    close_contacts = search(close_contacts, data[:search_text])
+    close_contacts = sort(close_contacts, data[:sort_order], data[:sort_direction])
+    close_contacts = paginate(close_contacts, data[:entries], data[:page])
+
+    render json: { table_data: close_contacts, total: close_contacts.total_entries }
+  end
 
   # Create a new close contact
   def create
@@ -100,7 +121,7 @@ class CloseContactsController < ApplicationController
     patient_id = params.require(:patient_id).to_i
     # Check if Patient ID is valid
     unless Patient.exists?(patient_id)
-      error_message = "Close Contact cannot be modified for unknown monitoree with ID: #{patient_id}"
+      error_message = "Unknown patient with ID: #{patient_id}"
       render(json: { error: error_message }, status: :bad_request) && return
     end
 

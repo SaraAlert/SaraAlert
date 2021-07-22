@@ -8,7 +8,7 @@ class VaccinesController < ApplicationController
   before_action :authenticate_user!
   before_action :check_can_create, only: %i[create]
   before_action :check_can_edit, only: %i[update destroy]
-  before_action :check_patient, only: %i[create update destroy]
+  before_action :check_patient
   before_action :check_vaccine, only: %i[update destroy]
 
   def index
@@ -19,10 +19,7 @@ class VaccinesController < ApplicationController
       render(json: { error: e.message }, status: :bad_request) && return
     end
 
-    # Verify user has access to patient, patient exists, and the patient has vaccines
-    patient = current_user.get_patient(data[:patient_id])
-    vaccines = patient&.vaccines
-    redirect_to(root_url) && return if patient.nil? || vaccines.blank?
+    vaccines = @patient&.vaccines
 
     # Get vaccines table data
     vaccines = search(vaccines, data[:search_text])
@@ -124,9 +121,7 @@ class VaccinesController < ApplicationController
   def check_patient
     # Check if Patient ID is valid
     patient_id = params.require(:patient_id)&.to_i
-    unless Patient.exists?(patient_id)
-      render(json: { error: "Vaccination cannot be modified for unknown monitoree with ID: #{patient_id}" }, status: :bad_request) && return
-    end
+    render(json: { error: "Unknown patient with ID #{patient_id}" }, status: :bad_request) && return unless Patient.exists?(patient_id)
 
     # Check if user has access to patient
     @patient = current_user.viewable_patients.find_by_id(patient_id)
