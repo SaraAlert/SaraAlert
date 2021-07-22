@@ -183,13 +183,9 @@ class Enrollment extends React.Component {
     let index = this.state.index;
     let lastIndex = this.state.lastIndex;
     if (lastIndex) {
-      this.setState({ direction: 'next' }, () => {
-        this.setState({ index: lastIndex, lastIndex: null });
-      });
+      this.setState({ index: lastIndex, lastIndex: null });
     } else {
-      this.setState({ direction: 'next' }, () => {
-        this.setState({ index: index + ((this.state.enrollmentState.isolation ? 4 : 5) == index ? 2 : 1), lastIndex: null });
-      });
+      this.setState({ index: index + ((this.state.enrollmentState.isolation ? 4 : 5) == index ? 2 : 1), lastIndex: null });
       if (index + ((this.state.enrollmentState.isolation ? 4 : 5) == index ? 2 : 1) == MAX_STEPS) {
         this.setState({ reviewing: true });
       }
@@ -199,9 +195,7 @@ class Enrollment extends React.Component {
   previous = () => {
     window.scroll(0, 0);
     let index = this.state.index;
-    this.setState({ direction: 'prev' }, () => {
-      this.setState({ index: index - (this.state.enrollmentState.isolation && index == 6 ? 2 : 1), lastIndex: null });
-    });
+    this.setState({ index: index - (this.state.enrollmentState.isolation && index == 6 ? 2 : 1), lastIndex: null });
   };
 
   goto = targetIndex => {
