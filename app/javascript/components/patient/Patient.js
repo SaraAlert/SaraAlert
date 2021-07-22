@@ -17,7 +17,7 @@ class Patient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: props.hidePreviousButton || !props.collapse,
+      expanded: props.edit_mode || !props.collapse,
       expandNotes: false,
       expandArrivalNotes: false,
       expandPlannedTravelNotes: false,
@@ -138,7 +138,7 @@ class Patient extends React.Component {
     return (
       <React.Fragment>
         <Row id="monitoree-details-header" className="mb-3">
-          {this.props.can_modify_subject_status && !this.props.hidePreviousButton && this.props.details.follow_up_reason && (
+          {this.props.can_modify_subject_status && !this.props.edit_mode && this.props.details.follow_up_reason && (
             <FollowUpFlagPanel
               patient={this.props.details}
               current_user={this.props.current_user}
@@ -155,7 +155,7 @@ class Patient extends React.Component {
               </span>
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
-            {this.props.can_modify_subject_status && !this.props.hidePreviousButton && !this.props.details.follow_up_reason && (
+            {this.props.can_modify_subject_status && !this.props.edit_mode && !this.props.details.follow_up_reason && (
               <Button id="set-follow-up-flag-link" size="sm" aria-label="Set Flag for Follow-up" onClick={() => this.setState({ showSetFlagModal: true })}>
                 <span>
                   {' '}
@@ -283,7 +283,7 @@ class Patient extends React.Component {
             </div>
           </Col>
         </Row>
-        {!this.props.hidePreviousButton && (
+        {!this.props.edit_mode && (
           <div className="details-expander mb-3">
             <Button
               id="details-expander-link"
@@ -675,7 +675,7 @@ class Patient extends React.Component {
                 <Col id="exposure-notes" md={10} xl={12} className="notes-section col-xxxl-8">
                   <div className="section-header">
                     <h4 className="section-title">Notes</h4>
-                    {this.renderEditLink('Edit Notes', this.props.workflow === 'isolation' ? 6 : 5)}
+                    {this.renderEditLink('Edit Notes', this.props.details.isolation ? 6 : 5)}
                   </div>
                   {!this.props.details.exposure_notes && <div className="none-text">None</div>}
                   {this.props.details.exposure_notes && this.props.details.exposure_notes.length < 400 && (
@@ -719,7 +719,7 @@ Patient.propTypes = {
   hoh: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   goto: PropTypes.func,
-  hidePreviousButton: PropTypes.bool,
+  edit_mode: PropTypes.bool,
   collapse: PropTypes.bool,
   other_household_members: PropTypes.array,
   can_modify_subject_status: PropTypes.bool,

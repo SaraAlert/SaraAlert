@@ -20,7 +20,7 @@ class PatientPage extends React.Component {
             details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
             hoh={this.props.other_household_members.find(patient => patient.head_of_household)}
             collapse={this.props.can_modify_subject_status}
-            hidePreviousButton={false}
+            edit_mode={false}
             other_household_members={this.props.other_household_members}
             can_modify_subject_status={this.props.can_modify_subject_status}
             authenticity_token={this.props.authenticity_token}
