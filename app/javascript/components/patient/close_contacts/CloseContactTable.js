@@ -8,7 +8,7 @@ import { formatPhoneNumberVisually, phoneNumberToE164Format } from '../../../uti
 import axios from 'axios';
 import _ from 'lodash';
 
-import { patientHref } from '../../../utils/Navigation';
+import { patientHref, navQueryParam } from '../../../utils/Navigation';
 import InfoTooltip from '../../util/InfoTooltip';
 import CloseContactModal from './CloseContactModal';
 import confirmDialog from '../../util/ConfirmDialog';
@@ -366,7 +366,9 @@ class CloseContactTable extends React.Component {
             </Dropdown.Item>
           )}
           {!rowData.enrolled_id && this.props.can_enroll_close_contacts && (
-            <Dropdown.Item className="px-4" onClick={() => (location.href = patientHref(rowData.enrolled_id, this.props.workflow))}>
+            <Dropdown.Item
+              className="px-4"
+              onClick={() => (location.href = `${window.BASE_PATH}/patients/new?cc=${rowData.id}${navQueryParam(this.props.workflow, false)}`)}>
               <i className="fas fa-plus" />
               <span className="ml-2"> Enroll</span>
             </Dropdown.Item>
@@ -399,13 +401,13 @@ class CloseContactTable extends React.Component {
                 <Col xl={6} lg={10} md={12}>
                   <InputGroup size="md" className="mt-3 mt-md-0 ">
                     <InputGroup.Prepend>
-                      <OverlayTrigger overlay={<Tooltip>Search by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attepts.</Tooltip>}>
+                      <OverlayTrigger overlay={<Tooltip>Search by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attempts.</Tooltip>}>
                         <InputGroup.Text className="rounded-0">
                           <i className="fas fa-search"></i>
                           <label
                             htmlFor="close-contact-search-input"
                             className="ml-2 mb-0"
-                            aria-label="Search Close Contact Table by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attepts.">
+                            aria-label="Search Close Contact Table by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attempts.">
                             Search
                           </label>
                         </InputGroup.Text>

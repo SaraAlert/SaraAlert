@@ -48,7 +48,7 @@ function phoneSchemaValidator() {
  * Transforms an e164 formatted number to an easier-to-read number
  * This should only be done for visual purposes.
  * Example: '+11234567890' => '123-456-7890'
- * @param {String} phone - phone number in e164 format
+ * @param {String} phone_number - phone number in e164 format
  */
 function formatPhoneNumberVisually(phone_number) {
   if (phone_number === null || phone_number === undefined) return '';
@@ -57,7 +57,7 @@ function formatPhoneNumberVisually(phone_number) {
     .replace('+1', '')
     .replace(/\D/g, '')
     .match(/^(\d{3})(\d{3})(\d{4})$/);
-  return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
+  return match ? `${match[1]}-${match[2]}-${match[3]}` : '';
 };
 
 /**
@@ -66,7 +66,7 @@ function formatPhoneNumberVisually(phone_number) {
  * Example: '123-456-7890' => '+11234567890'
  * Example: '+1-123-456-7890' => '+11234567890'
  * Example: '+11234567890' => '+11234567890'
- * @param {String} phone - valid phone number to be transformed to E164 format
+ * @param {String} phone_number - valid phone number to be transformed to E164 format
  */
 function phoneNumberToE164Format(phone_number) {
   if (phone_number === null || phone_number === undefined) return '';

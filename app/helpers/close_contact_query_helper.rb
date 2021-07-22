@@ -84,7 +84,7 @@ module CloseContactQueryHelper
     when 'email'
       close_contacts = close_contacts.order(Arel.sql('CASE WHEN email IS NULL THEN 1 ELSE 0 END, email ' + dir))
     when 'enrolled_id'
-      close_contacts = close_contacts.order(Arel.sql('CASE WHEN enrolled_id IS NULL THEN 1 ELSE 0 END, enrolled_id ' + dir))
+      close_contacts = close_contacts.order(Arel.sql('CASE WHEN enrolled_id IS NULL THEN "no" ELSE "yes" END ' + dir))
     when 'last_date_of_exposure'
       close_contacts = close_contacts.order(Arel.sql('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir))
     when 'assigned_user'
