@@ -59,11 +59,9 @@ class Patient extends React.Component {
     }
     if (this.props.goto) {
       return (
-        <div className="edit-link">
-          <Button variant="link" id={sectionId} className="py-0" onClick={() => this.props.goto(enrollmentStep)} aria-label={`Edit ${section}`}>
-            Edit
-          </Button>
-        </div>
+        <Button variant="link" id={sectionId} className="edit-link p-0" onClick={() => this.props.goto(enrollmentStep)} aria-label={`Edit ${section}`}>
+          Edit
+        </Button>
       );
     } else {
       return (

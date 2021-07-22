@@ -399,7 +399,7 @@ class Contact extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.hidePreviousButton && (
+            {this.props.previous && !this.props.hidePreviousButton && !this.state.isEditMode && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
