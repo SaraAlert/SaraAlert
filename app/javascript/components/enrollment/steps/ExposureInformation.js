@@ -1,7 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Alert, Button, Card, Col, Form } from 'react-bootstrap';
-import ReactTooltip from 'react-tooltip';
+import { Button, Card, Col, Form } from 'react-bootstrap';
 import * as yup from 'yup';
 import axios from 'axios';
 import moment from 'moment';
@@ -9,11 +8,11 @@ import _ from 'lodash';
 
 import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
-import FirstPositiveLaboratory from '../../patient/laboratory/FirstPositiveLaboratory';
 import InfoTooltip from '../../util/InfoTooltip';
 import { countryOptions } from '../../../data/countryOptions';
+import PublicHealthManagement from './PublicHealthManagement';
 
-class Exposure extends React.Component {
+class ExposureInformation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,7 +30,7 @@ class Exposure extends React.Component {
   }
 
   componentDidMount() {
-    this.updateStaticValidations(this.props.currentState.isolation, this.props.first_positive_lab);
+    this.updateStaticValidations();
   }
 
   componentDidUpdate(prevProps) {
@@ -103,8 +102,6 @@ class Exposure extends React.Component {
         modified = { patient: { ...modified.patient, continuous_exposure: false } };
       }
       this.updateExposureValidations({ ...current.patient, [field]: date });
-    } else if (field === 'symptom_onset') {
-      this.updateIsolationValidations({ ...current.patient, [field]: date }, this.state.current.first_positive_lab);
     }
     this.setState(
       {
@@ -131,33 +128,12 @@ class Exposure extends React.Component {
     );
   };
 
-  handleLabChange = first_positive_lab => {
-    const current = this.state.current;
-    const modified = this.state.modified;
-    this.setState(
-      {
-        current: { ...current, patient: { ...current.patient, first_positive_lab_at: first_positive_lab?.specimen_collection }, first_positive_lab },
-        modified: { ...modified, patient: { ...modified.patient, first_positive_lab_at: first_positive_lab?.specimen_collection }, first_positive_lab },
-        showLabModal: false,
-      },
-      () => {
-        this.props.setEnrollmentState({ ...this.state.modified });
-        this.updateIsolationValidations(current.patient, first_positive_lab);
-      }
-    );
-  };
-
-  updateStaticValidations = (isolation, first_positive_lab) => {
-    // Update the Schema Validator based on workflow.
-    if (isolation) {
-      this.updateIsolationValidations(this.props.currentState.patient, first_positive_lab);
-    } else {
-      this.updateExposureValidations(this.props.patient);
-    }
+  updateStaticValidations = () => {
+    this.updateExposureValidations(this.props.patient);
   };
 
   updateExposureValidations = patient => {
-    if (!patient.last_date_of_exposure && !patient.continuous_exposure) {
+    if (!patient.last_date_of_exposure && !patient.continuous_exposure && !this.props.currentState.isolation) {
       schema = yup.object().shape({
         ...staticValidations,
         last_date_of_exposure: yup
@@ -197,38 +173,6 @@ class Exposure extends React.Component {
       const errors = state.errors;
       delete errors.last_date_of_exposure;
       delete errors.continuous_exposure;
-      return { errors };
-    });
-  };
-
-  updateIsolationValidations = (patient, first_positive_lab) => {
-    if (!patient.symptom_onset && !first_positive_lab?.specimen_collection) {
-      schema = yup.object().shape({
-        ...staticValidations,
-        symptom_onset: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().toDate(), 'Date can not be in the future.')
-          .required('Please enter a Symptom Onset Date AND/OR a positive lab result.')
-          .nullable(),
-      });
-    } else if (patient.symptom_onset) {
-      schema = yup.object().shape({
-        ...staticValidations,
-        symptom_onset: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().toDate(), 'Date can not be in the future.')
-          .required('Please enter a Symptom Onset Date AND/OR a positive lab result.')
-          .nullable(),
-      });
-    } else {
-      schema = yup.object().shape({
-        ...staticValidations,
-        symptom_onset: yup.date('Date must correspond to the "mm/dd/yyyy" format.').max(moment().toDate(), 'Date can not be in the future.').nullable(),
-      });
-    }
-    this.setState(state => {
-      const errors = state.errors;
-      delete errors.symptom_onset;
       return { errors };
     });
   };
@@ -274,111 +218,6 @@ class Exposure extends React.Component {
           self.setState({ errors: issues });
         }
       });
-  };
-
-  isolationFields = () => {
-    return (
-      <React.Fragment>
-        {!this.state.current.patient.symptom_onset && !this.state.current.first_positive_lab && (
-          <Alert variant="warning" className="alert-warning-text">
-            You must enter a Symptom Onset Date AND/OR a <b style={{ fontWeight: 800 }}>positive</b> lab result (with a Specimen Collection Date) to enroll this
-            case.
-          </Alert>
-        )}
-        <Form.Row>
-          <Form.Group as={Col} md={12} xs={24} controlId="symptom_onset" className="mb-2">
-            <Form.Label className="input-label">
-              <React.Fragment>
-                SYMPTOM ONSET DATE
-                {this.props.patient.symptom_onset && this.state.current.patient.symptom_onset && (
-                  <div style={{ display: 'inline' }}>
-                    <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-2">
-                      {this.props.patient.user_defined_symptom_onset ? <i className="fas fa-user"></i> : <i className="fas fa-desktop"></i>}
-                    </span>
-                    <ReactTooltip
-                      id="user_defined_symptom_onset_tooltip"
-                      multiline={true}
-                      place="right"
-                      type="dark"
-                      effect="solid"
-                      className="tooltip-container">
-                      {this.props.patient.user_defined_symptom_onset ? (
-                        <span>This date was set by a user</span>
-                      ) : (
-                        <span>
-                          This date is auto-populated by the system as the date of the earliest report flagged as symptomatic (red highlight) in the reports
-                          table. Field is blank when there are no symptomatic reports.
-                        </span>
-                      )}
-                    </ReactTooltip>
-                  </div>
-                )}
-              </React.Fragment>
-            </Form.Label>
-            <DateInput
-              id="symptom_onset"
-              aria-label="Symptom Onset Date"
-              date={this.state.current.patient.symptom_onset}
-              minDate={'2020-01-01'}
-              maxDate={moment().format('YYYY-MM-DD')}
-              onChange={date => this.handleDateChange('symptom_onset', date)}
-              placement="bottom"
-              isInvalid={!!this.state.errors['symptom_onset']}
-              isClearable={!!this.props.patient.user_defined_symptom_onset || !this.props.patient.symptom_onset}
-              customClass="form-control-lg"
-              ariaLabel="Symptom Onset Date Input"
-            />
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['symptom_onset']}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group as={Col} md={12} xs={24} controlId="first_positive_lab" className="mb-2">
-            <FirstPositiveLaboratory lab={this.state.current.first_positive_lab} onChange={this.handleLabChange} size="lg" displayedLabClass="mx-1 mb-2" />
-          </Form.Group>
-          <Form.Group as={Col} md={12} xs={24} controlId="case_status" className="mb-2">
-            <Form.Label className="input-label">CASE STATUS{schema?.fields?.case_status?._exclusive?.required && ' *'}</Form.Label>
-            <Form.Control
-              isInvalid={this.state.errors['case_status']}
-              as="select"
-              size="lg"
-              className="form-square"
-              aria-label="Case Status Select"
-              onChange={this.handleChange}
-              value={this.state.current.patient.case_status || ''}>
-              <option></option>
-              <option>Confirmed</option>
-              <option>Probable</option>
-            </Form.Control>
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['case_status']}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} md="24" className="mb-2">
-            <Form.Label htmlFor="exposure_notes" className="input-label ml-1">
-              NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
-            </Form.Label>
-            <Form.Control
-              id="exposure_notes"
-              isInvalid={this.state.errors['exposure_notes']}
-              as="textarea"
-              rows="4"
-              size="lg"
-              className="form-square"
-              placeholder="enter additional information about case"
-              maxLength="2000"
-              value={this.state.current.patient.exposure_notes || ''}
-              onChange={this.handleChange}
-            />
-            <div className="character-limit-text">{2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining</div>
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['exposure_notes']}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
-      </React.Fragment>
-    );
   };
 
   exposureFields = () => {
@@ -629,29 +468,31 @@ class Exposure extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} md="24" className="pt-3 mb-2">
-            <Form.Label htmlFor="exposure_notes" className="input-label">
-              NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
-            </Form.Label>
-            <Form.Control
-              id="exposure_notes"
-              isInvalid={this.state.errors['exposure_notes']}
-              as="textarea"
-              rows="4"
-              size="lg"
-              className="form-square"
-              placeholder="enter additional information about monitoree’s potential exposure"
-              maxLength="2000"
-              value={this.state.current.patient.exposure_notes || ''}
-              onChange={this.handleChange}
-            />
-            <div className="character-limit-text">{2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining</div>
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['exposure_notes']}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
+        {!this.props.currentState.isolation && (
+          <Form.Row>
+            <Form.Group as={Col} md="24" className="pt-3 mb-2">
+              <Form.Label htmlFor="exposure_notes" className="input-label">
+                NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
+              </Form.Label>
+              <Form.Control
+                id="exposure_notes"
+                isInvalid={this.state.errors['exposure_notes']}
+                as="textarea"
+                rows="4"
+                size="lg"
+                className="form-square"
+                placeholder="enter additional information about monitoree’s potential exposure"
+                maxLength="2000"
+                value={this.state.current.patient.exposure_notes || ''}
+                onChange={this.handleChange}
+              />
+              <div className="character-limit-text">{2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining</div>
+              <Form.Control.Feedback className="d-block" type="invalid">
+                {this.state.errors['exposure_notes']}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Form.Row>
+        )}
       </React.Fragment>
     );
   };
@@ -659,149 +500,32 @@ class Exposure extends React.Component {
   render() {
     return (
       <React.Fragment>
-        {!this.props.currentState.isolation && <h1 className="sr-only">Monitoree Potential Exposure Information</h1>}
-        {this.props.currentState.isolation && <h1 className="sr-only">Monitoree Case Information</h1>}
+        <h1 className="sr-only">Monitoree Potential Exposure Information</h1>
         <Card className="mx-2 card-square">
-          {!this.props.currentState.isolation && <Card.Header className="h5">Monitoree Potential Exposure Information</Card.Header>}
-          {this.props.currentState.isolation && <Card.Header className="h5">Monitoree Case Information</Card.Header>}
+          <Card.Header className="h5">Monitoree Potential Exposure Information</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row className="pb-3 h-100">
                 <Form.Group as={Col} className="my-auto">
-                  {!this.props.currentState.isolation && this.exposureFields()}
-                  {this.props.currentState.isolation && this.isolationFields()}
-                  <Form.Row className="pt-2 g-border-bottom-2" />
-                  <Form.Row className="pt-2">
-                    <Form.Group as={Col} className="mb-2">
-                      <Form.Label className="input-label">PUBLIC HEALTH RISK ASSESSMENT AND MANAGEMENT</Form.Label>
-                    </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
-                    <Form.Group as={Col} md="18" className="mb-2 pt-2" controlId="jurisdiction_id">
-                      <Form.Label className="input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['jurisdiction_id']}
-                        as="input"
-                        list="jurisdiction_paths"
-                        autoComplete="off"
-                        size="lg"
-                        className="form-square"
-                        onChange={this.handleChange}
-                        value={this.state.jurisdiction_path}
-                      />
-                      <datalist id="jurisdiction_paths">
-                        {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
-                          return (
-                            <option value={jurisdiction} key={index}>
-                              {jurisdiction}
-                            </option>
-                          );
-                        })}
-                      </datalist>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['jurisdiction_id']}
-                      </Form.Control.Feedback>
-                      {this.props.has_dependents &&
-                        this.state.current.patient.jurisdiction_id !== this.state.originalJurisdictionId &&
-                        Object.keys(this.props.jurisdiction_paths).includes(this.state.current.patient.jurisdiction_id.toString()) && (
-                          <Form.Group className="mt-2">
-                            <Form.Check
-                              type="switch"
-                              id="update_group_member_jurisdiction_id"
-                              name="jurisdiction_id"
-                              label="Apply this change to the entire household that this monitoree is responsible for"
-                              onChange={this.handlePropagatedFieldChange}
-                              checked={this.state.current.propagatedFields.jurisdiction_id}
-                            />
-                          </Form.Group>
-                        )}
-                    </Form.Group>
-                    <Form.Group as={Col} md="6" className="mb-2 pt-2" controlId="assigned_user">
-                      <Form.Label className="input-label">
-                        ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
-                        <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
-                      </Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['assigned_user']}
-                        as="input"
-                        list="assigned_users"
-                        autoComplete="off"
-                        size="lg"
-                        className="form-square"
-                        onChange={this.handleChange}
-                        value={this.state.current.patient.assigned_user || ''}
-                      />
-                      <datalist id="assigned_users">
-                        {this.state.assigned_users?.map(num => {
-                          return (
-                            <option value={num} key={num}>
-                              {num}
-                            </option>
-                          );
-                        })}
-                      </datalist>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['assigned_user']}
-                      </Form.Control.Feedback>
-                      {this.props.has_dependents &&
-                        this.state.current.patient.assigned_user !== this.state.originalAssignedUser &&
-                        (this.state.current.patient.assigned_user === null ||
-                          (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 999999)) && (
-                          <Form.Group className="mt-2">
-                            <Form.Check
-                              type="switch"
-                              id="update_group_member_assigned_user"
-                              name="assigned_user"
-                              label="Apply this change to the entire household that this monitoree is responsible for"
-                              onChange={this.handlePropagatedFieldChange}
-                              checked={this.state.current.propagatedFields.assigned_user}
-                            />
-                          </Form.Group>
-                        )}
-                    </Form.Group>
-                    <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="mb-2 pt-2">
-                      <Form.Label className="input-label">RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}</Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['exposure_risk_assessment']}
-                        as="select"
-                        size="lg"
-                        className="form-square"
-                        onChange={this.handleChange}
-                        value={this.state.current.patient.exposure_risk_assessment || ''}>
-                        <option></option>
-                        <option>High</option>
-                        <option>Medium</option>
-                        <option>Low</option>
-                        <option>No Identified Risk</option>
-                      </Form.Control>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['exposure_risk_assessment']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group as={Col} md="16" controlId="monitoring_plan" className="mb-2 pt-2">
-                      <Form.Label className="input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['monitoring_plan']}
-                        as="select"
-                        size="lg"
-                        className="form-square"
-                        onChange={this.handleChange}
-                        value={this.state.current.patient.monitoring_plan || ''}>
-                        <option>None</option>
-                        <option>Daily active monitoring</option>
-                        <option>Self-monitoring with public health supervision</option>
-                        <option>Self-monitoring with delegated supervision</option>
-                        <option>Self-observation</option>
-                      </Form.Control>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['monitoring_plan']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Form.Row>
+                  {this.exposureFields()}
+                  {!this.props.currentState.isolation && (
+                    <PublicHealthManagement
+                      currentState={this.state.current}
+                      setEnrollmentState={this.props.setEnrollmentState}
+                      previous={this.previous}
+                      next={this.next}
+                      patient={this.props.patient}
+                      has_dependents={this.props.has_dependents}
+                      jurisdiction_paths={this.props.jurisdiction_paths}
+                      assigned_users={this.props.assigned_users}
+                      first_positive_lab={this.props.first_positive_lab}
+                      authenticity_token={this.props.authenticity_token}
+                    />
+                  )}
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && (
+            {this.props.previous && !this.props.hidePreviousButton && !this.props.isEditMode && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -841,7 +565,7 @@ const staticValidations = {
 
 var schema = yup.object().shape(staticValidations);
 
-Exposure.propTypes = {
+ExposureInformation.propTypes = {
   currentState: PropTypes.object,
   setEnrollmentState: PropTypes.func,
   previous: PropTypes.func,
@@ -852,8 +576,9 @@ Exposure.propTypes = {
   assigned_users: PropTypes.array,
   selected_jurisdiction: PropTypes.object,
   first_positive_lab: PropTypes.object,
-  edit_mode: PropTypes.bool,
+  hidePreviousButton: PropTypes.bool,
   authenticity_token: PropTypes.string,
+  isEditMode: PropTypes.bool,
 };
 
-export default Exposure;
+export default ExposureInformation;

@@ -63,11 +63,9 @@ class Patient extends React.Component {
     }
     if (this.props.goto) {
       return (
-        <div className="edit-link">
-          <Button variant="link" id={sectionId} className="py-0" onClick={() => this.props.goto(enrollmentStep)} aria-label={`Edit ${section}`}>
-            Edit
-          </Button>
-        </div>
+        <Button variant="link" id={sectionId} className="edit-link p-0" onClick={() => this.props.goto(enrollmentStep)} aria-label={`Edit ${section}`}>
+          Edit
+        </Button>
       );
     } else {
       return (
@@ -661,7 +659,7 @@ class Patient extends React.Component {
                     <Heading level={rootHeaderLevel + 1} className="section-title">
                       Case Information
                     </Heading>
-                    {this.renderEditLink('Case Information', 5)}
+                    {this.renderEditLink('Case Information', 6)}
                   </div>
                   <div className="item-group">
                     <div>
@@ -687,7 +685,7 @@ class Patient extends React.Component {
                     <Heading level={rootHeaderLevel + 1} className="section-title">
                       Notes
                     </Heading>
-                    {this.renderEditLink('Edit Notes', 5)}
+                    {this.renderEditLink('Edit Notes', this.props.details.isolation ? 6 : 5)}
                   </div>
                   {!this.props.details.exposure_notes && <div className="none-text">None</div>}
                   {this.props.details.exposure_notes && this.props.details.exposure_notes.length < 400 && (
