@@ -26,7 +26,7 @@ class CloseContactsController < ApplicationController
     close_contacts = sort(close_contacts, data[:sort_order], data[:sort_direction])
     close_contacts = paginate(close_contacts, data[:entries], data[:page])
 
-    render json: { table_data: close_contacts, total: close_contacts.size }
+    render json: { table_data: close_contacts, total: close_contacts.total_entries }
   end
 
   # Create a new close contact

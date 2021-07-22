@@ -113,8 +113,12 @@ describe('CloseContactModal', () => {
 
   it('Can properly set fields when an empty close contact is used as a prop', () => {
     const emptyCCWrapper = getShallowWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
-    const handleChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleChange');
+    const handleNameChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleNameChange');
+    const handlePhoneNumberChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handlePhoneNumberChange');
+    const handleEmailChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleEmailChange');
     const handleDateChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleDateChange');
+    const handleNotesChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleNotesChange');
+    const handleAssignedUserChangeSpy = jest.spyOn(emptyCCWrapper.instance(), 'handleAssignedUserChange');
     emptyCCWrapper.instance().forceUpdate();
 
     let value;
@@ -127,7 +131,7 @@ describe('CloseContactModal', () => {
       .find('FormControl')
       .at(0)
       .simulate('change', { target: { id: 'first_name', value: value } });
-    expect(handleChangeSpy).toHaveBeenCalledTimes(1);
+    expect(handleNameChangeSpy).toHaveBeenCalledTimes(1);
     expect(emptyCCWrapper.state('first_name')).toEqual(value);
 
     value = testInputValues.find(x => x.field === 'last_name').value;
@@ -139,7 +143,7 @@ describe('CloseContactModal', () => {
       .find('FormControl')
       .at(1)
       .simulate('change', { target: { id: 'last_name', value: value } });
-    expect(handleChangeSpy).toHaveBeenCalledTimes(2);
+    expect(handleNameChangeSpy).toHaveBeenCalledTimes(2);
     expect(emptyCCWrapper.state('last_name')).toEqual(value);
 
     value = testInputValues.find(x => x.field === 'primary_telephone').value;
@@ -150,7 +154,7 @@ describe('CloseContactModal', () => {
       .at(1)
       .find('PhoneInput')
       .simulate('change', { target: { id: 'primary_telephone', value: value } });
-    expect(handleChangeSpy).toHaveBeenCalledTimes(3);
+    expect(handlePhoneNumberChangeSpy).toHaveBeenCalledTimes(1);
     expect(emptyCCWrapper.state('primary_telephone')).toEqual(value);
 
     value = testInputValues.find(x => x.field === 'email').value;
@@ -161,7 +165,7 @@ describe('CloseContactModal', () => {
       .at(1)
       .find('FormControl')
       .simulate('change', { target: { id: 'email', value: value } });
-    expect(handleChangeSpy).toHaveBeenCalledTimes(4);
+    expect(handleEmailChangeSpy).toHaveBeenCalledTimes(1);
     expect(emptyCCWrapper.state('email')).toEqual(value);
 
     value = testInputValues.find(x => x.field === 'last_date_of_exposure').value;
@@ -178,7 +182,7 @@ describe('CloseContactModal', () => {
       .at(2)
       .find('FormControl')
       .simulate('change', { target: { id: 'assigned_user', value: value } });
-    expect(handleChangeSpy).toHaveBeenCalledTimes(5);
+    expect(handleAssignedUserChangeSpy).toHaveBeenCalledTimes(1);
     expect(emptyCCWrapper.state('assigned_user')).toEqual(value);
 
     value = testInputValues.find(x => x.field === 'notes').value;
@@ -189,7 +193,7 @@ describe('CloseContactModal', () => {
       .at(3)
       .find('FormControl')
       .simulate('change', { target: { id: 'notes', value: value } });
-    expect(handleChangeSpy).toHaveBeenCalledTimes(6);
+    expect(handleNotesChangeSpy).toHaveBeenCalledTimes(1);
     expect(emptyCCWrapper.state('notes')).toEqual(value);
   });
 

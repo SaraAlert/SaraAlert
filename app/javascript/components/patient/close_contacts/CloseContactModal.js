@@ -52,32 +52,38 @@ class CloseContactModal extends React.Component {
       });
   };
 
-  handleDateChange = event => this.setState({ last_date_of_exposure: event });
-
-  handleChange = event => {
-    let stateKey = _.startsWith(event.target.id, 'cc_') ? _.trim(event.target.id, 'cc_') : event.target.id;
+  handleNameChange = event => {
     if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.match(/^\s*$/) !== null) {
       // Empty spaces are allowed to be typed (for example, a first name may be 'Mary Beth')
       // But empty starting first spaces should not be allowed
       event.target.value = '';
     }
-    let value;
-    if (stateKey === 'assigned_user') {
-      if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
-      // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
-      value = _.trim(event.target.value) === '' ? null : parseInt(event.target.value);
-    } else if (stateKey === 'primary_telephone') {
-      value = event.target.value.replace(/-/g, '');
-    } else {
-      value = event.target.value;
-    }
-    this.setState({ [stateKey]: value }, () => {
+    this.updateState(_.trim(event.target.id, 'cc_'), event.target.value);
+  };
+
+  handlePhoneNumberChange = event => this.updateState('primary_telephone', event.target.value.replace(/-/g, ''));
+
+  handleEmailChange = event => this.updateState('email', event.target.value);
+
+  handleDateChange = event => this.updateState('last_date_of_exposure', event);
+
+  handleNotesChange = event => this.updateState('notes', event.target.value);
+
+  handleAssignedUserChange = event => {
+    if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
+    // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
+    const value = _.trim(event.target.value) === '' ? null : parseInt(event.target.value);
+    this.updateState('assigned_user', value);
+  };
+
+  updateState(key, value) {
+    this.setState({ [key]: value }, () => {
       let isValid = (this.state.first_name || this.state.last_name) && (this.state.primary_telephone || this.state.email);
       this.setState({
         isValid,
       });
     });
-  };
+  }
 
   render() {
     return (
@@ -90,14 +96,14 @@ class CloseContactModal extends React.Component {
           <Row className="mt-3">
             <Form.Group as={Col} lg="12" controlId="cc_first_name">
               <Form.Label className="input-label">First Name {schema?.fields?.first_name?._exclusive?.required && '*'} </Form.Label>
-              <Form.Control size="lg" className="form-square" value={this.state.first_name || ''} onChange={this.handleChange} />
+              <Form.Control size="lg" className="form-square" value={this.state.first_name || ''} onChange={this.handleNameChange} />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['first_name']}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Col} lg="12" controlId="cc_last_name">
               <Form.Label className="input-label">Last Name {schema?.fields?.last_name?._exclusive?.required && '*'} </Form.Label>
-              <Form.Control size="lg" className="form-square" value={this.state.last_name || ''} onChange={this.handleChange} />
+              <Form.Control size="lg" className="form-square" value={this.state.last_name || ''} onChange={this.handleNameChange} />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['last_name']}
               </Form.Control.Feedback>
@@ -110,7 +116,7 @@ class CloseContactModal extends React.Component {
                 id="primary_telephone"
                 className="form-square"
                 value={this.state.primary_telephone}
-                onChange={this.handleChange}
+                onChange={this.handlePhoneNumberChange}
                 isInvalid={!!this.state.errors['primary_telephone']}
               />
               <Form.Control.Feedback className="d-block" type="invalid">
@@ -119,7 +125,7 @@ class CloseContactModal extends React.Component {
             </Form.Group>
             <Form.Group as={Col} lg="12" controlId="cc_email">
               <Form.Label className="input-label">Email {schema?.fields?.email?._exclusive?.required && '*'} </Form.Label>
-              <Form.Control size="lg" className="form-square" value={this.state.email || ''} onChange={this.handleChange} />
+              <Form.Control size="lg" className="form-square" value={this.state.email || ''} onChange={this.handleEmailChange} />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['email']}
               </Form.Control.Feedback>
@@ -155,7 +161,7 @@ class CloseContactModal extends React.Component {
                 autoComplete="off"
                 size="lg"
                 className="d-block"
-                onChange={this.handleChange}
+                onChange={this.handleAssignedUserChange}
                 value={this.state.assigned_user || ''}
               />
               <datalist id="cc_assigned_users">
@@ -186,7 +192,7 @@ class CloseContactModal extends React.Component {
                 value={this.state.notes || ''}
                 placeholder={this.closeContactNotePlaceholder}
                 maxLength={MAX_NOTES_LENGTH}
-                onChange={this.handleChange}
+                onChange={this.handleNotesChange}
               />
               <div className="character-limit-text">{MAX_NOTES_LENGTH - this.state.notes.length} characters remaining</div>
               <Form.Control.Feedback className="d-block" type="invalid">
