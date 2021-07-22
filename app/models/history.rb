@@ -374,7 +374,6 @@ class History < ApplicationRecord
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
   end
 
-  def self.pause_notifications(history, create: true)
     field = {
       name: 'Notification Status',
       old_value: history[:patient_before][:pause_notifications] ? 'paused' : 'resumed',
@@ -413,7 +412,7 @@ class History < ApplicationRecord
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
   end
 
-  def self.continuous_exposure(history, create: true)
+  def self.continuous_exposure(history)
     field = {
       name: 'Continuous Exposure',
       old_value: history[:patient_before][:continuous_exposure] ? 'on' : 'off',
