@@ -1,7 +1,7 @@
 <%= render partial: 'layouts/breadcrumb', locals: {
       jurisdiction_path: current_user.jurisdiction_path,
       crumbs: [{ value: dashboard_crumb_title(@dashboard, @playbook), href: @dashboard_path },
-              { value: 'Enroll New Monitoree', href: nil }]
+               { value: 'Enroll New Monitoree', href: nil }]
     } %>
 
 <%= react_component('enrollment/Enrollment', {

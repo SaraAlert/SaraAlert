@@ -4,7 +4,6 @@
 
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: @workflow_label + ' Dashboard (' + @playbook_label + ')', href: nil }] } %>
 
-
 <%= react_component('public_health/Workflow', {
                       authenticity_token: form_authenticity_token,
                       abilities: {

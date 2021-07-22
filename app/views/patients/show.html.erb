@@ -24,7 +24,7 @@
                       blocked_sms: @patient.blocked_sms,
                       workflow: @dashboard,
                       continuous_exposure_enabled: @continuous_exposure_enabled
-                      }) %>
+                    }) %>
 
 <% if current_user.can_modify_subject_status? %>
 <% if @patient_page_sections[:options][:monitoring_actions].present? %>
