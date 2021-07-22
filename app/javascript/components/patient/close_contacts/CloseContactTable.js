@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Dropdown, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { formatDate } from '../../../utils/DateTime';
-import { formatPhoneNumber } from '../../../utils/Patient';
+import { formatPhoneNumberVisually, phoneNumberToE164Format } from '../../../utils/Patient';
 
 import axios from 'axios';
 import _ from 'lodash';
@@ -24,7 +24,7 @@ class CloseContactTable extends React.Component {
           { label: 'Actions', field: '', isSortable: false, className: 'text-center', filter: this.renderActionsDropdown },
           { label: 'First Name', field: 'first_name', isSortable: true },
           { label: 'Last Name', field: 'last_name', isSortable: true },
-          { label: 'Phone Number', field: 'primary_telephone', isSortable: true, filter: formatPhoneNumber },
+          { label: 'Phone Number', field: 'primary_telephone', isSortable: true, filter: d => formatPhoneNumberVisually(d.value) },
           { label: 'Email', field: 'email', isSortable: true },
           { label: 'Last Date of Exposure', field: 'last_date_of_exposure', isSortable: true, filter: formatDate },
           { label: 'Assigned User', field: 'assigned_user', isSortable: true },
@@ -311,7 +311,7 @@ class CloseContactTable extends React.Component {
           patient_id: this.props.patient.id,
           first_name: ccData.first_name || '',
           last_name: ccData.last_name || '',
-          primary_telephone: ccData.primary_telephone ? formatPhoneNumber(ccData.primary_telephone) : '',
+          primary_telephone: ccData.primary_telephone ? phoneNumberToE164Format(ccData.primary_telephone) : '',
           email: ccData.email || '',
           last_date_of_exposure: ccData.last_date_of_exposure || null,
           assigned_user: ccData.assigned_user || null,
@@ -341,7 +341,7 @@ class CloseContactTable extends React.Component {
     // NOTE: If this dropdown increases in height, the custom table class passed to CustomTable will need to be updated.
     const direction = this.state.table.rowData && this.state.table.rowData.length > 4 ? null : 'up';
     return (
-      <Dropdown drop={direction} className="close-contact-action-button">
+      <Dropdown drop={direction}>
         <Dropdown.Toggle
           id={`close-contact-action-button-${rowData.id}`}
           size="sm"

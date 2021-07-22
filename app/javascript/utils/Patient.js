@@ -45,22 +45,33 @@ function phoneSchemaValidator() {
 }
 
 /**
- * Formats patient's phone number in E164 format.
- * @param {String} phone - patient's phone number
+ * Transforms an e164 formatted number to an easier-to-read number
+ * This should only be done for visual purposes.
+ * Example: '+11234567890' => '123-456-7890'
+ * @param {String} phone - phone number in e164 format
  */
-function formatPhoneNumber(data) {
-  if (data === null || data === undefined) return '';
-  // Some components will call this with an object containing a value field containing a phone number
-  // Others will pass in a phone value directly
-  const phone = (Object.prototype.hasOwnProperty.call(data, 'value')) ? data.value : data
-  if (phone === null) return ''
+function formatPhoneNumberVisually(phone_number) {
+  if (phone_number === null || phone_number === undefined) return '';
 
-  const match = phone
+  const match = phone_number
     .replace('+1', '')
     .replace(/\D/g, '')
     .match(/^(\d{3})(\d{3})(\d{4})$/);
   return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
 };
+
+/**
+ * Transforms a phone number string into the e164 format that the server uses
+ * Example: '(123) 456-7890' => '+11234567890'
+ * Example: '123-456-7890' => '+11234567890'
+ * Example: '+1-123-456-7890' => '+11234567890'
+ * Example: '+11234567890' => '+11234567890'
+ * @param {String} phone - valid phone number to be transformed to E164 format
+ */
+function phoneNumberToE164Format(phone_number) {
+  if (phone_number === null || phone_number === undefined) return '';
+  return phoneUtil.format(phoneUtil.parse(phone_number, 'US'), PNF.E164);
+}
 
 /**
  * Formats patient's races as a string.
@@ -121,4 +132,4 @@ function formatDateOfBirthTableCell(dateOfBirth, id) {
   return formatDate(dateOfBirth);
 }
 
-export { formatName, formatNameAlt, formatPhoneNumber, phoneSchemaValidator, formatRace, isMinor, formatDateOfBirthTableCell };
+export { formatName, formatNameAlt, formatPhoneNumberVisually, phoneNumberToE164Format, phoneSchemaValidator, formatRace, isMinor, formatDateOfBirthTableCell };

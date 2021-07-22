@@ -9,7 +9,7 @@ import CloseContactTable from '../../components/patient/close_contacts/CloseCont
 import CloseContactModal from '../../components/patient/close_contacts/CloseContactModal';
 import DeleteDialog from '../../components/util/DeleteDialog';
 import { mockPatient1, mockPatient2 } from '../mocks/mockPatients';
-import { formatPhoneNumber } from '../../utils/Patient';
+import { formatPhoneNumberVisually } from '../../utils/Patient';
 import * as mockCloseContacts from '../mocks/mockCloseContact';
 import CustomTable from '../../components/layout/CustomTable';
 
@@ -80,7 +80,7 @@ describe('CloseContactTable', () => {
     closeContactsOfPatient.forEach(cc => {
       expect(wrapper.text()).toContain(cc['first_name']);
       expect(wrapper.text()).toContain(cc['last_name']);
-      expect(wrapper.text()).toContain(formatPhoneNumber(cc['primary_telephone']));
+      expect(wrapper.text()).toContain(formatPhoneNumberVisually(cc['primary_telephone']));
       expect(wrapper.text()).toContain(cc['email']);
       expect(wrapper.text()).toContain(Number(cc['contact_attempts']));
       expect(wrapper.text()).toContain(Number(cc['enrolled_id']));
