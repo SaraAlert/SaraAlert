@@ -185,30 +185,28 @@ class Enrollment extends React.Component {
     if (lastIndex) {
       this.setState({ index: lastIndex, lastIndex: null });
     } else {
-      this.setState({ index: index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1), lastIndex: null });
-      if (index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1) === MAX_STEPS) {
-        this.setState({ reviewing: true });
-      }
+      this.setState({
+        direction: 'next',
+        index: index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1),
+        lastIndex: null,
+        reviewing: index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1) === MAX_STEPS,
+      });
     }
   };
 
   previous = () => {
     window.scroll(0, 0);
     let index = this.state.index;
-    this.setState({ index: index - (this.state.enrollmentState.isolation && index === 6 ? 2 : 1), lastIndex: null });
+    this.setState({ direction: 'prev', index: index - (this.state.enrollmentState.isolation && index === 6 ? 2 : 1), lastIndex: null });
   };
 
   goto = targetIndex => {
     window.scroll(0, 0);
     let index = this.state.index;
     if (targetIndex > index) {
-      this.setState({ direction: 'next' }, () => {
-        this.setState({ index: targetIndex, lastIndex: index });
-      });
+      this.setState({ direction: 'next', index: targetIndex, lastIndex: index });
     } else if (targetIndex < index) {
-      this.setState({ direction: 'prev' }, () => {
-        this.setState({ index: targetIndex, lastIndex: index });
-      });
+      this.setState({ direction: 'prev', index: targetIndex, lastIndex: index });
     }
   };
 
