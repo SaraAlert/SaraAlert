@@ -131,6 +131,9 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     fill_in 'jurisdiction_id', with: '' # clear out jurisdiction to so that there is at least one validation error
     click_on 'Next'
     verify_text_displayed('Please enter a Symptom Onset Date AND/OR a positive lab result.')
+    fill_in 'symptom_onset', with: 1.day.from_now.strftime('%m/%d/%Y')
+    click_on 'Next'
+    verify_text_displayed('Date can not be in the future.')
     fill_in 'symptom_onset', with: 3.days.ago.strftime('%m/%d/%Y')
     click_on 'Next'
     verify_text_not_displayed('Please enter a Symptom Onset Date AND/OR a positive lab result.')

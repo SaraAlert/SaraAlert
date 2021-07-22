@@ -207,7 +207,7 @@ class Exposure extends React.Component {
         ...staticValidations,
         symptom_onset: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
+          .max(moment().toDate(), 'Date can not be in the future.')
           .required('Please enter a Symptom Onset Date AND/OR a positive lab result.')
           .nullable(),
       });
@@ -216,17 +216,14 @@ class Exposure extends React.Component {
         ...staticValidations,
         symptom_onset: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
+          .max(moment().toDate(), 'Date can not be in the future.')
           .required('Please enter a Symptom Onset Date AND/OR a positive lab result.')
           .nullable(),
       });
     } else {
       schema = yup.object().shape({
         ...staticValidations,
-        symptom_onset: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
-          .nullable(),
+        symptom_onset: yup.date('Date must correspond to the "mm/dd/yyyy" format.').max(moment().toDate(), 'Date can not be in the future.').nullable(),
       });
     }
     this.setState(state => {

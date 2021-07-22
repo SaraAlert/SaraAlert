@@ -58,13 +58,13 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?(:import)
     patient.date_of_birth = 20_210_101
     assert_not patient.valid?(:import)
-    assert_equal ['is not a valid date, please use the \'YYYY-MM-DD\' format'], patient.errors[:date_of_birth]
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', patient.errors[:date_of_birth].first
     patient.date_of_birth = 20_210_001
     assert_not patient.valid?(:import)
-    assert_equal ['is not a valid date, please use the \'YYYY-MM-DD\' format'], patient.errors[:date_of_birth]
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', patient.errors[:date_of_birth].first
     patient.date_of_birth = 20_210_101.001
     assert_not patient.valid?(:import)
-    assert_equal ['is not a valid date, please use the \'YYYY-MM-DD\' format'], patient.errors[:date_of_birth]
+    assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', patient.errors[:date_of_birth].first
   end
 
   test 'active dependents does NOT include dependents that are purged' do
@@ -1888,16 +1888,23 @@ class PatientTest < ActiveSupport::TestCase
     patient = valid_patient
 
     patient.last_date_of_exposure = 25.years.ago
-    assert patient.valid?(:api)
-    assert patient.valid?(:import)
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert_not patient.valid?
 
     patient.last_date_of_exposure = '01-15-2000'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.last_date_of_exposure
 
     patient.last_date_of_exposure = '2000-13-13'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.last_date_of_exposure
+
+    patient.last_date_of_exposure = '2020-12-12'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
@@ -1905,33 +1912,52 @@ class PatientTest < ActiveSupport::TestCase
     patient = valid_patient
 
     patient.symptom_onset = 25.years.ago
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert_not patient.valid?
+
+    patient.symptom_onset = 11.hours.from_now
     assert patient.valid?(:api)
     assert patient.valid?(:import)
+    assert patient.valid?
 
     patient.symptom_onset = '01-15-2000'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.symptom_onset
+
+    patient.symptom_onset = 3.days.from_now
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert_not patient.valid?
 
     patient.symptom_onset = '2000-13-13'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
-    assert patient.valid?
+    assert_nil patient.symptom_onset
   end
 
   test 'validates additional_planned_travel_start_date is a valid date in api and import context' do
     patient = valid_patient
 
     patient.additional_planned_travel_start_date = 25.years.ago
-    assert patient.valid?(:api)
-    assert patient.valid?(:import)
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert_not patient.valid?
 
     patient.additional_planned_travel_start_date = '01-15-2000'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.additional_planned_travel_start_date
 
     patient.additional_planned_travel_start_date = '2000-13-13'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.additional_planned_travel_start_date
+
+    patient.additional_planned_travel_start_date = '2020-12-12'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
@@ -1939,16 +1965,23 @@ class PatientTest < ActiveSupport::TestCase
     patient = valid_patient
 
     patient.additional_planned_travel_end_date = 25.years.ago
-    assert patient.valid?(:api)
-    assert patient.valid?(:import)
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert_not patient.valid?
 
     patient.additional_planned_travel_end_date = '01-15-2000'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.additional_planned_travel_end_date
 
     patient.additional_planned_travel_end_date = '2000-13-13'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.additional_planned_travel_end_date
+
+    patient.additional_planned_travel_end_date = '2020-11-11'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
@@ -1956,16 +1989,23 @@ class PatientTest < ActiveSupport::TestCase
     patient = valid_patient
 
     patient.date_of_departure = 25.years.ago
-    assert patient.valid?(:api)
-    assert patient.valid?(:import)
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert_not patient.valid?
 
     patient.date_of_departure = '01-15-2000'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.date_of_departure
 
     patient.date_of_departure = '2000-13-13'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.date_of_departure
+
+    patient.date_of_departure = '2020-12-12'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
@@ -1973,16 +2013,23 @@ class PatientTest < ActiveSupport::TestCase
     patient = valid_patient
 
     patient.date_of_arrival = 25.years.ago
-    assert patient.valid?(:api)
-    assert patient.valid?(:import)
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert_not patient.valid?
 
     patient.date_of_arrival = '01-15-2000'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.date_of_arrival
 
     patient.date_of_arrival = '2000-13-13'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
+    assert_nil patient.date_of_arrival
+
+    patient.date_of_arrival = '2020-12-12'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
@@ -1991,14 +2038,28 @@ class PatientTest < ActiveSupport::TestCase
     patient.isolation = true
 
     patient.extended_isolation = 25.years.ago
-    assert patient.valid?(:api)
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert_not patient.valid?
 
     patient.extended_isolation = '01-15-2000'
     assert_not patient.valid?(:api)
-    assert patient.valid?
+    assert_not patient.valid?(:import)
+    assert_nil patient.extended_isolation
 
     patient.extended_isolation = '2000-13-13'
     assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert_nil patient.extended_isolation
+
+    patient.extended_isolation = 2.months.ago
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert_not patient.valid?
+
+    patient.extended_isolation = 3.days.from_now
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
     assert patient.valid?
   end
 
