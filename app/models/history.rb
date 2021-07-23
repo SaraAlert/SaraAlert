@@ -374,6 +374,7 @@ class History < ApplicationRecord
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
   end
 
+  def self.pause_notifications(history)
     field = {
       name: 'Notification Status',
       old_value: history[:patient_before][:pause_notifications] ? 'paused' : 'resumed',
