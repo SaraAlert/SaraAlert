@@ -14,6 +14,13 @@ import { getLanguageData } from '../../../utils/Languages';
 
 let workflow_options;
 
+// the terms 'contact' and 'case' are used commonly in public health settings,
+// so we want to include them here in the UI for clarity
+let publicHealthTerms = {
+  exposure: 'Exposure (contact)',
+  isolation: 'Isolation (case)',
+};
+
 class Identification extends React.Component {
   constructor(props) {
     super(props);
@@ -26,7 +33,7 @@ class Identification extends React.Component {
       secondaryLanguageData: {},
       languageOptions: [], // store these on state so the component re-renders when they are returned asynchronously
     };
-    workflow_options = props.available_workflows.map(wf => ({ value: wf.name, label: wf.label }));
+    workflow_options = props.available_workflows.map(wf => ({ value: wf.name, label: publicHealthTerms[`${wf.name}`] }));
   }
 
   componentDidMount() {
@@ -610,27 +617,56 @@ class Identification extends React.Component {
 }
 
 const schema = yup.object().shape({
-  first_name: yup.string().required('Please enter a First Name.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  middle_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  last_name: yup.string().required('Please enter a Last Name.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  first_name: yup
+    .string()
+    .required('Please enter a First Name.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  middle_name: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  last_name: yup
+    .string()
+    .required('Please enter a Last Name.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   date_of_birth: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .required('Please enter a Date of Birth.')
     .max(new Date(), 'Date can not be in the future.')
     .nullable(),
   age: yup.number().nullable(),
-  sex: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  sex: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   white: yup.boolean().nullable(),
   black_or_african_american: yup.boolean().nullable(),
   american_indian_or_alaska_native: yup.boolean().nullable(),
   asian: yup.boolean().nullable(),
   native_hawaiian_or_other_pacific_islander: yup.boolean().nullable(),
-  ethnicity: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  primary_language: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  secondary_language: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  ethnicity: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  primary_language: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  secondary_language: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   interpretation_required: yup.boolean().nullable(),
-  nationality: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  user_defined_id: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  nationality: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  user_defined_id: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
 });
 
 Identification.propTypes = {
