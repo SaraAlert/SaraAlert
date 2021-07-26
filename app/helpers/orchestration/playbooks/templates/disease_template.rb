@@ -61,11 +61,11 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
           options: {
             enroll: { label: 'Enroll New Monitoree' },
             export: { label: 'Export', options: {
-              csv: { label: 'Line list CSV (exposure)' },
-              saf: { label: 'Sara Alert Format (exposure)' },
-              purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees' },
-              all: { label: 'Excel Export For All Monitorees' },
-              custom_format: { label: 'Custom Format...' }
+              csv: { label: 'Line list CSV', workflow_specific: true },
+              saf: { label: 'Sara Alert Format', workflow_specific: true },
+              purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees' , workflow_specific: false},
+              all: { label: 'Excel Export For All Monitorees' , workflow_specific: false},
+              custom_format: { label: 'Custom Format...', workflow_specific: false }
             } },
             import: { label: 'Import', options: {
               epix: { label: 'Epi-X' },
@@ -151,11 +151,11 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
           options: {
             enroll: { label: 'Enroll New Case' },
             export: { label: 'Export', options: {
-              csv: { label: 'Line list CSV (isolation)' },
-              saf: { label: 'Sara Alert Format (isolation)' },
-              purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees' },
-              all: { label: 'Excel Export For All Monitorees' },
-              custom_format: { label: 'Custom Format...' }
+              csv: { label: 'Line list CSV', workflow_specific: true },
+              saf: { label: 'Sara Alert Format', workflow_specific: true },
+              purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees', workflow_specific: false},
+              all: { label: 'Excel Export For All Monitorees', workflow_specific: false },
+              custom_format: { label: 'Custom Format...', workflow_specific: false}
 
             } },
             import: { label: 'Import', options: {
@@ -230,11 +230,11 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
           options: {
             enroll: { label: 'Enroll New Monitoree' },
             export: { label: 'Export', options: {
-              csv: { label: 'Line list CSV (global)' },
-              saf: { label: 'Sara Alert Format (global)' },
-              purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees' },
-              all: { label: 'Excel Export For All Monitorees' },
-              custom_format: { label: 'Custom Format...' }
+              csv: { label: 'Line list CSV', workflow_specific: true },
+              saf: { label: 'Sara Alert Format', workflow_specific: true },
+              purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees', workflow_specific: false },
+              all: { label: 'Excel Export For All Monitorees', workflow_specific: false },
+              custom_format: { label: 'Custom Format...', workflow_specific: false }
             } },
             import: { label: 'Import', options: {
               epix: { label: 'Epi-X' },

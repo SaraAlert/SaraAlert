@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, ButtonGroup, Col, Dropdown, DropdownButton, Form, Modal, ProgressBar, Row } from 'react-bootstrap';
 import axios from 'axios';
+import _ from 'lodash';
 
 import Export from './Export';
 import Import from './Import';
@@ -158,7 +159,6 @@ class PublicHealthHeader extends React.Component {
   }
 
   render() {
-    console.log(this.props.header_action_buttons);
     return (
       <React.Fragment>
         <Row className="mx-2 my-2">
@@ -183,11 +183,13 @@ class PublicHealthHeader extends React.Component {
                   jurisdiction_paths={this.props.jurisdiction_paths}
                   all_assigned_users={this.props.all_assigned_users}
                   jurisdiction={this.props.jurisdiction}
+                  available_workflows={this.props.available_workflows}
+                  available_line_lists={this.props.available_line_lists}
                   tabs={this.props.tabs}
                   workflow={this.props.workflow}
                   export_options={this.props.header_action_buttons}
                   query={this.props.query}
-                  all_monitorees_count={this.state.counts.exposure + this.state.counts.isolation}
+                  all_monitorees_count={_.isEmpty(this.state.counts) ? 0 : this.state.counts.exposure + this.state.counts.isolation}
                   current_monitorees_count={this.props.current_monitorees_count}
                   custom_export_options={this.props.custom_export_options}
                 />

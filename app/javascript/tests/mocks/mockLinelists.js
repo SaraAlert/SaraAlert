@@ -1,4 +1,4 @@
-const available_line_lists = {
+const availableLineLists = {
   exposure: {
     options: {
       symptomatic: {
@@ -92,4 +92,4 @@ const available_line_lists = {
     },
   },
 };
-export { available_line_lists };
+export { availableLineLists };

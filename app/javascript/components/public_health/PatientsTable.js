@@ -94,7 +94,6 @@ class PatientsTable extends React.Component {
       entryOptions: [10, 15, 25, 50, 100],
       cancelToken: axios.CancelToken.source(),
     };
-    console.log(this.props.available_workflows);
   }
 
   componentDidMount() {

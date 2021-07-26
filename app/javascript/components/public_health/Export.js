@@ -10,23 +10,21 @@ import ConfirmExport from './ConfirmExport';
 import CustomExport from './CustomExport';
 import reportError from '../util/ReportError';
 
-const exportOptions = [
-  { isOpen: false, workflowSpecific: true, label: 'Line list CSV' },
-  { isOpen: false, workflowSpecific: true, label: 'Sara Alert Format' },
-  { isOpen: false, workflowSpecific: false, label: 'Excel Export For Purge-Eligible Monitorees' },
-  { isOpen: false, workflowSpecific: false, label: 'Excel Export For All Monitorees' },
-];
-
 class Export extends React.Component {
   constructor(props) {
     super(props);
-    let allowedExportOptions = exportOptions;
+    let exportOptions = [];
+    let hasCustomFormat = false;
     if (props?.export_options?.export) {
-      let export_labels = Object.values(props.export_options.export.options).map(x => x.label);
-      allowedExportOptions = allowedExportOptions.filter(x => export_labels.includes(x.label));
+      exportOptions = Object.values(props.export_options.export.options).map(x => ({ isOpen: false, workflowSpecific: x.workflow_specific, label: x.label }));
     }
+    // 'Custom Format' is shown at the end after a divider, if it exists
+    hasCustomFormat = exportOptions.some(x => x.label === 'Custom Format...');
+    exportOptions = exportOptions.filter(x => x.label !== 'Custom Format...');
+
     this.state = {
-      exportOptions: allowedExportOptions,
+      exportOptions,
+      hasCustomFormat,
       showCustomFormatModal: false,
     };
   }
@@ -93,7 +91,7 @@ class Export extends React.Component {
           {this.state.exportOptions.map((eo, eoIndex) => {
             return (
               <Dropdown.Item key={`export-option-${eoIndex}`} onClick={() => this.toggleExportOpen(eoIndex)}>
-                {eo.label} {eo.workflowSpecific && `(${this.props.query.workflow})`}
+                {eo.workflowSpecific ? `${eo.label} (${this.props.query.workflow})` : `${eo.label}`}
               </Dropdown.Item>
             );
           })}
@@ -105,8 +103,12 @@ class Export extends React.Component {
               </Dropdown.Item>
             );
           })}
-          <Dropdown.Divider />
-          <Dropdown.Item onClick={() => this.setState({ showCustomFormatModal: true })}>Custom Format...</Dropdown.Item>
+          {this.state.hasCustomFormat && (
+            <React.Fragment>
+              <Dropdown.Divider />
+              <Dropdown.Item onClick={() => this.setState({ showCustomFormatModal: true })}>Custom Format...</Dropdown.Item>
+            </React.Fragment>
+          )}
         </DropdownButton>
         {this.state.exportOptions.map((eo, eoIndex) => {
           if (eo.isOpen) {
@@ -149,18 +151,21 @@ class Export extends React.Component {
 }
 
 Export.propTypes = {
+  all_monitorees_count: PropTypes.number,
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
   jurisdiction: PropTypes.object,
   available_workflows: PropTypes.array,
   available_line_lists: PropTypes.object,
-  tabs: PropTypes.object,
-  export_options: PropTypes.object,
-  query: PropTypes.object,
-  all_monitorees_count: PropTypes.number,
+  available_workflows: PropTypes.array,
   current_monitorees_count: PropTypes.number,
   custom_export_options: PropTypes.object,
+  export_options: PropTypes.object,
+  jurisdiction: PropTypes.object,
+  jurisdiction_paths: PropTypes.object,
+  tabs: PropTypes.object,
+  query: PropTypes.object,
 };
 
 export default Export;
