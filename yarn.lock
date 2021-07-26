@@ -2,15 +2,15 @@
 # yarn lockfile v1
 
 
-"@amcharts/amcharts4-geodata@^4.1.15":
-  version "4.1.20"
-  resolved "https://registry.npmjs.org/@amcharts/amcharts4-geodata/-/amcharts4-geodata-4.1.20.tgz#a87bbfc94ef03e4c753e56938c7618ae2b67476f"
-  integrity sha512-7GUhapiLNKG1ESIvgjElGMsQD1erP+eze+mKOvPrY/BcdUuFOvcZMMbJy1PfliGLBTT4c1/EwfM339bz27/q/w==
+"@amcharts/amcharts4-geodata@^4.1.21":
+  version "4.1.21"
+  resolved "https://registry.npmjs.org/@amcharts/amcharts4-geodata/-/amcharts4-geodata-4.1.21.tgz#841413e87fc5014ff129be5b6f1f3817a76af779"
+  integrity sha512-myBOrSExl3HCEDGCzbgdLZ2KUU4X1vrqfQTGc+ltYv45wABxgS5v55C9gYmMcMi2Y0fmlLKvDAJ81o2V2StdnQ==
 
-"@amcharts/amcharts4@^4.9.23":
-  version "4.10.19"
-  resolved "https://registry.npmjs.org/@amcharts/amcharts4/-/amcharts4-4.10.19.tgz#e47a63ba0fdbe00d27108af35e1d66db43bdbc02"
-  integrity sha512-O0SgjYkSzzrM+ZobE61BLIaoVbcUAQ0IuPuvXBHWdRTLhVnJDSsPIR6+dZZp5t2E7o4yKNRr5RzFiwDM+ASz9Q==
+"@amcharts/amcharts4@^4.10.20":
+  version "4.10.20"
+  resolved "https://registry.npmjs.org/@amcharts/amcharts4/-/amcharts4-4.10.20.tgz#140efe53d41df534886873584d54c3dcd5df95f0"
+  integrity sha512-btjGR+LcdC4pD7u7ShlWPlr8TuewDrD0R4ShyIBX41P74kw3LJYgF8q8kG97MdLW4DQlF+UZLUicZPLnxbOaHw==
   dependencies:
     "@babel/runtime" "^7.6.3"
     core-js "^3.0.0"
@@ -11540,10 +11540,10 @@ ws@^7.4.5:
   resolved "https://registry.npmjs.org/ws/-/ws-7.4.6.tgz#5654ca8ecdeee47c33a9a4bf6d28e2be2980377c"
   integrity sha512-YmhHDO4MzaDLB+M9ym/mDA5z0naX8j7SIlT8f8z+I0VtzsRbekxEutHSme7NPS2qE8StCYQNUnfWdXta/Yu85A==
 
-xlsx@^0.16.4:
-  version "0.16.9"
-  resolved "https://registry.npmjs.org/xlsx/-/xlsx-0.16.9.tgz#dacd5bb46bda6dd3743940c9c3dc1e2171826256"
-  integrity sha512-gxi1I3EasYvgCX1vN9pGyq920Ron4NO8PNfhuoA3Hpq6Y8f0ECXiy4OLrK4QZBnj1jx3QD+8Fq5YZ/3mPZ5iXw==
+xlsx@^0.16.4, xlsx@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.npmjs.org/xlsx/-/xlsx-0.17.0.tgz#028176a0140967dcee1817d221678461e47481c8"
+  integrity sha512-bZ36FSACiAyjoldey1+7it50PMlDp1pcAJrZKcVZHzKd8BC/z6TQ/QAN8onuqcepifqSznR6uKnjPhaGt6ig9A==
   dependencies:
     adler-32 "~1.2.0"
     cfb "^1.1.4"

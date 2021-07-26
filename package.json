@@ -2,8 +2,8 @@
   "name": "sara_alert",
   "private": true,
   "dependencies": {
-    "@amcharts/amcharts4": "^4.9.23",
-    "@amcharts/amcharts4-geodata": "^4.1.15",
+    "@amcharts/amcharts4": "^4.10.20",
+    "@amcharts/amcharts4-geodata": "^4.1.21",
     "@babel/preset-react": "^7.8.3",
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
@@ -87,5 +87,8 @@
   },
   "scripts": {
     "test": "jest --config jest.config.js"
+  },
+  "resolutions": {
+    "xlsx": "^0.17.0"
   }
 }
