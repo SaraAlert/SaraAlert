@@ -16,7 +16,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   WORKFLOW_CLICK_MAP = {
     exposure: 'Exposure Monitoring',
     isolation: 'Isolation Monitoring',
-    global: 'Global Monitoring'
+    global: 'Global Dashboard'
   }.freeze
 
   def search_for_and_view_patient(tab, patient_label)
