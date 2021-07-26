@@ -707,21 +707,18 @@ class Patient < ApplicationRecord
   }
 
   # Patients are eligible to be automatically closed by the system IF:
-  #  - patient is non-reporting (in exposure or isolation)
+  #  - patient is reporting (submitted today) and asymptomatic
+  #  - patient is in the exposure workflow
   #    AND
-  #  - patient has no recent activity
+  #  - patient is at the end of their monitoring period
   #
   #  OR
   #
-  #  - in exposure workflow
-  #     AND
-  #  - asymptomatic
-  #     AND
-  #  - submitted an assessment today already (based on their timezone)
-  #     AND
-  #  - not in continuous exposure
-  #     AND
-  #  - on the last day of or past their monitoring period
+  #  - non-reporting in exposure workflow (see below)
+  #
+  #  OR
+  #
+  #  - non-reporting in isolation workflow (see explanation below)
   scope :close_eligible, lambda { |reason = nil|
     base_scope = exposure_asymptomatic
                  .submitted_assessment_today
@@ -739,7 +736,12 @@ class Patient < ApplicationRecord
                                    .where('updated_at <= ?', 30.days.ago)
     # If a patient record has been inactive for 30 days or more
     # in the exposure workflow and is non-reporting
-    no_recent_activity_exposure = exposure_non_reporting.where('updated_at <= ?', 30.days.ago)
+    #
+    # To be eligible, the patient must not have continuous_exposure enabled and it must be
+    # past their last date of monitoring.
+    no_recent_activity_exposure = exposure_non_reporting
+                                  .where('updated_at <= ?', 30.days.ago)
+                                  .end_of_monitoring_period
     no_recent_activity = no_recent_activity_isolation.or(no_recent_activity_exposure)
 
     case reason
