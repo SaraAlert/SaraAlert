@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import UpdateCaseStatus from '../../../components/public_health/actions/UpdateCaseStatus';
+import UpdateCaseStatus from '../../../components/public_health/bulk_actions/UpdateCaseStatus';
 import { mockMonitoringReasons } from '../../mocks/mockMonitoringReasons';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, mockPatient6 } from '../../mocks/mockPatients';
 
