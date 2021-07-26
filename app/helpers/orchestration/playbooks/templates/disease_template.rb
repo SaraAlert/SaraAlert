@@ -277,6 +277,13 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
           close_contacts: { label: 'Close Contacts' },
           history: { label: 'History' }
         }
+      },
+      monitoring_dashboard_buttons: {
+        options: {
+          exposure: { label: 'Exposure Monitoring', icon: 'fa-people-arrows' },
+          isolation: { label: 'Isolation Monitoring', icon:  'fa-street-view' },
+          global: { label: 'Global Dashboard', icon: 'fa-globe' }
+        }
       }
     }
   }.freeze

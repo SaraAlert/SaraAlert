@@ -22,6 +22,8 @@ class DashboardController < ApplicationController
     @tabs = tabs[:options]
     button = workflow_configuration(playbook, workflow, :header_action_buttons)
     @header_action_buttons = button.nil? ? nil : button[:options]
+    dashboard_buttons = workflow_configuration(playbook, nil, :monitoring_dashboard_buttons)
+    @monitoring_dashboard_buttons = dashboard_buttons.nil? ? nil : dashboard_buttons[:options]
     @available_workflows = available_workflows(playbook, filter_out_global: false)
     @available_line_lists = available_line_lists(playbook)
   end
@@ -48,8 +50,8 @@ class DashboardController < ApplicationController
 
   def authenticate_user_role
     # TODO: Role restriction with current_user, but we don't know if this is configurable yet
-    # For now, stick with public health 
-    
+    # For now, stick with public health
+
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
   end
 end

@@ -26,14 +26,6 @@ class PublicHealthHeader extends React.Component {
       showUploadModal: false,
       showImportModal: false,
       uploading: false,
-      workflowIcons: {
-        exposure: 'fa-people-arrows',
-        isolation: 'fa-street-view',
-        global: 'fa-globe',
-      },
-      workflowsToShow: props.available_workflows,
-      // workflowsToShow:
-      //   props.available_workflows.length > 1 ? [...props.available_workflows, ...[{ name: 'global', label: 'Global' }]] : props.available_workflows,
       importOptions: allowedImportOptions,
     };
   }
@@ -219,14 +211,14 @@ class PublicHealthHeader extends React.Component {
               )}
             </ButtonGroup>
             <ButtonGroup className="float-right mb-2">
-              {this.state.workflowsToShow.map(value => {
+              {Object.entries(this.props.monitoring_dashboard_buttons).map(([key, value]) => {
                 return (
                   <Button
-                    key={value.name}
-                    variant={this.props.workflow === value.name ? 'primary' : 'outline-primary'}
-                    href={`${window.BASE_PATH}/dashboard/${this.props.playbook}/${value.name}`}>
-                    <i className={`fas ${this.state.workflowIcons[value.name]}`} /> {value.label} Monitoring{' '}
-                    {this.state.counts[value.name] !== undefined && <span id={`${value.name}Count`}>({this.state.counts[value.name]})</span>}
+                    key={key}
+                    variant={this.props.workflow === key ? 'primary' : 'outline-primary'}
+                    href={`${window.BASE_PATH}/dashboard/${this.props.playbook}/${key}`}>
+                    <i className={`fas ${value.icon}`} /> {value.label}{' '}
+                    {this.state.counts[key] !== undefined && <span id={`${key}Count`}>({this.state.counts[key]})</span>}
                   </Button>
                 );
               })}
@@ -261,6 +253,7 @@ PublicHealthHeader.propTypes = {
   available_line_lists: PropTypes.object,
   playbook: PropTypes.string,
   header_action_buttons: PropTypes.object,
+  monitoring_dashboard_buttons: PropTypes.object,
 };
 
 export default PublicHealthHeader;
