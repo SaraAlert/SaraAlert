@@ -16,7 +16,7 @@ module Orchestration::Playbooks::Covid19Playbook
             set: %i[symptomatic non_reporting all],
             custom_options: {
               symptomatic: {
-                label: 'Some random label'
+                label: 'Symptomatic'
               }
             }
           }

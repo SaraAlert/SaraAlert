@@ -61,8 +61,8 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
           options: {
             enroll: { label: 'Enroll New Monitoree' },
             export: { label: 'Export', options: {
-              csv: { label: 'Line list CSV' },
-              saf: { label: 'Sara Alert Format' },
+              csv: { label: 'Line list CSV (exposure)' },
+              saf: { label: 'Sara Alert Format (exposure)' },
               purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees' },
               all: { label: 'Excel Export For All Monitorees' },
               custom_format: { label: 'Custom Format...' }
@@ -151,8 +151,8 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
           options: {
             enroll: { label: 'Enroll New Case' },
             export: { label: 'Export', options: {
-              csv: { label: 'Line list CSV (Isolation)' },
-              saf: { label: 'Sara Alert Format(Isolation)' },
+              csv: { label: 'Line list CSV (isolation)' },
+              saf: { label: 'Sara Alert Format (isolation)' },
               purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees' },
               all: { label: 'Excel Export For All Monitorees' },
               custom_format: { label: 'Custom Format...' }
@@ -230,8 +230,8 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
           options: {
             enroll: { label: 'Enroll New Monitoree' },
             export: { label: 'Export', options: {
-              csv: { label: 'Line list CSV' },
-              saf: { label: 'Sara Alert Format' },
+              csv: { label: 'Line list CSV (global)' },
+              saf: { label: 'Sara Alert Format (global)' },
               purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees' },
               all: { label: 'Excel Export For All Monitorees' },
               custom_format: { label: 'Custom Format...' }

@@ -226,6 +226,7 @@ class PublicHealthHeader extends React.Component {
                     variant={this.props.workflow === value.name ? 'primary' : 'outline-primary'}
                     href={`${window.BASE_PATH}/dashboard/${this.props.playbook}/${value.name}`}>
                     <i className={`fas ${this.state.workflowIcons[value.name]}`} /> {value.label} Monitoring{' '}
+                    {this.state.counts[value.name] !== undefined && <span id={`${value.name}Count`}>({this.state.counts[value.name]})</span>}
                   </Button>
                 );
               })}

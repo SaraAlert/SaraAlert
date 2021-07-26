@@ -97,6 +97,7 @@ class MonitoringActions extends React.Component {
                 household_members={this.props.household_members}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 current_user={this.props.current_user}
+                playbook={this.props.playbook}
                 workflow={this.props.workflow}
                 continuous_exposure_enabled={this.props.continuous_exposure_enabled}
               />
@@ -117,6 +118,7 @@ MonitoringActions.propTypes = {
   assigned_users: PropTypes.array,
   household_members: PropTypes.array,
   monitoring_reasons: PropTypes.array,
+  playbook: PropTypes.string,
   workflow: PropTypes.string,
   continuous_exposure_enabled: PropTypes.bool,
   available_workflows: PropTypes.array,

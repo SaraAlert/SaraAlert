@@ -17,6 +17,11 @@ module Orchestration::Playbooks::EbolaPlaybook
         }
       } }
     },
+    general: {
+      base: INFECTIOUS[:general], custom_options: {
+
+      }
+    },
     system: {
       continuous_exposure_enabled: false
     },
