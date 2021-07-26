@@ -7,10 +7,10 @@ import JurisdictionFilter from '../../components/public_health/query/Jurisdictio
 import AssignedUserFilter from '../../components/public_health/query/AssignedUserFilter';
 import AdvancedFilter from '../../components/public_health/query/AdvancedFilter';
 import CustomTable from '../../components/layout/CustomTable';
-import CloseRecords from '../../components/public_health/actions/CloseRecords';
+import CloseRecords from '../../components/public_health/bulk_actions/CloseRecords';
 import FollowUpFlag from '../../components/patient/follow_up_flag/FollowUpFlag';
-import UpdateCaseStatus from '../../components/public_health/actions/UpdateCaseStatus';
-import UpdateAssignedUser from '../../components/public_health/actions/UpdateAssignedUser';
+import UpdateCaseStatus from '../../components/public_health/bulk_actions/UpdateCaseStatus';
+import UpdateAssignedUser from '../../components/public_health/bulk_actions/UpdateAssignedUser';
 import { mockJurisdiction1, mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 import { mockExposureTabs, mockIsolationTabs, mockGlobalTabs } from '../mocks/mockTabs';
 import { mockMonitoringReasons } from '../mocks/mockMonitoringReasons';
