@@ -47,6 +47,9 @@ class DashboardController < ApplicationController
   end
 
   def authenticate_user_role
-    # Role restriction with current_user, but we don't know if this is conifgurable yet
+    # TODO: Role restriction with current_user, but we don't know if this is configurable yet
+    # For now, stick with public health 
+    
+    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
   end
 end

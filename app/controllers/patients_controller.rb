@@ -32,8 +32,6 @@ class PatientsController < ApplicationController
 
     @title = "#{@patient.initials_age('-')} (ID: #{@patient.id})"
 
-    dashboard_crumb(params.permit(:nav)[:nav], @patient)
-
     @jurisdiction = @patient.jurisdiction
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
@@ -71,7 +69,6 @@ class PatientsController < ApplicationController
   def new
     redirect_to(root_url) && return unless current_user.can_create_patient?
 
-    dashboard_crumb(params.permit(:nav)[:nav] || (params.permit(:isolation)[:isolation] ? 'isolation' : 'global'), nil)
     @title = 'Enroll New Monitoree'
 
     # If this is a close contact that is being fully enrolled, grab that record to auto-populate fields
@@ -135,8 +132,6 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return if @patient.nil?
 
     @title = "Edit #{@patient.initials_age('-')} (ID: #{@patient.id})"
-
-    dashboard_crumb(params.permit(:nav)[:nav], @patient)
 
     @dependents_exclude_hoh = @patient.dependents_exclude_self
     @propagated_fields = group_member_subset.collect { |field| [field, false] }.to_h
