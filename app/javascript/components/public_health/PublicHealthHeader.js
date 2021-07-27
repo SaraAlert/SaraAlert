@@ -13,7 +13,6 @@ class PublicHealthHeader extends React.Component {
   constructor(props) {
     super(props);
     let importOptions = [];
-
     if (props?.header_action_buttons?.import) {
       let options = props.header_action_buttons.import.options;
       importOptions = Object.keys(options).map(key => {
