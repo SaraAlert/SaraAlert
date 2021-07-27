@@ -374,7 +374,7 @@ class History < ApplicationRecord
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
   end
 
-  def self.pause_notifications(history)
+  def self.pause_notifications(history, create: true)
     field = {
       name: 'Notification Status',
       old_value: history[:patient_before][:pause_notifications] ? 'paused' : 'resumed',
@@ -384,7 +384,7 @@ class History < ApplicationRecord
 
     creator = history[:initiator_id].nil? ? 'System' : 'User'
     comment = "#{creator} #{field[:new_value]} notifications for this monitoree#{compose_explanation(history)}."
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment, create: create)
   end
 
   def self.symptom_onset(history, create: true)
@@ -413,7 +413,7 @@ class History < ApplicationRecord
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field), create: create)
   end
 
-  def self.continuous_exposure(history)
+  def self.continuous_exposure(history, create: true)
     field = {
       name: 'Continuous Exposure',
       old_value: history[:patient_before][:continuous_exposure] ? 'on' : 'off',
@@ -423,7 +423,7 @@ class History < ApplicationRecord
 
     creator = history[:initiator_id].nil? ? 'System' : 'User'
     comment = "#{creator} turned #{field[:new_value]} #{field[:name]}#{compose_explanation(history)}."
-    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment, create: create)
   end
 
   def self.monitoring_reason(history, create: true)
