@@ -53,6 +53,7 @@ class ApplyToHousehold extends React.Component {
             handleApplyHouseholdChange={this.props.handleApplyHouseholdChange}
             handleApplyHouseholdIdsChange={this.props.handleApplyHouseholdIdsChange}
             workflow={this.props.workflow}
+            continuous_exposure_enabled={this.props.continuous_exposure_enabled}
           />
         )}
       </React.Fragment>

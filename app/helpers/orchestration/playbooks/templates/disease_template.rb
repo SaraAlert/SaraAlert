@@ -63,8 +63,8 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
             export: { label: 'Export', options: {
               csv: { label: 'Line list CSV', workflow_specific: true },
               saf: { label: 'Sara Alert Format', workflow_specific: true },
-              purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees' , workflow_specific: false},
-              all: { label: 'Excel Export For All Monitorees' , workflow_specific: false},
+              purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees', workflow_specific: false },
+              all: { label: 'Excel Export For All Monitorees', workflow_specific: false },
               custom_format: { label: 'Custom Format...', workflow_specific: false }
             } },
             import: { label: 'Import', options: {
@@ -153,9 +153,9 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
             export: { label: 'Export', options: {
               csv: { label: 'Line list CSV', workflow_specific: true },
               saf: { label: 'Sara Alert Format', workflow_specific: true },
-              purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees', workflow_specific: false},
+              purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees', workflow_specific: false },
               all: { label: 'Excel Export For All Monitorees', workflow_specific: false },
-              custom_format: { label: 'Custom Format...', workflow_specific: false}
+              custom_format: { label: 'Custom Format...', workflow_specific: false }
 
             } },
             import: { label: 'Import', options: {
@@ -281,7 +281,7 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
       monitoring_dashboard_buttons: {
         options: {
           exposure: { label: 'Exposure Monitoring', icon: 'fa-people-arrows' },
-          isolation: { label: 'Isolation Monitoring', icon:  'fa-street-view' },
+          isolation: { label: 'Isolation Monitoring', icon: 'fa-street-view' },
           global: { label: 'Global Dashboard', icon: 'fa-globe' }
         }
       }

@@ -227,7 +227,6 @@ class PublicHealthHeader extends React.Component {
             </ButtonGroup>
           </Col>
         </Row>
-
         {this.renderUploadModal()}
         {this.renderImportModal()}
       </React.Fragment>

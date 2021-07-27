@@ -342,7 +342,7 @@ class VaccineTable extends React.Component {
       <React.Fragment>
         <Card id="vaccines" className="mx-2 my-4 card-square">
           <Card.Header as="h1" className="patient-card-header">
-            {this.props.section_label}
+            {this.props.section_label || 'Vaccinations'}
           </Card.Header>
           <Card.Body className="my-1">
             <Row className="mb-4">
