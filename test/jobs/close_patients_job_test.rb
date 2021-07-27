@@ -46,7 +46,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
 
     # Verify fields changed
     updated_patient = Patient.find_by(id: patient.id)
-    assert_equal(updated_patient.closed_at.to_date, DateTime.now.to_date)
+    assert_equal(updated_patient.closed_at.to_date, DateTime.now.utc.to_date)
     assert_equal(updated_patient.monitoring, false)
   end
 
@@ -108,9 +108,10 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now,
-                     last_date_of_exposure: 14.days.ago,
                      created_at: Time.now)
-
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 14.days)
+    assert_not_nil Patient.enrolled_last_day_monitoring_period.find_by_id(patient.id)
+    assert_not_nil Patient.close_eligible(:enrolled_last_day_monitoring_period).find_by_id(patient.id)
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
     assert_equal(updated_patient.monitoring_reason, 'Enrolled on last day of monitoring period (system)')
@@ -140,7 +141,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     assert_equal(closed_email.header['subject'].value, 'Sara Alert Reporting Complete')
     assert_includes(
       closed_email.text_part.body.to_s.gsub("\r", ' ').gsub("\n", ' '),
-      "Sara Alert monitoring for #{patient.initials_age('-')} completed on #{DateTime.now.strftime('%m-%d-%Y')}! Thank you for your participation."
+      "Sara Alert monitoring for #{patient.initials_age('-')} completed on #{DateTime.now.utc.strftime('%m-%d-%Y')}! Thank you for your participation."
     )
     assert_equal(closed_email.to[0], patient.email)
     assert_histories_contain(patient, 'Monitoring Complete message was sent.')

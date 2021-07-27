@@ -26,11 +26,11 @@ class Transfer < ApplicationRecord
   scope :in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Last 24 Hours'
-      where('transfers.created_at >= ?', 24.hours.ago)
+      where('transfers.created_at >= ?', DateTime.now.utc - 24.hours)
     when 'Last 7 Days'
-      where('transfers.created_at >= ? AND transfers.created_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('transfers.created_at >= ? AND transfers.created_at < ?', DateTime.now.utc.beginning_of_day - 7.days, DateTime.now.utc.beginning_of_day)
     when 'Last 14 Days'
-      where('transfers.created_at >= ? AND transfers.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('transfers.created_at >= ? AND transfers.created_at < ?', DateTime.now.utc.beginning_of_day - 14.days, DateTime.now.utc.beginning_of_day)
     when 'Total'
       all
     else

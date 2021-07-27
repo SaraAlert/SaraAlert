@@ -1071,11 +1071,10 @@ class PatientsControllerTest < ActionController::TestCase
 
     assert_response :success
     patient.reload
-    assert_equal earliest_symptomatic_assessment_timestamp.to_date, patient.symptom_onset
+    assert_equal earliest_symptomatic_assessment_timestamp.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_not patient.user_defined_symptom_onset
 
-    h = History.where(patient: patient)
-    assert_match(/changed Symptom Onset Date/, h.second.comment)
+    assert_histories_contain(patient, 'changed Symptom Onset Date')
   end
 
   test 'setting and clearing follow up flag for an individual patient with no other household members' do
