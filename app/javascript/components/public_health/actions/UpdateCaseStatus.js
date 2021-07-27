@@ -27,11 +27,7 @@ class UpdateCaseStatus extends React.Component {
       monitoring: null,
       monitoring_reason: '',
       loading: false,
-      isolationWorkflowAvailable:
-        -1 <
-        props.available_workflows.findIndex(w => {
-          if (w.name.toLowerCase() == 'isolation') return true;
-        }),
+      isolationWorkflowAvailable: props.available_workflows.some(w => w.name.toLowerCase() == 'isolation'),
     };
     this.origState = Object.assign({}, this.state);
   }

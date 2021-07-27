@@ -78,7 +78,7 @@
 <% if @patient_page_sections[:options][:lab_results].present? %>
 <div id="labs-table" class="card mx-2 mt-3 mb-4 card-square">
   <div class="card-header h5">
-    <%= @patient_page_sections[:options][:lab_results][:label] %>
+    <%= @patient_page_sections[:options][:lab_results][:label] || 'Lab Results' %>
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
   </div>
   <div class="m-4">
