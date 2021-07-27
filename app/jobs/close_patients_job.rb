@@ -15,9 +15,10 @@ class ClosePatientsJob < ApplicationJob
     no_recent_activity = Patient.close_eligible(:no_recent_activity)
     completed_monitoring = Patient.close_eligible(:completed_monitoring)
     # Close patients using the scopes that have not been executed yet.
+    monitoring_period = ADMIN_OPTIONS['monitoring_period_days']
     results = combine_batch_results(
       [
-        perform_batch(enrolled_past_monitioring_period, 'Enrolled more than 14 days after last date of exposure (system)', juris_send_close),
+        perform_batch(enrolled_past_monitioring_period, "Enrolled more than #{monitoring_period} days after last date of exposure (system)", juris_send_close),
         perform_batch(enrolled_last_day_monitoring_period, 'Enrolled on last day of monitoring period (system)', juris_send_close),
         perform_batch(no_recent_activity, 'No record activity for 30 days (system)', juris_send_close),
         perform_batch(completed_monitoring, 'Completed Monitoring (system)', juris_send_close, completed_message: true)
@@ -83,7 +84,7 @@ class ClosePatientsJob < ApplicationJob
         end
 
         # History item for automatically closing the record
-        histories << History.record_automatically_closed(patient: patient, create: false)
+        histories << History.record_automatically_closed(patient: patient, reason: monitoring_reason, create: false)
 
         closed << { id: patient.id }
       rescue StandardError => e
