@@ -68,8 +68,9 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
               custom_format: { label: 'Custom Format...', workflow_specific: false }
             } },
             import: { label: 'Import', options: {
-              epix: { label: 'Epi-X' },
-              saf: { label: 'Sara Alert Format' }
+              epix: { label: 'Epi-X', workflow_specific: true },
+              saf: { label: 'Sara Alert Format', workflow_specific: true },
+              sdx: { label: 'SDX', workflow_specific: true }
             } }
           }
         },
@@ -159,8 +160,9 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
 
             } },
             import: { label: 'Import', options: {
-              epix: { label: 'Epi-X (Isolation)' },
-              saf: { label: 'Sara Alert Format (Isolation)' }
+              epix: { label: 'Epi-X', workflow_specific: true },
+              saf: { label: 'Sara Alert Format', workflow_specific: true },
+              sdx: { label: 'SDX', workflow_specific: true }
             } }
           }
         },
@@ -235,10 +237,6 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
               purge_eligible: { label: 'Excel Export For Purge-Eligible Monitorees', workflow_specific: false },
               all: { label: 'Excel Export For All Monitorees', workflow_specific: false },
               custom_format: { label: 'Custom Format...', workflow_specific: false }
-            } },
-            import: { label: 'Import', options: {
-              epix: { label: 'Epi-X' },
-              saf: { label: 'Sara Alert Format' }
             } }
           }
         },
