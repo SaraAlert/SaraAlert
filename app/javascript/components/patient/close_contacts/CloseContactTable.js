@@ -386,7 +386,7 @@ class CloseContactTable extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-2 mt-3 mb-4 card-square">
-          <Card.Header as="h5">
+          <Card.Header as="h1" className="patient-card-header">
             Close Contacts <InfoTooltip tooltipTextKey="closeContacts" location="right" />
           </Card.Header>
           <Card.Body>
