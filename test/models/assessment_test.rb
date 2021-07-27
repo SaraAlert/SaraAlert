@@ -34,7 +34,7 @@ class AssessmentTest < ActiveSupport::TestCase
     patient = create(:patient)
 
     # Create assessment 1 as asymptomatic
-    timestamp_1 = 5.days.ago
+    timestamp_1 = DateTime.now.utc - 5.days
     assessment_1 = create(:assessment, patient: patient, symptomatic: false, created_at: timestamp_1)
     assert_nil patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
@@ -42,19 +42,19 @@ class AssessmentTest < ActiveSupport::TestCase
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 1 to be symptomatic
-    timestamp_1 = 10.days.ago
+    timestamp_1 = DateTime.now.utc - 10.days
     assessment_1.update(symptomatic: true, created_at: timestamp_1)
-    assert_equal timestamp_1.to_date, patient.symptom_onset
+    assert_equal timestamp_1.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Create assessment 2 as symptomatic
-    timestamp_2 = 12.days.ago
+    timestamp_2 = DateTime.now.utc - 12.days
     assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_2)
     reported_condition_2 = create(:reported_condition, assessment_id: assessment_2.id)
     symptom_2 = create(:symptom, condition_id: reported_condition_2.id, type: 'BoolSymptom', name: 'fever', bool_value: false)
-    assert_equal timestamp_2.to_date, patient.symptom_onset
+    assert_equal timestamp_2.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
@@ -70,35 +70,35 @@ class AssessmentTest < ActiveSupport::TestCase
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Create assessment 3 as symptomatic
-    timestamp_3 = 14.days.ago
+    timestamp_3 = DateTime.now.utc - 14.days
     assessment_3 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_3)
-    assert_equal timestamp_3.to_date, patient.symptom_onset
+    assert_equal timestamp_3.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 3 to be asymptomatic
     assessment_3.update(symptomatic: false)
-    assert_equal timestamp_2.to_date, patient.symptom_onset
+    assert_equal timestamp_2.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Manually update symptom onset
-    symptom_onset_timestamp = 16.days.ago
+    symptom_onset_timestamp = DateTime.now.utc - 16.days
     patient.update(user_defined_symptom_onset: true, symptom_onset: symptom_onset_timestamp)
 
     # Update assessment 3 as symptomatic
-    timestamp_3 = 18.days.ago
+    timestamp_3 = DateTime.now.utc - 18.days
     assessment_3.update(symptomatic: true, created_at: timestamp_3)
-    assert_equal symptom_onset_timestamp.to_date, patient.symptom_onset
+    assert_equal symptom_onset_timestamp.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 3 to be asymptomatic
     assessment_3.update(symptomatic: false)
-    assert_equal symptom_onset_timestamp.to_date, patient.symptom_onset
+    assert_equal symptom_onset_timestamp.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
@@ -107,30 +107,30 @@ class AssessmentTest < ActiveSupport::TestCase
     patient.update(user_defined_symptom_onset: false)
 
     # Update assessment 3 as symptomatic
-    timestamp_3 = 18.days.ago
+    timestamp_3 = DateTime.now.utc - 18.days
     assessment_3.update(symptomatic: true, created_at: timestamp_3)
-    assert_equal timestamp_3.to_date, patient.symptom_onset
+    assert_equal timestamp_3.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 3 to be asymptomatic
     assessment_3.update(symptomatic: false)
-    assert_equal timestamp_2.to_date, patient.symptom_onset
+    assert_equal timestamp_2.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Destroy assessment 3
     assessment_3.destroy
-    assert_equal timestamp_2.to_date, patient.symptom_onset
+    assert_equal timestamp_2.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Update assessment 2 date
     timestamp_2 = 1.day.ago
     assessment_2.update(created_at: timestamp_2)
-    assert_equal timestamp_1.to_date, patient.symptom_onset
+    assert_equal timestamp_1.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_2, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
@@ -142,7 +142,7 @@ class AssessmentTest < ActiveSupport::TestCase
 
     # Update assessment 1 to be asymptomatic
     assessment_1.update(symptomatic: false)
-    assert_equal timestamp_2.to_date, patient.symptom_onset
+    assert_equal timestamp_2.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_2, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
@@ -155,17 +155,17 @@ class AssessmentTest < ActiveSupport::TestCase
 
     # Update assessment 1 to be symptomatic
     assessment_1.update(symptomatic: true)
-    assert_equal timestamp_1.to_date, patient.symptom_onset
+    assert_equal timestamp_1.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Create assessment 4 with fever
-    timestamp_4 = 1.day.ago
+    timestamp_4 = DateTime.now.utc - 1.days
     assessment_4 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_4)
     reported_condition_4 = create(:reported_condition, assessment_id: assessment_4.id)
     symptom_4 = create(:symptom, condition_id: reported_condition_4.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
-    assert_equal timestamp_1.to_date, patient.symptom_onset
+    assert_equal timestamp_1.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_4, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
     patient.reload.latest_fever_or_fever_reducer_at
