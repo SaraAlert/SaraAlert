@@ -245,7 +245,8 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:welcome_message_sent], comment, create: create)
   end
 
-  def self.record_automatically_closed(patient: nil, created_by: 'Sara Alert System', comment: 'Monitoree has completed monitoring.', create: true)
+  def self.record_automatically_closed(patient: nil, created_by: 'Sara Alert System', comment: 'Monitoree has completed monitoring.', reason: nil, create: true)
+    comment = "#{comment} Reason: #{reason}" unless reason.nil?
     create_history(patient, created_by, HISTORY_TYPES[:record_automatically_closed], comment, create: create)
   end
 
