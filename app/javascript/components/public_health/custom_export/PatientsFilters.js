@@ -12,8 +12,18 @@ import JurisdictionFilter from '../query/JurisdictionFilter';
 class PatientsFilters extends React.Component {
   constructor(props) {
     super(props);
+    // We want the available workflows to be `Global` (if global exists), followed by any other workflows
+    // The following bit of logic moves the global workflow to the front (if it exists)
+    let availableWorkflowsSorted = props.available_workflows;
+    availableWorkflowsSorted.unshift(
+      availableWorkflowsSorted.splice(
+        availableWorkflowsSorted.findIndex(y => y.label === 'Global'),
+        1
+      )[0]
+    );
     this.state = {
       assigned_users: [],
+      availableWorkflowsSorted,
     };
   }
 
@@ -61,8 +71,7 @@ class PatientsFilters extends React.Component {
                   this.props.onQueryChange('tab', 'all');
                 }}
                 value={this.props.query?.workflow}>
-                {this.props.available_workflows.length > 1 && <option value="global">Global</option>}
-                {this.props.available_workflows.map(wf => (
+                {this.state.availableWorkflowsSorted.map(wf => (
                   <option key={wf.name} value={wf.name}>
                     {' '}
                     {wf.label}{' '}
@@ -97,13 +106,11 @@ class PatientsFilters extends React.Component {
                   </React.Fragment>
                 )}
                 {this.props.query?.workflow != 'global' &&
-                  Object.entries(this.props.available_line_lists[this.props.query?.workflow]).map(([ll, llProps]) => {
-                    return (
-                      <option key={ll} value={ll}>
-                        {llProps.label}
-                      </option>
-                    );
-                  })}
+                  Object.entries(this.props.available_line_lists[this.props.query.workflow].options).map((ll, ll_index) => (
+                    <option key={`${ll.label}-${ll_index}`} value={ll.label}>
+                      {ll.label}
+                    </option>
+                  ))}
               </Form.Control>
             </InputGroup>
           </Col>
