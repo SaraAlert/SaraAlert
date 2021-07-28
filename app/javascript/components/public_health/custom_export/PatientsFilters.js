@@ -106,10 +106,10 @@ class PatientsFilters extends React.Component {
                     <option value="closed">Closed</option>
                   </React.Fragment>
                 )}
-                {this.props.query?.workflow != 'global' &&
-                  Object.entries(this.props.available_line_lists[this.props.query.workflow].options).map((ll, ll_index) => (
-                    <option key={`${ll.label}-${ll_index}`} value={ll.label}>
-                      {ll.label}
+                {this.props.query?.workflow !== 'global' &&
+                  Object.entries(this.props.available_line_lists[this.props.query.workflow].options).map(([ll_key, ll_value]) => (
+                    <option key={`${ll_key}`} value={ll_key}>
+                      {ll_value['label']}
                     </option>
                   ))}
               </Form.Control>
