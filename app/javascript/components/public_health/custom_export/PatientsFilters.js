@@ -15,12 +15,13 @@ class PatientsFilters extends React.Component {
     // We want the available workflows to be `Global` (if global exists), followed by any other workflows
     // The following bit of logic moves the global workflow to the front (if it exists)
     let availableWorkflowsSorted = props.available_workflows;
-    availableWorkflowsSorted.unshift(
-      availableWorkflowsSorted.splice(
-        availableWorkflowsSorted.findIndex(y => y.label === 'Global'),
-        1
-      )[0]
-    );
+
+    const globalWFIndex = availableWorkflowsSorted.findIndex(y => y.label === 'Global');
+    if (globalWFIndex !== -1) {
+      const globalWF = availableWorkflowsSorted.splice(globalWFIndex, 1);
+      availableWorkflowsSorted = globalWF.concat(availableWorkflowsSorted);
+    }
+
     this.state = {
       assigned_users: [],
       availableWorkflowsSorted,
