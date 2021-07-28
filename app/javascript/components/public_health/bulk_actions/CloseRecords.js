@@ -79,7 +79,7 @@ class CloseRecords extends React.Component {
           </p>
           <Form.Group controlId="monitoring_reason">
             <Form.Label>Please select reason for status change:</Form.Label>
-            <Form.Control as="select" size="lg" className="form-square" id="monitoring_reason" onChange={this.handleChange} defaultValue={-1}>
+            <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange} defaultValue={-1}>
               <option></option>
               {this.props.monitoring_reasons.map((option, index) => (
                 <option key={`option-${index}`} value={option}>
@@ -91,7 +91,7 @@ class CloseRecords extends React.Component {
           <Form.Group controlId="reasoning">
             <Form.Label>Please include any additional details:</Form.Label>
             <Form.Control as="textarea" rows="2" maxLength={MAX_NOTES_LENGTH} onChange={this.handleChange} />
-            <Form.Label className="character-limit-text"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </Form.Label>
+            <div className="character-limit-text"> {MAX_NOTES_LENGTH - this.state.reasoning.length} characters remaining </div>
           </Form.Group>
           <Form.Group className="my-2">
             <Form.Check

@@ -10,8 +10,7 @@ const mockToken = 'testMockTokenString12345';
 const mockAssignedUserDatalist = ['3682', '903874', '73892', '1689'];
 
 function getWrapper(patientsArray) {
-  let wrapper = shallow(<UpdateAssignedUser authenticity_token={mockToken} patients={patientsArray} close={onCloseMock} assigned_users={mockAssignedUserDatalist} />);
-  return wrapper;
+  return shallow(<UpdateAssignedUser authenticity_token={mockToken} patients={patientsArray} close={onCloseMock} assigned_users={mockAssignedUserDatalist} />);
 }
 
 describe('UpdateAssignedUser', () => {

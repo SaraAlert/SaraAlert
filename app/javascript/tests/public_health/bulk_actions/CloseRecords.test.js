@@ -20,17 +20,17 @@ describe('CloseRecords', () => {
     expect(wrapper.find('p').find('span').at(1).text()).toEqual(' These records will be moved to the closed line list and the reason for closure will be blank.');
     expect(wrapper.find(Form.Group).length).toEqual(3);
     expect(wrapper.find(Form.Group).at(0).find(Form.Label).text()).toEqual('Please select reason for status change:');
-    expect(wrapper.find('#monitoring_reason').exists()).toBeTruthy();
+    expect(wrapper.find(Form.Control).length).toEqual(2);
     const monitoringReasonOptions = [''].concat(mockMonitoringReasons);
     wrapper
-      .find('#monitoring_reason')
+      .find(Form.Control)
+      .at(0)
       .find('option')
       .forEach((option, index) => {
         expect(option.text()).toEqual(monitoringReasonOptions[Number(index)]);
       });
-    expect(wrapper.find(Form.Group).at(1).find(Form.Label).length).toEqual(2);
-    expect(wrapper.find(Form.Group).at(1).find(Form.Label).at(0).text()).toEqual('Please include any additional details:');
-    expect(wrapper.find(Form.Group).at(1).find(Form.Label).at(1).text()).toContain('characters remaining');
+    expect(wrapper.find(Form.Group).at(1).find(Form.Label).text()).toEqual('Please include any additional details:');
+    expect(wrapper.find('.character-limit-text').text()).toContain('characters remaining');
     expect(wrapper.find('#apply_to_household').exists()).toBeTruthy();
     expect(wrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
     expect(wrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Submit');
@@ -40,7 +40,7 @@ describe('CloseRecords', () => {
     const wrapper = getWrapper();
     // initial modal state with monitoring reason empty
     expect(wrapper.state('monitoring_reason')).toEqual('');
-    expect(wrapper.find('p').text()).toContain(' These records will be moved to the closed line list and the reason for closure will be blank.');
+    expect(wrapper.find('p').text()).toContain('These records will be moved to the closed line list and the reason for closure will be blank.');
 
     // test changing to each enabled monitoring option
     mockMonitoringReasons.forEach(value => {
@@ -50,13 +50,14 @@ describe('CloseRecords', () => {
         .simulate('change', { target: { id: 'monitoring_reason', value: value } });
       expect(wrapper.state('monitoring_reason')).toEqual(value);
       expect(wrapper.state('monitoring')).toEqual(false);
-      expect(wrapper.find('p').text()).not.toContain(' These records will be moved to the closed line list and the reason for closure will be blank.');
+      expect(wrapper.find('p').text()).not.toContain('These records will be moved to the closed line list and the reason for closure will be blank.');
     });
   });
 
-  it('Correctly updates the character limit label for the reason', () => {
+  it('Changing closure reason properly updates state and character limit label', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find('.character-limit-text').first().text()).toContain('2000 characters remaining');
+    expect(wrapper.find('.character-limit-text').text()).toContain('2000 characters remaining');
+    expect(wrapper.state('reasoning')).toEqual('');
     const mockReasoning = 'I Shall Call Him Squishy And He Shall Be Mine And He Shall Be My Squishy.';
     wrapper
       .find(Form.Group)
