@@ -1,14 +1,17 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Alert, Button, Card, Col, Form } from 'react-bootstrap';
+import { Alert, Button, Card, Col, Form, Modal } from 'react-bootstrap';
 
 import axios from 'axios';
 import libphonenumber from 'google-libphonenumber';
 import * as yup from 'yup';
+import Select from 'react-select';
+import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import InfoTooltip from '../../util/InfoTooltip';
 import PhoneInput from '../../util/PhoneInput';
 import { phoneSchemaValidator } from '../../../utils/Patient';
+import { customPreferredContactTimeOptions } from '../../../data/customPreferredContactTimeOptions';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
@@ -16,7 +19,15 @@ const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 class Contact extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
+    this.state = {
+      ...this.props,
+      current: { ...this.props.currentState },
+      errors: {},
+      modified: {},
+      isEditMode: window.location.href.includes('edit'),
+      showCustomPreferredContactTimeModal: false,
+      custom_preferred_contact_time_confirmed: false,
+    };
   }
 
   componentDidMount() {
@@ -79,6 +90,10 @@ class Contact extends React.Component {
       } else {
         blocked_sms = false;
       }
+    }
+
+    if (event.target.id === 'preferred_contact_time' && event.target.value === 'Custom') {
+      this.setState({ showCustomPreferredContactTimeModal: true });
     }
 
     let current = this.state.current;
@@ -188,6 +203,21 @@ class Contact extends React.Component {
       });
   };
 
+  closePreferredContactTimeModal = () => {
+    this.setState(
+      state => {
+        return {
+          showCustomPreferredContactTimeModal: false,
+          custom_preferred_contact_time: null,
+          custom_preferred_contact_time_confirmed: false,
+          current: { ...state.current, patient: { ...state.current.patient, preferred_contact_time: this.props.patient.preferred_contact_time } },
+          modified: { ...state.modified, patient: { ...state.modified.patient, preferred_contact_time: this.props.patient.preferred_contact_time } },
+        };
+      },
+      () => this.props.setEnrollmentState({ ...this.state.modified })
+    );
+  };
+
   renderWarningBanner = (message, showTooltip) => {
     return (
       <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
@@ -196,6 +226,69 @@ class Contact extends React.Component {
           {showTooltip && <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="right" />}
         </Alert>
       </Form.Group>
+    );
+  };
+
+  renderPreferredContactTimeModal = () => {
+    return (
+      <Modal size="mdlg" show={this.state.showCustomPreferredContactTimeModal} onHide={this.closePreferredContactTimeModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Custom Preferred Contact Time</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            You may specify a preferred contact time outside normal hours for this monitoree. This is the <b>earliest</b> time that any reminder would be sent
+            to the monitoree for that day.
+          </p>
+          <Select
+            inputId="custom_preferred_contact_time-select"
+            name="custom_preferred_contact_time"
+            options={customPreferredContactTimeOptions}
+            onChange={e => this.setState({ custom_preferred_contact_time: e.value })}
+            placeholder="Select custom preferred contact time..."
+            className="mb-3"
+            styles={cursorPointerStyle}
+            theme={theme => ({
+              ...theme,
+              borderRadius: 0,
+            })}
+          />
+          <p className="text-muted">
+            Reminders and contact attempts outside of normal hours (8:00 to 21:00) should only be done with the consent of the monitoree. Please indicate that
+            you have confirmed this time with the monitoree before continuing.
+          </p>
+          <Form.Check
+            size="lg"
+            className="form-square"
+            id="confirm_custom_preferred_contact_time"
+            label="I have confirmed with the monitoree that they agree to be contacted at this time"
+            checked={this.state.custom_preferred_contact_time_confirmed}
+            disabled={!this.state.custom_preferred_contact_time}
+            onChange={() =>
+              this.setState(state => {
+                return { ...state, custom_preferred_contact_time_confirmed: !state.custom_preferred_contact_time_confirmed };
+              })
+            }
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={() => this.setState(this.closePreferredContactTimeModal)}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary btn-square"
+            disabled={!this.state.custom_preferred_contact_time || !this.state.custom_preferred_contact_time_confirmed}
+            onClick={() => {
+              this.handleChange({
+                target: { id: 'preferred_contact_time', value: this.state.custom_preferred_contact_time },
+                currentTarget: { id: 'preferred_contact_time' },
+              });
+              this.setState({ showCustomPreferredContactTimeModal: false });
+            }}>
+            Submit
+          </Button>
+        </Modal.Footer>
+      </Modal>
     );
   };
 
@@ -251,6 +344,18 @@ class Contact extends React.Component {
                       <option>Morning</option>
                       <option>Afternoon</option>
                       <option>Evening</option>
+                      <option>Custom</option>
+                      {[
+                        ...new Set([this.state.current.patient.preferred_contact_time, this.props.patient.preferred_contact_time])
+                          .filter(value => !!value)
+                          .map(value => {
+                            return (
+                              <option key={value} value={value}>
+                                {customPreferredContactTimeOptions.find(option => option.value === value)?.label}
+                              </option>
+                            );
+                          }),
+                      ]}
                     </Form.Control>
                     <div className="mt-3">
                       <span className="font-weight-bold">Morning: </span>
@@ -416,6 +521,7 @@ class Contact extends React.Component {
             )}
           </Card.Body>
         </Card>
+        {this.renderPreferredContactTimeModal()}
       </React.Fragment>
     );
   }
@@ -440,6 +546,7 @@ var schema = yup.object().shape({
 Contact.propTypes = {
   currentState: PropTypes.object,
   setEnrollmentState: PropTypes.func,
+  patient: PropTypes.object,
   previous: PropTypes.func,
   next: PropTypes.func,
   showPreviousButton: PropTypes.bool,

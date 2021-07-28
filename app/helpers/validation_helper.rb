@@ -149,7 +149,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown', nil, ''],
     primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
     secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
-    preferred_contact_time: ['Morning', 'Afternoon', 'Evening', nil, ''],
+    preferred_contact_time: (0..23).to_a.map(&:to_s) + ['Morning', 'Afternoon', 'Evening', nil, ''],
     # arrival
     source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other'],
     # additional planned travel

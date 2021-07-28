@@ -12,6 +12,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   AFTERNOON_CONTACT_WINDOW = (12..16).freeze
   EVENING_CONTACT_WINDOW = (16..19).freeze
   UNSPECIFIED_CONTACT_WINDOW = (12..16).freeze
+  CUSTOM_CONTACT_OPTIONS = (0..23).to_a.map(&:to_s).freeze
 
   # Current patient status
   def status

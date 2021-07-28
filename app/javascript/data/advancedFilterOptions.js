@@ -178,7 +178,7 @@ export const advancedFilterOptions = [
     title: 'Preferred Contact Time (Select)',
     description: 'Monitoree preferred contact time',
     type: 'select',
-    options: ['Morning', 'Afternoon', 'Evening', ''],
+    options: ['Early Morning', 'Morning', 'Afternoon', 'Evening', 'Late Night', ''],
   },
   {
     name: 'primary-language',
