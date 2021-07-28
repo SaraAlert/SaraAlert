@@ -222,7 +222,7 @@ class AssessmentsController < ApplicationController
       comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
       unless delta.empty?
         comment += ' Symptom updates: ' + delta.join(', ') + '.'
-        comment += " Reporter updated: (\"#{old_reporter}\" to \"#{current_user.email}\")." unless old_reporter == current_user.email
+        comment += " Reporter edited (\"#{old_reporter}\" to \"#{current_user.email}\")." unless old_reporter == current_user.email
       end
       History.report_updated(patient: patient, created_by: current_user.email, comment: comment)
     end
