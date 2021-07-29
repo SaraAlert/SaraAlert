@@ -12,14 +12,9 @@ import { formatName, formatPhoneNumberVisually, formatRace, isMinor } from '../.
 import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
 import { navQueryParam, patientHref } from '../../utils/Navigation';
+import { Heading } from '../../utils/Heading';
 
 let rootHeaderLevel;
-
-// The Heading element below throws a false-positive for prop-types validation
-/* eslint-disable-next-line react/prop-types */
-const Heading = ({ level, children, ...props }) => {
-  return React.createElement(`h${Math.min(level, 6)}`, props, children);
-};
 
 class Patient extends React.Component {
   constructor(props) {
