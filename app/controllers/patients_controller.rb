@@ -7,14 +7,15 @@ class PatientsController < ApplicationController
   include Orchestration::Orchestrator
 
   before_action :authenticate_user!
+  before_action :set_playbook, :only => [:index, :show, :new, :new_group_member, :edit]
+  before_action(only: [:show,  :new, :new_group_member, :edit]) { set_available_workflows(@playbook) }
+  before_action(only: [:show,  :new, :new_group_member, :edit]) { set_continuous_exposure_enabled(@playbook) }
 
   # Enroller view to see enrolled subjects and button to enroll new subjects
   def index
     @title = 'Enroller Dashboard'
     @enrolled_patients = current_user.enrolled_patients.eager_load(:jurisdiction)
     redirect_to(root_url) && return unless current_user.can_create_patient?
-
-    @playbook = default_playbook
   end
 
   def monitoree_unavailable
@@ -54,11 +55,6 @@ class PatientsController < ApplicationController
 
     @history_types = History::HISTORY_TYPES
 
-    @playbook = default_playbook
-
-    @available_workflows = available_workflows(@playbook)
-    @continuous_exposure_enabled = continuous_exposure_enabled?(@playbook)
-
     dashboard_crumb(params.permit(:nav)[:nav], @playbook, @patient)
 
     @patient_page_sections = workflow_configuration(@playbook, nil, :patient_page_sections)
@@ -87,11 +83,6 @@ class PatientsController < ApplicationController
                            exposure_notes: @close_contact.nil? ? '' : @close_contact.notes,
                            preferred_contact_method: 'Unknown')
 
-    @playbook = default_playbook
-    @available_workflows = available_workflows(@playbook)
-
-    @continuous_exposure_enabled = continuous_exposure_enabled?(@playbook)
-
     dashboard_crumb(params.permit(:nav)[:nav] || (params.permit(:isolation)[:isolation] ? 'isolation' : 'global'), @playbook, nil)
   end
 
@@ -114,11 +105,6 @@ class PatientsController < ApplicationController
 
     @parent_id = parent.id
 
-    @playbook = default_playbook
-    @available_workflows = available_workflows(@playbook)
-
-    @continuous_exposure_enabled = continuous_exposure_enabled?(@playbook)
-
     dashboard_crumb(params.permit(:nav)[:nav], @playbook, parent)
   end
 
@@ -136,11 +122,6 @@ class PatientsController < ApplicationController
     @dependents_exclude_hoh = @patient.dependents_exclude_self
     @propagated_fields = group_member_subset.collect { |field| [field, false] }.to_h
     @enrollment_step = params.permit(:step)[:step]&.to_i
-
-    @playbook = default_playbook
-    @available_workflows = available_workflows(@playbook)
-
-    @continuous_exposure_enabled = continuous_exposure_enabled?(@playbook)
 
     dashboard_crumb(params.permit(:nav)[:nav], @playbook, @patient)
   end
@@ -1056,5 +1037,17 @@ class PatientsController < ApplicationController
     end
 
     @dashboard_path = current_user.enroller? && @dashboard == 'global' ? patients_path : "/dashboard/#{playbook}/#{dashboard}"
+  end
+
+  def set_playbook
+    @playbook = default_playbook
+  end
+
+  def set_available_workflows(playbook)
+    @available_workflows = available_workflows(playbook)
+  end
+
+  def set_continuous_exposure_enabled(playbook)
+    @continuous_exposure_enabled = continuous_exposure_enabled?(playbook)
   end
 end
