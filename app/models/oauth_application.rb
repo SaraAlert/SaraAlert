@@ -8,6 +8,10 @@ class OauthApplication < ApplicationRecord
   belongs_to :jurisdiction, optional: true
 
   def exported_recently?
-    api_downloads.where('created_at > ?', 15.minutes.ago).exists?
+    api_downloads.where('created_at > ?', Rails.configuration.api['bulk_export_retry_after_minutes'].minutes.ago).exists?
+  end
+
+  def retry_bulk_export_after
+    api_downloads.pluck(:created_at).last + Rails.configuration.api['bulk_export_retry_after_minutes'].minutes
   end
 end

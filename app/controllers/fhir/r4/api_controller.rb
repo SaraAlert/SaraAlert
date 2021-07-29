@@ -465,7 +465,11 @@ class Fhir::R4::ApiController < ApplicationApiController
 
     client_app = current_client_application
     if client_app.exported_recently?
-      status_too_many_requests_with_custom_errors(['Client already initiated an export of this type in the last 15 minutes. Please try again later']) && return
+      response['Retry-After'] = client_app.retry_bulk_export_after.httpdate
+      status_too_many_requests_with_custom_errors(
+        ["Client already initiated an export of this type in the last #{Rails.configuration.api['bulk_export_retry_after_minutes']} minutes. " \
+        'Please try again later']
+      ) && return
     end
 
     # Create the download to uniquely id this request, and queue the ExportFhirJob
@@ -498,6 +502,7 @@ class Fhir::R4::ApiController < ApplicationApiController
         transactionTime: transaction_time.utc.strftime('%FT%T%:z'),
         request: download.url,
         requiresAccessToken: true,
+        errors: [],
         output: download.files.blobs.pluck(:filename).map do |file|
           resource_type = file.split('.').first
           {
@@ -506,12 +511,16 @@ class Fhir::R4::ApiController < ApplicationApiController
           }
         end
       }
-      response.headers['Expires'] = Chronic.parse(ADMIN_OPTIONS['weekly_purge_date']).httpdate
       render json: response_json.to_json, status: :ok
     when :failed
       status_server_error(['Export failed']) && return
     when :working, :queued, :retrying
-      response.headers['X-Progress'] = status.to_s
+      response.headers['X-Progress'] = if status == :working
+                                         "#{Sidekiq::Status.pct_complete(download.job_id)} %"
+                                       else
+                                         status.to_s
+                                       end
+      response['Retry-After'] = Rails.configuration.api['bulk_export_status_retry_after_seconds'].to_s
       head :accepted
     else
       status_not_found_with_custom_errors(['No export found for this ID']) && return

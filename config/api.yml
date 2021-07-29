@@ -1,0 +1,4 @@
+# CONFIGURATION FOR FHIR API
+bulk_export_retry_after_minutes: 15
+
+bulk_export_status_retry_after_seconds: 10
