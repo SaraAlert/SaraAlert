@@ -193,8 +193,8 @@ class PatientMailer < ApplicationMailer
     # Reset send attempt timestamp on failure
     patient.last_assessment_reminder_sent = nil
     patient.save(touch: false)
-    # assessment_email_error History will not update associated patient updated_at
-    History.assessment_email_error(patient: patient)
+    # report_email_error History will not update associated patient updated_at
+    History.report_email_error(patient: patient)
     Raven.capture_exception(e)
   end
 
