@@ -1096,7 +1096,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       patient_before: patient_before,
       patient: patient,
       updates: updates,
-      household_status: :patient,
+      initiator_id: patient.id,
       propagation: :none
     }
     patient.monitoring_history_edit(history_data, nil)
