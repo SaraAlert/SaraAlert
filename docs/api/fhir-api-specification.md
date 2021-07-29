@@ -1665,6 +1665,42 @@ Get a monitoree history via an id, e.g.:
   "meta": {
     "lastUpdated": "2021-07-21T00:07:30+00:00"
   },
+  "contained": [
+    {
+      "id": "c1f6be4f-32ff-4fb8-b803-7bb8be7cb77b",
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/delete-reason",
+          "valueString": "Entered in error"
+        }
+      ],
+      "target": [
+        {
+          "reference": "Provenance/12554"
+        }
+      ],
+      "recorded": "2021-07-21T00:07:30+00:00",
+      "activity": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+            "code": "DELETE",
+            "display": "delete"
+          }
+        ]
+      },
+      "agent": [
+        {
+          "who": {
+            "identifier": {
+              "value": "state1_epi_enroller@example.com"
+            }
+          }
+        }
+      ],
+      "resourceType": "Provenance"
+    }
+  ],
   "extension": [
     {
       "url": "http://saraalert.org/StructureDefinition/comment",
@@ -1673,14 +1709,6 @@ Get a monitoree history via an id, e.g.:
     {
       "url": "http://saraalert.org/StructureDefinition/history-type",
       "valueString": "Comment"
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/deleted-by",
-      "valueString": "state1_epi_enroller@example.com"
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/delete-reason",
-      "valueString": "Entered in error"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/original-id",
@@ -1707,7 +1735,6 @@ Get a monitoree history via an id, e.g.:
   ],
   "resourceType": "Provenance"
 }
-
 ```
   </div>
 </details>
@@ -1730,18 +1757,10 @@ The `http://saraalert.org/StructureDefinition/history-type` extension indicates 
 }
 ```
 
-The `http://saraalert.org/StructureDefinition/deleted-by` extension indicates who a history was deleted by. This extension is read-only.
+The `http://saraalert.org/StructureDefinition/delete-reason` extension indicates the reason for which a history was deleted. This extension is read-only. This extension will be present on a Provenance resource in the `Provenance.contained` array, which is used to describe why a certain history was deleted.
 ```json
 {
-  "url": "http://saraalert.org/StructureDefinition/deleted-by",
-  "valueString": "epi_enroller_all@example.com"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/deleted-reason` extension indicates the reason for which a history was deleted. This extension is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/deleted-reason",
+  "url": "http://saraalert.org/StructureDefinition/delete-reason",
   "valueString": "Entered in error"
 }
 ```

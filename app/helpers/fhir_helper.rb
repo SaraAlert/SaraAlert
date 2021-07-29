@@ -36,6 +36,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     FHIR::Patient.new(
       meta: FHIR::Meta.new(lastUpdated: patient.updated_at.strftime('%FT%T%:z')),
       contained: [FHIR::Provenance.new(
+        id: SecureRandom.uuid,
         # Would like to use a Rails URL Helper here, but we don't get one for this endpoint
         target: [FHIR::Reference.new(reference: "/fhir/r4/Patient/#{patient.id}")],
         agent: [
@@ -287,6 +288,30 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # https://www.hl7.org/fhir/provenance.html
   def history_as_fhir(history)
     FHIR::Provenance.new(
+      contained: history.deleted_by.nil? ? nil : [
+        FHIR::Provenance.new(
+          id: SecureRandom.uuid,
+          target: [FHIR::Reference.new(reference: "Provenance/#{history.id}")],
+          agent: [
+            FHIR::Provenance::Agent.new(
+              who: FHIR::Reference.new(identifier: FHIR::Identifier.new(value: history.deleted_by))
+            )
+          ],
+          recorded: history.updated_at.strftime('%FT%T%:z'),
+          activity: {
+            coding: [
+              {
+                system: 'http://terminology.hl7.org/CodeSystem/v3-DataOperation',
+                code: 'DELETE',
+                display: 'delete'
+              }
+            ]
+          },
+          extension: [
+            to_string_extension(history.delete_reason, 'delete-reason')
+          ]
+        )
+      ],
       meta: FHIR::Meta.new(lastUpdated: history.updated_at.strftime('%FT%T%:z')),
       id: history.id,
       target: FHIR::Reference.new(reference: "Patient/#{history.patient_id}"),
@@ -300,8 +325,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       extension: [
         to_string_extension(history.comment, 'comment'),
         to_string_extension(history.history_type, 'history-type'),
-        to_string_extension(history.deleted_by, 'deleted-by'),
-        to_string_extension(history.delete_reason, 'delete-reason'),
         to_positive_integer_extension(history.original_comment_id, 'original-id')
       ]
     )
