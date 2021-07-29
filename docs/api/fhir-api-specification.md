@@ -429,7 +429,7 @@ Get a monitoree via an id, e.g.:
 {
   "id": 43,
   "meta": {
-    "lastUpdated": "2021-07-22T18:18:28+00:00"
+    "lastUpdated": "2021-07-27T15:31:08+00:00"
   },
   "contained": [
     {
@@ -691,7 +691,7 @@ Get a monitoree via an id, e.g.:
     },
     {
       "url": "http://saraalert.org/StructureDefinition/assigned-user",
-      "valuePositiveInt": 205610
+      "valuePositiveInt": 1234
     },
     {
       "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
@@ -735,11 +735,15 @@ Get a monitoree via an id, e.g.:
     },
     {
       "url": "http://saraalert.org/StructureDefinition/continuous-exposure",
-      "valueBoolean": true
+      "valueBoolean": false
     },
     {
       "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
-      "valueString": "Continuous Exposure"
+      "valueString": "2021-07-07"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/expected-purge-date",
+      "valueDateTime": "2021-08-10T15:31:08+00:00"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
@@ -762,6 +766,10 @@ Get a monitoree via an id, e.g.:
       "valueBoolean": false
     },
     {
+      "url": "http://saraalert.org/StructureDefinition/reason-for-closure",
+      "valueString": "Meets Case Definition"
+    },
+    {
       "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination",
       "valueString": "Pourosside"
     },
@@ -782,8 +790,20 @@ Get a monitoree via an id, e.g.:
       "valueString": "Confirmed"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/gender-identity",
-      "valueString": "Another"
+      "url": "http://saraalert.org/StructureDefinition/closed-at",
+      "valueDateTime": "2021-07-27T15:29:34+00:00"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/gender-identity",
+            "code": "transgender-female"
+          }
+        ],
+        "text": "Transgender Female (Male-to-Female [MTF])"
+      }
     },
     {
       "url": "http://saraalert.org/StructureDefinition/head-of-household",
@@ -803,7 +823,7 @@ Get a monitoree via an id, e.g.:
     },
     {
       "url": "http://saraalert.org/StructureDefinition/status",
-      "valueString": "symptomatic"
+      "valueString": "closed"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/user-defined-symptom-onset",
@@ -816,7 +836,7 @@ Get a monitoree via an id, e.g.:
       "value": "0952379687"
     }
   ],
-  "active": true,
+  "active": false,
   "name": [
     {
       "family": "Johns78",
@@ -974,11 +994,19 @@ The `http://saraalert.org/StructureDefinition/closed-at` extension represents th
 }
 ```
 
-The `http://saraalert.org/StructureDefinition/gender-identity` extension represents the gender identity of a monitoree. This field is read-only.
+The `http://hl7.org/fhir/StructureDefinition/patient-genderIdentity` extension represents the gender identity of a monitoree. This field is read-only.
 ```json
 {
-  "url": "http://saraalert.org/StructureDefinition/gender-identity",
-  "valueString": "Another"
+  "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/gender-identity",
+        "code": "transgender-female"
+      }
+    ],
+    "text": "Transgender Female (Male-to-Female [MTF])"
+  }
 }
 ```
 
@@ -986,7 +1014,15 @@ The `http://saraalert.org/StructureDefinition/sexual-orientation` extension repr
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/sexual-orientation",
-  "valueString": "Choose not to disclose"
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "38628009"
+      }
+    ],
+    "text": "Lesbian, Gay, or Homosexual"
+  }
 }
 ```
 
@@ -2096,8 +2132,16 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
             "valueString": "Confirmed"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/gender-identity",
-            "valueString": "Another"
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/gender-identity",
+                  "code": "transgender-female"
+                }
+              ],
+              "text": "Transgender Female (Male-to-Female [MTF])"
+            }
           },
           {
             "url": "http://saraalert.org/StructureDefinition/head-of-household",
@@ -4420,8 +4464,16 @@ GET `[base]/Patient?given=john&family=doe`
             "valueString": "Confirmed"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/gender-identity",
-            "valueString": "Another"
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/gender-identity",
+                  "code": "transgender-female"
+                }
+              ],
+              "text": "Transgender Female (Male-to-Female [MTF])"
+            }
           },
           {
             "url": "http://saraalert.org/StructureDefinition/head-of-household",
@@ -5338,12 +5390,28 @@ GET `[base]/Patient?_count=2`
             "valueString": "Probable"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/gender-identity",
-            "valueString": "Transgender Male (Female-to-Male [FTM])"
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/gender-identity",
+                  "code": "transgender-female"
+                }
+              ],
+              "text": "Transgender Female (Male-to-Female [MTF])"
+            }
           },
           {
             "url": "http://saraalert.org/StructureDefinition/sexual-orientation",
-            "valueString": "Choose not to disclose"
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "38628009"
+                }
+              ],
+              "text": "Lesbian, Gay, or Homosexual"
+            }
           },
           {
             "url": "http://saraalert.org/StructureDefinition/id-of-reporter",
@@ -5676,7 +5744,15 @@ GET `[base]/Patient?_count=2`
           },
           {
             "url": "http://saraalert.org/StructureDefinition/sexual-orientation",
-            "valueString": "Don’t know"
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "38628009"
+                }
+              ],
+              "text": "Lesbian, Gay, or Homosexual"
+            }
           },
           {
             "url": "http://saraalert.org/StructureDefinition/id-of-reporter",

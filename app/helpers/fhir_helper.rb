@@ -131,8 +131,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.additional_planned_travel_type, 'additional-planned-travel-type'),
         to_string_extension(patient.case_status, 'case-status'),
         to_datetime_extension(patient.closed_at, 'closed-at'),
-        to_string_extension(patient.gender_identity, 'gender-identity'),
-        to_string_extension(patient.sexual_orientation, 'sexual-orientation'),
+        to_gender_identity_extension(patient.gender_identity),
+        to_sexual_orientation_extension(patient.sexual_orientation),
         to_bool_extension(patient.head_of_household, 'head-of-household'),
         to_positive_integer_extension(patient.responder_id, 'id-of-reporter'),
         to_datetime_extension(patient.last_assessment_reminder_sent, 'last-assessment-reminder-sent'),
@@ -472,20 +472,39 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       item: assessment.reported_condition.symptoms.enum_for(:each_with_index).collect do |s, index|
         case s.type
         when 'IntegerSymptom'
-          FHIR::QuestionnaireResponse::Item.new(text: s.name,
-                                                answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueInteger: s.int_value),
-                                                linkId: index.to_s)
+          FHIR::QuestionnaireResponse::Item.new(
+            text: s.name,
+            answer: to_questionnaire_response_answer(:valueInteger, s.int_value),
+            linkId: index.to_s
+          )
         when 'FloatSymptom'
-          FHIR::QuestionnaireResponse::Item.new(text: s.name,
-                                                answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueDecimal: s.float_value),
-                                                linkId: index.to_s)
+          FHIR::QuestionnaireResponse::Item.new(
+            text: s.name,
+            answer: to_questionnaire_response_answer(:valueDecimal, s.float_value),
+            linkId: index.to_s
+          )
         when 'BoolSymptom'
-          FHIR::QuestionnaireResponse::Item.new(text: s.name,
-                                                answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueBoolean: s.bool_value),
-                                                linkId: index.to_s)
+          FHIR::QuestionnaireResponse::Item.new(
+            text: s.name,
+            answer: to_questionnaire_response_answer(:valueBoolean, s.bool_value),
+            linkId: index.to_s
+          )
         end
       end
     )
+  end
+
+  def to_questionnaire_response_answer(field, value)
+    if value.nil?
+      FHIR::QuestionnaireResponse::Item::Answer.new(
+        valueCoding: FHIR::Coding.new(
+          system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+          code: 'UNK'
+        )
+      )
+    else
+      FHIR::QuestionnaireResponse::Item::Answer.new(field => value)
+    end
   end
 
   # Build a FHIR US Core Race Extension given Sara Alert race booleans.
@@ -963,6 +982,85 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
           valueString: patient.source_of_report_specify
         )
       ]
+    )
+  end
+
+  def to_gender_identity_extension(gender_identity)
+    return nil if gender_identity.blank?
+
+    case gender_identity
+    when 'Male (Identifies as male)'
+      fhir_gender_identity = 'male'
+    when 'Female (Identifies as female)'
+      fhir_gender_identity = 'female'
+    when 'Transgender Male (Female-to-Male [FTM])'
+      fhir_gender_identity = 'transgender-male'
+    when 'Transgender Female (Male-to-Female [MTF])'
+      fhir_gender_identity = 'transgender-female'
+    when 'Genderqueer / gender nonconforming (neither exclusively male nor female)'
+      fhir_gender_identity = 'non-binary'
+    when 'Another'
+      fhir_gender_identity = 'other'
+    when 'Chose not to disclose'
+      fhir_gender_identity = 'non-disclose'
+    end
+
+    FHIR::Extension.new(
+      url: 'http://hl7.org/fhir/StructureDefinition/patient-genderIdentity',
+      valueCodeableConcept: FHIR::CodeableConcept.new(
+        coding: [
+          FHIR::Coding.new(
+            system: 'http://hl7.org/fhir/gender-identity',
+            code: fhir_gender_identity
+          )
+        ],
+        text: gender_identity
+      )
+    )
+  end
+
+  def to_sexual_orientation_extension(sexual_orientation)
+    return nil if sexual_orientation.blank?
+
+    case sexual_orientation
+    when 'Straight or Heterosexual'
+      sexual_orientation_coding = FHIR::Coding.new(
+        system: 'http://snomed.info/sct',
+        code: '20430005'
+      )
+    when 'Lesbian, Gay, or Homosexual'
+      sexual_orientation_coding = FHIR::Coding.new(
+        system: 'http://snomed.info/sct',
+        code: '38628009'
+      )
+    when 'Bisexual'
+      sexual_orientation_coding = FHIR::Coding.new(
+        system: 'http://snomed.info/sct',
+        code: '42035005'
+      )
+    when 'Another'
+      sexual_orientation_coding = FHIR::Coding.new(
+        system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+        code: 'OTH'
+      )
+    when 'Choose not to disclose'
+      sexual_orientation_coding = FHIR::Coding.new(
+        system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+        code: 'ASKU'
+      )
+    when 'Don’t know'
+      sexual_orientation_coding = FHIR::Coding.new(
+        system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+        code: 'UNK'
+      )
+    end
+
+    FHIR::Extension.new(
+      url: 'http://saraalert.org/StructureDefinition/sexual-orientation',
+      valueCodeableConcept: FHIR::CodeableConcept.new(
+        coding: [sexual_orientation_coding],
+        text: sexual_orientation
+      )
     )
   end
 
