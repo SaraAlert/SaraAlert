@@ -56,7 +56,7 @@ describe('CloseRecords', () => {
 
   it('Changing closure reason properly updates state and character limit label', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find('.character-limit-text').text()).toContain('2000 characters remaining');
+    expect(wrapper.find('.character-limit-text').text()).toEqual('2000 characters remaining');
     expect(wrapper.state('reasoning')).toEqual('');
     const mockReasoning = 'I Shall Call Him Squishy And He Shall Be Mine And He Shall Be My Squishy.';
     wrapper
@@ -65,7 +65,7 @@ describe('CloseRecords', () => {
       .find(Form.Control)
       .simulate('change', { target: { id: 'reasoning', value: mockReasoning } });
     expect(wrapper.state('reasoning')).toEqual(mockReasoning);
-    expect(wrapper.find('.character-limit-text').text()).toContain(`${2000 - mockReasoning.length} characters remaining`);
+    expect(wrapper.find('.character-limit-text').text()).toEqual(`${2000 - mockReasoning.length} characters remaining`);
   });
 
   it('Properly toggles the Apply to Household option', () => {
