@@ -44,6 +44,7 @@ class Workflow extends React.Component {
         <PatientsTable
           authenticity_token={this.props.authenticity_token}
           jurisdiction_paths={this.state.jurisdiction_paths}
+          playbook={this.props.playbook}
           workflow={this.props.workflow}
           jurisdiction={this.props.jurisdiction}
           tabs={this.props.tabs}
