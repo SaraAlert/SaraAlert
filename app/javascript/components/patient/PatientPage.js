@@ -25,7 +25,7 @@ class PatientPage extends React.Component {
             can_modify_subject_status={this.props.can_modify_subject_status}
             authenticity_token={this.props.authenticity_token}
             workflow={this.props.workflow}
-            priority={1}
+            headingLevel={2}
           />
           <div className="household-info">
             {!this.props.patient.head_of_household && this.props?.other_household_members?.length > 0 && (

@@ -24,7 +24,7 @@ describe('HistoryList', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
     expect(wrapper.find('#histories').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('span').text()).toEqual('History');
+    expect(wrapper.find(Card.Header).at(0).text()).toContain('History');
     expect(wrapper.find(Card.Header).find(InfoTooltip).exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).find(InfoTooltip).prop('tooltipTextKey')).toEqual('history');
     expect(wrapper.find('#history-filters').exists()).toBeTruthy();

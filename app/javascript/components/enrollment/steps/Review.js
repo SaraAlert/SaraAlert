@@ -72,7 +72,7 @@ class Review extends React.Component {
               details={{ ...this.props.currentState.patient, blocked_sms: this.props.currentState.blocked_sms } || {}}
               authenticity_token={this.props.authenticity_token}
               workflow={this.props.workflow}
-              priority={1}
+              headingLevel={2}
             />
             <div className="pb-4"></div>
             {this.props.previous && (

@@ -23,10 +23,10 @@ describe('History', () => {
   it('Properly renders non-comment histories', () => {
     const wrapper = getWrapper([mockEnrollmentHistory]);
     expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockEnrollmentHistory.created_by);
+    expect(wrapper.find(Card.Header).find('b').text()).toContain(mockEnrollmentHistory.created_by);
     expect(wrapper.find(Card.Header).text().includes(formatTimestamp(mockEnrollmentHistory.created_at))).toBeTruthy();
     expect(wrapper.find(Card.Header).text().includes(formatRelativePast(mockEnrollmentHistory.created_at))).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('.badge').text()).toEqual(mockEnrollmentHistory.history_type);
+    expect(wrapper.find(Card.Header).find('.badge').text()).toContain(mockEnrollmentHistory.history_type);
     expect(wrapper.find(Card.Body).find(Col).text()).toEqual(mockEnrollmentHistory.comment);
     expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeFalsy();
@@ -37,10 +37,10 @@ describe('History', () => {
   it('Properly renders comment histories if current user created the comment', () => {
     const wrapper = getWrapper([mockCommentHistory2]);
     expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockCommentHistory2.created_by);
+    expect(wrapper.find(Card.Header).find('b').text()).toContain(mockCommentHistory2.created_by);
     expect(wrapper.find(Card.Header).text().includes(formatTimestamp(mockCommentHistory2.created_at))).toBeTruthy();
     expect(wrapper.find(Card.Header).text().includes(formatRelativePast(mockCommentHistory2.created_at))).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('.badge').text()).toEqual(mockCommentHistory2.history_type);
+    expect(wrapper.find(Card.Header).find('.badge').text()).toContain(mockCommentHistory2.history_type);
     expect(wrapper.find(Card.Body).find(Col).at(0).text()).toEqual(mockCommentHistory2.comment);
     expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find(Button).length).toEqual(2);
@@ -56,10 +56,10 @@ describe('History', () => {
   it('Properly renders comment histories if current user did not create the comment', () => {
     const wrapper = getWrapper([mockCommentHistory1]);
     expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockCommentHistory1.created_by);
+    expect(wrapper.find(Card.Header).find('b').text()).toContain(mockCommentHistory1.created_by);
     expect(wrapper.find(Card.Header).text().includes(formatTimestamp(mockCommentHistory1.created_at))).toBeTruthy();
     expect(wrapper.find(Card.Header).text().includes(formatRelativePast(mockCommentHistory1.created_at))).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('.badge').text()).toEqual(mockCommentHistory1.history_type);
+    expect(wrapper.find(Card.Header).find('.badge').text()).toContain(mockCommentHistory1.history_type);
     expect(wrapper.find(Card.Body).find(Col).at(0).text()).toEqual(mockCommentHistory1.comment);
     expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeFalsy();
@@ -70,10 +70,10 @@ describe('History', () => {
   it('Properly renders edited comment histories', () => {
     const wrapper = getWrapper([mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2]);
     expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockCommentHistory2.created_by);
+    expect(wrapper.find(Card.Header).find('b').text()).toContain(mockCommentHistory2.created_by);
     expect(wrapper.find(Card.Header).text().includes(formatTimestamp(mockCommentHistory2.created_at))).toBeTruthy();
     expect(wrapper.find(Card.Header).text().includes(formatRelativePast(mockCommentHistory2.created_at))).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('.badge').text()).toEqual(mockCommentHistory2.history_type);
+    expect(wrapper.find(Card.Header).find('.badge').text()).toContain(mockCommentHistory2.history_type);
     expect(wrapper.find(Card.Body).find(Col).at(0).text().includes(mockCommentHistory2Edit2.comment)).toBeTruthy();
     expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find('.edit-text').text()).toEqual('(edited)');

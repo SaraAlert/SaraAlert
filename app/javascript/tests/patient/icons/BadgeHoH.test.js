@@ -8,7 +8,7 @@ describe('BadgeHoH', () => {
     const wrapper = shallow(<BadgeHoH patientId={'1'} location={'right'} />);
 
     expect(wrapper.find(Badge).exists()).toBeTruthy();
-    expect(wrapper.find(Badge).text()).toEqual('HoH');
+    expect(wrapper.find(Badge).find('span').text()).toEqual('HoH');
     expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('Monitoree is Head of Household that reports on behalf of household members');
   });

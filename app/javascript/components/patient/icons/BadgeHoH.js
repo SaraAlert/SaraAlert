@@ -9,9 +9,7 @@ class BadgeHoH extends React.Component {
       <React.Fragment>
         <span data-for={`${this.props.patientId}-hoh`} data-tip="" className={this.props.customClass}>
           <Badge variant="dark" className="badge-hoh">
-            {/* Maintaining a separate element prevents the screen reader from reading this as "Ho" */}
-            <span className="sr-only">Head of Household</span>
-            <span aria-hidden="true">HoH</span>
+            <span aria-label="Head of Household">HoH</span>
           </Badge>
         </span>
         <ReactTooltip id={`${this.props.patientId}-hoh`} multiline={true} place={this.props.location} type="dark" effect="solid" className="tooltip-container">

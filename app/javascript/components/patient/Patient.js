@@ -24,7 +24,7 @@ const Heading = ({ level, children, ...props }) => {
 class Patient extends React.Component {
   constructor(props) {
     super(props);
-    rootHeaderLevel = props.priority || 1;
+    rootHeaderLevel = props.headingLevel || 1;
     this.state = {
       expanded: props.edit_mode || !props.collapse,
       expandNotes: false,
@@ -160,9 +160,10 @@ class Patient extends React.Component {
             />
           )}
           <Col sm={12}>
-            <Heading level={rootHeaderLevel + 1} className="secondary-title">
-              <span className="sr-only"> Monitoree Name: </span>
-              <span className="pr-2">{formatName(this.props.details)}</span>
+            <Heading level={rootHeaderLevel} className="secondary-title">
+              <span className="pr-2" aria-label={`Monitoree Name: ${formatName(this.props.details)}`}>
+                {formatName(this.props.details)}
+              </span>
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
             </Heading>
             {this.props.can_modify_subject_status && !this.props.edit_mode && !this.props.details.follow_up_reason && (
@@ -191,7 +192,7 @@ class Patient extends React.Component {
         <Row>
           <Col id="identification" lg={14} className="col-xxl-12">
             <div className="section-header">
-              <Heading level={rootHeaderLevel + 2} className="section-title">
+              <Heading level={rootHeaderLevel + 1} className="section-title">
                 Identification
               </Heading>
               {this.renderEditLink('Identification', 0)}
@@ -245,7 +246,7 @@ class Patient extends React.Component {
           </Col>
           <Col id="contact-information" lg={10} className="col-xxl-12">
             <div className="section-header">
-              <Heading level={rootHeaderLevel + 2} className="section-title">
+              <Heading level={rootHeaderLevel + 1} className="section-title">
                 Contact Information
               </Heading>
               {this.renderEditLink('Contact Information', 2)}
@@ -313,7 +314,7 @@ class Patient extends React.Component {
             <Row>
               <Col id="address" lg={14} xl={12} className="col-xxxl-10">
                 <div className="section-header">
-                  <Heading level={rootHeaderLevel + 2} className="section-title">
+                  <Heading level={rootHeaderLevel + 1} className="section-title">
                     Address
                   </Heading>
                   {this.renderEditLink('Address', 1)}
@@ -427,7 +428,7 @@ class Patient extends React.Component {
                 <Row>
                   <Col id="arrival-information" xl={24} className="col-xxxl-12">
                     <div className="section-header">
-                      <Heading level={rootHeaderLevel + 2} className="section-title">
+                      <Heading level={rootHeaderLevel + 1} className="section-title">
                         Arrival Information
                       </Heading>
                       {this.renderEditLink('Arrival Information', 3)}
@@ -493,8 +494,8 @@ class Patient extends React.Component {
                   </Col>
                   <Col id="planned-travel" xl={24} className="col-xxxl-12">
                     <div className="section-header">
-                      <Heading level={rootHeaderLevel + 2} className="section-title">
-                        <span className="d-none d-lg-inline d-xl-none d-xxl-inline">Additional</span> Planned Travel
+                      <Heading level={rootHeaderLevel + 1} className="section-title">
+                        <span className="d-none d-lg-inline d-xl-none d-xxl-inline"> Additional </span>Planned Travel
                       </Heading>
                       {this.renderEditLink('Planned Travel', 4)}
                     </div>
@@ -565,8 +566,8 @@ class Patient extends React.Component {
             <Row>
               <Col id="potential-exposure-information" md={14} xl={12} className={this.props.details.isolation ? 'col-xxxl-8' : 'col-xxxl-10'}>
                 <div className="section-header">
-                  <Heading level={rootHeaderLevel + 2} className="section-title">
-                    Potential Exposure <span className="d-none d-lg-inline">Information</span>
+                  <Heading level={rootHeaderLevel + 1} className="section-title">
+                    Potential Exposure<span className="d-none d-lg-inline"> Information </span>
                   </Heading>
                   {!this.props.details.isolation && this.renderEditLink('Potential Exposure Information', 5)}
                 </div>
@@ -665,7 +666,7 @@ class Patient extends React.Component {
               {this.props.details.isolation && (
                 <Col id="case-information" md={10} xl={12} className="col-xxxl-8">
                   <div className="section-header">
-                    <Heading level={rootHeaderLevel + 2} className="section-title">
+                    <Heading level={rootHeaderLevel + 1} className="section-title">
                       Case Information
                     </Heading>
                     {this.renderEditLink('Case Information', 5)}
@@ -691,7 +692,7 @@ class Patient extends React.Component {
               {(showPotentialExposureInfo || showRiskFactors) && (
                 <Col id="exposure-notes" md={10} xl={12} className="notes-section col-xxxl-8">
                   <div className="section-header">
-                    <Heading level={rootHeaderLevel + 2} className="section-title">
+                    <Heading level={rootHeaderLevel + 1} className="section-title">
                       Notes
                     </Heading>
                     {this.renderEditLink('Edit Notes', 5)}
@@ -744,7 +745,7 @@ Patient.propTypes = {
   can_modify_subject_status: PropTypes.bool,
   authenticity_token: PropTypes.string,
   workflow: PropTypes.string,
-  priority: PropTypes.number,
+  headingLevel: PropTypes.number,
 };
 
 export default Patient;
