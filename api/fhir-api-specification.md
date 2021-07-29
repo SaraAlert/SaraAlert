@@ -487,8 +487,48 @@ Get a monitoree via an id, e.g.:
       "valueBoolean": false
     },
     {
-        "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
-        "valueString": "USA, State 1"
+      "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+      "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
+      "valueString": "2020-05-29"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+      "valueString": "Low"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/public-health-action",
+      "valueString": "Document results of medical evaluation"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
+      "valueBoolean": true
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
+      "valueString": "case1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+      "valueString": "Collierview"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+      "valueString": "Angola"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+      "valueBoolean": true
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-reason",
+      "valueString": "Duplicate"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-note",
+      "valueString": "This is a duplicate."
     }
   ],
   "active": true,
@@ -974,6 +1014,38 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
+            "valueString": "2020-05-29"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+            "valueString": "Low"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/public-health-action",
+            "valueString": "Document results of medical evaluation"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
+            "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
+            "valueString": "case1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+            "valueString": "Collierview"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+            "valueString": "Angola"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+            "valueBoolean": true
           }
         ],
         "active": true,
@@ -1259,6 +1331,42 @@ To create a new monitoree, simply POST a FHIR Patient resource.
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+      "valueString": "Low"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/public-health-action",
+      "valueString": "Document results of medical evaluation"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
+      "valueBoolean": true
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
+      "valueString": "case1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+      "valueString": "Collierview"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+      "valueString": "Angola"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+      "valueBoolean": true
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-reason",
+      "valueString": "Duplicate"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-note",
+      "valueString": "This is a duplicate."
     }
   ],
   "active": true,
@@ -1391,6 +1499,38 @@ On success, the server will return the newly created resource with an id. This i
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
+      "valueString": "2020-05-29"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+      "valueString": "Low"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/public-health-action",
+      "valueString": "Document results of medical evaluation"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
+      "valueBoolean": true
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
+      "valueString": "case1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+      "valueString": "Collierview"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+      "valueString": "Angola"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+      "valueBoolean": true
     }
   ],
   "active": true,
@@ -1600,6 +1740,94 @@ Use `http://saraalert.org/StructureDefinition/additional-planned-travel-notes` t
 }
 ```
 
+Use `http://saraalert.org/StructureDefinition/exposure-risk-assessment` to specify the risk assessment of the monitoree's exposure to disease.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+  "valueString": "Low"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/public-health-action` to specify the public health recommendation provided to a monitoree.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/public-health-action",
+  "valueString": "Document results of medical evaluation"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/contact-of-known-case` to specify if a monitoree has a known exposure to a confirmed or probable case.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
+  "valueBoolean": true
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/contact-of-known-case-id` to specify the case ID of the probable or confirmed case that a monitoree had exposure to. Any sort of identifier can be used here.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
+  "valueString": "1"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/common-exposure-cohort-name` to specify the name of a cohort that a monitoree shares common exposure with.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort-name",
+  "valueString": "Example Cohort"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/potential-exposure-location` to specify a description of the location where the monitoree was potentially last exposed to a case.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+  "valueString": "Boise"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/potential-exposure-country` to specify the country where the monitoree was potentially last exposed to a case.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+  "valueString": "Angola"
+}
+```
+
+Use `http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired` to specify if the monitoree needs a language interpreter when speaking with public health representatives.
+```json
+{
+  "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+  "valueBoolean": true
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/extended-isolation` to specify a user-defined date that determines eligibility for a monitoree appearing on the Records Requiring Review linelist.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/extended-isolation",
+  "valueDate": "2021-06-15"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/follow-up-reason` to specify a reason to follow up on the monitoree (options are: `Deceased`, `Duplicate`, `High-Risk`, `Hospitalized`, `In Need of Follow-up`, `Lost to Follow-up`, `Needs Interpretation`, `Quality Assurance`, `Refused Active Monitoring`, and `Other`).
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/follow-up-reason",
+  "valueString": "Duplicate"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/follow-up-note` to specify additional details for follow up reason on the monitoree. This requires the follow up reason to be set.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/follow-up-note",
+  "valueString": "This is a duplicate."
+}
+```
+
 Use `http://saraalert.org/StructureDefinition/phone-type` to specify the type of phone attached to the primary or secondary phone number (options are: `Smartphone`, `Plain Cell`, and `Landline`). Note that this extension should be placed on the first element in the `Patient.telecom` array to specify the monitoree's primary phone type, and the second element in the `Patient.telecom` array to specify the monitoree's secondary phone type.
 ```json
 "telecom": [
@@ -1639,6 +1867,48 @@ Use `http://saraalert.org/StructureDefinition/address-type` to specify the type 
     "postalCode": "05657",
   }
 ]
+```
+
+The `http://saraalert.org/StructureDefinition/end-of-monitoring` extension represents the system calculated end of monitoring period. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
+  "valueDate": "2021-06-15"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/expected-purge-date` extension represents the date and time that the monitoree's identifiers will be eligible to be purged from the system. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/expected-purge-date",
+  "valueDateTime": "2021-06-29T21:04:08+00:00"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/reason-for-closure` extension represents the reason a monitoree was closed by the user or system. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/reason-for-closure",
+  "valueString": "Completed Monitoring"
+}
+```
+
+The complex `http://saraalert.org/StructureDefinition/latest-transfer` extension represents the latest transfer that occurred for the monitoree. This field is read-only.
+```json
+
+{
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/transferred-at",
+      "valueDateTime": "2021-05-20T22:54:57+00:00"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/transferred-from",
+      "valueString": "USA, State 1, County 1"
+    }
+  ],
+  "url": "http://saraalert.org/StructureDefinition/latest-transfer"
+}
 ```
 
 ### POST `[base]/RelatedPerson`
@@ -1916,6 +2186,42 @@ An update request creates a new current version for an existing resource.
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+      "valueString": "Low"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/public-health-action",
+      "valueString": "Document results of medical evaluation"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
+      "valueBoolean": true
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
+      "valueString": "case1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+      "valueString": "Collierview"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+      "valueString": "Angola"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+      "valueBoolean": true
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-reason",
+      "valueString": "Duplicate"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-note",
+      "valueString": "This is a duplicate."
     }
   ],
   "active": true,
@@ -2048,6 +2354,38 @@ On success, the server will update the existing resource given the id.
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
+      "valueString": "2020-05-29"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+      "valueString": "Low"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/public-health-action",
+      "valueString": "Document results of medical evaluation"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
+      "valueBoolean": true
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
+      "valueString": "case1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+      "valueString": "Collierview"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+      "valueString": "Angola"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+      "valueBoolean": true
     }
   ],
   "active": true,
@@ -2346,8 +2684,40 @@ On success, the server will update the attributes indicated by the request.
       "valueBoolean": false
     },
     {
-        "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
-        "valueString": "USA, State 1"
+      "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+      "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
+      "valueString": "2020-05-29"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+      "valueString": "Low"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/public-health-action",
+      "valueString": "Document results of medical evaluation"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
+      "valueBoolean": true
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
+      "valueString": "case1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+      "valueString": "Collierview"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+      "valueString": "Angola"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+      "valueBoolean": true
     }
   ],
   "active": true,
@@ -2564,6 +2934,38 @@ GET `[base]/Patient?given=john&family=doe`
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
+            "valueString": "2020-05-29"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+            "valueString": "Low"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/public-health-action",
+            "valueString": "Document results of medical evaluation"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
+            "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
+            "valueString": "case1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+            "valueString": "Collierview"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+            "valueString": "Angola"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+            "valueBoolean": true
           }
         ],
         "active": true,
@@ -3189,6 +3591,38 @@ GET `[base]/Patient?_count=2`
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
+            "valueString": "2020-05-29"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+            "valueString": "Low"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/public-health-action",
+            "valueString": "Document results of medical evaluation"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
+            "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
+            "valueString": "case1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+            "valueString": "Collierview"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+            "valueString": "Angola"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+            "valueBoolean": true
           }
         ],
         "active": true,
