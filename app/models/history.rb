@@ -33,7 +33,7 @@ class History < ApplicationRecord
     welcome_message_sent: 'Welcome Message Sent',
     record_automatically_closed: 'Record Automatically Closed',
     monitoring_complete_message_sent: 'Monitoring Complete Message Sent',
-    assessment_email_error: 'Assessment Email Error'
+    report_email_error: 'Report Email Error'
   }.freeze
 
   columns.each do |column|
@@ -54,14 +54,14 @@ class History < ApplicationRecord
   # - report_reminder
   # - monitoree data download
   # - unsuccessful_report_reminder
-  # - assessment_email_error
+  # - report_email_error
   after_create(
     proc do
       patient.touch unless [
         HISTORY_TYPES[:report_reminder],
         HISTORY_TYPES[:monitoree_data_downloaded],
         HISTORY_TYPES[:unsuccessful_report_reminder],
-        HISTORY_TYPES[:assessment_email_error]
+        HISTORY_TYPES[:report_email_error]
       ].include? history_type
     end
   )
@@ -282,11 +282,11 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment, create: create)
   end
 
-  def self.assessment_email_error(patient: nil,
-                                  created_by: 'Sara Alert System',
-                                  comment: 'Sara Alert was unable to send a report email to the monitoree because of an unexpected error.',
-                                  create: true)
-    create_history(patient, created_by, HISTORY_TYPES[:assessment_email_error], comment, create: create)
+  def self.report_email_error(patient: nil,
+                              created_by: 'Sara Alert System',
+                              comment: 'Sara Alert was unable to send a report email to the monitoree because of an unexpected error.',
+                              create: true)
+    create_history(patient, created_by, HISTORY_TYPES[:report_email_error], comment, create: create)
   end
 
   def self.monitoring_status(history, create: true)

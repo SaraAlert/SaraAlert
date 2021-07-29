@@ -613,7 +613,7 @@ class PatientMailerTest < ActionMailer::TestCase
     end
   end
 
-  test 'assessment_email creates an assessment_email_error history when it fails' do
+  test 'assessment_email creates an report_email_error history when it fails' do
     ActionMailer::Base.deliveries.clear
     patient = create(:patient,
                      submission_token: SecureRandom.urlsafe_base64[0, 10],
@@ -624,7 +624,7 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_difference 'patient.histories.length', 1 do
       PatientMailer.assessment_email(patient).deliver_now
       patient.reload
-      assert_equal('Assessment Email Error', patient.histories.first.history_type)
+      assert_equal('Report Email Error', patient.histories.first.history_type)
       assert_equal(patient.updated_at, original_updated_at)
       assert_equal(ActionMailer::Base.deliveries.length, 0)
     end
