@@ -46,6 +46,7 @@ class Workflow extends React.Component {
           authenticity_token={this.props.authenticity_token}
           jurisdiction_paths={this.props.jurisdiction_paths}
           all_assigned_users={this.props.all_assigned_users}
+          playbook={this.props.playbook}
           workflow={this.props.workflow}
           jurisdiction={this.props.jurisdiction}
           tabs={this.props.tabs}

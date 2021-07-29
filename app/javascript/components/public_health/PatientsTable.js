@@ -81,6 +81,7 @@ class PatientsTable extends React.Component {
       jurisdiction_paths: {},
       assigned_users: [],
       query: {
+        playbook: props.playbook,
         workflow: props.workflow,
         tab: props.default_tab ?? Object.keys(props.tabs)[0],
         jurisdiction: props.jurisdiction.id,
@@ -101,10 +102,10 @@ class PatientsTable extends React.Component {
     const query = {};
 
     // Set tab from local storage if it exists and is a valid tab
-    let tab = this.getLocalStorage(`${this.props.workflow}Tab`);
+    let tab = this.getLocalStorage(`${this.props.playbook}_${this.props.workflow}Tab`);
     if (tab === null || !Object.keys(this.props.tabs).includes(tab)) {
       query.tab = this.state.query.tab;
-      this.setLocalStorage(`${this.props.workflow}Tab`, query.tab);
+      this.setLocalStorage(`${this.props.playbook}_${this.props.workflow}Tab`, query.tab);
     } else {
       query.tab = tab;
     }
@@ -135,10 +136,11 @@ class PatientsTable extends React.Component {
 
     // Set page & sort settings if they exist in local storage & user is in the same workflow as before
     let priorWorkflow = this.getLocalStorage(`Workflow`);
+    let priorPlaybook = this.getLocalStorage(`Playbook`);
     let page = this.getLocalStorage(`SaraPage`);
     let sortField = this.getLocalStorage(`SaraSortField`);
     let sortDirection = this.getLocalStorage(`SaraSortDirection`);
-    if (priorWorkflow && this.props.workflow === priorWorkflow) {
+    if (priorWorkflow && this.props.workflow === priorWorkflow && priorPlaybook && this.props.playbook === priorPlaybook) {
       if (parseInt(page)) {
         query.page = parseInt(page);
       }
@@ -152,6 +154,7 @@ class PatientsTable extends React.Component {
       this.removeLocalStorage(`SaraSortDirection`);
       // Update workflow local storage to be the current workflow
       this.setLocalStorage(`Workflow`, this.props.workflow);
+      this.setLocalStorage(`Playbook`, this.props.playbook);
       query.page = 0;
     }
 
@@ -228,7 +231,7 @@ class PatientsTable extends React.Component {
       () => {
         this.updateAssignedUsers(this.state.query);
         this.updateTable(this.state.query);
-        this.setLocalStorage(`${this.props.workflow}Tab`, tab);
+        this.setLocalStorage(`${this.props.playbook}_${this.props.workflow}Tab`, tab);
       }
     );
   };
@@ -811,6 +814,7 @@ PatientsTable.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
+  playbook: PropTypes.string,
   workflow: PropTypes.oneOf(['global', 'exposure', 'isolation']),
   jurisdiction: PropTypes.exact({
     id: PropTypes.number,

@@ -7,6 +7,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     # Require workflow and tab params
     workflow = params.require(:query).require(:workflow).to_sym
     tab = params.require(:query).require(:tab).to_sym
+    playbook = params.require(:query).permit(:playbook)[:playbook]&.to_sym || default_playbook
 
     query = validate_patients_query(params.require(:query))
 
@@ -30,7 +31,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     patients = patients.paginate(per_page: entries, page: page + 1)
 
     # Extract only relevant fields to be displayed by workflow and tab
-    linelist(patients, workflow, tab)
+    linelist(patients, playbook, workflow, tab)
   end
 
   def validate_patients_query(unsanitized_query)
@@ -696,9 +697,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     patients
   end
 
-  def linelist(patients, workflow, tab)
-    # get a list of fields relevant only to this linelist
-    fields = linelist_specific_fields(workflow, tab)
+  def linelist(patients, playbook, workflow, tab)
+    # get a list of fields relevant only to this linelist and requested from playbook
+    fields = linelist_specific_fields(playbook, workflow, tab)
 
     # retrieve proper jurisdiction
     patients = if tab == :transferred_in
@@ -766,8 +767,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     { linelist: linelist, fields: %i[name state_local_id dob].concat(fields), total: total }
   end
 
-  def linelist_specific_fields(workflow, tab)
-    columns = workflow_configuration(:covid_19, workflow, :dashboard_table_columns)
+  def linelist_specific_fields(playbook, workflow, tab)
+    columns = workflow_configuration(playbook, workflow, :dashboard_table_columns)
     return columns[:options][tab][:options] unless columns.nil?
 
     %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
