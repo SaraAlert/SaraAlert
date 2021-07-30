@@ -23,10 +23,10 @@ describe('History', () => {
   it('Properly renders non-comment histories', () => {
     const wrapper = getWrapper([mockEnrollmentHistory]);
     expect(wrapper.find(Card.Header).find('b').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('b').text()).toContain(mockEnrollmentHistory.created_by);
+    expect(wrapper.find(Card.Header).find('b').text()).toEqual(mockEnrollmentHistory.created_by);
     expect(wrapper.find(Card.Header).text().includes(formatTimestamp(mockEnrollmentHistory.created_at))).toBeTruthy();
     expect(wrapper.find(Card.Header).text().includes(formatRelativePast(mockEnrollmentHistory.created_at))).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('.badge').text()).toContain(mockEnrollmentHistory.history_type);
+    expect(wrapper.find(Card.Header).find('.badge').text()).toEqual(mockEnrollmentHistory.history_type);
     expect(wrapper.find(Card.Body).find(Col).text()).toEqual(mockEnrollmentHistory.comment);
     expect(wrapper.find(Card.Body).find('.edit-text').exists()).toBeFalsy();
     expect(wrapper.find(Card.Body).find('#edit-history-btn').exists()).toBeFalsy();

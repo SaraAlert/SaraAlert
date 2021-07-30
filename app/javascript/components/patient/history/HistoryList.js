@@ -122,8 +122,8 @@ class HistoryList extends React.Component {
       <React.Fragment>
         <Card id="histories" className="mx-2 my-4 card-square">
           <Card.Header as="h1" className="patient-card-header">
-            {' '}
-            History <InfoTooltip tooltipTextKey="history" location="right" className="pl-1" />
+            History
+            <InfoTooltip tooltipTextKey="history" location="right" className="pl-1" />
           </Card.Header>
           <Card.Body className="py-0 px-1">
             <Row id="history-filters" className="mx-3 mt-3 justify-content-end">

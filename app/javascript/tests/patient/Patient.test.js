@@ -32,7 +32,7 @@ describe('Patient', () => {
   it('Properly renders all main components when not in edit mode', () => {
     const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
-    expect(wrapper.find('#monitoree-details-header').at(0).find('span').at(0).text()).toContain(nameFormatter(mockPatient1));
+    expect(wrapper.find('#monitoree-details-header').at(0).find('span').at(0).text()).toEqual(nameFormatter(mockPatient1));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHoH).exists()).toBeTruthy();
     expect(wrapper.find(FollowUpFlagPanel).exists()).toBeFalsy();
     expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeTruthy();
@@ -53,7 +53,7 @@ describe('Patient', () => {
   it('Properly renders all main components when in edit mode', () => {
     const wrapper = shallow(<Patient details={mockPatient4} goto={goToMock} collapse={true} edit_mode={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
     expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
-    expect(wrapper.find('#monitoree-details-header').at(0).find('span').at(0).text()).toContain(nameFormatter(mockPatient4));
+    expect(wrapper.find('#monitoree-details-header').at(0).find('span').at(0).text()).toEqual(nameFormatter(mockPatient4));
     expect(wrapper.find('#monitoree-details-header').find(BadgeHoH).exists()).toBeFalsy();
     expect(wrapper.find(FollowUpFlagPanel).exists()).toBeFalsy();
     expect(wrapper.find('#set-follow-up-flag-link').exists()).toBeFalsy();

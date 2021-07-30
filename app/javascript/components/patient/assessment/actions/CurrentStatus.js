@@ -9,7 +9,7 @@ class CurrentStatus extends React.Component {
     super(props);
   }
 
-  generateStatus(status) {
+  renderStatus(status) {
     if (status === 'exposure_symptomatic') {
       return (
         <Badge variant="danger" className="badge-larger-font" aria-label="Linelist: Symptomatic.">
@@ -97,7 +97,7 @@ class CurrentStatus extends React.Component {
     }
   }
 
-  generateStatusTooltip(status) {
+  renderStatusTooltip(status) {
     if (status === 'isolation_symp_non_test_based') {
       return (
         <ReactTooltip id={`symptomatic-non-test-based`} multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
@@ -150,9 +150,9 @@ class CurrentStatus extends React.Component {
       <React.Fragment>
         <h2 className="tertiary-title pb-3">
           <b>
-            {this.props.isolation ? 'Isolation' : 'Exposure'} Workflow: {this.generateStatus(this.props.status)}
+            {this.props.isolation ? 'Isolation' : 'Exposure'} Workflow: {this.renderStatus(this.props.status)}
           </b>
-          {this.generateStatusTooltip(this.props.status)}
+          {this.renderStatusTooltip(this.props.status)}
           <span className="b-border-right-3 pl-3"></span>
           <b className="pl-3" aria-label={this.getHeaderLabel()}>
             Notification status is <EligibilityTooltip report_eligibility={this.props.report_eligibility} id={`eltt`} inline={true} />
