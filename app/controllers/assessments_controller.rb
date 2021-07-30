@@ -219,10 +219,10 @@ class AssessmentsController < ApplicationController
       # Attempt to save and continue; else if failed redirect to index
       return unless assessment.save
 
-      comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
+      comment = 'User edited an existing report (ID: ' + assessment.id.to_s + ').'
       unless delta.empty?
         comment += ' Symptom updates: ' + delta.join(', ') + '.'
-        comment += " Reporter edited (\"#{old_reporter}\" to \"#{current_user.email}\")." unless old_reporter == current_user.email
+        comment += " Reporter update (\"#{old_reporter}\" to \"#{current_user.email}\")." unless old_reporter == current_user.email
       end
       History.report_updated(patient: patient, created_by: current_user.email, comment: comment)
     end

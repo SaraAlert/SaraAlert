@@ -228,14 +228,14 @@ class AssessmentsControllerTest < ActionController::TestCase
 
     # Edit report and expect a specific snippet of a history item
     success_update_report_test(ph_user)
-    assert_histories_contain(patients(:patient_1), "Reporter edited: (\"Monitoree\" to \"#{ph_user.email}\")")
+    assert_histories_contain(patients(:patient_1), "Reporter update: (\"Monitoree\" to \"#{ph_user.email}\")")
 
     # Delete all to ensure that the history is not created again
     patients(:patient_1).histories.delete_all
 
     # Edit report and expect no history item because the report has not changed
     success_update_report_test(ct_user)
-    assert_not_histories_contain(patients(:patient_1), "Reporter edited: (\"Monitoree\" to \"#{ct_user.email}\")")
+    assert_not_histories_contain(patients(:patient_1), "Reporter update: (\"Monitoree\" to \"#{ct_user.email}\")")
   end
 
   def unauthorized_user_update_report_test(role)

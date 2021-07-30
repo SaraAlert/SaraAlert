@@ -30,7 +30,7 @@ class AssessmentTable extends React.Component {
             isSortable: true,
             tooltip: `${this.props.patient.isolation ? 'isolation' : 'exposure'}NeedsReviewColumn`,
           },
-          { label: 'Reporter', field: 'who_reported', isSortable: true, filter: this.createReporterLabel },
+          { label: 'Reporter', field: 'who_reported', isSortable: true },
           { label: 'Created At', field: 'created_at', isSortable: true, filter: formatTimestamp },
         ],
         rowData: [],
@@ -302,17 +302,6 @@ class AssessmentTable extends React.Component {
         </Dropdown.Menu>
       </Dropdown>
     );
-  };
-  /**
-   * Adds an asterisk to the reporter if the assessment has been edited.
-   * @param {Object} data - Data about the cell the filter is called on
-   */
-  createReporterLabel = data => {
-    const rowData = data.rowData;
-    if (rowData.who_reported != 'Monitoree') {
-      return <div>{rowData.who_reported + '*'}</div>;
-    }
-    return <div>{rowData.who_reported}</div>;
   };
 
   /**
