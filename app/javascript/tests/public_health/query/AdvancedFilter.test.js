@@ -30,6 +30,8 @@ import {
   mockFilterAddressForeignEmpty,
   mockFilterAddressForeign,
   mockFilterLabResults,
+  mockFilterAssignedUser,
+  mockFilterJurisdiction,
   mockSavedFilters,
 } from '../../mocks/mockFilters';
 
@@ -305,6 +307,27 @@ describe('AdvancedFilter', () => {
     wrapper.find('.remove-filter-row').at(0).simulate('click');
     expect(wrapper.state('activeFilterOptions')).toEqual([{ filterOption: null }]);
     expect(wrapper.find('.advanced-filter-options-dropdown').at(0).prop('value')).toEqual(null);
+    // Add row with jurisdiction filter
+    wrapper.find('.advanced-filter-options-dropdown').at(0).simulate('change', { value: mockFilterJurisdiction.filterOption.name });
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterJurisdiction]);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(0).prop('value').value).toEqual(mockFilterJurisdiction.filterOption.name);
+    wrapper.find('.advanced-filter-multi-select').simulate('change', { value: [{ value: '2', label: 'USA, State 1' }] });
+    expect(wrapper.find('.advanced-filter-multi-select').prop('value').value).toEqual([{ value: '2', label: 'USA, State 1' }]);
+    // Add row with assigned user filter
+    wrapper.find('#add-filter-row').simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').at(1).simulate('change', { value: mockFilterAssignedUser.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(1).prop('value').value).toEqual(mockFilterAssignedUser.filterOption.name);
+    wrapper
+      .find('.advanced-filter-multi-select')
+      .at(1)
+      .simulate('change', { value: [{ value: 8007, label: 8007 }] });
+    expect(wrapper.find('.advanced-filter-multi-select').at(0).prop('value').value).toEqual([{ value: '2', label: 'USA, State 1' }]);
+    expect(wrapper.find('.advanced-filter-multi-select').at(1).prop('value').value).toEqual([{ value: 8007, label: 8007 }]);
+    // Remove jurisdiction row
+    wrapper.find('.remove-filter-row').at(0).simulate('click');
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(0).prop('value').value).toEqual(mockFilterAssignedUser.filterOption.name);
+    expect(wrapper.find('.advanced-filter-multi-select').at(0).prop('value').value).toEqual([{ value: 8007, label: 8007 }]);
+    // Remove last remaining row
     wrapper.find('.remove-filter-row').at(0).simulate('click');
     expect(wrapper.state('activeFilterOptions')).toEqual([]);
     expect(wrapper.find('.advanced-filter-options-dropdown').length).toEqual(0);
@@ -729,7 +752,7 @@ describe('AdvancedFilter', () => {
     });
   });
 
-  it('Changing the combinati type dropdowns and date inputs properly updates ', () => {
+  it('Changing the combination type dropdowns and date inputs properly updates', () => {
     const wrapper = getWrapper();
     const selectField = mockFilterLabResults.filterOption.fields.filter(field => field.type === 'select')[0];
     const dateField = mockFilterLabResults.filterOption.fields.filter(field => field.type === 'date')[0];
@@ -777,6 +800,21 @@ describe('AdvancedFilter', () => {
     expect(wrapper.state('activeFilterOptions')[0].value).toEqual([{ name: selectField.name, value: selectField.options[0] }]);
     expect(wrapper.find('.advanced-filter-combination-options').prop('value')).toEqual(selectField.name);
     expect(wrapper.find('.advanced-filter-combination-select-options').prop('value')).toEqual(selectField.options[0]);
+  });
+
+  it('Properly renders advanced filter multi-select type statement', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAssignedUser.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAssignedUser.filterOption.name);
+    expect(wrapper.find('.advanced-filter-multi-select').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-multi-select').length).toEqual(1);
+    expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
+    mockFilterAssignedUser.filterOption.options.forEach((value, index) => {
+      expect(wrapper.find('.advanced-filter-multi-select').find('options').at(index).prop('value')).toEqual(value.value);
+      expect(wrapper.find('.advanced-filter-multi-select').find('options').at(index).prop('label')).toEqual(value.label);
+    });
+    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
   });
 
   it('Toggling boolean buttons properly updates state and value', () => {
@@ -1099,6 +1137,44 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "greater than 1 weeks in the future" will return records with Symptom Onset date after ${moment(new Date()).add(1, 'w').format('MM/DD/YY')}. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
     wrapper.find('.advanced-filter-when-input').simulate('change', { target: { value: 'past' } });
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`The current setting of "greater than 1 weeks in the past" will return records with Symptom Onset date before ${moment(new Date()).subtract(1, 'w').format('MM/DD/YY')}. To filter between two dates, use the "greater than" and "less than" filters in combination.`);
+  });
+
+  it('Changing advanced filter multi-select selected options properly updates state and value', () => {
+    const wrapper = getWrapper();
+    let selectedOptions = [];
+    let options = [
+      { label: 1, value: 1 },
+      { label: 2, value: 2 },
+      { label: 3, value: 3 },
+    ];
+
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAssignedUser.filterOption.name });
+
+    _.times(options.length, i => {
+      selectedOptions.push(options[Number(i)]);
+      wrapper.find('.advanced-filter-multi-select').simulate('change', { value: selectedOptions });
+      expect(wrapper.find('.advanced-filter-multi-select').prop('value').value).toEqual(selectedOptions);
+    });
+
+    _.times(options.length, () => {
+      selectedOptions.pop();
+      wrapper.find('.advanced-filter-multi-select').simulate('change', { value: selectedOptions });
+      expect(wrapper.find('.advanced-filter-multi-select').prop('value').value).toEqual(selectedOptions);
+    });
+  });
+
+  it('Changing advanced filter multi-select filter to another multi-select resets selected', () => {
+    const wrapper = getWrapper();
+
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAssignedUser.filterOption.name });
+    expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
+    wrapper.find('.advanced-filter-multi-select').simulate('change', { value: [{ value: 1, label: 1 }] });
+    expect(wrapper.find('.advanced-filter-multi-select').prop('value').value).toEqual([{ value: 1, label: 1 }]);
+
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterJurisdiction.filterOption.name });
+    expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
   });
 
   it('Clicking "Save" button opens Filter Name modal', () => {

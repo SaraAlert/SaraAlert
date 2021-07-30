@@ -206,6 +206,25 @@ const mockFilterLabResults = {
   value: [{ name: 'result', value: 'positive' }],
 };
 
+/* MULTI-SELECT TYPE MOCK FILTERS */
+const mockFilterAssignedUser = {
+  additionalFilterOption: null,
+  dateOption: null,
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'assigned-user'),
+  numberOption: null,
+  relativeOption: null,
+  value: [],
+};
+
+const mockFilterJurisdiction = {
+  additionalFilterOption: null,
+  dateOption: null,
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'jurisdiction'),
+  numberOption: null,
+  relativeOption: null,
+  value: [],
+};
+
 /* MOCK SAVED FILTERS */
 const mockFilter1 = {
   contents: [mockFilterAddressForeign],
@@ -248,6 +267,8 @@ export {
   mockFilterAddressForeignEmpty,
   mockFilterAddressForeign,
   mockFilterLabResults,
+  mockFilterAssignedUser,
+  mockFilterJurisdiction,
   mockFilter1,
   mockFilter2,
   mockSavedFilters,
