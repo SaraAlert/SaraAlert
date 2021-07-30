@@ -131,6 +131,38 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     nil
   ].freeze
 
+  TIME_OPTIONS = {
+    Morning: 'Morning',
+    Afternoon: 'Afternoon',
+    Evening: 'Evening',
+    '0': 'Midnight',
+    '1': '1:00',
+    '2': '2:00',
+    '3': '3:00',
+    '4': '4:00',
+    '5': '5:00',
+    '6': '6:00',
+    '7': '7:00',
+    '8': '8:00',
+    '9': '9:00',
+    '10': '10:00',
+    '11': '11:00',
+    '12': '12:00',
+    '13': '13:00',
+    '14': '14:00',
+    '15': '15:00',
+    '16': '16:00',
+    '17': '17:00',
+    '18': '18:00',
+    '19': '19:00',
+    '20': '20:00',
+    '21': '21:00',
+    '22': '22:00',
+    '23': '23:00'
+  }.freeze
+
+  NORMALIZED_INVERTED_TIME_OPTIONS = TIME_OPTIONS.invert.transform_keys { |k| k.downcase.strip.gsub(/[ -.]/, '') }.freeze
+
   VALID_PATIENT_ENUMS = {
     # identification
     sex: ['Male', 'Female', 'Unknown', nil, ''],
@@ -182,8 +214,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     case_status: %w[Confirmed Probable]
   }.freeze
 
-  def self.normalize_enums(enums_dict)
-    enums_dict.transform_values do |values|
+  def self.normalize_enums(enums)
+    enums.transform_values do |values|
       values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }.to_h
     end
   end
@@ -218,7 +250,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     foreign_monitored_address_state: { label: 'Foreign Monitored Address State', checks: [:state] },
     # contact info
     preferred_contact_method: { label: 'Preferred Contact Method', checks: [:enum] },
-    preferred_contact_time: { label: 'Preferred Contact Time', checks: [:enum] },
+    preferred_contact_time: { label: 'Preferred Contact Time', checks: %i[time] },
     primary_telephone: { label: 'Primary Telephone', checks: [:phone] },
     primary_telephone_type: { label: 'Primary Telephone Type', checks: [:enum] },
     secondary_telephone: { label: 'Secondary Telephone', checks: [:phone] },

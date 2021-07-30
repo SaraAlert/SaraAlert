@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, Form } from 'react-bootstrap';
 import Select from 'react-select';
-import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
+import { bootstrapSelectTheme, cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import _ from 'lodash';
 import * as yup from 'yup';
@@ -281,10 +281,7 @@ class Identification extends React.Component {
         onChange={e => this.handleLanguageChange(e, isPrimary)}
         placeholder=""
         styles={cursorPointerStyle}
-        theme={theme => ({
-          ...theme,
-          borderRadius: 0,
-        })}
+        theme={bootstrapSelectTheme}
       />
     );
   };
@@ -310,10 +307,7 @@ class Identification extends React.Component {
                     options={WORKFLOW_OPTIONS}
                     onChange={e => this.handleWorkflowChange(e)}
                     placeholder=""
-                    theme={theme => ({
-                      ...theme,
-                      borderRadius: 0,
-                    })}
+                    theme={bootstrapSelectTheme}
                   />
                 </Form.Group>
               </Form.Row>

@@ -11,7 +11,7 @@ import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
 import { Heading } from '../../utils/Heading';
 import { navQueryParam, patientHref } from '../../utils/Navigation';
-import { customPreferredContactTimeOptions } from '../../data/customPreferredContactTimeOptions';
+import { customPreferredContactTimeOptions } from '../../data/preferredContactTimeOptions';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
 import { formatName, formatPhoneNumberVisually, formatRace, isMinor } from '../../utils/Patient';
 
@@ -263,10 +263,8 @@ class Patient extends React.Component {
               <div>
                 <b>Preferred Contact Time:</b>{' '}
                 <span>
-                  {customPreferredContactTimeOptions.find(option => option.value === this.props.details.preferred_contact_time)?.label ||
-                    this.props.details.preferred_contact_time ||
-                    '--'}
-                  {customPreferredContactTimeOptions.find(option => option.value === this.props.details.preferred_contact_time) && (
+                  {customPreferredContactTimeOptions[this.props.details.preferred_contact_time] || this.props.details.preferred_contact_time || '--'}
+                  {customPreferredContactTimeOptions[this.props.details.preferred_contact_time] && (
                     <InfoTooltip tooltipTextKey="customPreferredContactTime" location="right" />
                   )}
                 </span>

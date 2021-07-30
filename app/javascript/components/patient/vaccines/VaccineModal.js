@@ -5,7 +5,7 @@ import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import Select from 'react-select';
-import { vaccineModalSelectStyling } from '../../../packs/stylesheets/ReactSelectStyling';
+import { bootstrapSelectTheme, vaccineModalSelectStyling } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import DateInput from '../../util/DateInput';
 
@@ -110,10 +110,7 @@ class VaccineModal extends React.Component {
                   options={this.getDropdownOptions(this.props.group_name_options)}
                   onChange={this.handleGroupNameChange}
                   placeholder=""
-                  theme={theme => ({
-                    ...theme,
-                    borderRadius: 0,
-                  })}
+                  theme={bootstrapSelectTheme}
                   styles={vaccineModalSelectStyling}
                 />
               </Form.Group>
@@ -135,10 +132,7 @@ class VaccineModal extends React.Component {
                   options={this.getDropdownOptions(this.getProductNameOptions())}
                   onChange={this.handleProductNameChange}
                   placeholder=""
-                  theme={theme => ({
-                    ...theme,
-                    borderRadius: 0,
-                  })}
+                  theme={bootstrapSelectTheme}
                   styles={vaccineModalSelectStyling}
                 />
               </Form.Group>
@@ -176,12 +170,9 @@ class VaccineModal extends React.Component {
                   value={this.state.dose_number ? { label: this.state.dose_number, value: this.state.dose_number } : ''}
                   options={this.getDropdownOptions(this.props.dose_number_options)}
                   onChange={this.handleDoseNumberChange}
-                  theme={theme => ({
-                    ...theme,
-                    borderRadius: 0,
-                  })}
                   placeholder=""
                   styles={vaccineModalSelectStyling}
+                  theme={bootstrapSelectTheme}
                 />
               </Form.Group>
             </Row>

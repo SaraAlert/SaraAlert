@@ -6,7 +6,7 @@ require 'roo'
 require_relative '../../../lib/system_test_utils'
 
 class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
-  include ImportExport
+  include ExportHelper
   include Languages
   @@system_test_utils = SystemTestUtils.new(nil)
 
@@ -289,7 +289,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
     # Validate headers
     checked.each_with_index do |header, col|
-      assert_equal(ImportExport::PATIENT_FIELD_NAMES[header], patients_sheet.cell(1, col + 1), "For header: #{header} in Monitorees List")
+      assert_equal(PATIENT_FIELD_NAMES[header], patients_sheet.cell(1, col + 1), "For header: #{header} in Monitorees List")
     end
 
     # Validate cell values
@@ -329,7 +329,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     checked.delete(:symptoms)
 
     # Get headers/col names
-    headers = checked.map { |field| ImportExport::ASSESSMENT_FIELD_NAMES[field] }
+    headers = checked.map { |field| ASSESSMENT_FIELD_NAMES[field] }
     patients_assessments = patients.joins(assessments: [{ reported_condition: :symptoms }])
 
     # Add symptom name headers if checked
@@ -380,7 +380,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     checked = data.dig(:vaccines, :checked)
 
     # Validate vaccine headers
-    headers = checked.map { |field| ImportExport::VACCINE_FIELD_NAMES[field] }
+    headers = checked.map { |field| VACCINE_FIELD_NAMES[field] }
     headers.each_with_index do |header, col|
       assert_equal(header, vaccines_sheet.cell(1, col + 1), "For header: #{header} in Vaccines")
     end

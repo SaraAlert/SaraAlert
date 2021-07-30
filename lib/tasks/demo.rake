@@ -391,7 +391,7 @@ namespace :demo do
 
       # Contact Information
       patient[:preferred_contact_method] = ValidationHelper::VALID_PATIENT_ENUMS[:preferred_contact_method].sample
-      if patient[:preferred_contact_method] != 'E-mailed Web Link' && rand < 0.8
+      if ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include?(patient[:preferred_contact_method]) && rand < 0.8
         patient[:preferred_contact_time] = rand < 0.6 ? ['Morning', 'Afternoon', 'Evening', ''].sample : rand(0..23)
       end
       patient[:primary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:preferred_contact_method] != 'E-mailed Web Link' || rand < 0.5

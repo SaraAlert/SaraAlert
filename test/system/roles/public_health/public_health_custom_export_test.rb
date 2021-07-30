@@ -8,7 +8,7 @@ require_relative 'public_health_test_helper'
 require_relative '../../lib/system_test_utils'
 
 class PublicHealthCustomExportTest < ApplicationSystemTestCase
-  include ImportExport
+  include ExportHelper
 
   @@public_health_test_helper = PublicHealthTestHelper.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
@@ -44,7 +44,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
   # Gets all the patient field options for custom export.
   def all_custom_export_patient_fields
     # NOTE: Doesn't use PATIENT_FIELD_NAMES as that contains options not available to custom export
-    options_tree = ImportExport::PATIENTS_EXPORT_OPTIONS
+    options_tree = ImportExportConstants::PATIENTS_EXPORT_OPTIONS
     get_all_field_options(options_tree[:nodes])
   end
 

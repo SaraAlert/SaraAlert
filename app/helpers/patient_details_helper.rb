@@ -137,7 +137,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       primary_telephone_type: primary_telephone_type || '',
       secondary_telephone: secondary_telephone || '',
       secondary_telephone_type: secondary_telephone_type || '',
-      preferred_contact_time: preferred_contact_time || '',
+      preferred_contact_time: ValidationHelper::TIME_OPTIONS[preferred_contact_time&.to_sym] || '',
       email: email || '',
       port_of_origin: port_of_origin || '',
       date_of_departure: date_of_departure&.strftime('%F') || '',

@@ -3,6 +3,7 @@
 // in each component as necessary
 const cursorPointerStyle = {
   option: base => ({ ...base, cursor: 'pointer' }),
+  control: base => ({ ...base, fontSize: '1.25rem', fontWeight: 400, fontFamily: 'Arial', color: '#495057', paddingLeft: '0.25rem' }),
 };
 
 const vaccineModalSelectStyling = {
@@ -10,7 +11,30 @@ const vaccineModalSelectStyling = {
   option: base => ({ ...base, minHeight: 30, cursor: 'pointer' })
 };
 
+const preferredContactTimeSelectStyling = {
+  option: base => ({ ...base, cursor: 'pointer', ':nth-child(4)': { borderBottom: '1px solid #ced4da' } }),
+  control: base => ({ ...base, fontSize: '1.25rem', fontWeight: 400, fontFamily: 'Arial', color: '#495057', paddingLeft: '0.25rem' }),
+};
+
+const customPreferredContactTimeSelectStyling = {
+  option: base => ({ ...base, cursor: 'pointer', padding: '0.25rem 1.5rem' }),
+};
+
+const bootstrapSelectTheme = theme => {
+  return {
+    ...theme,
+    borderRadius: 0,
+    spacing: {
+      ...theme.spacing,
+      controlHeight: '3rem',
+    },
+  };
+};
+
 export {
   cursorPointerStyle,
-  vaccineModalSelectStyling
-}
+  vaccineModalSelectStyling,
+  preferredContactTimeSelectStyling,
+  customPreferredContactTimeSelectStyling,
+  bootstrapSelectTheme,
+};

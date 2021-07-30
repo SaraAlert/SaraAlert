@@ -6,12 +6,20 @@ import axios from 'axios';
 import libphonenumber from 'google-libphonenumber';
 import * as yup from 'yup';
 import Select from 'react-select';
-import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import InfoTooltip from '../../util/InfoTooltip';
 import PhoneInput from '../../util/PhoneInput';
 import { phoneSchemaValidator } from '../../../utils/Patient';
-import { customPreferredContactTimeOptions } from '../../../data/customPreferredContactTimeOptions';
+import {
+  customPreferredContactTimeOptions,
+  customPreferredContactTimeGroupedOptions,
+  basicPreferredContactTimeOptions,
+} from '../../../data/preferredContactTimeOptions';
+import {
+  preferredContactTimeSelectStyling,
+  customPreferredContactTimeSelectStyling,
+  bootstrapSelectTheme,
+} from '../../../packs/stylesheets/ReactSelectStyling';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
@@ -92,7 +100,7 @@ class Contact extends React.Component {
       }
     }
 
-    if (event.target.id === 'preferred_contact_time' && event.target.value === 'Custom') {
+    if (event.target.id === 'preferred_contact_time' && event.target.value === 'Custom...') {
       this.setState({ showCustomPreferredContactTimeModal: true });
     }
 
@@ -243,15 +251,12 @@ class Contact extends React.Component {
           <Select
             inputId="custom_preferred_contact_time-select"
             name="custom_preferred_contact_time"
-            options={customPreferredContactTimeOptions}
+            options={customPreferredContactTimeGroupedOptions}
             onChange={e => this.setState({ custom_preferred_contact_time: e.value })}
             placeholder="Select custom preferred contact time..."
             className="mb-3"
-            styles={cursorPointerStyle}
-            theme={theme => ({
-              ...theme,
-              borderRadius: 0,
-            })}
+            styles={customPreferredContactTimeSelectStyling}
+            theme={bootstrapSelectTheme}
           />
           <p className="text-muted">
             Reminders and contact attempts outside of normal hours (8:00 to 21:00) should only be done with the consent of the monitoree. Please indicate that
@@ -283,7 +288,7 @@ class Contact extends React.Component {
                 target: { id: 'preferred_contact_time', value: this.state.custom_preferred_contact_time },
                 currentTarget: { id: 'preferred_contact_time' },
               });
-              this.setState({ showCustomPreferredContactTimeModal: false });
+              this.setState({ showCustomPreferredContactTimeModal: false, custom_preferred_contact_time_confirmed: false });
             }}>
             Submit
           </Button>
@@ -328,35 +333,38 @@ class Contact extends React.Component {
                   this.state.current.patient.preferred_contact_method === 'Telephone call' ||
                   this.state.current.patient.preferred_contact_method === 'SMS Text-message' ||
                   this.state.current.patient.preferred_contact_method === 'E-mailed Web Link') && (
-                  <Form.Group as={Col} lg="12" controlId="preferred_contact_time">
+                  <Form.Group as={Col} lg="12" id="preferred_contact_time_wrapper" controlId="preferred_contact_time">
                     <Form.Label className="input-label">
                       PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
                       <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
                     </Form.Label>
-                    <Form.Control
-                      isInvalid={this.state.errors['preferred_contact_time']}
-                      as="select"
-                      size="lg"
-                      className="form-square"
-                      value={this.state.current.patient.preferred_contact_time || ''}
-                      onChange={this.handleChange}>
-                      <option></option>
-                      <option>Morning</option>
-                      <option>Afternoon</option>
-                      <option>Evening</option>
-                      <option>Custom</option>
-                      {[
-                        ...new Set([this.state.current.patient.preferred_contact_time, this.props.patient.preferred_contact_time])
-                          .filter(value => !!value)
+                    <Select
+                      inputId="preferred_contact_time-select"
+                      name="preferred_contact_time"
+                      value={{
+                        label:
+                          customPreferredContactTimeOptions[this.state.current.patient.preferred_contact_time] ||
+                          this.state.current.patient.preferred_contact_time ||
+                          '',
+                        value: this.state.current.patient.preferred_contact_time || '',
+                      }}
+                      placeholder=""
+                      options={basicPreferredContactTimeOptions.concat(
+                        [...new Set([this.state.current.patient.preferred_contact_time, this.props.patient.preferred_contact_time])]
+                          .filter(value => Object.keys(customPreferredContactTimeOptions).includes(value))
                           .map(value => {
-                            return (
-                              <option key={value} value={value}>
-                                {customPreferredContactTimeOptions.find(option => option.value === value)?.label}
-                              </option>
-                            );
-                          }),
-                      ]}
-                    </Form.Control>
+                            return { label: customPreferredContactTimeOptions[`${value}`], value };
+                          })
+                      )}
+                      onChange={e =>
+                        this.handleChange({
+                          target: { id: 'preferred_contact_time', value: e.value },
+                          currentTarget: { id: 'preferred_contact_time' },
+                        })
+                      }
+                      styles={preferredContactTimeSelectStyling}
+                      theme={bootstrapSelectTheme}
+                    />
                     <div className="mt-3">
                       <span className="font-weight-bold">Morning: </span>
                       <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>

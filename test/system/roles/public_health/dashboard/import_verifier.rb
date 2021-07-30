@@ -6,7 +6,7 @@ require 'roo'
 require_relative '../../../lib/system_test_utils'
 
 class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
-  include ImportExport
+  include ExportHelper
   include PatientHelper
   @@system_test_utils = SystemTestUtils.new(nil)
 
@@ -19,8 +19,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   MONITORED_ADDRESS_FIELDS = %i[monitored_address_line_1 monitored_address_city monitored_address_state monitored_address_line_2 monitored_address_zip].freeze
   # TODO: when workflow specific case status validation re-enabled: take out 'case_status'
   ISOLATION_FIELDS = %i[symptom_onset extended_isolation case_status].freeze
-  ENUM_FIELDS = %i[ethnicity preferred_contact_method primary_telephone_type secondary_telephone_type preferred_contact_time additional_planned_travel_type
-                   exposure_risk_assessment monitoring_plan case_status].freeze
+  ENUM_FIELDS = %i[ethnicity preferred_contact_method primary_telephone_type secondary_telephone_type additional_planned_travel_type exposure_risk_assessment
+                   monitoring_plan case_status].freeze
+  TIME_FIELDS = %i[preferred_contact_time].freeze
   RISK_FACTOR_FIELDS = %i[contact_of_known_case was_in_health_care_facility_with_known_cases].freeze
   # TODO: when workflow specific case status validation re-enabled: uncomment
   # WORKFLOW_SPECIFIC_FIELDS = %i[case_status].freeze
@@ -127,7 +128,6 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     sheet = get_xlsx(file_name).sheet(0)
     sleep(2) # wait for db write
     rejects = [] if rejects.nil?
-    address_fields_as_symbols = %i[address_line_1 address_city address_zip address_line_2]
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       patients = jurisdiction.all_patients_excluding_purged.where(first_name: epi_x_val(row, :first_name))
@@ -140,41 +140,39 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       else
         assert_not_nil(patient, "Patient not found in db: #{epi_x_val(row, :first_name)} #{epi_x_val(row, :last_name)} in row #{row_num}")
         EPI_X_FIELDS.each_with_index do |field, index|
+          err_msg = "#{field} mismatch in row #{row_num}"
           # import primary_telephone before secondary_telephone
           if field == :primary_telephone && row[EPI_X_FIELDS.index(:primary_telephone)].blank?
-            assert_equal(Phonelib.parse(row[EPI_X_FIELDS.index(:secondary_telephone)], 'US').full_e164, patient[:primary_telephone].to_s,
-                         "#{field} mismatch in row #{row_num}")
+            assert_equal(Phonelib.parse(row[EPI_X_FIELDS.index(:secondary_telephone)], 'US').full_e164, patient[:primary_telephone].to_s, err_msg)
           elsif field == :secondary_telephone && row[EPI_X_FIELDS.index(:primary_telephone)].blank?
-            assert_equal('', patient[:secondary_telephone].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal('', patient[:secondary_telephone].to_s, err_msg)
           elsif TELEPHONE_FIELDS.include?(field)
-            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, err_msg)
           elsif field == :sex && row[index].present?
-            assert_equal(SEX_ABBREVIATIONS[row[index].upcase.to_sym] || row[index]&.downcase&.capitalize, patient[field].to_s,
-                         "#{field} mismatch in row #{row_num}")
+            assert_equal(SEX_ABBREVIATIONS[row[index].upcase.to_sym] || row[index]&.downcase&.capitalize, patient[field].to_s, err_msg)
           elsif %i[primary_language secondary_language].include?(field) && row[index].present?
-            assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, err_msg)
           # only import foreign address country if it's not united states
           elsif field == :foreign_address_country
-            assert_equal(international_address ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(international_address ? row[index].to_s : '', patient[field].to_s, err_msg)
           # import address to international address if international
-          elsif international_address && address_fields_as_symbols.include?(field)
-            assert_equal(row[index].to_s, patient[ImportController::FOREIGN_ADDRESS_MAPPINGS[field]].to_s, "#{field} mismatch in row #{row_num}")
+          elsif international_address && %i[address_line_1 address_city address_zip address_line_2].include?(field)
+            assert_equal(row[index].to_s, patient[ImportController::FOREIGN_ADDRESS_MAPPINGS[field]].to_s, err_msg)
           elsif international_address && field == :address_state
-            assert_equal(normalize_state_field(row[index].to_s), patient[ImportController::FOREIGN_ADDRESS_MAPPINGS[field]].to_s,
-                         "#{field} mismatch in row #{row_num}")
+            assert_equal(normalize_state_field(row[index].to_s), patient[ImportController::FOREIGN_ADDRESS_MAPPINGS[field]].to_s, err_msg)
           # normalize state fields
           elsif field == :address_state || (field == :monitored_address_state && row[index].present?)
-            assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, err_msg)
           # these fields come from multiple columns
           elsif %i[travel_related_notes port_of_entry_into_usa].include?(field)
-            assert patient[field].to_s.include?(row[index].to_s), "#{field} mismatch in row #{row_num}"
+            assert patient[field].to_s.include?(row[index].to_s), err_msg
           # format dates
           elsif %i[date_of_birth date_of_departure symptom_onset].include?(field)
-            assert_equal(row[index].present? ? Date.strptime(row[index], '%m/%d/%Y').to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(row[index].present? ? Date.strptime(row[index], '%m/%d/%Y').to_s : '', patient[field].to_s, err_msg)
           elsif field == :date_of_arrival
-            assert_equal(row[index].present? ? Date.strptime(row[index], '%b %d %Y').to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(row[index].present? ? Date.strptime(row[index], '%b %d %Y').to_s : '', patient[field].to_s, err_msg)
           elsif !field.nil?
-            assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(row[index].to_s, patient[field].to_s, err_msg)
           end
         end
         assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_num}")
@@ -199,18 +197,19 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         assert_not_nil(patient, "Patient not found in db: #{saf_val(row, :first_name)} #{saf_val(row, :middle_name)} #{saf_val(row, :last_name)}"\
                                 " in row #{row_num}")
         SARA_ALERT_FORMAT_FIELDS.each_with_index do |field, index|
+          err_msg = "#{field} mismatch in row #{row_num}"
           if TELEPHONE_FIELDS.include?(field)
-            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, err_msg)
           elsif BOOL_FIELDS.include?(field)
-            assert_equal(normalize_bool_field(row[index]).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(normalize_bool_field(row[index]).to_s, patient[field].to_s, err_msg)
           elsif STATE_FIELDS.include?(field) || (field == :monitored_address_state && !row[index].nil?)
-            assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, err_msg)
           elsif field == :symptom_onset # isolation workflow specific field
-            assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, err_msg)
           # TODO: when workflow specific case status validation re-enabled: remove the next 3 lines
           elsif field == :case_status # isolation workflow specific enum field
             normalized_cell_value = NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])].to_s
-            assert_equal(workflow == :isolation ? normalized_cell_value : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(workflow == :isolation ? normalized_cell_value : '', patient[field].to_s, err_msg)
           # TODO: when workflow specific case status validation re-enabled: uncomment
           # elsif field == :case_status
           #   normalized_cell_value = if workflow == :isolation
@@ -218,15 +217,17 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
           #                           else
           #                             NORMALIZED_EXPOSURE_ENUMS[field][normalize_enum_field_value(row[index])].to_s
           #                           end
-          #   assert_equal(normalized_cell_value, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+          #   assert_equal(normalized_cell_value, patient[field].to_s, err_msg)
           elsif %i[primary_language secondary_language].include?(field) && row[index].present?
-            assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, err_msg)
           elsif field == :jurisdiction_path
-            assert_equal(row[index] ? row[index].to_s : jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(row[index] ? row[index].to_s : jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, err_msg)
           elsif ENUM_FIELDS.include?(field)
-            assert_equal(NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])].to_s, patient[field].to_s, err_msg)
+          elsif TIME_FIELDS.include?(field)
+            assert_equal(NORMALIZED_INVERTED_TIME_OPTIONS[normalize_enum_field_value(row[index])].to_s, patient[field].to_s, err_msg)
           elsif NON_IMPORTED_PATIENT_FIELDS.exclude?(field)
-            assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+            assert_equal(row[index].to_s, patient[field].to_s, err_msg)
           end
         end
         verify_laboratory(patient, row[87..90]) if row[87..90].filter(&:present?).any?

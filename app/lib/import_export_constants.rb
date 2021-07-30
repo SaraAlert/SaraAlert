@@ -120,15 +120,16 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 monitored_address_line_1 monitored_address_city monitoring_address_state monitored_address_state monitored_address_line_2 monitored_address_zip
                 monitored_address_county foreign_monitored_address_line_1 foreign_monitored_address_city foreign_monitored_address_state
                 foreign_monitored_address_line_2 foreign_monitored_address_zip foreign_monitored_address_county preferred_contact_method primary_telephone_type
-                secondary_telephone_type preferred_contact_time email port_of_origin source_of_report source_of_report_specify flight_or_vessel_number
-                flight_or_vessel_carrier port_of_entry_into_usa travel_related_notes additional_planned_travel_type additional_planned_travel_destination
-                additional_planned_travel_destination_state additional_planned_travel_destination_country additional_planned_travel_port_of_departure
-                additional_planned_travel_related_notes potential_exposure_location potential_exposure_country contact_of_known_case_id
-                was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel_facility_name healthcare_personnel_facility_name
-                member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan exposure_notes case_status gender_identity
-                sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason follow_up_note],
+                secondary_telephone_type email port_of_origin source_of_report source_of_report_specify flight_or_vessel_number flight_or_vessel_carrier
+                port_of_entry_into_usa additional_planned_travel_type additional_planned_travel_destination additional_planned_travel_destination_state
+                additional_planned_travel_destination_country additional_planned_travel_port_of_departure potential_exposure_location potential_exposure_country
+                contact_of_known_case_id was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel_facility_name
+                healthcare_personnel_facility_name member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan case_status gender_identity
+                sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason],
+    notes: %i[travel_related_notes additional_planned_travel_related_notes exposure_notes follow_up_note],
     dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
               symptom_onset first_positive_lab_at extended_isolation],
+    times: %i[preferred_contact_time],
     timestamps: %i[created_at updated_at closed_at latest_assessment_at latest_transfer_at last_assessment_reminder_sent],
     phones: %i[primary_telephone secondary_telephone],
     booleans: %i[interpretation_required isolation continuous_exposure contact_of_known_case travel_to_affected_country_or_area
