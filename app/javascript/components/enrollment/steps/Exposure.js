@@ -320,7 +320,7 @@ class Exposure extends React.Component {
               aria-label="Symptom Onset Date"
               date={this.state.current.patient.symptom_onset}
               minDate={'2020-01-01'}
-              maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
+              maxDate={moment().format('YYYY-MM-DD')}
               onChange={date => this.handleDateChange('symptom_onset', date)}
               placement="bottom"
               isInvalid={!!this.state.errors['symptom_onset']}
