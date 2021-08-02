@@ -14,25 +14,29 @@ class ExportFhirJob < ApplicationJob
     patient_ids = Jurisdiction.find_by(id: current_client_application[:jurisdiction_id])&.all_patients_excluding_purged&.pluck(:id)
     return if patient_ids.nil?
 
-    store transaction_time: DateTime.now.utc
-    total 6
+    # Store transaction_time via sidekiq-status gem to be retrieved when returning completed status
+    store(transaction_time: DateTime.now.utc)
+
+    # Track progress using methods from sidekiq-status gem so that percentage complete can be
+    # displayed when current status is requested. Total is 6 for 6 possible resourceTypes
+    total(6)
     progress = 0
-    at progress
+    at(progress)
 
     patient_query = { id: patient_ids }
     patient_query[:updated_at] = (params[:since]..) unless params[:since].nil?
     add_file(download, Patient.where(patient_query), 'Patient.ndjson')
-    at progress += 1
+    at(progress += 1)
     resource_query = { patient_id: patient_ids }
     resource_query[:updated_at] = (params[:since]..) unless params[:since].nil?
     add_file(download, Assessment.where(resource_query), 'QuestionnaireResponse.ndjson')
-    at progress += 1
+    at(progress += 1)
     add_file(download, History.where(resource_query), 'Provenance.ndjson')
-    at progress += 1
+    at(progress += 1)
     add_file(download, Laboratory.where(resource_query), 'Observation.ndjson')
-    at progress += 1
+    at(progress += 1)
     add_file(download, Vaccine.where(resource_query), 'Immunization.ndjson')
-    at progress + 1
+    at(progress + 1)
     add_file(download, CloseContact.where(resource_query), 'RelatedPerson.ndjson')
 
     # Remove any old downloads besides the current one
@@ -53,6 +57,6 @@ class ExportFhirJob < ApplicationJob
     download.files.attach(io: file, filename: filename, content_type: 'application/fhir+ndjson')
   ensure
     file&.close
-    FileUtils.remove_entry(File.dirname(file)) if file.is_a?(File) && File.exist?(file)
+    file.unlink if file.is_a?(File) && File.exist?(file)
   end
 end

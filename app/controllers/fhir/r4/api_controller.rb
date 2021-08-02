@@ -488,7 +488,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   # GET /fhir/r4/ExportStatus/[:id]
   def export_status
     id = params.require(:id)
-    download = ApiDownload.find_by_id(id)
+    download = ApiDownload.where(application_id: doorkeeper_token&.application_id).find_by_id(id)
     status = Sidekiq::Status.status(download&.job_id)
     case status
     when :complete
