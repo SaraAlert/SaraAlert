@@ -11,7 +11,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   def setup_labs
-    patient_1 = create(:patient, creator: User.find_by_id(@system_everything_app.user_id))
+    patient_1 = create(:patient, creator: User.find_by(id: @system_everything_app.user_id))
     @lab_1 = create(
       :laboratory,
       lab_type: Laboratory::LAB_TYPE_TO_CODE.keys.sample,

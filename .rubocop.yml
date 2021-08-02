@@ -1,3 +1,6 @@
+require:
+  - rubocop-performance
+  - rubocop-rails
 AllCops:
   TargetRubyVersion: 2.7
   Exclude:
@@ -184,4 +187,88 @@ Style/MultilineInPatternThen: # (new in 1.16)
 Style/QuotedSymbols: # (new in 1.16)
   Enabled: true
 Style/StringChars: # (new in 1.12)
+  Enabled: true
+Rails/FilePath:
+  Enabled: true
+  EnforcedStyle: arguments
+Style/SafeNavigation:
+  Enabled: false
+Rails/WhereNot:
+  Enabled: true
+Rails/WhereEquals:
+  Enabled: true
+Rails/ShortI18n:
+  Enabled: true
+Rails/Pluck:
+  Enabled: true
+Rails/FindById:
+  Enabled: true
+Rails/I18nLocaleAssignment:
+  Enabled: true
+Rails/UnusedIgnoredColumns:
+  Enabled: true
+Rails/TimeZoneAssignment:
+  Enabled: true
+Rails/Inquiry:
+  Enabled: true
+Rails/NegateInclude:
+  Enabled: true
+Rails/RenderInline:
+  Enabled: true
+Rails/SquishedSQLHeredocs:
+  Enabled: true
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: true
+Rails/AfterCommitOverride:
+  Enabled: true
+Rails/AddColumnIndex:
+  Enabled: true
+Rails/RenderPlainText:
+  Enabled: true
+Rails/MailerName:
+  Enabled: true
+Rails/ExpandedDateRange:
+  Enabled: true
+Rails/EagerEvaluationLogMessage:
+  Enabled: true
+Rails/MatchRoute:
+  Enabled: true
+Rails/PluckInWhere:
+  Enabled: false
+Rails/WhereExists:
+  Enabled: false
+Rails/AttributeDefaultBlockValue:
+  Enabled: true
+Performance/Sum:
+  Enabled: true
+Performance/StringInclude:
+  Enabled: true
+Performance/Squeeze:
+  Enabled: true
+Performance/SortReverse:
+  Enabled: true
+Performance/ReverseFirst:
+  Enabled: true
+Performance/RedundantStringChars:
+  Enabled: true
+Performance/RedundantSplitRegexpArgument:
+  Enabled: true
+Performance/MethodObjectAsBlock:
+  Enabled: true
+Performance/RedundantSortBlock:
+  Enabled: true
+Performance/MapCompact:
+  Enabled: true
+Performance/BigDecimalWithNumericArgument:
+  Enabled: true
+Performance/BlockGivenWithExplicitBlock:
+  Enabled: true
+Performance/RedundantEqualityComparisonBlock:
+  Enabled: true
+Performance/CollectionLiteralInLoop:
+  Enabled: true
+  MinSize: 4
+Performance/ConstantRegexp:
+  Enabled: true
+Performance/AncestorsInclude:
   Enabled: true

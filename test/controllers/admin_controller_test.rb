@@ -380,7 +380,7 @@ class AdminControllerTest < ActionController::TestCase
 
     User.where(id: user_ids).each do |u|
       assert u.authy_id.nil?
-      assert !u.authy_enabled
+      assert_not u.authy_enabled
     end
 
     sign_out user
@@ -449,7 +449,7 @@ class AdminControllerTest < ActionController::TestCase
     assert_response :bad_request
 
     # Lock the first user
-    User.first.update!(locked_at: Time.now)
+    User.first.update!(locked_at: DateTime.now)
 
     # Test email is sent for all unlocked users
     assert_no_difference 'User.count' do

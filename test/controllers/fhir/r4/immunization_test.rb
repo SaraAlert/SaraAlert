@@ -18,8 +18,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       administration_date: 2.days.ago,
       dose_number: 1,
       notes: 'Foo',
-      created_at: 1.days.ago,
-      updated_at: 1.days.ago
+      created_at: 1.day.ago,
+      updated_at: 1.day.ago
     )
   end
   #----- show tests -----
@@ -31,7 +31,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
-    assert_equal JSON.parse(Vaccine.find_by_id(vaccine_id).as_fhir.to_json), JSON.parse(response.body)
+    assert_equal JSON.parse(Vaccine.find_by(id: vaccine_id).as_fhir.to_json), JSON.parse(response.body)
   end
 
   test 'should be forbidden via show for inaccessible Immunization' do
@@ -137,7 +137,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :ok
-    updated_v = Vaccine.find_by_id(@vaccine_1.id)
+    updated_v = Vaccine.find_by(id: @vaccine_1.id)
 
     # Verify that the updated Vaccine matches the original outside of updated fields
     %i[patient_id
@@ -169,7 +169,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/json-patch+json' }
     )
     assert_response :ok
-    updated_v = Vaccine.find_by_id(@vaccine_1.id)
+    updated_v = Vaccine.find_by(id: @vaccine_1.id)
 
     # Verify that the updated Vaccine matches the original outside of updated fields
     %i[patient_id
@@ -241,7 +241,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'should find Immunizations for a Patient via search' do
     @vaccine_1.patient_id = 2
     @vaccine_1.save
-    patient = Patient.find_by_id(@vaccine_1.patient_id)
+    patient = Patient.find_by(id: @vaccine_1.patient_id)
     get(
       "/fhir/r4/Immunization?patient=Patient/#{@vaccine_1.patient_id}",
       headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }

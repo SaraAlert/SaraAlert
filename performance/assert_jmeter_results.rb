@@ -53,7 +53,9 @@ class Array
     column_sizes = reduce([]) do |lengths, row|
       row.each_with_index.map { |iterand, index| [lengths[index] || 0, iterand.to_s.length].max }
     end
+    # rubocop:disable Performance/Sum
     puts head = '-' * (column_sizes.inject(&:+) + (3 * column_sizes.count) + 1)
+    # rubocop:enable Performance/Sum
     each do |row|
       row.fill(nil, row.size..(column_sizes.size - 1))
       row = row.each_with_index.map { |v, i| v.to_s + ' ' * (column_sizes[i] - v.to_s.length) }
@@ -65,11 +67,11 @@ end
 
 def rows_stats(rows)
   {
-    avg_latency: rows.map { |row| row['Latency'].to_i }.sum / rows.size,
+    avg_latency: (rows.sum { |row| row['Latency'].to_i }) / rows.size,
     max_latency: rows.map { |row| row['Latency'].to_i }.max,
-    avg_elapsed: rows.map { |row| row['elapsed'].to_i }.sum / rows.size,
+    avg_elapsed: (rows.sum { |row| row['elapsed'].to_i }) / rows.size,
     max_elapsed: rows.map { |row| row['elapsed'].to_i }.max,
-    failure_percent: rows.filter { |row| row['success'] != 'true' }.size / rows.size
+    failure_percent: (rows.count { |row| row['success'] != 'true' }) / rows.size
   }
 end
 

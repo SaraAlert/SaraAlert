@@ -47,7 +47,9 @@ class EnrollmentForm < ApplicationSystemTestCase
         elsif field[:type] == :risk_factor
           page.find('label', text: field[:label].upcase).click
         elsif field[:type] == :react_select
+          # rubocop:disable Rails/DynamicFindBy
           input_element = page.find_by_id("#{field[:id]}_wrapper").first(:xpath, './/div//div//div//div//div//input')
+          # rubocop:enable Rails/DynamicFindBy
           input_element.set data[field[:id]]
           input_element.send_keys :enter
         elsif field[:type] == :recent_date && data[field[:id]]
