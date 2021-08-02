@@ -318,7 +318,7 @@ class Patient < ApplicationRecord
       ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= ?)'\
       'OR (patients.preferred_contact_time IN (?)'\
       ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= CONVERT(patients.preferred_contact_time, UNSIGNED INTEGER)'\
-      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= CONVERT(patients.preferred_contact_time, UNSIGNED INTEGER))',
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= CONVERT(patients.preferred_contact_time + 4, UNSIGNED INTEGER))',
       now, PatientDetailsHelper::MORNING_CONTACT_WINDOW.first,
       now, PatientDetailsHelper::MORNING_CONTACT_WINDOW.last,
       now, PatientDetailsHelper::AFTERNOON_CONTACT_WINDOW.first,

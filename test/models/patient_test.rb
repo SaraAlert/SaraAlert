@@ -3041,7 +3041,7 @@ class PatientTest < ActiveSupport::TestCase
       end
 
       # custom time windows
-      [3, 11, 22].each do |hour|
+      [3, 11, 23].each do |hour|
         patient.update(preferred_contact_time: hour)
         patient.reload
         # before window
@@ -3061,7 +3061,7 @@ class PatientTest < ActiveSupport::TestCase
           assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
         end
         # after window
-        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: (hour + 1) % 24)) do
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: (hour + 5) % 24)) do
           assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
         end
       end
