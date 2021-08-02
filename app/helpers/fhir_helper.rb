@@ -36,7 +36,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     FHIR::Patient.new(
       meta: FHIR::Meta.new(lastUpdated: patient.updated_at.strftime('%FT%T%:z')),
       contained: [FHIR::Provenance.new(
-        id: SecureRandom.uuid,
         # Would like to use a Rails URL Helper here, but we don't get one for this endpoint
         target: [FHIR::Reference.new(reference: "/fhir/r4/Patient/#{patient.id}")],
         agent: [
@@ -290,7 +289,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     FHIR::Provenance.new(
       contained: history.deleted_by.nil? ? nil : [
         FHIR::Provenance.new(
-          id: SecureRandom.uuid,
           target: [FHIR::Reference.new(reference: "Provenance/#{history.id}")],
           agent: [
             FHIR::Provenance::Agent.new(
