@@ -295,12 +295,7 @@ class ExposureInformation extends React.Component {
               {this.state.errors['potential_exposure_country']}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group
-            as={Col}
-            lg={{ span: 8, order: 4 }}
-            md={{ span: 12, order: 3 }}
-            xs={{ span: 24, order: 2 }}
-            className="pl-1">
+          <Form.Group as={Col} lg={{ span: 8, order: 4 }} md={{ span: 12, order: 3 }} xs={{ span: 24, order: 2 }} className="pl-1">
             <Form.Check
               size="lg"
               label={`CONTINUOUS EXPOSURE${schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}`}
@@ -319,7 +314,7 @@ class ExposureInformation extends React.Component {
               type="switch"
               id="contact_of_known_case"
               label="CLOSE CONTACT WITH A KNOWN CASE"
-              checked={this.state.current.patient.contact_of_known_case}
+              checked={this.state.current.patient.contact_of_known_case || false}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -345,7 +340,7 @@ class ExposureInformation extends React.Component {
               type="switch"
               id="travel_to_affected_country_or_area"
               label="TRAVEL FROM AFFECTED COUNTRY OR AREA"
-              checked={this.state.current.patient.travel_to_affected_country_or_area}
+              checked={this.state.current.patient.travel_to_affected_country_or_area || false}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -357,7 +352,7 @@ class ExposureInformation extends React.Component {
               type="switch"
               id="was_in_health_care_facility_with_known_cases"
               label="WAS IN HEALTHCARE FACILITY WITH KNOWN CASES"
-              checked={this.state.current.patient.was_in_health_care_facility_with_known_cases}
+              checked={this.state.current.patient.was_in_health_care_facility_with_known_cases || false}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -383,7 +378,7 @@ class ExposureInformation extends React.Component {
               type="switch"
               id="laboratory_personnel"
               label="LABORATORY PERSONNEL"
-              checked={this.state.current.patient.laboratory_personnel}
+              checked={this.state.current.patient.laboratory_personnel || false}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -409,7 +404,7 @@ class ExposureInformation extends React.Component {
               type="switch"
               id="healthcare_personnel"
               label="HEALTHCARE PERSONNEL"
-              checked={this.state.current.patient.healthcare_personnel}
+              checked={this.state.current.patient.healthcare_personnel || false}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -435,7 +430,7 @@ class ExposureInformation extends React.Component {
               type="switch"
               id="crew_on_passenger_or_cargo_flight"
               label="CREW ON PASSENGER OR CARGO FLIGHT"
-              checked={this.state.current.patient.crew_on_passenger_or_cargo_flight}
+              checked={this.state.current.patient.crew_on_passenger_or_cargo_flight || false}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -447,7 +442,7 @@ class ExposureInformation extends React.Component {
               type="switch"
               id="member_of_a_common_exposure_cohort"
               label="MEMBER OF A COMMON EXPOSURE COHORT"
-              checked={this.state.current.patient.member_of_a_common_exposure_cohort}
+              checked={this.state.current.patient.member_of_a_common_exposure_cohort || false}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -469,9 +464,7 @@ class ExposureInformation extends React.Component {
         {!this.props.patient.isolation && (
           <Form.Row>
             <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-3 mb-2">
-              <Form.Label className="input-label">
-                NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
-              </Form.Label>
+              <Form.Label className="input-label">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
               <Form.Control
                 isInvalid={this.state.errors['exposure_notes']}
                 as="textarea"

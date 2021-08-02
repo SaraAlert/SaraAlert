@@ -138,7 +138,7 @@ class Enrollment extends React.Component {
       .then(response => {
         if (response.data && response.data.is_duplicate) {
           const dupFieldData = response.data.duplicate_field_data;
-          const patientType = this.state.enrollmentState.isolation ? 'case' : 'monitoree';
+          const patientType = this.props.patient.isolation ? 'case' : 'monitoree';
 
           let text = `This ${patientType} already appears to exist in the system! `;
 
@@ -182,14 +182,15 @@ class Enrollment extends React.Component {
     window.scroll(0, 0);
     let index = this.state.index;
     let lastIndex = this.state.lastIndex;
+    let step = this.props.patient.isolation && 4 === index ? 2 : 1;
     if (lastIndex) {
       this.setState({ index: lastIndex, lastIndex: null });
     } else {
       this.setState({
         direction: 'next',
-        index: index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1),
+        index: index + step,
         lastIndex: null,
-        review_mode: index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1) === MAX_STEPS,
+        review_mode: index + step === MAX_STEPS,
       });
     }
   };
@@ -197,7 +198,8 @@ class Enrollment extends React.Component {
   previous = () => {
     window.scroll(0, 0);
     let index = this.state.index;
-    this.setState({ direction: 'prev', index: index - (this.state.enrollmentState.isolation && index === 6 ? 2 : 1), lastIndex: null });
+    let step = this.props.patient.isolation && index === 6 ? 2 : 1;
+    this.setState({ direction: 'prev', index: index - step, lastIndex: null });
   };
 
   goto = targetIndex => {
@@ -284,21 +286,23 @@ class Enrollment extends React.Component {
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
-          <Carousel.Item>
-            <CaseInformation
-              currentState={this.state.enrollmentState}
-              setEnrollmentState={this.setEnrollmentState}
-              previous={this.previous}
-              next={this.next}
-              patient={this.props.patient}
-              has_dependents={this.props.has_dependents}
-              jurisdiction_paths={this.props.jurisdiction_paths}
-              assigned_users={this.props.assigned_users}
-              first_positive_lab={this.props.first_positive_lab}
-              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
-              authenticity_token={this.props.authenticity_token}
-            />
-          </Carousel.Item>
+          {this.props.patient.isolation && (
+            <Carousel.Item>
+              <CaseInformation
+                currentState={this.state.enrollmentState}
+                setEnrollmentState={this.setEnrollmentState}
+                previous={this.previous}
+                next={this.next}
+                patient={this.props.patient}
+                has_dependents={this.props.has_dependents}
+                jurisdiction_paths={this.props.jurisdiction_paths}
+                assigned_users={this.props.assigned_users}
+                first_positive_lab={this.props.first_positive_lab}
+                hidePreviousButton={this.props.edit_mode || this.state.review_mode}
+                authenticity_token={this.props.authenticity_token}
+              />
+            </Carousel.Item>
+          )}
           <Carousel.Item>
             <Review
               currentState={this.state.enrollmentState}
