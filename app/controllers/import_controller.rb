@@ -282,7 +282,7 @@ class ImportController < ApplicationController
   def import_time_field(field, value, row_ind)
     return nil if value.blank?
 
-    normalized_value = value.downcase.strip.gsub(/[ -.]/, '')
+    normalized_value = value.to_s.downcase.strip.gsub(/[ -.]/, '')
     saved_value = NORMALIZED_INVERTED_TIME_OPTIONS[normalized_value]
     return saved_value unless saved_value.blank?
 
