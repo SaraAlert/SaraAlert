@@ -20,7 +20,7 @@ class Contact extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.isEditMode) {
+    if (this.props.edit_mode) {
       // Update the Schema Validator by simulating the user changing their preferred_contact_method to what their actual preferred_contact_method really is.
       // This is to trigger schema validation when editing.
       this.updatePrimaryContactMethodValidations({
@@ -399,7 +399,7 @@ class Contact extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.hidePreviousButton && !this.props.isEditMode && (
+            {this.props.previous && !this.props.hidePreviousButton && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -438,7 +438,7 @@ Contact.propTypes = {
   previous: PropTypes.func,
   next: PropTypes.func,
   hidePreviousButton: PropTypes.bool,
-  isEditMode: PropTypes.bool,
+  edit_mode: PropTypes.bool,
 };
 
 export default Contact;

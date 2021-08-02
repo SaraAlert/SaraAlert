@@ -92,21 +92,20 @@ class ExposureInformation extends React.Component {
     );
   };
 
-  handleDateChange = (field, date) => {
+  handleLDEChange = date => {
     let current = this.state.current;
     let modified = this.state.modified;
-    if (field === 'last_date_of_exposure') {
-      // turn off CE if LDE is populated
-      if (date) {
-        current.patient.continuous_exposure = false;
-        modified = { patient: { ...modified.patient, continuous_exposure: false } };
-      }
-      this.updateExposureValidations({ ...current.patient, [field]: date });
+
+    // turn off CE if LDE is populated
+    if (date) {
+      current.patient.continuous_exposure = false;
+      modified = { patient: { ...modified.patient, continuous_exposure: false } };
     }
+    this.updateExposureValidations({ ...current.patient, last_date_of_exposure: date });
     this.setState(
       {
-        current: { ...current, patient: { ...current.patient, [field]: date } },
-        modified: { ...modified, patient: { ...modified.patient, [field]: date } },
+        current: { ...current, patient: { ...current.patient, last_date_of_exposure: date } },
+        modified: { ...modified, patient: { ...modified.patient, last_date_of_exposure: date } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
@@ -220,7 +219,7 @@ class ExposureInformation extends React.Component {
       });
   };
 
-  exposureFields = () => {
+  renderExposureFields = () => {
     return (
       <React.Fragment>
         <Form.Row className="mb-2">
@@ -241,7 +240,7 @@ class ExposureInformation extends React.Component {
               date={this.state.current.patient.last_date_of_exposure}
               minDate={'2020-01-01'}
               maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
-              onChange={date => this.handleDateChange('last_date_of_exposure', date)}
+              onChange={date => this.handleLDEChange(date)}
               placement="bottom"
               isInvalid={!!this.state.errors['last_date_of_exposure']}
               customClass="form-control-lg"
@@ -301,7 +300,6 @@ class ExposureInformation extends React.Component {
             lg={{ span: 8, order: 4 }}
             md={{ span: 12, order: 3 }}
             xs={{ span: 24, order: 2 }}
-            controlId="continuous_exposure"
             className="pl-1">
             <Form.Check
               size="lg"
@@ -468,14 +466,13 @@ class ExposureInformation extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        {!this.props.currentState.isolation && (
+        {!this.props.patient.isolation && (
           <Form.Row>
-            <Form.Group as={Col} md="24" className="pt-3 mb-2">
-              <Form.Label htmlFor="exposure_notes" className="input-label">
+            <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-3 mb-2">
+              <Form.Label className="input-label">
                 NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
               </Form.Label>
               <Form.Control
-                id="exposure_notes"
                 isInvalid={this.state.errors['exposure_notes']}
                 as="textarea"
                 rows="4"
@@ -507,8 +504,8 @@ class ExposureInformation extends React.Component {
             <Form>
               <Form.Row className="pb-3 h-100">
                 <Form.Group as={Col} className="my-auto">
-                  {this.exposureFields()}
-                  {!this.props.currentState.isolation && (
+                  {this.renderExposureFields()}
+                  {!this.props.patient.isolation && (
                     <PublicHealthManagement
                       currentState={this.state.current}
                       setEnrollmentState={this.props.setEnrollmentState}
@@ -525,7 +522,7 @@ class ExposureInformation extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.hidePreviousButton && !this.props.isEditMode && (
+            {this.props.previous && !this.props.hidePreviousButton && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -578,7 +575,6 @@ ExposureInformation.propTypes = {
   first_positive_lab: PropTypes.object,
   hidePreviousButton: PropTypes.bool,
   authenticity_token: PropTypes.string,
-  isEditMode: PropTypes.bool,
 };
 
 export default ExposureInformation;

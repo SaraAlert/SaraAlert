@@ -31,7 +31,7 @@ class Enrollment extends React.Component {
       index: props.enrollment_step != undefined ? props.enrollment_step : props.edit_mode ? MAX_STEPS : 0,
       lastIndex: props.enrollment_step != undefined ? MAX_STEPS : null,
       direction: null,
-      reviewing: false,
+      review_mode: false,
       enrollmentState: {
         patient: pickBy(props.patient, identity),
         propagatedFields: {},
@@ -189,7 +189,7 @@ class Enrollment extends React.Component {
         direction: 'next',
         index: index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1),
         lastIndex: null,
-        reviewing: index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1) === MAX_STEPS,
+        review_mode: index + ((this.state.enrollmentState.isolation ? 4 : 5) === index ? 2 : 1) === MAX_STEPS,
       });
     }
   };
@@ -237,8 +237,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
-              isEditMode={this.props.edit_mode}
+              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -247,9 +246,9 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
+              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
               blocked_sms={this.props.blocked_sms}
-              isEditMode={this.props.edit_mode}
+              edit_mode={this.props.edit_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -258,8 +257,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
-              isEditMode={this.props.edit_mode}
+              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -268,8 +266,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
-              isEditMode={this.props.edit_mode}
+              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -283,9 +280,8 @@ class Enrollment extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
-              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
+              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
               authenticity_token={this.props.authenticity_token}
-              isEditMode={this.props.edit_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -299,9 +295,8 @@ class Enrollment extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
-              hidePreviousButton={this.props.edit_mode || this.state.reviewing}
+              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
               authenticity_token={this.props.authenticity_token}
-              isEditMode={this.props.edit_mode}
             />
           </Carousel.Item>
           <Carousel.Item>

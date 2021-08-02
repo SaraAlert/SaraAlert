@@ -232,7 +232,7 @@ class AdditionalPlannedTravel extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.hidePreviousButton && !this.props.isEditMode && (
+            {this.props.previous && !this.props.hidePreviousButton && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -273,7 +273,6 @@ AdditionalPlannedTravel.propTypes = {
   previous: PropTypes.func,
   next: PropTypes.func,
   hidePreviousButton: PropTypes.bool,
-  isEditMode: PropTypes.bool,
 };
 
 export default AdditionalPlannedTravel;

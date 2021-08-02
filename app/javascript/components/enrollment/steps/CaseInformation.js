@@ -211,7 +211,7 @@ class CaseInformation extends React.Component {
       });
   };
 
-  isolationFields = () => {
+  renderIsolationFields = () => {
     return (
       <React.Fragment>
         {!this.state.current.patient.symptom_onset && !this.state.current.first_positive_lab && (
@@ -223,32 +223,24 @@ class CaseInformation extends React.Component {
         <Form.Row>
           <Form.Group as={Col} md={12} xs={24} controlId="symptom_onset" className="mb-2">
             <Form.Label className="input-label">
-              <React.Fragment>
-                SYMPTOM ONSET DATE
-                {this.props.patient.symptom_onset && this.state.current.patient.symptom_onset && (
-                  <div style={{ display: 'inline' }}>
-                    <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-2">
-                      {this.props.patient.user_defined_symptom_onset ? <i className="fas fa-user"></i> : <i className="fas fa-desktop"></i>}
-                    </span>
-                    <ReactTooltip
-                      id="user_defined_symptom_onset_tooltip"
-                      multiline={true}
-                      place="right"
-                      type="dark"
-                      effect="solid"
-                      className="tooltip-container">
-                      {this.props.patient.user_defined_symptom_onset ? (
-                        <span>This date was set by a user</span>
-                      ) : (
-                        <span>
-                          This date is auto-populated by the system as the date of the earliest report flagged as symptomatic (red highlight) in the reports
-                          table. Field is blank when there are no symptomatic reports.
-                        </span>
-                      )}
-                    </ReactTooltip>
-                  </div>
-                )}
-              </React.Fragment>
+              SYMPTOM ONSET DATE
+              {this.props.patient.symptom_onset && this.state.current.patient.symptom_onset && (
+                <div style={{ display: 'inline' }}>
+                  <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-2">
+                    {this.props.patient.user_defined_symptom_onset ? <i className="fas fa-user"></i> : <i className="fas fa-desktop"></i>}
+                  </span>
+                  <ReactTooltip id="user_defined_symptom_onset_tooltip" multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+                    {this.props.patient.user_defined_symptom_onset ? (
+                      <span>This date was set by a user</span>
+                    ) : (
+                      <span>
+                        This date is auto-populated by the system as the date of the earliest report flagged as symptomatic (red highlight) in the reports
+                        table. Field is blank when there are no symptomatic reports.
+                      </span>
+                    )}
+                  </ReactTooltip>
+                </div>
+              )}
             </Form.Label>
             <DateInput
               id="symptom_onset"
@@ -290,12 +282,9 @@ class CaseInformation extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Row>
-          <Form.Group as={Col} md="24" className="mb-2">
-            <Form.Label htmlFor="exposure_notes" className="input-label ml-1">
-              NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}
-            </Form.Label>
+          <Form.Group as={Col} md="24" controlId="exposure_notes" className="mb-2">
+            <Form.Label className="input-label ml-1">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
-              id="exposure_notes"
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
               rows="4"
@@ -326,7 +315,7 @@ class CaseInformation extends React.Component {
             <Form>
               <Form.Row className="pb-3 h-100">
                 <Form.Group as={Col} className="my-auto">
-                  {this.isolationFields()}
+                  {this.renderIsolationFields()}
                   <PublicHealthManagement
                     currentState={this.state.current}
                     setEnrollmentState={this.props.setEnrollmentState}
@@ -342,7 +331,7 @@ class CaseInformation extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.hidePreviousButton && !this.props.isEditMode && (
+            {this.props.previous && !this.props.hidePreviousButton && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -395,7 +384,7 @@ CaseInformation.propTypes = {
   first_positive_lab: PropTypes.object,
   hidePreviousButton: PropTypes.bool,
   authenticity_token: PropTypes.string,
-  isEditMode: PropTypes.bool,
+  edit_mode: PropTypes.bool,
 };
 
 export default CaseInformation;
