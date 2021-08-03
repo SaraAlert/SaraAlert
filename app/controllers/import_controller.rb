@@ -23,7 +23,7 @@ class ImportController < ApplicationController
 
   def download_guidance
     send_file(
-      "#{Rails.root}/public/Sara%20Alert%20Import%20Format.xlsx",
+      Rails.root.join('public', 'Sara%20Alert%20Import%20Format.xlsx'),
       filename: 'Sara%20Alert%20Import%20Format.xlsx',
       type: 'application/vnd.ms-excel'
     )
@@ -162,7 +162,7 @@ class ImportController < ApplicationController
       patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[SARA_ALERT_FORMAT_FIELDS.index(:jurisdiction_path)],
                                                                                      row_ind, valid_jurisdiction_ids)
     elsif field == :assigned_user
-      patient[:assigned_user] = import_assigned_user(row[SARA_ALERT_FORMAT_FIELDS.index(:assigned_user)])
+      patient[:assigned_user] = row[SARA_ALERT_FORMAT_FIELDS.index(:assigned_user)].presence
     elsif field == :symptom_onset && workflow == :isolation
       patient[:user_defined_symptom_onset] = row[SARA_ALERT_FORMAT_FIELDS.index(:symptom_onset)].present?
       patient[field] = import_field(field, row[col_num], row_ind)
@@ -250,7 +250,7 @@ class ImportController < ApplicationController
     value = import_and_validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
     value = import_and_validate_language_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:lang)
     value = import_sex_field(field, value) if VALIDATION[field][:checks].include?(:sex)
-    value = import_email_field(value) if VALIDATION[field][:checks].include?(:email)
+    value = value.presence if VALIDATION[field][:checks].include?(:email)
     value
   end
 
@@ -264,12 +264,12 @@ class ImportController < ApplicationController
     return nil if value.blank?
 
     normalized_value = normalize_enum_field_value(value)
-    NORMALIZED_ENUMS[field].keys.include?(normalized_value) ? NORMALIZED_ENUMS[field][normalized_value] : value
+    NORMALIZED_ENUMS[field].key?(normalized_value) ? NORMALIZED_ENUMS[field][normalized_value] : value
   end
 
   def import_and_validate_bool_field(field, value, row_ind)
     return value if value.blank?
-    return (value.to_s.downcase == 'true') if %w[true false].include?(value.to_s.downcase)
+    return value.to_s.casecmp('true').zero? if %w[true false].include?(value.to_s.downcase)
 
     # NOTE: The controller still validates boolean values, since validating those on the model does not work
     # because by that point they will have been typecast from a string to a bool
@@ -278,7 +278,7 @@ class ImportController < ApplicationController
   end
 
   def import_date_field(value)
-    value.blank? ? nil : value
+    value.presence
   end
 
   def import_and_validate_time_field(field, value, row_ind)
@@ -286,7 +286,7 @@ class ImportController < ApplicationController
 
     normalized_value = value.to_s.downcase.strip
     saved_value = NORMALIZED_INVERTED_TIME_OPTIONS[normalized_value]
-    return saved_value unless saved_value.blank?
+    return saved_value if saved_value.present?
 
     err_msg = "Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value, acceptable values are: '#{TIME_OPTIONS.values.join("', '")}'"
     raise ValidationError.new(err_msg, row_ind)
@@ -294,7 +294,7 @@ class ImportController < ApplicationController
 
   def import_phone_field(value)
     e_164 = Phonelib.parse(value, 'US').full_e164
-    e_164.blank? ? value : e_164
+    e_164.presence || value
   end
 
   def import_and_validate_state_field(field, value, row_ind)
@@ -324,14 +324,10 @@ class ImportController < ApplicationController
     return nil if value.blank?
 
     normalized_value = normalize_enum_field_value(value)
-    return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
+    return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].key?(normalized_value)
 
     normalized_sex = SEX_ABBREVIATIONS[value.to_s.upcase.to_sym]
     normalized_sex || value
-  end
-
-  def import_email_field(value)
-    value.blank? ? nil : value
   end
 
   def validate_jurisdiction(value, row_ind, valid_jurisdiction_ids)
@@ -349,21 +345,17 @@ class ImportController < ApplicationController
     raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path' because you do not have permission to import into it", row_ind)
   end
 
-  def import_assigned_user(value)
-    value.blank? ? nil : value
-  end
-
   def validate_workflow_specific_enums(workflow, field, value, row_ind)
     return nil if value.blank?
 
     normalized_value = normalize_enum_field_value(value)
     if workflow == :exposure
-      return NORMALIZED_EXPOSURE_ENUMS[field][normalized_value] if NORMALIZED_EXPOSURE_ENUMS[field].keys.include?(normalized_value)
+      return NORMALIZED_EXPOSURE_ENUMS[field][normalized_value] if NORMALIZED_EXPOSURE_ENUMS[field].keys?(normalized_value)
 
       err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for monitorees imported into the Exposure workflow, "
       err_msg += "acceptable values are: #{VALID_EXPOSURE_ENUMS[field].reject(&:blank?).to_sentence}"
     else
-      return NORMALIZED_ISOLATION_ENUMS[field][normalized_value] if NORMALIZED_ISOLATION_ENUMS[field].keys.include?(normalized_value)
+      return NORMALIZED_ISOLATION_ENUMS[field][normalized_value] if NORMALIZED_ISOLATION_ENUMS[field].key?(normalized_value)
 
       err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for cases imported into the Isolation workflow, "
       err_msg += "acceptable values are: #{VALID_ISOLATION_ENUMS[field].reject(&:blank?).to_sentence}"
