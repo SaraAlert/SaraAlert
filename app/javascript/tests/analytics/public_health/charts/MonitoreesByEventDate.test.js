@@ -11,8 +11,13 @@ const graphInfo = [
   { title: 'Isolation Workflow', axisLabel: 'Symptom Onset Date' },
 ];
 
+const available_workflows = [
+  { name: 'exposure', label: 'Exposure' },
+  { name: 'isolation', label: 'Isolation' },
+];
+
 function getWrapper() {
-  return shallow(<MonitoreesByEventDate stats={mockAnalyticsData} />);
+  return shallow(<MonitoreesByEventDate stats={mockAnalyticsData} available_workflows={available_workflows} />);
 }
 
 describe('MonitoreesByEventDate', () => {
@@ -22,13 +27,45 @@ describe('MonitoreesByEventDate', () => {
     expect(wrapper.find(Card.Header).exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).text()).toEqual('Monitorees by Event Date (Active Records Only)');
     expect(wrapper.find(Card.Body).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Form.Group).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Form.Label).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Form.Label).text()).toEqual('Time Resolution');
-    expect(wrapper.find(Card.Body).find(Form.Control).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Form.Control).find('option').length).toEqual(timeResolutionOptions.length);
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Form.Group)
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Form.Label)
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Form.Label)
+        .text()
+    ).toEqual('Time Resolution');
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Form.Control)
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find(Form.Control)
+        .find('option').length
+    ).toEqual(timeResolutionOptions.length);
     timeResolutionOptions.forEach((option, index) => {
-      expect(wrapper.find(Card.Body).find(Form.Control).find('option').at(index).text()).toEqual(option);
+      expect(
+        wrapper
+          .find(Card.Body)
+          .find(Form.Control)
+          .find('option')
+          .at(index)
+          .text()
+      ).toEqual(option);
     });
   });
 
@@ -38,15 +75,74 @@ describe('MonitoreesByEventDate', () => {
     expect(wrapper.find(Card.Body).find(BarChart).length).toEqual(2);
 
     graphInfo.forEach((graph, index) => {
-      expect(wrapper.find(Col).at(index).find('.h5').text()).toEqual(graph.title);
-      expect(wrapper.find(Col).at(index).find(ResponsiveContainer).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).find(CartesianGrid).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).find(XAxis).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).find(YAxis).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).find(Tooltip).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).find(Bar).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find('.h6').text()).toEqual(graph.axisLabel);
+      expect(
+        wrapper
+          .find(Col)
+          .at(index)
+          .find('.h5')
+          .text()
+      ).toEqual(graph.title);
+      expect(
+        wrapper
+          .find(Col)
+          .at(index)
+          .find(ResponsiveContainer)
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find(Col)
+          .at(index)
+          .find(BarChart)
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find(Col)
+          .at(index)
+          .find(BarChart)
+          .find(CartesianGrid)
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find(Col)
+          .at(index)
+          .find(BarChart)
+          .find(XAxis)
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find(Col)
+          .at(index)
+          .find(BarChart)
+          .find(YAxis)
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find(Col)
+          .at(index)
+          .find(BarChart)
+          .find(Tooltip)
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find(Col)
+          .at(index)
+          .find(BarChart)
+          .find(Bar)
+          .exists()
+      ).toBeTruthy();
+      expect(
+        wrapper
+          .find(Col)
+          .at(index)
+          .find('.h6')
+          .text()
+      ).toEqual(graph.axisLabel);
     });
   });
 
