@@ -11,67 +11,56 @@ module Orchestration::Playbooks::Covid19Playbook
     workflows: {
       exposure: { label: 'Exposure', base: INFECTIOUS[:workflows][:exposure], custom_options: {
         dashboard_tabs: {
-          type: 'all',
-          config: {
-            set: %i[symptomatic non_reporting all],
-            custom_options: {
-              symptomatic: {
-                label: 'Symptomatic'
-              }
-            }
-          }
+          type: 'base',
+          config: {}
         },
         header_action_buttons: {
-          type: 'all',
-          config: {
-            set: %i[enroll import],
-            custom_options: {
-              import: {
-                label: 'Import',
-                type: 'all',
-                config: {
-                  set: %i[saf]
-                }
-              }
-            }
-          }
+          type: 'base',
+          config: {}
         },
         dashboard_table_columns: {
-          type: 'all',
-          config: {
-            custom_options: {
-              symptomatic: {
-                type: 'all',
-                config: {
-                  set: %i[jurisdiction end_of_monitoring risk_level]
-                }
-              }
-            }
-          }
-
-        },
-        other_properties: {
+          type: 'base',
+          config: {}
         }
       } },
       isolation: { label: 'Isolation', base: INFECTIOUS[:workflows][:isolation], custom_options: {
         dashboard_tabs: {
-          type: 'base'
+          type: 'base',
+          config: {}
         },
         header_action_buttons: {
-          type: 'all'
+          type: 'base',
+          config: {}
+        },
+        dashboard_table_columns: {
+          type: 'base',
+          config: {}
         }
       } },
       global: { label: 'Global', base: INFECTIOUS[:workflows][:global], custom_options: {
+        dashboard_tabs: {
+          type: 'base',
+          config: {}
+        },
+        header_action_buttons: {
+          type: 'base',
+          config: {}
+        },
+        dashboard_table_columns: {
+          type: 'base',
+          config: {}
+        }
       } }
     },
     general: {
       base: INFECTIOUS[:general], custom_options: {
         patient_page_sections: {
-          type: 'all',
-          config: {
-            custom_options: {
-            }
-          }
+          type: 'base',
+          config: {}
+        },
+        monitoring_dashboard_buttons: {
+          type: 'base',
+          config: {}
         }
       }
     },
@@ -79,9 +68,6 @@ module Orchestration::Playbooks::Covid19Playbook
       # Define primary, i.e., default, workflow to present on dashboard
       primary_workflow: :exposure,
       continuous_exposure_enabled: true
-    },
-    other_properties: {
-
     }
   }.freeze
 end
