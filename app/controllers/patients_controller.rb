@@ -118,7 +118,7 @@ class PatientsController < ApplicationController
     dashboard_crumb(params.permit(:nav)[:nav], @patient)
 
     @dependents_exclude_hoh = @patient.dependents_exclude_self
-    @propagated_fields = group_member_subset.collect { |field| [field, false] }.to_h
+    @propagated_fields = group_member_subset.index_with { |_field| false }
     @enrollment_step = params.permit(:step)[:step]&.to_i
   end
 
@@ -170,7 +170,7 @@ class PatientsController < ApplicationController
     patient.submission_token = patient.new_submission_token
 
     # Attempt to save and continue; else if failed redirect to index
-    render(json: patient.errors, status: 422) && return unless patient.save
+    render(json: patient.errors, status: :unprocessable_entity) && return unless patient.save
 
     # Send enrollment notification only to responders
     patient.send_enrollment_notification if patient.self_reporter_or_proxy?
@@ -180,14 +180,14 @@ class PatientsController < ApplicationController
 
     # Create histories for lab results if present
     if allowed_params[:laboratories_attributes].present?
-      patient.laboratories.order(created_at: :desc).limit(allowed_params[:laboratories_attributes].size).pluck(:id).reverse.each do |laboratory_id|
+      patient.laboratories.order(created_at: :desc).limit(allowed_params[:laboratories_attributes].size).pluck(:id).reverse_each do |laboratory_id|
         History.lab_result(patient: patient.id, created_by: current_user.email, comment: "User added a new lab result (ID: #{laboratory_id}).")
       end
     end
 
     # Create histories for vaccinations if presentt
     if allowed_params[:vaccines_attributes].present?
-      patient.vaccines.order(created_at: :desc).limit(allowed_params[:vaccines_attributes].size).pluck(:id).reverse.each do |vaccine_id|
+      patient.vaccines.order(created_at: :desc).limit(allowed_params[:vaccines_attributes].size).pluck(:id).reverse_each do |vaccine_id|
         History.vaccination(patient: patient.id, created_by: current_user.email, comment: "User added a new vaccination (ID: #{vaccine_id}).")
       end
     end
@@ -217,7 +217,7 @@ class PatientsController < ApplicationController
 
       # If we failed to find a laboratory given the id, redirect to index
       first_positive_lab = patient.laboratories.find(laboratory[:id])
-      redirect_to(root_url) && return unless first_positive_lab.present?
+      redirect_to(root_url) && return if first_positive_lab.blank?
 
       first_positive_lab.update(laboratory)
       History.lab_result(patient: patient, created_by: current_user.email, comment: "User edited a lab result (ID: #{laboratory[:id]}).")
@@ -279,7 +279,7 @@ class PatientsController < ApplicationController
     # Update patient history with detailed edit diff
     patient_before = patient.dup
 
-    render(json: patient.errors, status: 422) and return unless patient.update(content)
+    render(json: patient.errors, status: :unprocessable_entity) and return unless patient.update(content)
 
     allowed_fields = allowed_params&.keys&.reject { |apk| %w[jurisdiction_id assigned_user].include? apk }
     Patient.detailed_history_edit(patient_before, patient, allowed_fields, current_user.email)
@@ -473,7 +473,7 @@ class PatientsController < ApplicationController
         responders = Patient.find(not_viewable).map(&:responder)
         responders.uniq
         render json: { error: 'Selected monitoree dependents are in a household that spans jurisidictions which you do not have access to.',
-                       patients: responders }, status: 401
+                       patients: responders }, status: :unauthorized
       end
 
       patient_ids = patient_ids.union(dependent_ids)
@@ -702,7 +702,7 @@ class PatientsController < ApplicationController
     comment += " and updated Symptom Onset Date to #{patient[:symptom_onset]&.strftime('%m/%d/%Y')}" if isolation_updates.include?(:symptom_onset)
     comment += " and added a new lab result (ID: #{lab_id})" if lab_id.present?
     comment += '.'
-    comment += ' Reason: ' + permitted_params[:reasoning] unless permitted_params[:reasoning].blank?
+    comment += ' Reason: ' + permitted_params[:reasoning] if permitted_params[:reasoning].present?
     History.reports_reviewed(patient: patient, created_by: current_user.email, comment: comment)
   end
 
@@ -726,7 +726,7 @@ class PatientsController < ApplicationController
     comment += " and updated Symptom Onset Date to #{patient[:symptom_onset]&.strftime('%m/%d/%Y')}" if isolation_updates.include?(:symptom_onset)
     comment += " and added a new lab result (ID: #{lab_id})" if lab_id.present?
     comment += '.'
-    comment += ' Reason: ' + permitted_params[:reasoning] unless permitted_params[:reasoning].blank?
+    comment += ' Reason: ' + permitted_params[:reasoning] if permitted_params[:reasoning].present?
     History.report_reviewed(patient: patient, created_by: current_user.email, comment: comment)
   end
 
@@ -754,7 +754,7 @@ class PatientsController < ApplicationController
 
   # Create first positive lab and history if present (using laboratories_attributes does not work in this case)
   def create_lab_result(params, patient, create_history)
-    return unless params[:first_positive_lab].present?
+    return if params[:first_positive_lab].blank?
 
     lab = Laboratory.new(lab_type: params[:first_positive_lab][:lab_type],
                          specimen_collection: params[:first_positive_lab][:specimen_collection],
@@ -781,8 +781,8 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return if patient.nil?
 
     duplicate_contact = false
-    duplicate_contact = patient[:primary_telephone] == patient.responder[:primary_telephone] unless patient[:primary_telephone].blank?
-    duplicate_contact ||= (patient[:email] == patient.responder[:email]) unless patient[:email].blank?
+    duplicate_contact = patient[:primary_telephone] == patient.responder[:primary_telephone] if patient[:primary_telephone].present?
+    duplicate_contact ||= (patient[:email] == patient.responder[:email]) if patient[:email].present?
     # They are removeable from the household if their current responder does not have duplicate contact information
     render json: { removeable: !duplicate_contact }
   end
