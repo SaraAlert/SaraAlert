@@ -22,14 +22,15 @@ import { navQueryParam } from '../../utils/Navigation';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
-const MAX_STEPS = 7;
 
 class Enrollment extends React.Component {
   constructor(props) {
+    const maxSteps = props.patient.isolation ? 7 : 6;
     super(props);
     this.state = {
-      index: props.enrollment_step != undefined ? props.enrollment_step : props.edit_mode ? MAX_STEPS : 0,
-      lastIndex: props.enrollment_step != undefined ? MAX_STEPS : null,
+      maxSteps: maxSteps,
+      index: props.enrollment_step != undefined ? props.enrollment_step : props.edit_mode ? maxSteps : 0,
+      lastIndex: props.enrollment_step != undefined ? maxSteps : null,
       direction: null,
       review_mode: false,
       enrollmentState: {
@@ -190,7 +191,7 @@ class Enrollment extends React.Component {
         direction: 'next',
         index: index + step,
         lastIndex: null,
-        review_mode: index + step === MAX_STEPS,
+        review_mode: index + step === this.state.maxSteps,
       });
     }
   };

@@ -7,7 +7,6 @@ import PublicHealthManagement from '../../../components/enrollment/steps/PublicH
 import DateInput from '../../../components/util/DateInput';
 import { blankExposureMockPatient, blankIsolationMockPatient, mockPatient1, mockPatient2 } from '../../mocks/mockPatients';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
-import { mockLaboratory1 } from '../../mocks/mockLaboratories';
 
 const previousMock = jest.fn();
 const nextMock = jest.fn();
@@ -20,7 +19,7 @@ function getShallowWrapper(patient, hideBtn) {
     patient: patient,
     propagatedFields: {},
   };
-  return shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} hidePreviousButton={hideBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} first_positive_lab={mockLaboratory1} authenticity_token={'123'} />);
+  return shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} hidePreviousButton={hideBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} />);
 }
 
 function getMountedWrapper(patient, hideBtn) {
@@ -29,7 +28,7 @@ function getMountedWrapper(patient, hideBtn) {
     patient: patient,
     propagatedFields: {},
   };
-  return mount(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} hidePreviousButton={hideBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} first_positive_lab={mockLaboratory1} authenticity_token={'123'} />);
+  return mount(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} hidePreviousButton={hideBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} />);
 }
 
 afterEach(() => {
@@ -69,7 +68,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Button).at(1).text()).toEqual('Next');
   });
 
-  it('Properly renders exposure information inputs when creating a new patient', () => {
+  it('Properly renders exposure information inputs when creating a new monitoree', () => {
     const wrapper = getMountedWrapper(blankExposureMockPatient);
     exposureInputLabels.forEach((label, index) => {
       expect(wrapper.find('label').at(index).text()).toContain(label);
@@ -125,7 +124,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.find('.character-limit-text').hostNodes().text()).toEqual('2000 characters remaining');
   });
 
-  it('Properly renders exposure information inputs when editing an existing patient', () => {
+  it('Properly renders exposure information inputs when editing an existing monitoree', () => {
     const wrapper = getMountedWrapper(mockPatient2);
     exposureInputLabels.forEach((label, index) => {
       expect(wrapper.find('label').at(index).text()).toContain(label);

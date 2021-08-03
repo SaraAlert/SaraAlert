@@ -1,12 +1,8 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Col, Form } from 'react-bootstrap';
-import * as yup from 'yup';
 import axios from 'axios';
-import moment from 'moment';
 import _ from 'lodash';
-
-import confirmDialog from '../../util/ConfirmDialog';
 import InfoTooltip from '../../util/InfoTooltip';
 
 class PublicHealthManagement extends React.Component {
@@ -20,19 +16,18 @@ class PublicHealthManagement extends React.Component {
       sorted_jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
       jurisdiction_path: this.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
-      originalAssignedUser: this.props.currentState.patient.assigned_user,
       assigned_users: this.props.assigned_users,
-      selected_jurisdiction: this.props.selected_jurisdiction,
+      originalAssignedUser: this.props.currentState.patient.assigned_user,
     };
   }
 
   componentDidMount() {
-    this.updateStaticValidations(this.props.currentState.isolation, this.props.first_positive_lab);
+    this.props.updateValidations(this.props.currentState.isolation);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.currentState.isolation !== this.props.currentState.isolation) {
-      this.updateStaticValidations(this.props.currentState.isolation, this.props.first_positive_lab);
+      this.props.updateValidations(this.props.currentState.isolation);
     }
   }
 
@@ -67,45 +62,11 @@ class PublicHealthManagement extends React.Component {
 
       // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
       value = event.target.value.trim() === '' ? null : parseInt(event.target.value);
-    } else if (event?.target?.id && event.target.id === 'continuous_exposure') {
-      // clear out LDE if CE is turned on and populate it with previous LDE if CE is turned off
-      const lde = value ? null : this.props.patient.last_date_of_exposure;
-      current.patient.last_date_of_exposure = lde;
-      if (modified.patient) {
-        modified.patient.last_date_of_exposure = lde;
-      } else {
-        modified = { patient: { last_date_of_exposure: lde } };
-      }
-      this.updateExposureValidations({ ...current.patient, [event.target.id]: value });
     }
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
         modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
-      },
-      () => {
-        this.props.setEnrollmentState({ ...this.state.modified });
-      }
-    );
-  };
-
-  handleDateChange = (field, date) => {
-    let current = this.state.current;
-    let modified = this.state.modified;
-    if (field === 'last_date_of_exposure') {
-      // turn off CE if LDE is populated
-      if (date) {
-        current.patient.continuous_exposure = false;
-        modified = { patient: { ...modified.patient, continuous_exposure: false } };
-      }
-      this.updateExposureValidations({ ...current.patient, [field]: date });
-    } else if (field === 'symptom_onset') {
-      this.updateIsolationValidations({ ...current.patient, [field]: date }, this.state.current.first_positive_lab);
-    }
-    this.setState(
-      {
-        current: { ...current, patient: { ...current.patient, [field]: date } },
-        modified: { ...modified, patient: { ...modified.patient, [field]: date } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
@@ -127,154 +88,6 @@ class PublicHealthManagement extends React.Component {
     );
   };
 
-  handleLabChange = first_positive_lab => {
-    const current = this.state.current;
-    const modified = this.state.modified;
-    this.setState(
-      {
-        current: { ...current, patient: { ...current.patient, first_positive_lab_at: first_positive_lab?.specimen_collection }, first_positive_lab },
-        modified: { ...modified, patient: { ...modified.patient, first_positive_lab_at: first_positive_lab?.specimen_collection }, first_positive_lab },
-        showLabModal: false,
-      },
-      () => {
-        this.props.setEnrollmentState({ ...this.state.modified });
-        this.updateIsolationValidations(current.patient, first_positive_lab);
-      }
-    );
-  };
-
-  updateStaticValidations = (isolation, first_positive_lab) => {
-    // Update the Schema Validator based on workflow.
-    if (isolation) {
-      this.updateIsolationValidations(this.props.currentState.patient, first_positive_lab);
-    } else {
-      this.updateExposureValidations(this.props.patient);
-    }
-  };
-
-  updateExposureValidations = patient => {
-    if (!patient.last_date_of_exposure && !patient.continuous_exposure) {
-      schema = yup.object().shape({
-        ...staticValidations,
-        last_date_of_exposure: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
-          .required('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
-          .nullable(),
-        continuous_exposure: yup.bool().nullable(),
-      });
-    } else if (!patient.last_date_of_exposure && patient.continuous_exposure) {
-      schema = yup.object().shape({
-        ...staticValidations,
-        last_date_of_exposure: yup.date('Date must correspond to the "mm/dd/yyyy" format.').oneOf([null, undefined]).nullable(),
-        continuous_exposure: yup.bool().oneOf([true]).nullable(),
-      });
-    } else if (patient.last_date_of_exposure && !patient.continuous_exposure) {
-      schema = yup.object().shape({
-        ...staticValidations,
-        last_date_of_exposure: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
-          .required('Please enter a Last Date of Exposure')
-          .nullable(),
-        continuous_exposure: yup.bool().oneOf([null, undefined, false]).nullable(),
-      });
-    } else {
-      schema = yup.object().shape({
-        ...staticValidations,
-        last_date_of_exposure: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .oneOf([null, undefined], 'Please enter a Last Date of Exposure OR turn on Continuous Exposure, but not both.')
-          .nullable(),
-        continuous_exposure: yup.bool().nullable(),
-      });
-    }
-    this.setState(state => {
-      const errors = state.errors;
-      delete errors.last_date_of_exposure;
-      delete errors.continuous_exposure;
-      return { errors };
-    });
-  };
-
-  updateIsolationValidations = (patient, first_positive_lab) => {
-    if (!patient.symptom_onset && !first_positive_lab?.specimen_collection) {
-      schema = yup.object().shape({
-        ...staticValidations,
-        symptom_onset: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
-          .required('Please enter a Symptom Onset Date AND/OR a positive lab result.')
-          .nullable(),
-      });
-    } else if (patient.symptom_onset) {
-      schema = yup.object().shape({
-        ...staticValidations,
-        symptom_onset: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
-          .required('Please enter a Symptom Onset Date AND/OR a positive lab result.')
-          .nullable(),
-      });
-    } else {
-      schema = yup.object().shape({
-        ...staticValidations,
-        symptom_onset: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
-          .nullable(),
-      });
-    }
-    this.setState(state => {
-      const errors = state.errors;
-      delete errors.symptom_onset;
-      return { errors };
-    });
-  };
-
-  validate = callback => {
-    let self = this;
-    schema
-      .validate(this.state.current.patient, { abortEarly: false })
-      .then(() => {
-        // No validation issues? Invoke callback (move to next step)
-        self.setState({ errors: {} }, async () => {
-          if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
-            // If we set it back to the last saved value no need to confirm.
-            if (self.state.current.patient.jurisdiction_id === self.state.selected_jurisdiction) {
-              callback();
-              return;
-            }
-            const originalJurisdictionPath = self.props.jurisdiction_paths[self.state.originalJurisdictionId];
-            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdiction_path}. Are you sure you want to do this?`;
-            const options = { title: 'Confirm Jurisdiction Change' };
-
-            if (self.state.current.patient.assigned_user && self.state.current.patient.assigned_user === self.state.originalAssignedUser) {
-              options.additionalNote = 'Please also consider removing or updating the assigned user if it is no longer applicable.';
-            }
-
-            if (await confirmDialog(message, options)) {
-              self.setState({ selected_jurisdiction: self.state.current.patient.jurisdiction_id });
-              callback();
-            }
-          } else {
-            self.setState({ selected_jurisdiction: self.state.current.patient.jurisdiction_id });
-            callback();
-          }
-        });
-      })
-      .catch(err => {
-        // Validation errors, update state to display to user
-        if (err && err.inner) {
-          let issues = {};
-          for (var issue of err.inner) {
-            issues[issue['path']] = issue['errors'];
-          }
-          self.setState({ errors: issues });
-        }
-      });
-  };
-
   render() {
     return (
       <React.Fragment>
@@ -286,7 +99,7 @@ class PublicHealthManagement extends React.Component {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} md="18" className="mb-2 pt-2" controlId="jurisdiction_id">
-            <Form.Label className="input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="input-label">ASSIGNED JURISDICTION{this.props.schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['jurisdiction_id']}
               as="input"
@@ -319,14 +132,14 @@ class PublicHealthManagement extends React.Component {
                     name="jurisdiction_id"
                     label="Apply this change to the entire household that this monitoree is responsible for"
                     onChange={this.handlePropagatedFieldChange}
-                    checked={this.state.current.propagatedFields.jurisdiction_id}
+                    checked={this.state.current.propagatedFields.jurisdiction_id || false}
                   />
                 </Form.Group>
               )}
           </Form.Group>
           <Form.Group as={Col} md="6" className="mb-2 pt-2" controlId="assigned_user">
             <Form.Label className="input-label">
-              ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
+              ASSIGNED USER{this.props.schema?.fields?.assigned_user?._exclusive?.required && ' *'}
               <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
             </Form.Label>
             <Form.Control
@@ -362,13 +175,13 @@ class PublicHealthManagement extends React.Component {
                     name="assigned_user"
                     label="Apply this change to the entire household that this monitoree is responsible for"
                     onChange={this.handlePropagatedFieldChange}
-                    checked={this.state.current.propagatedFields.assigned_user}
+                    checked={this.state.current.propagatedFields.assigned_user || false}
                   />
                 </Form.Group>
               )}
           </Form.Group>
           <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="mb-2 pt-2">
-            <Form.Label className="input-label">RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="input-label">RISK ASSESSMENT{this.props.schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['exposure_risk_assessment']}
               as="select"
@@ -387,7 +200,7 @@ class PublicHealthManagement extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md="16" controlId="monitoring_plan" className="mb-2 pt-2">
-            <Form.Label className="input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="input-label">MONITORING PLAN{this.props.schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['monitoring_plan']}
               as="select"
@@ -395,6 +208,7 @@ class PublicHealthManagement extends React.Component {
               className="form-square"
               onChange={this.handleChange}
               value={this.state.current.patient.monitoring_plan || ''}>
+              <option></option>
               <option>None</option>
               <option>Daily active monitoring</option>
               <option>Self-monitoring with public health supervision</option>
@@ -411,41 +225,18 @@ class PublicHealthManagement extends React.Component {
   }
 }
 
-const staticValidations = {
-  potential_exposure_location: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  potential_exposure_country: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  contact_of_known_case: yup.boolean().nullable(),
-  contact_of_known_case_id: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  healthcare_personnel_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  laboratory_personnel_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  was_in_health_care_facility_with_known_cases_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  member_of_a_common_exposure_cohort_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  travel_to_affected_country_or_area: yup.boolean().nullable(),
-  was_in_health_care_facility_with_known_cases: yup.boolean().nullable(),
-  crew_on_passenger_or_cargo_flight: yup.boolean().nullable(),
-  laboratory_personnel: yup.boolean().nullable(),
-  healthcare_personnel: yup.boolean().nullable(),
-  exposure_risk_assessment: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  monitoring_plan: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  jurisdiction_id: yup.number().positive('Please enter a valid Assigned Jurisdiction.').required(),
-  assigned_user: yup.number().positive('Please enter a valid Assigned User').nullable(),
-  exposure_notes: yup.string().max(2000, 'Max length exceeded, please limit to 2000 characters.').nullable(),
-};
-
-var schema = yup.object().shape(staticValidations);
-
 PublicHealthManagement.propTypes = {
   currentState: PropTypes.object,
   setEnrollmentState: PropTypes.func,
+  updateValidations: PropTypes.func,
   previous: PropTypes.func,
   next: PropTypes.func,
   patient: PropTypes.object,
   has_dependents: PropTypes.bool,
   jurisdiction_paths: PropTypes.object,
   assigned_users: PropTypes.array,
-  selected_jurisdiction: PropTypes.object,
-  first_positive_lab: PropTypes.object,
   authenticity_token: PropTypes.string,
+  schema: PropTypes.object,
 };
 
 export default PublicHealthManagement;

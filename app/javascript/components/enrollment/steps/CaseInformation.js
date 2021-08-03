@@ -3,7 +3,6 @@ import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, Form } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 import * as yup from 'yup';
-import axios from 'axios';
 import moment from 'moment';
 import _ from 'lodash';
 
@@ -24,8 +23,6 @@ class CaseInformation extends React.Component {
       jurisdiction_path: this.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
-      assigned_users: this.props.assigned_users,
-      selected_jurisdiction: this.props.selected_jurisdiction,
     };
   }
 
@@ -43,34 +40,6 @@ class CaseInformation extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    if (event?.target?.id && event.target.id === 'jurisdiction_id') {
-      this.setState({ jurisdiction_path: event.target.value });
-      let jurisdiction_id = parseInt(Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === event.target.value));
-      if (jurisdiction_id) {
-        value = jurisdiction_id;
-        axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-        axios
-          .post(window.BASE_PATH + '/jurisdictions/assigned_users', {
-            query: {
-              jurisdiction: jurisdiction_id,
-              scope: 'exact',
-            },
-          })
-          .catch(() => {})
-          .then(response => {
-            if (response?.data?.assigned_users) {
-              this.setState({ assigned_users: response.data.assigned_users });
-            }
-          });
-      } else {
-        value = -1;
-      }
-    } else if (event?.target?.id && event.target.id === 'assigned_user') {
-      if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
-
-      // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
-      value = event.target.value.trim() === '' ? null : parseInt(event.target.value);
-    }
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
@@ -177,12 +146,13 @@ class CaseInformation extends React.Component {
         self.setState({ errors: {} }, async () => {
           if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
             // If we set it back to the last saved value no need to confirm.
-            if (self.state.current.patient.jurisdiction_id === self.state.selected_jurisdiction) {
+            if (self.props.currentState.patient.jurisdiction_id === self.state.selected_jurisdiction) {
               callback();
               return;
             }
             const originalJurisdictionPath = self.props.jurisdiction_paths[self.state.originalJurisdictionId];
-            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdiction_path}. Are you sure you want to do this?`;
+            const newJurisdictionPath = self.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id];
+            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${newJurisdictionPath}. Are you sure you want to do this?`;
             const options = { title: 'Confirm Jurisdiction Change' };
 
             if (self.state.current.patient.assigned_user && self.state.current.patient.assigned_user === self.state.originalAssignedUser) {
@@ -319,14 +289,17 @@ class CaseInformation extends React.Component {
                   <PublicHealthManagement
                     currentState={this.state.current}
                     setEnrollmentState={this.props.setEnrollmentState}
+                    updateValidations={patient => {
+                      this.updateIsolationValidations(patient, this.state.current.first_positive_lab);
+                    }}
                     previous={this.previous}
                     next={this.next}
                     patient={this.props.patient}
                     has_dependents={this.props.has_dependents}
                     jurisdiction_paths={this.props.jurisdiction_paths}
                     assigned_users={this.props.assigned_users}
-                    first_positive_lab={this.props.first_positive_lab}
                     authenticity_token={this.props.authenticity_token}
+                    schema={schema}
                   />
                 </Form.Group>
               </Form.Row>
@@ -380,7 +353,6 @@ CaseInformation.propTypes = {
   has_dependents: PropTypes.bool,
   jurisdiction_paths: PropTypes.object,
   assigned_users: PropTypes.array,
-  selected_jurisdiction: PropTypes.object,
   first_positive_lab: PropTypes.object,
   hidePreviousButton: PropTypes.bool,
   authenticity_token: PropTypes.string,
