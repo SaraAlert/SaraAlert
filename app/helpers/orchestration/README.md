@@ -48,7 +48,7 @@ A template has 2 required properties: `workflows` and `general`. Configurations 
 
 ### Example
 
-The example below presents a templated named EXAMPLE. This template defines two workflows: `exposure` and `isolation`. Both offer the configurable option, `header_action_buttons`. This option conrols which buttons are presented on the monitoring dashboard. In the example, the `import` option is configured for the `exposure` workflow while just the `export` option is configured for the `isolation` workflow. Both of these options specify sub-options, which are manifest as drop-down menu options: `exposure.import` has `epix`, `saf`, and `sdx` while `isolation.export` has `csv`, `saf`, `purge_eligible`, `all`, and `custom_format`.
+The example below presents a templated named `EXAMPLE`. This template defines two workflows: `exposure` and `isolation`. Both offer the configurable option, `header_action_buttons`. This option conrols which buttons are presented on the monitoring dashboard. In the example, the `import` option is configured for the `exposure` workflow while just the `export` option is configured for the `isolation` workflow. Both of these options specify sub-options, which are manifest as drop-down menu options: `exposure[import]` has `epix`, `saf`, and `sdx` while `isolation[export]` has `csv`, `saf`, `purge_eligible`, `all`, and `custom_format`.
 
 ```ruby
 EXAMPLE = {
@@ -85,7 +85,7 @@ EXAMPLE = {
 
 ## Playbooks
 
-Templates are implemented in the form of "Playbooks". Playbooks use the templates as a base, indicating an inherited set of options, and define what subset of these options should be utilized for a specific instance. A playbook is defined within a Ruby module that contains the two variables, NAME, and PLAYBOOK.
+Templates are implemented in the form of "Playbooks". Playbooks use the templates as a base, indicating an inherited set of options, and define what subset of these options should be utilized for a specific instance. A playbook is defined within a Ruby module that contains the two variables, `NAME`, and `PLAYBOOK`.
 
 ```ruby
 
@@ -124,9 +124,9 @@ For each workflow, there should be three properties defined:
 2. `base`: A reference to the superset of available options for that workflow; it is suggested that this be a hashset from a "Template".
 3. `custom_options`: The configurations in respect to the `base`. If there are no custom options wished to be applied (that is you want it to be exactly the same as `base`), this can be set to `{}`.
 
-### NAME
+### Name
 
-The value of the NAME variable is expected to be a Ruby symbol and is used by the orchestrator to select the correct playbook. Additionally, this name will be used along with the active workflow name as part of the dashboard url (`/dashboard/playbook_name/workflow_name`).
+The value of the `NAME` variable is expected to be a Ruby symbol and is used by the orchestrator to select the correct playbook. Additionally, this name will be used along with the active workflow name as part of the dashboard url (`/dashboard/playbook_name/workflow_name`).
 
 ### Custom Options
 
@@ -251,6 +251,6 @@ To obtain system configurations, use:
 
 The following constraints should be considered when defining a new playbook.
 
-- Only 1 playbook may be active at a time. The playbook in use is defined in sara.yml by the admin variable, `playbook_name`. This can be overwritten by `ENV["ACTIVE_PLAYBOOK"]`)
-- The object names used for workflows must be a combination of  `exposure`, `isolation`, and `global`. The values used for the label attributie can be changed in order to display a different name on the GUi, but the base name must be one of those three.
+- Only 1 playbook may be active at a time. The playbook in use is defined in `config/sara.yml` by the admin variable, `playbook_name`. This can be overwritten by `ENV["ACTIVE_PLAYBOOK"]`)
+- The object names used for workflows must be a combination of `exposure`, `isolation`, and `global`. The values used for the label attributie can be changed in order to display a different name on the GUi, but the base name must be one of those three.
 - A playbook configuration cannot be used to add features that are not available (i.e., defined) in the template that is inherited.

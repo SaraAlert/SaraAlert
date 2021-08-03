@@ -54,8 +54,13 @@ const isolationTransferredOutValues = [
   { number: '25', percent: '78.1%' },
 ];
 
+const available_workflows = [
+  { name: 'exposure', label: 'Exposure' },
+  { name: 'isolation', label: 'Isolation' },
+];
+
 function getWrapper() {
-  return shallow(<MonitoreeFlow stats={mockAnalytics} />);
+  return shallow(<MonitoreeFlow stats={mockAnalytics} available_workflows={available_workflows} />);
 }
 
 describe('MonitoreeFlow', () => {
@@ -65,19 +70,50 @@ describe('MonitoreeFlow', () => {
     expect(wrapper.find(Card.Header).exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).text()).toEqual('Monitoree Flow Over Time (All Records)');
     expect(wrapper.find(Card.Body).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.analytics-table-header').exists()).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find('.analytics-table-header')
+        .exists()
+    ).toBeTruthy();
     expect(wrapper.find(Card.Body).find('.analytics-table-header').length).toEqual(2);
-    expect(wrapper.find(Card.Body).find('table').exists()).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find('table')
+        .exists()
+    ).toBeTruthy();
     expect(wrapper.find(Card.Body).find('table').length).toEqual(2);
-    expect(wrapper.find(Card.Body).find('.info-text').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.info-text').find('i').hasClass('fa-info-circle')).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.info-text').text()).toContain('Cumulative includes all incoming and outgoing counts ever recorded for this jurisdiction');
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find('.info-text')
+        .exists()
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find('.info-text')
+        .find('i')
+        .hasClass('fa-info-circle')
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find('.info-text')
+        .text()
+    ).toContain('Cumulative includes all incoming and outgoing counts ever recorded for this jurisdiction');
   });
 
   it('Properly renders exposure monitoree flow table', () => {
     const wrapper = getWrapper();
     const tableBody = wrapper.find('tbody').at(0);
-    expect(wrapper.find('.analytics-table-header').at(0).text()).toEqual('Exposure Workflow');
+    expect(
+      wrapper
+        .find('.analytics-table-header')
+        .at(0)
+        .text()
+    ).toEqual('Exposure Workflow');
     monitoreeFlowTableHeaders.forEach((header, index) => {
       expect(
         wrapper
@@ -86,8 +122,20 @@ describe('MonitoreeFlow', () => {
           .text()
       ).toContain(header);
     });
-    expect(tableBody.find('tr').at(0).text()).toEqual('Incoming');
-    expect(tableBody.find('tr').at(1).find('td').first().text()).toEqual('New Enrollments');
+    expect(
+      tableBody
+        .find('tr')
+        .at(0)
+        .text()
+    ).toEqual('Incoming');
+    expect(
+      tableBody
+        .find('tr')
+        .at(1)
+        .find('td')
+        .first()
+        .text()
+    ).toEqual('New Enrollments');
     exposureNewEnrollmentValues.forEach((value, index) => {
       expect(
         tableBody
@@ -108,7 +156,14 @@ describe('MonitoreeFlow', () => {
           .text()
       ).toEqual(`(${value.percent})`);
     });
-    expect(tableBody.find('tr').at(2).find('td').first().text()).toEqual('Transferred In');
+    expect(
+      tableBody
+        .find('tr')
+        .at(2)
+        .find('td')
+        .first()
+        .text()
+    ).toEqual('Transferred In');
     exposureTransferredInValues.forEach((value, index) => {
       expect(
         tableBody
@@ -129,8 +184,20 @@ describe('MonitoreeFlow', () => {
           .text()
       ).toEqual(`(${value.percent})`);
     });
-    expect(tableBody.find('tr').at(3).text()).toEqual('Outgoing');
-    expect(tableBody.find('tr').at(4).find('td').first().text()).toEqual('Closed');
+    expect(
+      tableBody
+        .find('tr')
+        .at(3)
+        .text()
+    ).toEqual('Outgoing');
+    expect(
+      tableBody
+        .find('tr')
+        .at(4)
+        .find('td')
+        .first()
+        .text()
+    ).toEqual('Closed');
     exposureClosedValues.forEach((value, index) => {
       expect(
         tableBody
@@ -151,7 +218,14 @@ describe('MonitoreeFlow', () => {
           .text()
       ).toEqual(`(${value.percent})`);
     });
-    expect(tableBody.find('tr').at(5).find('td').first().text()).toEqual('Transferred Out');
+    expect(
+      tableBody
+        .find('tr')
+        .at(5)
+        .find('td')
+        .first()
+        .text()
+    ).toEqual('Transferred Out');
     exposureTransferredOutValues.forEach((value, index) => {
       expect(
         tableBody
@@ -177,7 +251,12 @@ describe('MonitoreeFlow', () => {
   it('Properly renders isolation monitoree flow table', () => {
     const wrapper = getWrapper();
     const tableBody = wrapper.find('tbody').at(1);
-    expect(wrapper.find('.analytics-table-header').at(1).text()).toEqual('Isolation Workflow');
+    expect(
+      wrapper
+        .find('.analytics-table-header')
+        .at(1)
+        .text()
+    ).toEqual('Isolation Workflow');
     monitoreeFlowTableHeaders.forEach((header, index) => {
       expect(
         wrapper
@@ -186,8 +265,20 @@ describe('MonitoreeFlow', () => {
           .text()
       ).toContain(header);
     });
-    expect(tableBody.find('tr').at(0).text()).toEqual('Incoming');
-    expect(tableBody.find('tr').at(1).find('td').first().text()).toEqual('New Enrollments');
+    expect(
+      tableBody
+        .find('tr')
+        .at(0)
+        .text()
+    ).toEqual('Incoming');
+    expect(
+      tableBody
+        .find('tr')
+        .at(1)
+        .find('td')
+        .first()
+        .text()
+    ).toEqual('New Enrollments');
     isolationNewEnrollmentValues.forEach((value, index) => {
       expect(
         tableBody
@@ -208,7 +299,14 @@ describe('MonitoreeFlow', () => {
           .text()
       ).toEqual(`(${value.percent})`);
     });
-    expect(tableBody.find('tr').at(2).find('td').first().text()).toEqual('Transferred In');
+    expect(
+      tableBody
+        .find('tr')
+        .at(2)
+        .find('td')
+        .first()
+        .text()
+    ).toEqual('Transferred In');
     isolationTransferredInValues.forEach((value, index) => {
       expect(
         tableBody
@@ -229,8 +327,20 @@ describe('MonitoreeFlow', () => {
           .text()
       ).toEqual(`(${value.percent})`);
     });
-    expect(tableBody.find('tr').at(3).text()).toEqual('Outgoing');
-    expect(tableBody.find('tr').at(4).find('td').first().text()).toEqual('Closed');
+    expect(
+      tableBody
+        .find('tr')
+        .at(3)
+        .text()
+    ).toEqual('Outgoing');
+    expect(
+      tableBody
+        .find('tr')
+        .at(4)
+        .find('td')
+        .first()
+        .text()
+    ).toEqual('Closed');
     isolationClosedValues.forEach((value, index) => {
       expect(
         tableBody
@@ -251,7 +361,14 @@ describe('MonitoreeFlow', () => {
           .text()
       ).toEqual(`(${value.percent})`);
     });
-    expect(tableBody.find('tr').at(5).find('td').first().text()).toEqual('Transferred Out');
+    expect(
+      tableBody
+        .find('tr')
+        .at(5)
+        .find('td')
+        .first()
+        .text()
+    ).toEqual('Transferred Out');
     isolationTransferredOutValues.forEach((value, index) => {
       expect(
         tableBody

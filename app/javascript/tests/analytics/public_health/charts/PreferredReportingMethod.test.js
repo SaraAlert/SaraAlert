@@ -84,8 +84,13 @@ const isolationValues = [
   [{ number: '22' }, { number: '34' }, { number: '29' }, { number: '39' }, { number: '34' }, { number: '30' }, { number: '0' }, { number: '188' }],
 ];
 
+const available_workflows = [
+  { name: 'exposure', label: 'Exposure' },
+  { name: 'isolation', label: 'Isolation' },
+];
+
 function getWrapper() {
-  return shallow(<PreferredReportingMethod stats={mockAnalyticsData} />);
+  return shallow(<PreferredReportingMethod stats={mockAnalyticsData} available_workflows={available_workflows} />);
 }
 
 describe('PreferredReportingMethod', () => {
@@ -95,7 +100,12 @@ describe('PreferredReportingMethod', () => {
     expect(wrapper.find(Card.Header).exists()).toBeTruthy();
     expect(wrapper.find(Card.Header).text()).toEqual('Monitorees by Reporting Method (Active Records Only)');
     expect(wrapper.find(Card.Body).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('table').exists()).toBeTruthy();
+    expect(
+      wrapper
+        .find(Card.Body)
+        .find('table')
+        .exists()
+    ).toBeTruthy();
   });
 
   it('Properly renders reporting method table', () => {
@@ -113,13 +123,26 @@ describe('PreferredReportingMethod', () => {
     });
     expect(wrapper.find('tbody').exists()).toBeTruthy();
     expect(wrapper.find('tbody').find('tr').length).toEqual(exposureRowHeaders.length + isolationRowHeaders.length + 2);
-    expect(wrapper.find('tbody').find('tr').at(0).find('td').at(0).text()).toEqual('Exposure Workflow');
+    expect(
+      wrapper
+        .find('tbody')
+        .find('tr')
+        .at(0)
+        .find('td')
+        .at(0)
+        .text()
+    ).toEqual('Exposure Workflow');
     exposureRowHeaders.forEach((row, r_index) => {
       const rowWrapper = wrapper
         .find('tbody')
         .find('tr')
         .at(r_index + 1);
-      expect(rowWrapper.find('td').at(1).text()).toEqual(row);
+      expect(
+        rowWrapper
+          .find('td')
+          .at(1)
+          .text()
+      ).toEqual(row);
       exposureValues[parseInt(r_index)].forEach((cell, c_index) => {
         expect(
           rowWrapper
@@ -151,7 +174,12 @@ describe('PreferredReportingMethod', () => {
         .find('tbody')
         .find('tr')
         .at(exposureRowHeaders.length + 2 + r_index);
-      expect(rowWrapper.find('td').at(1).text()).toEqual(row);
+      expect(
+        rowWrapper
+          .find('td')
+          .at(1)
+          .text()
+      ).toEqual(row);
       isolationValues[parseInt(r_index)].forEach((cell, c_index) => {
         expect(
           rowWrapper

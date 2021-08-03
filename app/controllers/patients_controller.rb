@@ -7,9 +7,9 @@ class PatientsController < ApplicationController
   include Orchestration::Orchestrator
 
   before_action :authenticate_user!
-  before_action :set_playbook, :only => [:index, :show, :new, :new_group_member, :edit]
-  before_action(only: [:show,  :new, :new_group_member, :edit]) { set_available_workflows(@playbook) }
-  before_action(only: [:show,  :new, :new_group_member, :edit]) { set_continuous_exposure_enabled(@playbook) }
+  before_action :playbook, only: %i[index show new new_group_member edit]
+  before_action(only: %i[show new new_group_member edit]) { check_available_workflows(@playbook) }
+  before_action(only: %i[show new new_group_member edit]) { check_continuous_exposure_enabled(@playbook) }
 
   # Enroller view to see enrolled subjects and button to enroll new subjects
   def index
@@ -1039,15 +1039,15 @@ class PatientsController < ApplicationController
     @dashboard_path = current_user.enroller? && @dashboard == 'global' ? patients_path : "/dashboard/#{playbook}/#{dashboard}"
   end
 
-  def set_playbook
+  def playbook
     @playbook = default_playbook
   end
 
-  def set_available_workflows(playbook)
+  def check_available_workflows(playbook)
     @available_workflows = available_workflows(playbook)
   end
 
-  def set_continuous_exposure_enabled(playbook)
+  def check_continuous_exposure_enabled(playbook)
     @continuous_exposure_enabled = continuous_exposure_enabled?(playbook)
   end
 end
