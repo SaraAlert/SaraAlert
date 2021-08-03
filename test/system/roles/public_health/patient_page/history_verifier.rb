@@ -44,7 +44,7 @@ class PublicHealthPatientPageHistoryVerifier < ApplicationSystemTestCase
   end
 
   def verify_edit_report(user_label)
-    verify_historical_event(user_label, 'Report Updated', ['User updated an existing report'])
+    verify_historical_event(user_label, 'Report Updated', ['User edited an existing report'])
   end
 
   def verify_add_note_to_report(user_label, assessment_id, note)
