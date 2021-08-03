@@ -26,7 +26,7 @@ class PurgeJob < ApplicationJob
       attributes = Patient.new.attributes.keys
       attributes -= PurgeJob.attributes_to_keep
       # Set everything else to nil
-      mask = attributes.collect { |a| [a, nil] }.to_h.symbolize_keys
+      mask = attributes.index_with { |_a| nil }.symbolize_keys
       mask[:purged] = true
       monitoree.update!(mask)
       monitoree.responder.refresh_head_of_household if monitoree.responder_id != monitoree.id
