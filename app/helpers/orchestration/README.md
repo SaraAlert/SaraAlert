@@ -2,7 +2,7 @@
 
 ## Templates
 
-Templates are meant to represent the superset of available options for configuration. The format of templates should be as follows:
+Templates represent the superset of available configuration options. It is represented as a Ruby hash with the following structure:
 
 ```ruby
 TEMPLATE = {
@@ -11,7 +11,7 @@ TEMPLATE = {
             configuration_feature1: {
                 options: {
                     option1: {
-                        label: 'Label',
+                        label: 'LabelValueHere',
                         property1: {},
                         ...
                     }
@@ -21,7 +21,7 @@ TEMPLATE = {
             configuration_featureN: {
                 options: {
                     options1: {
-                        label: 'Label',
+                        label: 'LabelValueHere',
                         options: {
                             sub_option1: {
 
@@ -44,11 +44,11 @@ TEMPLATE = {
 }
 ```
 
-A template should have 2 properties, `workflows` and `general`. Configurations that go under `general` should be for general UI which is not tied to a specific workflow. Inside of `workflows` should be each supported workflow, indicated by its name which is the key. Each workflow's value should contain the configuration features that define that workflow, also indicated by its name which acts as the key. Each configurable feature should have the required value, `options` which should be the definition of the actual feature's constants in form of a hash or array of values. If the value of `options` is a hash, it can have nested options defined by having another `options` within it.
+A template has 2 required properties: `workflows` and `general`. Configurations that go under `general` are for general UI that is not tied to a specific workflow. Inside of `workflows` is a definition for each supported workflow, indicated by its name which is the key. Each workflow's value contains the configuration features that define that workflow, also indicated by its name which acts as the key. Each configurable feature should have the required object, `options` which should be the definition of the actual feature's constants in form of a hash or array of values. If the value of `options` is a hash, it can have nested options defined by having another `options` within it.
 
 ### Example
 
-In the template written below, defined is a template called `EXAMPLE` which has two workflows, `exposure` and `isolation`. Both have `header_action_buttons` as a configuration option. For the `exposure` workflow, `header_action_buttons` has the `import` option while the `isolation` workflow has just `export`. Both of these options have sub-options: `exposure.import` has `epix`, `saf`, and `sdx` while `isolation.export` has `csv`, `saf`, `purge_eligible`, `all`, and `custom_format`.
+The example below presents a templated named EXAMPLE. This template defines two workflows: `exposure` and `isolation`. Both offer the configurable option, `header_action_buttons`. This option conrols which buttons are presented on the monitoring dashboard. In the example, the `import` option is configured for the `exposure` workflow while just the `export` option is configured for the `isolation` workflow. Both of these options specify sub-options, which are manifest as drop-down menu options: `exposure.import` has `epix`, `saf`, and `sdx` while `isolation.export` has `csv`, `saf`, `purge_eligible`, `all`, and `custom_format`.
 
 ```ruby
 EXAMPLE = {
@@ -85,7 +85,7 @@ EXAMPLE = {
 
 ## Playbooks
 
-Templates are implemented in the form of "Playbooks". Playbooks use the templates as a base, indicating an inherited set of options, and add the ability to define what subset of these options should be utilized for a specific instance.
+Templates are implemented in the form of "Playbooks". Playbooks use the templates as a base, indicating an inherited set of options, and define what subset of these options should be utilized for a specific instance. A playbook is defined within a Ruby module that contains the two variables, NAME, and PLAYBOOK.
 
 ```ruby
 
@@ -124,9 +124,9 @@ For each workflow, there should be three properties defined:
 2. `base`: A reference to the superset of available options for that workflow; it is suggested that this be a hashset from a "Template".
 3. `custom_options`: The configurations in respect to the `base`. If there are no custom options wished to be applied (that is you want it to be exactly the same as `base`), this can be set to `{}`.
 
-### Name
+### NAME
 
-This name is used by the orchestrator to select the correct playbook. Additionally, this name will be displayed in the dashboard url (`/dashboard/:playbook/:workflow`).
+The value of the NAME variable is expected to be a Ruby symbol and is used by the orchestrator to select the correct playbook. Additionally, this name will be used along with the active workflow name as part of the dashboard url (`/dashboard/playbook_name/workflow_name`).
 
 ### Custom Options
 
@@ -213,7 +213,7 @@ Let the playbook definition for this option then be:
 ...
 ```
 
-In the configuration above, all three options (`enroll`, `export`, `import`) under `header_action_buttons` will be included as the type supplied is `'all'`. Because the type is `'all'` and not `'base'`, we will look to see if any further `custom_options` were supplied. We can see that there are -- `export` has a type `'subset'` and a given `set`; this means for the `export` option under `header_action_buttons` we will only include `csv` and `saf`. On the other hand, `import` has the type `'remove'`, meaning we will excluse that in which is defined in the `set`. In this case we will remove `sdx` from `import`, leaving us with `epix` and `saf`.
+In the configuration above, all three options (`enroll`, `export`, `import`) under `header_action_buttons` will be included as the type supplied is `'all'`. Because the type is `'all'` and not `'base'`, we will look to see if any further `custom_options` were supplied. We can see that there are -- `export` has a type `'subset'` and a given `set`; this means for the `export` option under `header_action_buttons` we will only include `csv` and `saf`. On the other hand, `import` has the type `'remove'`, meaning we will exclude that which is defined in the `set`. In this case we will remove `sdx` from `import`, leaving us with `epix` and `saf`.
 
 What will be returned is the following:
 
@@ -235,7 +235,7 @@ What will be returned is the following:
 
 ## Orchestrator
 
-The orchestrator is a set of helper functions that parses the playbooks that are defined in `app/helpers/orchestration/playbooks` to return the desired configurations to the rest of the system (such as the controllers).
+The orchestrator is a set of helper functions that parse the playbooks that are found in `app/helpers/orchestration/playbooks`. These helper functions are accessed by the rest of the system (such as the controllers) to determined the desired configuration.
 
 To obtain a specific `workflow` configuration option, use the following function:
 
@@ -243,14 +243,14 @@ To obtain a specific `workflow` configuration option, use the following function
 
 If `workflow` is set as `nil`, it will look in the `general` section instead.
 
-To obtain system configurations, instead use:
+To obtain system configurations, use:
 
 `system_configuration(playbook, option)`
 
-## Notes & Roadmap
+## Constraints
 
-At the current moment, the system:
+The following constraints should be considered when defining a new playbook.
 
-- Supports only 1 playbook at a time, defined by the admin variable `playbook_name` (which can be overwritten by `ENV["ACTIVE_PLAYBOOK"]`)
-- Works with the assumption that workflows cannot be renamed from `exposure`, `isolation`, and `global`. They can be relabeled to display a different name, but the base name must remain one of those three, given
-- Does not support the addition of features from the playbook; that is, the playbook cannot add features that are not defined in the template that is inherited.
+- Only 1 playbook may be active at a time. The playbook in use is defined in sara.yml by the admin variable, `playbook_name`. This can be overwritten by `ENV["ACTIVE_PLAYBOOK"]`)
+- The object names used for workflows must be a combination of  `exposure`, `isolation`, and `global`. The values used for the label attributie can be changed in order to display a different name on the GUi, but the base name must be one of those three.
+- A playbook configuration cannot be used to add features that are not available (i.e., defined) in the template that is inherited.
