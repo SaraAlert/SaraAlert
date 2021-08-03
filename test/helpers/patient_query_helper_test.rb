@@ -184,7 +184,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
-  # --- MULTI ADVANCED FILTER QUERIES --- #
+  # --- COMBINATION ADVANCED FILTER QUERIES --- #
 
   test 'advanced filter laboratory single filter option results' do
     Patient.destroy_all
@@ -869,6 +869,104 @@ class PatientQueryHelperTest < ActionView::TestCase
     filtered_patients_array = [patient_4, patient_7]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
+
+  # --- MULTI-SELECT ADVANCED FILTER QUERIES --- #
+
+  test 'advanced filter assigned user filters by assigned user' do
+    Patient.destroy_all
+    user_1 = create(:public_health_enroller_user)
+    user_2 = create(:public_health_enroller_user)
+    user_3 = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user_1)
+    patient_1.update_attribute('assigned_user', user_1[:id])
+    patient_2 = create(:patient, creator: user_1)
+    patient_2.update_attribute('assigned_user', user_1[:id])
+    patient_3 = create(:patient, creator: user_2)
+    patient_3.update_attribute('assigned_user', user_2[:id])
+    patient_4 = create(:patient, creator: user_3)
+    patient_4.update_attribute('assigned_user', user_3[:id])
+
+    patients = Patient.all
+
+    tz_offset = 240
+
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ value: user_1[:id], label: user_1[:id] }] }]
+    filters[0][:filterOption]['name'] = 'assigned-user'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ value: user_1[:id], label: user_1[:id] },
+                         { value: user_2[:id], label: user_2[:id] }] }]
+    filters[0][:filterOption]['name'] = 'assigned-user'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ value: user_1[:id], label: user_1[:id] },
+                         { value: user_2[:id], label: user_2[:id] },
+                         { value: user_3[:id], label: user_3[:id] }] }]
+    filters[0][:filterOption]['name'] = 'assigned-user'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # filters = [{ filterOption: {}, additionalFilterOption: nil, value: []}]
+    # filters[0][:filterOption]['name'] = 'assigned-user'
+    # filtered_patients = advanced_filter(patients, filters, tz_offset)
+    # filtered_patients_array = []
+    # assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter jurisdiction filters by jurisdiction' do
+    Patient.destroy_all
+    user_1 = create(:public_health_enroller_user)
+    user_2 = create(:public_health_enroller_user)
+    user_3 = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user_1)
+    patient_2 = create(:patient, creator: user_1)
+    patient_3 = create(:patient, creator: user_2)
+    patient_4 = create(:patient, creator: user_3)
+
+    patients = Patient.all
+
+    tz_offset = 240
+
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ value: user_1[:jurisdiction_id], label: user_1[:jurisdiction_id] }] }]
+    filters[0][:filterOption]['name'] = 'jurisdiction'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ value: user_1[:jurisdiction_id], label: user_1[:jurisdiction_id] },
+                         { value: user_2[:jurisdiction_id], label: user_2[:jurisdiction_id] }] }]
+    filters[0][:filterOption]['name'] = 'jurisdiction'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ value: user_1[:jurisdiction_id], label: user_1[:jurisdiction_id] },
+                         { value: user_2[:jurisdiction_id], label: user_2[:jurisdiction_id] },
+                         { value: user_3[:jurisdiction_id], label: user_3[:jurisdiction_id] }] }]
+    filters[0][:filterOption]['name'] = 'jurisdiction'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # filters = [{ filterOption: {}, additionalFilterOption: nil, value: []}]
+    # filters[0][:filterOption]['name'] = 'jurisdiction'
+    # filtered_patients = advanced_filter(patients, filters, tz_offset)
+    # filtered_patients_array = []
+    # assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+  end
+
+  # --- SELECT ADVANCED FILTER QUERIES --- #
 
   test 'advanced filter flagged for follow up filters those marked as flagged for follow up' do
     Patient.destroy_all
