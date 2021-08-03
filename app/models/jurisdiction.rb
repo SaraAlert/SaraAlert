@@ -7,13 +7,13 @@ class Jurisdiction < ApplicationRecord
   has_ancestry
 
   # Immediate patients are those just in this jurisdiction
-  has_many :immediate_patients, class_name: 'Patient'
+  has_many :immediate_patients, class_name: 'Patient', dependent: nil
 
-  has_many :threshold_conditions, class_name: 'ThresholdCondition'
+  has_many :threshold_conditions, class_name: 'ThresholdCondition', dependent: nil
 
-  has_many :analytics, class_name: 'Analytic'
+  has_many :analytics, class_name: 'Analytic', dependent: nil
 
-  has_many :stats, class_name: 'Stat'
+  has_many :stats, class_name: 'Stat', dependent: nil
 
   # Find the USA Jurisdiction
   def self.root
