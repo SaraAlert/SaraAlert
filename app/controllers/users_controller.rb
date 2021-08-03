@@ -11,7 +11,7 @@ class UsersController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_user_audits?
 
     permitted_params = params.permit(:entries, :page, :order, :direction, :id, :cancelToken)
-    return head :bad_request unless permitted_params[:id].present?
+    return head :bad_request if permitted_params[:id].blank?
 
     # Validate pagination params
     entries = permitted_params[:entries]&.to_i || 25
@@ -23,8 +23,8 @@ class UsersController < ApplicationController
     return head :bad_request unless order_by.nil? || order_by.blank? || %w[user timestamp].include?(order_by)
 
     sort_direction = permitted_params[:direction]
-    return head :bad_request unless sort_direction.nil? || sort_direction.blank? || %w[asc desc].include?(sort_direction)
-    return head :bad_request unless (!order_by.blank? && !sort_direction.blank?) || (order_by.blank? && sort_direction.blank?)
+    return head :bad_request if sort_direction.blank? || %w[asc desc].exclude?(sort_direction)
+    return head :bad_request unless (order_by.present? && sort_direction.present?) || (order_by.blank? && sort_direction.blank?)
 
     # Find user
     user = User.find_by(id: permitted_params[:id])
@@ -63,7 +63,7 @@ class UsersController < ApplicationController
 
   # Sort users by a given field either in ascending or descending order.
   def sort(individual_audits, order_by, sort_direction)
-    return individual_audits if order_by.nil? || order_by.empty? || sort_direction.nil? || sort_direction.blank?
+    return individual_audits if order_by.blank? || sort_direction.blank?
 
     # Satisfy brakeman with additional sanitation logic
     dir = sort_direction == 'asc' ? 'asc' : 'desc'
