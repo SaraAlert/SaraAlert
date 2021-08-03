@@ -94,7 +94,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       # Parse in the FHIR
       request_body = request.body.read
-      contents = FHIR.from_contents(request_body) unless request_body.blank?
+      contents = FHIR.from_contents(request_body) if request_body.present?
       errors = contents&.validate
       status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
     end
@@ -202,7 +202,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
     # Parse in the FHIR
     request_body = request.body.read
-    contents = FHIR.from_contents(request_body) unless request_body.blank?
+    contents = FHIR.from_contents(request_body) if request_body.present?
     errors = contents&.validate
     status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
 
@@ -254,7 +254,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
     # Parse in the FHIR
     request_body = request.body.read
-    contents = FHIR.from_contents(request_body) unless request_body.blank?
+    contents = FHIR.from_contents(request_body) if request_body.present?
 
     # Only allow a maximum batch size of MAX_TRANSACTION_ENTRIES
     if !contents&.entry.nil? && contents.entry.length > MAX_TRANSACTION_ENTRIES
@@ -490,7 +490,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
     begin
       since = params.permit(:_since)[:_since]
-      since = DateTime.strptime(since, '%Y-%m-%dT%H:%M:%S%z') unless since.blank?
+      since = DateTime.strptime(since, '%Y-%m-%dT%H:%M:%S%z') if since.present?
     rescue Date::Error
       status_unprocessable_entity_with_custom_errors(['Invalid Date in _since parameter. Please use the FHIR instant datatype'], '') && return
     end
@@ -520,7 +520,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   # GET /fhir/r4/ExportStatus/[:id]
   def export_status
     id = params.require(:id)
-    download = ApiDownload.where(application_id: doorkeeper_token&.application_id).find_by_id(id)
+    download = ApiDownload.where(application_id: doorkeeper_token&.application_id).find_by(id: id)
     status = Sidekiq::Status.status(download&.job_id)
     case status
     when :complete
@@ -575,7 +575,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     resource_type = params.require(:resource_type)&.downcase
     authorize_resource_type_read(resource_type)
 
-    download = current_client_application&.api_downloads&.find_by_id(id)
+    download = current_client_application&.api_downloads&.find_by(id: id)
     status_not_found_with_custom_errors(['No file found at this URL']) && return if download.nil?
 
     # Find and return the specific attachment associated with the given filename
@@ -789,7 +789,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
     # query current_resource_owner and current_client_application from db only once
     resource_owner = current_resource_owner
-    client_application = current_client_application unless resource_owner.present?
+    client_application = current_client_application if resource_owner.blank?
 
     if resource_owner.present?
       Rails.logger.info "Client: User, ID: #{resource_owner.id}, Email: #{resource_owner.email}"
@@ -850,7 +850,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
   # Determine if the referenced patient is valid (accessible) for the client application
   def referenced_patient_valid_for_client?(resource, id_field)
-    referenced_patient = accessible_patients.find_by_id(resource[id_field])
+    referenced_patient = accessible_patients.find_by(id: resource[id_field])
 
     return true unless referenced_patient.nil?
 
@@ -870,7 +870,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   # Returns true if the jurisdiction is valid, otherwise false.
   def jurisdiction_valid_for_update?(patient)
     allowed_jurisdiction_ids = @current_actor.jurisdictions_for_transfer
-    return true if !patient.jurisdiction_id.nil? && allowed_jurisdiction_ids.keys.include?(patient.jurisdiction_id)
+    return true if !patient.jurisdiction_id.nil? && allowed_jurisdiction_ids.key?(patient.jurisdiction_id)
 
     patient.errors.add(:jurisdiction_id, 'Jurisdiction does not exist or cannot be transferred to')
 
@@ -1080,7 +1080,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     return [] if if_none_exist && (options.keys & VALID_PATIENT_SEARCH_PARAMS).empty?
 
     options.each do |option, search|
-      next unless search.present?
+      next if search.blank?
 
       case option
       when 'family'
@@ -1111,7 +1111,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   def search_laboratories(options)
     query = Laboratory.where(patient: accessible_patients)
     options.each do |option, search|
-      next unless search.present?
+      next if search.blank?
 
       case option
       when 'subject'
@@ -1127,7 +1127,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   def search_assessments(options)
     query = Assessment.where(patient: accessible_patients)
     options.each do |option, search|
-      next unless search.present?
+      next if search.blank?
 
       case option
       when 'subject'
@@ -1143,7 +1143,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   def search_close_contacts(options)
     query = CloseContact.where(patient: accessible_patients)
     options.each do |option, search|
-      next unless search.present?
+      next if search.blank?
 
       case option
       when 'patient'
@@ -1159,7 +1159,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   def search_vaccines(options)
     query = Vaccine.where(patient: accessible_patients)
     options.each do |option, search|
-      next unless search.present?
+      next if search.blank?
 
       case option
       when 'patient'
@@ -1175,7 +1175,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   def search_histories(options)
     query = History.where(patient: accessible_patients)
     options.each do |option, search|
-      next unless search.present?
+      next if search.blank?
 
       case option
       when 'patient'
@@ -1317,7 +1317,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     # Handle History for monitoree details information updates
     # NOTE: "isolation" is a special case, because it is not a monitoring field, but it has side effects that are handled
     # alongside monitoring fields
-    info_updates = updates.filter { |attr, _value| !PatientHelper.monitoring_fields.include?(attr) || attr == :isolation }
+    info_updates = updates.filter { |attr, _value| PatientHelper.monitoring_fields.exclude?(attr) || attr == :isolation }
     Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, @current_actor_label)
 
     # Handle History for monitoree monitoring information updates
