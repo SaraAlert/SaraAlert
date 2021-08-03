@@ -586,7 +586,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # Build a FHIR US Core Race Extension given Sara Alert race booleans.
   def to_us_core_race(races)
     # Don't return an extension if all race categories are false or nil
-    return nil unless races.values.include?(true)
+    return nil unless races.value?(true)
 
     # Build out extension based on what race categories are true
     FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race', extension: [
@@ -656,7 +656,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # Build a FHIR US Core Ethnicity Extension given Sara Alert ethnicity information.
   def to_us_core_ethnicity(ethnicity)
     # Don't return an extension if no ethnicity specified
-    return nil if ethnicity.nil? || !ValidationHelper::VALID_PATIENT_ENUMS[:ethnicity].include?(ethnicity)
+    return nil if ethnicity.nil? || ValidationHelper::VALID_PATIENT_ENUMS[:ethnicity].exclude?(ethnicity)
 
     # Build out extension based on what ethnicity was specified
     FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity', extension: [
@@ -784,7 +784,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def to_string_extension(value, extension_id)
-    value.nil? || value.empty? ? nil : FHIR::Extension.new(
+    value.blank? ? nil : FHIR::Extension.new(
       url: SA_EXT_BASE_URL + extension_id,
       valueString: value
     )
@@ -874,11 +874,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def to_statelocal_identifier(statelocal_identifier)
-    FHIR::Identifier.new(value: statelocal_identifier, system: 'http://saraalert.org/SaraAlert/state-local-id') unless statelocal_identifier.blank?
+    FHIR::Identifier.new(value: statelocal_identifier, system: 'http://saraalert.org/SaraAlert/state-local-id') if statelocal_identifier.present?
   end
 
   def to_identifier(value, system_id)
-    FHIR::Identifier.new(value: value, system: "http://saraalert.org/SaraAlert/#{system_id}") unless value.blank?
+    FHIR::Identifier.new(value: value, system: "http://saraalert.org/SaraAlert/#{system_id}") if value.present?
   end
 
   def from_identifier(identifier, system_id, base_path)
