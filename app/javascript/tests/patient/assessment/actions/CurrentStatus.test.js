@@ -19,7 +19,7 @@ function getWrapper(status, isolation) {
 describe('CurrentStatus', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper('exposure_symptomatic', false);
-    expect(wrapper.find('h4').exists()).toBeTruthy();
+    expect(wrapper.find('h2').exists()).toBeTruthy();
     expect(wrapper.find('b').at(0).text().includes('Workflow:')).toBeTruthy();
     expect(wrapper.find(Badge).exists()).toBeTruthy();
     expect(wrapper.find('b').at(1).text().includes('Notification status is')).toBeTruthy();

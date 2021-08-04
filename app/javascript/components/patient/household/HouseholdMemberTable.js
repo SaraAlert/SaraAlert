@@ -259,6 +259,8 @@ class HouseholdMemberTable extends React.Component {
 
     return (
       <React.Fragment>
+        {/* Visually, this Badge is floated to the right. Semantically you would expect it to come after the anchor below */}
+        {/* However, following user feedback, it is easier to hear "Head of Household" before the monitoree's name (if applicable) */}
         {rowData.head_of_household && <BadgeHoH patientId={rowData.id.toString()} customClass={'float-right ml-1'} location={'right'} />}
         <a
           id={rowData.head_of_household ? 'dependent-hoh-link' : null}
@@ -286,6 +288,7 @@ class HouseholdMemberTable extends React.Component {
   render() {
     return (
       <CustomTable
+        title="Household Members"
         dataType="household-members"
         columnData={this.state.table.colData}
         rowData={this.state.table.rowData}

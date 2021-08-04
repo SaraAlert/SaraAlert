@@ -4,6 +4,10 @@
   vertical-align: top !important;
 }
 
+.patient-card-header {
+  font-size: 1.25rem;
+}
+
 .jurisdiction-user-box {
   background-color: $jurisdiction-box;
   padding: 10px;
@@ -19,6 +23,14 @@
   text-transform: uppercase;
   font-size: 1.2rem;
   font-weight: bold;
+}
+
+.secondary-title {
+  font-size: 1.75rem;
+}
+
+.tertiary-title {
+  font-size: 1.5rem;
 }
 
 .subsection-title {
