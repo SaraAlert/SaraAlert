@@ -17,20 +17,20 @@ function getWrapper(patient) {
 describe('MonitoringPeriod', () => {
   it('Properly renders symptom onset and extended isolation when patient is in isolation workflow', () => {
     const wrapper = getWrapper(mockPatient1);
-    expect(wrapper.find(SymptomOnset).exists()).toBeTruthy();
-    expect(wrapper.find(LastDateExposure).exists()).toBeTruthy();
-    expect(wrapper.find(ExtendedIsolation).exists()).toBeTruthy();
-    expect(wrapper.find(InfoTooltip).exists()).toBeFalsy();
-    expect(wrapper.find('#end_of_monitoring_date').exists()).toBeFalsy();
+    expect(wrapper.find(SymptomOnset).exists()).toBe(true);
+    expect(wrapper.find(LastDateExposure).exists()).toBe(false);
+    expect(wrapper.find(ExtendedIsolation).exists()).toBe(true);
+    expect(wrapper.find(InfoTooltip).exists()).toBe(false);
+    expect(wrapper.find('#end_of_monitoring_date').exists()).toBe(false);
   });
 
   it('Properly renders symptom onset, last date of exposure, and end of monitoring when patient is in exposure workflow', () => {
     const wrapper = getWrapper(mockPatient2);
-    expect(wrapper.find(SymptomOnset).exists()).toBeTruthy();
-    expect(wrapper.find(LastDateExposure).exists()).toBeTruthy();
-    expect(wrapper.find(ExtendedIsolation).exists()).toBeFalsy();
+    expect(wrapper.find(SymptomOnset).exists()).toBe(true);
+    expect(wrapper.find(LastDateExposure).exists()).toBe(true);
+    expect(wrapper.find(ExtendedIsolation).exists()).toBe(false);
     expect(wrapper.find('.input-label').text()).toEqual('END OF MONITORING');
-    expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(InfoTooltip).exists()).toBe(true);
     expect(wrapper.find('#end_of_monitoring_date').text()).toEqual(moment(mockPatient2.linelist.end_of_monitoring).format('MM/DD/YYYY'));
   });
 });
