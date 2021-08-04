@@ -7,12 +7,12 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import BadgeHoH from './icons/BadgeHoH';
 import InfoTooltip from '../util/InfoTooltip';
-import { convertLanguageCodesToNames } from '../../utils/Languages';
-import { formatName, formatPhoneNumberVisually, formatRace, isMinor } from '../../utils/Patient';
 import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
-import { navQueryParam, patientHref } from '../../utils/Navigation';
 import { Heading } from '../../utils/Heading';
+import { navQueryParam, patientHref } from '../../utils/Navigation';
+import { convertLanguageCodesToNames } from '../../utils/Languages';
+import { formatName, formatPhoneNumberVisually, formatRace, isMinor } from '../../utils/Patient';
 
 let rootHeaderLevel;
 
@@ -163,10 +163,7 @@ class Patient extends React.Component {
             </Heading>
             {this.props.can_modify_subject_status && !this.props.edit_mode && !this.props.details.follow_up_reason && (
               <Button id="set-follow-up-flag-link" size="sm" aria-label="Set Flag for Follow-up" onClick={() => this.setState({ showSetFlagModal: true })}>
-                <span>
-                  {' '}
-                  <i className="fas fa-flag pr-1"></i> Flag for Follow-up
-                </span>
+                <i className="fas fa-flag pr-1"></i> Flag for Follow-up
               </Button>
             )}
           </Col>
@@ -490,7 +487,7 @@ class Patient extends React.Component {
                   <Col id="planned-travel" xl={24} className="col-xxxl-12">
                     <div className="section-header">
                       <Heading level={rootHeaderLevel + 1} className="section-title">
-                        <span className="d-none d-lg-inline d-xl-none d-xxl-inline"> Additional </span>Planned Travel
+                        <span className="d-none d-lg-inline d-xl-none d-xxl-inline">Additional </span>Planned Travel
                       </Heading>
                       {this.renderEditLink('Planned Travel', 4)}
                     </div>
@@ -562,7 +559,7 @@ class Patient extends React.Component {
               <Col id="potential-exposure-information" md={14} xl={12} className={this.props.details.isolation ? 'col-xxxl-8' : 'col-xxxl-10'}>
                 <div className="section-header">
                   <Heading level={rootHeaderLevel + 1} className="section-title">
-                    Potential Exposure<span className="d-none d-lg-inline"> Information </span>
+                    Potential Exposure<span className="d-none d-lg-inline"> Information</span>
                   </Heading>
                   {!this.props.details.isolation && this.renderEditLink('Potential Exposure Information', 5)}
                 </div>

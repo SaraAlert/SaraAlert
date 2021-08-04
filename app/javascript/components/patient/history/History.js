@@ -169,12 +169,12 @@ class History extends React.Component {
       <React.Fragment>
         <Card className="card-square mt-4 mx-3 shadow-sm">
           <Card.Header>
-            <span className="sr-only"> Created by: </span>
+            <span className="sr-only">Created by:</span>
             <b>{this.state.original_version.created_by}</b>, {formatRelativePast(this.state.original_version.created_at)} (
             {formatTimestamp(this.state.original_version.created_at)})
             <span className="float-right">
               <div className="h5 m-0">
-                <span className="sr-only">History Type: </span>
+                <span className="sr-only">History Type:</span>
                 <span className="badge badge-secondary">{this.state.original_version.history_type}</span>
               </div>
             </span>
