@@ -374,6 +374,10 @@ class InfoTooltip extends React.Component {
         <span data-for={this.customID} data-tip="" className="ml-1">
           <i className="fas fa-question-circle px-0"></i>
         </span>
+        <div className="sr-only">
+          {this.props.tooltipTextKey && <span>Tooltip: {TOOLTIP_TEXT[this.props.tooltipTextKey]}</span>}
+          {!this.props.tooltipTextKey && this.props.getCustomText && <span>Tooltip: {this.props.getCustomText()}</span>}
+        </div>
         <ReactTooltip id={this.customID} multiline={true} place={this.props.location} type="dark" effect="solid" className="tooltip-container">
           {this.props.tooltipTextKey && <span>{TOOLTIP_TEXT[this.props.tooltipTextKey]}</span>}
           {!this.props.tooltipTextKey && this.props.getCustomText && <span>{this.props.getCustomText()}</span>}

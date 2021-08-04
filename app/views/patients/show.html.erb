@@ -26,7 +26,7 @@
 
 <% if current_user.can_modify_subject_status? %>
 <div id="monitoring-actions" class="card mx-2 my-4 card-square">
-  <div class="card-header h5">Monitoring Actions</div>
+  <h1 class="card-header patient-card-header">Monitoring Actions</h1>
   <%= react_component('patient/monitoring_actions/MonitoringActions', {
                         current_user: current_user,
                         user_can_transfer: current_user.can_transfer_patients?,
@@ -65,10 +65,10 @@
 
 <% if current_user.can_view_patient_laboratories? %>
 <div id="labs-table" class="card mx-2 my-4 card-square">
-  <div class="card-header h5">
+  <h1 class="card-header patient-card-header">
     Lab Results
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
-  </div>
+  </h1>
   <div class="m-4">
     <div class="pb-1 mb-3">
       <div class="btn-group" role="group">
