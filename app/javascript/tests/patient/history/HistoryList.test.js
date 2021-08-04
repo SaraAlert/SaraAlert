@@ -24,9 +24,9 @@ describe('HistoryList', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
     expect(wrapper.find('#histories').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).find('span').text()).toEqual('History');
-    expect(wrapper.find(Card.Header).find(InfoTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).find(InfoTooltip).prop('tooltipTextKey')).toEqual('history');
+    expect(wrapper.find('.patient-card-header').text()).toContain('History');
+    expect(wrapper.find('.patient-card-header').find(InfoTooltip).exists()).toBeTruthy();
+    expect(wrapper.find('.patient-card-header').find(InfoTooltip).prop('tooltipTextKey')).toEqual('history');
     expect(wrapper.find('#history-filters').exists()).toBeTruthy();
     expect(wrapper.find(Select).length).toEqual(2);
     expect(wrapper.find(Select).at(0).prop('placeholder')).toEqual('Filter by Creator');

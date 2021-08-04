@@ -60,9 +60,10 @@ class Review extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <h1 className="sr-only">Monitoree Review</h1>
         <Card className="mx-2 card-square">
-          <Card.Header className="h5">Monitoree Review</Card.Header>
+          <Card.Header as="h1" className="patient-card-header">
+            Monitoree Review
+          </Card.Header>
           <Card.Body>
             <Patient
               goto={this.props.goto}
@@ -71,6 +72,7 @@ class Review extends React.Component {
               details={{ ...this.props.currentState.patient, blocked_sms: this.props.currentState.blocked_sms } || {}}
               authenticity_token={this.props.authenticity_token}
               workflow={this.props.workflow}
+              headingLevel={2}
             />
             <div className="pb-4"></div>
             {this.props.previous && (
