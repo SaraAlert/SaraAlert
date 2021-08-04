@@ -7,15 +7,19 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import BadgeHoH from './icons/BadgeHoH';
 import InfoTooltip from '../util/InfoTooltip';
-import { convertLanguageCodesToNames } from '../../utils/Languages';
-import { formatName, formatPhoneNumberVisually, formatRace, isMinor } from '../../utils/Patient';
 import FollowUpFlagPanel from './follow_up_flag/FollowUpFlagPanel';
 import FollowUpFlagModal from './follow_up_flag/FollowUpFlagModal';
+import { Heading } from '../../utils/Heading';
 import { navQueryParam, patientHref } from '../../utils/Navigation';
+import { convertLanguageCodesToNames } from '../../utils/Languages';
+import { formatName, formatPhoneNumberVisually, formatRace, isMinor } from '../../utils/Patient';
+
+let rootHeaderLevel;
 
 class Patient extends React.Component {
   constructor(props) {
     super(props);
+    rootHeaderLevel = props.headingLevel || 1;
     this.state = {
       expanded: props.edit_mode || !props.collapse,
       expandNotes: false,
@@ -151,18 +155,15 @@ class Patient extends React.Component {
             />
           )}
           <Col sm={12}>
-            <h3>
-              <span aria-label={formatName(this.props.details)} className="pr-2">
+            <Heading level={rootHeaderLevel} className="secondary-title">
+              <span className="pr-2" aria-label={`Monitoree Name: ${formatName(this.props.details)}`}>
                 {formatName(this.props.details)}
               </span>
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
-            </h3>
+            </Heading>
             {this.props.can_modify_subject_status && !this.props.edit_mode && !this.props.details.follow_up_reason && (
               <Button id="set-follow-up-flag-link" size="sm" aria-label="Set Flag for Follow-up" onClick={() => this.setState({ showSetFlagModal: true })}>
-                <span>
-                  {' '}
-                  <i className="fas fa-flag pr-1"></i> Flag for Follow-up
-                </span>
+                <i className="fas fa-flag pr-1"></i> Flag for Follow-up
               </Button>
             )}
           </Col>
@@ -183,7 +184,9 @@ class Patient extends React.Component {
         <Row>
           <Col id="identification" lg={14} className="col-xxl-12">
             <div className="section-header">
-              <h4 className="section-title">Identification</h4>
+              <Heading level={rootHeaderLevel + 1} className="section-title">
+                Identification
+              </Heading>
               {this.renderEditLink('Identification', 0)}
             </div>
             <Row>
@@ -235,7 +238,9 @@ class Patient extends React.Component {
           </Col>
           <Col id="contact-information" lg={10} className="col-xxl-12">
             <div className="section-header">
-              <h4 className="section-title">Contact Information</h4>
+              <Heading level={rootHeaderLevel + 1} className="section-title">
+                Contact Information
+              </Heading>
               {this.renderEditLink('Contact Information', 2)}
             </div>
             <div className="item-group">
@@ -287,14 +292,11 @@ class Patient extends React.Component {
         </Row>
         {!this.props.edit_mode && (
           <div className="details-expander mb-3">
-            <Button
-              id="details-expander-link"
-              variant="link"
-              className="p-0"
-              aria-label="Show address, travel, exposure, and case information"
-              onClick={() => this.setState({ expanded: !this.state.expanded })}>
+            <Button id="details-expander-link" variant="link" className="p-0" onClick={() => this.setState({ expanded: !this.state.expanded })}>
               <FontAwesomeIcon className={this.state.expanded ? 'chevron-opened' : 'chevron-closed'} icon={faChevronRight} />
-              <span className="pl-2">{this.state.expanded ? 'Hide' : 'Show'} address, travel, exposure, and case information</span>
+              <span aria-label={`${this.state.expanded ? 'Collapse' : 'Expand'} address, travel, exposure, and case information`} className="pl-2">
+                {this.state.expanded ? 'Hide' : 'Show'} address, travel, exposure, and case information
+              </span>
             </Button>
             <span className="dashed-line"></span>
           </div>
@@ -304,7 +306,9 @@ class Patient extends React.Component {
             <Row>
               <Col id="address" lg={14} xl={12} className="col-xxxl-10">
                 <div className="section-header">
-                  <h4 className="section-title">Address</h4>
+                  <Heading level={rootHeaderLevel + 1} className="section-title">
+                    Address
+                  </Heading>
                   {this.renderEditLink('Address', 1)}
                 </div>
                 {!(showDomesticAddress || showMonitoredAddress || showForeignAddress || showForeignMonitoringAddress) && <div className="none-text">None</div>}
@@ -416,7 +420,9 @@ class Patient extends React.Component {
                 <Row>
                   <Col id="arrival-information" xl={24} className="col-xxxl-12">
                     <div className="section-header">
-                      <h4 className="section-title">Arrival Information</h4>
+                      <Heading level={rootHeaderLevel + 1} className="section-title">
+                        Arrival Information
+                      </Heading>
                       {this.renderEditLink('Arrival Information', 3)}
                     </div>
                     {!(showArrivalSection || this.props.details.travel_related_notes) && <div className="none-text">None</div>}
@@ -480,9 +486,9 @@ class Patient extends React.Component {
                   </Col>
                   <Col id="planned-travel" xl={24} className="col-xxxl-12">
                     <div className="section-header">
-                      <h4 className="section-title">
-                        <span className="d-none d-lg-inline d-xl-none d-xxl-inline">Additional</span> Planned Travel
-                      </h4>
+                      <Heading level={rootHeaderLevel + 1} className="section-title">
+                        <span className="d-none d-lg-inline d-xl-none d-xxl-inline">Additional </span>Planned Travel
+                      </Heading>
                       {this.renderEditLink('Planned Travel', 4)}
                     </div>
                     {!(showPlannedTravel || this.props.details.additional_planned_travel_related_notes) && <div className="none-text">None</div>}
@@ -552,9 +558,9 @@ class Patient extends React.Component {
             <Row>
               <Col id="potential-exposure-information" md={14} xl={12} className={this.props.details.isolation ? 'col-xxxl-8' : 'col-xxxl-10'}>
                 <div className="section-header">
-                  <h4 className="section-title">
-                    Potential Exposure <span className="d-none d-lg-inline">Information</span>
-                  </h4>
+                  <Heading level={rootHeaderLevel + 1} className="section-title">
+                    Potential Exposure<span className="d-none d-lg-inline"> Information</span>
+                  </Heading>
                   {!this.props.details.isolation && this.renderEditLink('Potential Exposure Information', 5)}
                 </div>
                 {!(showPotentialExposureInfo || showRiskFactors || this.props.details.exposure_notes) && <div className="none-text">None</div>}
@@ -652,7 +658,9 @@ class Patient extends React.Component {
               {this.props.details.isolation && (
                 <Col id="case-information" md={10} xl={12} className="col-xxxl-8">
                   <div className="section-header">
-                    <h4 className="section-title">Case Information</h4>
+                    <Heading level={rootHeaderLevel + 1} className="section-title">
+                      Case Information
+                    </Heading>
                     {this.renderEditLink('Case Information', 5)}
                   </div>
                   <div className="item-group">
@@ -676,7 +684,9 @@ class Patient extends React.Component {
               {(showPotentialExposureInfo || showRiskFactors) && (
                 <Col id="exposure-notes" md={10} xl={12} className="notes-section col-xxxl-8">
                   <div className="section-header">
-                    <h4 className="section-title">Notes</h4>
+                    <Heading level={rootHeaderLevel + 1} className="section-title">
+                      Notes
+                    </Heading>
                     {this.renderEditLink('Edit Notes', 5)}
                   </div>
                   {!this.props.details.exposure_notes && <div className="none-text">None</div>}
@@ -727,6 +737,7 @@ Patient.propTypes = {
   can_modify_subject_status: PropTypes.bool,
   authenticity_token: PropTypes.string,
   workflow: PropTypes.string,
+  headingLevel: PropTypes.number,
 };
 
 export default Patient;

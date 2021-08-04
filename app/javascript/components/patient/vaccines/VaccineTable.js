@@ -341,7 +341,9 @@ class VaccineTable extends React.Component {
     return (
       <React.Fragment>
         <Card id="vaccines" className="mx-2 my-4 card-square">
-          <Card.Header className="h5">Vaccinations</Card.Header>
+          <Card.Header as="h1" className="patient-card-header">
+            Vaccinations
+          </Card.Header>
           <Card.Body className="my-1">
             <Row className="mb-4">
               <Col>
@@ -356,7 +358,7 @@ class VaccineTable extends React.Component {
                     <OverlayTrigger overlay={<Tooltip>Search by ID, Group Name, or Product Name.</Tooltip>}>
                       <InputGroup.Text className="rounded-0">
                         <i className="fas fa-search"></i>
-                        <label htmlFor="vaccines-search-input" className="ml-1 mb-0">
+                        <label htmlFor="vaccines-search-input" className="ml-1 mb-0" aria-label="Search Vaccinations Table by ID, Group Name, or Product Name.">
                           Search
                         </label>
                       </InputGroup.Text>

@@ -121,13 +121,9 @@ class HistoryList extends React.Component {
     return (
       <React.Fragment>
         <Card id="histories" className="mx-2 my-4 card-square">
-          <Card.Header>
-            <div className="d-flex flex-row align-items-center">
-              <div className="float-left flex-grow-1 mb-0 h5">
-                <span>History</span>
-                <InfoTooltip tooltipTextKey="history" location="right" className="pl-1"></InfoTooltip>
-              </div>
-            </div>
+          <Card.Header as="h1" className="patient-card-header">
+            History
+            <InfoTooltip tooltipTextKey="history" location="right" className="pl-1" />
           </Card.Header>
           <Card.Body className="py-0 px-1">
             <Row id="history-filters" className="mx-3 mt-3 justify-content-end">
@@ -164,10 +160,19 @@ class HistoryList extends React.Component {
                 onChange={this.handleTypeFilterChange}
               />
             </Row>
-            {this.state.displayedHistories.map(histories => (
-              <History key={histories[0].id} versions={histories} current_user={this.props.current_user} authenticity_token={this.props.authenticity_token} />
-            ))}
-            <Row className="mx-3 mt-3 justify-content-end">
+            <section role="list" aria-label="History Items">
+              {this.state.displayedHistories.map((histories, index) => (
+                <div role="listitem" key={`history-item-${index}`} aria-label={`History Entry ${index}`}>
+                  <History
+                    key={histories[0].id}
+                    versions={histories}
+                    current_user={this.props.current_user}
+                    authenticity_token={this.props.authenticity_token}
+                  />
+                </div>
+              ))}
+            </section>
+            <Row role="region" className="mx-3 mt-3 justify-content-end">
               <Pagination pageSize={5} maxPages={5} items={this.state.filteredHistories} onChangePage={this.onChangePage} />
             </Row>
             <Card className="mb-4 mt-4 mx-3 card-square shadow-sm">

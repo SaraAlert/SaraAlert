@@ -10,7 +10,7 @@ class PatientPage extends React.Component {
   render() {
     return (
       <Card id="patient-page" className="mx-2 my-4 card-square">
-        <Card.Header className="h5" id="patient-info-header">
+        <Card.Header as="h1" className="patient-card-header" id="patient-info-header">
           Monitoree Details {this.props.patient.user_defined_id ? `(ID: ${this.props.patient.user_defined_id})` : ''}{' '}
         </Card.Header>
         <Card.Body>
@@ -25,6 +25,7 @@ class PatientPage extends React.Component {
             can_modify_subject_status={this.props.can_modify_subject_status}
             authenticity_token={this.props.authenticity_token}
             workflow={this.props.workflow}
+            headingLevel={2}
           />
           <div className="household-info">
             {!this.props.patient.head_of_household && this.props?.other_household_members?.length > 0 && (
