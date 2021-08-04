@@ -243,7 +243,7 @@ class ImportController < ApplicationController
     value = import_enum_field(field, value) if VALIDATION[field][:checks].include?(:enum)
     value = import_and_validate_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
     value = import_date_field(value) if VALIDATION[field][:checks].include?(:date)
-    value = import_time_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:time)
+    value = import_and_validate_time_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:time)
     value = import_phone_field(value) if VALIDATION[field][:checks].include?(:phone)
     value = import_and_validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
     value = import_and_validate_language_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:lang)
@@ -279,10 +279,10 @@ class ImportController < ApplicationController
     value.blank? ? nil : value
   end
 
-  def import_time_field(field, value, row_ind)
+  def import_and_validate_time_field(field, value, row_ind)
     return nil if value.blank?
 
-    normalized_value = value.to_s.downcase.strip.gsub(/[ -.]/, '')
+    normalized_value = value.to_s.downcase.strip
     saved_value = NORMALIZED_INVERTED_TIME_OPTIONS[normalized_value]
     return saved_value unless saved_value.blank?
 

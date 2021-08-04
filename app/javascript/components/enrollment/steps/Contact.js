@@ -256,10 +256,10 @@ class Contact extends React.Component {
             placeholder="Select custom preferred contact time..."
             className="mb-3"
             styles={customPreferredContactTimeSelectStyling}
-            theme={bootstrapSelectTheme}
+            theme={theme => bootstrapSelectTheme(theme, 'lg')}
           />
           <p className="text-muted">
-            Reminders and contact attempts outside of normal hours (8:00 to 21:00) should only be done with the consent of the monitoree. Please indicate that
+            Reminders and contact attempts outside of normal hours (8:00 to 20:00) should only be done with the consent of the monitoree. Please indicate that
             you have confirmed this time with the monitoree before continuing.
           </p>
           <Form.Check
@@ -363,7 +363,7 @@ class Contact extends React.Component {
                         })
                       }
                       styles={preferredContactTimeSelectStyling}
-                      theme={bootstrapSelectTheme}
+                      theme={theme => bootstrapSelectTheme(theme, 'lg')}
                     />
                     <div className="mt-3">
                       <span className="font-weight-bold">Morning: </span>

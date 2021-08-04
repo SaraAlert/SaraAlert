@@ -27,7 +27,7 @@ export const customPreferredContactTimeOptions = {
 
 export const customPreferredContactTimeGroupedOptions = [
   {
-    label: 'Early',
+    label: 'Early Morning',
     options: [
       { label: 'Midnight', value: '0' },
       { label: '1:00', value: '1' },
@@ -67,7 +67,7 @@ export const customPreferredContactTimeGroupedOptions = [
     ],
   },
   {
-    label: 'Late',
+    label: 'Late Night',
     options: [
       { label: '20:00', value: '20' },
       { label: '21:00', value: '21' },
