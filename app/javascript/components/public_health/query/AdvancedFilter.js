@@ -45,7 +45,7 @@ class AdvancedFilter extends React.Component {
     if (this.props.jurisdiction_paths) {
       let index = advancedFilterOptions.findIndex(x => x.name === 'jurisdiction');
       let paths = Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
-        return { value: id, label: path };
+        return { label: path, value: id };
       });
       advancedFilterOptions[Number(index)].options = paths;
     }
@@ -854,6 +854,37 @@ class AdvancedFilter extends React.Component {
   };
 
   /**
+   * Renders multi-select type line "statement"
+   * @param {Object} filter - Filter currently selected
+   * @param {Number} index - Filter index
+   * @param {Array} value - Current values selected
+   */
+  renderMultiStatement = (filter, index, value) => {
+    // Tooltip for Multi-select type
+    let tooltip = 'Leaving this field blank will not filter out any monitorees.';
+
+    return (
+      <React.Fragment>
+        <div className="d-flex justify-content-between py-0 my-0">
+          <Select
+            closeMenuOnSelect={false}
+            isMulti
+            value={value}
+            options={filter.options}
+            className="advanced-filter-multi-select w-100"
+            placeholder=""
+            aria-label="Advanced Filter Multi-select Options"
+            onChange={event => {
+              this.changeValue(index, event);
+            }}
+          />
+          {tooltip && this.renderStatementTooltip(filter.name, index, tooltip)}
+        </div>
+      </React.Fragment>
+    );
+  };
+
+  /**
    * Renders number type line "statement"
    * @param {Object} filterOption - Filter currently selected
    * @param {Number} index - Filter index
@@ -1199,37 +1230,6 @@ class AdvancedFilter extends React.Component {
   };
 
   /**
-   * Renders multi-select type line "statement"
-   * @param {Object} filter - Filter currently selected
-   * @param {Number} index - Filter index
-   * @param {Array} value - Current values selected
-   * @param {Function} handleChange - Function to handle onChange
-   */
-  renderMultiStatement = (filter, index, value, handleChange) => {
-    // Function here to pass in selected options and index
-    function handleMultiStatementChange(selectedOptions) {
-      handleChange(index, selectedOptions);
-    }
-
-    return (
-      <React.Fragment>
-        <div className="d-flex justify-content-between py-0 my-0">
-          <Select
-            closeMenuOnSelect={false}
-            isMulti
-            value={value}
-            options={filter.options}
-            className="advanced-filter-multi-select w-50 mr-3"
-            placeholder=""
-            aria-label="Advanced Filter Multi-select Options"
-            onChange={handleMultiStatementChange}
-          />
-        </div>
-      </React.Fragment>
-    );
-  };
-
-  /**
    * Renders a single line "statement"
    * @param {Object} filterOption - Filter currently selected
    * @param {*} value - Current value for this statement (could be a string, bool, date or object)
@@ -1264,6 +1264,7 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'boolean' && this.renderBooleanStatement(filterOption, index, value)}
             {filterOption?.type === 'search' && this.renderSearchStatement(filterOption, index, value, additionalFilterOption)}
             {filterOption?.type === 'select' && this.renderSelectStatement(filterOption, index, value)}
+            {filterOption?.type === 'multi' && this.renderMultiStatement(filterOption, index, value)}
             {filterOption?.type === 'number' && this.renderNumberStatement(filterOption, index, value, numberOption, additionalFilterOption)}
             {filterOption?.type === 'date' && this.renderDateStatement(filterOption, index, value, dateOption)}
             {filterOption?.type === 'relative' && this.renderRelativeDateStatement(filterOption, index, value, relativeOption)}
@@ -1274,7 +1275,6 @@ class AdvancedFilter extends React.Component {
                 })}
               </React.Fragment>
             )}
-            {filterOption?.type === 'multi' && this.renderMultiStatement(filterOption, index, value, this.changeValue)}
           </Col>
           {filterOption?.type !== 'combination' && (
             <Col className="py-0" md="auto">

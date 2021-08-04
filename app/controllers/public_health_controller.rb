@@ -6,20 +6,18 @@ class PublicHealthController < ApplicationController
 
   before_action :authenticate_user!
   before_action :authenticate_user_role
+  before_action :set_jurisdiction_paths, only: %i[exposure isolation global]
 
   def exposure
     @title = 'Exposure Dashboard'
-    @possible_jurisdiction_paths = current_user.jurisdiction.subtree.pluck(:id, :path).to_h
   end
 
   def isolation
     @title = 'Isolation Dashboard'
-    @possible_jurisdiction_paths = current_user.jurisdiction.subtree.pluck(:id, :path).to_h
   end
 
   def global
     @title = 'Global Dashboard'
-    @possible_jurisdiction_paths = current_user.jurisdiction.subtree.pluck(:id, :path).to_h
   end
 
   def patients
@@ -81,5 +79,9 @@ class PublicHealthController < ApplicationController
   def authenticate_user_role
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+  end
+
+  def set_jurisdiction_paths
+    @possible_jurisdiction_paths = current_user.jurisdiction.subtree.pluck(:id, :path).to_h
   end
 end

@@ -890,35 +890,56 @@ class PatientQueryHelperTest < ActionView::TestCase
 
     tz_offset = 240
 
+    # Check for monitorees with assigned user user_1
     filters = [{ filterOption: {}, additionalFilterOption: nil,
-                 value: [{ value: user_1[:id], label: user_1[:id] }] }]
+                 value: [{ label: user_1[:id], value: user_1[:id] }] }]
     filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
 
+    # Check for monitorees with assigned user user_1 or user_2 or user_3
     filters = [{ filterOption: {}, additionalFilterOption: nil,
-                 value: [{ value: user_1[:id], label: user_1[:id] },
-                         { value: user_2[:id], label: user_2[:id] }] }]
-    filters[0][:filterOption]['name'] = 'assigned-user'
-    filtered_patients = advanced_filter(patients, filters, tz_offset)
-    filtered_patients_array = [patient_1, patient_2, patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
-
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
-                 value: [{ value: user_1[:id], label: user_1[:id] },
-                         { value: user_2[:id], label: user_2[:id] },
-                         { value: user_3[:id], label: user_3[:id] }] }]
+                 value: [{ label: user_1[:id], value: user_1[:id] },
+                         { label: user_2[:id], value: user_2[:id] },
+                         { label: user_3[:id], value: user_3[:id] }] }]
     filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
 
-    # filters = [{ filterOption: {}, additionalFilterOption: nil, value: []}]
-    # filters[0][:filterOption]['name'] = 'assigned-user'
-    # filtered_patients = advanced_filter(patients, filters, tz_offset)
-    # filtered_patients_array = []
-    # assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    # Check for monitorees with assigned user user_1 or user_2
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ label: user_1[:id], value: user_1[:id] },
+                         { label: user_2[:id], value: user_2[:id] }] }]
+    filters[0][:filterOption]['name'] = 'assigned-user'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # No selected assigned user should not filter out any monitorees
+    filters = [{ filterOption: {}, additionalFilterOption: nil, value: [] }]
+    filters[0][:filterOption]['name'] = 'assigned-user'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Invalid assigned user should not return any monitorees
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ label: -1, value: -1 }] }]
+    filters[0][:filterOption]['name'] = 'assigned-user'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = []
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Check for monitorees with assigned user user_1 or invalid assigned user
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ label: user_1[:id], value: user_1[:id] },
+                         { label: -1, value: -1 }] }]
+    filters[0][:filterOption]['name'] = 'assigned-user'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 
   test 'advanced filter jurisdiction filters by jurisdiction' do
@@ -927,43 +948,68 @@ class PatientQueryHelperTest < ActionView::TestCase
     user_2 = create(:public_health_enroller_user)
     user_3 = create(:public_health_enroller_user)
     patient_1 = create(:patient, creator: user_1)
+    patient_1.update!(jurisdiction_id: user_1[:jurisdiction_id])
     patient_2 = create(:patient, creator: user_1)
+    patient_2.update!(jurisdiction_id: user_1[:jurisdiction_id])
     patient_3 = create(:patient, creator: user_2)
+    patient_3.update!(jurisdiction_id: user_2[:jurisdiction_id])
     patient_4 = create(:patient, creator: user_3)
+    patient_4.update!(jurisdiction_id: user_3[:jurisdiction_id])
 
     patients = Patient.all
 
     tz_offset = 240
 
+    # Check for monitorees with jurisdiction of user_1
     filters = [{ filterOption: {}, additionalFilterOption: nil,
-                 value: [{ value: user_1[:jurisdiction_id], label: user_1[:jurisdiction_id] }] }]
+                 value: [{ label: user_1[:jurisdiction_path], value: user_1[:jurisdiction_id] }] }]
     filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
 
+    # Check for monitorees with jurisdiction of user_1 or user_2 or user_3
     filters = [{ filterOption: {}, additionalFilterOption: nil,
-                 value: [{ value: user_1[:jurisdiction_id], label: user_1[:jurisdiction_id] },
-                         { value: user_2[:jurisdiction_id], label: user_2[:jurisdiction_id] }] }]
-    filters[0][:filterOption]['name'] = 'jurisdiction'
-    filtered_patients = advanced_filter(patients, filters, tz_offset)
-    filtered_patients_array = [patient_1, patient_2, patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
-
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
-                 value: [{ value: user_1[:jurisdiction_id], label: user_1[:jurisdiction_id] },
-                         { value: user_2[:jurisdiction_id], label: user_2[:jurisdiction_id] },
-                         { value: user_3[:jurisdiction_id], label: user_3[:jurisdiction_id] }] }]
+                 value: [{ label: user_1[:jurisdiction_path], value: user_1[:jurisdiction_id] },
+                         { label: user_2[:jurisdiction_path], value: user_2[:jurisdiction_id] },
+                         { label: user_3[:jurisdiction_path], value: user_3[:jurisdiction_id] }] }]
     filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
     assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
 
-    # filters = [{ filterOption: {}, additionalFilterOption: nil, value: []}]
-    # filters[0][:filterOption]['name'] = 'jurisdiction'
-    # filtered_patients = advanced_filter(patients, filters, tz_offset)
-    # filtered_patients_array = []
-    # assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    # Check for monitorees with jurisdiction of user_1 or user_2
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ label: user_1[:jurisdiction_path], value: user_1[:jurisdiction_id] },
+                         { label: user_2[:jurisdiction_path], value: user_2[:jurisdiction_id] }] }]
+    filters[0][:filterOption]['name'] = 'jurisdiction'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # No selected jurisdiction should not filter out any monitorees
+    filters = [{ filterOption: {}, additionalFilterOption: nil, value: [] }]
+    filters[0][:filterOption]['name'] = 'jurisdiction'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Invalid jurisdiction should not return any monitorees
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ label: 'Not real jurisdiction', value: -1 }] }]
+    filters[0][:filterOption]['name'] = 'jurisdiction'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = []
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+
+    # Check for monitorees with jurisdiction of user_2 or invalid jurisdiction
+    filters = [{ filterOption: {}, additionalFilterOption: nil,
+                 value: [{ label: user_2[:jurisdiction_path], value: user_2[:jurisdiction_id] },
+                         { label: 'Not real jurisdiction', value: -1 }] }]
+    filters[0][:filterOption]['name'] = 'jurisdiction'
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_3]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
   end
 
   # --- SELECT ADVANCED FILTER QUERIES --- #
@@ -1072,6 +1118,118 @@ class PatientQueryHelperTest < ActionView::TestCase
 
     # Check bad_request error is thrown
     assert_raises(InvalidQueryError) { patients_table_data(params, user) }
+  end
+
+  test 'patients table data filters by assigned user multi-select advanced filter' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    user_1 = create(:public_health_enroller_user)
+    user_2 = create(:public_health_enroller_user)
+    user_3 = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    patient_1.update_attribute('assigned_user', user_1[:id])
+    patient_2 = create(:patient, creator: user)
+    patient_2.update_attribute('assigned_user', user_1[:id])
+    patient_3 = create(:patient, creator: user)
+    patient_3.update_attribute('assigned_user', user_2[:id])
+    patient_4 = create(:patient, creator: user)
+    patient_4.update_attribute('assigned_user', user_3[:id])
+
+    params = ActionController::Parameters.new({
+                                                query: {
+                                                  workflow: 'global',
+                                                  tab: 'all',
+                                                  scope: 'all',
+                                                  search: '',
+                                                  entries: 25,
+                                                  tz_offset: 240,
+                                                  filter: [{
+                                                    filterOption: {
+                                                      name: 'assigned-user',
+                                                      title: 'Assigned User (Multi-select)',
+                                                      description: 'Monitorees who have a specific assigned user',
+                                                      type: 'multi'
+                                                    },
+                                                    value: [
+                                                      { label: user_1[:id], value: user_1[:id] },
+                                                      { label: user_2[:id], value: user_2[:id] }
+                                                    ]
+                                                  }]
+                                                }
+                                              })
+    filtered_patients = patients_table_data(params, user)
+    filtered_patients_array = [patient_1, patient_2, patient_3]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+  end
+
+  test 'patients table data does not filter when nothing selected in multi-select advanced filter' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient = create(:patient, creator: user)
+    patient.update_attribute('assigned_user', user[:id])
+
+    params = ActionController::Parameters.new({
+                                                query: {
+                                                  workflow: 'global',
+                                                  tab: 'all',
+                                                  scope: 'all',
+                                                  search: '',
+                                                  entries: 25,
+                                                  tz_offset: 240,
+                                                  filter: [{
+                                                    filterOption: {
+                                                      name: 'assigned-user',
+                                                      title: 'Assigned User (Multi-select)',
+                                                      description: 'Monitorees who have a specific assigned user',
+                                                      type: 'multi'
+                                                    },
+                                                    value: []
+                                                  }]
+                                                }
+                                              })
+    filtered_patients = patients_table_data(params, user)
+    filtered_patients_array = [patient]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+  end
+
+  test 'patients table data filters by jurisdiction multi-select advanced filter' do
+    Patient.destroy_all
+    user_1 = create(:public_health_enroller_user)
+    user_2 = create(:public_health_enroller_user)
+    user_3 = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user_1)
+    patient_1.update!(jurisdiction_id: user_1[:jurisdiction_id])
+    patient_2 = create(:patient, creator: user_1)
+    patient_2.update!(jurisdiction_id: user_1[:jurisdiction_id])
+    patient_3 = create(:patient, creator: user_2)
+    patient_3.update!(jurisdiction_id: user_2[:jurisdiction_id])
+    patient_4 = create(:patient, creator: user_3)
+    patient_4.update!(jurisdiction_id: user_3[:jurisdiction_id])
+
+    params = ActionController::Parameters.new({
+                                                query: {
+                                                  workflow: 'global',
+                                                  tab: 'all',
+                                                  scope: 'all',
+                                                  search: '',
+                                                  entries: 25,
+                                                  tz_offset: 240,
+                                                  filter: [{
+                                                    filterOption: {
+                                                      name: 'jurisdiction',
+                                                      title: 'Jurisdiction (Multi-select)',
+                                                      description: 'Monitorees of a specific jurisdiction',
+                                                      type: 'multi'
+                                                    },
+                                                    value: [
+                                                      { label: user_1[:jurisdiction_id], value: user_1[:jurisdiction_id] }
+                                                    ]
+                                                  }]
+                                                }
+                                              })
+    filtered_patients = patients_table_data(params, user_1)
+    filtered_patients_array = [patient_1, patient_2]
+    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
   end
 end
 # rubocop:enable Metrics/ClassLength

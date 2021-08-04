@@ -75,8 +75,13 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       raise InvalidQueryError.new(:tz_offset, tz_offset) unless tz_offset.to_i.to_s == tz_offset.to_s
 
       query[:filter] = unsanitized_query[:filter].collect do |filter|
-        permitted_filter_params = filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
-                                                filterOption: {}, value: {}, value: %i[label value])
+        permitted_filter_params = if filter[:value].is_a? Array
+                                    filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
+                                                  filterOption: {}, value: %i[label value])
+                                  else
+                                    filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
+                                                  filterOption: {}, value: {})
+                                  end
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :tooltip,
                                                              options: [], fields: [:name, :title, :type, { options: [] }]),
@@ -488,33 +493,28 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                              )
                    end
       when 'assigned-user'
-        filter_assigned_users = nil
         if filter[:value].any?
-          # Map multi-select type filter from { value, label } to values
+          # Map multi-select type filter from { label, value } to values
           filter_assigned_users = filter[:value].map { |p| p[:value] }
-        end
 
-        # Get patients where assigned_user is any of the assigned users specified in the filter
-        patients = patients.where(assigned_user: filter_assigned_users)
+          # Get patients where assigned_user is any of the assigned users specified in the filter
+          patients = patients.where(assigned_user: filter_assigned_users)
+        end
       when 'jurisdiction'
-        filter_jurisdictions = []
         if filter[:value].any?
-          # Map multi-select type filter from { value, label } to jurisdictions
-          filter_jurisdictions = filter[:value].map { |p| Jurisdiction.find(p[:value]&.to_i) unless ['all', nil].include?(p[:value]) }
-        end
+          # Map multi-select type filter from { label, value } to jurisdictions
+          # For example, filter[:value] that looks like
+          #     [{"label": "USA", "value": "1"}, {"label": "USA, State 1", "value": "2"}],
+          #   would map to
+          #     Jurisdiction.where([1, 2])
+          filter_jurisdictions = Jurisdiction.where(id: filter[:value].map(&:values).map(&:second).map(&:to_i)&.flatten)
 
-        # Get subset of jurisdictions
-        subjurisdictions = []
-        filter_jurisdictions.each do |jurisdiction|
-          jurisdiction.subtree_ids.each do |id|
-            subjurisdictions.push(id)
-          end
-        end
-        subjurisdictions = subjurisdictions.uniq
+          # Get subset of jurisdictions
+          subjurisdictions = filter_jurisdictions.map(&:subtree_ids).flatten.uniq
 
-        # Get patients where jurisdiction is any of the jurisdictions or subjurisdictions of the filter
-        patients = patients.where(jurisdiction_id: subjurisdictions)
-        # patients = patients.where(jurisdiction_id: filter[:value].any? ? filter[:value] : nil)
+          # Get patients where jurisdiction is any of the jurisdictions or subjurisdictions of the filter
+          patients = patients.where(jurisdiction_id: subjurisdictions)
+        end
       end
     end
     patients

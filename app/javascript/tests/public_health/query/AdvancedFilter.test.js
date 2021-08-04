@@ -807,14 +807,15 @@ describe('AdvancedFilter', () => {
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAssignedUser.filterOption.name });
     expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAssignedUser.filterOption.name);
-    expect(wrapper.find('.advanced-filter-multi-select').exists()).toBeTruthy();
+    expect(wrapper.find('.advanced-filter-multi-select').exists()).toBe(true);
     expect(wrapper.find('.advanced-filter-multi-select').length).toEqual(1);
     expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
     mockFilterAssignedUser.filterOption.options.forEach((value, index) => {
       expect(wrapper.find('.advanced-filter-multi-select').find('options').at(index).prop('value')).toEqual(value.value);
       expect(wrapper.find('.advanced-filter-multi-select').find('options').at(index).prop('label')).toEqual(value.label);
     });
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Leaving this field blank will not filter out any monitorees.`);
   });
 
   it('Toggling boolean buttons properly updates state and value', () => {
@@ -1166,13 +1167,11 @@ describe('AdvancedFilter', () => {
 
   it('Changing advanced filter multi-select filter to another multi-select resets selected', () => {
     const wrapper = getWrapper();
-
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAssignedUser.filterOption.name });
     expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
     wrapper.find('.advanced-filter-multi-select').simulate('change', { value: [{ value: 1, label: 1 }] });
     expect(wrapper.find('.advanced-filter-multi-select').prop('value').value).toEqual([{ value: 1, label: 1 }]);
-
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterJurisdiction.filterOption.name });
     expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
   });

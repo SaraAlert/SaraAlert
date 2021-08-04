@@ -203,6 +203,22 @@ export const advancedFilterOptions = [
     tooltip: 'This will return monitorees that are flagged for follow-up for the selected reason. To return all montitorees flagged for follow-up, select the “Any Reason” option.'
   },
 
+  /* MULTI-SELECT OPTIONS */
+  {
+    name: 'assigned-user',
+    title: 'Assigned User (Multi-select)',
+    description: 'Monitorees who have a specific assigned user',
+    type: 'multi',
+    options: [], // Populated asynchronously in the AdvancedFilter component
+  },
+  {
+    name: 'jurisdiction',
+    title: 'Jurisdiction (Multi-select)',
+    description: 'Monitorees of a specific jurisdiction',
+    type: 'multi',
+    options: [], // Populated in the AdvancedFilter component
+  },
+
   /* NUMBER FILTER OPTIONS */
   {
     name: 'age',
@@ -340,21 +356,5 @@ export const advancedFilterOptions = [
         options: ['', '1', '2', 'Unknown'],
       },
     ],
-  },
-
-  /* MULTI-SELECT OPTIONS */
-  {
-    name: 'assigned-user',
-    title: 'Assigned User (Multi-select)',
-    description: 'Monitorees who have a specific assigned user',
-    type: 'multi',
-    options: [], // Populated asynchronously in the AdvancedFilter component
-  },
-  {
-    name: 'jurisdiction',
-    title: 'Jurisdiction (Multi-select)',
-    description: 'Monitorees of a specific jurisdiction',
-    type: 'multi',
-    options: [], // Populated in the AdvancedFilter component
   },
 ];
