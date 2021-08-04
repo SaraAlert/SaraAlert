@@ -60,8 +60,8 @@ class PublicHealthManagement extends React.Component {
     } else if (event?.target?.id && event.target.id === 'assigned_user') {
       if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
 
-      // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
-      value = event.target.value.trim() === '' ? null : parseInt(event.target.value);
+      // trim call included since there is a bug with yup validation for numbers that allows whitespace entry
+      value = _.trim(event.target.value) === '' ? null : parseInt(event.target.value);
     }
     this.setState(
       {
