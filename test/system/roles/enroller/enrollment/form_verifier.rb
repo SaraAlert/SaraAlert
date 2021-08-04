@@ -15,9 +15,11 @@ class EnrollmentFormVerifier < ApplicationSystemTestCase
     click_link 'Enroll New Monitoree'
     @@enrollment_form_steps.steps.each_key do |step|
       @@enrollment_form.populate_enrollment_step(step, monitoree[step.to_s])
-      @@system_test_utils.go_to_prev_page
-      verify_form_data_consistency_for_step(step, monitoree[step.to_s])
-      @@system_test_utils.go_to_next_page
+      unless step == :potential_exposure_information
+        @@system_test_utils.go_to_prev_page
+        verify_form_data_consistency_for_step(step, monitoree[step.to_s])
+        @@system_test_utils.go_to_next_page
+      end
     end
   end
 

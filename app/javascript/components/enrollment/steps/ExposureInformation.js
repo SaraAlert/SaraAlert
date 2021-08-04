@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Form } from 'react-bootstrap';
+import axios from 'axios';
 import * as yup from 'yup';
 import moment from 'moment';
 import _ from 'lodash';
@@ -9,7 +10,6 @@ import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
 import { countryOptions } from '../../../data/countryOptions';
-import PublicHealthManagement from './PublicHealthManagement';
 
 class ExposureInformation extends React.Component {
   constructor(props) {
@@ -40,7 +40,34 @@ class ExposureInformation extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    if (event?.target?.id && event.target.id === 'continuous_exposure') {
+    if (event?.target?.id && event.target.id === 'jurisdiction_id') {
+      this.setState({ jurisdiction_path: event.target.value });
+      let jurisdiction_id = parseInt(Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === event.target.value));
+      if (jurisdiction_id) {
+        value = jurisdiction_id;
+        axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+        axios
+          .post(window.BASE_PATH + '/jurisdictions/assigned_users', {
+            query: {
+              jurisdiction: jurisdiction_id,
+              scope: 'exact',
+            },
+          })
+          .catch(() => {})
+          .then(response => {
+            if (response?.data?.assigned_users) {
+              this.setState({ assigned_users: response.data.assigned_users });
+            }
+          });
+      } else {
+        value = -1;
+      }
+    } else if (event?.target?.id && event.target.id === 'assigned_user') {
+      if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
+
+      // trim call included since there is a bug with yup validation for numbers that allows whitespace entry
+      value = _.trim(event.target.value) === '' ? null : parseInt(event.target.value);
+    } else if (event?.target?.id && event.target.id === 'continuous_exposure') {
       // clear out LDE if CE is turned on and populate it with previous LDE if CE is turned off
       const lde = value ? null : this.props.patient.last_date_of_exposure;
       current.patient.last_date_of_exposure = lde;
@@ -153,19 +180,18 @@ class ExposureInformation extends React.Component {
       .then(() => {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, async () => {
-          if (self.props.currentState.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
+          if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
             // If we set it back to the last saved value no need to confirm.
-            if (self.props.currentState.patient.jurisdiction_id === self.state.selected_jurisdiction) {
+            if (self.state.jurisdiction_path === self.state.selected_jurisdiction) {
               callback();
               return;
             }
             const originalJurisdictionPath = self.props.jurisdiction_paths[self.state.originalJurisdictionId];
-            const newJurisdictionPath = self.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id];
-            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${newJurisdictionPath}. Are you sure you want to do this?`;
+            const message = `You are about to change the Assigned Jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdiction_path}. Are you sure you want to do this?`;
             const options = { title: 'Confirm Jurisdiction Change' };
 
             if (self.state.current.patient.assigned_user && self.state.current.patient.assigned_user === self.state.originalAssignedUser) {
-              options.additionalNote = 'Please also consider removing or updating the assigned user if it is no longer applicable.';
+              options.additionalNote = 'Please also consider removing or updating the Assigned User if it is no longer applicable.';
             }
 
             if (await confirmDialog(message, options)) {
@@ -211,7 +237,7 @@ class ExposureInformation extends React.Component {
               date={this.state.current.patient.last_date_of_exposure}
               minDate={'2020-01-01'}
               maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
-              onChange={date => this.handleLDEChange(date)}
+              onChange={this.handleLDEChange}
               placement="bottom"
               isInvalid={!!this.state.errors['last_date_of_exposure']}
               customClass="form-control-lg"
@@ -458,6 +484,142 @@ class ExposureInformation extends React.Component {
     );
   };
 
+  renderPublicHealthManagementFields = () => {
+    return (
+      <React.Fragment>
+        <Form.Row className="pt-2 g-border-bottom-2" />
+        <Form.Row className="pt-2">
+          <Form.Group as={Col} className="mb-2">
+            <Form.Label className="input-label">PUBLIC HEALTH RISK ASSESSMENT AND MANAGEMENT</Form.Label>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="18" className="mb-2 pt-2" controlId="jurisdiction_id">
+            <Form.Label className="input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['jurisdiction_id']}
+              as="input"
+              list="jurisdiction_paths"
+              autoComplete="off"
+              size="lg"
+              className="form-square"
+              onChange={this.handleChange}
+              value={this.state.jurisdiction_path}
+            />
+            <datalist id="jurisdiction_paths">
+              {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
+                return (
+                  <option value={jurisdiction} key={index}>
+                    {jurisdiction}
+                  </option>
+                );
+              })}
+            </datalist>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['jurisdiction_id']}
+            </Form.Control.Feedback>
+            {this.props.has_dependents &&
+              this.state.current.patient.jurisdiction_id !== this.state.originalJurisdictionId &&
+              Object.keys(this.props.jurisdiction_paths).includes(this.state.current.patient.jurisdiction_id.toString()) && (
+                <Form.Group className="mt-2">
+                  <Form.Check
+                    type="switch"
+                    id="update_group_member_jurisdiction_id"
+                    name="jurisdiction_id"
+                    label="Apply this change to the entire household that this monitoree is responsible for"
+                    onChange={this.handlePropagatedFieldChange}
+                    checked={this.state.current.propagatedFields.jurisdiction_id || false}
+                  />
+                </Form.Group>
+              )}
+          </Form.Group>
+          <Form.Group as={Col} md="6" className="mb-2 pt-2" controlId="assigned_user">
+            <Form.Label className="input-label">
+              ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
+              <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
+            </Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['assigned_user']}
+              as="input"
+              list="assigned_users"
+              autoComplete="off"
+              size="lg"
+              className="form-square"
+              onChange={this.handleChange}
+              value={this.state.current.patient.assigned_user || ''}
+            />
+            <datalist id="assigned_users">
+              {this.state.assigned_users?.map(num => {
+                return (
+                  <option value={num} key={num}>
+                    {num}
+                  </option>
+                );
+              })}
+            </datalist>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['assigned_user']}
+            </Form.Control.Feedback>
+            {this.props.has_dependents &&
+              this.state.current.patient.assigned_user !== this.state.originalAssignedUser &&
+              (this.state.current.patient.assigned_user === null ||
+                (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 999999)) && (
+                <Form.Group className="mt-2">
+                  <Form.Check
+                    type="switch"
+                    id="update_group_member_assigned_user"
+                    name="assigned_user"
+                    label="Apply this change to the entire household that this monitoree is responsible for"
+                    onChange={this.handlePropagatedFieldChange}
+                    checked={this.state.current.propagatedFields.assigned_user || false}
+                  />
+                </Form.Group>
+              )}
+          </Form.Group>
+          <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="mb-2 pt-2">
+            <Form.Label className="input-label">RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['exposure_risk_assessment']}
+              as="select"
+              size="lg"
+              className="form-square"
+              onChange={this.handleChange}
+              value={this.state.current.patient.exposure_risk_assessment || ''}>
+              <option></option>
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+              <option>No Identified Risk</option>
+            </Form.Control>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['exposure_risk_assessment']}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="16" controlId="monitoring_plan" className="mb-2 pt-2">
+            <Form.Label className="input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['monitoring_plan']}
+              as="select"
+              size="lg"
+              className="form-square"
+              onChange={this.handleChange}
+              value={this.state.current.patient.monitoring_plan || ''}>
+              <option></option>
+              <option>None</option>
+              <option>Daily active monitoring</option>
+              <option>Self-monitoring with public health supervision</option>
+              <option>Self-monitoring with delegated supervision</option>
+              <option>Self-observation</option>
+            </Form.Control>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['monitoring_plan']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+      </React.Fragment>
+    );
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -469,31 +631,22 @@ class ExposureInformation extends React.Component {
               <Form.Row className="pb-3 h-100">
                 <Form.Group as={Col} className="my-auto">
                   {this.renderExposureFields()}
-                  {!this.props.patient.isolation && (
-                    <PublicHealthManagement
-                      currentState={this.state.current}
-                      setEnrollmentState={this.props.setEnrollmentState}
-                      updateValidations={this.updateExposureValidations}
-                      previous={this.previous}
-                      next={this.next}
-                      patient={this.props.patient}
-                      has_dependents={this.props.has_dependents}
-                      jurisdiction_paths={this.props.jurisdiction_paths}
-                      assigned_users={this.state.assigned_users}
-                      authenticity_token={this.props.authenticity_token}
-                      schema={schema}
-                    />
-                  )}
+                  {!this.props.patient.isolation && this.renderPublicHealthManagementFields()}
                 </Form.Group>
               </Form.Row>
             </Form>
             {this.props.previous && !this.props.hidePreviousButton && (
-              <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
+              <Button id="enrollment-previous-button" variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
             )}
             {this.props.next && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
+              <Button
+                id="enrollment-next-button"
+                variant="outline-primary"
+                size="lg"
+                className="float-right btn-square px-5"
+                onClick={() => this.validate(this.props.next)}>
                 Next
               </Button>
             )}

@@ -58,9 +58,6 @@ class Patient extends React.Component {
    */
   renderEditLink(section, enrollmentStep) {
     let sectionId = `edit-${section.replace(/\s+/g, '_').toLowerCase()}-btn`;
-    if (section === 'Case Information') {
-      sectionId = 'edit-potential_exposure_information-btn';
-    }
     if (this.props.goto) {
       return (
         <Button variant="link" id={sectionId} className="edit-link p-0" onClick={() => this.props.goto(enrollmentStep)} aria-label={`Edit ${section}`}>
@@ -559,7 +556,7 @@ class Patient extends React.Component {
                   <Heading level={rootHeaderLevel + 1} className="section-title">
                     Potential Exposure<span className="d-none d-lg-inline"> Information</span>
                   </Heading>
-                  {!this.props.details.isolation && this.renderEditLink('Potential Exposure Information', 5)}
+                  {this.renderEditLink('Potential Exposure Information', 5)}
                 </div>
                 {!(showPotentialExposureInfo || showRiskFactors || this.props.details.exposure_notes) && <div className="none-text">None</div>}
                 {(showPotentialExposureInfo || showRiskFactors) && (

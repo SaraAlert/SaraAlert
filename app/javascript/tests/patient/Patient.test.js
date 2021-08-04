@@ -286,7 +286,7 @@ describe('Patient', () => {
   });
 
   it('Displays "None" if arrival information has no information', () => {
-    const wrapper = shallow(<Patient details={blankMockPatient} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
+    const wrapper = shallow(<Patient details={blankIsolationMockPatient} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
     const section = wrapper.find('#arrival-information');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();
@@ -327,7 +327,7 @@ describe('Patient', () => {
   });
 
   it('Displays "None" if planned travel has no information', () => {
-    const wrapper = shallow(<Patient details={blankMockPatient} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
+    const wrapper = shallow(<Patient details={blankIsolationMockPatient} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
     const section = wrapper.find('#planned-travel');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();
@@ -387,7 +387,7 @@ describe('Patient', () => {
   });
 
   it('Displays "None" if potential exposure information has no information', () => {
-    const wrapper = shallow(<Patient details={blankMockPatient} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
+    const wrapper = shallow(<Patient details={blankIsolationMockPatient} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();
@@ -455,7 +455,7 @@ describe('Patient', () => {
   });
 
   it('Renders edit buttons if props.goto is defined in exposure', () => {
-    const wrapper = shallow(<Patient details={mockPatient1} goto={goToMock} collapse={true} edit_mode={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="exposure" headingLevel={2} />);
+    const wrapper = shallow(<Patient details={mockPatient2} goto={goToMock} collapse={true} edit_mode={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="exposure" headingLevel={2} />);
     expect(wrapper.find('.edit-link').find(Button).length).toEqual(7);
     expect(wrapper.find('.edit-link').find('a').exists()).toBeFalsy();
     wrapper
@@ -480,7 +480,7 @@ describe('Patient', () => {
 
   it('Renders edit hrefs if props.goto is not defined in exposure', () => {
     const stepIds = [0, 2, 1, 3, 4, 5, 5];
-    const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="exposure" headingLevel={2} />);
+    const wrapper = shallow(<Patient details={mockPatient2} collapse={true} edit_mode={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="exposure" headingLevel={2} />);
     expect(wrapper.find('.edit-link').find(Button).exists()).toBeFalsy();
     expect(wrapper.find('.edit-link').find('a').length).toEqual(7);
     wrapper
