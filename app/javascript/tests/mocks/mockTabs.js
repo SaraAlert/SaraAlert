@@ -101,7 +101,7 @@ const mockGlobalTabs = {
     variant: 'secondary',
   },
   non_reporting: {
-    description: 'All monitorees who have failed to report in the last day across both the exposure and isolation workflows.',
+    description: 'All monitorees on the Non-Reporting line list in all workflows.',
     label: 'Non-Reporting',
     variant: 'warning',
   },
