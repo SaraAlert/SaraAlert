@@ -647,9 +647,17 @@ namespace :stats do
         exposure: active_exp.where(primary_language: 'som').count,
         isolation: active_iso.where(primary_language: 'som').count
       }
+      results[title]['Preferred Language - Vietnamese'] = {
+        exposure: active_exp.where(primary_language: 'vie').count,
+        isolation: active_iso.where(primary_language: 'vie').count
+      }
+      results[title]['Preferred Language - Korean'] = {
+        exposure: active_exp.where(primary_language: 'kor').count,
+        isolation: active_iso.where(primary_language: 'kor').count
+      }
       results[title]['Preferred Language - Other'] = {
-        exposure: active_exp.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr', 'fra', 'som']).count,
-        isolation: active_iso.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr', 'fra', 'som']).count
+        exposure: active_exp.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr', 'fra', 'som', 'vie', 'kor']).count,
+        isolation: active_iso.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr', 'fra', 'som', 'vie', 'kor']).count
       }
       results[title]['Preferred Language - blank'] = {
         exposure: active_exp.where(primary_language: ['', nil]).count,

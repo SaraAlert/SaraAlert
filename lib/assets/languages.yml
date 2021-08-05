@@ -869,6 +869,10 @@
   :display: 'Korean'
   :iso6391code: "ko"
   :system: 'iso639-2t'
+  :supported:
+    :sms: true
+    :email: true
+    :phone: true
 
 :kos:
   :display: 'Kosraean'
@@ -1775,6 +1779,10 @@
   :display: 'Vietnamese'
   :iso6391code: "vi"
   :system: 'iso639-2t'
+  :supported:
+    :sms: true
+    :email: true
+    :phone: true
 
 :vot:
   :display: 'Votic'

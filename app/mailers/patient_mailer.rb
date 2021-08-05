@@ -35,10 +35,9 @@ class PatientMailer < ApplicationMailer
     end
 
     lang = patient.select_language
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
+    contents = I18n.t('assessments.sms.prompt.intro', locale: lang, name: patient&.initials_age('-'))
     threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
-    message = { prompt: contents, patient_submission_token: patient.submission_token,
-                threshold_hash: threshold_hash }
+    message = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash }
     success = TwilioSender.send_sms(patient, [message])
     History.welcome_message_sent(patient: patient) if success
 
