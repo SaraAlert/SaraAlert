@@ -65,7 +65,7 @@ class MonitoringPeriod extends React.Component {
             />
           </Col>
         )}
-        <Col xl={{ span: 8, order: 1 }} md={{ span: this.props.patient.isolation ? 12 : 8, order: 3 }} xs={{ span: 24, order: 4 }}>
+        <Col xl={{ span: 8, order: 3 }} md={{ span: this.props.patient.isolation ? 12 : 8, order: 3 }} xs={{ span: 24, order: 4 }}>
           {this.props.patient.isolation ? (
             <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
           ) : (
