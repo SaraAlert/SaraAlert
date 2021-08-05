@@ -109,9 +109,7 @@ class Patient < ApplicationRecord
   validates_with RequiredAddressValidator, on: :api
   validates_with TimeZoneValidator
   validates_with IsolationSymptomOnsetValidator, on: %i[api_create]
-
-  # NOTE: Commented out until additional testing
-  # validates_with PatientDateValidator
+  validates_with PatientDateValidator
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
