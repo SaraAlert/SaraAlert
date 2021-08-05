@@ -9,7 +9,7 @@ import InfoTooltip from '../../components/util/InfoTooltip';
 import BadgeHoH from '../../components/patient/icons/BadgeHoH';
 import { Heading } from '../../utils/Heading';
 import { mockUser1 } from '../mocks/mockUsers';
-import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankIsolationMockPatient } from '../mocks/mockPatients';
+import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankIsolationMockPatient, blankExposureMockPatient } from '../mocks/mockPatients';
 import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 import { nameFormatter, formatDate } from '../util.js';
 
@@ -387,7 +387,7 @@ describe('Patient', () => {
   });
 
   it('Displays "None" if potential exposure information has no information', () => {
-    const wrapper = shallow(<Patient details={blankIsolationMockPatient} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
+    const wrapper = shallow(<Patient details={blankExposureMockPatient} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.exists()).toBeTruthy();
     expect(section.find('.none-text').exists()).toBeTruthy();

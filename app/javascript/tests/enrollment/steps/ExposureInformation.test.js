@@ -37,7 +37,7 @@ const monitoringPlanOptions = ['', 'None', 'Daily active monitoring', 'Self-moni
 
 function getShallowWrapper(patient, hideBtn, hasDependents) {
   const current = {
-    isolation: false,
+    isolation: patient.isolation,
     patient: patient,
     propagatedFields: {},
   };
@@ -46,7 +46,7 @@ function getShallowWrapper(patient, hideBtn, hasDependents) {
 
 function getMountedWrapper(patient, hideBtn, hasDependents) {
   const current = {
-    isolation: false,
+    isolation: patient.isolation,
     patient: patient,
     propagatedFields: {},
   };

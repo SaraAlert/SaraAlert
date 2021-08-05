@@ -28,7 +28,6 @@ class Enrollment extends React.Component {
     const maxSteps = props.patient.isolation ? 7 : 6;
     super(props);
     this.state = {
-      maxSteps: maxSteps,
       index: props.enrollment_step != undefined ? props.enrollment_step : props.edit_mode ? maxSteps : 0,
       lastIndex: props.enrollment_step != undefined ? maxSteps : null,
       direction: null,
@@ -139,7 +138,7 @@ class Enrollment extends React.Component {
       .then(response => {
         if (response.data && response.data.is_duplicate) {
           const dupFieldData = response.data.duplicate_field_data;
-          const patientType = this.props.patient.isolation ? 'case' : 'monitoree';
+          const patientType = this.state.current.patient.isolation ? 'case' : 'monitoree';
 
           let text = `This ${patientType} already appears to exist in the system! `;
 
@@ -183,7 +182,9 @@ class Enrollment extends React.Component {
     window.scroll(0, 0);
     let index = this.state.index;
     let lastIndex = this.state.lastIndex;
-    let step = this.props.patient.isolation && 4 === index ? 2 : 1;
+    let step = this.state.enrollmentState.patient.isolation && 4 === index ? 2 : 1;
+    let maxSteps = this.state.enrollmentState.patient.isolation ? 7 : 6
+
     if (lastIndex) {
       this.setState({ index: lastIndex, lastIndex: null });
     } else {
@@ -191,7 +192,7 @@ class Enrollment extends React.Component {
         direction: 'next',
         index: index + step,
         lastIndex: null,
-        review_mode: index + step === this.state.maxSteps,
+        review_mode: index + step === maxSteps,
       });
     }
   };
@@ -199,7 +200,7 @@ class Enrollment extends React.Component {
   previous = () => {
     window.scroll(0, 0);
     let index = this.state.index;
-    let step = this.props.patient.isolation && index === 6 ? 2 : 1;
+    let step = this.state.enrollmentState.patient.isolation && index === 6 ? 2 : 1;
     this.setState({ direction: 'prev', index: index - step, lastIndex: null });
   };
 
@@ -287,7 +288,7 @@ class Enrollment extends React.Component {
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
-          {this.props.patient.isolation && (
+          {this.state.enrollmentState.patient.isolation && (
             <Carousel.Item>
               <CaseInformation
                 currentState={this.state.enrollmentState}

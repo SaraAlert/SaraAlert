@@ -458,7 +458,7 @@ class ExposureInformation extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        {!this.props.patient.isolation && (
+        {!this.props.currentState.isolation && (
           <Form.Row>
             <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-3 mb-2">
               <Form.Label className="input-label">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
@@ -631,7 +631,7 @@ class ExposureInformation extends React.Component {
               <Form.Row className="pb-3 h-100">
                 <Form.Group as={Col} className="my-auto">
                   {this.renderExposureFields()}
-                  {!this.props.patient.isolation && this.renderPublicHealthManagementFields()}
+                  {!this.props.currentState.isolation && this.renderPublicHealthManagementFields()}
                 </Form.Group>
               </Form.Row>
             </Form>
