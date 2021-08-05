@@ -141,7 +141,7 @@ class SymptomOnset extends React.Component {
             id="symptom_onset"
             date={this.state.symptom_onset}
             minDate={'2020-01-01'}
-            maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
+            maxDate={moment().format('YYYY-MM-DD')}
             onChange={this.openModal}
             placement="bottom"
             isClearable={this.props.patient.user_defined_symptom_onset}

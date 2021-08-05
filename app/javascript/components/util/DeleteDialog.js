@@ -92,7 +92,7 @@ class DeleteDialog extends React.Component {
                 id="symptom_onset_delete_dialog"
                 date={this.state.symptom_onset}
                 minDate={'2020-01-01'}
-                maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
+                maxDate={moment().format('YYYY-MM-DD')}
                 onChange={date => this.setState({ symptom_onset: date })}
                 isClearable={true}
                 placement="bottom"
