@@ -90,7 +90,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_us_core_race(races_as_hash(patient)),
         to_us_core_ethnicity(patient.ethnicity),
         to_us_core_birthsex(patient.sex),
-        *to_transfer_extensions(patient),
+        *patient.transfers.map { |t| transfer_as_fhir_extension(t) },
         to_exposure_risk_factors_extension(patient),
         to_report_source_extension(patient),
         to_string_extension(patient.preferred_contact_method, 'preferred-contact-method'),
@@ -103,6 +103,12 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_positive_integer_extension(patient.assigned_user, 'assigned-user'),
         to_date_extension(patient.additional_planned_travel_start_date, 'additional-planned-travel-start-date'),
         to_date_extension(patient.additional_planned_travel_end_date, 'additional-planned-travel-end-date'),
+        to_string_extension(patient.additional_planned_travel_related_notes, 'additional-planned-travel-notes'),
+        to_string_extension(patient.additional_planned_travel_destination, 'additional-planned-travel-destination'),
+        to_string_extension(patient.additional_planned_travel_destination_state, 'additional-planned-travel-destination-state'),
+        to_string_extension(patient.additional_planned_travel_destination_country, 'additional-planned-travel-destination-country'),
+        to_string_extension(patient.additional_planned_travel_port_of_departure, 'additional-planned-travel-port-of-departure'),
+        to_string_extension(patient.additional_planned_travel_type, 'additional-planned-travel-type'),
         to_string_extension(patient.port_of_origin, 'port-of-origin'),
         to_string_extension(patient.port_of_entry_into_usa, 'port-of-entry-into-usa'),
         to_date_extension(patient.date_of_departure, 'date-of-departure'),
@@ -111,7 +117,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_date_extension(patient.date_of_arrival, 'date-of-arrival'),
         to_string_extension(patient.exposure_notes, 'exposure-notes'),
         to_string_extension(patient.travel_related_notes, 'travel-related-notes'),
-        to_string_extension(patient.additional_planned_travel_related_notes, 'additional-planned-travel-notes'),
         to_bool_extension(patient.continuous_exposure, 'continuous-exposure'),
         to_string_extension(patient.end_of_monitoring, 'end-of-monitoring'),
         to_datetime_extension(patient.expected_purge_ts, 'expected-purge-date'),
@@ -124,11 +129,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.monitoring_reason, 'reason-for-closure'),
         to_string_extension(patient.follow_up_reason, 'follow-up-reason'),
         to_string_extension(patient.follow_up_note, 'follow-up-note'),
-        to_string_extension(patient.additional_planned_travel_destination, 'additional-planned-travel-destination'),
-        to_string_extension(patient.additional_planned_travel_destination_state, 'additional-planned-travel-destination-state'),
-        to_string_extension(patient.additional_planned_travel_destination_country, 'additional-planned-travel-destination-country'),
-        to_string_extension(patient.additional_planned_travel_port_of_departure, 'additional-planned-travel-port-of-departure'),
-        to_string_extension(patient.additional_planned_travel_type, 'additional-planned-travel-type'),
         to_string_extension(patient.case_status, 'case-status'),
         to_datetime_extension(patient.closed_at, 'closed-at'),
         to_gender_identity_extension(patient.gender_identity),
@@ -296,6 +296,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
             )
           ],
           recorded: history.updated_at.strftime('%FT%T%:z'),
+          reason: FHIR::CodeableConcept.new(
+            text: history.delete_reason
+          ),
           activity: {
             coding: [
               {
@@ -304,10 +307,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
                 display: 'delete'
               }
             ]
-          },
-          extension: [
-            to_string_extension(history.delete_reason, 'delete-reason')
-          ]
+          }
         )
       ],
       meta: FHIR::Meta.new(lastUpdated: history.updated_at.strftime('%FT%T%:z')),
@@ -528,6 +528,20 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     end
   end
 
+  def transfer_as_fhir_extension(transfer)
+    FHIR::Extension.new(
+      url: SA_EXT_BASE_URL + 'transfer',
+      extension: [
+        FHIR::Extension.new(url: 'id', valuePositiveInt: transfer.id),
+        FHIR::Extension.new(url: 'updated-at', valueDateTime: transfer.updated_at.strftime('%FT%T%:z')),
+        FHIR::Extension.new(url: 'created-at', valueDateTime: transfer.updated_at.strftime('%FT%T%:z')),
+        FHIR::Extension.new(url: 'who-initiated-transfer', valueString: transfer.who.email),
+        FHIR::Extension.new(url: 'from-jurisdiction', valueString: transfer.from_jurisdiction[:path]),
+        FHIR::Extension.new(url: 'to-jurisdiction', valueString: transfer.to_jurisdiction[:path])
+      ]
+    )
+  end
+
   # Build a FHIR US Core Race Extension given Sara Alert race booleans.
   def to_us_core_race(races)
     # Don't return an extension if all race categories are false or nil
@@ -666,37 +680,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     converted = 'Unknown' if code == 'UNK'
 
     { value: converted || code, path: "Patient.extension('http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex').valueCode" }
-  end
-
-  # Return an array of extensions representing the Sara Alert Transfers for a monitoree
-  def to_transfer_extensions(patient)
-    nil if patient.transfers.empty?
-
-    fields_to_pluck = {
-      id: { url: 'id', type: 'valuePositiveInt' },
-      updated_at: { url: 'updated-at', type: 'valueDateTime' },
-      created_at: { url: 'created-at', type: 'valueDateTime' },
-      'users.email': { url: 'who-initiated-transfer', type: 'valueString' },
-      'j_from.path': { url: 'from-jurisdiction', type: 'valueString' },
-      'j_to.path': { url: 'to-jurisdiction', type: 'valueString' }
-    }
-    transfers = patient.transfers
-                       .joins('JOIN jurisdictions j_from ON transfers.from_jurisdiction_id = j_from.id')
-                       .joins('JOIN jurisdictions j_to ON transfers.to_jurisdiction_id = j_to.id')
-                       .joins('JOIN users ON transfers.who_id = users.id')
-                       .pluck(*fields_to_pluck.keys)
-
-    transfers.map do |transfer|
-      FHIR::Extension.new(
-        url: SA_EXT_BASE_URL + 'transfer',
-        extension: fields_to_pluck.values.each_with_index.map do |val, i|
-          FHIR::Extension.new(
-            url: val[:url],
-            "#{val[:type]}": val[:type] == 'valueDateTime' ? transfer[i].strftime('%FT%T%:z') : transfer[i]
-          )
-        end
-      )
-    end
   end
 
   # Given a language string, try to find the corresponding BCP 47 code for it and construct a FHIR::Coding.

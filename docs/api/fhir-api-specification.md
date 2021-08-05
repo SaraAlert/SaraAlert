@@ -1668,18 +1668,17 @@ Get a monitoree history via an id, e.g.:
   "contained": [
     {
       "id": "c1f6be4f-32ff-4fb8-b803-7bb8be7cb77b",
-      "extension": [
-        {
-          "url": "http://saraalert.org/StructureDefinition/delete-reason",
-          "valueString": "Entered in error"
-        }
-      ],
       "target": [
         {
           "reference": "Provenance/12554"
         }
       ],
       "recorded": "2021-07-21T00:07:30+00:00",
+      "reason": [
+        {
+          "text": "Entered in error"
+        }
+      ],
       "activity": {
         "coding": [
           {
@@ -1754,14 +1753,6 @@ The `http://saraalert.org/StructureDefinition/history-type` extension indicates 
 {
   "url": "http://saraalert.org/StructureDefinition/history-type", 
   "valueString": "Monitoring Change"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/delete-reason` extension indicates the reason for which a history was deleted. This extension is read-only. This extension will be present on a Provenance resource in the `Provenance.contained` array, which is used to describe why a certain history was deleted.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/delete-reason",
-  "valueString": "Entered in error"
 }
 ```
 
