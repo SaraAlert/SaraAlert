@@ -44,7 +44,7 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_equal [PatientMailer.default[:from]], email.from
     assert_equal I18n.t('assessments.email.enrollment.subject', locale: @patient.primary_language), email.subject
     assert_includes email_body, I18n.t('assessments.email.enrollment.header', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.enrollment.dear', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t('assessments.email.enrollment.greeting', locale: @patient.primary_language, name: @patient&.initials_age('-'))
     assert_includes email_body, I18n.t('assessments.email.enrollment.info1', locale: @patient.primary_language)
     assert_includes email_body, I18n.t('assessments.email.enrollment.info2', locale: @patient.primary_language)
     assert_includes email_body, I18n.t('assessments.email.enrollment.report', locale: @patient.primary_language)
@@ -122,7 +122,7 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'enrollment sms weblink message contents' do
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
+    contents = I18n.t('assessments.sms.prompt.intro', locale: 'eng', name: '-0')
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -150,7 +150,7 @@ class PatientMailerTest < ActionMailer::TestCase
   test 'enrollment sms weblink message contents not using messaging service' do
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
 
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
+    contents = I18n.t('assessments.sms.prompt.intro', locale: 'eng', name: '-0')
 
     # Assert correct REST call when messaging_service is NOT used falls back to from number
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
@@ -173,7 +173,7 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'enrollment sms text based message contents using messaging service' do
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
+    contents = I18n.t('assessments.sms.prompt.intro', locale: 'eng', name: '-0')
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -199,7 +199,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'enrollment sms text based message contents not using messaging service' do
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
+    contents = I18n.t('assessments.sms.prompt.intro', locale: 'eng', name: '-0')
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -487,7 +487,7 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_equal [PatientMailer.default[:from]], email.from
     assert_equal I18n.t('assessments.email.reminder.subject', locale: @patient.primary_language), email.subject
     assert_includes email_body, I18n.t('assessments.email.reminder.header', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.reminder.dear', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t('assessments.email.reminder.greeting', locale: @patient.primary_language, name: @patient&.initials_age('-'))
     assert_includes email_body, I18n.t('assessments.email.reminder.thank-you', locale: @patient.primary_language)
     assert_includes email_body, I18n.t('assessments.email.reminder.report', locale: @patient.primary_language)
     assert_includes email_body, I18n.t('assessments.email.reminder.footer', locale: @patient.primary_language)
