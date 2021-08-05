@@ -1,73 +1,64 @@
 fra:
   assessments:
     symptoms:
+      chills:
+        name: 'Frissons'
+        notes: ''
+      congestion-or-runny-nose:
+        name: 'Congestion nasale ou nez qui coule'
+        notes: ''
       cough:
         name: 'Toux'
+        notes: ''
+      diarrhea:
+        name: 'Diarrhée'
         notes: ''
       difficulty-breathing:
         name: 'Difficultes respiratoires'
         notes: ''
-      fever:
-        name: 'Fievre'
-        notes: 'Sensation de febrilite ou temperature mesuree superieure ou egale a 38 °C (100,4 °F)'
-      used-a-fever-reducer:
-        name: 'Utilisation d’un agent pour diminuer la fievre'
-        notes: 'Avez-vous utilise un medicament pour diminuer la fievre au cours des dernieres 24 heures?'
-      chills:
-        name: 'Frissons'
+      fatigue:
+        name: 'Fatigue'
         notes: ''
-      repeated-shaking-with-chills:
-        name: 'Tremblements repetes accompagnes de frissons'
+      fever:
+        name: 'Fièvre'
+        notes: 'Sensation de fébrilité ou température mesurée supérieure ou égale à 38 °C (100,4 °F)'
+      headache:
+        name: 'Maux de tête'
         notes: ''
       muscle-pain:
         name: 'Douleurs musculaires'
         notes: ''
-      headache:
-        name: 'Maux de tête'
-        notes: ''
-      sore-throat:
-        name: 'Maux de gorge'
-        notes: ''
-      new-loss-of-taste-or-smell:
-        name: "Une nouvelle perte de gout ou de l'odorat"
-        notes: ''
-      pulse-ox:
-        name: 'd’oxymetrie de pouls'
-        notes: 'Saisissez votre mesure d’oxymetrie de pouls la plus faible au cours des dernieres 24 heures'
-      fatigue:
-        name: 'Fatigue'
-        notes: ''
       nausea-or-vomiting:
         name: 'Nausees ou vomissements'
         notes: ''
-      diarrhea:
-        name: 'Diarrhee'
-        notes: ''
-      nasal-congestion:
-        name: 'Congestion nasale'
-        notes: ''
-      runny-nose:
-        name: 'Nez qui coule'
-        notes: ''
-      temperature:
-        name: 'Temperature'
-        notes: 'Veuillez entrer votre temperature actuelle en degres Fahrenheit'
-      other:
-        name: 'Other'
-        notes: "J'aimerais que quelqu'un m'appelle pour faire le suivi d'autres symptomes ou d’autre chose"
-      no-symptoms: 'Aucun symptome'
       new-loss-of-smell:
         name: 'Nouvelle perte de l’odorat'
         notes: ''
       new-loss-of-taste:
         name: 'Nouvelle perte de gout'
         notes: ''
+      no-symptoms: 'Aucun symptôme'
+      other:
+        name: 'Other'
+        notes: 'J''aimerais que quelqu''un m''appelle pour faire le suivi d''autres symptômes ou d’autre chose'
+      pulse-ox:
+        name: 'd’oxymétrie de pouls'
+        notes: 'Saisissez votre mesure d’oxymétrie de pouls la plus faible au cours des dernières 24 heures'
+      repeated-shaking-with-chills:
+        name: 'Tremblements répétés accompagnés de frissons'
+        notes: ''
       shortness-of-breath:
         name: 'Essoufflement'
         notes: ''
-      congestion-or-runny-nose:
-        name: 'Congestion nasale ou nez qui coule'
+      sore-throat:
+        name: 'Maux de gorge'
         notes: ''
+      temperature:
+        name: 'Température'
+        notes: 'Veuillez entrer votre température actuelle en degrés Fahrenheit'
+      used-a-fever-reducer:
+        name: 'Utilisation d’un agent pour diminuer la fièvre'
+        notes: 'Avez-vous utilisé un médicament pour diminuer la fièvre au cours des dernières 24 heures?'
     threshold-op:
       less-than: 'moins que'
       less-than-or-equal: 'inferieur ou egal a'

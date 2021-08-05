@@ -1,73 +1,64 @@
 kor:
   assessments:
     symptoms:
-      cough:
-        name: '기침'
-        notes: ''
-      difficulty-breathing:
-        name: '호흡곤란'
-        notes: ''
-      fever:
-        name: '발열'
-        notes: '미열이 감지되거나 100.4°F/38°C 이상의 고열이 측정됨'
-      used-a-fever-reducer:
-        name: '해열제를 사용했음'
-        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
       chills:
         name: '오한'
         notes: ''
-      repeated-shaking-with-chills:
-        name: '오한을 동반한 지속적 떨림'
+      congestion-or-runny-nose:
+        name: '코막힘 또는 콧물'
         notes: ''
-      muscle-pain:
-        name: '근육통'
-        notes: ''
-      headache:
-        name: '두통'
-        notes: ''
-      sore-throat:
-        name: '인후통'
-        notes: ''
-      new-loss-of-taste-or-smell:
-        name: 'New Loss of Taste or Smell'
-        notes: ''
-      pulse-ox:
-        name: 'Pulse Ox'
-        notes: 'What was your lowest oxygen level in the past 24 hours?'
-      fatigue:
-        name: '피로'
-        notes: ''
-      nausea-or-vomiting:
-        name: '메스꺼움 또는 구토'
+      cough:
+        name: '기침'
         notes: ''
       diarrhea:
         name: '설사'
         notes: ''
-      nasal-congestion:
-        name: '코막힘'
+      difficulty-breathing:
+        name: '호흡곤란'
         notes: ''
-      runny-nose:
-        name: '콧물'
+      fatigue:
+        name: '피로'
         notes: ''
-      temperature:
-        name: 'Temperature'
-        notes: 'Please enter your current temperature in degrees Fahrenheit'
-      other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
-      no-symptoms: 'I am not experiencing any symptoms'
+      fever:
+        name: '발열'
+        notes: '미열이 감지되거나 100.4°F/38°C 이상의 고열이 측정됨'
+      headache:
+        name: '두통'
+        notes: ''
+      muscle-pain:
+        name: '근육통'
+        notes: ''
+      nausea-or-vomiting:
+        name: '메스꺼움 또는 구토'
+        notes: ''
       new-loss-of-smell:
         name: '새로운 후각소실'
         notes: ''
       new-loss-of-taste:
         name: '새로운 미각소실'
         notes: ''
+      no-symptoms: 'I am not experiencing any symptoms'
+      other:
+        name: 'Other'
+        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
+      pulse-ox:
+        name: 'Pulse Ox'
+        notes: 'What was your lowest oxygen level in the past 24 hours?'
+      repeated-shaking-with-chills:
+        name: '오한을 동반한 지속적 떨림'
+        notes: ''
       shortness-of-breath:
         name: '숨참'
         notes: ''
-      congestion-or-runny-nose:
-        name: '코막힘 또는 콧물'
+      sore-throat:
+        name: '인후통'
         notes: ''
+      temperature:
+        name: 'Temperature'
+        notes: 'Please enter your current temperature in degrees Fahrenheit'
+      used-a-fever-reducer:
+        name: '해열제를 사용했음'
+        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
     threshold-op:
       less-than: 'Less Than'
       less-than-or-equal: 'Less Than Or Equal to'

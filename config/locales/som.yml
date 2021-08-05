@@ -1,73 +1,64 @@
 som:
   assessments:
     symptoms:
-      cough:
-        name: 'Qufac'
-        notes: ''
-      difficulty-breathing:
-        name: 'Neef-qabasho'
-        notes: ''
-      fever:
-        name: 'Qandho'
-        notes: 'Dareemida xummad ama xaraarad cabbirkeedu yahay ama ka sareysa 100.4°F/38°C'
-      used-a-fever-reducer:
-        name: 'Isticmaalay Xanuun-baa’bi’iye'
-        notes: '24-kii saac ee la soo dhaafay, ma isticmaashay wax daawo ah oo qanshada baa’bi’isa?'
       chills:
         name: 'Qarqaryo'
         notes: ''
-      repeated-shaking-with-chills:
-        name: 'Gariir wata Qarqaryo oo soo noqnoqda'
+      congestion-or-runny-nose:
+        name: 'San xidhan ama duuf leh'
         notes: ''
-      muscle-pain:
-        name: 'Murqo-xanuun'
-        notes: ''
-      headache:
-        name: 'Madax-xanuun'
-        notes: ''
-      sore-throat:
-        name: 'Cune-xanuun'
-        notes: ''
-      new-loss-of-taste-or-smell:
-        name: 'Luminta cusub ee dhadhanka ama urta'
-        notes: ''
-      pulse-ox:
-        name: 'Aksijiinta Dhiiggaaga'
-        notes: 'Geli cabbirka aksijiinta dhiiggaaga ee ugu hooseeya ee la qaaday 24-kii saac ee la soo dhaafay'
-      fatigue:
-        name: 'Daal'
-        notes: ''
-      nausea-or-vomiting:
-        name: 'Lalabbo ama matagid'
+      cough:
+        name: 'Qufac'
         notes: ''
       diarrhea:
         name: 'Shuban'
         notes: ''
-      nasal-congestion:
-        name: 'Nasal Congestion'
+      difficulty-breathing:
+        name: 'Neef-qabasho'
         notes: ''
-      runny-nose:
-        name: 'Runny Nose'
+      fatigue:
+        name: 'Daal'
         notes: ''
-      temperature:
-        name: 'Temperature'
-        notes: 'Please enter your current temperature in degrees Fahrenheit'
-      other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
-      no-symptoms: 'Astaamo ma laha'
+      fever:
+        name: 'Qandho'
+        notes: 'Dareemida xummad ama xaraarad cabbirkeedu yahay ama ka sareysa 100.4°F/38°C'
+      headache:
+        name: 'Madax-xanuun'
+        notes: ''
+      muscle-pain:
+        name: 'Murqo-xanuun'
+        notes: ''
+      nausea-or-vomiting:
+        name: 'Lalabbo ama matagid'
+        notes: ''
       new-loss-of-smell:
         name: 'ur cusub kaa lunta'
         notes: ''
       new-loss-of-taste:
         name: 'Dhadhan kaa lunta'
         notes: ''
+      no-symptoms: 'Astaamo ma laha'
+      other:
+        name: 'Other'
+        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
+      pulse-ox:
+        name: 'Aksijiinta Dhiiggaaga'
+        notes: 'Geli cabbirka aksijiinta dhiiggaaga ee ugu hooseeya ee la qaaday 24-kii saac ee la soo dhaafay'
+      repeated-shaking-with-chills:
+        name: 'Gariir wata Qarqaryo oo soo noqnoqda'
+        notes: ''
       shortness-of-breath:
         name: 'Neef qabatin'
         notes: ''
-      congestion-or-runny-nose:
-        name: 'San xidhan ama duuf leh'
+      sore-throat:
+        name: 'Cune-xanuun'
         notes: ''
+      temperature:
+        name: 'Temperature'
+        notes: 'Please enter your current temperature in degrees Fahrenheit'
+      used-a-fever-reducer:
+        name: 'Isticmaalay Xanuun-baa’bi’iye'
+        notes: '24-kii saac ee la soo dhaafay, ma isticmaashay wax daawo ah oo qanshada baa’bi’isa?'
     threshold-op:
       less-than: 'Ka yar'
       less-than-or-equal: 'Kayar ama Sinnaansho'
