@@ -504,10 +504,10 @@ class History < ApplicationRecord
       ' and to all household members'
     elsif history[:initiator_id] != history[:patient].id && history[:initiator_id] == history[:patient].responder_id
       " by making that change to monitoree's Head of Household (Sara Alert ID: #{history[:initiator_id]})"\
-      ' and to this monitoree'
+      ' and applying it to this monitoree'
     elsif history[:initiator_id] != history[:patient].id
       " by making that change to a household member (Sara Alert ID: #{history[:initiator_id]})"\
-      ' and to this monitoree'
+      ' and applying it to this monitoree'
     else
       ''
     end
