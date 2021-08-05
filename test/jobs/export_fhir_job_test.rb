@@ -17,6 +17,7 @@ class ExportFhirJobTest < ActiveSupport::TestCase
     @history = create(:history, patient_id: @patient.id)
     @vaccine = create(:vaccine, patient_id: @patient.id)
     @close_contact = create(:close_contact, patient_id: @patient.id)
+    @patient.reload
 
     @download = create(:api_download, application_id: @client_app.id)
   end

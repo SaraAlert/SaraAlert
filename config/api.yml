@@ -1,4 +1,5 @@
 # CONFIGURATION FOR FHIR API
-bulk_export_retry_after_minutes: 15
+bulk_export_retry_after_minutes: <%= ENV["SARA_ALERT_BULK_FHIR_EXPORT_RETRY_AFTER_MINUTES"] || 10 %>
+bulk_export_expiration_minutes: <%= ENV["SARA_ALERT_BULK_FHIR_EXPORT_EXPIRATION_MINUTES"] || 60 %>
 
-bulk_export_status_retry_after_seconds: 10
+bulk_export_status_retry_after_seconds: <%= ENV["SARA_ALERT_BULK_FHIR_EXPORT_STATUS_RETRY_AFTER_SECONDS"] || 10 %>

@@ -523,7 +523,11 @@ class Fhir::R4::ApiController < ApplicationApiController
       response['Retry-After'] = Rails.configuration.api['bulk_export_status_retry_after_seconds'].to_s
       head :accepted
     else
-      status_not_found_with_custom_errors(['No export found for this ID']) && return
+      status_not_found_with_custom_errors([
+                                            'Export for this ID either does not exist, or was too large and had to be cancelled. ' \
+                                            'Exports are cancelled if they take longer than '\
+                                            "#{Rails.configuration.api['bulk_export_expiration_minutes']} minutes."
+                                          ]) && return
     end
   end
 
@@ -542,10 +546,14 @@ class Fhir::R4::ApiController < ApplicationApiController
     download = current_client_application&.api_downloads&.find_by_id(id)
     status_not_found_with_custom_errors(['No file found at this URL']) && return if download.nil?
 
+    # Find and return the specific attachment associated with the given filename
+    attachment = download.files.blobs.where(filename: "#{resource_type}.ndjson").first
+    status_not_found_with_custom_errors(['No file found at this URL']) && return if attachment.nil?
+
     # Set the headers before streaming the returned content
     response.headers['Content-Type'] = 'application/fhir+ndjson'
-    # Find and return the specific attachment associated with the given filename
-    download.files.blobs.where(filename: "#{resource_type}.ndjson").first.download do |chunk|
+
+    attachment.download do |chunk|
       response.stream.write chunk
     end
   ensure

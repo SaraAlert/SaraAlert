@@ -28,6 +28,6 @@ module SARAAlert
     config.vaccine_standards = YAML.safe_load(File.read('config/vaccines.yml'))
 
     # Load API configuration
-    config.api = YAML.safe_load(File.read('config/api.yml'))
+    config.api = YAML.safe_load(ERB.new(File.read(Rails.root.join('config', 'api.yml'))).result)
   end
 end
