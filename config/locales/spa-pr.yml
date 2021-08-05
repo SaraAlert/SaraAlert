@@ -1,73 +1,64 @@
 spa-pr:
   assessments:
     symptoms:
-      cough:
-        name: 'Tos'
-        notes: ''
-      difficulty-breathing:
-        name: 'Problemas para respirar'
-        notes: ''
-      fever:
-        name: 'Fiebre'
-        notes: 'Se siente que tiene fiebre o tiene una temperatura igual o superior a 100.4°F/38°C'
-      used-a-fever-reducer:
-        name: 'Tomó medicina para reducir la fiebre'
-        notes: 'En las últimas 24 horas, ¿ha tomado algún medicamento para reducir la fiebre?'
       chills:
         name: 'Escalofrío'
         notes: ''
-      repeated-shaking-with-chills:
-        name: 'Tiembla repetidamente y tiene escalofríos'
+      congestion-or-runny-nose:
+        name: 'Congestión nasal o un exceso de moco en la nariz'
         notes: ''
-      muscle-pain:
-        name: 'Dolor muscular'
-        notes: ''
-      headache:
-        name: 'Dolor de cabeza'
-        notes: ''
-      sore-throat:
-        name: 'Dolor de garganta'
-        notes: ''
-      new-loss-of-taste-or-smell:
-        name: 'Perdió recientemente el sentido del olfato y de gusto'
-        notes: ''
-      pulse-ox:
-        name: 'oxímetro de pulso'
-        notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
-      fatigue:
-        name: 'Fatiga'
-        notes: ''
-      nausea-or-vomiting:
-        name: 'Náuseas o vómitos'
+      cough:
+        name: 'Tos'
         notes: ''
       diarrhea:
         name: 'Diarrea'
         notes: ''
-      nasal-congestion:
-        name: 'Congestión nasal'
+      difficulty-breathing:
+        name: 'Problemas para respirar'
         notes: ''
-      runny-nose:
-        name: 'Exceso de moco en la nariz'
+      fatigue:
+        name: 'Fatiga'
         notes: ''
-      temperature:
-        name: 'Temperatura'
-        notes: 'Por favor ingrese su temperatura actual en grados Fahrenheit'
-      other:
-        name: 'Otro'
-        notes: 'Me gustaría que alguien me llamara para hacer un seguimiento de otros síntomas o necesidades adicionales'
-      no-symptoms: 'No tengo ningún síntoma.'
+      fever:
+        name: 'Fiebre'
+        notes: 'Se siente que tiene fiebre o tiene una temperatura igual o superior a 100.4°F/38°C'
+      headache:
+        name: 'Dolor de cabeza'
+        notes: ''
+      muscle-pain:
+        name: 'Dolor muscular'
+        notes: ''
+      nausea-or-vomiting:
+        name: 'Náuseas o vómitos'
+        notes: ''
       new-loss-of-smell:
         name: 'Pérdida reciente el olfato'
         notes: ''
       new-loss-of-taste:
         name: 'Pérdida reciente del gusto'
         notes: ''
+      no-symptoms: 'No tengo ningún síntoma.'
+      other:
+        name: 'Otro'
+        notes: 'Me gustaría que alguien me llamara para hacer un seguimiento de otros síntomas o necesidades adicionales'
+      pulse-ox:
+        name: 'oxímetro de pulso'
+        notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
+      repeated-shaking-with-chills:
+        name: 'Tiembla repetidamente y tiene escalofríos'
+        notes: ''
       shortness-of-breath:
         name: 'Falta de aire'
         notes: ''
-      congestion-or-runny-nose:
-        name: 'Congestión nasal o un exceso de moco en la nariz'
+      sore-throat:
+        name: 'Dolor de garganta'
         notes: ''
+      temperature:
+        name: 'Temperatura'
+        notes: 'Por favor ingrese su temperatura actual en grados Fahrenheit'
+      used-a-fever-reducer:
+        name: 'Tomó medicina para reducir la fiebre'
+        notes: 'En las últimas 24 horas, ¿ha tomado algún medicamento para reducir la fiebre?'
     threshold-op:
       less-than: 'Menos que'
       less-than-or-equal: 'Menor o igual a'

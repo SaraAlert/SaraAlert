@@ -1,73 +1,64 @@
 vie:
   assessments:
     symptoms:
-      cough:
-        name: 'Ho'
-        notes: ''
-      difficulty-breathing:
-        name: 'Khó thở'
-        notes: ''
-      fever:
-        name: 'Sốt'
-        notes: 'Cảm thấy sốt hoặc nhiệt độ đo được bằng hoặc trên 100,4°F/38°C'
-      used-a-fever-reducer:
-        name: 'Sử dụng thuốc hạ sốt'
-        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
       chills:
         name: 'Ớn lạnh'
         notes: ''
-      repeated-shaking-with-chills:
-        name: 'Run rẩy lặp đi lặp lại kèm theo ớn lạnh'
+      congestion-or-runny-nose:
+        name: 'Nghẹt mũi hoặc chảy nước mũi'
         notes: ''
-      muscle-pain:
-        name: 'Đau cơ'
-        notes: ''
-      headache:
-        name: 'Đau đầu'
-        notes: ''
-      sore-throat:
-        name: 'Đau họng'
-        notes: ''
-      new-loss-of-taste-or-smell:
-        name: 'New Loss of Taste or Smell'
-        notes: ''
-      pulse-ox:
-        name: 'Pulse Ox'
-        notes: 'What was your lowest oxygen level in the past 24 hours?'
-      fatigue:
-        name: 'Mệt mỏi'
-        notes: ''
-      nausea-or-vomiting:
-        name: 'Buồn nôn hoặc nôn mửa'
+      cough:
+        name: 'Ho'
         notes: ''
       diarrhea:
         name: 'Tiêu chảy'
         notes: ''
-      nasal-congestion:
-        name: 'Nghẹt mũi'
+      difficulty-breathing:
+        name: 'Khó thở'
         notes: ''
-      runny-nose:
-        name: 'Chảy nước mũi'
+      fatigue:
+        name: 'Mệt mỏi'
         notes: ''
-      temperature:
-        name: 'Temperature'
-        notes: 'Please enter your current temperature in degrees Fahrenheit'
-      other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
-      no-symptoms: 'I am not experiencing any symptoms'
+      fever:
+        name: 'Sốt'
+        notes: 'Cảm thấy sốt hoặc nhiệt độ đo được bằng hoặc trên 100,4°F/38°C'
+      headache:
+        name: 'Đau đầu'
+        notes: ''
+      muscle-pain:
+        name: 'Đau cơ'
+        notes: ''
+      nausea-or-vomiting:
+        name: 'Buồn nôn hoặc nôn mửa'
+        notes: ''
       new-loss-of-smell:
         name: 'Mất mùi mới'
         notes: ''
       new-loss-of-taste:
         name: 'Mất vị giác mới'
         notes: ''
+      no-symptoms: 'I am not experiencing any symptoms'
+      other:
+        name: 'Other'
+        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
+      pulse-ox:
+        name: 'Pulse Ox'
+        notes: 'What was your lowest oxygen level in the past 24 hours?'
+      repeated-shaking-with-chills:
+        name: 'Run rẩy lặp đi lặp lại kèm theo ớn lạnh'
+        notes: ''
       shortness-of-breath:
         name: 'Hơi thở ngắn'
         notes: ''
-      congestion-or-runny-nose:
-        name: 'Nghẹt mũi hoặc chảy nước mũi'
+      sore-throat:
+        name: 'Đau họng'
         notes: ''
+      temperature:
+        name: 'Temperature'
+        notes: 'Please enter your current temperature in degrees Fahrenheit'
+      used-a-fever-reducer:
+        name: 'Sử dụng thuốc hạ sốt'
+        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
     threshold-op:
       less-than: 'Less Than'
       less-than-or-equal: 'Less Than Or Equal to'

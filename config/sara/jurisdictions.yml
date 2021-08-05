@@ -120,6 +120,12 @@
                     threshold_operator: 'Less Than'
                     type: 'FloatSymptom'
                     required: true
+                'Other':
+                    value: true
+                    type: 'BoolSymptom'
+                    required: true
+                    threshold_operator: 'Equal'
+                    group: 1
             children:
                 'County 1':
                 'County 2':

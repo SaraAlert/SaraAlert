@@ -1,73 +1,64 @@
 fra:
   assessments:
     symptoms:
-      cough:
-        name: 'Toux'
-        notes: ''
-      difficulty-breathing:
-        name: 'Difficultés respiratoires'
-        notes: ''
-      fever:
-        name: 'Fièvre'
-        notes: 'Sensation de fébrilité ou température mesurée supérieure ou égale à 38 °C (100,4 °F)'
-      used-a-fever-reducer:
-        name: 'Utilisation d’un agent pour diminuer la fièvre'
-        notes: 'Avez-vous utilisé un médicament pour diminuer la fièvre au cours des dernières 24 heures?'
       chills:
         name: 'Frissons'
         notes: ''
-      repeated-shaking-with-chills:
-        name: 'Tremblements répétés accompagnés de frissons'
+      congestion-or-runny-nose:
+        name: 'Congestion nasale ou nez qui coule'
         notes: ''
-      muscle-pain:
-        name: 'Douleurs musculaires'
-        notes: ''
-      headache:
-        name: 'Maux de tête'
-        notes: ''
-      sore-throat:
-        name: 'Maux de gorge'
-        notes: ''
-      new-loss-of-taste-or-smell:
-        name: "Une nouvelle perte de goût ou de l'odorat"
-        notes: ''
-      pulse-ox:
-        name: 'd’oxymétrie de pouls'
-        notes: 'Saisissez votre mesure d’oxymétrie de pouls la plus faible au cours des dernières 24 heures'
-      fatigue:
-        name: 'Fatigue'
-        notes: ''
-      nausea-or-vomiting:
-        name: 'Nausées ou vomissements'
+      cough:
+        name: 'Toux'
         notes: ''
       diarrhea:
         name: 'Diarrhée'
         notes: ''
-      nasal-congestion:
-        name: 'Congestion nasale'
+      difficulty-breathing:
+        name: 'Difficultés respiratoires'
         notes: ''
-      runny-nose:
-        name: 'Nez qui coule'
+      fatigue:
+        name: 'Fatigue'
         notes: ''
-      temperature:
-        name: 'Température'
-        notes: 'Veuillez entrer votre température actuelle en degrés Fahrenheit'
-      other:
-        name: 'Other'
-        notes: "J'aimerais que quelqu'un m'appelle pour faire le suivi d'autres symptômes ou d’autre chose"
-      no-symptoms: 'Aucun symptôme'
+      fever:
+        name: 'Fièvre'
+        notes: 'Sensation de fébrilité ou température mesurée supérieure ou égale à 38 °C (100,4 °F)'
+      headache:
+        name: 'Maux de tête'
+        notes: ''
+      muscle-pain:
+        name: 'Douleurs musculaires'
+        notes: ''
+      nausea-or-vomiting:
+        name: 'Nausées ou vomissements'
+        notes: ''
       new-loss-of-smell:
         name: 'Nouvelle perte de l’odorat'
         notes: ''
       new-loss-of-taste:
         name: 'Nouvelle perte de goût'
         notes: ''
+      no-symptoms: 'Aucun symptôme'
+      other:
+        name: 'Other'
+        notes: 'J''aimerais que quelqu''un m''appelle pour faire le suivi d''autres symptômes ou d’autre chose'
+      pulse-ox:
+        name: 'd’oxymétrie de pouls'
+        notes: 'Saisissez votre mesure d’oxymétrie de pouls la plus faible au cours des dernières 24 heures'
+      repeated-shaking-with-chills:
+        name: 'Tremblements répétés accompagnés de frissons'
+        notes: ''
       shortness-of-breath:
         name: 'Essoufflement'
         notes: ''
-      congestion-or-runny-nose:
-        name: 'Congestion nasale ou nez qui coule'
+      sore-throat:
+        name: 'Maux de gorge'
         notes: ''
+      temperature:
+        name: 'Température'
+        notes: 'Veuillez entrer votre température actuelle en degrés Fahrenheit'
+      used-a-fever-reducer:
+        name: 'Utilisation d’un agent pour diminuer la fièvre'
+        notes: 'Avez-vous utilisé un médicament pour diminuer la fièvre au cours des dernières 24 heures?'
     threshold-op:
       less-than: 'moins que'
       less-than-or-equal: 'inférieur ou égal à'
