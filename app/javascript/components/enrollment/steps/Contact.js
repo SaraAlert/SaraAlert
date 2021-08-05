@@ -301,7 +301,7 @@ class Contact extends React.Component {
                 </Form.Group>
                 {this.state.current.patient?.preferred_contact_method?.includes('SMS') &&
                   this.state.current.blocked_sms &&
-                  this.renderWarningBanner('SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert)', true)}
+                  this.renderWarningBanner('SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert', true)}
               </Form.Row>
               <Form.Row className="mb-3">
                 <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 1 }} lg={{ span: 12, order: 1 }} controlId="primary_telephone_type">

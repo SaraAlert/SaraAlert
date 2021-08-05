@@ -138,7 +138,7 @@ class Enrollment extends React.Component {
       .then(response => {
         if (response.data && response.data.is_duplicate) {
           const dupFieldData = response.data.duplicate_field_data;
-          const patientType = this.state.current.patient.isolation ? 'case' : 'monitoree';
+          const patientType = this.state.enrollmentState.patient.isolation ? 'case' : 'monitoree';
 
           let text = `This ${patientType} already appears to exist in the system! `;
 
