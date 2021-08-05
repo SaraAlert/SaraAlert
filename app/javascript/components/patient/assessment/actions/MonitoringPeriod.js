@@ -45,7 +45,7 @@ class MonitoringPeriod extends React.Component {
   render() {
     return (
       <Row>
-        <Col xl={{ span: 8, order: 1 }} md={{ span: this.props.patient.isolation ? 12 : 8, order: 1 }} xs={{ span: 24, order: 1 }}>
+        <Col xl={{ span: this.props.patient.isolation ? 9 : 8, order: 1 }} md={{ span: 12, order: 1 }} xs={{ span: 24, order: 1 }}>
           <SymptomOnset
             authenticity_token={this.props.authenticity_token}
             patient={this.props.patient}
@@ -55,7 +55,7 @@ class MonitoringPeriod extends React.Component {
           />
         </Col>
         {!this.props.patient.isolation && (
-          <Col md={{ span: 8, order: 2 }} xs={{ span: 24, order: 3 }}>
+          <Col xl={{ span: 8, order: 2 }} md={{ span: 12, order: 2 }} xs={{ span: 24, order: 3 }}>
             <LastDateExposure
               household_members={this.props.household_members}
               authenticity_token={this.props.authenticity_token}
@@ -65,7 +65,7 @@ class MonitoringPeriod extends React.Component {
             />
           </Col>
         )}
-        <Col xl={{ span: 8, order: 3 }} md={{ span: this.props.patient.isolation ? 12 : 8, order: 3 }} xs={{ span: 24, order: 4 }}>
+        <Col xl={{ span: this.props.patient.isolation ? 9 : 8, order: 3 }} md={{ span: 12, order: 3 }} xs={{ span: 24, order: 4 }}>
           {this.props.patient.isolation ? (
             <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
           ) : (
@@ -73,7 +73,7 @@ class MonitoringPeriod extends React.Component {
           )}
         </Col>
         {this.props.patient.isolation && !this.props.patient.symptom_onset && !this.props.symptomatic_assessments_exist && this.props.num_pos_labs === 0 && (
-          <Col md={{ span: 24, order: 4 }} xs={{ span: 24, order: 2 }}>
+          <Col xl={{ span: 9, order: 4 }} md={{ span: 12, order: 4 }} xs={{ span: 24, order: 2 }}>
             <Alert variant="warning" className="alert-warning-text">
               <b>Warning: </b>This case does not have a Symptom Onset Date or positive lab result and may never become eligible to end monitoring
             </Alert>
