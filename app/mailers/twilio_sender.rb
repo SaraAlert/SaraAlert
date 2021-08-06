@@ -17,8 +17,7 @@ class TwilioSender
                       message: 'Recipient phone number may not be eligible to receive SMS text messages, or the carrier network may be unreachable.' },
     carrier_filter: { code: '30007', message: 'Message has been filtered by carrier network.' },
     unknown_error: { code: '30008',
-                     message: 'An unknown error has been encountered by the messaging system. The system will retry in an hour if it is still in '\
-                     'monitoree’s preferred contact period.' }
+                     message: '30008' }
   }.freeze
 
   @client = Twilio::REST::Client.new(ENV['TWILLIO_API_ACCOUNT'], ENV['TWILLIO_API_KEY'])
@@ -28,7 +27,7 @@ class TwilioSender
     end
     err_msg = TWILIO_ERROR_CODES.find do |_k, v|
                 v[:code] == error_code
-              end&.second&.[](:message) || 'An unknown error has been encountered by the messaging system.'
+              end&.second&.[](:message) || error_code
     dispatch_errored_contact_history_items(patient, err_msg)
   end
 
