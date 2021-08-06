@@ -2,6 +2,8 @@
 
 require 'test_case'
 
+# IMPORTANT NOTE ON CHANGES TO Time.now CALLS IN THIS FILE
+# Updated Time.now to Time.now.getlocal for Rails/TimeZone because Time.now defaulted to a zone. In this case it was the developer machine or CI/CD server zone.
 class VaccinesControllerTest < ActionController::TestCase
   def setup; end
 
@@ -336,7 +338,7 @@ class VaccinesControllerTest < ActionController::TestCase
 
     vaccine.reload
     assert_response(:success)
-    assert_in_delta(Time.now, vaccine.updated_at, 1) # assert updated
+    assert_in_delta(Time.now.getlocal, vaccine.updated_at, 1) # assert updated
     assert_equal(1, patient.histories.count)
 
     vaccine = Vaccine.find(vaccine.id)

@@ -307,7 +307,8 @@ class PatientsControllerTest < ActionController::TestCase
     patient = create(:patient, creator: user)
 
     # Create invalid record and skip validation
-    patient.update_attribute('assigned_user', -1)
+    patient.assigned_user = -1
+    patient.save(validate: false)
     patient.reload
 
     sign_in user
@@ -412,7 +413,8 @@ class PatientsControllerTest < ActionController::TestCase
     dependent = create(:patient, creator: user, responder_id: hoh.id)
 
     # Create invalid record and skip validation
-    dependent.update_attribute('assigned_user', -1)
+    dependent.assigned_user = -1
+    dependent.save(validate: false)
     dependent.reload
 
     sign_in user
@@ -609,7 +611,8 @@ class PatientsControllerTest < ActionController::TestCase
     dependent = create(:patient, creator: user, responder_id: hoh.id)
 
     # Create invalid record and skip validation
-    dependent.update_attribute('assigned_user', -1)
+    dependent.assigned_user = -1
+    dependent.save(validate: false)
     dependent.reload
 
     sign_in user
@@ -1057,7 +1060,7 @@ class PatientsControllerTest < ActionController::TestCase
     user = create(:public_health_enroller_user)
     sign_in user
     patient = create(:patient, symptom_onset: DateTime.now - 1.day, creator: user)
-    earliest_symptomatic_assessment_timestamp = DateTime.now - 2.day
+    earliest_symptomatic_assessment_timestamp = DateTime.now - 2.days
     create(:assessment, patient_id: patient.id, symptomatic: true, created_at: earliest_symptomatic_assessment_timestamp)
 
     post :update, params: {

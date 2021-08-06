@@ -2,6 +2,8 @@
 
 require 'test_case'
 
+# IMPORTANT NOTE ON CHANGES TO Time.now CALLS IN THIS FILE
+# Updated Time.now to Time.now.getlocal for Rails/TimeZone because Time.now defaulted to a zone. In this case it was the developer machine or CI/CD server zone.
 class PurgeJwtIdentifiersJobTest < ActiveSupport::TestCase
   def setup
     # Allowed to purge immediately for the tests
@@ -15,17 +17,17 @@ class PurgeJwtIdentifiersJobTest < ActiveSupport::TestCase
   end
 
   test 'sends an email with all purged JWT identifiers' do
-    create(:jwt_identifier, value: 'a', expiration_date: Time.now - 1.day, application_id: @oauth_app.id)
+    create(:jwt_identifier, value: 'a', expiration_date: Time.now.getlocal - 1.day, application_id: @oauth_app.id)
     email = PurgeJwtIdentifiersJob.perform_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes(email_body, 'Total JWT Identifiers BEFORE purge: 1')
   end
 
   test 'deletes purge eligible JWT Identifiers' do
-    create(:jwt_identifier, value: 'a', expiration_date: Time.now - 1.day, application_id: @oauth_app.id)
-    create(:jwt_identifier, value: 'b', expiration_date: Time.now - 1.day, application_id: @oauth_app.id)
-    create(:jwt_identifier, value: 'c', expiration_date: Time.now + 5.minutes, application_id: @oauth_app.id)
+    create(:jwt_identifier, value: 'a', expiration_date: Time.now.getlocal - 1.day, application_id: @oauth_app.id)
+    create(:jwt_identifier, value: 'b', expiration_date: Time.now.getlocal - 1.day, application_id: @oauth_app.id)
+    create(:jwt_identifier, value: 'c', expiration_date: Time.now.getlocal + 5.minutes, application_id: @oauth_app.id)
 
     PurgeJwtIdentifiersJob.perform_now
     # Should be one remaining since one out of the above was NOT purge eligible

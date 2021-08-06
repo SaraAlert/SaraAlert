@@ -177,7 +177,7 @@ class CloseContactsControllerTest < ActionController::TestCase
 
     close_contact.reload
     assert_response(:success)
-    assert_in_delta(Time.now, close_contact.updated_at, 1) # assert updated
+    assert_in_delta(Time.now.getlocal, close_contact.updated_at, 1) # assert updated
     assert_equal(1, patient.histories.count)
 
     close_contact = CloseContact.find(close_contact.id)

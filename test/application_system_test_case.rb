@@ -5,7 +5,7 @@ require 'system_test_case'
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   driver = ENV['APP_IN_CI'] ? :gitlab_chrome_headless : :chrome
 
-  download_path = Rails.root.join('tmp/downloads')
+  download_path = Rails.root.join('tmp', 'downloads')
   FileUtils.rm_rf(download_path) if File.exist?(download_path)
 
   Capybara.register_driver(driver) do |app|

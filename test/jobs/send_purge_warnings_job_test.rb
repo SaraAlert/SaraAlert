@@ -13,7 +13,7 @@ class SendPurgeWarningsJobTest < ActiveSupport::TestCase
 
   test 'sends an purge notification job email with user IDs of users sent notification email' do
     email = SendPurgeWarningsJob.perform_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes(email_body, 'Sara Alert Send Purge Warnings Job Results')
   end

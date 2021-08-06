@@ -363,6 +363,13 @@ GEM
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.7.0)
       parser (>= 3.0.1.1)
+    rubocop-performance (1.11.4)
+      rubocop (>= 1.7.0, < 2.0)
+      rubocop-ast (>= 0.4.0)
+    rubocop-rails (2.11.3)
+      activesupport (>= 4.2.0)
+      rack (>= 1.1)
+      rubocop (>= 1.7.0, < 2.0)
     ruby-jmeter (3.1.08)
       nokogiri
       rest-client
@@ -513,6 +520,8 @@ DEPENDENCIES
   roo
   rspec-mocks
   rubocop
+  rubocop-performance
+  rubocop-rails
   ruby-jmeter
   rubyzip
   sara-schema

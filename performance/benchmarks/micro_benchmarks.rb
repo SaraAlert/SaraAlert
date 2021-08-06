@@ -86,7 +86,9 @@ micro_results << benchmark(
     # Due to the `no_recent_activity` criteria of the close_eligible scope
     # it is necessary to change the updated_at of all patients so that
     # we do not go over `max_num_to_close`
-    Patient.update_all(updated_at: Time.now)
+    # Skip model validations as they are not needed in the benchmark.
+    # rubocop:disable Rails/SkipsModelValidations
+    Patient.update_all(updated_at: DateTime.now)
     Patient.limit(max_num_to_close).update_all(
       isolation: false,
       continuous_exposure: false,
@@ -100,6 +102,7 @@ micro_results << benchmark(
       email: 'testpatient@example.com',
       primary_telephone: '+12223334444'
     )
+    # rubocop:enable Rails/SkipsModelValidations
   }
 ) { Patient.close_eligible.count }
 

@@ -3,6 +3,8 @@
 require 'test_case'
 
 # rubocop:disable Metrics/ClassLength
+# IMPORTANT NOTE ON CHANGES TO Time.now CALLS IN THIS FILE
+# Updated Time.now to Time.now.getlocal for Rails/TimeZone because Time.now defaulted to a zone. In this case it was the developer machine or CI/CD server zone.
 class PatientTest < ActiveSupport::TestCase
   include PatientHelper
 
@@ -341,10 +343,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
 
     # Test with purged set to true
     patient = create(:patient,
@@ -353,10 +355,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(0, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible does not include records in isolation' do
@@ -367,10 +369,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
 
     # Test with isolation set to true
     patient = create(:patient,
@@ -379,10 +381,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(0, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible does not include symptomatic records' do
@@ -393,10 +395,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
 
     # Test with non-nil symptom onset
     patient = create(:patient,
@@ -405,10 +407,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: 1.day.ago,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(0, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible does not include already closed records' do
@@ -419,10 +421,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
 
     # Test with monitoring set to false
     patient = create(:patient,
@@ -431,10 +433,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: false,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(0, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible does not include records in continuous exposure' do
@@ -446,10 +448,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
 
     # Test with continuous exposure set to true
     patient = create(:patient,
@@ -459,10 +461,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(0, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible does not include records that have NOT reported in the last 24 hours and were created more than 24 hours ago' do
@@ -473,11 +475,11 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      created_at: 2.days.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
 
     # Test with latest_assessment_at set to two days ago and create_at set to two days ago
     patient = create(:patient,
@@ -490,7 +492,7 @@ class PatientTest < ActiveSupport::TestCase
                      created_at: 2.days.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(0, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible does NOT include records that have never reported' do
@@ -505,7 +507,7 @@ class PatientTest < ActiveSupport::TestCase
                      created_at: 2.days.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
 
     patient = create(:patient,
                      purged: false,
@@ -517,7 +519,7 @@ class PatientTest < ActiveSupport::TestCase
                      created_at: 2.days.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(0, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible does NOT include records that have NOT reported today (based on their timezone)' do
@@ -532,7 +534,7 @@ class PatientTest < ActiveSupport::TestCase
                      created_at: 2.days.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
 
     patient = create(:patient,
                      purged: false,
@@ -544,7 +546,7 @@ class PatientTest < ActiveSupport::TestCase
                      created_at: 2.days.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(0, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible does not include records still within their monitoring period' do
@@ -555,10 +557,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
 
     # Test where patient is still within their monitoring period
     patient = create(:patient,
@@ -567,10 +569,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 2.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(0, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible includes records on their last day of monitoring' do
@@ -581,10 +583,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
 
     # Test where patient is on the last day of their monitoring period
     patient = create(:patient,
@@ -593,10 +595,10 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 14.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible includes records past their last day of monitoring' do
@@ -607,11 +609,11 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 15.days.ago,
                      created_at: 5.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+    assert_equal(1, Patient.close_eligible.count { |p| p.id == patient.id })
   end
 
   test 'close eligible includes records that have been inactive for 30+ days' do
@@ -820,7 +822,7 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      preferred_contact_method: 'Telephone call',
                      primary_telephone: '+13333333333',
-                     latest_assessment_at: Time.now)
+                     latest_assessment_at: Time.now.getlocal)
 
     assert_equal(0, Patient.reminder_eligible.where(id: patient.id).count)
   end
@@ -962,14 +964,14 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal 1, Patient.purge_eligible.count
 
     # If the patient was last updated within the purgeable_after timeframe, do not purge
-    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 2.5.days + 1.minute).strftime('%A %l:%M%p')
+    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now.getlocal + 1.minute).strftime('%A %l:%M%p')
+    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now.getlocal + 2.5.days + 1.minute).strftime('%A %l:%M%p')
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes - 900.minutes).ago)
     assert_equal 0, Patient.purge_eligible.count
 
     # If the patient was last updated exactly at the purgeable_after timeframe, they should not be purgeable
-    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
+    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now.getlocal + 1.minute).strftime('%A %l:%M%p')
+    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now.getlocal + 1.minute - 2.5.days).strftime('%A %l:%M%p')
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after']).minutes.ago)
     assert_equal 0, Patient.purge_eligible.count
   end
@@ -977,7 +979,7 @@ class PatientTest < ActiveSupport::TestCase
   test 'continuous_exposure never purge eligible' do
     patient = create(:patient, purged: false, monitoring: false, continuous_exposure: true)
     patient.update!(updated_at: (2 * ADMIN_OPTIONS['purgeable_after']).minutes.ago)
-    assert_nil Patient.purge_eligible.find_by_id(patient.id)
+    assert_nil Patient.purge_eligible.find_by(id: patient.id)
   end
 
   test 'purged' do
@@ -1394,7 +1396,7 @@ class PatientTest < ActiveSupport::TestCase
     patient = create(:patient, date_of_birth: number.years.ago)
     age = patient.calc_current_age
 
-    birth_year = Date.today.year - age
+    birth_year = Date.current.year - age
 
     assert_equal age, Patient.calc_current_age_fhir("#{birth_year}-01-01")
     assert_equal age, Patient.calc_current_age_fhir("#{birth_year}-01")
@@ -2218,7 +2220,7 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.isolation = false
     patient.continuous_exposure = false
-    patient.last_date_of_exposure = Time.now - 1.day
+    patient.last_date_of_exposure = Time.now.getlocal - 1.day
     assert patient.valid?(:api)
 
     patient.isolation = false
@@ -2241,7 +2243,7 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?(:api)
 
     patient.continuous_exposure = true
-    patient.last_date_of_exposure = Time.now - 1.day
+    patient.last_date_of_exposure = Time.now.getlocal - 1.day
     assert_not patient.valid?(:api)
   end
 
@@ -2365,7 +2367,7 @@ class PatientTest < ActiveSupport::TestCase
 
     # LDE + 15 days: in range as long as assessments are in range
     patient = create(:patient, last_date_of_exposure: 15.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 2.day.ago)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 2.days.ago)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
   end
@@ -2405,19 +2407,19 @@ class PatientTest < ActiveSupport::TestCase
 
     # LDE + 12 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 2.day)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 2.days)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # LDE + 13 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 3.day)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 3.days)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # LDE + 1 days: too late
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 4.day)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 4.days)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
   end
@@ -2560,14 +2562,14 @@ class PatientTest < ActiveSupport::TestCase
 
     # # LDE + 9 days: in range
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 2.day)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 2.days)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # # LDE + 10 days: too late
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 3.day)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 3.days)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
@@ -2619,7 +2621,7 @@ class PatientTest < ActiveSupport::TestCase
   test 'seven_day_quarantine_candidates scope asserts lab results specimen_collection within correct range around LDE' do
     # LDE + 4 days: too early
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 4.day.ago.utc)
+    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 4.days.ago.utc)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 6.days.ago.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
@@ -3053,13 +3055,14 @@ class PatientTest < ActiveSupport::TestCase
       1440 * 21
     ].each do |reporting_period|
       ADMIN_OPTIONS['reporting_period_minutes'] = reporting_period
-      [
+      state_params_array = [
         { monitored_address_state: nil, address_state: nil },
         { monitored_address_state: 'california', address_state: nil },
         { monitored_address_state: nil, address_state: 'minnesota' },
         { monitored_address_state: 'montana', address_state: nil },
         { monitored_address_state: nil, address_state: 'florida' }
-      ].each do |state_params|
+      ]
+      state_params_array.each do |state_params|
         patient = create(:patient, state_params)
         # Patient with no reports (latest_report_at is NULL)
         assert_not_nil Patient.has_not_reported_recently.find_by(id: patient.id)
@@ -3110,13 +3113,14 @@ class PatientTest < ActiveSupport::TestCase
       60
     ].each do |monitoring_period|
       ADMIN_OPTIONS['monitoring_period_days'] = monitoring_period
-      [
+      state_params_array = [
         { monitored_address_state: nil, address_state: nil },
         { monitored_address_state: 'minnesota', address_state: nil },
         { monitored_address_state: nil, address_state: 'minnesota' },
         { monitored_address_state: 'montana', address_state: nil },
         { monitored_address_state: nil, address_state: 'florida' }
-      ].each do |state_params|
+      ]
+      state_params_array.each do |state_params|
         # Created now should be in the monitoring period
         patient = create(:patient, state_params)
         assert_not_nil Patient.is_being_monitored.find_by(id: patient.id)
@@ -3223,13 +3227,14 @@ class PatientTest < ActiveSupport::TestCase
       60
     ].each do |monitoring_period|
       ADMIN_OPTIONS['monitoring_period_days'] = monitoring_period
-      [
+      state_params_array = [
         { monitored_address_state: nil, address_state: nil },
         { monitored_address_state: 'minnesota', address_state: nil },
         { monitored_address_state: nil, address_state: 'minnesota' },
         { monitored_address_state: 'montana', address_state: nil },
         { monitored_address_state: nil, address_state: 'florida' }
-      ].each do |state_params|
+      ]
+      state_params_array.each do |state_params|
         # Created now should be in the monitoring period
         patient = create(:patient, state_params)
         assert_nil Patient.end_of_monitoring_period.find_by(id: patient.id)
@@ -3298,13 +3303,14 @@ class PatientTest < ActiveSupport::TestCase
       1440 * 21
     ].each do |reporting_period|
       ADMIN_OPTIONS['reporting_period_minutes'] = reporting_period
-      [
+      state_params_array = [
         { monitored_address_state: nil, address_state: nil },
         { monitored_address_state: 'california', address_state: nil },
         { monitored_address_state: nil, address_state: 'minnesota' },
         { monitored_address_state: 'montana', address_state: nil },
         { monitored_address_state: nil, address_state: 'florida' }
-      ].each do |state_params|
+      ]
+      state_params_array.each do |state_params|
         patient = create(:patient, state_params)
         # Patient with no reports (latest_report_at is NULL)
         assert_not_nil Patient.reminder_not_sent_recently.find_by(id: patient.id)
@@ -3437,7 +3443,7 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
     assert_not_nil Patient.close_eligible(:completed_monitoring).find_by(id: patient.id)
   end
@@ -3449,7 +3455,7 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      created_at: 20.days.ago)
     assert_not_nil Patient.close_eligible(:completed_monitoring).find_by(id: patient.id)
     assert_nil Patient.close_eligible(:enrolled_last_day_monitoring_period).find_by(id: patient.id)
@@ -3465,7 +3471,7 @@ class PatientTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      created_at: 20.days.ago)
     assert_not_nil Patient.close_eligible(:completed_monitoring).find_by(id: patient.id)
     assert_nil Patient.close_eligible(:enrolled_past_monitioring_period).find_by(id: patient.id)

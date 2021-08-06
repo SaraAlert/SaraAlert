@@ -161,7 +161,7 @@ class AssessmentTest < ActiveSupport::TestCase
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Create assessment 4 with fever
-    timestamp_4 = DateTime.now.utc - 1.days
+    timestamp_4 = DateTime.now.utc - 1.day
     assessment_4 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_4)
     reported_condition_4 = create(:reported_condition, assessment_id: assessment_4.id)
     symptom_4 = create(:symptom, condition_id: reported_condition_4.id, type: 'BoolSymptom', name: 'fever', bool_value: true)

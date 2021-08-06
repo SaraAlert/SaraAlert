@@ -235,7 +235,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   def bulk_edit_close_records(monitoring_reason, reasoning, apply_to_household)
     click_on 'Actions'
     click_on 'Close Records'
-    select(monitoring_reason, from: 'monitoring_reason') unless monitoring_reason.blank?
+    select(monitoring_reason, from: 'monitoring_reason') if monitoring_reason.present?
     fill_in 'reasoning', with: reasoning
     find_by_id('apply_to_household', { visible: :all }).check({ allow_label_click: true }) if apply_to_household
     click_on 'Submit'

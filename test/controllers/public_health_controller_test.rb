@@ -284,7 +284,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       assert patient['assigned_user'].blank?
     end
 
-    assigned_user = user.viewable_patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).first
+    assigned_user = user.viewable_patients.where.not(assigned_user: nil).distinct.pick(:assigned_user)
 
     post :patients, params: { query: { workflow: 'exposure', tab: 'all', user: assigned_user } }, as: :json
     JSON.parse(response.body)['linelist'].each do |patient|
@@ -502,7 +502,7 @@ class PublicHealthControllerTest < ActionController::TestCase
     assessment = create(:assessment, patient: patient, symptomatic: false)
     (10..15).to_a.each do |lde|
       patient.update(last_date_of_exposure: Time.now.getlocal(patient.address_timezone_offset) - lde.days)
-      assessment.update(created_at: 1.days.ago) if lde == 14
+      assessment.update(created_at: 1.day.ago) if lde == 14
       assessment.update(created_at: 2.days.ago) if lde == 15
       patients = @controller.send(:advanced_filter_quarantine_option, user.viewable_patients, { value: true }, :ten_day)
       assert_equal(patients.count, 1)

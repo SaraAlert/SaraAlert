@@ -138,7 +138,7 @@ class PurgeJobTest < ActiveSupport::TestCase
     assert_not(patient_attributes.delete('continuous_exposure'))
     patient.attributes.each do |attribute|
       if PurgeJob.send(:attributes_to_keep).include?(attribute[0])
-        assert(!attribute[1].nil?)
+        assert_not(attribute[1].nil?)
       else
         assert_nil(attribute[1])
       end

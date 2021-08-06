@@ -25,7 +25,7 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
     load 'app/jobs/export_job.rb'
 
     # Remove any files downloaded for each test
-    FileUtils.rm_rf(Rails.root.join('tmp/downloads'))
+    FileUtils.rm_rf(Rails.root.join('tmp', 'downloads'))
   end
 
   # Recursively grabs all the "leaf" field options in custom export

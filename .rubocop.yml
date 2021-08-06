@@ -1,3 +1,6 @@
+require:
+  - rubocop-performance
+  - rubocop-rails
 AllCops:
   TargetRubyVersion: 2.7
   Exclude:
@@ -185,3 +188,125 @@ Style/QuotedSymbols: # (new in 1.16)
   Enabled: true
 Style/StringChars: # (new in 1.12)
   Enabled: true
+Rails/FilePath:
+  Enabled: false
+  EnforcedStyle: arguments
+Style/SafeNavigation:
+  Enabled: false
+Rails/WhereNot:
+  Enabled: false
+Rails/WhereEquals:
+  Enabled: false
+Rails/ShortI18n:
+  Enabled: false
+Rails/Pluck:
+  Enabled: false
+Rails/FindById:
+  Enabled: false
+Rails/I18nLocaleAssignment:
+  Enabled: false
+Rails/UnusedIgnoredColumns:
+  Enabled: false
+Rails/TimeZoneAssignment:
+  Enabled: false
+Rails/Inquiry:
+  Enabled: false
+Rails/NegateInclude:
+  Enabled: false
+Rails/RenderInline:
+  Enabled: false
+Rails/SquishedSQLHeredocs:
+  Enabled: false
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: false
+Rails/AfterCommitOverride:
+  Enabled: false
+Rails/AddColumnIndex:
+  Enabled: false
+Rails/RenderPlainText:
+  Enabled: false
+Rails/MailerName:
+  Enabled: false
+Rails/ExpandedDateRange:
+  Enabled: false
+Rails/EagerEvaluationLogMessage:
+  Enabled: false
+Rails/MatchRoute:
+  Enabled: false
+Rails/PluckInWhere:
+  Enabled: false
+Rails/WhereExists:
+  Enabled: false
+Rails/AttributeDefaultBlockValue:
+  Enabled: false
+Performance/Sum:
+  Enabled: false
+Performance/StringInclude:
+  Enabled: false
+Performance/Squeeze:
+  Enabled: false
+Performance/SortReverse:
+  Enabled: false
+Performance/ReverseFirst:
+  Enabled: false
+Performance/RedundantStringChars:
+  Enabled: false
+Performance/RedundantSplitRegexpArgument:
+  Enabled: false
+Performance/MethodObjectAsBlock:
+  Enabled: false
+Performance/RedundantSortBlock:
+  Enabled: false
+Performance/MapCompact:
+  Enabled: false
+Performance/BigDecimalWithNumericArgument:
+  Enabled: false
+Performance/BlockGivenWithExplicitBlock:
+  Enabled: false
+Performance/RedundantEqualityComparisonBlock:
+  Enabled: false
+Performance/CollectionLiteralInLoop:
+  Enabled: false
+  MinSize: 4
+Performance/ConstantRegexp:
+  Enabled: false
+Performance/AncestorsInclude:
+  Enabled: false
+Performance/InefficientHashSearch:
+  Enabled: false
+Rails/Present:
+  Enabled: false
+Rails/DynamicFindBy:
+  Enabled: false
+Rails/Presence:
+  Enabled: false
+Performance/Casecmp:
+  Enabled: false
+Rails/Blank:
+  Enabled: false
+Rails/HttpStatus:
+  Enabled: false
+Rails/TimeZone:
+  Enabled: false
+Rails/Date:
+  Enabled: false
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+Lint/RedundantCopDisableDirective:
+  Enabled: false
+Rails/InverseOf:
+  Enabled: false
+Performance/Count:
+  Enabled: false
+Performance/RangeInclude:
+  Enabled: false
+Rails/SkipsModelValidations:
+  Enabled: false
+Rails/IndexBy:
+  Enabled: false
+Rails/IndexWith:
+  Enabled: false
+Performance/StringReplacement:
+  Enabled: false
+Performance/ReverseEach:
+  Enabled: false

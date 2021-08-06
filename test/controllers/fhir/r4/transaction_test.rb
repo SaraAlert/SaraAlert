@@ -27,7 +27,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       last_name: last_name,
       last_date_of_exposure: 4.days.ago.to_date,
       symptom_onset: 4.days.ago.to_date,
-      creator: User.find_by_id(@system_everything_app.user_id)
+      creator: User.find_by(id: @system_everything_app.user_id)
     ).as_fhir
 
     FHIR::Bundle::Entry.new(
@@ -210,7 +210,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     created_patient_id = patient_json['id']
     created_lab_id = observation_json['id']
-    created_patient = Patient.find_by_id(created_patient_id.to_i)
+    created_patient = Patient.find_by(id: created_patient_id.to_i)
     assert_not_nil created_patient
     assert_equal 1, created_patient.laboratories.count
     assert_equal created_lab_id, created_patient.laboratories[0].id
@@ -232,7 +232,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal original_json.except('id', 'meta', 'contained'), patient_json.except('id', 'meta', 'contained')
 
     created_patient_id = patient_json['id']
-    created_patient = Patient.find_by_id(created_patient_id.to_i)
+    created_patient = Patient.find_by(id: created_patient_id.to_i)
     assert_not_nil created_patient
     assert_equal 2, created_patient.laboratories.count
   end
