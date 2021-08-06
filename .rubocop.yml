@@ -290,7 +290,7 @@ Rails/TimeZone:
   Enabled: false
 Rails/Date:
   Enabled: false
-Rails/Rails/HasManyOrHasOneDependent:
+Rails/HasManyOrHasOneDependent:
   Enabled: false
 Lint/RedundantCopDisableDirective:
   Enabled: false
