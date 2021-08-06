@@ -22,11 +22,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Patient', json_response['resourceType']
     assert_equal 3, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
-    assert_equal 'Telephone call', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
-    assert_equal 'Morning', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
-    assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-date-of-exposure' }.first['valueDate']
-    assert_equal 5.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
-    assert_not json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
+    assert_equal 'Telephone call', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-method' }['valueString']
+    assert_equal 'Morning', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-time' }['valueString']
+    assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].detect { |e| e['url'].include? 'last-date-of-exposure' }['valueDate']
+    assert_equal 5.days.ago.strftime('%Y-%m-%d'), json_response['extension'].detect { |e| e['url'].include? 'symptom-onset-date' }['valueDate']
+    assert_not json_response['extension'].detect { |e| e['url'].include? 'isolation' }['valueBoolean']
     assert_equal resource_path, json_response['contained'].first['target'].first['reference']
     assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
     assert_equal Patient.find_by(id: patient_id).creator.email, json_response['contained'].first['agent'].first['who']['display']
@@ -403,12 +403,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert p.asian
     assert_equal 'Patient', json_response['resourceType']
     assert_equal 'Kirlin44', json_response['name'].first['family']
-    assert_equal 'SMS Texted Weblink', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
-    assert_equal 'Afternoon', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
-    assert json_response['extension'].filter { |e| e['url'].include? 'continuous-exposure' }.first['valueBoolean']
-    assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
+    assert_equal 'SMS Texted Weblink', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-method' }['valueString']
+    assert_equal 'Afternoon', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-time' }['valueString']
+    assert json_response['extension'].detect { |e| e['url'].include? 'continuous-exposure' }['valueBoolean']
+    assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].detect { |e| e['url'].include? 'symptom-onset-date' }['valueDate']
     assert p.user_defined_symptom_onset
-    assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
+    assert json_response['extension'].detect { |e| e['url'].include? 'isolation' }['valueBoolean']
     assert_equal 'USA, State 1, County 1',
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
     assert_equal resource_path, json_response['contained'].first['target'].first['reference']
@@ -829,7 +829,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     assert_response :success
     json_response = JSON.parse(response.body)
-    assert_equal 'USA, State 2', json_response['extension'].filter { |e| e['url'].include? 'full-assigned-jurisdiction-path' }.first['valueString']
+    assert_equal 'USA, State 2', json_response['extension'].detect { |e| e['url'].include? 'full-assigned-jurisdiction-path' }['valueString']
     t = Transfer.find_by(patient_id: @patient_1.id)
     assert_equal Jurisdiction.find_by(path: 'USA, State 1').id, t.from_jurisdiction_id
     assert_equal Jurisdiction.find_by(path: 'USA, State 2').id, t.to_jurisdiction_id
@@ -845,7 +845,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     assert_response :success
     json_response = JSON.parse(response.body)
-    assert_equal 'USA, State 2', json_response['extension'].filter { |e| e['url'].include? 'full-assigned-jurisdiction-path' }.first['valueString']
+    assert_equal 'USA, State 2', json_response['extension'].detect { |e| e['url'].include? 'full-assigned-jurisdiction-path' }['valueString']
     t = Transfer.find_by(patient_id: @patient_1.id)
     assert_equal Jurisdiction.find_by(path: 'USA, State 1').id, t.from_jurisdiction_id
     assert_equal Jurisdiction.find_by(path: 'USA, State 2').id, t.to_jurisdiction_id

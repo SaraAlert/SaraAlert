@@ -124,7 +124,10 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     @@system_test_utils.wait_for_enrollment_page_transition
     click_on 'edit-identification-btn'
     @@system_test_utils.wait_for_enrollment_page_transition
+    # This is a Capybara/Selenium method so we disable Rubocop.
+    # rubocop:disable Rails/DynamicFindBy
     page.find_by_id('workflow_wrapper').first(:xpath, './/div//div//div//div//div//input').set('Isolation (case)').send_keys(:enter)
+    # rubocop:enable Rails/DynamicFindBy
     click_on 'Next'
     @@system_test_utils.wait_for_enrollment_page_transition
     click_on 'edit-potential_exposure_information-btn'

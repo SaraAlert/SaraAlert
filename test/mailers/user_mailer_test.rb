@@ -15,7 +15,7 @@ class UserMailerTest < ActionMailer::TestCase
   test 'download email no lookups' do
     # When no monitorees match export criteria lookups = []
     email = UserMailer.download_email(@user, 'Export Label', []).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not(ActionMailer::Base.deliveries.empty?)
     assert_includes(email_body, 'Export Label')
     assert_includes(email_body, 'no monitorees or monitoree data matched the selected export criteria')
@@ -26,13 +26,13 @@ class UserMailerTest < ActionMailer::TestCase
       [{ id: 9999 }],
       { current: 1, total: 1 },
       {
-        start_time: 2.minute.ago,
+        start_time: 2.minutes.ago,
         end_time: 1.minute.ago,
         not_purged_count: 0,
         purged_count: 1
       }
     ).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not(ActionMailer::Base.deliveries.empty?)
     assert_includes(email_body, 'Purged during this job run: 1')
     assert_includes(email_body, '9999')
@@ -43,13 +43,13 @@ class UserMailerTest < ActionMailer::TestCase
       [{ id: 9999, reason: 'StandardError' }],
       { current: 1, total: 1 },
       {
-        start_time: 2.minute.ago,
+        start_time: 2.minutes.ago,
         end_time: 1.minute.ago,
         not_purged_count: 1,
         purged_count: 0
       }
     ).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not(ActionMailer::Base.deliveries.empty?)
     assert_includes(email_body, 'Purged during this job run: 0')
     assert_includes(email_body, 'Not purged during this job run: 1')
@@ -61,13 +61,13 @@ class UserMailerTest < ActionMailer::TestCase
       [],
       { current: 1, total: 1 },
       {
-        start_time: 2.minute.ago,
+        start_time: 2.minutes.ago,
         end_time: 1.minute.ago,
         not_purged_count: 0,
         purged_count: 0
       }
     ).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not(ActionMailer::Base.deliveries.empty?)
     assert_includes(email_body, 'Purged during this job run: 0')
     assert_includes(email_body, 'Not purged during this job run: 0')
@@ -78,13 +78,13 @@ class UserMailerTest < ActionMailer::TestCase
       [{ id: 9998 }, { id: 9999, reason: 'StandardError' }],
       { current: 1, total: 1 },
       {
-        start_time: 2.minute.ago,
+        start_time: 2.minutes.ago,
         end_time: 1.minute.ago,
         not_purged_count: 1,
         purged_count: 1
       }
     ).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not(ActionMailer::Base.deliveries.empty?)
     assert_includes(email_body, 'Purged during this job run: 1')
     assert_includes(email_body, 'Not purged during this job run: 1')

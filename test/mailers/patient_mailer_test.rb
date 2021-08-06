@@ -38,7 +38,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'enrollment email contents' do
     email = PatientMailer.enrollment_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_equal [@patient.email], email.to
     assert_equal [PatientMailer.default[:from]], email.from
@@ -66,14 +66,14 @@ class PatientMailerTest < ActionMailer::TestCase
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
     email = PatientMailer.enrollment_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes email_body, @patient.submission_token
     assert_includes email_body, dependent.submission_token
 
     dependent.update(monitoring: false)
     email = PatientMailer.enrollment_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes email_body, @patient.submission_token
     assert_not_includes email_body, dependent.submission_token
@@ -481,7 +481,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment email contents' do
     email = PatientMailer.assessment_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_equal [@patient.email], email.to
     assert_equal [PatientMailer.default[:from]], email.from
@@ -503,7 +503,7 @@ class PatientMailerTest < ActionMailer::TestCase
     patient_history_count = @patient.histories.count
 
     email = PatientMailer.assessment_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes email_body, @patient.submission_token
     assert_includes email_body, dependent.submission_token
@@ -511,7 +511,7 @@ class PatientMailerTest < ActionMailer::TestCase
     @patient.update(last_assessment_reminder_sent: nil)
     dependent.update(monitoring: false)
     email = PatientMailer.assessment_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes email_body, @patient.submission_token
     assert_not_includes email_body, dependent.submission_token
@@ -540,14 +540,14 @@ class PatientMailerTest < ActionMailer::TestCase
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
 
     email = PatientMailer.enrollment_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes email_body, @patient.submission_token
     assert_includes email_body, dependent.submission_token
 
     dependent.update(monitoring: false)
     email = PatientMailer.enrollment_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes email_body, @patient.submission_token
     assert_not_includes email_body, dependent.submission_token
@@ -556,7 +556,7 @@ class PatientMailerTest < ActionMailer::TestCase
   test 'closed email contents' do
     @patient.update(closed_at: DateTime.now)
     email = PatientMailer.closed_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ').gsub("\r", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ').tr("\r", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_equal [@patient.email], email.to
     assert_equal [PatientMailer.default[:from]], email.from

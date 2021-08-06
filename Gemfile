@@ -118,6 +118,8 @@ group :development, :test do
   gem 'memory_profiler'
   gem 'octokit', '~> 4.0'
   gem 'rubocop'
+  gem 'rubocop-performance'
+  gem 'rubocop-rails'
   gem 'ruby-jmeter'
   gem 'stackprof'
   gem 'timecop'

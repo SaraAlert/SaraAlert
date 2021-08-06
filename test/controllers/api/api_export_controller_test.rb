@@ -170,7 +170,7 @@ class ApiExportControllerTest < ActionDispatch::IntegrationTest
       end
     end
     expected_ids = Jurisdiction
-                   .find_by_id(@shadow_user_jurisdiction)
+                   .find_by(id: @shadow_user_jurisdiction)
                    .all_patients_excluding_purged
                    .where(scope)
                    .pluck(:id)

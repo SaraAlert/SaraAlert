@@ -14,7 +14,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { Authorization: "Bearer #{@system_provenance_token_r.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
-    assert_equal JSON.parse(History.find_by_id(history_id).as_fhir.to_json), JSON.parse(response.body)
+    assert_equal JSON.parse(History.find_by(id: history_id).as_fhir.to_json), JSON.parse(response.body)
   end
 
   test 'should be forbidden via show for inaccessible Provenance' do
@@ -28,7 +28,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   #----- search tests -----
 
   test 'should find Provenances for a Patient via search' do
-    patient = Patient.find_by_id(6)
+    patient = Patient.find_by(id: 6)
     get(
       '/fhir/r4/Provenance?patient=Patient/6',
       headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }

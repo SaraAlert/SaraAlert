@@ -45,10 +45,10 @@ def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exi
 
   timestamp = Time.now.utc.iso8601
   FileUtils.mkdir_p('performance/benchmarks/output') # Create the folder if it doesn't exist already
-  stackprof_file = "performance/benchmarks/output/#{name}_#{timestamp}_CPU.dump".gsub(':', '-')
-  flamegraph_file = "performance/benchmarks/output/#{name}_#{timestamp}_FLM".gsub(':', '-')
-  memprof_file = "performance/benchmarks/output/#{name}_#{timestamp}_MEM.log".gsub(':', '-')
-  benchmark_file = "performance/benchmarks/output/#{name}_#{timestamp}_BCM.log".gsub(':', '-')
+  stackprof_file = "performance/benchmarks/output/#{name}_#{timestamp}_CPU.dump".tr(':', '-')
+  flamegraph_file = "performance/benchmarks/output/#{name}_#{timestamp}_FLM".tr(':', '-')
+  memprof_file = "performance/benchmarks/output/#{name}_#{timestamp}_MEM.log".tr(':', '-')
+  benchmark_file = "performance/benchmarks/output/#{name}_#{timestamp}_BCM.log".tr(':', '-')
   $stdout = File.new(benchmark_file, 'w') if ENV['CAP_STDOUT']
   $stdout.sync = true if ENV['CAP_STDOUT']
 
@@ -63,9 +63,7 @@ def benchmark(name: nil, time_threshold: 3600, setup: nil, teardown: nil, no_exi
   Benchmark.bm(20) do |x|
     MemoryProfiler.start unless ENV['NO_MEMPROF']
     StackProf.start(mode: :wall, out: stackprof_file, interval: 1000, raw: true) unless ENV['NO_STACKPROF']
-    benchmark_report = x.report(name) do
-      block.call
-    end
+    benchmark_report = x.report(name, &block)
     StackProf.stop unless ENV['NO_STACKPROF']
     MemoryProfiler.stop.pretty_print(normalize_paths: true, scale_bytes: true, to_file: memprof_file) unless ENV['NO_MEMPROF']
   end

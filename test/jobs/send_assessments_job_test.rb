@@ -2,6 +2,8 @@
 
 require 'test_case'
 
+# IMPORTANT NOTE ON CHANGES TO Time.now CALLS IN THIS FILE
+# Updated Time.now to Time.now.getlocal for Rails/TimeZone because Time.now defaulted to a zone. In this case it was the developer machine or CI/CD server zone.
 class SendAssessmentsJobTest < ActiveSupport::TestCase
   def setup
     Timecop.freeze(Time.now.utc.change(hour: 18))
@@ -20,7 +22,7 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
 
   test 'send assessments job to zero patients' do
     email = SendAssessmentsJob.perform_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
 
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes(email_body, 'Total eligible for notifications at runtime: 0')
@@ -54,7 +56,7 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
     end
 
     email = SendAssessmentsJob.perform_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
 
     assert_includes(email_body, "Total eligible for notifications at runtime: #{eligible_patients.size}")
     assert_includes(email_body, 'Sent during this job run: 0')
@@ -75,7 +77,7 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
       { preferred_contact_method: 'Opt-out' },
       { preferred_contact_method: '' },
       { preferred_contact_method: nil },
-      { last_assessment_reminder_sent: Time.now },
+      { last_assessment_reminder_sent: Time.now.getlocal },
       { preferred_contact_time: 'Morning' }
     ].map do |ineligible_params|
       create(
@@ -130,7 +132,7 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
     end
 
     email = SendAssessmentsJob.perform_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
 
     assert_not ActionMailer::Base.deliveries.empty?
 

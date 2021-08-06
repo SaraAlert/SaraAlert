@@ -103,7 +103,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     # verify_patient_field('closed at', patient[:closed_at]) if tab == :closed # local timezone
     # verify_patient_field('transferred at', patient[:latest_transfer_at]) if %i[transferred_in transferred_out].include?(tab) # local timezone
     # verify_patient_field('latest report', patient[:latest_assessment_at]) unless %i[transferred_in transferred_out].include?(tab) # local timezone
-    verify_patient_field('status', patient.status.to_s.gsub('_', ' ').sub('exposure ', '')&.sub('isolation ', '')) if tab == :all
+    verify_patient_field('status', patient.status.to_s.tr('_', ' ').sub('exposure ', '')&.sub('isolation ', '')) if tab == :all
   end
 
   def verify_patient_field(field, value)
