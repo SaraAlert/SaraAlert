@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Col, Collapse, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import _ from 'lodash';
 import Patient from '../../components/patient/Patient';
 import FollowUpFlagPanel from '../../components/patient/follow_up_flag/FollowUpFlagPanel';
 import InfoTooltip from '../../components/util/InfoTooltip';
@@ -357,44 +356,16 @@ describe('Patient', () => {
         expect(section.find('li').at(index).find('.risk-val').exists()).toBeFalsy();
       }
     });
-    expect(section.find('.notes-section').exists()).toBeFalsy();
   });
 
-  it('Properly renders notes in potential exposure information section if the rest of the section is empty', () => {
-    let newMockPatient5 = _.cloneDeep(mockPatient5);
-    newMockPatient5.exposure_notes = 'new exposure note';
-    const wrapper = shallow(<Patient details={newMockPatient5} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
-    const section = wrapper.find('#potential-exposure-information');
-    expect(section.find('.item-group').exists()).toBeFalsy();
-    expect(section.find('.risk-factors').exists()).toBeFalsy();
-    expect(section.find('.notes-section').exists()).toBeTruthy();
-    expect(wrapper.find('.notes-section').find(Button).exists()).toBeFalsy();
-    expect(section.find('.notes-section').find('p').text()).toEqual('Notes');
-    expect(section.find('.notes-text').text()).toEqual(newMockPatient5.exposure_notes);
-  });
-
-  it('Collapses/expands exposure notes in potential exposure information section if longer than 400 characters', () => {
-    const wrapper = shallow(<Patient details={mockPatient5} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
-    expect(wrapper.find('#potential-exposure-information').find(Button).exists()).toBeTruthy();
-    expect(wrapper.find('#potential-exposure-information').find(Button).text()).toEqual('(View all)');
-    expect(wrapper.find('#potential-exposure-information').find('.notes-text').text()).toEqual(mockPatient5.exposure_notes.slice(0, 400) + ' ...');
-    wrapper.find('#potential-exposure-information').find(Button).simulate('click');
-    expect(wrapper.find('#potential-exposure-information').find(Button).text()).toEqual('(Collapse)');
-    expect(wrapper.find('#potential-exposure-information').find('.notes-text').text()).toEqual(mockPatient5.exposure_notes);
-    wrapper.find('#potential-exposure-information').find(Button).simulate('click');
-    expect(wrapper.find('#potential-exposure-information').find(Button).text()).toEqual('(View all)');
-    expect(wrapper.find('#potential-exposure-information').find('.notes-text').text()).toEqual(mockPatient5.exposure_notes.slice(0, 400) + ' ...');
-  });
-
-  it('Displays "None" if potential exposure information has no information', () => {
+  it('Displays "None specified" if there are no risk factors', () => {
     const wrapper = shallow(<Patient details={blankExposureMockPatient} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.exists()).toBeTruthy();
-    expect(section.find('.none-text').exists()).toBeTruthy();
-    expect(section.find('.none-text').text()).toEqual('None');
-    expect(section.find('.item-group').exists()).toBeFalsy();
+    expect(section.find('.item-group').exists()).toBeTruthy();
     expect(section.find('.risk-factors').exists()).toBeFalsy();
-    expect(section.find('.notes-section').exists()).toBeFalsy();
+    expect(section.find('.none-text').exists()).toBeTruthy();
+    expect(section.find('.none-text').text()).toEqual('None specified');
   });
 
   it('Properly renders case information section', () => {

@@ -183,7 +183,7 @@ class Enrollment extends React.Component {
     let index = this.state.index;
     let lastIndex = this.state.lastIndex;
     let step = this.state.enrollmentState.patient.isolation && 4 === index ? 2 : 1;
-    let maxSteps = this.state.enrollmentState.patient.isolation ? 7 : 6
+    let maxSteps = this.state.enrollmentState.patient.isolation ? 7 : 6;
 
     if (lastIndex) {
       this.setState({ index: lastIndex, lastIndex: null });

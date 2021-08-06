@@ -298,6 +298,10 @@ class CaseInformation extends React.Component {
     );
   };
 
+  /**
+   * Due to how the validation works, these fields are defined in both the CaseInformation and ExposureInformation components instead of broken out into a new component.
+   * If you update this render method or related functionality, be sure to update in the ExposureInformation component as well.
+   */
   renderPublicHealthManagementFields = () => {
     return (
       <React.Fragment>

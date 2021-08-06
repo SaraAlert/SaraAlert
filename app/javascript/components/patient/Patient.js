@@ -125,8 +125,6 @@ class Patient extends React.Component {
       this.props.details.additional_planned_travel_port_of_departure ||
       this.props.details.additional_planned_travel_start_date ||
       this.props.details.additional_planned_travel_end_date;
-    const showPotentialExposureInfo =
-      this.props.details.last_date_of_exposure || this.props.details.potential_exposure_location || this.props.details.potential_exposure_country;
     const showRiskFactors =
       this.props.details.contact_of_known_case ||
       this.props.details.member_of_a_common_exposure_cohort ||
@@ -558,96 +556,73 @@ class Patient extends React.Component {
                   </Heading>
                   {this.renderEditLink('Potential Exposure Information', 5)}
                 </div>
-                {!(showPotentialExposureInfo || showRiskFactors || this.props.details.exposure_notes) && <div className="none-text">None</div>}
-                {(showPotentialExposureInfo || showRiskFactors) && (
-                  <React.Fragment>
-                    <div className="item-group">
-                      <div>
-                        <b>Last Date of Exposure:</b>{' '}
-                        <span>
-                          {this.props.details.last_date_of_exposure
-                            ? moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')
-                            : '--'}
-                        </span>
-                      </div>
-                      <div>
-                        <b>Exposure Location:</b> <span>{this.props.details.potential_exposure_location || '--'}</span>
-                      </div>
-                      <div>
-                        <b>Exposure Country:</b> <span>{this.props.details.potential_exposure_country || '--'}</span>
-                      </div>
-                    </div>
-                    <p className="subsection-title">Risk Factors</p>
-                    {!showRiskFactors && <div className="none-text">None specified</div>}
-                    {showRiskFactors && (
-                      <ul className="risk-factors">
-                        {this.props.details.contact_of_known_case && (
-                          <li>
-                            <span className="risk-factor">Close Contact with a Known Case</span>
-                            {this.props.details.contact_of_known_case_id && <span className="risk-val">{this.props.details.contact_of_known_case_id}</span>}
-                          </li>
-                        )}
-                        {this.props.details.member_of_a_common_exposure_cohort && (
-                          <li>
-                            <span className="risk-factor">Member of a Common Exposure Cohort</span>
-                            {this.props.details.member_of_a_common_exposure_cohort_type && (
-                              <span className="risk-val">{this.props.details.member_of_a_common_exposure_cohort_type}</span>
-                            )}
-                          </li>
-                        )}
-                        {this.props.details.travel_to_affected_country_or_area && (
-                          <li>
-                            <span className="risk-factor">Travel from Affected Country or Area</span>
-                          </li>
-                        )}
-                        {this.props.details.was_in_health_care_facility_with_known_cases && (
-                          <li>
-                            <span className="risk-factor">Was in Healthcare Facility with Known Cases</span>
-                            {this.props.details.was_in_health_care_facility_with_known_cases_facility_name && (
-                              <span className="risk-val">{this.props.details.was_in_health_care_facility_with_known_cases_facility_name}</span>
-                            )}
-                          </li>
-                        )}
-                        {this.props.details.laboratory_personnel && (
-                          <li>
-                            <span className="risk-factor">Laboratory Personnel</span>
-                            {this.props.details.laboratory_personnel_facility_name && (
-                              <span className="risk-val">{this.props.details.laboratory_personnel_facility_name}</span>
-                            )}
-                          </li>
-                        )}
-                        {this.props.details.healthcare_personnel && (
-                          <li>
-                            <span className="risk-factor">Healthcare Personnel</span>
-                            {this.props.details.healthcare_personnel_facility_name && (
-                              <span className="risk-val">{this.props.details.healthcare_personnel_facility_name}</span>
-                            )}
-                          </li>
-                        )}
-                        {this.props.details.crew_on_passenger_or_cargo_flight && (
-                          <li>
-                            <span className="risk-factor">Crew on Passenger or Cargo Flight</span>
-                          </li>
-                        )}
-                      </ul>
-                    )}
-                  </React.Fragment>
-                )}
-                {this.props.details.exposure_notes && !showPotentialExposureInfo && !showRiskFactors && (
-                  <div className="notes-section">
-                    <p className="subsection-title">Notes</p>
-                    {this.props.details.exposure_notes.length < 400 && <div className="notes-text">{this.props.details.exposure_notes}</div>}
-                    {this.props.details.exposure_notes.length >= 400 && (
-                      <React.Fragment>
-                        <div className="notes-text">
-                          {this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 400) + ' ...'}
-                        </div>
-                        <Button variant="link" className="notes-button p-0" onClick={() => this.setState({ expandNotes: !this.state.expandNotes })}>
-                          {this.state.expandNotes ? '(Collapse)' : '(View all)'}
-                        </Button>
-                      </React.Fragment>
-                    )}
+                <div className="item-group">
+                  <div>
+                    <b>Last Date of Exposure:</b>{' '}
+                    <span>
+                      {this.props.details.last_date_of_exposure ? moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY') : '--'}
+                    </span>
                   </div>
+                  <div>
+                    <b>Exposure Location:</b> <span>{this.props.details.potential_exposure_location || '--'}</span>
+                  </div>
+                  <div>
+                    <b>Exposure Country:</b> <span>{this.props.details.potential_exposure_country || '--'}</span>
+                  </div>
+                </div>
+                <p className="subsection-title">Risk Factors</p>
+                {!showRiskFactors && <div className="none-text">None specified</div>}
+                {showRiskFactors && (
+                  <ul className="risk-factors">
+                    {this.props.details.contact_of_known_case && (
+                      <li>
+                        <span className="risk-factor">Close Contact with a Known Case</span>
+                        {this.props.details.contact_of_known_case_id && <span className="risk-val">{this.props.details.contact_of_known_case_id}</span>}
+                      </li>
+                    )}
+                    {this.props.details.member_of_a_common_exposure_cohort && (
+                      <li>
+                        <span className="risk-factor">Member of a Common Exposure Cohort</span>
+                        {this.props.details.member_of_a_common_exposure_cohort_type && (
+                          <span className="risk-val">{this.props.details.member_of_a_common_exposure_cohort_type}</span>
+                        )}
+                      </li>
+                    )}
+                    {this.props.details.travel_to_affected_country_or_area && (
+                      <li>
+                        <span className="risk-factor">Travel from Affected Country or Area</span>
+                      </li>
+                    )}
+                    {this.props.details.was_in_health_care_facility_with_known_cases && (
+                      <li>
+                        <span className="risk-factor">Was in Healthcare Facility with Known Cases</span>
+                        {this.props.details.was_in_health_care_facility_with_known_cases_facility_name && (
+                          <span className="risk-val">{this.props.details.was_in_health_care_facility_with_known_cases_facility_name}</span>
+                        )}
+                      </li>
+                    )}
+                    {this.props.details.laboratory_personnel && (
+                      <li>
+                        <span className="risk-factor">Laboratory Personnel</span>
+                        {this.props.details.laboratory_personnel_facility_name && (
+                          <span className="risk-val">{this.props.details.laboratory_personnel_facility_name}</span>
+                        )}
+                      </li>
+                    )}
+                    {this.props.details.healthcare_personnel && (
+                      <li>
+                        <span className="risk-factor">Healthcare Personnel</span>
+                        {this.props.details.healthcare_personnel_facility_name && (
+                          <span className="risk-val">{this.props.details.healthcare_personnel_facility_name}</span>
+                        )}
+                      </li>
+                    )}
+                    {this.props.details.crew_on_passenger_or_cargo_flight && (
+                      <li>
+                        <span className="risk-factor">Crew on Passenger or Cargo Flight</span>
+                      </li>
+                    )}
+                  </ul>
                 )}
               </Col>
               {this.props.details.isolation && (
@@ -676,30 +651,28 @@ class Patient extends React.Component {
                   </div>
                 </Col>
               )}
-              {(showPotentialExposureInfo || showRiskFactors) && (
-                <Col id="exposure-notes" md={10} xl={12} className="notes-section col-xxxl-8">
-                  <div className="section-header">
-                    <Heading level={rootHeaderLevel + 1} className="section-title">
-                      Notes
-                    </Heading>
-                    {this.renderEditLink('Edit Notes', this.props.details.isolation ? 6 : 5)}
-                  </div>
-                  {!this.props.details.exposure_notes && <div className="none-text">None</div>}
-                  {this.props.details.exposure_notes && this.props.details.exposure_notes.length < 400 && (
-                    <div className="notes-text">{this.props.details.exposure_notes}</div>
-                  )}
-                  {this.props.details.exposure_notes && this.props.details.exposure_notes.length >= 400 && (
-                    <React.Fragment>
-                      <div className="notes-text">
-                        {this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 400) + ' ...'}
-                      </div>
-                      <Button variant="link" className="notes-button p-0" onClick={() => this.setState({ expandNotes: !this.state.expandNotes })}>
-                        {this.state.expandNotes ? '(Collapse)' : '(View all)'}
-                      </Button>
-                    </React.Fragment>
-                  )}
-                </Col>
-              )}
+              <Col id="exposure-notes" md={10} xl={12} className="notes-section col-xxxl-8">
+                <div className="section-header">
+                  <Heading level={rootHeaderLevel + 1} className="section-title">
+                    Notes
+                  </Heading>
+                  {this.renderEditLink('Edit Notes', this.props.details.isolation ? 6 : 5)}
+                </div>
+                {!this.props.details.exposure_notes && <div className="none-text">None</div>}
+                {this.props.details.exposure_notes && this.props.details.exposure_notes.length < 400 && (
+                  <div className="notes-text">{this.props.details.exposure_notes}</div>
+                )}
+                {this.props.details.exposure_notes && this.props.details.exposure_notes.length >= 400 && (
+                  <React.Fragment>
+                    <div className="notes-text">
+                      {this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 400) + ' ...'}
+                    </div>
+                    <Button variant="link" className="notes-button p-0" onClick={() => this.setState({ expandNotes: !this.state.expandNotes })}>
+                      {this.state.expandNotes ? '(Collapse)' : '(View all)'}
+                    </Button>
+                  </React.Fragment>
+                )}
+              </Col>
             </Row>
           </div>
         </Collapse>
