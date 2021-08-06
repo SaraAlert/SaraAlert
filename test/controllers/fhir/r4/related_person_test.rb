@@ -32,7 +32,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }
     )
     assert_response :ok
-    assert_equal JSON.parse(CloseContact.find_by_id(1).as_fhir.to_json), JSON.parse(response.body)
+    assert_equal JSON.parse(CloseContact.find_by(id: 1).as_fhir.to_json), JSON.parse(response.body)
   end
 
   test 'should be forbidden via show for inaccessible RelatedPerson' do
@@ -133,7 +133,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   #----- update tests -----
 
   test 'should update RelatedPerson via update' do
-    cc = CloseContact.find_by_id(1)
+    cc = CloseContact.find_by(id: 1)
     original_cc = cc.dup
     cc.notes = 'Some new notes'
     cc.first_name = 'FarContact1'
@@ -143,7 +143,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :ok
-    updated_cc = CloseContact.find_by_id(1)
+    updated_cc = CloseContact.find_by(id: 1)
 
     # Verify that the created Close Contact matches the original outside of updated fields
     %i[patient_id
@@ -167,7 +167,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should update RelatedPerson via patch update' do
-    cc = CloseContact.find_by_id(1)
+    cc = CloseContact.find_by(id: 1)
     original_cc = cc.dup
     patch = [
       { op: 'replace', path: '/name/0/given/0', value: 'FarContact1' }
@@ -178,7 +178,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/json-patch+json' }
     )
     assert_response :ok
-    updated_cc = CloseContact.find_by_id(1)
+    updated_cc = CloseContact.find_by(id: 1)
 
     # Verify that the created Close Contact matches the original outside of updated fields
     %i[patient_id
@@ -247,7 +247,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   #----- search tests -----
 
   test 'should find RelatedPersons for a Patient via search' do
-    patient_1 = Patient.find_by_id(1)
+    patient_1 = Patient.find_by(id: 1)
     get(
       '/fhir/r4/RelatedPerson?patient=Patient/1',
       headers: { Authorization: "Bearer #{@system_everything_token.token}", Accept: 'application/fhir+json' }

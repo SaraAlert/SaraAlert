@@ -184,7 +184,7 @@ class LaboratoriesControllerTest < ActionController::TestCase
 
     lab.reload
     assert_response(:success)
-    assert_in_delta(Time.now, lab.updated_at, 1) # assert updated
+    assert_in_delta(Time.now.getlocal, lab.updated_at, 1) # assert updated
     assert_equal(1, patient.histories.count)
 
     lab = Laboratory.find(lab.id)

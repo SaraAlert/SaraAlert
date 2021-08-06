@@ -25,13 +25,13 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:value] = true
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have NOT blocked the system
     filters[0][:value] = false
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter ineligible for any recovery definition' do
@@ -70,13 +70,13 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:value] = true
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_4, patient_5, patient_6, patient_7, patient_8]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who are NOT ineligible for any recovery definition
     filters[0][:value] = false
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   # --- SEARCH ADVANCED FILTER QUERIES --- #
@@ -104,7 +104,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4, patient_5, patient_6, patient_7, patient_8]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter close contact with known case id exact match multiple value' do
@@ -129,7 +129,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4, patient_5, patient_6, patient_7, patient_8]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter close contact with known case id contains single value' do
@@ -156,7 +156,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4, patient_5, patient_6, patient_7, patient_8, patient_9, patient_10, patient_11,
                                patient_12]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter close contact with known case id contains multiple value' do
@@ -181,7 +181,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4, patient_5, patient_6, patient_7, patient_8, patient_9, patient_10, patient_11]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   # --- MULTI ADVANCED FILTER QUERIES --- #
@@ -216,13 +216,13 @@ class PatientQueryHelperTest < ActionView::TestCase
     # Check for monitorees who have a blank result
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_7, patient_3, patient_5]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have a non-blank result
     filters[0][:value][0][:value] = 'positive'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_4, patient_6]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter laboratory single filter option test type' do
@@ -255,13 +255,13 @@ class PatientQueryHelperTest < ActionView::TestCase
     # Check for monitorees who have a blank lab type
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_3, patient_5, patient_7]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have a non-blank lab type
     filters[0][:value][0][:value] = 'PCR'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_4, patient_6]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter laboratory single filter option specimen collection date' do
@@ -295,19 +295,19 @@ class PatientQueryHelperTest < ActionView::TestCase
     # Check for monitorees who have a blank specimen collection date
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_7]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have a specimen collection date "before"
     filters[0][:value][0][:value] = { when: 'before', date: '2021-03-25' }
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_5]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have a specimen collection date "after"
     filters[0][:value][0][:value] = { when: 'after', date: '2021-03-25' }
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_4, patient_6]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter laboratory single filter option report date' do
@@ -341,19 +341,19 @@ class PatientQueryHelperTest < ActionView::TestCase
     # Check for monitorees who have a blank report date
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_7]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have a specimen collection date "before"
     filters[0][:value][0][:value] = { when: 'before', date: '2021-03-25' }
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_5]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have a specimen collection date "after"
     filters[0][:value][0][:value] = { when: 'after', date: '2021-03-25' }
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_4, patient_6]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter laboratory single filter option muliple values' do
@@ -384,7 +384,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_5]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter laboratory single filter option all values' do
@@ -433,7 +433,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_5]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter laboratory multiple filter options some values' do
@@ -475,7 +475,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_6]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter laboratory multiple filter options all values' do
@@ -536,7 +536,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_6]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter vaccination single filter option vaccine group' do
@@ -555,7 +555,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter vaccination single filter option product name' do
@@ -584,7 +584,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_3, patient_6]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter vaccination single filter option administration date' do
@@ -621,19 +621,19 @@ class PatientQueryHelperTest < ActionView::TestCase
     # Check for monitorees who have a blank report date
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_7, patient_8]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have a report date "before"
     filters[0][:value][0][:value] = { when: 'before', date: '2021-03-25' }
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_5, patient_8]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have a report date "after"
     filters[0][:value][0][:value] = { when: 'after', date: '2021-03-25' }
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_4, patient_6]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter vaccination single filter option dose number' do
@@ -667,13 +667,13 @@ class PatientQueryHelperTest < ActionView::TestCase
     # Check for monitorees who have a blank dose number
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_3, patient_4, patient_5, patient_6]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have a non-blank dose number
     filters[0][:value][0][:value] = '1'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_6]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter vaccination single filter option muliple values' do
@@ -706,7 +706,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_5, patient_7]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter vaccination single filter option all values' do
@@ -754,7 +754,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_5, patient_7]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter vaccination multiple filter options some values' do
@@ -790,7 +790,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_5]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter vaccination multiple filter options all values' do
@@ -867,7 +867,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_4, patient_7]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter flagged for follow up filters those marked as flagged for follow up' do
@@ -891,13 +891,13 @@ class PatientQueryHelperTest < ActionView::TestCase
 
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees who have a specific follow-up flag reason
     filters[0][:value] = 'Lost to Follow-up'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_4]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   # --- PATIENTS TABLE DATA TESTS --- #
@@ -925,7 +925,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     # Check for monitorees that are HoH or self-reporter
     filtered_patients = patients_table_data(params, user)
     filtered_patients_array = [patient_2, patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients[:linelist]&.pluck(:id)
 
     # Check that current monitoree is not in patients list
     patients_by_id = filtered_patients[:linelist]&.pluck(:id)
@@ -952,7 +952,7 @@ class PatientQueryHelperTest < ActionView::TestCase
 
     # Check that no patients were filtered out
     filtered_patients = patients_table_data(params, user)
-    assert_equal patients.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+    assert_equal patients.pluck(:id), filtered_patients[:linelist]&.pluck(:id)
   end
 
   test 'patients table data raises InvalidQueryError when exclude_patient_id is not valid' do

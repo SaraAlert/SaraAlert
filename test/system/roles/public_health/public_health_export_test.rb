@@ -22,7 +22,7 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
     load 'app/jobs/export_job.rb'
 
     # Remove any files downloaded for each test
-    FileUtils.rm_rf(Rails.root.join('tmp/downloads'))
+    FileUtils.rm_rf(Rails.root.join('tmp', 'downloads'))
   end
 
   test 'export line list csv (exposure)' do

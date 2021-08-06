@@ -2,6 +2,8 @@
 
 require 'test_case'
 
+# IMPORTANT NOTE ON CHANGES TO Time.now CALLS IN THIS FILE
+# Updated Time.now to Time.now.getlocal for Rails/TimeZone because Time.now defaulted to a zone. In this case it was the developer machine or CI/CD server zone.
 class ClosePatientsJobTest < ActiveSupport::TestCase
   def setup
     # Variable's purpose is strictly to reduce line size
@@ -23,7 +25,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: nil,
                      created_at: 20.days.ago)
     ClosePatientsJob.perform_now
@@ -39,7 +41,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
     ClosePatientsJob.perform_now
@@ -57,7 +59,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
     ClosePatientsJob.perform_now
@@ -73,7 +75,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago,
                      created_at: 7.days.ago)
 
@@ -90,9 +92,9 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago,
-                     created_at: Time.now)
+                     created_at: Time.now.getlocal)
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
@@ -107,11 +109,12 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
-                     created_at: Time.now)
+                     latest_assessment_at: Time.now.getlocal,
+                     last_date_of_exposure: 14.days.ago,
+                     created_at: Time.now.getlocal)
     patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 14.days)
-    assert_not_nil Patient.enrolled_last_day_monitoring_period.find_by_id(patient.id)
-    assert_not_nil Patient.close_eligible(:enrolled_last_day_monitoring_period).find_by_id(patient.id)
+    assert_not_nil Patient.enrolled_last_day_monitoring_period.find_by(id: patient.id)
+    assert_not_nil Patient.close_eligible(:enrolled_last_day_monitoring_period).find_by(id: patient.id)
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
     assert_equal(updated_patient.monitoring_reason, 'Enrolled on last day of monitoring period (system)')
@@ -128,7 +131,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago,
                      email: 'testpatient@example.com',
                      preferred_contact_method: 'E-mailed Web Link',
@@ -140,7 +143,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     assert_not_nil closed_email
     assert_equal(closed_email.header['subject'].value, 'Sara Alert Reporting Complete')
     assert_includes(
-      closed_email.text_part.body.to_s.gsub("\r", ' ').gsub("\n", ' '),
+      closed_email.text_part.body.to_s.tr("\r", ' ').tr("\n", ' '),
       "Sara Alert monitoring for #{patient.initials_age('-')} completed on #{DateTime.now.utc.strftime('%m-%d-%Y')}! Thank you for your participation."
     )
     assert_equal(closed_email.to[0], patient.email)
@@ -156,7 +159,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago,
                      email: 'testpatient@example.com',
                      preferred_contact_method: 'E-mailed Web Link')
@@ -174,7 +177,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                        monitoring: true,
                        symptom_onset: nil,
                        public_health_action: 'None',
-                       latest_assessment_at: Time.now,
+                       latest_assessment_at: Time.now.getlocal,
                        last_date_of_exposure: 20.days.ago,
                        email: 'testpatient@example.com',
                        preferred_contact_method: preferred_contact_method,
@@ -195,7 +198,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                        monitoring: true,
                        symptom_onset: nil,
                        public_health_action: 'None',
-                       latest_assessment_at: Time.now,
+                       latest_assessment_at: Time.now.getlocal,
                        last_date_of_exposure: 20.days.ago,
                        preferred_contact_method: preferred_contact_method,
                        created_at: 20.days.ago)
@@ -207,13 +210,14 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     end
 
     test "sends closed email if closed record is a reporter with #{preferred_contact_method} preferred" do
+      Patient.destroy_all
       patient = create(:patient,
                        purged: false,
                        isolation: false,
                        monitoring: true,
                        symptom_onset: nil,
                        public_health_action: 'None',
-                       latest_assessment_at: Time.now,
+                       latest_assessment_at: Time.now.getlocal,
                        last_date_of_exposure: 20.days.ago,
                        email: 'testpatient@example.com',
                        primary_telephone: '+12223334444',
@@ -236,7 +240,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                        monitoring: true,
                        symptom_onset: nil,
                        public_health_action: 'None',
-                       latest_assessment_at: Time.now,
+                       latest_assessment_at: Time.now.getlocal,
                        last_date_of_exposure: 20.days.ago,
                        preferred_contact_method: preferred_contact_method,
                        primary_telephone: '+12223334444',
@@ -261,10 +265,10 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
     email = ClosePatientsJob.perform_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes(email_body, patient.id.to_s)
   end
@@ -276,7 +280,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      monitoring: true,
                      symptom_onset: nil,
                      public_health_action: 'None',
-                     latest_assessment_at: Time.now,
+                     latest_assessment_at: Time.now.getlocal,
                      last_date_of_exposure: 20.days.ago)
 
     allow_any_instance_of(Patient).to(receive(:save!) do
@@ -284,7 +288,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     end)
 
     email = ClosePatientsJob.perform_now
-    email_body = email.parts.first.body.to_s.gsub("\n", ' ')
+    email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes(email_body, patient.id.to_s)
     assert_includes(email_body, 'Test StandardError')

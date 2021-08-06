@@ -2,6 +2,8 @@
 
 require 'test_case'
 
+# IMPORTANT NOTE ON CHANGES TO Time.now CALLS IN THIS FILE
+# Updated Time.now to Time.now.getlocal for Rails/TimeZone because Time.now defaulted to a zone. In this case it was the developer machine or CI/CD server zone.
 class LaboratoryTest < ActiveSupport::TestCase
   def setup; end
 
@@ -24,7 +26,7 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert laboratory.valid?(:api)
     assert laboratory.valid?(:import)
 
-    laboratory = build(:laboratory, report: Time.now)
+    laboratory = build(:laboratory, report: Time.now.getlocal)
     assert laboratory.valid?(:api)
     assert laboratory.valid?(:import)
 
@@ -48,7 +50,7 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert laboratory.valid?(:api)
     assert laboratory.valid?(:import)
 
-    laboratory = build(:laboratory, specimen_collection: Time.now)
+    laboratory = build(:laboratory, specimen_collection: Time.now.getlocal)
     assert laboratory.valid?(:api)
     assert laboratory.valid?(:import)
 
@@ -61,11 +63,11 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert_not laboratory.valid?(:import)
 
     # Ensure specimen collection date is before report date
-    laboratory = build(:laboratory, specimen_collection: 1.days.ago, report: 2.days.ago)
+    laboratory = build(:laboratory, specimen_collection: 1.day.ago, report: 2.days.ago)
     assert_not laboratory.valid?(:api)
     assert_not laboratory.valid?(:import)
 
-    laboratory = build(:laboratory, specimen_collection: 2.days.ago, report: 1.days.ago)
+    laboratory = build(:laboratory, specimen_collection: 2.days.ago, report: 1.day.ago)
     assert laboratory.valid?(:api)
     assert laboratory.valid?(:import)
   end
@@ -194,7 +196,7 @@ class LaboratoryTest < ActiveSupport::TestCase
   test 'validates specimen_collection is a valid date' do
     lab = create(:laboratory)
 
-    lab.specimen_collection = Time.now - 1.day
+    lab.specimen_collection = Time.now.getlocal - 1.day
     assert lab.valid?(:api)
     assert lab.valid?(:import)
 
@@ -245,7 +247,7 @@ class LaboratoryTest < ActiveSupport::TestCase
   test 'validates report is a valid date' do
     lab = create(:laboratory)
 
-    lab.report = Time.now - 1.day
+    lab.report = Time.now.getlocal - 1.day
     assert lab.valid?(:api)
     assert lab.valid?(:import)
 

@@ -38,7 +38,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       row.each_with_index do |value, index|
-        verify_validation(:epix, jurisdiction, workflow, EPI_X_FIELDS[index], RISK_FACTOR_FIELDS.include?(EPI_X_FIELDS[index]) ? !value.blank? : value)
+        verify_validation(:epix, jurisdiction, workflow, EPI_X_FIELDS[index], RISK_FACTOR_FIELDS.include?(EPI_X_FIELDS[index]) ? value.present? : value)
       end
     end
   end
@@ -127,6 +127,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     sheet = get_xlsx(file_name).sheet(0)
     sleep(2) # wait for db write
     rejects = [] if rejects.nil?
+    address_fields_as_symbols = %i[address_line_1 address_city address_zip address_line_2]
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       patients = jurisdiction.all_patients_excluding_purged.where(first_name: epi_x_val(row, :first_name))
@@ -147,16 +148,16 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal('', patient[:secondary_telephone].to_s, "#{field} mismatch in row #{row_num}")
           elsif TELEPHONE_FIELDS.include?(field)
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif field == :sex && !row[index].blank?
+          elsif field == :sex && row[index].present?
             assert_equal(SEX_ABBREVIATIONS[row[index].upcase.to_sym] || row[index]&.downcase&.capitalize, patient[field].to_s,
                          "#{field} mismatch in row #{row_num}")
-          elsif %i[primary_language secondary_language].include?(field) && !row[index].blank?
+          elsif %i[primary_language secondary_language].include?(field) && row[index].present?
             assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           # only import foreign address country if it's not united states
           elsif field == :foreign_address_country
             assert_equal(international_address ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           # import address to international address if international
-          elsif international_address && %i[address_line_1 address_city address_zip address_line_2].include?(field)
+          elsif international_address && address_fields_as_symbols.include?(field)
             assert_equal(row[index].to_s, patient[ImportController::FOREIGN_ADDRESS_MAPPINGS[field]].to_s, "#{field} mismatch in row #{row_num}")
           elsif international_address && field == :address_state
             assert_equal(normalize_state_field(row[index].to_s), patient[ImportController::FOREIGN_ADDRESS_MAPPINGS[field]].to_s,
@@ -218,13 +219,13 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
           #                             NORMALIZED_EXPOSURE_ENUMS[field][normalize_enum_field_value(row[index])].to_s
           #                           end
           #   assert_equal(normalized_cell_value, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif %i[primary_language secondary_language].include?(field) && !row[index].blank?
+          elsif %i[primary_language secondary_language].include?(field) && row[index].present?
             assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :jurisdiction_path
             assert_equal(row[index] ? row[index].to_s : jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, "#{field} mismatch in row #{row_num}")
           elsif ENUM_FIELDS.include?(field)
             assert_equal(NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif !NON_IMPORTED_PATIENT_FIELDS.include?(field)
+          elsif NON_IMPORTED_PATIENT_FIELDS.exclude?(field)
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end
         end
@@ -246,51 +247,51 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       # if checks.include?(:required) && (!value || value.blank?)
       #   assert page.has_content?("Required field '#{VALIDATION[field][:label]}' is missing"), "Error message for #{field}"
       # end
-      if value && !value.blank? && checks.include?(:enum) && !NORMALIZED_ENUMS[field].keys.include?(normalize_enum_field_value(value))
+      if value && value.present? && checks.include?(:enum) && !NORMALIZED_ENUMS[field].key?(normalize_enum_field_value(value))
         assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value"), "Error message for #{field} missing"
       end
       # TODO: when workflow specific case status validation re-enabled: uncomment
-      # if value && !value.blank? && WORKFLOW_SPECIFIC_FIELDS.include?(field)
+      # if value && value.present? && WORKFLOW_SPECIFIC_FIELDS.include?(field)
       #   if workflow == :exposure && !NORMALIZED_EXPOSURE_ENUMS[field].keys.include?(normalize_enum_field_value(value))
       #     assert page.has_content?('for monitorees imported into the Exposure workflow'), "Error message for #{field} incorrect"
       #   elsif workflow == :isolation && !NORMALIZED_ISOLATION_ENUMS[field].keys.include?(normalize_enum_field_value(value))
       #     assert page.has_content?('for cases imported into the Isolation workflow'), "Error message for #{field} incorrect"
       #   end
       # end
-      if value && !value.blank? && checks.include?(:bool) && !%w[true false].include?(value.to_s.downcase)
+      if value && value.present? && checks.include?(:bool) && %w[true false].exclude?(value.to_s.downcase)
         assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value"), "Error message for #{field} missing"
       end
-      if value && !value.blank? && checks.include?(:date) && !value.instance_of?(Date) && value.match(/\d{4}-\d{2}-\d{2}/)
+      if value && value.present? && checks.include?(:date) && !value.instance_of?(Date) && value.match(/\d{4}-\d{2}-\d{2}/)
         begin
           Date.parse(value)
         rescue ArgumentError
           assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not a valid date"), "Error message for #{field} missing"
         end
       end
-      if value && !value.blank? && checks.include?(:date) && !value.instance_of?(Date) && !value.match(/\d{4}-\d{2}-\d{2}/) && format == :saf
+      if value && value.present? && checks.include?(:date) && !value.instance_of?(Date) && !value.match(/\d{4}-\d{2}-\d{2}/) && format == :saf
         generic_msg = "Value '#{value}' for '#{VALIDATION[field][:label]}' is not a valid date"
-        if value.match(%r{\d{2}/\d{2}/\d{4}})
+        if value.match?(%r{\d{2}/\d{2}/\d{4}})
           specific_msg = "#{generic_msg} due to ambiguity between 'MM/DD/YYYY' and 'DD/MM/YYYY', please use the 'YYYY-MM-DD' format instead"
           assert page.has_content?(specific_msg), "Error message for #{field} missing"
         else
           assert page.has_content?("#{generic_msg}, please use the 'YYYY-MM-DD' format"), "Error message for #{field} missing"
         end
       end
-      if value && !value.blank? && checks.include?(:phone) && Phonelib.parse(value, 'US').full_e164.nil?
+      if value && value.present? && checks.include?(:phone) && Phonelib.parse(value, 'US').full_e164.nil?
         assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not a valid phone number"), "Error message for #{field} missing"
       end
-      if value && !value.blank? && checks.include?(:state) && !VALID_STATES.include?(value) && STATE_ABBREVIATIONS[value.to_s.upcase.to_sym].nil?
+      if value && value.present? && checks.include?(:state) && VALID_STATES.exclude?(value) && STATE_ABBREVIATIONS[value.to_s.upcase.to_sym].nil?
         assert page.has_content?("'#{value}' is not a valid state for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
-      if value && !value.blank? && checks.include?(:sex) && !%(Male Female Unknown M F).include?(value.to_s.capitalize)
+      if value && value.present? && checks.include?(:sex) && %(Male Female Unknown M F).exclude?(value.to_s.capitalize)
         assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value"),
                "Error message for #{field} missing"
       end
-      if value && !value.blank? && checks.include?(:email) && !ValidEmail2::Address.new(value).valid?
+      if value && value.present? && checks.include?(:email) && !ValidEmail2::Address.new(value).valid?
         assert page.has_content?("Value '#{value}' for '#{VALIDATION[field][:label]}' is not a valid Email Address"), "Error message for #{field} missing"
       end
     elsif field == :jurisdiction_path
-      return unless value && !value.blank?
+      return unless value && value.present?
 
       jurisdiction = Jurisdiction.where(path: value).first
       if jurisdiction.nil?
@@ -307,7 +308,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         end
       end
     elsif field == :assigned_user
-      return unless value && !value.blank? && !value.to_i.between?(1, 999_999)
+      return unless value && value.present? && !value.to_i.between?(1, 999_999)
 
       msg = "Value '#{value}' for 'Assigned User' is not valid, acceptable values are numbers between 1-999999"
       assert page.has_content?(msg), "Error message for #{field} missing"
@@ -343,7 +344,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def epi_x_val(row, field)
     value = row[ImportExportConstants::EPI_X_FIELDS.index(field)]
-    return nil unless value.present?
+    return nil if value.blank?
 
     value = Date.strptime(value, '%m/%d/%Y') if %i[date_of_birth date_of_departure].include?(field)
     value = Date.strptime(value, '%b %d %Y') if field == :date_of_arrival
@@ -356,7 +357,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def displayed_epi_x_val(row, field)
     value = row[ImportExportConstants::EPI_X_FIELDS.index(field)]
-    return nil unless value.present?
+    return nil if value.blank?
 
     value = Date.strptime(value, '%m/%d/%Y').strftime('%m/%d/%Y') if %i[date_of_birth date_of_departure].include?(field)
     value = Date.strptime(value, '%b %d %Y').strftime('%m/%d/%Y') if field == :date_of_arrival
@@ -366,7 +367,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def displayed_saf_val(row, field)
     value = row[ImportExportConstants::SARA_ALERT_FORMAT_FIELDS.index(field)]
-    return nil unless value.present?
+    return nil if value.blank?
 
     if %i[date_of_birth date_of_departure date_of_arrival].include?(field)
       value = value.instance_of?(String) ? Date.parse(value).strftime('%m/%d/%Y') : value.strftime('%m/%d/%Y')
@@ -380,7 +381,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   end
 
   def normalize_bool_field(value)
-    %w[true false].include?(value.to_s.downcase) ? (value.to_s.downcase == 'true') : nil
+    %w[true false].include?(value.to_s.downcase) ? value.to_s.casecmp('true').zero? : nil
   end
 
   def get_xlsx(file_name)
