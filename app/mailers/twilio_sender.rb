@@ -27,7 +27,7 @@ class TwilioSender
     end
     err_msg = TWILIO_ERROR_CODES.find do |_k, v|
                 v[:code] == error_code
-              end&.second&.[](:message) || '30008'
+              end&.second&.[](:message) || error_code
     dispatch_errored_contact_history_items(patient, err_msg)
   end
 
