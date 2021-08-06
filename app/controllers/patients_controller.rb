@@ -1032,11 +1032,12 @@ class PatientsController < ApplicationController
 
   # Set the instance variables necessary for rendering the breadcrumbs
   def dashboard_crumb(dashboard, playbook, patient)
-    unless current_user.enroller?
+    if current_user.enroller?
+      @dashboard_path = patients_path
+    else
       @dashboard = %w[global isolation exposure].include?(dashboard) ? dashboard : (patient&.isolation ? 'isolation' : 'exposure')
+      @dashboard_path = "/dashboard/#{playbook}/#{dashboard}"
     end
-
-    @dashboard_path = current_user.enroller? && @dashboard == 'global' ? patients_path : "/dashboard/#{playbook}/#{dashboard}"
   end
 
   def playbook

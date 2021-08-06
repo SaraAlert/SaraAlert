@@ -50,7 +50,7 @@ module PatientHelper
   end
 
   def dashboard_crumb_title(dashboard, playbook)
-    title = dashboard.nil? ? 'Return To Dashboard' : "Return to #{dashboard.titleize} Dashboard"
+    title = dashboard.nil? ? 'Return to Dashboard' : "Return to #{dashboard.titleize} Dashboard"
     title + (playbook.nil? ? '' : " (#{playbook_label(playbook)})")
   end
 
