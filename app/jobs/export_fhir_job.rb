@@ -9,9 +9,10 @@ class ExportFhirJob < ApplicationJob
   # Batch size limits number of Patient records details help in memory at once before writing to file.
   BATCH_SIZE = ENV.fetch('EXPORT_INNER_BATCH_SIZE', 500).to_i unless const_defined?(:BATCH_SIZE)
   NUM_EXPORTS = 6
+  EXPIRATION_TIME = Rails.configuration.api['bulk_export_expiration_minutes'].minutes
 
   def perform(current_client_application, download, params)
-    start_time = DateTime.now.utc
+    start_time = Time.now.utc
     patient_ids = Jurisdiction.find_by(id: current_client_application[:jurisdiction_id])&.all_patients_excluding_purged&.pluck(:id)
     return if patient_ids.nil?
 
@@ -58,7 +59,7 @@ class ExportFhirJob < ApplicationJob
     file = Tempfile.new
     records.in_batches(of: BATCH_SIZE).each do |batch|
       batch.each do |r|
-        raise ExpiredExportError if DateTime.now.utc > start_time + Rails.configuration.api['bulk_export_expiration_minutes'].minutes
+        raise ExpiredExportError if Time.now.utc > start_time + EXPIRATION_TIME
 
         file.write(JSON.generate(r.as_fhir.to_hash) + "\n")
       end
