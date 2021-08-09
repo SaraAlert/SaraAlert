@@ -27,7 +27,8 @@ class Workflow extends React.Component {
       <React.Fragment>
         <PublicHealthHeader
           authenticity_token={this.props.authenticity_token}
-          jurisdiction_paths={this.state.jurisdiction_paths}
+          all_assigned_users={this.props.all_assigned_users}
+          jurisdiction_paths={this.props.jurisdiction_paths}
           workflow={this.props.workflow}
           jurisdiction={this.props.jurisdiction}
           tabs={this.props.tabs}
@@ -39,6 +40,7 @@ class Workflow extends React.Component {
         <PatientsTable
           authenticity_token={this.props.authenticity_token}
           jurisdiction_paths={this.props.jurisdiction_paths}
+          all_assigned_users={this.props.all_assigned_users}
           workflow={this.props.workflow}
           jurisdiction={this.props.jurisdiction}
           tabs={this.props.tabs}
@@ -60,6 +62,7 @@ Workflow.propTypes = {
   tabs: PropTypes.object,
   default_tab: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
+  all_assigned_users: PropTypes.array,
   custom_export_options: PropTypes.object,
   monitoring_reasons: PropTypes.array,
 };

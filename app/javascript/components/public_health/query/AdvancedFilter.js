@@ -50,6 +50,15 @@ class AdvancedFilter extends React.Component {
       advancedFilterOptions[Number(index)].options = paths;
     }
 
+    // Get all assigned user options for assigned user multi-select advanced filter
+    if (this.props.all_assigned_users) {
+      let index = advancedFilterOptions.findIndex(x => x.name === 'assigned-user');
+      let all_assigned_users = _.values(this.props.all_assigned_users).map(assigned_user => {
+        return { value: assigned_user, label: assigned_user };
+      });
+      advancedFilterOptions[Number(index)].options = all_assigned_users;
+    }
+
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
       this.addStatement();
@@ -74,18 +83,6 @@ class AdvancedFilter extends React.Component {
         }
       });
     });
-  }
-
-  componentDidUpdate(prevProps) {
-    // Get list of assigned users for assigned users multi-select advanced filter
-    if (this.props.assigned_users !== prevProps.assigned_users) {
-      let index = advancedFilterOptions.findIndex(x => x.name === 'assigned-user');
-      let assigned_users = _.values(this.props.assigned_users).map(assigned_user => {
-        return { value: assigned_user, label: assigned_user };
-      });
-
-      advancedFilterOptions[Number(index)].options = assigned_users;
-    }
   }
 
   /**
@@ -1491,7 +1488,7 @@ AdvancedFilter.propTypes = {
   advancedFilterUpdate: PropTypes.func,
   updateStickySettings: PropTypes.bool,
   jurisdiction_paths: PropTypes.object,
-  assigned_users: PropTypes.array,
+  all_assigned_users: PropTypes.array,
 };
 
 export default AdvancedFilter;

@@ -173,6 +173,8 @@ class PatientsFilters extends React.Component {
                 }
                 authenticity_token={this.props.authenticity_token}
                 updateStickySettings={false}
+                jurisdiction_paths={this.props.jurisdiction_paths}
+                all_assigned_users={this.props.all_assigned_users}
               />
             </InputGroup>
           </Col>
@@ -185,6 +187,7 @@ class PatientsFilters extends React.Component {
 PatientsFilters.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
+  all_assigned_users: PropTypes.array,
   jurisdiction: PropTypes.object,
   query: PropTypes.object,
   onQueryChange: PropTypes.func,

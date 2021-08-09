@@ -123,6 +123,7 @@ class Export extends React.Component {
           <CustomExport
             authenticity_token={this.props.authenticity_token}
             jurisdiction_paths={this.props.jurisdiction_paths}
+            all_assigned_users={this.props.all_assigned_users}
             jurisdiction={this.props.jurisdiction}
             tabs={this.props.tabs}
             preset={this.state.savedPreset}
@@ -145,6 +146,7 @@ class Export extends React.Component {
 Export.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
+  all_assigned_users: PropTypes.array,
   jurisdiction: PropTypes.object,
   tabs: PropTypes.object,
   query: PropTypes.object,

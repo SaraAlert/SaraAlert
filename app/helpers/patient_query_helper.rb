@@ -75,17 +75,12 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       raise InvalidQueryError.new(:tz_offset, tz_offset) unless tz_offset.to_i.to_s == tz_offset.to_s
 
       query[:filter] = unsanitized_query[:filter].collect do |filter|
-        permitted_filter_params = if filter[:value].is_a? Array
-                                    filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
-                                                  filterOption: {}, value: %i[label value])
-                                  else
-                                    filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
-                                                  filterOption: {}, value: {})
-                                  end
+        permitted_filter_params = filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
+                                                filterOption: {}, value: filter[:value].is_a?(Array) ? %i[label value] : {})
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :tooltip,
                                                              options: [], fields: [:name, :title, :type, { options: [] }]),
-          value: permitted_filter_params[:value] || filter.permit(:value)[:value] || false,
+          value: permitted_filter_params[:value] || false,
           numberOption: permitted_filter_params[:numberOption],
           dateOption: permitted_filter_params[:dateOption],
           relativeOption: permitted_filter_params[:relativeOption],
@@ -493,7 +488,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                              )
                    end
       when 'assigned-user'
-        if filter[:value].any?
+        if filter[:value].present?
           # Map multi-select type filter from { label, value } to values
           filter_assigned_users = filter[:value].map { |p| p[:value] }
 
@@ -501,7 +496,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           patients = patients.where(assigned_user: filter_assigned_users)
         end
       when 'jurisdiction'
-        if filter[:value].any?
+        if filter[:value].present?
           # Map multi-select type filter from { label, value } to jurisdictions
           # For example, filter[:value] that looks like
           #     [{"label": "USA", "value": "1"}, {"label": "USA, State 1", "value": "2"}],

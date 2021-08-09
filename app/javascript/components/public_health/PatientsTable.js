@@ -696,7 +696,7 @@ class PatientsTable extends React.Component {
                     authenticity_token={this.props.authenticity_token}
                     updateStickySettings={true}
                     jurisdiction_paths={this.props.jurisdiction_paths}
-                    assigned_users={this.state.assigned_users}
+                    all_assigned_users={this.props.all_assigned_users}
                   />
                   {this.state.query.tab !== 'transferred_out' && (
                     <DropdownButton
@@ -809,6 +809,7 @@ class PatientsTable extends React.Component {
 PatientsTable.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
+  all_assigned_users: PropTypes.array,
   workflow: PropTypes.oneOf(['global', 'exposure', 'isolation']),
   jurisdiction: PropTypes.exact({
     id: PropTypes.number,

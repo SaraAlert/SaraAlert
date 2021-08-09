@@ -6,7 +6,7 @@ class PublicHealthController < ApplicationController
 
   before_action :authenticate_user!
   before_action :authenticate_user_role
-  before_action :set_jurisdiction_paths, only: %i[exposure isolation global]
+  before_action :set_jurisdiction_paths, :set_all_assigned_users, only: %i[exposure isolation global]
 
   def exposure
     @title = 'Exposure Dashboard'
@@ -83,5 +83,11 @@ class PublicHealthController < ApplicationController
 
   def set_jurisdiction_paths
     @possible_jurisdiction_paths = current_user.jurisdiction.subtree.pluck(:id, :path).to_h
+  end
+
+  def set_all_assigned_users
+    # Get all assigned users of current user's jurisdiction
+    patients = current_user.patients&.where(jurisdiction_id: current_user.jurisdiction.subtree_ids)
+    @all_assigned_users = patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
   end
 end

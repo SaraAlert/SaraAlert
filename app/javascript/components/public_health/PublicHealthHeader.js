@@ -175,6 +175,7 @@ class PublicHealthHeader extends React.Component {
                 <Export
                   authenticity_token={this.props.authenticity_token}
                   jurisdiction_paths={this.props.jurisdiction_paths}
+                  all_assigned_users={this.props.all_assigned_users}
                   jurisdiction={this.props.jurisdiction}
                   tabs={this.props.tabs}
                   workflow={this.props.workflow}
@@ -227,6 +228,7 @@ class PublicHealthHeader extends React.Component {
 PublicHealthHeader.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
+  all_assigned_users: PropTypes.array,
   workflow: PropTypes.oneOf(['global', 'exposure', 'isolation']),
   jurisdiction: PropTypes.object,
   tabs: PropTypes.object,
