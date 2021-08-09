@@ -939,11 +939,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
                                   patient.healthcare_personnel_facility_name),
       to_risk_factor_subextension('member-of-a-common-exposure-cohort', 'member-of-a-common-exposure-cohort-type',
                                   patient.member_of_a_common_exposure_cohort, patient.member_of_a_common_exposure_cohort_type),
-      to_bool_extension(patient.travel_to_affected_country_or_area, 'travel-from-affected-country-or-area'),
-      to_bool_extension(patient.crew_on_passenger_or_cargo_flight, 'crew-on-passenger-or-cargo-flight')
+      to_bool_extension(patient.travel_to_affected_country_or_area || false, 'travel-from-affected-country-or-area'),
+      to_bool_extension(patient.crew_on_passenger_or_cargo_flight || false, 'crew-on-passenger-or-cargo-flight')
     ]
-
-    return nil if subextensions.all?(&:nil?)
 
     FHIR::Extension.new(
       url: "#{SA_EXT_BASE_URL}exposure-risk-factors",
@@ -953,14 +951,12 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   # Return a sub-extension which represents a certain risk factor bool/string pair
   def to_risk_factor_subextension(risk_factor_id, string_id, bool_value, string_value)
-    return nil if bool_value.nil? && string_value.blank?
-
     FHIR::Extension.new(
       url: "#{SA_EXT_BASE_URL}#{risk_factor_id}",
       extension: [
-        bool_value.nil? ? nil : FHIR::Extension.new(
+        FHIR::Extension.new(
           url: risk_factor_id,
-          valueBoolean: bool_value
+          valueBoolean: bool_value || false
         ),
         string_value.blank? ? nil : FHIR::Extension.new(
           url: string_id,
