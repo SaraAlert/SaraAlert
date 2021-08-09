@@ -219,7 +219,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       secondary_telephone_type: from_secondary_phone_type_extension(patient, 'Patient'),
       continuous_exposure: from_bool_extension_false_default(patient, 'Patient', 'continuous-exposure'),
       exposure_risk_assessment: from_string_extension(patient, 'Patient', 'exposure-risk-assessment'),
-      public_health_action: from_string_extension(patient, 'Patient', 'public-health-action'),
+      public_health_action: from_string_extension(patient, 'Patient', 'public-health-action', 'None'),
       contact_of_known_case: from_bool_extension_nil_default(patient, 'Patient', 'contact-of-known-case'),
       contact_of_known_case_id: from_string_extension(patient, 'Patient', 'contact-of-known-case-id'),
       member_of_a_common_exposure_cohort_type: from_string_extension(patient, 'Patient', 'common-exposure-cohort-name'),
@@ -648,8 +648,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def from_string_extension(element, base_path, extension_id)
-    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueString, path: str_ext_path(base_path, extension_id) }
+  def from_string_extension(element, base_path, extension_id, default_value = nil)
+    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueString || default_value, path: str_ext_path(base_path, extension_id) }
   end
 
   def to_reference_extension(id, resource_type, extension_id)
