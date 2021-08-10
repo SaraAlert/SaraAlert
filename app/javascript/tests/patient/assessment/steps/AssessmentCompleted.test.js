@@ -100,6 +100,30 @@ describe('AssessmentCompleted', () => {
     expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['web']['instruction3'])).toBeTruthy();
   });
 
+  it('Properly renders all main components in Russian', () => {
+    const language = 'rus';
+    const wrapper = getWrapper(language, contact);
+    expect(wrapper.find(Card.Header).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Header).text()).toEqual(mockTranslations[`${language}`]['web']['title']);
+    expect(wrapper.find(Card.Body).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Label).at(0).text()).toEqual(mockTranslations[`${language}`]['web']['thank-you']);
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['web']['instruction1'])).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['web']['instruction2'])).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['web']['instruction3'])).toBeTruthy();
+  });
+
+  it('Properly renders all main components in Arabic', () => {
+    const language = 'ara';
+    const wrapper = getWrapper(language, contact);
+    expect(wrapper.find(Card.Header).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Header).text()).toEqual(mockTranslations[`${language}`]['web']['title']);
+    expect(wrapper.find(Card.Body).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Label).at(0).text()).toEqual(mockTranslations[`${language}`]['web']['thank-you']);
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['web']['instruction1'])).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['web']['instruction2'])).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['web']['instruction3'])).toBeTruthy();
+  });
+
   it('Properly renders email contact information', () => {
     const language = 'eng';
     const wrapper = getWrapper(language, { email: 'email@example.com' });

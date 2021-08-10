@@ -81,6 +81,10 @@
   :display: 'Arabic'
   :iso6391code: "ar"
   :system: 'iso639-2t'
+  :supported:
+    :sms: true
+    :email: true
+    :phone: true
 
 :arg:
   :display: 'Aragonese'
@@ -1393,6 +1397,10 @@
   :display: 'Russian'
   :iso6391code: "ru"
   :system: 'iso639-2t'
+  :supported:
+    :sms: true
+    :email: true
+    :phone: true
 
 :sad:
   :display: 'Sandawe'
