@@ -76,11 +76,11 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
       query[:filter] = unsanitized_query[:filter].collect do |filter|
         permitted_filter_params = filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
-                                                filterOption: {}, value: filter[:value].is_a?(Array) ? %i[label value] : {})
+                                                filterOption: {}, value: filter[:value].is_a?(Array) ? [] : {})
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :tooltip,
                                                              options: [], fields: [:name, :title, :type, { options: [] }]),
-          value: permitted_filter_params[:value] || false,
+          value: permitted_filter_params[:value] || filter.require(:value) || false,
           numberOption: permitted_filter_params[:numberOption],
           dateOption: permitted_filter_params[:dateOption],
           relativeOption: permitted_filter_params[:relativeOption],

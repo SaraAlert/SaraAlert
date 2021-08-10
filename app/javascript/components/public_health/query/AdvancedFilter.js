@@ -42,22 +42,18 @@ class AdvancedFilter extends React.Component {
     });
 
     // Get jurisdiction options for jurisdiction multi-select advanced filter
-    if (this.props.jurisdiction_paths) {
-      let index = advancedFilterOptions.findIndex(x => x.name === 'jurisdiction');
-      let paths = Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
-        return { label: path, value: id };
-      });
-      advancedFilterOptions[Number(index)].options = paths;
-    }
+    let jurisdictionIndex = advancedFilterOptions.findIndex(x => x.name === 'jurisdiction');
+    let paths = _.toPairs(this.props.jurisdiction_paths).map(([id, path]) => {
+      return { label: path, value: id };
+    });
+    advancedFilterOptions[Number(jurisdictionIndex)].options = paths;
 
     // Get all assigned user options for assigned user multi-select advanced filter
-    if (this.props.all_assigned_users) {
-      let index = advancedFilterOptions.findIndex(x => x.name === 'assigned-user');
-      let all_assigned_users = _.values(this.props.all_assigned_users).map(assigned_user => {
-        return { value: assigned_user, label: assigned_user };
-      });
-      advancedFilterOptions[Number(index)].options = all_assigned_users;
-    }
+    let assignedUsersIndex = advancedFilterOptions.findIndex(x => x.name === 'assigned-user');
+    let allAssignedUsers = _.values(this.props.all_assigned_users).map(assigned_user => {
+      return { value: assigned_user, label: assigned_user };
+    });
+    advancedFilterOptions[Number(assignedUsersIndex)].options = allAssignedUsers;
 
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
@@ -136,14 +132,35 @@ class AdvancedFilter extends React.Component {
   };
 
   /**
+   * Get options for saved filters
+   */
+  getSavedFilterOptions = () => {
+    let savedFilters = [...this.state.savedFilters];
+    if (savedFilters.length > 0) {
+      _.forEach(savedFilters, (filter, filterIndex) => {
+        _.forEach(filter.contents, (statement, statementIndex) => {
+          if (statement.filterOption.type == 'multi') {
+            // Get the options for the multi-select types
+            let multiIndex = advancedFilterOptions.findIndex(x => x.name === statement.filterOption.name);
+            savedFilters[Number(filterIndex)].contents[Number(statementIndex)].filterOption.options = advancedFilterOptions[Number(multiIndex)].options;
+          }
+        });
+      });
+    }
+
+    return savedFilters;
+  };
+
+  /**
    * Set the active filter
    * @param {Object} filter
    * @param {Bool} apply - only true when called from componentDidMount(), a flag to determine when the filter should be applied to the results
    *                         results & when other existing sticky settings/filter on the table should persist
    */
   setFilter = (filter, apply = false) => {
+    let savedFilters = this.getSavedFilterOptions();
     if (filter) {
-      this.setState({ activeFilter: filter, showAdvancedFilterModal: true, activeFilterOptions: filter?.contents || [] }, () => {
+      this.setState({ savedFilters, activeFilter: filter, showAdvancedFilterModal: true, activeFilterOptions: filter?.contents || [] }, () => {
         if (apply) {
           this.apply(true);
         }
@@ -496,6 +513,16 @@ class AdvancedFilter extends React.Component {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     activeFilterOptions[parseInt(index)]['value'] = value;
     this.setState({ activeFilterOptions });
+  };
+
+  /**
+   * Change value of a filter statement of type multi-select
+   * @param {Number} index - Current filter index
+   * @param {*} value - Current filter value
+   */
+  changeMultiValue = (index, value) => {
+    value = !value ? [] : value;
+    this.changeValue(index, value);
   };
 
   /**
@@ -872,7 +899,7 @@ class AdvancedFilter extends React.Component {
             placeholder=""
             aria-label="Advanced Filter Multi-select Options"
             onChange={event => {
-              this.changeValue(index, event);
+              this.changeMultiValue(index, event);
             }}
           />
           {tooltip && this.renderStatementTooltip(filter.name, index, tooltip)}
