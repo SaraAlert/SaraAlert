@@ -15,6 +15,8 @@ const COMMON_LANGUAGES = {
   som: 'Somali',
   vie: 'Vietnamese',
   kor: 'Korean',
+  rus: 'Russian',
+  ara: 'Arabic',
 };
 
 /**
