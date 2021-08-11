@@ -42,13 +42,13 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_not ActionMailer::Base.deliveries.empty?
     assert_equal [@patient.email], email.to
     assert_equal [PatientMailer.default[:from]], email.from
-    assert_equal I18n.t('assessments.email.enrollment.subject', locale: @patient.primary_language), email.subject
-    assert_includes email_body, I18n.t('assessments.email.enrollment.header', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.enrollment.greeting', locale: @patient.primary_language, name: @patient&.initials_age('-'))
-    assert_includes email_body, I18n.t('assessments.email.enrollment.info1', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.enrollment.info2', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.enrollment.report', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.enrollment.footer', locale: @patient.primary_language)
+    assert_equal I18n.t('assessments.html.email.enrollment.subject', locale: @patient.primary_language), email.subject
+    assert_includes email_body, I18n.t('assessments.html.email.enrollment.header', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t('assessments.html.email.shared.greeting', locale: @patient.primary_language, name: @patient&.initials_age('-'))
+    assert_includes email_body, I18n.t('assessments.html.email.enrollment.info1', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t('assessments.html.email.enrollment.info2', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t('assessments.html.email.shared.report', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t('assessments.html.email.shared.footer', locale: @patient.primary_language)
   end
 
   %i[enrollment_email assessment_email closed_email].each do |mthd|
@@ -122,7 +122,7 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'enrollment sms weblink message contents' do
-    contents = I18n.t('assessments.sms.prompt.intro', locale: 'eng', name: '-0')
+    contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: 'eng', name: '-0')
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -150,7 +150,7 @@ class PatientMailerTest < ActionMailer::TestCase
   test 'enrollment sms weblink message contents not using messaging service' do
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
 
-    contents = I18n.t('assessments.sms.prompt.intro', locale: 'eng', name: '-0')
+    contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: 'eng', name: '-0')
 
     # Assert correct REST call when messaging_service is NOT used falls back to from number
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
@@ -173,7 +173,7 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'enrollment sms text based message contents using messaging service' do
-    contents = I18n.t('assessments.sms.prompt.intro', locale: 'eng', name: '-0')
+    contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: 'eng', name: '-0')
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -199,7 +199,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'enrollment sms text based message contents not using messaging service' do
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
-    contents = I18n.t('assessments.sms.prompt.intro', locale: 'eng', name: '-0')
+    contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: 'eng', name: '-0')
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -226,7 +226,7 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                 @patient.jurisdiction.unique_identifier,
                                                                 'eng',
                                                                 @patient&.initials_age)
-    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'eng')} -0: #{url}"
+    contents = I18n.t('assessments.twilio.sms.weblink.intro', locale: 'eng', initials_age: '-0', url: url)
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -255,7 +255,7 @@ class PatientMailerTest < ActionMailer::TestCase
                                                                 @patient.jurisdiction.unique_identifier,
                                                                 'eng',
                                                                 @patient&.initials_age)
-    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'eng')} -0: #{url}"
+    contents = I18n.t('assessments.twilio.sms.weblink.intro', locale: 'eng', initials_age: '-0', url: url)
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
       true
@@ -375,18 +375,22 @@ class PatientMailerTest < ActionMailer::TestCase
     dependent_history_count = dependent.histories.count
     patient_history_count = @patient.histories.count
 
+    patient_names = @patient.active_dependents.uniq.map { |dep| I18n.t('assessments.twilio.sms.prompt.name', locale: 'eng', name: dep&.initials_age('-')) }
+
+    symptom_names = @patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')
+    experiencing_symptoms = I18n.t('assessments.twilio.shared.experiencing_symptoms_p', locale: 'eng', name: @patient.initials, symptom_names: symptom_names)
+    contents = I18n.t('assessments.twilio.sms.prompt.daily', locale: 'eng', names: patient_names.join(', '), experiencing_symptoms: experiencing_symptoms)
+
     params = {
       language: 'ENG',
-      try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'eng'),
-      thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'eng'),
+      try_again: I18n.t('assessments.twilio.sms.prompt.try_again', locale: 'eng'),
+      thanks: I18n.t('assessments.twilio.sms.prompt.thanks', locale: 'eng'),
       medium: 'SMS',
-      max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'eng'),
+      max_retries_message: I18n.t('assessments.twilio.shared.max_retries_message', locale: 'eng'),
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
-      # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'eng')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'eng')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'eng')}"
-      # rubocop:enable Layout/LineLength
+      prompt: contents
     }
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
@@ -412,18 +416,22 @@ class PatientMailerTest < ActionMailer::TestCase
     dependent_history_count = dependent.histories.count
     patient_history_count = @patient.histories.count
 
+    patient_names = @patient.active_dependents.uniq.map { |dep| I18n.t('assessments.twilio.sms.prompt.name', locale: 'eng', name: dep&.initials_age('-')) }
+
+    symptom_names = @patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')
+    experiencing_symptoms = I18n.t('assessments.twilio.shared.experiencing_symptoms_p', locale: 'eng', name: @patient.initials, symptom_names: symptom_names)
+    contents = I18n.t('assessments.twilio.sms.prompt.daily', locale: 'eng', names: patient_names.join(', '), experiencing_symptoms: experiencing_symptoms)
+
     params = {
       language: 'ENG',
-      try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'eng'),
-      thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'eng'),
+      try_again: I18n.t('assessments.twilio.sms.prompt.try_again', locale: 'eng'),
+      thanks: I18n.t('assessments.twilio.sms.prompt.thanks', locale: 'eng'),
       medium: 'SMS',
-      max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'eng'),
+      max_retries_message: I18n.t('assessments.twilio.shared.max_retries_message', locale: 'eng'),
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
-      # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'eng')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'eng')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'eng')}"
-      # rubocop:enable Layout/LineLength
+      prompt: contents
     }
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
@@ -449,19 +457,25 @@ class PatientMailerTest < ActionMailer::TestCase
     dependent_history_count = dependent.histories.count
     patient_history_count = @patient.histories.count
 
+    patient_names = @patient.active_dependents.uniq.map do |dep|
+      I18n.t('assessments.twilio.voice.initials_age', locale: 'eng', initials: dep&.initials, age: dep&.calc_current_age || '0')
+    end
+
+    symptom_names = @patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')
+    experiencing_symptoms = I18n.t('assessments.twilio.shared.experiencing_symptoms_p', locale: 'eng', name: @patient.initials, symptom_names: symptom_names)
+    contents = I18n.t('assessments.twilio.voice.daily', locale: 'eng', names: patient_names.join(', '), experiencing_symptoms: experiencing_symptoms)
+
     params = {
       language: 'ENG',
-      intro: I18n.t('assessments.phone.intro', locale: 'eng'),
-      try_again: I18n.t('assessments.phone.try-again', locale: 'eng'),
-      thanks: I18n.t('assessments.phone.thanks', locale: 'eng'),
-      max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: 'eng'),
+      intro: I18n.t('assessments.twilio.voice.intro', locale: 'eng'),
+      try_again: I18n.t('assessments.twilio.voice.try_again', locale: 'eng'),
+      thanks: I18n.t('assessments.twilio.voice.thanks', locale: 'eng'),
+      max_retries_message: I18n.t('assessments.twilio.shared.max_retries_message', locale: 'eng'),
       medium: 'VOICE',
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
-      # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.phone.daily1', locale: 'eng')}, , #{I18n.t('assessments.phone.age', locale: 'eng')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'eng')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'eng')}#{I18n.t('assessments.phone.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}?#{I18n.t('assessments.phone.daily4', locale: 'eng')}"
-      # rubocop:enable Layout/LineLength
+      prompt: contents
     }
 
     allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
@@ -485,12 +499,12 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_not ActionMailer::Base.deliveries.empty?
     assert_equal [@patient.email], email.to
     assert_equal [PatientMailer.default[:from]], email.from
-    assert_equal I18n.t('assessments.email.reminder.subject', locale: @patient.primary_language), email.subject
-    assert_includes email_body, I18n.t('assessments.email.reminder.header', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.reminder.greeting', locale: @patient.primary_language, name: @patient&.initials_age('-'))
-    assert_includes email_body, I18n.t('assessments.email.reminder.thank-you', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.reminder.report', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.reminder.footer', locale: @patient.primary_language)
+    assert_equal I18n.t('assessments.html.email.reminder.subject', locale: @patient.primary_language), email.subject
+    assert_includes email_body, I18n.t('assessments.html.email.reminder.header', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t('assessments.html.email.shared.greeting', locale: @patient.primary_language, name: @patient&.initials_age('-'))
+    assert_includes email_body, I18n.t('assessments.html.email.reminder.thank_you', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t('assessments.html.email.shared.report', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t('assessments.html.email.shared.footer', locale: @patient.primary_language)
   end
 
   test 'assessment email with dependents' do
@@ -560,15 +574,15 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_not ActionMailer::Base.deliveries.empty?
     assert_equal [@patient.email], email.to
     assert_equal [PatientMailer.default[:from]], email.from
-    assert_equal I18n.t('assessments.email.closed.subject', locale: @patient.primary_language), email.subject
-    assert_includes email_body, I18n.t('assessments.email.closed.header', locale: @patient.primary_language)
+    assert_equal I18n.t('assessments.html.email.closed.subject', locale: @patient.primary_language), email.subject
+    assert_includes email_body, I18n.t('assessments.html.email.closed.header', locale: @patient.primary_language)
     assert_includes email_body, I18n.t(
-      'assessments.email.closed.thank-you',
+      'assessments.html.email.closed.thank_you',
       initials_age: @patient.initials_age('-'),
       completed_date: @patient.closed_at.strftime('%m-%d-%Y'),
       locale: @patient.primary_language
     )
-    assert_includes email_body, I18n.t('assessments.email.closed.footer', locale: @patient.primary_language)
+    assert_includes email_body, I18n.t('assessments.html.email.shared.footer', locale: @patient.primary_language)
     assert_histories_contain(@patient, 'Monitoring Complete message was sent.')
   end
 

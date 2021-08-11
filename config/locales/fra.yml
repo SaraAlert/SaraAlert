@@ -1,134 +1,127 @@
 fra:
   assessments:
+    html:
+      shared:
+        email: 'Courriel'
+        phone: 'Téléphone'
+        webpage: 'Site web'
+      weblink:
+        title: 'Rapport quotidien'
+        bool-title: 'Veuillez sélectionner tous les symptômes que vous présentez.'
+        instruction1: >-
+          'Si vous n''avez pas signalé aucun symptôme, veuillez continuer à suivre les recommandations fournies par votre autorité de santé publique locale.'
+        instruction2: >-
+          'Si vous signalez des symptômes, votre autorité de santé publique locale vous contactera bientôt. Si vous avez des inquiétudes immédiates, veuillez
+          contacter votre fournisseur médical ou votre autorité de santé publique locale. Évitez vos contacts avec les autres et vous devez vous isoler à la
+          maison.'
+        instruction3: 'En cas d''urgence médicale, appelez le 911, et faites-leur savoir que vous êtes surveillé par le autorité de santé publique.'
+        instruction4: 'Veuillez utiliser les coordonnées ci-dessous si vous souhaitez nous contacter au sujet de votre cas.'
+        submit: 'Envoyer'
+        thank_you: 'Merci d''avoir complété votre rapport quotidien !'
+      email:
+        shared:
+          greeting: 'Cher/Chère %{name},'
+          report: 'Rapport quotidien'
+          footer: >-
+            'Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le
+            système d''Alerte Sara ; il est unique et n''est destiné qu''à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu''il
+            s''agit d''une erreur, veuillez contacter les autorités sanitaires locales. Pour la confidentialité et plus d''informations, visitez saraalert.org.'
+        enrollment:
+          subject: 'Recrutement pour alerte Sara'
+          header: 'Bienvenue sur le système d''Alerte Sara'
+          info1: >-
+            'Vous avez été recruté(e) dans le système de surveillance d''Alerte Sara. Nous vous demandons de fournir des rapports quotidiens sur votre état.
+            Veuillez cliquer sur le bouton ci-dessous et suivre les instructions qui s''affichent à l''écran.'
+          info2: 'Vous recevrez un rappel similaire tous les jours jusqu''à ce que votre période de surveillance soit terminée.'
+        reminder:
+          subject: 'Rappel de rapport d''Alerte Sara'
+          header: 'Rappel de rapport d''Alerte Sara'
+          thank_you: >-
+            'Merci de participer au programme de surveillance d''Alerte Sara. Veuillez remplir votre rapport quotidien en utilisant le lien ci-dessous.'
+        closed:
+          subject: 'Rapport d''Alerte Sara complété'
+          header: 'Rapport d''Alerte Sara complété'
+          thank_you: 'La période de surveillance de Sara Alert pour %{initials_age} a été terminée le %{completed_date} ! Merci de votre participation'
+        contact:
+          info1: >-
+            'Si vous avez des questions, veuillez utiliser les coordonnées ci-dessous pour contacter l''organisation de santé publique qui vous a aidé à vous
+            inscrire:'
+          info2: 'Si vous avez des questions, veuillez contacter le professionnel de santé qui vous a recruté(e).'
+    twilio:
+      shared:
+        experiencing_symptoms_s: 'Cette personne est-elle y en a-t-il qui présentent un des symptômes suivants: %{symptom_names}.'
+        experiencing_symptoms_p: 'Parmi ces personnes y en a-t-il qui présentent un des symptômes suivants: %{symptom_names}.'
+        max_retries_message: >-
+          'Je suis désolé, vous avez atteint le nombre maximum de tentatives de réponse. Si vous rencontrez une urgence médicale, veuillez appeler le 911.'
+      sms:
+        prompt:
+          intro: >-
+            'Bienvenue sur le système d''Alerte Sara, nous vous enverrons vos rapports quotidiens pour %{name} à ce numéro de téléphone. Pour la confidentialité
+            et plus d''informations, visitez saraalert.org.'
+          reminder: 'Ceci est un rappel du système d''Alerte Sara vous rappelant que vous devez répondre à nos messages de rapport quotidien.'
+          name: '%{name}'
+          daily: 'Il s''agit d''un rapport d''alerte Sara quotidien destiné aux: %{names}. %{experiencing_symptoms} Veuillez répondre par "Oui" ou par "Non"'
+          try_again: 'Je suis désolé, je n''ai pas compris. Veuillez répondre par "Oui" ou par "Non"'
+          thanks: 'Merci d''avoir rempli votre rapport quotidien!'
+        weblink:
+          intro: 'Veuillez remplir le rapport quotidien de Sara Alert pour %{initials_age}: %{url}'
+        closed:
+          thank_you: 'La période de surveillance de Sara Alert pour %{initials_age} a été terminée le %{completed_date} ! Merci de votre participation'
+      voice:
+        intro: 'Bonjour, voici Sara, l''assistante de santé publique automatisée qui demande votre rapport quotidien.'
+        initials_age: '%{initials}, âge %{age}'
+        daily: ' Il s''agit d''un rapport d''alerte Sara quotidien destiné aux: %{names}. %{experiencing_symptoms} Veuillez répondre par "Oui" ou par "Non"'
+        try_again: 'Je suis désolé, je n''ai pas compris. Essayons encore.'
+        thanks: 'Merci d''avoir rempli votre rapport quotidien! Au revoir.'
     symptoms:
       chills:
         name: 'Frissons'
-        notes: ''
       congestion-or-runny-nose:
         name: 'Congestion nasale ou nez qui coule'
-        notes: ''
       cough:
         name: 'Toux'
-        notes: ''
       diarrhea:
         name: 'Diarrhée'
-        notes: ''
       difficulty-breathing:
-        name: 'Difficultes respiratoires'
-        notes: ''
+        name: 'Difficultés respiratoires'
       fatigue:
         name: 'Fatigue'
-        notes: ''
       fever:
         name: 'Fièvre'
         notes: 'Sensation de fébrilité ou température mesurée supérieure ou égale à 38 °C (100,4 °F)'
       headache:
         name: 'Maux de tête'
-        notes: ''
       muscle-pain:
         name: 'Douleurs musculaires'
-        notes: ''
       nausea-or-vomiting:
-        name: 'Nausees ou vomissements'
-        notes: ''
+        name: 'Nausées ou vomissements'
       new-loss-of-smell:
-        name: 'Nouvelle perte de l’odorat'
-        notes: ''
+        name: 'Nouvelle perte de l''odorat'
       new-loss-of-taste:
-        name: 'Nouvelle perte de gout'
-        notes: ''
-      no-symptoms: 'Aucun symptôme'
-      other:
-        name: 'Other'
-        notes: 'J''aimerais que quelqu''un m''appelle pour faire le suivi d''autres symptômes ou d’autre chose'
+        name: 'Nouvelle perte de goût'
       pulse-ox:
-        name: 'd’oxymétrie de pouls'
-        notes: 'Saisissez votre mesure d’oxymétrie de pouls la plus faible au cours des dernières 24 heures'
+        name: 'd''oxymétrie de pouls'
+        notes: 'Saisissez votre mesure d''oxymétrie de pouls la plus faible au cours des dernières 24 heures'
       repeated-shaking-with-chills:
         name: 'Tremblements répétés accompagnés de frissons'
-        notes: ''
       shortness-of-breath:
         name: 'Essoufflement'
-        notes: ''
       sore-throat:
         name: 'Maux de gorge'
-        notes: ''
       temperature:
         name: 'Température'
         notes: 'Veuillez entrer votre température actuelle en degrés Fahrenheit'
       used-a-fever-reducer:
-        name: 'Utilisation d’un agent pour diminuer la fièvre'
+        name: 'Utilisation d''un agent pour diminuer la fièvre'
         notes: 'Avez-vous utilisé un médicament pour diminuer la fièvre au cours des dernières 24 heures?'
+      other:
+        name: 'Other'
+        notes: 'J''aimerais que quelqu''un m''appelle pour faire le suivi d''autres symptômes ou d''autre chose'
+      no-symptoms: 'Aucun symptôme'
     threshold-op:
       less-than: 'moins que'
       less-than-or-equal: 'inferieur ou egal a'
       greater-than: 'plus grand que'
-      greater-than-or-equal: 'Plus grand ou egal a'
-      equal: 'egal a'
-      not-equal: 'pas egal a'
-    web:
-      title: 'Rapport quotidien'
-      bool-title: 'Veuillez sélectionner tous les symptômes que vous présentez.'
-      submit: 'Envoyer'
-      thank-you: 'Merci d’avoir complété votre rapport quotidien !'
-      instruction1: "Si vous n'avez pas signalé aucun symptôme, veuillez continuer à suivre les recommandations fournies par votre autorité de santé publique locale."
-      instruction2: 'Si vous signalez des symptômes, votre autorité de santé publique locale vous contactera bientôt. Si vous avez des inquiétudes immédiates, veuillez contacter votre fournisseur médical ou votre autorité de santé publique locale. Évitez vos contacts avec les autres et vous devez vous isoler à la maison.'
-      instruction3: 'En cas d’urgence médicale, appelez le 911, et faites-leur savoir que vous êtes surveillé par le autorité de santé publique.'
-      instruction4: 'Veuillez utiliser les coordonnées ci-dessous si vous souhaitez nous contacter au sujet de votre cas.'
-      email: 'Courriel'
-      phone: 'Téléphone'
-      webpage: 'Site web'
-    email:
-      reminder:
-        subject: 'Rappel de rapport d’Alerte Sara'
-        header: 'Rappel de rapport d’Alerte Sara'
-        greeting: 'Cher/Chère %{name},'
-        thank-you: 'Merci de participer au programme de surveillance d’Alerte Sara. Veuillez remplir votre rapport quotidien en utilisant le lien ci-dessous.'
-        report: 'Rappel de rapport d’Alerte Sara'
-        footer: 'Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales. Pour la confidentialité et plus d’informations, visitez saraalert.org.'
-      enrollment:
-        subject: 'Recrutement pour alerte Sara'
-        header: 'Bienvenue sur le système d’Alerte Sara'
-        greeting: 'Cher/Chère %{name},'
-        info1: 'Vous avez été recruté(e) dans le système de surveillance d’Alerte Sara. Nous vous demandons de fournir des rapports quotidiens sur votre état. Veuillez cliquer sur le bouton ci-dessous et suivre les instructions qui s’affichent à l’écran.'
-        info2: 'Vous recevrez un rappel similaire tous les jours jusqu’à ce que votre période de surveillance soit terminée.'
-        report: 'Rapport quotidien'
-        footer: 'Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales. Pour la confidentialité et plus d’informations, visitez saraalert.org.'
-      closed:
-        subject: 'Rapport d’Alerte Sara complété'
-        header: 'Rapport d’Alerte Sara complété'
-        thank-you: "La période de surveillance de Sara Alert pour %{initials_age} a été terminée le %{complete_date} ! Merci de votre participation"
-        footer: "Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales. Pour la confidentialité et plus d’informations, visitez saraalert.org."
-      contact:
-        info1: 'Si vous avez des questions, veuillez utiliser les coordonnées ci-dessous pour contacter l’organisation de santé publique qui vous a aidé à vous inscrire:'
-        info2: 'Si vous avez des questions, veuillez contacter le professionnel de santé qui vous a recruté(e).'
-        email: 'Courriel'
-        phone: 'Téléphone'
-        webpage: 'Site web'
-    sms:
-      prompt:
-        intro: 'Bienvenue sur le système d’Alerte Sara, nous vous enverrons vos rapports quotidiens pour %{name} à ce numéro de téléphone. Pour la confidentialité et plus d’informations, visitez saraalert.org.'
-        reminder: 'Ceci est un rappel du système d’Alerte Sara vous rappelant que vous devez répondre à nos messages de rapport quotidien.'
-        daily1: 'Il s’agit d’un rapport d’alerte Sara quotidien destiné aux: '
-        daily2-p: ' Parmi ces personnes '
-        daily2-s: ' Cette personne est-elle '
-        daily3: ' y en a-t-il qui presentent un des symptomes suivants: '
-        daily4: ' Veuillez repondre par "Oui" ou par "Non"'
-        try-again: "Je suis desole, je n'ai pas compris. Veuillez repondre par \"Oui\" ou par \"Non\""
-        max_retries_message: "Je suis desole, vous avez atteint le nombre maximum de tentatives de reponse. Si vous rencontrez une urgence medicale, veuillez appeler le 911."
-        thanks: "Merci d'avoir rempli votre rapport quotidien!"
-      weblink:
-        intro: 'Veuillez remplir le rapport quotidien de Sara Alert pour'
-      closed:
-        thank-you: "La periode de surveillance de Sara Alert pour %{initials_age} a ete terminee le %{completed_date} ! Merci de votre participation"
-    phone:
-      intro: "Bonjour, voici Sara, l'assistante de santé publique automatisée qui demande votre rapport quotidien."
-      try-again: "Je suis désolé, je n'ai pas compris. Essayons encore."
-      max_retries_message: "Je suis désolé, vous avez atteint le nombre maximum de tentatives de réponse. Si vous rencontrez une urgence médicale, veuillez appeler le 911."
-      thanks: "Merci d'avoir rempli votre rapport quotidien! Au revoir."
-      age: 'âge'
-      daily1: ' Il s’agit d’un rapport d’alerte Sara quotidien destiné aux: '
-      daily2-p: ' Parmi ces personnes '
-      daily2-s: ' Cette personne est-elle '
-      daily3: ' y en a-t-il qui présentent un des symptômes suivants '
-      daily4: ' Veuillez répondre par "Oui" ou par "Non"'
+      greater-than-or-equal: 'Plus grand ou égal à'
+      equal: 'égal à'
+      not-equal: 'pas égal à'

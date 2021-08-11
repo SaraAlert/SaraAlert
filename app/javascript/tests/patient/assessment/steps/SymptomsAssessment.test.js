@@ -20,14 +20,14 @@ describe('SymptomsAssessment', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
     expect(wrapper.find(Card.Header).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).text()).toEqual(`${mockTranslations['eng']['web']['title']} (AA-39)`);
+    expect(wrapper.find(Card.Header).text()).toEqual(`${mockTranslations['eng']['html']['weblink']['title']} (AA-39)`);
     expect(wrapper.find(Card.Body).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Form.Row).at(0).text()).toEqual(mockTranslations['eng']['web']['bool-title']);
+    expect(wrapper.find(Card.Body).find(Form.Row).at(0).text()).toEqual(mockTranslations['eng']['html']['weblink']['bool-title']);
     expect(wrapper.find(Card.Body).find(Form.Group).exists()).toBeTruthy();
     expect(wrapper.find(Card.Body).find(Form.Check).length).toEqual(17);
     expect(wrapper.find(Card.Body).find(Form.Control).length).toEqual(2);
     expect(wrapper.find(Card.Body).find(Button).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Button).text()).toEqual(mockTranslations['eng']['web']['submit']);
+    expect(wrapper.find(Card.Body).find(Button).text()).toEqual(mockTranslations['eng']['html']['weblink']['submit']);
   });
 
   it('Properly renders symptom checkboxes when creating a new report', () => {

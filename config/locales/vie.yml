@@ -1,64 +1,122 @@
 vie:
   assessments:
+    html:
+      shared:
+        email: 'Email'
+        phone: 'Điện thoại'
+        webpage: 'Trang web'
+      weblink:
+        title: 'Tự Báo cáo Hàng ngày'
+        bool-title: 'Xin vui lòng chọn tất cả các triệu chứng mà bạn đang gặp phải.'
+        instruction1: 'Nếu bạn không báo cáo bất kỳ triệu chứng nào, vui lòng tiếp tục làm theo các khuyến nghị do sở y tế địa phương cung cấp.'
+        instruction2: >-
+          'Nếu bạn báo cáo bất kỳ triệu chứng nào, bộ phận y tế địa phương của bạn sẽ sớm liên hệ với bạn. Nếu bạn có bất kỳ thắc mắc nào, ngay lập tức, xin vui
+          lòng liên hệ với nhà cung cấp dịch vụ y tế hoặc sở y tế địa phương. Tránh tiếp xúc gần gũi với người khác và xin vui lòng ở nhà.'
+        instruction3: 'Nếu bạn đang gặp trường hợp khẩn cấp về y tế, xin vui lòng gọi 911 và cho họ biết bạn đang được bộ phận y tế theo dõi.'
+        instruction4: 'Xin vui lòng sử dụng thông tin liên hệ bên dưới để liên hệ với một quan chức y tế công cộng quản lý trường hợp của bạn.'
+        submit: 'Gửi đi'
+        thank_you: 'Cảm ơn bạn đã hoàn thành bản báo cáo của mình.'
+      email:
+        shared:
+          greeting: 'Kính gửi %{name},'
+          report: 'Daily Report'
+          footer: >-
+            'Xin đừng trả lời email này, chuyển tiếp email này hoặc chia sẻ liên kết này. Thông báo này được tạo tự động bởi hệ thống Sara Alert và là duy nhất và
+            chỉ dành cho bạn. Nếu bạn muốn ngừng nhận những thông báo này hoặc tin rằng đó là do nhầm lẫn, vui lòng liên hệ với sở y tế công cộng địa phương của
+            bạn. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.'
+        enrollment:
+          subject: 'Đăng ký Sara Alert'
+          header: 'Chào mừng bạn đến với Hệ thống Cảnh báo Sara'
+          greeting: 'Kính gửi %{name},'
+          info1: >-
+            'Bạn đã được đăng ký vào hệ thống giám sát Sara Alert. Chúng tôi yêu cầu bạn cung cấp các báo cáo hàng ngày về tình trạng của bạn. Chỉ cần nhấn vào
+            nút bên dưới và làm theo hướng dẫn trên màn hình.'
+          info2: 'Bạn sẽ nhận được một lời nhắc tương tự hàng ngày cho đến khi thời gian theo dõi của bạn kết thúc.'
+        reminder:
+          subject: 'Lời nhắc Báo cáo Cảnh báo Sara'
+          header: 'Đây là lời nhắc của bạn để hoàn thành báo cáo hàng ngày của bạn.'
+          thank_you: >-
+            'Cảm ơn bạn đã tham gia vào chương trình theo dõi Sara Alert, xin vui lòng điền vào báo cáo hàng ngày của bạn bằng cách sử dụng liên kết bên dưới.'
+        closed:
+          subject: 'Hoàn thành theo dõi cảnh báo Sara'
+          header: 'Quá trình giám sát hoàn tất!'
+          thank_you: 'Sara Alert giám sát cho %{initials_age} hoàn thành vào %{completed_date}! Cảm ơn bạn vì sự tham gia của bạn.'
+        contact:
+          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
+          info2: 'Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với tổ chức y tế công cộng, nơi đã giúp đăng ký cho bạn.'
+    twilio:
+      shared:
+        experiencing_symptoms_s: 'Người này có gặp bất kỳ triệu chứng nào sau đây không? %{symptom_names}.'
+        experiencing_symptoms_p: 'Có ai trong số những người này gặp bất kỳ triệu chứng nào sau đây không? %{symptom_names}.'
+        max_retries_message: >-
+          'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.
+      sms:
+        prompt:
+          intro: >-
+            'Chào mừng bạn đến với hệ thống Sara Alert, chúng tôi sẽ gửi các báo cáo hàng ngày của bạn cho %{name} tới số điện thoại này. Để biết về quyền riêng
+            tư và biết thêm thông tin, hãy truy cập saraalert.org.'
+          reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
+          name: '%{name}'
+          daily: 'This is the Sara Alert daily report for: %{names}. %{experiencing_symptoms} Please reply with "Yes" or "No"'
+          try_again: >-
+            'Tôi xin lỗi, tôi không hiểu lắm. Xin vui lòng trả lời bằng \ "Có \" hoặc \ "Không \". Nếu bạn có bất kỳ câu hỏi nào, xin vui lòng liên hệ với sở y
+            tế địa phương của bạn.'
+          thanks: 'Cảm ơn bạn đã hoàn thành báo cáo hàng ngày của mình'
+        weblink:
+          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}'
+        closed:
+          thank_you: 'Sara Alert giám sát cho %{initials_age} hoàn thành vào %{completed_date}! Cảm ơn bạn vì sự tham gia của bạn.'
+      voice:
+        intro: 'Xin chào, đây là Sara, trợ lý y tế công cộng tự động đang gọi cho báo cáo hàng ngày của bạn.'
+        initials_age: '%{initials}, %{age} tuổi'
+        daily: 'Đây là bản báo cáo hàng ngày của Sara Alert cho: %{names}. %{experiencing_symptoms}. Xin vui lòng trả lời "Có" hoặc "Không"'
+        try_again: 'Tôi xin lỗi, tôi không hiểu lắm. Hãy thử lại lần nữa.'
+        thanks: 'Cảm ơn bạn đã hoàn thành báo cáo hàng ngày của mình! Tạm biệt.'
     symptoms:
       chills:
         name: 'Ớn lạnh'
-        notes: ''
       congestion-or-runny-nose:
         name: 'Nghẹt mũi hoặc chảy nước mũi'
-        notes: ''
       cough:
         name: 'Ho'
-        notes: ''
       diarrhea:
         name: 'Tiêu chảy'
-        notes: ''
       difficulty-breathing:
         name: 'Khó thở'
-        notes: ''
       fatigue:
         name: 'Mệt mỏi'
-        notes: ''
       fever:
         name: 'Sốt'
         notes: 'Cảm thấy sốt hoặc nhiệt độ đo được bằng hoặc trên 100,4°F/38°C'
       headache:
         name: 'Đau đầu'
-        notes: ''
       muscle-pain:
         name: 'Đau cơ'
-        notes: ''
       nausea-or-vomiting:
         name: 'Buồn nôn hoặc nôn mửa'
-        notes: ''
       new-loss-of-smell:
         name: 'Mất mùi mới'
-        notes: ''
       new-loss-of-taste:
         name: 'Mất vị giác mới'
-        notes: ''
-      no-symptoms: 'I am not experiencing any symptoms'
-      other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
       pulse-ox:
         name: 'Pulse Ox'
         notes: 'What was your lowest oxygen level in the past 24 hours?'
       repeated-shaking-with-chills:
         name: 'Run rẩy lặp đi lặp lại kèm theo ớn lạnh'
-        notes: ''
       shortness-of-breath:
         name: 'Hơi thở ngắn'
-        notes: ''
       sore-throat:
         name: 'Đau họng'
-        notes: ''
       temperature:
         name: 'Temperature'
         notes: 'Please enter your current temperature in degrees Fahrenheit'
       used-a-fever-reducer:
         name: 'Sử dụng thuốc hạ sốt'
         notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
+      other:
+        name: 'Other'
+        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
+      no-symptoms: 'I am not experiencing any symptoms'
     threshold-op:
       less-than: 'Less Than'
       less-than-or-equal: 'Less Than Or Equal to'
@@ -66,69 +124,3 @@ vie:
       greater-than-or-equal: 'Greater Than Or Equal to'
       equal: 'Equal to'
       not-equal: 'Not Equal to'
-    web:
-      title: 'Daily Self-Report'
-      bool-title: 'Please select all symptoms which you are experiencing.'
-      submit: 'Submit'
-      thank-you: 'Thank You For Completing Your Self Report'
-      instruction1: 'If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.'
-      instruction2: 'If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please contact your medical provider or local health department. Avoid close contact with other people and stay at home.'
-      instruction3: 'If you are experiencing a medical emergency, please call 911 and let them know you are being monitored by the health department.'
-      instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.'
-      email: 'Email'
-      phone: 'Phone'
-      webpage: 'Webpage'
-    email:
-      reminder:
-        subject: 'Sara Alert Report Reminder'
-        header: 'This is your reminder to complete your daily report.'
-        greeting: 'Kính gửi %{name},'
-        thank-you: 'Thank you for participating in the Sara Alert monitoring program, please fill out your daily report using the link below.'
-        report: 'Daily Report'
-        footer: 'Do not reply to this email, forward this email, or share this link. This message was automatically generated by the Sara Alert system and is unique and intended only for you. If you wish to stop receiving these notifications or believe that it was a mistake, please contact your local public health department. For privacy and more info, visit saraalert.org.'
-      enrollment:
-        subject: 'Sara Alert Enrollment'
-        header: 'Welcome to the Sara Alert System!'
-        greeting: 'Kính gửi %{name},'
-        info1: 'You have been enrolled in the Sara Alert monitoring system. We ask that you provide daily reports of your status. Simply click the button below and follow the on-screen instructions.'
-        info2: 'You will receive a similar reminder daily until your monitoring period has ended.'
-        report: 'Daily Report'
-        footer: 'Do not reply to this email, forward this email, or share this link. This message was automatically generated by the Sara Alert system and is unique and intended only for you. If you wish to stop receiving these notifications or believe that it was a mistake, please contact your local public health department. For privacy and more info, visit saraalert.org.'
-      closed:
-        subject: 'Sara Alert Reporting Complete'
-        header: 'Monitoring complete!'
-        thank-you: "Sara Alert monitoring for %{initials_age} completed on %{completed_date}! Thank you for your participation."
-        footer: 'Do not reply to this email, forward this email, or share this link. This message was automatically generated by the Sara Alert system and is unique and intended only for you. If you wish to stop receiving these notifications or believe that it was a mistake, please contact your local public health department. For privacy and more info, visit saraalert.org.'
-      contact:
-        info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
-        info2: 'If you have any questions please reach out to the public health organization that helped enroll you.'
-        email: 'Email'
-        phone: 'Phone'
-        webpage: 'Webpage'
-    sms:
-      prompt:
-        intro: 'Chào mừng bạn đến với hệ thống Sara Alert, chúng tôi sẽ gửi các báo cáo hàng ngày của bạn cho %{name} tới số điện thoại này. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.'
-        reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
-        daily1: 'This is the Sara Alert daily report for: '
-        daily2-p: ' Are any of these people '
-        daily2-s: ' Is this person '
-        daily3: 'experiencing any of the following symptoms: '
-        daily4: ' Please reply with "Yes" or "No"'
-        try-again: "I'm sorry, I didn't quite get that. Please reply with \"Yes\" or \"No\". If you have any questions, please contact your local health department."
-        max_retries_message: "I’m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911."
-        thanks: 'Thank you for completing your daily report!'
-      weblink:
-        intro: 'Please complete the Sara Alert Daily Report for'
-      closed:
-        thank-you: "Sara Alert monitoring for %{initials_age} completed on %{completed_date}! Thank you for your participation."
-    phone:
-      intro: 'Hello, this is Sara, the automated public health assistant calling for your daily report.'
-      try-again: "I'm sorry, I didn't quite get that. Let's try again."
-      max_retries_message: "I’m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911."
-      thanks: 'Thank you for completing your daily report! Goodbye.'
-      age: 'Age'
-      daily1: ' This is the report for: '
-      daily2-p: ' Are any of these people '
-      daily2-s: ' Is this person '
-      daily3: ' experiencing any of the following symptoms '
-      daily4: ' Please reply with "Yes" or "No"'
