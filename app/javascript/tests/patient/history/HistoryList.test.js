@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Card } from 'react-bootstrap';
+import _ from 'lodash';
 import Select from 'react-select';
 import Pagination from 'jw-react-pagination';
 import HistoryList from '../../../components/patient/history/HistoryList';
@@ -11,9 +12,17 @@ import { mockEnrollmentHistory, mockCommentHistory1, mockCommentHistory2, mockCo
 
 const mockToken = 'testMockTokenString12345';
 const histories = [[mockEnrollmentHistory], [mockCommentHistory2, mockCommentHistory2Edit1, mockCommentHistory2Edit2], [mockCommentHistory1]];
-let historyCreators = histories.map(history_group => history_group[0].created_by);
+let historyCreators = _.orderBy(
+  histories.map(history_group => history_group[0].created_by),
+  x => x,
+  'asc'
+);
 historyCreators = historyCreators.filter((creator, index) => historyCreators.includes(creator) && index === historyCreators.indexOf(creator));
-let historyTypes = histories.map(history_group => history_group[0].history_type);
+let historyTypes = _.orderBy(
+  histories.map(history_group => history_group[0].history_type),
+  x => x,
+  'asc'
+);
 historyTypes = historyTypes.filter((type, index) => historyTypes.includes(type) && index === historyTypes.indexOf(type));
 
 function getWrapper() {
