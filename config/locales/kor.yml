@@ -1,64 +1,113 @@
 kor:
   assessments:
+    html:
+      shared:
+        email: 'Email'
+        phone: 'Phone'
+        webpage: 'Webpage'
+      weblink:
+        title: '일일 자기 보고서'
+        bool-title: '겪고 계신 모든 증상을 선택해 주십시오.'
+        instruction1: '아무 증상도 보고하지 않으셨다면, 계속해서 지역 보건부가 제공하는 권고사항을 따라 주십시오.'
+        instruction2: >-
+          '어떠한 증상을 보고하셨다면, 곧 지역 보건부로부터 연락을 받으시게 됩니다. 즉각적인 대처가 필요한 경우는 의료 제공자나 지역 보건부에 문의하시기 바랍니다. 다른 사람들과의 접촉을 피하고 집에 머물러
+          주십시오.'
+        instruction3: '응급 의료 상황을 겪고 계신다면 911에 전화하셔서 보건부에 의해 모니터링되고 있음을 알려주시기 바랍니다.'
+        instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.'
+        submit: 'Submit'
+        thank_you: '자기 보고서를 작성해 주셔서 감사합니다.'
+      email:
+        shared:
+          greeting: '%{name}님,'
+          report: 'Daily Report'
+          footer: >-
+            '이 이메일에 답장하거나, 이 이메일을 전달하거나, 이 링크를 공유하지 마십시오. 이 메시지는 Sara Alert 시스템에 의해 자동으로 생성되었으며 고유하고 귀하만을 위한 것입니다. 이러한 알림을
+            중단하고 싶거나 실수라고 생각되면 지역 공중 보건부에 문의하십시오. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.'
+        enrollment:
+          subject: 'Sara Alert 등록'
+          header: 'Sara Alert 시스템에 오신 것을 환영합니다!'
+          info1: 'Sara Alert 모니터링 시스템에 등록되셨습니다. 귀하의 상태에 대한 일일 보고서를 제공해 주시기를 부탁드립니다. 아래의 버튼을 클릭한 후, 화면의 지시를 따라주시면 됩니다.'
+          info2: '모니터링 기간이 끝날 때까지 매일 비슷한 알림을 받으시게 됩니다.'
+        reminder:
+          subject: 'Sara Alert 보고서 알림'
+          header: '일일 보고서 작성 알림입니다.'
+          thank_you: 'Sara Alert 모니터링 시스템에 참여해 주셔서 감사합니다. 아래의 링크를 사용하여 일일 보고서를 작성해 주시기 바랍니다.'
+        closed:
+          subject: 'Sara Alert 모니터링 종료'
+          header: '모니터링이 종료되었습니다.'
+          thank_you: '%{initials_age}에 대한 Sara Alert 모니터링이 %{completed_date}일에 완료되었습니다.참여해 주셔서 감사합니다.'
+        contact:
+          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
+          info2: '질문이 있으시면 등록을 도와드린 공중 보건 기관에 문의하시기 바랍니다.'
+    twilio:
+      shared:
+        experiencing_symptoms_s: '다음과 같은 증상을 겪고 계십니까? %{symptom_names}.'
+        experiencing_symptoms_p: '이 분들 중에 다음과 같은 증상을 겪고 계신 분이 있으십니까? %{symptom_names}.'
+        max_retries_message: >-
+          'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.'
+      sms:
+        prompt:
+          intro: 'Sara Alert 시스템에 오신 것을 환영합니다. 이 전화번호로 %{name}님의 일일 보고서를 보내드리겠습니다. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.'
+          reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
+          name: '%{name}님'
+          daily: '이것은 %{names}의 Sara Alert 일일 보고서입니다. %{experiencing_symptoms} "네" 또는 "아니요"로 대답해 주시기 바랍니다.'
+          try_again: '죄송합니다만 이해하지 못했습니다. "네" 또는 "아니요"로 대답해 주시기 바랍니다. 질문이 있으시면 지역 보건부에 문의하십시오.'
+          thanks: '일일 보고서를 작성해 주셔서 감사합니다.'
+        weblink:
+          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}'
+        closed:
+          thank_you: "%{initials_age}에 대한 Sara Alert 모니터링이 %{completed_date}일에 완료되었습니다.참여해 주셔서 감사합니다."
+      voice:
+        intro: '안녕하십니까? 자동화된 공중 보건 보조원 Sara가 일일 보고서를 요청합니다.'
+        initials_age: '%{age} 세 %{initials} 님'
+        daily: '이것은 %{names} 보고서입니다. %{experiencing_symptoms} "네" 또는 "아니요"로 대답해 주시기 바랍니다.'
+        try_again: '죄송합니다만 이해하지 못했습니다. 다시 해봅시다.'
+        thanks: '일일 보고서를 작성해 주셔서 감사합니다. 안녕히 가십시오.'
     symptoms:
       chills:
         name: '오한'
-        notes: ''
       congestion-or-runny-nose:
         name: '코막힘 또는 콧물'
-        notes: ''
       cough:
         name: '기침'
-        notes: ''
       diarrhea:
         name: '설사'
-        notes: ''
       difficulty-breathing:
         name: '호흡곤란'
-        notes: ''
       fatigue:
         name: '피로'
-        notes: ''
       fever:
         name: '발열'
         notes: '미열이 감지되거나 100.4°F/38°C 이상의 고열이 측정됨'
       headache:
         name: '두통'
-        notes: ''
       muscle-pain:
         name: '근육통'
-        notes: ''
       nausea-or-vomiting:
         name: '메스꺼움 또는 구토'
-        notes: ''
       new-loss-of-smell:
         name: '새로운 후각소실'
-        notes: ''
       new-loss-of-taste:
         name: '새로운 미각소실'
-        notes: ''
-      no-symptoms: 'I am not experiencing any symptoms'
-      other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
       pulse-ox:
         name: 'Pulse Ox'
         notes: 'What was your lowest oxygen level in the past 24 hours?'
       repeated-shaking-with-chills:
         name: '오한을 동반한 지속적 떨림'
-        notes: ''
       shortness-of-breath:
         name: '숨참'
-        notes: ''
       sore-throat:
         name: '인후통'
-        notes: ''
       temperature:
         name: 'Temperature'
         notes: 'Please enter your current temperature in degrees Fahrenheit'
       used-a-fever-reducer:
         name: '해열제를 사용했음'
         notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
+      other:
+        name: 'Other'
+        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
+      no-symptoms: 'I am not experiencing any symptoms'
     threshold-op:
       less-than: 'Less Than'
       less-than-or-equal: 'Less Than Or Equal to'
@@ -66,69 +115,3 @@ kor:
       greater-than-or-equal: 'Greater Than Or Equal to'
       equal: 'Equal to'
       not-equal: 'Not Equal to'
-    web:
-      title: 'Daily Self-Report'
-      bool-title: 'Please select all symptoms which you are experiencing.'
-      submit: 'Submit'
-      thank-you: 'Thank You For Completing Your Self Report'
-      instruction1: 'If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.'
-      instruction2: 'If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please contact your medical provider or local health department. Avoid close contact with other people and stay at home.'
-      instruction3: 'If you are experiencing a medical emergency, please call 911 and let them know you are being monitored by the health department.'
-      instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.'
-      email: 'Email'
-      phone: 'Phone'
-      webpage: 'Webpage'
-    email:
-      reminder:
-        subject: 'Sara Alert Report Reminder'
-        header: 'This is your reminder to complete your daily report.'
-        greeting: '%{name}님,'
-        thank-you: 'Thank you for participating in the Sara Alert monitoring program, please fill out your daily report using the link below.'
-        report: 'Daily Report'
-        footer: 'Do not reply to this email, forward this email, or share this link. This message was automatically generated by the Sara Alert system and is unique and intended only for you. If you wish to stop receiving these notifications or believe that it was a mistake, please contact your local public health department. For privacy and more info, visit saraalert.org.'
-      enrollment:
-        subject: 'Sara Alert 등록'
-        header: 'Sara Alert 시스템에 오신 것을 환영합니다!'
-        greeting: '%{name}님,'
-        info1: 'Sara Alert 모니터링 시스템에 등록되셨습니다. 귀하의 상태에 대한 일일 보고서를 제공해 주시기를 부탁드립니다. 아래의 버튼을 클릭한 후, 화면의 지시를 따라주시면 됩니다.'
-        info2: '모니터링 기간이 끝날 때까지 매일 비슷한 알림을 받으시게 됩니다. 질문이 있으시면 등록을 도와드린 공중 보건 기관에 문의하시기 바랍니다.'
-        report: 'Daily Report'
-        footer: '이 이메일에 답장하거나, 이 이메일을 전달하거나, 이 링크를 공유하지 마십시오. 이 메시지는 Sara Alert 시스템에 의해 자동으로 생성되었으며 고유하고 귀하만을 위한 것입니다. 이러한 알림을 중단하고 싶거나 실수라고 생각되면 지역 공중 보건부에 문의하십시오. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.'
-      closed:
-        subject: 'Sara Alert Reporting Complete'
-        header: 'Monitoring complete!'
-        thank-you: "Sara Alert monitoring for %{initials_age} completed on %{completed_date}! Thank you for your participation."
-        footer: 'Do not reply to this email, forward this email, or share this link. This message was automatically generated by the Sara Alert system and is unique and intended only for you. If you wish to stop receiving these notifications or believe that it was a mistake, please contact your local public health department. For privacy and more info, visit saraalert.org.'
-      contact:
-        info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
-        info2: 'If you have any questions please reach out to the public health organization that helped enroll you.'
-        email: 'Email'
-        phone: 'Phone'
-        webpage: 'Webpage'
-    sms:
-      prompt:
-        intro: 'Sara Alert 시스템에 오신 것을 환영합니다. 이 전화번호로 %{name}님의 일일 보고서를 보내드리겠습니다. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.'
-        reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
-        daily1: 'This is the Sara Alert daily report for: '
-        daily2-p: ' Are any of these people '
-        daily2-s: ' Is this person '
-        daily3: 'experiencing any of the following symptoms: '
-        daily4: ' Please reply with "Yes" or "No"'
-        try-again: "I'm sorry, I didn't quite get that. Please reply with \"Yes\" or \"No\". If you have any questions, please contact your local health department."
-        max_retries_message: "I’m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911."
-        thanks: 'Thank you for completing your daily report!'
-      weblink:
-        intro: 'Please complete the Sara Alert Daily Report for'
-      closed:
-        thank-you: "Sara Alert monitoring for %{initials_age} completed on %{completed_date}! Thank you for your participation."
-    phone:
-      intro: '안녕하십니까? 자동화된 공중 보건 보조원 Sara가 일일 보고서를 요청합니다.'
-      try-again: "I'm sorry, I didn't quite get that. Let's try again."
-      max_retries_message: "I’m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911."
-      thanks: 'Thank you for completing your daily report! Goodbye.'
-      age: 'Age'
-      daily1: ' This is the report for: '
-      daily2-p: ' Are any of these people '
-      daily2-s: ' Is this person '
-      daily3: ' experiencing any of the following symptoms '
-      daily4: ' Please reply with "Yes" or "No"'
