@@ -1,64 +1,116 @@
 ara:
   assessments:
+    html:
+      shared:
+        email: 'البريد الإلكتروني'
+        phone: 'الهاتف'
+        webpage: 'صفحة الويب'
+      weblink:
+        title: 'التقرير الذاتي اليومي'
+        bool-title: 'الرجاء تحديد جميع الأعراض التي تعاني منها'
+        instruction1: 'إذا لم تبلغ عن أي أعراض ، فيرجى الاستمرار في اتباع التوصيات المقدمة من وزارة الصحة المحلية.'
+        instruction2: >-
+          'إذا أبلغت عن أي أعراض ، فستتواصل إدارة الصحة المحلية قريبًا. إذا كان لديك أي مخاوف فورية ، يرجى الاتصال بمزود الخدمة الطبية أو الصحة المحلية'
+        instruction3: 'إذا كنت تعاني من حالة طبية طارئة، فيرجى الاتصال برقم 911 وإبلاغهم بأنك تحت المتابعة الصحية.'
+        instruction4: 'يرجى استخدام معلومات الاتصال أدناه للتواصل مع مسؤول الصحة العامة الذي يتابع حالتك.'
+        submit: 'إرسال'
+        thank_you: 'Thank You For Completing Your Self Report'
+      email:
+        shared:
+          greeting: 'عزيزي %{name} ،'
+          report: 'Daily Report'
+          footer: >-
+            'تم إنشاؤه بواسطة نظام Sara Alert وهو فريد ومخصص لك فقط. إذا كنت ترغب في التوقف عن تلقي هذه الإخطارات أو تعتقد أنه كان خطأ، يرجى الاتصال بقسم الصحة
+            العامة المحلي. للخصوصية ومزيد من المعلومات، قم بزيارة saraalert.org.'
+        enrollment:
+          subject: 'تسجيل Sara Alert'
+          header: 'مرحبًا بك في نظام تنبيه سارة'
+          info1: >-
+            'لقد تم تسجيلك في نظام مراقبة Sara Alert. نطلب منك تقديم تقارير يومية عن حالتك. ما عليك سوى النقر فوق الزر أدناه واتباع التعليمات التي تظهر على
+            الشاشة.'
+          info2: 'You will receive a similar reminder daily until your monitoring period has ended.'
+        reminder:
+          subject: 'تذكير تقرير تنبيه سارة'
+          header: 'هذا هو تذكيرك لإكمال تقريرك اليومي.'
+          thank_you: 'شكرًا لك على المشاركة في برنامج Sara Alert للمراقبة، يرجى ملء تقريرك اليومي باستخدام الرابط أدناه.'
+        closed:
+          subject: 'اكتمال متابعة تنبيه سارة'
+          header: 'اكتملت المتابعة!'
+          thank_you: 'Sara Alert اكتملت مرمتابعة %{initials_age} في %{completed_date}! أشكركم على مشاركتكم.'
+        contact:
+          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
+          info2: 'If you have any questions please reach out to the public health organization that helped enroll you.'
+    twilio:
+      shared:
+        experiencing_symptoms_s: 'هل يعاني هذا الشخص من أي من الأعراض التالية: %{symptom_names}'
+        experiencing_symptoms_p: 'هل يعاني أي من هؤلاء الأشخاص من أي من الأعراض التالية: %{symptom_names}.'
+        max_retries_message: >-
+          'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.'
+      sms:
+        prompt:
+          intro: >-
+            'مرحبًا بك في نظام Sara Alert، سنرسل لك تقاريرك اليومية عن %{name} إلى رقم هذا الهاتف. للخصوصية ومزيد من المعلومات، قم بزيارة saraalert.org.'
+          reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
+          name: '%{name}'
+          daily: 'هذا هو تقرير Sara Alert اليومي لـ: %{names}. %{experiencing_symptoms} الرجاء الرد بـ "نعم" أو "لا"'
+          try_again: >-
+            'أنا آسف لم أفهم. الرجاء الرد بـ "نعم" أو "لا". إذا كانت لديك أي أسئلة ، يرجى الاتصال بقسم الصحة المحلي.'
+          thanks: 'شكرا لاستكمال تقريرك اليومي'
+        weblink:
+          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}'
+        closed:
+          thank_you: 'Sara Alert اكتملت مرمتابعة %{initials_age} في %{completed_date}! أشكركم على مشاركتكم.'
+      voice:
+        intro: 'مرحبًا، هذه سارة، مساعدة الصحة العامة الآلية التي تطلب تقريرك اليومي.'
+        initials_age: '%{initials} ، %{age} سنة'
+        daily: 'هذا التقرير عن: %{names}. %{experiencing_symptoms}. الرجاء الرد بـ "نعم" أو "لا"'
+        try_again: 'أنا آسف لم أفهم. لنجرب مجددا.'
+        thanks: 'شكرا لاستكمال تقريرك اليومي! مع السلامة.'
     symptoms:
       chills:
         name: 'قشعريرة'
-        notes: ''
       congestion-or-runny-nose:
         name: 'احتقان أو سيلان الأنف'
-        notes: ''
       cough:
         name: 'سعال'
-        notes: ''
       diarrhea:
         name: 'إسهال'
-        notes: ''
       difficulty-breathing:
         name: 'صعوبة في التنفس'
-        notes: ''
       fatigue:
         name: 'تعب'
-        notes: ''
       fever:
         name: 'حمى'
         notes: 'قياس درجة الحرارة يساوي أو يزيد ١100.4°F/38°C.٤ درجة فهرنهايت/٣٨ درجة مئوية'
       headache:
         name: 'صداع'
-        notes: ''
       muscle-pain:
         name: 'ألم عضلي'
-        notes: ''
       nausea-or-vomiting:
         name: 'غثيان أو تقيؤ'
-        notes: ''
       new-loss-of-smell:
         name: 'فقدان حاسة الشم المفاجئ'
-        notes: ''
       new-loss-of-taste:
         name: 'فقدان حاسة التذوق المفاجئ'
-        notes: ''
-      no-symptoms: 'I am not experiencing any symptoms'
-      other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
       pulse-ox:
         name: 'Pulse Ox'
         notes: 'What was your lowest oxygen level in the past 24 hours?'
       repeated-shaking-with-chills:
         name: 'قشعريرة'
-        notes: ''
       shortness-of-breath:
         name: 'ضيق التنفس'
-        notes: ''
       sore-throat:
         name: 'التهاب الحلق'
-        notes: ''
       temperature:
         name: 'Temperature'
         notes: 'Please enter your current temperature in degrees Fahrenheit'
       used-a-fever-reducer:
         name: 'أستخدمت مخفض الحمى'
         notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
+      other:
+        name: 'Other'
+        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
+      no-symptoms: 'I am not experiencing any symptoms'
     threshold-op:
       less-than: 'Less Than'
       less-than-or-equal: 'Less Than Or Equal to'
@@ -66,69 +118,3 @@ ara:
       greater-than-or-equal: 'Greater Than Or Equal to'
       equal: 'Equal to'
       not-equal: 'Not Equal to'
-    web:
-      title: 'Daily Self-Report'
-      bool-title: 'Please select all symptoms which you are experiencing.'
-      submit: 'Submit'
-      thank-you: 'Thank You For Completing Your Self Report'
-      instruction1: 'If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.'
-      instruction2: 'If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please contact your medical provider or local health department. Avoid close contact with other people and stay at home.'
-      instruction3: 'If you are experiencing a medical emergency, please call 911 and let them know you are being monitored by the health department.'
-      instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.'
-      email: 'Email'
-      phone: 'Phone'
-      webpage: 'Webpage'
-    email:
-      reminder:
-        subject: 'Sara Alert Report Reminder'
-        header: 'This is your reminder to complete your daily report.'
-        greeting: 'Dear %{name},'
-        thank-you: 'Thank you for participating in the Sara Alert monitoring program, please fill out your daily report using the link below.'
-        report: 'Daily Report'
-        footer: 'Do not reply to this email, forward this email, or share this link. This message was automatically generated by the Sara Alert system and is unique and intended only for you. If you wish to stop receiving these notifications or believe that it was a mistake, please contact your local public health department. For privacy and more info, visit saraalert.org.'
-      enrollment:
-        subject: 'Sara Alert Enrollment'
-        header: 'Welcome to the Sara Alert System!'
-        greeting: 'Dear %{name},'
-        info1: 'You have been enrolled in the Sara Alert monitoring system. We ask that you provide daily reports of your status. Simply click the button below and follow the on-screen instructions.'
-        info2: 'You will receive a similar reminder daily until your monitoring period has ended.'
-        report: 'Daily Report'
-        footer: 'Do not reply to this email, forward this email, or share this link. This message was automatically generated by the Sara Alert system and is unique and intended only for you. If you wish to stop receiving these notifications or believe that it was a mistake, please contact your local public health department. For privacy and more info, visit saraalert.org.'
-      closed:
-        subject: 'Sara Alert Reporting Complete'
-        header: 'Monitoring complete!'
-        thank-you: "Sara Alert monitoring for %{initials_age} completed on %{completed_date}! Thank you for your participation."
-        footer: 'Do not reply to this email, forward this email, or share this link. This message was automatically generated by the Sara Alert system and is unique and intended only for you. If you wish to stop receiving these notifications or believe that it was a mistake, please contact your local public health department. For privacy and more info, visit saraalert.org.'
-      contact:
-        info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
-        info2: 'If you have any questions please reach out to the public health organization that helped enroll you.'
-        email: 'Email'
-        phone: 'Phone'
-        webpage: 'Webpage'
-    sms:
-      prompt:
-        intro: 'Welcome to the Sara Alert system, we will be sending your daily reports for %{name} to this phone number. For privacy and more info, visit saraalert.org.'
-        reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
-        daily1: 'This is the Sara Alert daily report for: '
-        daily2-p: ' Are any of these people '
-        daily2-s: ' Is this person '
-        daily3: 'experiencing any of the following symptoms: '
-        daily4: ' Please reply with "Yes" or "No"'
-        try-again: "I'm sorry, I didn't quite get that. Please reply with \"Yes\" or \"No\". If you have any questions, please contact your local health department."
-        max_retries_message: "I’m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911."
-        thanks: 'Thank you for completing your daily report!'
-      weblink:
-        intro: 'Please complete the Sara Alert Daily Report for'
-      closed:
-        thank-you: "Sara Alert monitoring for %{initials_age} completed on %{completed_date}! Thank you for your participation."
-    phone:
-      intro: 'Hello, this is Sara, the automated public health assistant calling for your daily report.'
-      try-again: "I'm sorry, I didn't quite get that. Let's try again."
-      max_retries_message: "I’m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911."
-      thanks: 'Thank you for completing your daily report! Goodbye.'
-      age: 'Age'
-      daily1: ' This is the report for: '
-      daily2-p: ' Are any of these people '
-      daily2-s: ' Is this person '
-      daily3: ' experiencing any of the following symptoms '
-      daily4: ' Please reply with "Yes" or "No"'

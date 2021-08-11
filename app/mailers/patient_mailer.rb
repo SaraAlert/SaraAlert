@@ -10,12 +10,12 @@ class PatientMailer < ApplicationMailer
 
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    @patients = patient.active_dependents.uniq.collect do |dependent|
+    @patients = patient.active_dependents.uniq.map do |dependent|
       { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
     end
     @lang = patient.select_language
     @contact_info = patient.jurisdiction.contact_info
-    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.enrollment.subject', locale: @lang)) do |format|
+    mail(to: patient.email&.strip, subject: I18n.t('assessments.html.email.enrollment.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
     History.welcome_message_sent(patient: patient)
@@ -35,7 +35,7 @@ class PatientMailer < ApplicationMailer
     end
 
     lang = patient.select_language
-    contents = I18n.t('assessments.sms.prompt.intro', locale: lang, name: patient&.initials_age('-'))
+    contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: patient&.initials_age('-'))
     threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
     message = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash }
     success = TwilioSender.send_sms(patient, [message])
@@ -64,7 +64,7 @@ class PatientMailer < ApplicationMailer
     patient.active_dependents.uniq.each do |dependent|
       url = new_patient_assessment_jurisdiction_lang_initials_url(dependent.submission_token, dependent.jurisdiction.unique_identifier, lang&.to_s,
                                                                   dependent&.initials_age)
-      contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
+      contents = I18n.t('assessments.twilio.sms.weblink.intro', locale: lang, initials_age: dependent&.initials_age('-'), url: url)
       # Update last send attempt timestamp before Twilio call
       patient.last_assessment_reminder_sent = DateTime.now
       patient.save(touch: false)
@@ -91,27 +91,29 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    patient_names = patient.active_dependents.uniq.collect { |dependent| dependent&.initials_age('-') }
-    contents = I18n.t('assessments.sms.prompt.daily1', locale: lang) + patient_names.join(', ') + '.'
+    patient_names = patient.active_dependents.uniq.map do |dependent|
+      I18n.t('assessments.twilio.sms.prompt.name', locale: lang, name: dependent&.initials_age('-'))
+    end
 
     # Prepare text asking about anyone in the group
-    contents += if patient.active_dependents.uniq.count > 1
-                  I18n.t('assessments.sms.prompt.daily2-p', locale: lang)
-                else
-                  I18n.t('assessments.sms.prompt.daily2-s', locale: lang)
-                end
+    plural = patient.active_dependents.uniq.count > 1
 
     # This assumes that all of the dependents will be in the same jurisdiction and therefore have the same symptom questions
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
-    contents += I18n.t('assessments.sms.prompt.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '.'
-    contents += I18n.t('assessments.sms.prompt.daily4', locale: lang)
+    symptom_names = patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang)
+
+    # Construct message contents
+    experiencing_symptoms = I18n.t("assessments.twilio.shared.experiencing_symptoms_#{plural ? 'p' : 's'}", locale: lang, name: patient.initials,
+                                                                                                            symptom_names: symptom_names)
+    contents = I18n.t('assessments.twilio.sms.prompt.daily', locale: lang, names: patient_names.join(', '), experiencing_symptoms: experiencing_symptoms)
+
     threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
     # The medium parameter will either be SMS, VOICE or SINGLE_SMS
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.split('-').first.upcase,
-               try_again: I18n.t('assessments.sms.prompt.try-again', locale: lang),
-               max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: lang),
-               thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
+               try_again: I18n.t('assessments.twilio.sms.prompt.try_again', locale: lang),
+               max_retries_message: I18n.t('assessments.twilio.shared.max_retries_message', locale: lang),
+               thanks: I18n.t('assessments.twilio.sms.prompt.thanks', locale: lang) }
     # Update last send attempt timestamp before Twilio sms assessment
     patient.last_assessment_reminder_sent = DateTime.now
     patient.save(touch: false)
@@ -130,32 +132,30 @@ class PatientMailer < ApplicationMailer
     lang = patient.select_language
     lang = :eng unless Languages.voice_supported?(lang) # Some languages are not supported via voice
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    patient_names = patient.active_dependents.uniq.collect do |dependent|
-      "#{dependent&.first_name&.first || ''}, #{dependent&.last_name&.first || ''}, "\
-        "#{I18n.t('assessments.phone.age', locale: lang)} #{dependent&.calc_current_age || '0'},"
+    patient_names = patient.active_dependents.uniq.map do |dependent|
+      I18n.t('assessments.twilio.voice.initials_age', locale: lang, initials: dependent&.initials, age: dependent&.calc_current_age || '0')
     end
-    contents = I18n.t('assessments.phone.daily1', locale: lang) + patient_names.join(', ')
 
     # Prepare text asking about anyone in the group
-    contents += if patient.active_dependents.uniq.count > 1
-                  I18n.t('assessments.phone.daily2-p', locale: lang)
-                else
-                  I18n.t('assessments.phone.daily2-s', locale: lang)
-                end
+    plural = patient.active_dependents.uniq.count > 1
 
     # This assumes that all of the dependents will be in the same jurisdiction and therefore have the same symptom questions
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
-    contents += I18n.t('assessments.phone.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '?'
-    contents += I18n.t('assessments.phone.daily4', locale: lang)
+    symptom_names = patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang)
+
+    # Construct message contents
+    experiencing_symptoms = I18n.t("assessments.twilio.shared.experiencing_symptoms_#{plural ? 'p' : 's'}", locale: lang, name: patient.initials,
+                                                                                                            symptom_names: symptom_names)
+    contents = I18n.t('assessments.twilio.voice.daily', locale: lang, names: patient_names.join(', '), experiencing_symptoms: experiencing_symptoms)
 
     threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
     # The medium parameter will either be SMS, VOICE or SINGLE_SMS
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'VOICE', language: lang.to_s.split('-').first.upcase,
-               intro: I18n.t('assessments.phone.intro', locale: lang),
-               try_again: I18n.t('assessments.phone.try-again', locale: lang),
-               max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: lang),
-               thanks: I18n.t('assessments.phone.thanks', locale: lang) }
+               intro: I18n.t('assessments.twilio.voice.intro', locale: lang),
+               try_again: I18n.t('assessments.twilio.voice.try_again', locale: lang),
+               max_retries_message: I18n.t('assessments.twilio.shared.max_retries_message', locale: lang),
+               thanks: I18n.t('assessments.twilio.voice.thanks', locale: lang) }
     # Update last send attempt timestamp before Twilio call
     patient.last_assessment_reminder_sent = DateTime.now
     patient.save(touch: false)
@@ -176,13 +176,13 @@ class PatientMailer < ApplicationMailer
     @contact_info = patient.jurisdiction.contact_info
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    @patients = patient.active_dependents.uniq.collect do |dependent|
+    @patients = patient.active_dependents.uniq.map do |dependent|
       { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
     end
     # Update last send attempt timestamp before SMTP call
     patient.last_assessment_reminder_sent = DateTime.now
     patient.save(touch: false)
-    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang)) do |format|
+    mail(to: patient.email&.strip, subject: I18n.t('assessments.html.email.reminder.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
     patient.active_dependents_and_self.each { |pat| add_success_history(pat) }
@@ -205,12 +205,12 @@ class PatientMailer < ApplicationMailer
 
     @lang = patient.select_language
     @contents = I18n.t(
-      'assessments.sms.closed.thank-you',
+      'assessments.twilio.sms.closed.thank_you',
       initials_age: patient&.initials_age('-'),
       completed_date: patient.closed_at&.strftime('%m-%d-%Y'),
       locale: @lang
     )
-    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.closed.subject', locale: @lang)) do |format|
+    mail(to: patient.email&.strip, subject: I18n.t('assessments.html.email.closed.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
     History.monitoring_complete_message_sent(patient: patient)
@@ -228,7 +228,7 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     contents = I18n.t(
-      'assessments.sms.closed.thank-you',
+      'assessments.twilio.sms.closed.thank_you',
       initials_age: patient&.initials_age('-'),
       completed_date: patient.closed_at&.strftime('%m-%d-%Y'),
       locale: lang
