@@ -30,6 +30,7 @@ class History < ApplicationRecord
     close_contact: 'Close Contact',
     close_contact_edit: 'Close Contact Edit',
     contact_attempt: 'Contact Attempt',
+    manual_contact_attempt: 'Manual Contact Attempt',
     welcome_message_sent: 'Welcome Message Sent',
     record_automatically_closed: 'Record Automatically Closed',
     monitoring_complete_message_sent: 'Monitoring Complete Message Sent',

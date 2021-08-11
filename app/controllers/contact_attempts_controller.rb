@@ -25,6 +25,6 @@ class ContactAttemptsController < ApplicationController
     History.create!(patient_id: patient_id,
                     created_by: current_user.email,
                     comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}",
-                    history_type: 'Contact Attempt')
+                    history_type: 'Manual Contact Attempt')
   end
 end
