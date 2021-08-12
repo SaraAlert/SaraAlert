@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
-require 'test_helper'
-require 'test_case'
-require 'rspec/mocks/minitest_integration'
-require 'controllers/fhir/r4/api_controller_test'
+require 'api_controller_test_case'
 
-class ApiControllerTest < ActionDispatch::IntegrationTest
+class ApiControllerTest < ApiControllerTestCase
   setup do
+    setup_system_applications
+    setup_system_tokens
+    setup_user_applications
     setup_labs
+    setup_logger
   end
 
   def setup_labs
