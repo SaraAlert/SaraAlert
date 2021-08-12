@@ -5,6 +5,7 @@ class Assessment < ApplicationRecord
   extend OrderAsSpecified
   include PatientHelper
   include ExcelSanitizer
+  include FhirHelper
 
   columns.each do |column|
     case column.type
@@ -131,28 +132,7 @@ class Assessment < ApplicationRecord
   # Returns a representative FHIR::QuestionnaireResponse for an instance of a Sara Alert Assessment.
   # https://www.hl7.org/fhir/observation.html
   def as_fhir
-    FHIR::QuestionnaireResponse.new(
-      meta: FHIR::Meta.new(lastUpdated: updated_at.strftime('%FT%T%:z')),
-      id: id,
-      subject: FHIR::Reference.new(reference: "Patient/#{patient_id}"),
-      status: 'completed',
-      item: reported_condition.symptoms.enum_for(:each_with_index).collect do |s, index|
-        case s.type
-        when 'IntegerSymptom'
-          FHIR::QuestionnaireResponse::Item.new(text: s.name,
-                                                answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueInteger: s.int_value),
-                                                linkId: index.to_s)
-        when 'FloatSymptom'
-          FHIR::QuestionnaireResponse::Item.new(text: s.name,
-                                                answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueDecimal: s.float_value),
-                                                linkId: index.to_s)
-        when 'BoolSymptom'
-          FHIR::QuestionnaireResponse::Item.new(text: s.name,
-                                                answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueBoolean: s.bool_value),
-                                                linkId: index.to_s)
-        end
-      end
-    )
+    assessment_as_fhir(self)
   end
 
   private

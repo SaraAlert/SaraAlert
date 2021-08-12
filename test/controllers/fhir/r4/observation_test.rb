@@ -58,7 +58,7 @@ class ApiControllerTest < ApiControllerTestCase
     end
 
     # Verify that the JSON response matches the original as FHIR
-    assert_equal JSON.parse(@lab_1.as_fhir.to_json).except('id', 'meta'), json_response.except('id', 'meta')
+    assert_equal JSON.parse(created_lab.as_fhir.to_json).except('id', 'meta'), json_response.except('id', 'meta')
 
     histories = History.where(patient: created_lab.patient_id)
     assert_equal(1, histories.count)

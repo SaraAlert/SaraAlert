@@ -269,7 +269,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         patient_details[:end_of_monitoring] = patient.end_of_monitoring if fields.include?(:end_of_monitoring)
         patient_details[:expected_purge_ts] = patient.expected_purge_date_exp if fields.include?(:expected_purge_ts)
         patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase if fields.include?(:full_status)
-        patient_details[:status] = patient.status&.to_s&.humanize&.downcase&.sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
+        patient_details[:status] = patient.status_as_string if fields.include?(:status)
 
         # populate creator if requested
         patient_details[:creator] = patients_creators[patient.creator_id] if fields.include?(:creator)
